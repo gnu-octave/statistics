@@ -70,6 +70,15 @@ DC_ARG="${1:-}" "$OCTAVE" --no-gui -q --eval "
     for k = 1:numel (s)
       if (s(k).isdir && ! any (strcmp (s(k).name, skip)))
         cand{end+1} = fullfile ('inst', s(k).name);
+        ## A namespace directory holds functions of its own and is one level
+        ## deeper, so it is never reached by this single pass.  The classes in
+        ## inst/dist_obj/+prob are the case in point.
+        s2 = dir (fullfile ('inst', s(k).name));
+        for j = 1:numel (s2)
+          if (s2(j).isdir && strncmp (s2(j).name, '+', 1))
+            cand{end+1} = fullfile ('inst', s(k).name, s2(j).name);
+          endif
+        endfor
       endif
     endfor
     ## Keep only directories that actually contain functions.

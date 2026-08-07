@@ -110,7 +110,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = BetaDistribution (a, b);
+      pd = prob.BetaDistribution (a, b);
 
     case 'binomial'
       N = 1;
@@ -126,7 +126,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = BinomialDistribution (N, p);
+      pd = prob.BinomialDistribution (N, p);
 
     case {'birnbaumsaunders', 'bisa'}
       beta = 1;
@@ -143,7 +143,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = BirnbaumSaundersDistribution (beta, gamma);
+      pd = prob.BirnbaumSaundersDistribution (beta, gamma);
 
     case 'burr'
       alpha = 1;
@@ -162,7 +162,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = BurrDistribution (alpha, c, k);
+      pd = prob.BurrDistribution (alpha, c, k);
 
     case 'exponential'
       mu = 1;
@@ -176,7 +176,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = ExponentialDistribution (mu);
+      pd = prob.ExponentialDistribution (mu);
 
     case {'extremevalue', 'ev'}
       mu = 0;
@@ -193,7 +193,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = ExtremeValueDistribution (mu, sigma);
+      pd = prob.ExtremeValueDistribution (mu, sigma);
 
     case 'gamma'
       a = 1;
@@ -209,7 +209,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = GammaDistribution (a, b);
+      pd = prob.GammaDistribution (a, b);
 
     case {'generalizedextremevalue', 'gev'}
       k = 0;
@@ -229,7 +229,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = GeneralizedExtremeValueDistribution (k, sigma, mu);
+      pd = prob.GeneralizedExtremeValueDistribution (k, sigma, mu);
 
     case {'generalizedpareto', 'gp'}
     k = 1;
@@ -249,7 +249,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = GeneralizedParetoDistribution (k, sigma, theta);
+      pd = prob.GeneralizedParetoDistribution (k, sigma, theta);
 
     case {'halfnormal', 'hn'}
       mu = 0;
@@ -266,7 +266,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = HalfNormalDistribution (mu, sigma);
+      pd = prob.HalfNormalDistribution (mu, sigma);
 
     case {'inversegaussian', 'invg'}
       mu = 1;
@@ -283,7 +283,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = InverseGaussianDistribution (mu, lambda);
+      pd = prob.InverseGaussianDistribution (mu, lambda);
 
     case 'kernel'
       error (strcat ("makedist: the Kernel distribution is not parametric", ...
@@ -304,7 +304,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = LogisticDistribution (mu, sigma);
+      pd = prob.LogisticDistribution (mu, sigma);
 
     case 'loglogistic'
       mu = 0;
@@ -321,7 +321,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = LoglogisticDistribution (mu, sigma);
+      pd = prob.LoglogisticDistribution (mu, sigma);
 
     case 'lognormal'
       mu = 0;
@@ -338,7 +338,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = LognormalDistribution (mu, sigma);
+      pd = prob.LognormalDistribution (mu, sigma);
 
     case 'loguniform'
       lower = 1;
@@ -355,7 +355,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = LoguniformDistribution (lower, upper);
+      pd = prob.LoguniformDistribution (lower, upper);
 
     case 'multinomial'
       probs = [0.5, 0.5];
@@ -369,7 +369,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = MultinomialDistribution (probs);
+      pd = prob.MultinomialDistribution (probs);
 
     case 'nakagami'
       mu = 1;
@@ -386,7 +386,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = NakagamiDistribution (mu, omega);
+      pd = prob.NakagamiDistribution (mu, omega);
 
     case {'negativebinomial', 'nbin'}
       R = 1;
@@ -403,7 +403,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = NegativeBinomialDistribution (R, P);
+      pd = prob.NegativeBinomialDistribution (R, P);
 
     case 'normal'
       mu = 0;
@@ -419,7 +419,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = NormalDistribution (mu, sigma);
+      pd = prob.NormalDistribution (mu, sigma);
 
     case 'piecewiselinear'
       x = [0, 1];
@@ -436,7 +436,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = PiecewiseLinearDistribution (x, Fx);
+      pd = prob.PiecewiseLinearDistribution (x, Fx);
 
     case 'poisson'
       lambda = 1;
@@ -449,7 +449,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = PoissonDistribution (lambda);
+      pd = prob.PoissonDistribution (lambda);
 
     case 'rayleigh'
       sigma = 1;
@@ -463,7 +463,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = RayleighDistribution (sigma);
+      pd = prob.RayleighDistribution (sigma);
 
     case 'rician'
       s = 1;
@@ -479,7 +479,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = RicianDistribution (s, sigma);
+      pd = prob.RicianDistribution (s, sigma);
 
     case 'stable'
       alpha = 2;
@@ -501,7 +501,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = StableDistribution (alpha, beta, gam, delta);
+      pd = prob.StableDistribution (alpha, beta, gam, delta);
 
     case {'tlocationscale', 'tls', 'locationscalet'}
       mu = 0;
@@ -521,7 +521,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = tLocationScaleDistribution (mu, sigma, df);
+      pd = prob.tLocationScaleDistribution (mu, sigma, df);
 
     case 'triangular'
       A = 0;
@@ -541,7 +541,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = TriangularDistribution (A, B, C);
+      pd = prob.TriangularDistribution (A, B, C);
 
     case 'uniform'
       Lower = 0;
@@ -557,7 +557,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = UniformDistribution (Lower, Upper);
+      pd = prob.UniformDistribution (Lower, Upper);
 
     case 'weibull'
       lambda = 1;
@@ -573,7 +573,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = WeibullDistribution (lambda, k);
+      pd = prob.WeibullDistribution (lambda, k);
 
   endswitch
 
@@ -582,7 +582,7 @@ endfunction
 ## Test output
 %!test
 %! pd = makedist ('beta');
-%! assert_equal (class (pd), "BetaDistribution");
+%! assert_equal (class (pd), "prob.BetaDistribution");
 %! assert_equal (pd.a, 1);
 %! assert_equal (pd.b, 1);
 %!test
@@ -599,7 +599,7 @@ endfunction
 %! assert_equal (pd.b, 5);
 %!test
 %! pd = makedist ('binomial');
-%! assert_equal (class (pd), "BinomialDistribution");
+%! assert_equal (class (pd), "prob.BinomialDistribution");
 %! assert_equal (pd.N, 1);
 %! assert_equal (pd.p, 0.5);
 %!test
@@ -616,7 +616,7 @@ endfunction
 %! assert_equal (pd.p, 0.3);
 %!test
 %! pd = makedist ('birnbaumsaunders');
-%! assert_equal (class (pd), "BirnbaumSaundersDistribution");
+%! assert_equal (class (pd), "prob.BirnbaumSaundersDistribution");
 %! assert_equal (pd.beta, 1);
 %! assert_equal (pd.gamma, 1);
 %!test
@@ -633,7 +633,7 @@ endfunction
 %! assert_equal (pd.gamma, 5);
 %!test
 %! pd = makedist ('burr');
-%! assert_equal (class (pd), "BurrDistribution");
+%! assert_equal (class (pd), "prob.BurrDistribution");
 %! assert_equal (pd.alpha, 1);
 %! assert_equal (pd.c, 1);
 %! assert_equal (pd.k, 1);
@@ -659,34 +659,34 @@ endfunction
 %! assert_equal (pd.k, 3);
 %!test
 %! pd = makedist ('exponential');
-%! assert_equal (class (pd), "ExponentialDistribution");
+%! assert_equal (class (pd), "prob.ExponentialDistribution");
 %! assert_equal (pd.mu, 1);
 %!test
 %! pd = makedist ('exponential', 'mu', 5);
 %! assert_equal (pd.mu, 5);
 %!test
 %! pd = makedist ('extremevalue');
-%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (class (pd), "prob.ExtremeValueDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('extremevalue', 'mu', 5);
-%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (class (pd), "prob.ExtremeValueDistribution");
 %! assert_equal (pd.mu, 5);
 %! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('ev', 'sigma', 5);
-%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (class (pd), "prob.ExtremeValueDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('ev', 'mu', -3, 'sigma', 5);
-%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (class (pd), "prob.ExtremeValueDistribution");
 %! assert_equal (pd.mu, -3);
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('gamma');
-%! assert_equal (class (pd), "GammaDistribution");
+%! assert_equal (class (pd), "prob.GammaDistribution");
 %! assert_equal (pd.a, 1);
 %! assert_equal (pd.b, 1);
 %!test
@@ -703,7 +703,7 @@ endfunction
 %! assert_equal (pd.b, 5);
 %!test
 %! pd = makedist ('GeneralizedExtremeValue');
-%! assert_equal (class (pd), "GeneralizedExtremeValueDistribution");
+%! assert_equal (class (pd), "prob.GeneralizedExtremeValueDistribution");
 %! assert_equal (pd.k, 0);
 %! assert_equal (pd.sigma, 1);
 %! assert_equal (pd.mu, 0);
@@ -729,7 +729,7 @@ endfunction
 %! assert_equal (pd.mu, 3);
 %!test
 %! pd = makedist ('GeneralizedPareto');
-%! assert_equal (class (pd), "GeneralizedParetoDistribution");
+%! assert_equal (class (pd), "prob.GeneralizedParetoDistribution");
 %! assert_equal (pd.k, 1);
 %! assert_equal (pd.sigma, 1);
 %! assert_equal (pd.theta, 1);
@@ -755,7 +755,7 @@ endfunction
 %! assert_equal (pd.theta, 3);
 %!test
 %! pd = makedist ('HalfNormal');
-%! assert_equal (class (pd), "HalfNormalDistribution");
+%! assert_equal (class (pd), "prob.HalfNormalDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %!test
@@ -772,7 +772,7 @@ endfunction
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('InverseGaussian');
-%! assert_equal (class (pd), "InverseGaussianDistribution");
+%! assert_equal (class (pd), "prob.InverseGaussianDistribution");
 %! assert_equal (pd.mu, 1);
 %! assert_equal (pd.lambda, 1);
 %!test
@@ -789,7 +789,7 @@ endfunction
 %! assert_equal (pd.lambda, 5);
 %!test
 %! pd = makedist ('logistic');
-%! assert_equal (class (pd), "LogisticDistribution");
+%! assert_equal (class (pd), "prob.LogisticDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %!test
@@ -806,7 +806,7 @@ endfunction
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('loglogistic');
-%! assert_equal (class (pd), "LoglogisticDistribution");
+%! assert_equal (class (pd), "prob.LoglogisticDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %!test
@@ -823,7 +823,7 @@ endfunction
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Lognormal');
-%! assert_equal (class (pd), "LognormalDistribution");
+%! assert_equal (class (pd), "prob.LognormalDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %!test
@@ -840,7 +840,7 @@ endfunction
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Loguniform');
-%! assert_equal (class (pd), "LoguniformDistribution");
+%! assert_equal (class (pd), "prob.LoguniformDistribution");
 %! assert_equal (pd.Lower, 1);
 %! assert_equal (pd.Upper, 4);
 %!test
@@ -853,65 +853,65 @@ endfunction
 %! assert_equal (pd.Upper, 3);
 %!test
 %! pd = makedist ('Multinomial');
-%! assert_equal (class (pd), "MultinomialDistribution");
+%! assert_equal (class (pd), "prob.MultinomialDistribution");
 %! assert_equal (pd.Probabilities, [0.5, 0.5]);
 %!test
 %! pd = makedist ('Multinomial', 'Probabilities', [0.2, 0.3, 0.1, 0.4]);
-%! assert_equal (class (pd), "MultinomialDistribution");
+%! assert_equal (class (pd), "prob.MultinomialDistribution");
 %! assert_equal (pd.Probabilities, [0.2, 0.3, 0.1, 0.4]);
 %!test
 %! pd = makedist ('Nakagami');
-%! assert_equal (class (pd), "NakagamiDistribution");
+%! assert_equal (class (pd), "prob.NakagamiDistribution");
 %! assert_equal (pd.mu, 1);
 %! assert_equal (pd.omega, 1);
 %!test
 %! pd = makedist ('Nakagami', 'mu', 5);
-%! assert_equal (class (pd), "NakagamiDistribution");
+%! assert_equal (class (pd), "prob.NakagamiDistribution");
 %! assert_equal (pd.mu, 5);
 %! assert_equal (pd.omega, 1);
 %!test
 %! pd = makedist ('Nakagami', 'omega', 0.3);
-%! assert_equal (class (pd), "NakagamiDistribution");
+%! assert_equal (class (pd), "prob.NakagamiDistribution");
 %! assert_equal (pd.mu, 1);
 %! assert_equal (pd.omega, 0.3);
 %!test
 %! pd = makedist ('NegativeBinomial');
-%! assert_equal (class (pd), "NegativeBinomialDistribution");
+%! assert_equal (class (pd), "prob.NegativeBinomialDistribution");
 %! assert_equal (pd.R, 1);
 %! assert_equal (pd.P, 0.5);
 %!test
 %! pd = makedist ('NegativeBinomial', 'R', 5);
-%! assert_equal (class (pd), "NegativeBinomialDistribution");
+%! assert_equal (class (pd), "prob.NegativeBinomialDistribution");
 %! assert_equal (pd.R, 5);
 %! assert_equal (pd.P, 0.5);
 %!test
 %! pd = makedist ('NegativeBinomial', 'p', 0.3);
-%! assert_equal (class (pd), "NegativeBinomialDistribution");
+%! assert_equal (class (pd), "prob.NegativeBinomialDistribution");
 %! assert_equal (pd.R, 1);
 %! assert_equal (pd.P, 0.3);
 %!test
 %! pd = makedist ('Normal');
-%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (class (pd), "prob.NormalDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Normal', 'mu', 5);
-%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (class (pd), "prob.NormalDistribution");
 %! assert_equal (pd.mu, 5);
 %! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Normal', 'sigma', 5);
-%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (class (pd), "prob.NormalDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Normal', 'mu', -3, 'sigma', 5);
-%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (class (pd), "prob.NormalDistribution");
 %! assert_equal (pd.mu, -3);
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('PiecewiseLinear');
-%! assert_equal (class (pd), "PiecewiseLinearDistribution");
+%! assert_equal (class (pd), "prob.PiecewiseLinearDistribution");
 %! assert_equal (pd.x, [0; 1]);
 %! assert_equal (pd.Fx, [0; 1]);
 %!test
@@ -920,21 +920,21 @@ endfunction
 %! assert_equal (pd.Fx, [0; 0.5; 1]);
 %!test
 %! pd = makedist ('Poisson');
-%! assert_equal (class (pd), "PoissonDistribution");
+%! assert_equal (class (pd), "prob.PoissonDistribution");
 %! assert_equal (pd.lambda, 1);
 %!test
 %! pd = makedist ('Poisson', 'lambda', 5);
 %! assert_equal (pd.lambda, 5);
 %!test
 %! pd = makedist ('Rayleigh');
-%! assert_equal (class (pd), "RayleighDistribution");
+%! assert_equal (class (pd), "prob.RayleighDistribution");
 %! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Rayleigh', 'sigma', 5);
 %! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Rician');
-%! assert_equal (class (pd), "RicianDistribution");
+%! assert_equal (class (pd), "prob.RicianDistribution");
 %! assert_equal (pd.s, 1);
 %! assert_equal (pd.sigma, 1);
 %!test
@@ -951,12 +951,12 @@ endfunction
 %! assert_equal (pd.sigma, 3);
 %!test
 %! pd = makedist ('stable');
-%! assert_equal (class (pd), "StableDistribution");
+%! assert_equal (class (pd), "prob.StableDistribution");
 %! assert_equal (pd.alpha, 2);
 %! assert_equal (pd.beta, 0);
 %!test
 %! pd = makedist ('tlocationscale');
-%! assert_equal (class (pd), "tLocationScaleDistribution");
+%! assert_equal (class (pd), "prob.tLocationScaleDistribution");
 %! assert_equal (pd.mu, 0);
 %! assert_equal (pd.sigma, 1);
 %! assert_equal (pd.nu, 5);
@@ -987,7 +987,7 @@ endfunction
 %! assert_equal (pd.nu, 1);
 %!test
 %! pd = makedist ('Triangular');
-%! assert_equal (class (pd), "TriangularDistribution");
+%! assert_equal (class (pd), "prob.TriangularDistribution");
 %! assert_equal (pd.A, 0);
 %! assert_equal (pd.B, 0.5);
 %! assert_equal (pd.C, 1);
@@ -1008,7 +1008,7 @@ endfunction
 %! assert_equal (pd.C, 5);
 %!test
 %! pd = makedist ('Uniform');
-%! assert_equal (class (pd), "UniformDistribution");
+%! assert_equal (class (pd), "prob.UniformDistribution");
 %! assert_equal (pd.Lower, 0);
 %! assert_equal (pd.Upper, 1);
 %!test
@@ -1021,7 +1021,7 @@ endfunction
 %! assert_equal (pd.Upper, 3);
 %!test
 %! pd = makedist ('Weibull');
-%! assert_equal (class (pd), "WeibullDistribution");
+%! assert_equal (class (pd), "prob.WeibullDistribution");
 %! assert_equal (pd.lambda, 1);
 %! assert_equal (pd.k, 1);
 %!test

@@ -184,7 +184,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   ## If CDF is a probability distribution object
   elseif (isobject (CDF))
     PDO = makedist ();
-    PDO = cellfun (@(x) sprintf ("%sDistribution", x), PDO, ...
+    PDO = cellfun (@(x) sprintf ("prob.%sDistribution", x), PDO, ...
                    'UniformOutput', false);
 
     if (! any (isa (CDF, PDO)))
