@@ -78,6 +78,13 @@
 ## colour names or as an @math{N}-by-3 matrix of RGB values, cycled over the
 ## groups.
 ##
+## @qcode{'LineStyle'} and @qcode{'LineWidth'} style the marginal outlines, not
+## the scatter markers, and are cycled over the groups.
+##
+## @qcode{'Bandwidth'} sets the kernel bandwidth used when @qcode{'Kernel'} is
+## on: a scalar for all marginals, a pair for @var{x} and @var{y}, or one row
+## per group.
+##
 ## @end deftypefn
 
 function h = scatterhist (varargin)
@@ -96,54 +103,75 @@ function h = scatterhist (varargin)
     error ("scatterhist: X and Y must have the same length.");
   endif
 
-  ## Parse name/value options
-  group = [];
-  nbins = [];
-  kernel = "off";
-  location = "southwest";
-  legend_opt = "";
-  marker = "o";
-  markersize = 6;
-  direction = "in";
-  plotgroup = "";
-  style = "";
-  colour = [];
+  ## Parse name/value options through the datatypes parser.  It consumes the
+  ## names it knows and returns whatever is left, so anything remaining is an
+  ## unrecognised property.
+  optNames = {"Group", "NBins", "Kernel", "Location", "Legend", "Marker", ...
+              "MarkerSize", "Direction", "PlotGroup", "Style", "Color", ...
+              "Bandwidth", "LineStyle", "LineWidth"};
+  dfValues = {[], [], "off", "southwest", "", "o", 6, "in", "", "", [], ...
+              [], "-", 0.5};
   if (mod (numel (varargin), 2) != 0)
     error ("scatterhist: name/value arguments must come in pairs.");
   endif
   for i = 1:2:numel (varargin)
-    name = varargin{i};
-    value = varargin{i+1};
-    if (! ischar (name))
+    if (! ischar (varargin{i}))
       error ("scatterhist: property names must be strings.");
     endif
-    switch (lower (name))
-      case "group"
-        group = value;
-      case "nbins"
-        nbins = value;
-      case "kernel"
-        kernel = value;
-      case "location"
-        location = value;
-      case "legend"
-        legend_opt = value;
-      case "marker"
-        marker = value;
-      case "markersize"
-        markersize = value;
-      case "direction"
-        direction = value;
-      case "plotgroup"
-        plotgroup = value;
-      case "style"
-        style = value;
-      case "color"
-        colour = value;
-      otherwise
-        error ("scatterhist: unknown property '%s'.", name);
-    endswitch
   endfor
+  [group, nbins, kernel, location, legend_opt, marker, markersize, ...
+   direction, plotgroup, style, colour, bandwidth, linestyle, linewidth, ...
+   rest] = parsePairedArguments (optNames, dfValues, varargin(:));
+  if (! isempty (rest))
+    error ("scatterhist: unknown property '%s'.", rest{1});
+  endif
+
+  ## The parser only splits the pairs; every value is validated here.
+  if (! isempty (nbins))
+    if (! (isnumeric (nbins) && all (nbins(:) > 0)
+           && all (nbins(:) == fix (nbins(:))) && numel (nbins) <= 2))
+      error (strcat ("scatterhist: NBINS must be one or two positive", ...
+                     " integers."));
+    endif
+  endif
+  if (! (ischar (kernel) && any (strcmpi (kernel, {"off", "on", "overlay"}))))
+    error ("scatterhist: KERNEL must be 'off', 'on' or 'overlay'.");
+  endif
+  if (! (ischar (location) && any (strcmpi (location, {"southwest", ...
+         "southeast", "northeast", "northwest"}))))
+    error (strcat ("scatterhist: LOCATION must be 'SouthWest', 'SouthEast',", ...
+                   " 'NorthEast' or 'NorthWest'."));
+  endif
+  if (! (ischar (legend_opt) && any (strcmpi (legend_opt, {"", "on", "off"}))))
+    error ("scatterhist: LEGEND must be 'on' or 'off'.");
+  endif
+  if (! ischar (marker))
+    error ("scatterhist: MARKER must be a character vector of markers.");
+  endif
+  if (! (isnumeric (markersize) && all (markersize(:) > 0)))
+    error ("scatterhist: MARKERSIZE must be positive numeric values.");
+  endif
+
+  ## Marginal line style.  'Bandwidth' is a scalar, a pair for x and y, or one
+  ## row per group; 'LineStyle' and 'LineWidth' cycle over the groups and apply
+  ## to the marginals, not to the scatter markers.
+  if (! isempty (bandwidth))
+    if (! (isnumeric (bandwidth) && all (bandwidth(:) > 0)))
+      error ("scatterhist: BANDWIDTH must be positive numeric values.");
+    endif
+    if (isvector (bandwidth))
+      bandwidth = bandwidth(:)';
+    endif
+  endif
+  if (! (ischar (linestyle) || iscellstr (linestyle)))
+    error ("scatterhist: LINESTYLE must be a string or a cell array of them.");
+  endif
+  if (ischar (linestyle))
+    linestyle = {linestyle};
+  endif
+  if (! (isnumeric (linewidth) && all (linewidth(:) > 0)))
+    error ("scatterhist: LINEWIDTH must be positive numeric values.");
+  endif
 
   n = numel (x);
   if (isempty (group))
@@ -232,12 +260,16 @@ function h = scatterhist (varargin)
     for g = 1:k
       xg = x(gidx == g & ! isnan (x));
       yg = y(gidx == g & ! isnan (y));
-      marginal (ax_x, xg, nbx, gcol(g,:), do_kernel, multi, false);
-      marginal (ax_y, yg, nby, gcol(g,:), do_kernel, multi, true);
+      marginal (ax_x, xg, nbx, gcol(g,:), do_kernel, multi, false, ...
+                sty (bandwidth, linestyle, linewidth, g, 1));
+      marginal (ax_y, yg, nby, gcol(g,:), do_kernel, multi, true, ...
+                sty (bandwidth, linestyle, linewidth, g, 2));
     endfor
   else
-    marginal (ax_x, x(! isnan (x)), nbx, gcol(1,:), do_kernel, multi, false);
-    marginal (ax_y, y(! isnan (y)), nby, gcol(1,:), do_kernel, multi, true);
+    marginal (ax_x, x(! isnan (x)), nbx, gcol(1,:), do_kernel, multi, false, ...
+              sty (bandwidth, linestyle, linewidth, 1, 1));
+    marginal (ax_y, y(! isnan (y)), nby, gcol(1,:), do_kernel, multi, true, ...
+              sty (bandwidth, linestyle, linewidth, 1, 2));
   endif
 
   ## 'Direction' points the marginal bars toward the scatter ("in", as MATLAB
@@ -267,6 +299,23 @@ function h = scatterhist (varargin)
     h = [ax_s, ax_x, ax_y];
   endif
 
+endfunction
+
+## Pick the bandwidth, line style and line width for group G and variable V
+## (1 for x, 2 for y), cycling whatever the user supplied.
+function sy = sty (bandwidth, linestyle, linewidth, g, v)
+  if (isempty (bandwidth))
+    sy.bw = [];
+  elseif (isscalar (bandwidth))
+    sy.bw = bandwidth;
+  elseif (isrow (bandwidth))
+    sy.bw = bandwidth(mod (v - 1, numel (bandwidth)) + 1);
+  else
+    row = bandwidth(mod (g - 1, rows (bandwidth)) + 1, :);
+    sy.bw = row(mod (v - 1, numel (row)) + 1);
+  endif
+  sy.ls = linestyle{mod (g - 1, numel (linestyle)) + 1};
+  sy.lw = linewidth(mod (g - 1, numel (linewidth)) + 1);
 endfunction
 
 ## Map a colour name to its RGB triplet.
@@ -303,16 +352,20 @@ endfunction
 
 ## Draw one group's marginal, either as a histogram or a kernel density.
 ## When horiz is true the marginal runs along the vertical (y) axis.
-function marginal (ax, v, nb, col, do_kernel, multi, horiz)
+function marginal (ax, v, nb, col, do_kernel, multi, horiz, sy)
   if (isempty (v))
     return;
   endif
   if (do_kernel)
-    [f, u] = ksdensity (v);
-    if (horiz)
-      line (ax, f, u, "color", col);
+    if (isempty (sy.bw))
+      [f, u] = ksdensity (v);
     else
-      line (ax, u, f, "color", col);
+      [f, u] = ksdensity (v, "Bandwidth", sy.bw);
+    endif
+    if (horiz)
+      line (ax, f, u, "color", col, "linestyle", sy.ls, "linewidth", sy.lw);
+    else
+      line (ax, u, f, "color", col, "linestyle", sy.ls, "linewidth", sy.lw);
     endif
   else
     [nn, cc] = hist (v, nb);
@@ -322,15 +375,19 @@ function marginal (ax, v, nb, col, do_kernel, multi, horiz)
       ce = [cc(1)-(cc(2)-cc(1))/2, e, cc(end)+(cc(end)-cc(end-1))/2];
       ne = [nn, nn(end)];
       if (horiz)
-        stairs (ax, ne, ce, "color", col);
+        stairs (ax, ne, ce, "color", col, "linestyle", sy.ls, ...
+                "linewidth", sy.lw);
       else
-        stairs (ax, ce, ne, "color", col);
+        stairs (ax, ce, ne, "color", col, "linestyle", sy.ls, ...
+                "linewidth", sy.lw);
       endif
     else
       if (horiz)
-        barh (ax, cc, nn, 1.0, "facecolor", col, "edgecolor", col);
+        barh (ax, cc, nn, 1.0, "facecolor", col, "edgecolor", col, ...
+              "linestyle", sy.ls, "linewidth", sy.lw);
       else
-        bar (ax, cc, nn, 1.0, "facecolor", col, "edgecolor", col);
+        bar (ax, cc, nn, 1.0, "facecolor", col, "edgecolor", col, ...
+             "linestyle", sy.ls, "linewidth", sy.lw);
       endif
     endif
   endif
@@ -349,6 +406,43 @@ endfunction
 %! scatterhist (meas(:,3), meas(:,4), "Group", species, "Kernel", "on");
 
 ## Test output
+%!test  # LineWidth and LineStyle apply to the marginals and cycle over groups
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   g = [1 1 1 1 2 2 2 2]';
+%!   h = scatterhist (x, y, "Group", g, "LineWidth", 3);
+%!   ch = get (h(2), "children");
+%!   assert (get (ch(1), "linewidth"), 3);
+%!   assert (get (ch(2), "linewidth"), 3);
+%!   h = scatterhist (x, y, "Group", g, "LineStyle", {"--", ":"});
+%!   ch = get (h(2), "children");
+%!   assert (get (ch(2), "linestyle"), "--");
+%!   assert (get (ch(1), "linestyle"), ":");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # Bandwidth is passed to the kernel density
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   h = scatterhist (x, y, "Kernel", "on", "Bandwidth", 2);
+%!   wide = get (get (h(2), "children")(1), "ydata");
+%!   h = scatterhist (x, y, "Kernel", "on");
+%!   auto = get (get (h(2), "children")(1), "ydata");
+%!   assert (! isequal (wide, auto));
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!error <scatterhist: LINEWIDTH must be positive numeric values.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "LineWidth", -1)
+%!error <scatterhist: LINESTYLE must be a string or a cell array of them.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "LineStyle", 5)
+%!error <scatterhist: BANDWIDTH must be positive numeric values.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Bandwidth", 0)
+
 %!test  # Direction points the marginals toward the scatter by default
 %! hf = figure ("visible", "off");
 %! unwind_protect
@@ -388,6 +482,29 @@ endfunction
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
+
+%!error <scatterhist: NBINS must be one or two positive integers.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "NBins", 0)
+%!error <scatterhist: NBINS must be one or two positive integers.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "NBins", 2.5)
+%!error <scatterhist: NBINS must be one or two positive integers.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "NBins", [2, 3, 4])
+%!error <scatterhist: KERNEL must be 'off', 'on' or 'overlay'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Kernel", "sometimes")
+%!error <scatterhist: KERNEL must be 'off', 'on' or 'overlay'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Kernel", 1)
+%!error <scatterhist: LOCATION must be 'SouthWest', 'SouthEast', 'NorthEast' or 'NorthWest'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Location", "middle")
+%!error <scatterhist: LEGEND must be 'on' or 'off'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Legend", "maybe")
+%!error <scatterhist: MARKER must be a character vector of markers.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Marker", 7)
+%!error <scatterhist: MARKERSIZE must be positive numeric values.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "MarkerSize", 0)
+%!error <scatterhist: COLOR must be a character vector of colour names or an N-by-3 matrix of RGB values.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Color", [1, 2])
+%!error <scatterhist: unknown colour 'q'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Color", "q")
 
 %!error <scatterhist: DIRECTION must be 'in' or 'out'.> ...
 %! scatterhist ([1 2 3]', [1 2 3]', "Direction", "sideways")
