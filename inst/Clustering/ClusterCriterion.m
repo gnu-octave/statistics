@@ -17,7 +17,7 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-classdef ClusterCriterion < handle
+classdef (Abstract) ClusterCriterion < handle
   ## -*- texinfo -*-
   ## @deftp {statistics} ClusterCriterion
   ##
@@ -141,6 +141,13 @@ classdef ClusterCriterion < handle
     OptimalIndex = 0; # index of the optimal K
   endproperties
 
+  ## Every subclass must define an 'evaluate' method: this class provides
+  ## the data, the K list and the shared bookkeeping, but never computes a
+  ## criterion itself.  MATLAB declares that method abstract; Octave cannot,
+  ## because a bodyless signature in a 'methods (Abstract)' block is read as
+  ## an external method and rejected outside an @-folder, so a subclass that
+  ## omits 'evaluate' is caught when it is called rather than when it is
+  ## defined.  All four subclasses shipped here define it.
   methods(Access = public)
 
     ## -*- texinfo -*-
@@ -300,11 +307,16 @@ classdef ClusterCriterion < handle
 endclassdef
 
 ## Test input validation
+## This class is abstract, so its input validation is reached through a
+## subclass, which is the only way a user can reach it either.
 %!error <ClusterCriterion: X must be a numeric matrix.> ...
-%! ClusterCriterion ('1', 'kmeans', [1:6])
+%! CalinskiHarabaszEvaluation ('1', 'kmeans', [1:6])
 %!error <ClusterCriterion: unknown clustering algorithm 'k'.> ...
-%! ClusterCriterion ([1, 2, 1, 3, 2, 4, 3], 'k', [1:6])
+%! CalinskiHarabaszEvaluation ([1, 2, 1, 3, 2, 4, 3], 'k', [1:6])
 %!error <ClusterCriterion: invalid matrix of clustering solutions.> ...
-%! ClusterCriterion ([1, 2, 1; 3, 2, 4], 1, [1:6])
+%! CalinskiHarabaszEvaluation ([1, 2, 1; 3, 2, 4], 1, [1:6])
 %!error <ClusterCriterion: invalid argument.> ...
-%! ClusterCriterion ([1, 2, 1; 3, 2, 4], ones (2, 2, 2), [1:6])
+%! CalinskiHarabaszEvaluation ([1, 2, 1; 3, 2, 4], ones (2, 2, 2), [1:6])
+
+%!error <cannot instantiate object for abstract class 'ClusterCriterion'> ...
+%! ClusterCriterion ([1, 2, 1; 3, 2, 4], 'kmeans', [1:6])
