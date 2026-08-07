@@ -119,9 +119,7 @@
 ## @seealso{barttest, factoran, pcacov, pcares}
 ## @end deftypefn
 
-##FIXME
-## -- can change isnan to ismissing once the latter is implemented in Octave
-## -- change mystd to std and remove the helper function mystd once weighting is available in the Octave function
+
 
 function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
 
@@ -224,7 +222,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
           case 'pairwise'
             optRowsB = true;
           case 'all'
-            if (any (isnan (x)))
+            if (any (isnan (x), 'all'))
               error (strcat ("pca: when all rows are requested the", ...
                              " dataset cannot include NaN values"));
             endif
@@ -311,7 +309,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         ## unbiased variance estimation: the bias when using reliability weights
         ## is 1 - var(weights) / std(weights)^2
         sqrtBias = sqrt (1 - (sumsq (optWeights) / sum (optWeights) ^ 2));
-        optVariableWeights = mystd (x, optWeights) / sqrtBias;
+        optVariableWeights = std (x, optWeights) / sqrtBias;
       endif
     endif
     Xc = Xc ./ optVariableWeights;
@@ -394,7 +392,6 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
     r = rank (score);
 
     ## If there is missing data, put it back
-    ## FIXME: this needs tests
     if (nmissing)
       scoretmp = zeros (nobs, nvars);
       scoretmp(! missingRows, :) = score;
@@ -445,13 +442,16 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
     ## Calculate the Hotelling T-Square statistic for the observations
     ## formally: tsquared = sumsq (zscore (score(:, 1:r)),2);
     if (! isempty (optWeights))
-      tsquared = zeros (nobs, 1);
+      tsquared = NaN (nobs, 1);
       if (r > 0)
         standardized_scores = score(ridcs, 1:r) ./ sqrt (latent(1:r)');
         tsquared(ridcs) = sum (standardized_scores .^ 2, 2);
       endif
     else
-      tsquared = mahal (score(ridcs, 1:r), score(ridcs, 1:r));
+      tsquared = NaN (nobs, 1);
+      if (r > 0)
+        tsquared(ridcs) = mahal (score(ridcs, 1:r), score(ridcs, 1:r));
+      endif
     endif
   endif
 
@@ -471,14 +471,6 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
 
 endfunction
 
-#return the weighted standard deviation
-function retval = mystd (x, w)
-  (dim = find (size (x) != 1, 1)) || (dim = 1);
-  den = sum (w);
-  mu = sum (w .* x, dim) ./ sum (w);
-  retval = sum (w .* ((x - mu) .^ 2), dim) / den;
-  retval = sqrt (retval);
-endfunction
 
 %!shared COEFF,SCORE,latent,tsquare,m,x,R,V,lambda,i,S,F
 
@@ -626,7 +618,33 @@ endfunction
 %!assert_equal (latent, [1], 10*eps);
 %!assert_equal (tsquare, [0.5;0.5], 10*eps)
 
+%!test
+%! ## Complex missing data test
+%! x = [ 0.8147 0.2785 0.9575
+%!       0.9058 0.5469 0.9649
+%!       0.1270 0.9575 0.1576
+%!       0.9134 0.9649 0.9706
+%!       0.6324 0.1576 0.9572
+%!       0.0975 0.9706 0.4854
+%!       0.2785 0.9575 0.8003
+%!       0.5469 0.1419 0.1419 ];
+%! x_nan = x;
+%! x_nan(2, 3) = NaN;
+%! x_nan(5, 1) = NaN;
+%! [COEFF, SCORE, latent, tsquare] = pca (x_nan, 'Economy', false);
+%! 
+%! ## Verify NaNs are correctly placed in SCORE and tsquare
+%! assert_equal (all (isnan (SCORE(2, :))), true);
+%! assert_equal (all (isnan (SCORE(5, :))), true);
+%! assert_equal (isnan (tsquare(2)), true);
+%! assert_equal (isnan (tsquare(5)), true);
+%! 
+%! ## Verify other rows do not have NaNs
+%! assert_equal (any (isnan (SCORE([1 3 4 6 7 8], :))(:)), false);
+%! assert_equal (any (isnan (tsquare([1 3 4 6 7 8]))), false);
+
 %!error <invalid algorithm> pca ([1 2; 3 4], 'Algorithm', 'xxx')
+%!error <when all rows are requested the dataset cannot include NaN values> pca ([1 NaN; 3 4], 'Rows', 'all')
 %!error <'centered' requires a boolean value> pca ([1 2; 3 4], 'Centered', 'xxx')
 %!error <must be a positive integer> pca ([1 2; 3 4], 'NumComponents', -4)
 %!error <invalid value for rows> pca ([1 2; 3 4], 'Rows', 1)
