@@ -143,9 +143,14 @@ function [nlogl, param, other] = __proflik__ (pd, pnum, varargin)
 
 endfunction
 
-## Evaluate the family negative log likelihood at a full parameter vector
+## Evaluate the family negative log likelihood at a full parameter vector.
+## The family function takes (params, x, censor, freq) or (params, x, freq);
+## dispatch on what it declares rather than on the distribution's own
+## CensoringAllowed, since Burr does not allow censoring yet still takes the
+## four-argument form, and passing the frequencies positionally into the
+## censoring slot marks every observation censored.
 function nll = like_value (fname, params, pd)
-  if (pd.CensoringAllowed)
+  if (nargin (fname) > 3)
     nll = feval (fname, params, pd.InputData.data, ...
                  pd.InputData.cens, pd.InputData.freq);
   else

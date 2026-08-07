@@ -872,17 +872,34 @@ endfunction
 %!assert_equal (var (t), 0.3220, 1e-4);
 
 %!test
-%! ## The profile over the first free parameter: 21 grid values and one row of
-%! ## OTHER per value.  The peak is not asserted here as it is for the other
-%! ## families: the profile reports a loglikelihood that burrlike does not
-%! ## reproduce at the very parameters OTHER gives for it, which is unresolved.
-%! x = [1.2; 0.4; 3.1; 0.7; 2.5; 1.8; 0.3; 4.2; 1.1; 0.9; 2.2; 0.6; ...
-%!      1.5; 3.7; 0.8; 2.9; 1.3; 0.5; 2.0; 1.6; 12; 18; 25];
+%! ## The profile over the first free parameter: 21 grid values, one row of
+%! ## OTHER per value, and the likelihood peaking at the fitted estimate.  The
+%! ## sample is Burr, drawn from burrinv at fixed quantiles.
+%! x = [0.160128; 0.284747; 0.377964; 0.460566; 0.538816; 0.615882; ...
+%!      0.693889; 0.774597; 0.859727; 0.951190; 1.051310; 1.163160; ...
+%!      1.290990; 1.441150; 1.623690; 1.855920; 2.171240; 2.645750; ...
+%!      3.511880; 6.245000];
 %! pd = fitdist (x, 'Burr');
 %! [nlogL, param, other] = proflik (pd, 1);
 %! assert_equal (size (param), [1, 21]);
 %! assert_equal (size (other), [21, 2]);
 %! assert_equal (proflik (pd), nlogL);
+%! [~, imax] = max (nlogL);
+%! assert_equal (abs (param(imax) - pd.ParameterValues(1)) <= param(2) - param(1), true);
+
+%!test
+%! ## The profiled-out parameters are passed to burrlike as frequencies, not as
+%! ## censoring: reading them as censoring marks every observation censored and
+%! ## the profile runs away as the second shape parameter goes to zero.
+%! x = [0.160128; 0.284747; 0.377964; 0.460566; 0.538816; 0.615882; ...
+%!      0.693889; 0.774597; 0.859727; 0.951190; 1.051310; 1.163160; ...
+%!      1.290990; 1.441150; 1.623690; 1.855920; 2.171240; 2.645750; ...
+%!      3.511880; 6.245000];
+%! pd = fitdist (x, 'Burr');
+%! [nlogL, param, other] = proflik (pd, 1);
+%! assert_equal (max (nlogL) <= -burrlike (pd.ParameterValues, x), true);
+%! [~, imax] = max (nlogL);
+%! assert_equal (-burrlike ([param(imax), other(imax,:)], x), nlogL(imax), 1e-6);
 
 ## Test input validation
 ## 'BurrDistribution' constructor
