@@ -266,9 +266,15 @@ classdef cvpartition
     ## @qcode{'GroupingVariables'}, @var{grpvars})} creates a
     ## @qcode{cvpartition}
     ## object @var{C} that defines a random partition for k-fold
-    ## cross-validation with each fold containing the same combination of group
-    ## labels as defined by @var{grpvars}. The grouping variables specified in
-    ## @var{grpvars} can be one of the following:
+    ## cross-validation in which every observation sharing a group label, as
+    ## defined by @var{grpvars}, is assigned to the same fold.  No group is
+    ## split between the training and test sets, so a fold holds out whole
+    ## groups; this is the partition scikit-learn calls @code{GroupKFold}, and
+    ## it is what you want when observations within a group are not
+    ## independent, such as repeated measurements of one subject.  It is not
+    ## stratification: a fold does not contain a proportional mix of the group
+    ## labels, and @qcode{'Stratify'} is the option for that.  The grouping
+    ## variables specified in @var{grpvars} can be one of the following:
     ##
     ## @itemize
     ## @item A numeric vector, logical vector, categorical vector, character
