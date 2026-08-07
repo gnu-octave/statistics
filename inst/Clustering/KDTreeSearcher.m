@@ -266,6 +266,13 @@ classdef KDTreeSearcher
     ## @code{createns} function.
     ##
     ## @seealso{KDTreeSearcher, knnsearch, rangesearch, createns}
+    ##
+    ## @qcode{'Distance'} and @qcode{'P'} override the searcher's own metric for
+    ## that call only; the @qcode{Distance} and @qcode{DistParameter}
+    ## properties keep their values.  The tree is built from the data alone, so
+    ## changing the metric does not rebuild it.  @qcode{'Cov'} and
+    ## @qcode{'Scale'} are not accepted, since they belong to metrics a kd-tree
+    ## cannot search.
     ## @end deftypefn
     function obj = KDTreeSearcher (X, varargin)
       if (nargin < 1)
@@ -420,6 +427,7 @@ classdef KDTreeSearcher
       ## Parse options
       IncludeTies = false;
       SortIndices = true;
+      Dist = [];  Pval = [];
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
           case 'k'
@@ -441,12 +449,32 @@ classdef KDTreeSearcher
               error (strcat ("KDTreeSearcher.knnsearch:", ...
                              " SortIndices must be a logical scalar."));
             endif
+          case 'distance'
+            Dist = varargin{2};
+          case 'p'
+            Pval = varargin{2};
           otherwise
             error (strcat ("KDTreeSearcher.knnsearch: invalid", ...
                            " parameter name: '%s'."), varargin{1});
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## A metric given here applies to this call only.  The tree is
+      ## built from the data alone, so changing the metric does not
+      ## invalidate it; only the pruning bound changes.  'Cov' and
+      ## 'Scale' are not accepted: they belong to metrics a kd-tree
+      ## cannot search.
+      Distance = obj.Distance;
+      DistParameter = obj.DistParameter;
+      if (! (isempty (Dist) && isempty (Pval)))
+        if (isempty (Dist))
+          Dist = Distance;
+        endif
+        [Distance, DistParameter] = __resolve_metric__ ( ...
+                  "KDTreeSearcher.knnsearch", obj.X, Dist, ...
+                  Pval, [], [], {"euclidean", "cityblock", "chebychev", "minkowski"});
+      endif
 
       ## There are only as many points to return as the training data holds,
       ## so a larger K is answered with all of them.  Building the result at
@@ -467,11 +495,11 @@ classdef KDTreeSearcher
         D = cell (rows (Y), 1);
         for i = 1:rows (Y)
           [temp_idx, temp_D] = search_kdtree (obj.KDTree, Y(i,:), K, obj.X, ...
-                                              obj.Distance, obj.DistParameter, ...
+                                              Distance, DistParameter, ...
                                               false);
           r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
           [idx{i}, D{i}] = search_kdtree (obj.KDTree, Y(i,:), Inf, obj.X, ...
-                                          obj.Distance, obj.DistParameter, ...
+                                          Distance, DistParameter, ...
                                           true, r);
           if (SortIndices)
             iv = idx{i}(:);
@@ -488,7 +516,7 @@ classdef KDTreeSearcher
         D = zeros (rows (Y), K, cls);
         for i = 1:rows (Y)
           [temp_idx, temp_D] = search_kdtree (obj.KDTree, Y(i,:), K, obj.X, ...
-                                              obj.Distance, obj.DistParameter, ...
+                                              Distance, DistParameter, ...
                                               false);
           if (SortIndices)
             [sorted_D, sort_idx] = sortrows ([temp_D, temp_idx]);
@@ -551,6 +579,7 @@ classdef KDTreeSearcher
         error (strcat ("KDTreeSearcher.rangesearch:", ...
                        " Name-Value arguments must be in pairs."));
       endif
+      Dist = [];  Pval = [];
 
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
         error (strcat ("KDTreeSearcher.rangesearch:", ...
@@ -577,12 +606,32 @@ classdef KDTreeSearcher
               error (strcat ("KDTreeSearcher.rangesearch:", ...
                              " SortIndices must be a logical scalar."));
             endif
+          case 'distance'
+            Dist = varargin{2};
+          case 'p'
+            Pval = varargin{2};
           otherwise
             error (strcat ("KDTreeSearcher.rangesearch:", ...
                            " invalid parameter name: '%s'."), varargin{1});
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## A metric given here applies to this call only.  The tree is
+      ## built from the data alone, so changing the metric does not
+      ## invalidate it; only the pruning bound changes.  'Cov' and
+      ## 'Scale' are not accepted: they belong to metrics a kd-tree
+      ## cannot search.
+      Distance = obj.Distance;
+      DistParameter = obj.DistParameter;
+      if (! (isempty (Dist) && isempty (Pval)))
+        if (isempty (Dist))
+          Dist = Distance;
+        endif
+        [Distance, DistParameter] = __resolve_metric__ ( ...
+                  "KDTreeSearcher.rangesearch", obj.X, Dist, ...
+                  Pval, [], [], {"euclidean", "cityblock", "chebychev", "minkowski"});
+      endif
 
       ## Distances are computed in single precision when either the training
       ## data or the query is single, and in double otherwise.  The indices
@@ -597,7 +646,7 @@ classdef KDTreeSearcher
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
         [idx{i}, D{i}] = search_kdtree (obj.KDTree, Y(i,:), Inf, obj.X, ...
-                                        obj.Distance, obj.DistParameter, ...
+                                        Distance, DistParameter, ...
                                         true, r);
         if (SortIndices)
           iv = idx{i}(:);
@@ -1337,6 +1386,24 @@ endfunction
 %! [idx, D] = knnsearch (KDTreeSearcher (X), Y, 'K', 2, 'IncludeTies', true);
 %! assert_equal (rows (idx{1}), 1);
 %! assert_equal (rows (D{1}), 1);
+
+%!test
+%! ## Distance and P may be overridden per call: the tree is built from the
+%! ## data alone, so only the pruning bound changes.  The object is unchanged.
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 1, 5; 5, 1];  Y = [2, 2; 4, 4];
+%! o = KDTreeSearcher (X);
+%! assert_equal (knnsearch (o, Y, 'K', 3, 'Distance', 'cityblock'), ...
+%!               knnsearch (KDTreeSearcher (X, 'Distance', 'cityblock'), ...
+%!                          Y, 'K', 3));
+%! assert_equal (rangesearch (o, Y, 3, 'Distance', 'cityblock'), ...
+%!               rangesearch (KDTreeSearcher (X, 'Distance', 'cityblock'), ...
+%!                            Y, 3));
+%! assert_equal (o.Distance, 'euclidean');
+
+%!error <KDTreeSearcher.knnsearch: invalid parameter name: 'Cov'.> ...
+%! knnsearch (KDTreeSearcher ([1, 1; 2, 2]), [1, 1], 'K', 1, 'Cov', eye (2))
+%!error <KDTreeSearcher.knnsearch: invalid parameter name: 'Scale'.> ...
+%! knnsearch (KDTreeSearcher ([1, 1; 2, 2]), [1, 1], 'K', 1, 'Scale', [1, 1])
 
 %!error<KDTreeSearcher: too few input arguments.> ...
 %! KDTreeSearcher ()

@@ -285,6 +285,10 @@ classdef ExhaustiveSearcher
     ## @end multitable
     ##
     ## @seealso{ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
+    ##
+    ## @qcode{'Distance'}, @qcode{'P'}, @qcode{'Cov'} and @qcode{'Scale'} override
+    ## the searcher's own metric for that call only; the @qcode{Distance} and
+    ## @qcode{DistParameter} properties keep their values, as they do in MATLAB.
     ## @end deftypefn
     function obj = ExhaustiveSearcher (X, varargin)
       if (nargin < 1)
@@ -466,6 +470,7 @@ classdef ExhaustiveSearcher
 
       K = 1;
       IncludeTies = false;
+      Dist = [];  Pval = [];  Cval = [];  Sval = [];
 
       ## Parse options
       while (numel (varargin) > 0)
@@ -483,12 +488,37 @@ classdef ExhaustiveSearcher
               error (strcat ("ExhaustiveSearcher.knnsearch:", ...
                              " IncludeTies must be a logical scalar."));
             endif
+          case 'distance'
+            Dist = varargin{2};
+          case 'p'
+            Pval = varargin{2};
+          case 'cov'
+            Cval = varargin{2};
+          case 'scale'
+            Sval = varargin{2};
           otherwise
             error (strcat ("ExhaustiveSearcher.knnsearch:", ...
                            " invalid parameter name: '%s'."), varargin{1});
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## A metric given here applies to this call only: the searcher's
+      ## own Distance and DistParameter are left untouched, as MATLAB
+      ## leaves them.
+      Distance = obj.Distance;
+      DistParameter = obj.DistParameter;
+      if (! (isempty (Dist) && isempty (Pval) && isempty (Cval)
+             && isempty (Sval)))
+        if (isempty (Dist))
+          Dist = Distance;
+        endif
+        [Distance, DistParameter] = __resolve_metric__ ( ...
+                  "ExhaustiveSearcher.knnsearch", obj.X, Dist, ...
+                  Pval, Cval, Sval, {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
+                 "cityblock", "manhattan", "chebychev", "cosine", ...
+                 "correlation", "spearman", "hamming", "jaccard"});
+      endif
 
       ## Determine block size based on memory target (128 MB)
       N = rows (obj.X);
@@ -530,10 +560,10 @@ classdef ExhaustiveSearcher
         blk_rows = blk_end - blk_start + 1;
 
         ## Compute distance matrix for this block
-        if (ischar (obj.Distance))
-          D_blk = pdist2 (Y_blk, X, obj.Distance, obj.DistParameter);
+        if (ischar (Distance))
+          D_blk = pdist2 (Y_blk, X, Distance, DistParameter);
         else
-          D_blk = pdist2 (X, Y_blk, obj.Distance, obj.DistParameter);
+          D_blk = pdist2 (X, Y_blk, Distance, DistParameter);
           D_blk = reshape (D_blk', blk_rows, N);
         endif
 
@@ -626,6 +656,7 @@ classdef ExhaustiveSearcher
 
       ## Parse options
       SortIndices = true;
+      Dist = [];  Pval = [];  Cval = [];  Sval = [];
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
           case 'sortindices'
@@ -634,12 +665,37 @@ classdef ExhaustiveSearcher
               error (strcat ("ExhaustiveSearcher.rangesearch:", ...
                              " SortIndices must be a logical scalar."));
             endif
+          case 'distance'
+            Dist = varargin{2};
+          case 'p'
+            Pval = varargin{2};
+          case 'cov'
+            Cval = varargin{2};
+          case 'scale'
+            Sval = varargin{2};
           otherwise
             error (strcat ("ExhaustiveSearcher.rangesearch: invalid", ...
                            " parameter name: '%s'."), varargin{1});
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## A metric given here applies to this call only: the searcher's
+      ## own Distance and DistParameter are left untouched, as MATLAB
+      ## leaves them.
+      Distance = obj.Distance;
+      DistParameter = obj.DistParameter;
+      if (! (isempty (Dist) && isempty (Pval) && isempty (Cval)
+             && isempty (Sval)))
+        if (isempty (Dist))
+          Dist = Distance;
+        endif
+        [Distance, DistParameter] = __resolve_metric__ ( ...
+                  "ExhaustiveSearcher.rangesearch", obj.X, Dist, ...
+                  Pval, Cval, Sval, {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
+                 "cityblock", "manhattan", "chebychev", "cosine", ...
+                 "correlation", "spearman", "hamming", "jaccard"});
+      endif
 
       ## Determine block size based on memory target (128 MB)
       N = rows (obj.X);
@@ -668,10 +724,10 @@ classdef ExhaustiveSearcher
         blk_rows = blk_end - blk_start + 1;
 
         ## Compute distance matrix for this block
-        if (ischar (obj.Distance))
-          D_blk = pdist2 (Y_blk, X, obj.Distance, obj.DistParameter);
+        if (ischar (Distance))
+          D_blk = pdist2 (Y_blk, X, Distance, DistParameter);
         else
-          D_blk = pdist2 (X, Y_blk, obj.Distance, obj.DistParameter);
+          D_blk = pdist2 (X, Y_blk, Distance, DistParameter);
           D_blk = reshape (D_blk', blk_rows, N);
         endif
 
@@ -1063,6 +1119,31 @@ endclassdef
 %! assert_equal (obj.DistParameter, eye (2))
 
 ## Test Input Validation
+
+%!test
+%! ## A metric given per call overrides the searcher's own for that call,
+%! ## matching a searcher built with it, and leaves the object unchanged.
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 1, 5; 5, 1];  Y = [2, 2; 4, 4];
+%! o = ExhaustiveSearcher (X);
+%! assert_equal (knnsearch (o, Y, 'K', 3, 'Distance', 'cityblock'), ...
+%!               knnsearch (ExhaustiveSearcher (X, 'Distance', 'cityblock'), ...
+%!                          Y, 'K', 3));
+%! assert_equal (rangesearch (o, Y, 3, 'Distance', 'cityblock'), ...
+%!               rangesearch (ExhaustiveSearcher (X, 'Distance', ...
+%!                            'cityblock'), Y, 3));
+%! assert_equal (knnsearch (o, Y, 'K', 2, 'Distance', 'minkowski', 'P', 3), ...
+%!               knnsearch (ExhaustiveSearcher (X, 'Distance', 'minkowski', ...
+%!                          'P', 3), Y, 'K', 2));
+%! ## the searcher keeps its own metric
+%! assert_equal (o.Distance, 'euclidean');
+%! assert_equal (isempty (o.DistParameter), true);
+
+%!error <ExhaustiveSearcher.knnsearch: 'P' applies only to the minkowski metric.> ...
+%! knnsearch (ExhaustiveSearcher ([1, 1; 2, 2]), [1, 1], 'K', 1, ...
+%!            'Distance', 'cityblock', 'P', 3)
+%!error <ExhaustiveSearcher.knnsearch: unsupported distance metric 'bogus'.> ...
+%! knnsearch (ExhaustiveSearcher ([1, 1; 2, 2]), [1, 1], 'K', 1, ...
+%!            'Distance', 'bogus')
 
 %!error<ExhaustiveSearcher: too few input arguments.> ...
 %! ExhaustiveSearcher ()
