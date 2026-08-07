@@ -99,8 +99,14 @@ function [X, Y, T, AUC, OPTROCPT, SUBY, SUBYNAMES] = perfcurve (labels, ...
   endif
   scores = scores(:);
   n = numel (scores);
-  if (! ((isnumeric (labels) || iscellstr (labels) || ischar (labels))
-         && numel_labels (labels) == n))
+  ## Check the class and the length separately, so that a type failure is not
+  ## reported as a length failure
+  if (! (isnumeric (labels) || islogical (labels) || iscellstr (labels)
+         || ischar (labels)))
+    error (strcat ("perfcurve: LABELS must be numeric, logical, a character", ...
+                   " matrix, or a cell array of character vectors."));
+  endif
+  if (numel_labels (labels) != n)
     error ("perfcurve: LABELS must have one element per score.");
   endif
 
@@ -615,10 +621,28 @@ endfunction
 
 ## Test input validation
 %!error <Invalid call to perfcurve> perfcurve (1, 2)
+%!test
+%! ## Logical labels are accepted, as MATLAB does, and give the same curve as
+%! ## the equivalent numeric labels.
+%! s = [0.9; 0.8; 0.7; 0.6; 0.5; 0.4; 0.3; 0.2];
+%! l = [1; 1; 1; 0; 1; 0; 0; 0];
+%! [xn, yn, tn, an] = perfcurve (l, s, 1);
+%! [xg, yg, tg, ag] = perfcurve (logical (l), s, true);
+%! assert_equal (xg, xn);
+%! assert_equal (yg, yn);
+%! assert_equal (tg, tn);
+%! assert_equal (ag, an);
+%! ## and the curve is MATLAB's, not merely self-consistent
+%! assert_equal (xg(:)', [0, 0, 0, 0, 0.25, 0.25, 0.5, 0.75, 1], 1e-12);
+
 %!error <perfcurve: SCORES must be a vector of real values.> ...
 %! perfcurve ([1 0], ones (2, 2), 1)
 %!error <perfcurve: LABELS must have one element per score.> ...
 %! perfcurve ([1 0 1], [0.5 0.4], 1)
+%!error <perfcurve: LABELS must be numeric, logical, a character matrix, or a cell array of character vectors.> ...
+%! perfcurve (struct ('a', 1), [0.5 0.4], 1)
+%!error <perfcurve: LABELS must be numeric, logical, a character matrix, or a cell array of character vectors.> ...
+%! perfcurve ({1, 2}, [0.5 0.4], 1)
 %!error <perfcurve: LABELS must contain both positive and negative classes.> ...
 %! perfcurve ([1 1 1], [0.5 0.4 0.3], 1)
 %!error <perfcurve: unsupported criterion 'foo'.> ...
