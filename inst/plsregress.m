@@ -187,7 +187,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
 
 
   ## Check number of output arguments
-  if (nargout < 2 || nargout > 8)
+  if (nargout > 8)
     print_usage ();
   endif
 
@@ -354,6 +354,9 @@ function sse = sseCV (XTR, YTR, XTE, YTE, NCOMP)
     Y0fitted = XTEscore(:,1:i) * yload(:,1:i)';
     sse(2,i+1) = sum (sum (abs (Y0TE - Y0fitted) .^ 2, 2));
   endfor
+  ## crossval collects a row per test set, and the caller reshapes the summed
+  ## rows back to [2, NCOMP+1]
+  sse = sse(:)';
 endfunction
 
 %!demo
@@ -486,4 +489,12 @@ endfunction
 %! plsregress (ones (20,3), ones (20,1), 3, 'mcreps', 2)
 %!error<plsregress: 'mcreps' must be 1 when 'resubstitution' is specified> ...
 %! plsregress (ones (20,3), ones (20,1), 3, 'cv', 'resubstitution', 'mcreps', 2)
-%!error<Invalid call to plsregress.  Correct usage is:> plsregress (1, 2)
+%!test
+%! ## A single output returns the predictor loadings, as MATLAB allows;
+%! ## fewer than two outputs used to be refused outright.
+%! X = [1, 2, 3; 2, 3, 5; 3, 5, 8; 4, 7, 11; 5, 11, 16; 6, 13, 19];
+%! Y = [1; 2; 3; 4; 5; 6];
+%! xl = plsregress (X, Y, 2);
+%! [xl2, yl2] = plsregress (X, Y, 2);
+%! assert_equal (xl, xl2);
+%! assert_equal (size (xl), [3, 2]);

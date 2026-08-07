@@ -139,11 +139,13 @@ function results = crossval (f, varargin)
       n = size (X, 1);
       is_cellarray = false;
     else
-      X = args(1:end-1);  # cell array with multiple data variables
+      X = args;           # cell array with multiple data variables
       n = size (args{1}, 1);
       is_cellarray = true;
     endif
-    ## Check for valid function handle on user data
+    ## Check for valid function handle on user data.  Every data variable is
+    ## passed for the training set and again for the test set, so a handle over
+    ## X and Y is called as f (Xtrain, Ytrain, Xtest, Ytest).
     try
       if (is_cellarray)
         value = f(X{:}, X{:});
@@ -328,6 +330,17 @@ endfunction
 %! assert_equal (cvMSE, 18.720, 1e-3);
 
 ## Test input validation
+%!test
+%! ## With a response variable the handle is called over both, as
+%! ## f (Xtrain, Ytrain, Xtest, Ytest); Y used to be dropped and the handle
+%! ## called with two arguments, so any supervised handle was refused.
+%! X = [1, 2; 2, 3; 3, 4; 4, 5; 5, 6; 6, 7; 7, 8; 8, 9; 9, 10; 10, 11];
+%! Y = (1:10)';
+%! f = @(xtr, ytr, xte, yte) size (xtr, 1) + size (xte, 1) + numel (ytr) + numel (yte);
+%! r = crossval (f, X, Y, 'KFold', 5);
+%! assert_equal (size (r), [1, 5]);
+%! assert_equal (unique (r), 20);
+
 %!error <crossval: criterion must be 'mse' or 'mcr'.> ...
 %! crossval ('fe', rand (10, 1), rand (10, 1), 1);
 %!error <crossval: prediction function handle is required for error evaluation.>  ...
@@ -342,7 +355,7 @@ endfunction
 %!error <crossval: bad function handle to cross-validate.> ...
 %! crossval (@(x) x, rand (10, 3), rand (10, 1));
 %!error <crossval: function handle must return a scalar or a row vector.> ...
-%! crossval (@(x,y) [x, y], rand (10, 3), rand (10, 1));
+%! crossval (@(xtr, ytr, xte, yte) [xte, yte], rand (10, 3), rand (10, 1));
 %!error <crossval: invalid first input argument.> crossval ({1}, 1, 1);
 %!error <crossval: you can only set one cvpartition type in paired arguments.> ...
 %! crossval (@(x,y) sum ([x; y]), rand (10, 3), 'Holdout', 0.1, 'Leaveout', true)
