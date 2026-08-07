@@ -40,14 +40,14 @@ function [m, v] = poisstat (lambda)
     error ("poisstat: function called with too few input arguments.");
   endif
 
-  ## Check for SIGMA being numeric
+  ## Check for LAMBDA being numeric
   if (! isnumeric (lambda))
-    error ("poisstat: SIGMA must be numeric.");
+    error ("poisstat: LAMBDA must be numeric.");
   endif
 
-  ## Check for SIGMA being real
+  ## Check for LAMBDA being real
   if (iscomplex (lambda))
-    error ("poisstat: SIGMA must not be complex.");
+    error ("poisstat: LAMBDA must not be complex.");
   endif
 
   ## Set moments
@@ -65,9 +65,9 @@ endfunction
 
 ## Input validation tests
 %!error<poisstat: function called with too few input arguments.> poisstat ()
-%!error<poisstat: SIGMA must be numeric.> poisstat ({})
-%!error<poisstat: SIGMA must be numeric.> poisstat ('')
-%!error<poisstat: SIGMA must not be complex.> poisstat (i)
+%!error<poisstat: LAMBDA must be numeric.> poisstat ({})
+%!error<poisstat: LAMBDA must be numeric.> poisstat ('')
+%!error<poisstat: LAMBDA must not be complex.> poisstat (i)
 
 ## Output validation tests
 %!test
