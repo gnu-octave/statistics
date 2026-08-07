@@ -63,6 +63,21 @@
 ## axes of the @var{y} (vertical) histogram.
 ##
 ## @seealso{gscatter, scatter, hist, ksdensity}
+##
+## @qcode{'Direction'} points the marginal bars toward the scatter plot,
+## @qcode{'in'} by default, or away from it with @qcode{'out'}.
+##
+## @qcode{'PlotGroup'} draws one marginal per group with @qcode{'on'}, or a
+## single pooled marginal with @qcode{'off'}.  It defaults to @qcode{'on'} when
+## @qcode{'Group'} is given and to @qcode{'off'} otherwise.
+##
+## @qcode{'Style'} outlines the marginals as @qcode{'bar'} or @qcode{'stairs'},
+## defaulting to stairs when the data are grouped and bars when they are not.
+##
+## @qcode{'Color'} sets the group colours, either as a character vector of
+## colour names or as an @math{N}-by-3 matrix of RGB values, cycled over the
+## groups.
+##
 ## @end deftypefn
 
 function h = scatterhist (varargin)
@@ -89,6 +104,10 @@ function h = scatterhist (varargin)
   legend_opt = "";
   marker = "o";
   markersize = 6;
+  direction = "in";
+  plotgroup = "";
+  style = "";
+  colour = [];
   if (mod (numel (varargin), 2) != 0)
     error ("scatterhist: name/value arguments must come in pairs.");
   endif
@@ -113,6 +132,14 @@ function h = scatterhist (varargin)
         marker = value;
       case "markersize"
         markersize = value;
+      case "direction"
+        direction = value;
+      case "plotgroup"
+        plotgroup = value;
+      case "style"
+        style = value;
+      case "color"
+        colour = value;
       otherwise
         error ("scatterhist: unknown property '%s'.", name);
     endswitch
@@ -129,7 +156,24 @@ function h = scatterhist (varargin)
     endif
   endif
   k = numel (gnames);
-  gcol = lines (k);
+  if (isempty (colour))
+    gcol = lines (k);
+  else
+    if (ischar (colour))
+      colour = colour(:);
+      gcol = zeros (numel (colour), 3);
+      for i = 1:numel (colour)
+        gcol(i,:) = colour_rgb (colour(i));
+      endfor
+    elseif (isnumeric (colour) && columns (colour) == 3)
+      gcol = colour;
+    else
+      error (strcat ("scatterhist: COLOR must be a character vector of", ...
+                     " colour names or an N-by-3 matrix of RGB values."));
+    endif
+    ## cycle the supplied colours over the groups
+    gcol = gcol(mod ((0:k-1), rows (gcol)) + 1, :);
+  endif
   do_kernel = any (strcmpi (kernel, {"on", "overlay"}));
 
   ## Number of bins for the marginals (Scott's rule by default)
@@ -165,14 +209,46 @@ function h = scatterhist (varargin)
   xlabel (ax_s, inputname (1));
   ylabel (ax_s, inputname (2));
 
-  ## Marginal for x along the top, for y along the right
-  multi = (k > 1);
-  for g = 1:k
-    xg = x(gidx == g & ! isnan (x));
-    yg = y(gidx == g & ! isnan (y));
-    marginal (ax_x, xg, nbx, gcol(g,:), do_kernel, multi, false);
-    marginal (ax_y, yg, nby, gcol(g,:), do_kernel, multi, true);
-  endfor
+  ## Marginal for x along the top, for y along the right.  'Style' picks the
+  ## outline, defaulting to stairs when grouped and bars when not, and
+  ## 'PlotGroup' says whether the groups are drawn apart or pooled.
+  if (isempty (style))
+    multi = (k > 1);
+  elseif (strcmpi (style, "stairs"))
+    multi = true;
+  elseif (strcmpi (style, "bar"))
+    multi = false;
+  else
+    error ("scatterhist: STYLE must be 'bar' or 'stairs'.");
+  endif
+  if (isempty (plotgroup))
+    bygroup = ! isempty (group);
+  elseif (any (strcmpi (plotgroup, {"on", "off"})))
+    bygroup = strcmpi (plotgroup, "on");
+  else
+    error ("scatterhist: PLOTGROUP must be 'on' or 'off'.");
+  endif
+  if (bygroup)
+    for g = 1:k
+      xg = x(gidx == g & ! isnan (x));
+      yg = y(gidx == g & ! isnan (y));
+      marginal (ax_x, xg, nbx, gcol(g,:), do_kernel, multi, false);
+      marginal (ax_y, yg, nby, gcol(g,:), do_kernel, multi, true);
+    endfor
+  else
+    marginal (ax_x, x(! isnan (x)), nbx, gcol(1,:), do_kernel, multi, false);
+    marginal (ax_y, y(! isnan (y)), nby, gcol(1,:), do_kernel, multi, true);
+  endif
+
+  ## 'Direction' points the marginal bars toward the scatter ("in", as MATLAB
+  ## defaults) or away from it ("out")
+  if (! any (strcmpi (direction, {"in", "out"})))
+    error ("scatterhist: DIRECTION must be 'in' or 'out'.");
+  endif
+  if (strcmpi (direction, "in"))
+    set (ax_x, "ydir", "reverse");
+    set (ax_y, "xdir", "reverse");
+  endif
 
   ## Share the data axes with the scatter and tidy the marginal axes
   set (ax_x, "xlim", get (ax_s, "xlim"), "xtick", [], "ytick", []);
@@ -191,6 +267,22 @@ function h = scatterhist (varargin)
     h = [ax_s, ax_x, ax_y];
   endif
 
+endfunction
+
+## Map a colour name to its RGB triplet.
+function rgb = colour_rgb (c)
+  switch (lower (c))
+    case "r", rgb = [1, 0, 0];
+    case "g", rgb = [0, 1, 0];
+    case "b", rgb = [0, 0, 1];
+    case "c", rgb = [0, 1, 1];
+    case "m", rgb = [1, 0, 1];
+    case "y", rgb = [1, 1, 0];
+    case "k", rgb = [0, 0, 0];
+    case "w", rgb = [1, 1, 1];
+    otherwise
+      error ("scatterhist: unknown colour '%s'.", c);
+  endswitch
 endfunction
 
 ## Scott's rule for the number of histogram bins.
@@ -257,6 +349,53 @@ endfunction
 %! scatterhist (meas(:,3), meas(:,4), "Group", species, "Kernel", "on");
 
 ## Test output
+%!test  # Direction points the marginals toward the scatter by default
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   h = scatterhist (x, y);
+%!   assert (get (h(2), "ydir"), "reverse");
+%!   assert (get (h(3), "xdir"), "reverse");
+%!   h = scatterhist (x, y, "Direction", "out");
+%!   assert (get (h(2), "ydir"), "normal");
+%!   assert (get (h(3), "xdir"), "normal");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # Color sets the group colours, cycling if fewer than the groups
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   g = [1 1 1 1 2 2 2 2]';
+%!   h = scatterhist (x, y, "Group", g, "Color", "rb");
+%!   c = get (get (h(1), "children"), "color");
+%!   assert (c{2}, [1, 0, 0]);
+%!   assert (c{1}, [0, 0, 1]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # PlotGroup pools the marginals when off
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   g = [1 1 1 1 2 2 2 2]';
+%!   h = scatterhist (x, y, "Group", g, "PlotGroup", "off");
+%!   assert (numel (get (h(2), "children")), 1);
+%!   h = scatterhist (x, y, "Group", g, "PlotGroup", "on");
+%!   assert (numel (get (h(2), "children")), 2);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!error <scatterhist: DIRECTION must be 'in' or 'out'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Direction", "sideways")
+%!error <scatterhist: STYLE must be 'bar' or 'stairs'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Style", "curvy")
+%!error <scatterhist: PLOTGROUP must be 'on' or 'off'.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "PlotGroup", "maybe")
+
 %!test
 %! hf = figure ("visible", "off");
 %! unwind_protect
