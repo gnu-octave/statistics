@@ -64,6 +64,10 @@
 ##
 ## @seealso{gscatter, scatter, hist, ksdensity}
 ##
+## @qcode{'Parent'} draws into a supplied figure or uipanel instead of the
+## current figure.  The container is used as it stands and is never
+## cleared, so a scatterhist can be placed alongside other axes.
+##
 ## @qcode{'Location'} names the corner the scatter occupies,
 ## @qcode{'SouthWest'} by default, or @qcode{'SouthEast'}, @qcode{'NorthEast'}
 ## or @qcode{'NorthWest'}; the marginals take the two opposite sides.
@@ -113,9 +117,9 @@ function h = scatterhist (varargin)
   ## unrecognised property.
   optNames = {"Group", "NBins", "Kernel", "Location", "Legend", "Marker", ...
               "MarkerSize", "Direction", "PlotGroup", "Style", "Color", ...
-              "Bandwidth", "LineStyle", "LineWidth"};
+              "Bandwidth", "LineStyle", "LineWidth", "Parent"};
   dfValues = {[], [], "off", "southwest", "", "o", 6, "in", "", "", [], ...
-              [], "-", 0.5};
+              [], "-", 0.5, []};
   if (mod (numel (varargin), 2) != 0)
     error ("scatterhist: name/value arguments must come in pairs.");
   endif
@@ -126,7 +130,7 @@ function h = scatterhist (varargin)
   endfor
   [group, nbins, kernel, location, legend_opt, marker, markersize, ...
    direction, plotgroup, style, colour, bandwidth, linestyle, linewidth, ...
-   rest] = parsePairedArguments (optNames, dfValues, varargin(:));
+   parent, rest] = parsePairedArguments (optNames, dfValues, varargin(:));
   if (! isempty (rest))
     error ("scatterhist: unknown property '%s'.", rest{1});
   endif
@@ -166,6 +170,12 @@ function h = scatterhist (varargin)
   if (! isempty (plotgroup)
       && ! (ischar (plotgroup) && any (strcmpi (plotgroup, {"on", "off"}))))
     error ("scatterhist: PLOTGROUP must be 'on' or 'off'.");
+  endif
+  if (! isempty (parent))
+    if (! (isscalar (parent) && ishghandle (parent)
+           && any (strcmp (get (parent, "type"), {"figure", "uipanel"}))))
+      error ("scatterhist: PARENT must be a figure or uipanel handle.");
+    endif
   endif
 
   ## Marginal line style.  'Bandwidth' is a scalar, a pair for x and y, or one
@@ -237,8 +247,15 @@ function h = scatterhist (varargin)
   ## right.
   west = any (strcmpi (location, {"southwest", "northwest"}));
   south = any (strcmpi (location, {"southwest", "southeast"}));
-  cf = gcf ();
-  clf (cf);
+  ## A container supplied through 'Parent' is drawn into as it stands: it
+  ## belongs to the caller, so it is never cleared.  Only a figure of our own
+  ## choosing is.
+  if (isempty (parent))
+    cf = gcf ();
+    clf (cf);
+  else
+    cf = parent;
+  endif
   if (west)
     xs = 0.10;  ys_marg = 0.72;
   else
@@ -475,6 +492,46 @@ endfunction
 %! scatterhist ([1 2 3]', [1 2 3]', "LineStyle", 5)
 %!error <scatterhist: BANDWIDTH must be positive numeric values.> ...
 %! scatterhist ([1 2 3]', [1 2 3]', "Bandwidth", 0)
+
+%!test  # Parent draws into a supplied container without clearing it
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   pre = axes ("parent", hf, "position", [0.01, 0.01, 0.05, 0.05]);
+%!   h = scatterhist (x, y, "Parent", hf);
+%!   assert (all (arrayfun (@(a) get (a, "parent"), h) == hf));
+%!   ## the caller's own axes are left alone
+%!   assert (ishghandle (pre), true);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a uipanel is a container too
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   hp = uipanel ("parent", hf, "position", [0, 0, 1, 1]);
+%!   h = scatterhist (x, y, "Parent", hp);
+%!   assert (all (arrayfun (@(a) get (a, "parent"), h) == hp));
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # without Parent the current figure is still claimed and cleared
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   old = axes ("parent", hf);
+%!   h = scatterhist (x, y);
+%!   assert (ishghandle (old), false);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!error <scatterhist: PARENT must be a figure or uipanel handle.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Parent", 0)
+%!error <scatterhist: PARENT must be a figure or uipanel handle.> ...
+%! scatterhist ([1 2 3]', [1 2 3]', "Parent", -5)
 
 %!test  # Location moves the scatter to the named corner and the marginals with it
 %! hf = figure ("visible", "off");
