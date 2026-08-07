@@ -160,13 +160,13 @@ endif
   MaxIter = Inf;
   Keep    = [];
 
-  ## Parse Name-Value paired arguments using pairedArgs
+  ## Parse Name-Value paired arguments
   optNames = {'InModel', 'Display', 'PEnter', 'PRemove', ...
               'Scale', 'MaxIter', 'Keep'};
   dfValues = {[], 'on', 0.05, [], 'off', Inf, []};
 
   [InModel, Display, PEnter, PRemove, Scale, MaxIter, Keep, args] = ...
-    pairedArgs (optNames, dfValues, varargin(:));
+    parsePairedArguments (optNames, dfValues, varargin(:));
 
   ## Semantic validation for Name-Value options
 

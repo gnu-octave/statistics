@@ -97,7 +97,7 @@ function [R, TF] = rmmissing (A, varargin)
   ## Parse optional Name-Value paired arguments
   optNames = {'MinNumMissing', 'MissingLocations'};
   dfValues = {1, []};
-  [MinNumMissing, MissingLocations, args] = pairedArgs (optNames, dfValues, ...
+  [MinNumMissing, MissingLocations, args] = parsePairedArguments (optNames, dfValues, ...
                                                         varargin(:));
 
   ## Validate optional Name-Value paired arguments

@@ -85,7 +85,7 @@ function results = crossval (f, varargin)
               'Partition', 'Stratify', 'Predfun'};
   dfValues = {[], [], [], 1, [], [], []};
   [Holdout, KFold, Leaveout, MCReps, Partition, Stratify, Predfun, args] = ...
-                                   pairedArgs (optNames, dfValues, varargin(:));
+                                   parsePairedArguments (optNames, dfValues, varargin(:));
 
   ## Check first input argument
   if (ischar (f))

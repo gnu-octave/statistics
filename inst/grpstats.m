@@ -241,7 +241,7 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
   ## Parse optional Name-Value paired arguments
   optNames = {'Alpha', 'DataVars', 'VarNames'};
   dfValues = {0.05, [], {}};
-  [alpha, DataVars, VarNames, args] = pairedArgs (optNames, dfValues, ...
+  [alpha, DataVars, VarNames, args] = parsePairedArguments (optNames, dfValues, ...
                                                   varargin(:));
   if (! isempty (args))
     tmp = args{1};
