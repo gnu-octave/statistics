@@ -1664,8 +1664,8 @@ endclassdef
 %!               "a3 = anova (g, y, 'SumOfSquaresType', 'one',", ...
 %!               " 'Display', 'on');");
 %! str = evalc (cmd);
-%! assert (isempty (str));
-%! assert (isempty (setdiff (get (0, 'children'), figs)));
+%! assert_equal (isempty (str), true);
+%! assert_equal (isempty (setdiff (get (0, 'children'), figs)), true);
 
 ## Backend selection: one-way default -> anova1
 %!test
@@ -1748,10 +1748,10 @@ endclassdef
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (popcorn, [], 'reps', 3);
-%! assert (! isempty (strfind (evalc ('disp (a)'), '2-way anova')));
+%! assert_equal (! isempty (strfind (evalc ('disp (a)'), '2-way anova')), true);
 %! a.fit ();
-%! assert (! isempty (a.AnovaTable));
-%! assert (isfield (a.Stats, 'sigmasq'));
+%! assert_equal (! isempty (a.AnovaTable), true);
+%! assert_equal (isfield (a.Stats, 'sigmasq'), true);
 %! assert_equal (a.MSE, a.Stats.sigmasq);
 
 ## fit_(): N-way fixture (anovan backend, three factors)
@@ -1763,10 +1763,10 @@ endclassdef
 %! a = anova ({g1, g2, g3}, y);
 %! assert_equal (a.NumFactors, 3);
 %! a.fit ();
-%! assert (! isempty (a.AnovaTable));
-%! assert (! isempty (a.Coefficients));
-%! assert (! isempty (a.Residuals));
-%! assert (! isempty (a.DesignMatrix));
+%! assert_equal (! isempty (a.AnovaTable), true);
+%! assert_equal (! isempty (a.Coefficients), true);
+%! assert_equal (! isempty (a.Residuals), true);
+%! assert_equal (! isempty (a.DesignMatrix), true);
 %! assert_equal (rows (a.Residuals), numel (y));
 
 ## fit_(): FittedValues = DesignMatrix * Coefficients(:,1) for anovan
@@ -1867,30 +1867,32 @@ endclassdef
 %!test
 %! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two');
 %! str = evalc ('summary (a)');
-%! assert (! isempty (strfind (str, 'ANOVA TABLE')));
-%! assert (! isempty (strfind (str, 'backend = anovan')));
+%! assert_equal (! isempty (strfind (str, 'ANOVA TABLE')), true);
+%! assert_equal (! isempty (strfind (str, 'backend = anovan')), true);
 
 ## summary(): includes MSE / DFE / Alpha line
 %!test
 %! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two', ...
 %!            'Alpha', 0.10);
 %! str = evalc ('summary (a)');
-%! assert (! isempty (strfind (str, 'Alpha: 0.1')));
+%! assert_equal (! isempty (strfind (str, 'Alpha: 0.1')), true);
 
 ## disp(): one-line overview of key fields
 %!test
 %! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two');
 %! str = evalc ('disp (a)');
-%! assert (! isempty (strfind (str, '1-way anova')));
-%! assert (! isempty (strfind (str, 'Type II')));
-%! assert (! isempty (strfind (str, 'Properties, Methods')));
+%! assert_equal (! isempty (strfind (str, '1-way anova')), true);
+%! assert_equal (! isempty (strfind (str, 'Type II')), true);
+%! assert_equal (! isempty (strfind (str, 'Properties, Methods')), true);
 
 ## summary(): SSType label appears in the header (Type I / II / III)
 %!test
 %! a1 = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'one');
 %! a2 = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two');
-%! assert (! isempty (strfind (evalc ('summary (a1)'), 'Type I sums')));
-%! assert (! isempty (strfind (evalc ('summary (a2)'), 'Type II sums')));
+%! assert_equal (! isempty (strfind (evalc ('summary (a1)'), ...
+%!                                   'Type I sums')), true);
+%! assert_equal (! isempty (strfind (evalc ('summary (a2)'), ...
+%!                                   'Type II sums')), true);
 
 ## --- Week 4: multcompare pass-through ----------------------------------
 
@@ -1900,9 +1902,9 @@ endclassdef
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! C = multcompare (a, 'display', 'off');
-%! assert (! isempty (C));
+%! assert_equal (! isempty (C), true);
 %! assert_equal (size (C, 1), 3);        ## 3 pairwise comparisons for 3 groups
-%! assert (size (C, 2) >= 6);            ## at least i,j,diff,lo,hi,p
+%! assert_equal (size (C, 2) >= 6, true);  ## at least i,j,diff,lo,hi,p
 
 ## multcompare(): two-way balanced via anova2 backend
 %!test
@@ -1910,14 +1912,14 @@ endclassdef
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (popcorn, [], 'reps', 3);
 %! C = multcompare (a, 'display', 'off', 'estimate', 'column');
-%! assert (! isempty (C));
-%! assert (size (C, 2) >= 6);
+%! assert_equal (! isempty (C), true);
+%! assert_equal (size (C, 2) >= 6, true);
 
 ## multcompare(): runs after a fresh construction (triggers ensureFit_)
 %!test
 %! a = anova ([1;1;2;2;3;3], (1:6)', 'SumOfSquaresType', 'two');
 %! C = multcompare (a, 'display', 'off');
-%! assert (! isempty (C));
+%! assert_equal (! isempty (C), true);
 
 ## MATLAB-compatible public methods and properties
 %!test
@@ -1930,7 +1932,7 @@ endclassdef
 %! assert_equal (a.Y, y);
 %! assert_equal (a.FactorNames, {'Brand'});
 %! assert_equal (a.SumOfSquaresType, 'two');
-%! assert (! any (strcmp (methods ('anova'), 'predict')));
+%! assert_equal (! any (strcmp (methods ('anova'), 'predict'), 'all'), true);
 %! T = stats (a);
 %! M = groupmeans (a);
 %! V = varianceComponent (a);
@@ -1952,7 +1954,7 @@ endclassdef
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova ({g1, g2}, y, 'FactorNames', {'A', 'B'});
-%! assert (istable (a.Factors));
+%! assert_equal (istable (a.Factors), true);
 %! assert_equal (a.Factors.A, g1);
 %! assert_equal (a.Factors.B, g2);
 
@@ -1962,7 +1964,7 @@ endclassdef
 %! g = [1;1;1;2;2;2;3;3;3];
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
-%! assert (istable (a.Residuals));
+%! assert_equal (istable (a.Residuals), true);
 %! assert_equal (a.Residuals.Properties.VariableNames, {'Raw', 'Pearson'});
 %! assert_equal (a.Residuals.Pearson, a.Residuals.Raw ./ sqrt (a.MSE), 1e-12);
 
@@ -1985,16 +1987,16 @@ endclassdef
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
-%! assert (iscellstr (a.ExpandedFactorNames));
-%! assert (! isempty (a.ExpandedFactorNames));
+%! assert_equal (iscellstr (a.ExpandedFactorNames), true);
+%! assert_equal (! isempty (a.ExpandedFactorNames), true);
 
 ## groupmeans(): confidence bounds bracket the group means
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! M = groupmeans (anova (g, y, 'SumOfSquaresType', 'two'));
-%! assert (all (M.MeanLower <= M.Mean));
-%! assert (all (M.Mean <= M.MeanUpper));
+%! assert_equal (all (M.MeanLower <= M.Mean, 'all'), true);
+%! assert_equal (all (M.Mean <= M.MeanUpper, 'all'), true);
 
 ## boxchart(): returns a non-empty graphics result
 %!test
@@ -2003,7 +2005,7 @@ endclassdef
 %!   y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %!   g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %!   h = boxchart (anova (g, y));
-%!   assert (! isempty (h));
+%!   assert_equal (! isempty (h), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -2027,7 +2029,7 @@ endclassdef
 %!   g = [1;1;1;2;2;2;3;3;3];
 %!   a = anova (g, y, 'SumOfSquaresType', 'two');
 %!   h = plotDiagnostics (a, 'Visible', 'off');
-%!   assert (ishghandle (h));
+%!   assert_equal (all (ishghandle (h), 'all'), true);
 %!   assert_equal (numel (findall (h, 'type', 'axes')), 4);
 %! unwind_protect_cleanup
 %!   close (h);
@@ -2057,9 +2059,9 @@ endclassdef
 %! g = [1;1;1;2;2;2;3;3;3];
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! es = getEffectSizes (a);
-%! assert (iscell (es.Source));
+%! assert_equal (iscell (es.Source), true);
 %! assert_equal (numel (es.EtaSquared), numel (es.Source));
-%! assert (all (isfinite (es.PartialEtaSquared)));
+%! assert_equal (all (isfinite (es.PartialEtaSquared), 'all'), true);
 
 ## anova(LinearModel): builds from Avanish's LinearModel surface
 %!test
@@ -2067,8 +2069,8 @@ endclassdef
 %! y = [2; 4; 5; 4; 5];
 %! mdl = fitlm (X, y);
 %! a = anova (mdl);
-%! assert (! isempty (strfind (evalc ('disp (a)'), 'anova')));
-%! assert (! isempty (a.AnovaTable));
+%! assert_equal (! isempty (strfind (evalc ('disp (a)'), 'anova')), true);
+%! assert_equal (! isempty (a.AnovaTable), true);
 %! assert_equal (predict (a), mdl.Fitted, 1e-9);
 %! es = getEffectSizes (a);
 %! assert_equal (es.Source, {'Model'});
@@ -2082,7 +2084,7 @@ endclassdef
 %! a = anova (mdl);
 %! h = plotDiagnostics (a, 'Visible', 'off');
 %! unwind_protect
-%!   assert (ishghandle (h));
+%!   assert_equal (all (ishghandle (h), 'all'), true);
 %!   assert_equal (numel (findall (h, 'type', 'axes')), 4);
 %! unwind_protect_cleanup
 %!   close (h);
