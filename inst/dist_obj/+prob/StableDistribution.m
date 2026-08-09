@@ -860,8 +860,8 @@ endfunction
 %! assert_equal (pt.IsTruncated, true);
 %! assert_equal (cdf (pt, [-2, 3]), [0, 1]);
 %! assert_equal (isfinite (mean (pt)), true);
-%! assert_equal (all (random (pt, 100, 1) >= -1 ...
-%!                    & random (pt, 100, 1) <= 3, 'all'), true);
+%! r = random (pt, 100, 1);
+%! assert_equal (all (r >= -1 & r <= 3, 'all'), true);
 
 %!test
 %! ## The profile over alpha: 21 grid values, one row of OTHER per value, and
