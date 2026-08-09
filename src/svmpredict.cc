@@ -511,7 +511,6 @@ probability of the instance being an inlier. \n\
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! # Train One-Class (-s 2) with Probability (-b 1)
 %! model_oc = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07 -b 1');
-%! # FIX: Changed // to # below to fix syntax error
 %! assert_equal (isstruct (model_oc), true);
 %! # Predict with Probability (-b 1)
 %! [pred, acc, probs] = svmpredict (L, D, model_oc, '-b 1');
