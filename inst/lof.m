@@ -134,7 +134,7 @@ endfunction
 %!      -0.05 -0.15; 0.05 0.12; -0.12 -0.05; 5 5; -4 3];
 %! [~, ~, scores] = lof (X, "NumNeighbors", 5, "Distance", "cityblock");
 %! assert_equal (scores(11), 34.198447151536712, 1e-10);
-%! assert (scores(1) > 1 && scores(7) < 1);
+%! assert_equal (scores(1) > 1 && scores(7) < 1, true);
 
 ## Test input validation
 %!error <lof: too few input arguments.> lof ()

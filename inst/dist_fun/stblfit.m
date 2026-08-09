@@ -258,8 +258,9 @@ endfunction
 %! ## MATLAB fitdist (x, 'Stable') on the same data agrees to ~1.5e-2
 %! assert_equal (phat, [1.5449145, 0.4693139, 2.0000225, 1.1646526], 1.5e-2);
 %! ## Confidence intervals bracket the estimate; gam CI is positive
-%! assert (all (pci(1,:) <= phat) && all (pci(2,:) >= phat));
-%! assert (pci(1,3) > 0);
+%! assert_equal (all (pci(1,:) <= phat, 'all') ...
+%!               && all (pci(2,:) >= phat, 'all'), true);
+%! assert_equal (pci(1,3) > 0, true);
 
 ## Test input validation
 %!error <stblfit: X must be a vector.> stblfit (ones (2, 2))

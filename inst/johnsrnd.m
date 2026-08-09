@@ -193,12 +193,12 @@ endfunction
 %!test
 %! r = johnsrnd ([-1, -0.25, 0.75, 3], 3, 4);
 %! assert_equal (size (r), [3, 4]);
-%! assert (all (isfinite (r(:))));
+%! assert_equal (all (isfinite (r), 'all'), true);
 %! assert_equal (size (johnsrnd ([-1, -0.25, 0.75, 3], -1)), [0, 0]);
 %! assert_equal (size (johnsrnd ([-1, -0.25, 0.75, 3], 2, -1, 5)), [2, 0, 5]);
 %!test
 %! [r, ~, c] = johnsrnd ([0.1, 0.3, 0.8, 0.95], 1, 500);
-%! assert (all (r > c(3) & r < c(3) + c(4)));
+%! assert_equal (all (r > c(3) & r < c(3) + c(4), 'all'), true);
 
 ## Test input validation
 %!error <Invalid call to johnsrnd> johnsrnd ()

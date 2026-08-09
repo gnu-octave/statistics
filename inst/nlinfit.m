@@ -579,7 +579,7 @@ endfunction
 %!                                 "RobustWgtFun", "bisquare");
 %! bo = nlinfit (x, yo, modelfun, beta0);
 %! bc = nlinfit (x, y, modelfun, beta0);
-%! assert (max (abs (br - bc)) < max (abs (bo - bc)));
+%! assert_equal (max (abs (br - bc)) < max (abs (bo - bc)), true);
 %! assert_equal (br, [1.679154218; 0.287198922], 1e-5);
 %! assert_equal (Mr, 15.892255, 1e-2);
 %! assert_equal (Cr, [0.671544, -0.044220; -0.044220, 0.003012], 1e-3);

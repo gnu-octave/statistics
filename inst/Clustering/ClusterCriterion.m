@@ -365,7 +365,7 @@ endclassdef
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   h = plot (c);
-%!   assert (isaxes (h));
+%!   assert_equal (all (isaxes (h), 'all'), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

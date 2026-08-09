@@ -207,13 +207,13 @@ endfunction
 %! [yp, dp] = nlpredci (modelfun, xp, beta, R, "Jacobian", J, ...
 %!                      "PredOpt", "observation");
 %! assert_equal (dp, [0.412235094; 0.425555051; 0.429899138], 1e-6);
-%! assert (all (dp > dc));
+%! assert_equal (all (dp > dc, 'all'), true);
 %!test
 %! ## Simultaneous (Scheffe) intervals are wider than the pointwise ones.
 %! [yp, dc] = nlpredci (modelfun, xp, beta, R, "Jacobian", J);
 %! [yp, ds] = nlpredci (modelfun, xp, beta, R, "Jacobian", J, "SimOpt", "on");
 %! assert_equal (ds, [0.156197123; 0.207634833; 0.222135990], 1e-6);
-%! assert (all (ds > dc));
+%! assert_equal (all (ds > dc, 'all'), true);
 %!test
 %! ## The covariance form matches the Jacobian form.
 %! [yp, dj] = nlpredci (modelfun, xp, beta, R, "Jacobian", J);

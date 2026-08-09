@@ -251,13 +251,13 @@ endfunction
 %!test
 %! [rho, nu] = copulafit ("t", u);
 %! assert_equal (rho, [1, 0.98084; 0.98084, 1], 2e-3);
-%! assert (nu > 10);
+%! assert_equal (nu > 10, true);
 
 ## The confidence level widens the interval as alpha shrinks
 %!test
 %! [~, ci95] = copulafit ("Clayton", u);
 %! [~, ci99] = copulafit ("Clayton", u, "alpha", 0.01);
-%! assert (ci99(1) < ci95(1) && ci99(2) > ci95(2));
+%! assert_equal (ci99(1) < ci95(1) && ci99(2) > ci95(2), true);
 
 ## Round trip: fit recovers a parameter close to the generating one
 %!test

@@ -285,10 +285,10 @@ endclassdef
 %! rand ("state", 5);
 %! X = [randn(40,2)*0.3; 10 10; -9 8];
 %! Mdl = IsolationForest (X, "NumLearners", 50);
-%! assert (isa (Mdl, "IsolationForest"));
+%! assert_equal (isa (Mdl, "IsolationForest"), true);
 %! assert_equal (Mdl.NumLearners, 50);
 %! assert_equal (Mdl.NumObservationsPerLearner, 42);
 %! [tf, scores] = isanomaly (Mdl, [0 0; 12 12]);
-%! assert (all (scores >= 0 & scores <= 1));
-%! assert (scores(2) > scores(1));                 # far point is more anomalous
-%! assert (islogical (tf));
+%! assert_equal (all (scores >= 0 & scores <= 1, 'all'), true);
+%! assert_equal (scores(2) > scores(1), true);  # far point is more anomalous
+%! assert_equal (islogical (tf), true);

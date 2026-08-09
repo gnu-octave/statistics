@@ -141,7 +141,7 @@ endfunction
 %! ## A 90% interval is narrower than the default 95% interval.
 %! ci95 = nlparci (beta, R, "covar", CovB);
 %! ci90 = nlparci (beta, R, "covar", CovB, "alpha", 0.10);
-%! assert (all (diff (ci90, 1, 2) < diff (ci95, 1, 2)));
+%! assert_equal (all (diff (ci90, 1, 2) < diff (ci95, 1, 2), 'all'), true);
 
 ## Test input validation
 %!error<Invalid call> nlparci (1, 2)

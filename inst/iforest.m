@@ -94,8 +94,9 @@ endfunction
 %! [Mdl, tf, scores] = iforest (X, "ContaminationFraction", 3/63);
 %! assert_equal (Mdl.NumLearners, 100);
 %! assert_equal (Mdl.NumObservationsPerLearner, 63);
-%! assert (all (scores >= 0 & scores <= 1));
-%! assert (all (scores(61:63) > max (scores(1:60))));   # outliers rank highest
+%! assert_equal (all (scores >= 0 & scores <= 1, 'all'), true);
+%! # outliers rank highest
+%! assert_equal (all (scores(61:63) > max (scores(1:60)), 'all'), true);
 %! assert_equal (tf, logical ([false(60,1); true(3,1)]));
 
 ## ScoreThreshold follows the quantile rule; contamination 0 flags none
@@ -123,8 +124,8 @@ endfunction
 %! X = [randn(60,2)*0.3; 12 12; -11 10; 10 -12];
 %! Mdl = iforest (X, "ContaminationFraction", 3/63);
 %! [tf, scores] = isanomaly (Mdl, [0 0; 15 15]);
-%! assert (all (scores >= 0 & scores <= 1));
-%! assert (scores(2) > scores(1));            # far point scores higher
+%! assert_equal (all (scores >= 0 & scores <= 1, 'all'), true);
+%! assert_equal (scores(2) > scores(1), true);  # far point scores higher
 %! assert_equal (tf, logical ([false; true]));
 
 ## Test input validation

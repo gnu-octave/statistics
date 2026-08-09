@@ -136,8 +136,8 @@ endfunction
 %! mdl = fitnlm (X, y, modelfun, beta0);
 %! [p, F, df] = coefTest (mdl);
 %! assert_equal (df, 2);
-%! assert (F > 1e5);
-%! assert (p < 1e-10);
+%! assert_equal (F > 1e5, true);
+%! assert_equal (p < 1e-10, true);
 %!test
 %! ## predict returns the fitted values and confidence intervals.
 %! mdl = fitnlm (X, y, modelfun, beta0);

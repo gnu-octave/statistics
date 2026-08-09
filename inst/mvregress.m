@@ -303,7 +303,7 @@ endfunction
 %!test  # ecm uses all observed data; the log-likelihood improves on listwise
 %! b_ecm = mvregress (X, Ymiss, "algorithm", "ecm");
 %! b_mvn = mvregress (X, Ymiss, "algorithm", "mvn");
-%! assert (! isequal (b_ecm, b_mvn));   # different estimates
+%! assert_equal (! isequal (b_ecm, b_mvn), true);   # different estimates
 
 %!test  # default algorithm: mvn without missing data, ecm with
 %! [b1, ~, ~, ~, L1] = mvregress (X, Ycomp);

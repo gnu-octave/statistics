@@ -832,7 +832,7 @@ endfunction
 %!         [-1.63127009138493, 0.133853042315326, 2.58231785139714], 1e-6);
 %!test  # mean, variance, median of a skewed stable (alpha = 1.5)
 %! assert_equal (mean (pd), 0.5, 1e-12);
-%! assert (isnan (var (pd)));
+%! assert_equal (isnan (var (pd)), true);
 %! assert_equal (median (pd), 0.133853042315326, 1e-6);
 
 ## alpha = 2 is the normal distribution with variance 2*gam^2
@@ -846,8 +846,8 @@ endfunction
 ## alpha <= 1 has no finite mean
 %!test
 %! pc = makedist ("Stable", "alpha", 0.8, "beta", 0.5, "gam", 1, "delta", 0);
-%! assert (isnan (mean (pc)));
-%! assert (isnan (var (pc)));
+%! assert_equal (isnan (mean (pc)), true);
+%! assert_equal (isnan (var (pc)), true);
 %! assert_equal (median (pc), 0.250487323305453, 1e-5);
 
 ## Scale and location, and a truncated distribution
@@ -857,10 +857,11 @@ endfunction
 %! assert_equal (median (ps), 3.26770608463065, 1e-6);
 %!test  # truncation renormalizes and bounds the support
 %! pt = truncate (pd, -1, 3);
-%! assert (pt.IsTruncated);
+%! assert_equal (pt.IsTruncated, true);
 %! assert_equal (cdf (pt, [-2, 3]), [0, 1]);
-%! assert (isfinite (mean (pt)));
-%! assert (all (random (pt, 100, 1) >= -1 & random (pt, 100, 1) <= 3));
+%! assert_equal (isfinite (mean (pt)), true);
+%! assert_equal (all (random (pt, 100, 1) >= -1 ...
+%!                    & random (pt, 100, 1) <= 3, 'all'), true);
 
 %!test
 %! ## The profile over alpha: 21 grid values, one row of OTHER per value, and

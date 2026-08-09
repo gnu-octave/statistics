@@ -249,7 +249,7 @@ endfunction
 
 %!test  # binomial logit, MPL -- matches MATLAB fitglme
 %! glme = fitglme (tbl, "yBin ~ xL + (1 | g)", "Distribution", "binomial");
-%! assert (isa (glme, "GeneralizedLinearMixedModel"));
+%! assert_equal (isa (glme, "GeneralizedLinearMixedModel"), true);
 %! assert_equal (glme.Coefficients.Estimate, [-0.55912; 0.76062], 1e-3);
 %! assert_equal (glme.Coefficients.SE, [0.33856; 0.39971], 1e-3);
 %! assert_equal (glme.LogLikelihood, -92.58872, 1e-2);

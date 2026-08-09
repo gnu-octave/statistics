@@ -422,7 +422,7 @@ endfunction
 %! X = [randn(10,2) - 5; randn(10,2) + 5];
 %! [idx, C, sumd, D, midx] = kmedoids (X, 2, "Replicates", 3);
 %! assert_equal (numel (idx), 20);
-%! assert (all (idx >= 1 & idx <= 2));
+%! assert_equal (all (idx >= 1 & idx <= 2, 'all'), true);
 %! assert_equal (C, X(midx,:));
 %! assert_equal (size (D), [20 2]);
 

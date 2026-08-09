@@ -481,7 +481,7 @@ endfunction
 %!   wide = get (get (h(2), "children")(1), "ydata");
 %!   h = scatterhist (x, y, "Kernel", "on");
 %!   auto = get (get (h(2), "children")(1), "ydata");
-%!   assert (! isequal (wide, auto));
+%!   assert_equal (! isequal (wide, auto), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -499,7 +499,8 @@ endfunction
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   pre = axes ("parent", hf, "position", [0.01, 0.01, 0.05, 0.05]);
 %!   h = scatterhist (x, y, "Parent", hf);
-%!   assert (all (arrayfun (@(a) get (a, "parent"), h) == hf));
+%!   assert_equal (all (arrayfun (@(a) get (a, "parent"), h) == hf, 'all'), ...
+%!                 true);
 %!   ## the caller's own axes are left alone
 %!   assert_equal (ishghandle (pre), true);
 %! unwind_protect_cleanup
@@ -512,7 +513,8 @@ endfunction
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   hp = uipanel ("parent", hf, "position", [0, 0, 1, 1]);
 %!   h = scatterhist (x, y, "Parent", hp);
-%!   assert (all (arrayfun (@(a) get (a, "parent"), h) == hp));
+%!   assert_equal (all (arrayfun (@(a) get (a, "parent"), h) == hp, 'all'), ...
+%!                 true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -651,7 +653,7 @@ endfunction
 %!   y = [1.2 2.4 3.1 2.6 4.5 3.3 5.1 2.8 4.0 3.6 1.9 4.4 3.2 2.1 5.0]';
 %!   h = scatterhist (x, y);
 %!   assert_equal (numel (h), 3);
-%!   assert (all (isaxes (h)));
+%!   assert_equal (all (isaxes (h), 'all'), true);
 %!   ## the scatter axes hold the data
 %!   sc = get (h(1), "children");
 %!   assert_equal (get (sc(1), "xdata")(:), x, 1e-12);
@@ -666,7 +668,7 @@ endfunction
 %!   g = [1 1 1 2 2 2]';
 %!   h = scatterhist (x, y, "Group", g);
 %!   assert_equal (numel (h), 3);
-%!   assert (all (isaxes (h)));
+%!   assert_equal (all (isaxes (h), 'all'), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

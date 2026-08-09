@@ -110,7 +110,8 @@ endfunction
 %! [Mdl, tf, scores] = ocsvm (X, "KernelScale", 2, ...
 %!                            "NumExpansionDimensions", 128, ...
 %!                            "ContaminationFraction", 3/63);
-%! assert (all (scores(61:63) > max (scores(1:60))));   # outliers rank highest
+%! # outliers rank highest
+%! assert_equal (all (scores(61:63) > max (scores(1:60)), 'all'), true);
 %! assert_equal (tf, logical ([false(60,1); true(3,1)]));
 
 ## ScoreThreshold follows the quantile rule; contamination 0 flags none
@@ -145,7 +146,7 @@ endfunction
 %! assert_equal (numel (Mdl.Mu), 2);
 %! assert_equal (numel (Mdl.Sigma), 2);
 %! [tf, scores] = isanomaly (Mdl, [5 -2; 20 5]);
-%! assert (scores(2) > scores(1));                 # the outlier scores higher
+%! assert_equal (scores(2) > scores(1), true);  # the outlier scores higher
 
 ## isanomaly scores new observations against the trained model
 %!test
@@ -154,7 +155,7 @@ endfunction
 %! X = [randn(60,2)*0.3; 10 10; -9 8];
 %! Mdl = ocsvm (X, "KernelScale", 2, "ContaminationFraction", 2/62);
 %! [tf, scores] = isanomaly (Mdl, [0 0; 15 15]);
-%! assert (scores(2) > scores(1));
+%! assert_equal (scores(2) > scores(1), true);
 %! assert_equal (tf, logical ([false; true]));
 
 ## Test input validation

@@ -325,12 +325,12 @@ endfunction
 %! S = [0 1 1 0 0 0; 1 0 1 0 0 0; 1 1 0 0.1 0 0; 0 0 0.1 0 1 1; ...
 %!      0 0 0 1 0 1; 0 0 0 1 1 0];
 %! [idx, V, D] = spectralcluster (S, 2, "Distance", "precomputed");
-%! assert (abs (D(1)) < 1e-9);
+%! assert_equal (abs (D(1)) < 1e-9, true);
 %! assert_equal (D(2), 0.0314065796348158, 1e-12);
 %! assert_equal (size (V), [6 2]);
-%! assert (idx(1) == idx(2) && idx(2) == idx(3));
-%! assert (idx(4) == idx(5) && idx(5) == idx(6));
-%! assert (idx(1) != idx(4));
+%! assert_equal (idx(1) == idx(2) && idx(2) == idx(3), true);
+%! assert_equal (idx(4) == idx(5) && idx(5) == idx(6), true);
+%! assert_equal (idx(1) != idx(4), true);
 
 ## Symmetric normalization has the same spectrum as random-walk
 %!test
@@ -353,18 +353,18 @@ endfunction
 %! Sc = [0 0.5 0 0; 0.5 0 0.2 0; 0 0.2 0 0.5; 0 0 0.5 0];
 %! [idx, ~, D] = spectralcluster (Sc, 2, "Distance", "precomputed");
 %! assert_equal (D(2), 2/7, 1e-12);
-%! assert (idx(1) == idx(2));
-%! assert (idx(3) == idx(4));
-%! assert (idx(1) != idx(3));
+%! assert_equal (idx(1) == idx(2), true);
+%! assert_equal (idx(3) == idx(4), true);
+%! assert_equal (idx(1) != idx(3), true);
 
 ## Full knn pipeline (graph + Gaussian kernel + Laplacian) matches MATLAB
 %!test
 %! X = [0 0; 0.1 0; 0 0.1; 5 0; 5.1 0; 5 0.1];
 %! [idx, ~, D] = spectralcluster (X, 2, "NumNeighbors", 3, "KernelScale", 2);
 %! assert_equal (D(2), 0.00358001836237202, 1e-11);
-%! assert (idx(1) == idx(2) && idx(2) == idx(3));
-%! assert (idx(4) == idx(5) && idx(5) == idx(6));
-%! assert (idx(1) != idx(4));
+%! assert_equal (idx(1) == idx(2) && idx(2) == idx(3), true);
+%! assert_equal (idx(4) == idx(5) && idx(5) == idx(6), true);
+%! assert_equal (idx(1) != idx(4), true);
 
 ## Default NumNeighbors is ceil (log (N)): for N = 8 that is 3
 %!test
@@ -378,22 +378,22 @@ endfunction
 %!test
 %! X = [0 0; 0.2 0; 0 0.2; 0.2 0.2; 10 10; 10.2 10; 10 10.2; 10.2 10.2];
 %! idx = spectralcluster (X, 2);
-%! assert (numel (unique (idx(1:4))) == 1);
-%! assert (numel (unique (idx(5:8))) == 1);
-%! assert (idx(1) != idx(5));
+%! assert_equal (numel (unique (idx(1:4))) == 1, true);
+%! assert_equal (numel (unique (idx(5:8))) == 1, true);
+%! assert_equal (idx(1) != idx(5), true);
 
 ## kmedoids embedding-clustering and the epsilon graph both work
 %!test
 %! X = [0 0; 0.2 0; 0 0.2; 0.2 0.2; 10 10; 10.2 10; 10 10.2; 10.2 10.2];
 %! idx = spectralcluster (X, 2, "ClusterMethod", "kmedoids");
-%! assert (numel (unique (idx(1:4))) == 1);
-%! assert (numel (unique (idx(5:8))) == 1);
+%! assert_equal (numel (unique (idx(1:4))) == 1, true);
+%! assert_equal (numel (unique (idx(5:8))) == 1, true);
 %!test
 %! X = [0 0; 0.2 0; 0 0.2; 0.2 0.2; 10 10; 10.2 10; 10 10.2; 10.2 10.2];
 %! [idx, ~, D] = spectralcluster (X, 2, "SimilarityGraph", "epsilon", ...
 %!                                "Radius", 1);
 %! assert_equal (numel (idx), 8);
-%! assert (idx(1) != idx(5));
+%! assert_equal (idx(1) != idx(5), true);
 
 ## Three clusters: mutual knn graph and output shapes
 %!test
@@ -402,9 +402,9 @@ endfunction
 %!                                "KNNGraphType", "mutual");
 %! assert_equal (size (V), [9 3]);
 %! assert_equal (size (D), [3 1]);
-%! assert (numel (unique (idx(1:3))) == 1);
-%! assert (numel (unique (idx(4:6))) == 1);
-%! assert (numel (unique (idx(7:9))) == 1);
+%! assert_equal (numel (unique (idx(1:3))) == 1, true);
+%! assert_equal (numel (unique (idx(4:6))) == 1, true);
+%! assert_equal (numel (unique (idx(7:9))) == 1, true);
 
 ## Test input validation
 %!error <spectralcluster: too few input arguments.> spectralcluster (1)

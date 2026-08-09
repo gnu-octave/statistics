@@ -419,7 +419,7 @@ endfunction
 %!test
 %! warning ("off", "all", "local");
 %! acov = mlecov (1, [1, 2, 3, 4, 5], 'nloglf', @(p, d, c, f) -sum (p(1) .* d));
-%! assert (isnan (acov));
+%! assert_equal (all (isnan (acov), 'all'), true);
 
 ## Test input validation
 %!error <Invalid call to mlecov> mlecov (1, [1, 2, 3])

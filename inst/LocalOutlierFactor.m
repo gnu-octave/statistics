@@ -280,10 +280,10 @@ endclassdef
 %!test
 %! X = [0 0; 0.1 0.1; 0.2 -0.1; -0.1 0.2; 0.1 -0.2; -0.2 0.1; 0.15 0.05; 5 5];
 %! Mdl = LocalOutlierFactor (X, "NumNeighbors", 3);
-%! assert (isa (Mdl, "LocalOutlierFactor"));
+%! assert_equal (isa (Mdl, "LocalOutlierFactor"), true);
 %! assert_equal (Mdl.NumNeighbors, 3);
 %! assert_equal (Mdl.Distance, "euclidean");
 %! [tf, scores] = isanomaly (Mdl, [0 0; 6 6]);
 %! assert_equal (size (scores), [2, 1]);
-%! assert (scores(2) > scores(1));                 # far point is more anomalous
-%! assert (islogical (tf));
+%! assert_equal (scores(2) > scores(1), true);  # far point is more anomalous
+%! assert_equal (islogical (tf), true);

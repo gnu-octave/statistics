@@ -358,7 +358,7 @@ endfunction
 %!   [h, ax, bigax] = gplotmatrix (X, [], g);
 %!   assert_equal (size (h), [2, 2, 2]);
 %!   assert_equal (size (ax), [3, 2]);
-%!   assert (isscalar (bigax) && isaxes (bigax));
+%!   assert_equal (isscalar (bigax) && isaxes (bigax), true);
 %!   assert_equal (get (h(1,2,1), "xdata"), [20 25 21]);
 %!   assert_equal (get (h(1,2,1), "ydata"), [10 11 12]);
 %!   assert_equal (get (h(2,1,1), "xdata"), [10 11 12]);

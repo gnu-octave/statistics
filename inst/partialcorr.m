@@ -332,7 +332,7 @@ endfunction
 %!test
 %! DN = D;
 %! DN(3,2) = NaN;
-%! assert (all (isnan (partialcorr (DN))(:)));
+%! assert_equal (all (isnan (partialcorr (DN)), 'all'), true);
 %! rc = partialcorr (DN, 'Rows', 'complete');
 %! assert_equal (rc(1,2), -0.8311, 1e-4);
 %! assert_equal (rc(4,5), -0.6163, 1e-4);

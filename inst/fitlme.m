@@ -277,7 +277,7 @@ endfunction
 
 %!test  # random intercept via formula -- matches MATLAB fitlme
 %! lme = fitlme (tbl, "yL ~ xL + x2 + (1 | g)", "FitMethod", "REML");
-%! assert (isa (lme, "LinearMixedModel"));
+%! assert_equal (isa (lme, "LinearMixedModel"), true);
 %! assert_equal (lme.Coefficients.Estimate, ...
 %!               [1.96839; -1.37926; 0.811747], 1e-4);
 %! assert_equal (lme.Coefficients.SE, [0.376509; 0.113264; 0.0966571], 1e-5);
@@ -306,7 +306,7 @@ endfunction
 %!test  # slope-only random term (no random intercept)
 %! lme = fitlme (tbl, "yL ~ xL + x2 + (xL - 1 | g)", "FitMethod", "REML");
 %! [psi, ~] = covarianceParameters (lme);
-%! assert (isscalar (psi{1}));        # 1x1 covariance (slope only)
+%! assert_equal (isscalar (psi{1}), true);        # 1x1 covariance (slope only)
 
 %!test  # metadata: Formula and ResponseName are stored
 %! lme = fitlme (tbl, "yL ~ xL + (1 | g)");

@@ -133,7 +133,7 @@ endfunction
 %!test
 %! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, 3, 4)), [3, 4]);
 %! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, [2, 5])), [2, 5]);
-%! assert (isscalar (stblrnd (1.5, 0.5, 1, 0)));
+%! assert_equal (isscalar (stblrnd (1.5, 0.5, 1, 0)), true);
 %! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, -1)), [0, 0]);
 %! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, 2, -1, 5)), [2, 0, 5]);
 

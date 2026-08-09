@@ -592,7 +592,7 @@ endclassdef
 %!         "FixedEffectPredictors", {"(Intercept)", "x", "x2"});
 
 %!test  # returns a LinearMixedModel and basic properties
-%! assert (isa (lme, "LinearMixedModel"));
+%! assert_equal (isa (lme, "LinearMixedModel"), true);
 %! assert_equal (lme.NumObservations, 42);
 %! assert_equal (lme.NumCoefficients, 3);
 %! assert_equal (lme.DFE, 39);
@@ -623,7 +623,7 @@ endclassdef
 %! [p, F, df1, df2] = coefTest (lme);
 %! assert_equal (F, 106.847, 1e-2);
 %! assert_equal (df1, 2);  assert_equal (df2, 39);
-%! assert (p < 1e-12);   # ~1e-16, below the precision of 1 - fcdf
+%! assert_equal (p < 1e-12, true);   # ~1e-16, below the precision of 1 - fcdf
 
 %!test  # coefTest with an explicit single-row hypothesis (the x coefficient)
 %! [p, F, df1] = coefTest (lme, [0 1 0]);
@@ -648,7 +648,7 @@ endclassdef
 %! fc = fitted (lme);
 %! fm = fitted (lme, "Conditional", false);
 %! assert_equal (fm, X * fixedEffects (lme), 1e-12);
-%! assert (any (abs (fc - fm) > 1e-3));
+%! assert_equal (any (abs (fc - fm) > 1e-3, 'all'), true);
 
 %!test  # predict: conditional (unseen group falls back to marginal) + marginal
 %! Xn = [1 0.5 0; 1 -0.5 1; 1 1 -1];
@@ -662,7 +662,7 @@ endclassdef
 %!test  # predict confidence intervals bracket the marginal mean
 %! Xn = [1 0.5 0; 1 -0.5 1];
 %! [yp, ci] = predict (lme, Xn, ones (2, 1), [1; 2], "Conditional", false);
-%! assert (all (ci(:,1) < yp & yp < ci(:,2)));
+%! assert_equal (all (ci(:,1) < yp & yp < ci(:,2), 'all'), true);
 
 %!test  # effect extraction and design matrices
 %! [beta, names] = fixedEffects (lme);

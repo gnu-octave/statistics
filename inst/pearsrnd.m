@@ -320,7 +320,7 @@ endfunction
 %!test
 %! assert_equal (size (pearsrnd (0, 1, 0, 3, 3, 4)), [3, 4]);
 %! assert_equal (size (pearsrnd (0, 1, 0, 3, [2, 5])), [2, 5]);
-%! assert (isscalar (pearsrnd (0, 1, 0, 3)));
+%! assert_equal (isscalar (pearsrnd (0, 1, 0, 3)), true);
 %! assert_equal (size (pearsrnd (0, 1, 0, 3, -1)), [0, 0]);
 %! assert_equal (size (pearsrnd (0, 1, 0, 3, 2, -1, 5)), [2, 0, 5]);
 

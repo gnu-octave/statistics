@@ -162,8 +162,8 @@ endfunction
 %! rand ("seed", 1);
 %! x = stblrnd (1.6, 0, 1, 0, 150, 1);
 %! [~, acov] = stbllike ([1.6, 0, 1, 0], x);
-%! assert (issymmetric (acov, 1e-10));
-%! assert (all (diag (acov) > 0));
+%! assert_equal (issymmetric (acov, 1e-10), true);
+%! assert_equal (all (diag (acov) > 0, 'all'), true);
 
 ## Test input validation
 %!error <stbllike: function called with too few input arguments.> ...

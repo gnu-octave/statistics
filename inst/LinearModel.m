@@ -7133,7 +7133,7 @@ endfunction
 %! m = fitlm (ct1, 'resp ~ h2 - 1');
 %! assert_equal (m.CoefficientNames, {'h2_b', 'h2_c', 'h2_a'});
 %! assert_equal (m.Coefficients.Estimate', [8.05, 9.15, 10.25], 1e-12);
-%! assert (m.Rsquared.Ordinary > 0);
+%! assert_equal (m.Rsquared.Ordinary > 0, true);
 
 %!test  # the keyword path codes it the same way
 %! m = fitlm (ct1, 'linear', 'Intercept', false);

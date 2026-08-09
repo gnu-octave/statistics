@@ -406,7 +406,7 @@ endfunction
 %!                 "FitMethod", "REMPL");
 
 %!test  # object type and basic properties
-%! assert (isa (glme, "GeneralizedLinearMixedModel"));
+%! assert_equal (isa (glme, "GeneralizedLinearMixedModel"), true);
 %! assert_equal (glme.NumObservations, 42);
 %! assert_equal (glme.NumCoefficients, 2);
 %! assert_equal (glme.DFE, 40);
@@ -443,7 +443,7 @@ endfunction
 
 %!test  # fitted values are positive counts (log link) and residuals sum sensibly
 %! mu = fitted (glme);
-%! assert (all (mu > 0));
+%! assert_equal (all (mu > 0, 'all'), true);
 %! assert_equal (residuals (glme), tbl.yPois - mu, 1e-12);
 %! assert_equal (residuals (glme, "ResidualType", "Pearson"), ...
 %!               (tbl.yPois - mu) ./ sqrt (mu), 1e-10);

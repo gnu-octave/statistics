@@ -523,7 +523,7 @@ probability of the instance being an inlier. \n\
 %! assert_equal (sum (probs, 2), ones (length(L), 1), 1e-5);
 %!
 %! # Detail Check C: Values must be valid probabilities [0, 1]
-%! assert (all (all (probs >= 0 & probs <= 1)));
+%! assert_equal (all (probs >= 0 & probs <= 1, 'all'), true);
 %! clear model_oc
 %!
 %!test

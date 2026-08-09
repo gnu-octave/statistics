@@ -1252,7 +1252,7 @@ endfunction
 %! x = stblrnd (1.5, 0.5, 2, 1, 150, 1);
 %! pd = fitdist (x, 'Stable');
 %! assert_equal (class (pd), 'prob.StableDistribution');
-%! assert (! any (pd.ParameterIsFixed));
+%! assert_equal (! any (pd.ParameterIsFixed, 'all'), true);
 %! assert_equal (pd.alpha, 1.5, 0.4);
 %! assert_equal (pd.gam, 2, 0.5);
 %!test

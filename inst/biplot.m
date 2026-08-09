@@ -345,8 +345,8 @@ endfunction
 %!               "ObsLabels", {"x", "y"});
 %!   ## 2 varlines + 2 varmarks + 2 vartext + 2 obsmarks + 2 obstext + 1 axis
 %!   assert_equal (numel (h), 11);
-%!   assert (strcmp (get (h(5), "string"), "a"));
-%!   assert (strcmp (get (h(9), "string"), "x"));
+%!   assert_equal (strcmp (get (h(5), "string"), "a"), true);
+%!   assert_equal (strcmp (get (h(9), "string"), "x"), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

@@ -282,7 +282,7 @@ endfunction
 
 %!test  # returns a LinearMixedModel object
 %! lme = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
-%! assert (isa (lme, "LinearMixedModel"));
+%! assert_equal (isa (lme, "LinearMixedModel"), true);
 
 %!test  # random intercept, ML -- matches MATLAB fitlmematrix
 %! lme = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
@@ -307,7 +307,7 @@ endfunction
 %! lme_re = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "REML");
 %! pml = covarianceParameters (lme_ml);
 %! pre = covarianceParameters (lme_re);
-%! assert (pre{1} > pml{1});
+%! assert_equal (pre{1} > pml{1}, true);
 %! # close, not equal
 %! assert_equal (fixedEffects (lme_ml), fixedEffects (lme_re), 5e-3);
 

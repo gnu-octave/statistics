@@ -2142,39 +2142,39 @@ endfunction
 ## Mixed-effects 'mixed' mode
 %!test  # random intercept: basic decomposition
 %! S = parseWilkinsonFormula ('y ~ x + z + (1|g)', 'mixed');
-%! assert (S.HasRandom);
-%! assert (S.FixedIntercept);
+%! assert_equal (S.HasRandom, true);
+%! assert_equal (S.FixedIntercept, true);
 %! assert_equal (numel (S.FixedTerms), 2);
 %! assert_equal (numel (S.Random), 1);
-%! assert (S.Random(1).Intercept);
-%! assert (isempty (S.Random(1).Terms));
+%! assert_equal (S.Random(1).Intercept, true);
+%! assert_equal (isempty (S.Random(1).Terms), true);
 %! assert_equal (S.Random(1).GroupVars, {'g'});
 %! assert_equal (S.Random(1).Group, 'g');
 %! assert_equal (S.Response, 'y');
 
 %!test  # (x|g) carries an implicit intercept, like the fixed-effects rule
 %! S = parseWilkinsonFormula ('y ~ x + (x|g)', 'mixed');
-%! assert (S.Random(1).Intercept);
+%! assert_equal (S.Random(1).Intercept, true);
 %! assert_equal (numel (S.Random(1).Terms), 1);
 %! assert_equal (S.Random(1).Terms{1}, {'x'});
 
 %!test  # explicit (1 + x|g) matches the implicit form
 %! S = parseWilkinsonFormula ('y ~ x + (1 + x|g)', 'mixed');
-%! assert (S.Random(1).Intercept);
+%! assert_equal (S.Random(1).Intercept, true);
 %! assert_equal (S.Random(1).Terms, {{'x'}});
 
 %!test  # all four intercept-suppression spellings agree: slope only, no int
 %! for f = {'(x-1|g)', '(-1 + x|g)', '(0 + x|g)', '(x + 0|g)'}
 %!   S = parseWilkinsonFormula (['y ~ x + ' f{1}], 'mixed');
-%!   assert (! S.Random(1).Intercept);
+%!   assert_equal (! S.Random(1).Intercept, true);
 %!   assert_equal (S.Random(1).Terms, {{'x'}});
 %! endfor
 
 %!test  # two random blocks on the same grouping factor
 %! S = parseWilkinsonFormula ('y ~ x + (1|g) + (x-1|g)', 'mixed');
 %! assert_equal (numel (S.Random), 2);
-%! assert (S.Random(1).Intercept && isempty (S.Random(1).Terms));
-%! assert (! S.Random(2).Intercept);
+%! assert_equal (S.Random(1).Intercept && isempty (S.Random(1).Terms), true);
+%! assert_equal (! S.Random(2).Intercept, true);
 %! assert_equal (S.Random(2).Terms, {{'x'}});
 %! assert_equal (S.Random(1).GroupVars, {'g'});
 %! assert_equal (S.Random(2).GroupVars, {'g'});
@@ -2196,7 +2196,7 @@ endfunction
 
 %!test  # multi-term random slopes (1 + x + z|g)
 %! S = parseWilkinsonFormula ('y ~ x + (1 + x + z|g)', 'mixed');
-%! assert (S.Random(1).Intercept);
+%! assert_equal (S.Random(1).Intercept, true);
 %! assert_equal (numel (S.Random(1).Terms), 2);
 
 %!test  # interaction in the random design (1 + x:z|g)
@@ -2206,18 +2206,18 @@ endfunction
 
 %!test  # crossing '*' expands in the random design to x + z + x:z
 %! S = parseWilkinsonFormula ('y ~ x + (x*z|g)', 'mixed');
-%! assert (S.Random(1).Intercept);
+%! assert_equal (S.Random(1).Intercept, true);
 %! assert_equal (numel (S.Random(1).Terms), 3);
 
 %!test  # intercept-only fixed part: y ~ (1|g)
 %! S = parseWilkinsonFormula ('y ~ (1|g)', 'mixed');
-%! assert (S.FixedIntercept);
-%! assert (isempty (S.FixedTerms));
+%! assert_equal (S.FixedIntercept, true);
+%! assert_equal (isempty (S.FixedTerms), true);
 %! assert_equal (numel (S.Random), 1);
 
 %!test  # suppressed fixed intercept coexists with a random term
 %! S = parseWilkinsonFormula ('y ~ x - 1 + (1|g)', 'mixed');
-%! assert (! S.FixedIntercept);
+%! assert_equal (! S.FixedIntercept, true);
 %! assert_equal (numel (S.FixedTerms), 1);
 
 %!test  # fixed interaction via '*' expands independently of the random part
@@ -2232,13 +2232,13 @@ endfunction
 
 %!test  # nesting in the fixed part coexists with a random term
 %! S = parseWilkinsonFormula ('y ~ a/b + (1|g)', 'mixed');
-%! assert (S.FixedIntercept);
+%! assert_equal (S.FixedIntercept, true);
 %! assert_equal (numel (S.Random), 1);
 
 %!test  # 'mixed' mode degrades gracefully on a fixed-only formula
 %! S = parseWilkinsonFormula ('y ~ x + z', 'mixed');
-%! assert (! S.HasRandom);
-%! assert (isempty (S.Random));
+%! assert_equal (! S.HasRandom, true);
+%! assert_equal (isempty (S.Random), true);
 %! assert_equal (numel (S.FixedTerms), 2);
 
 %!test  # FixedFormula reconstructs the fixed-only formula string

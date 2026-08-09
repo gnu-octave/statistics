@@ -304,8 +304,8 @@ endclassdef
 %! randn ("state", 8);
 %! X = [randn(60,2)*0.3; 9 9; -8 7];
 %! Mdl = OneClassSVM (X, "KernelScale", 2, "NumExpansionDimensions", 64);
-%! assert (isa (Mdl, "OneClassSVM"));
+%! assert_equal (isa (Mdl, "OneClassSVM"), true);
 %! assert_equal (Mdl.NumExpansionDimensions, 64);
 %! [tf, scores] = isanomaly (Mdl, [0 0; 12 12]);
-%! assert (scores(2) > scores(1));                 # far point is more anomalous
-%! assert (islogical (tf));
+%! assert_equal (scores(2) > scores(1), true);  # far point is more anomalous
+%! assert_equal (islogical (tf), true);

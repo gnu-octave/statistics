@@ -447,8 +447,9 @@ endfunction
 %! sig0 = robustcov (X, "BiasCorrection", 0);
 %! sig1 = robustcov (X);
 %! r = sig1 ./ sig0;
-%! assert (all (abs (r(:) - r(1)) < 1e-12));      # scalar inflation factor
-%! assert (r(1) > 1);
+%! # scalar inflation factor
+%! assert_equal (all (abs (r - r(1)) < 1e-12, 'all'), true);
+%! assert_equal (r(1) > 1, true);
 
 ## mah is the robust Mahalanobis distance, outliers use the 0.975 cutoff
 %!test
@@ -463,12 +464,12 @@ endfunction
 %!test
 %! X = [randn(40,2); 10 10; -10 8];
 %! [sig, mu, mah, ol, s] = robustcov (X);
-%! assert (isfield (s, "Method") && strcmp (s.Method, "fmcd"));
-%! assert (isfield (s, "Sigma") && isfield (s, "Mu"));
-%! assert (isfield (s, "Distances") && isfield (s, "Outliers"));
+%! assert_equal (isfield (s, "Method") && strcmp (s.Method, "fmcd"), true);
+%! assert_equal (isfield (s, "Sigma") && isfield (s, "Mu"), true);
+%! assert_equal (isfield (s, "Distances") && isfield (s, "Outliers"), true);
 %! [~, ~, ~, ~, s2] = robustcov (X, "Method", "ogk");
-%! assert (strcmp (s2.Method, "ogk"));
-%! assert (isfield (s2, "NumOGKIterations"));
+%! assert_equal (strcmp (s2.Method, "ogk"), true);
+%! assert_equal (isfield (s2, "NumOGKIterations"), true);
 
 ## OGK is bit-exact in 3-D: cube vertices have identity covariance (1/N)
 %!test
@@ -487,7 +488,7 @@ endfunction
 %! [sig, mu, mah, ol] = robustcov (X);
 %! assert_equal (size (sig), [3 3]);
 %! assert_equal (sig, sig', 1e-12);
-%! assert (all (eig (sig) > 0));
+%! assert_equal (all (eig (sig) > 0, 'all'), true);
 %! assert_equal (ol(11:12), logical ([1;1]));
 
 ## Rows with NaN values are dropped before estimation
