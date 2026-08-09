@@ -31,7 +31,8 @@
 ##
 ## The Durbin-Watson statistic is
 ## @tex
-## $ d = \sum_{i=1}^{n-1} (r_{i+1} - r_i)^2 / \sum_{i=1}^{n} r_i^2 $.
+## $$ d = \sum_{i=1}^{n-1} (r_{i+1} - r_i)^2 / \sum_{i=1}^{n} r_i^2. $$
+##
 ## @end tex
 ## @ifnottex
 ## @code{@var{d} = sum ((diff (@var{r})) .^ 2) / sum (@var{r} .^ 2)}.

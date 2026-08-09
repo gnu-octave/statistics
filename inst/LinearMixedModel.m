@@ -23,7 +23,8 @@
 ## A @code{LinearMixedModel} object represents a fitted linear mixed-effects
 ## model
 ## @tex
-## $y = X\beta + Zb + \varepsilon$,
+## $$ y = X\beta + Zb + \varepsilon, $$
+##
 ## @end tex
 ## @ifnottex
 ## @code{y = X*beta + Z*b + e},

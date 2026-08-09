@@ -34,7 +34,8 @@
 ##
 ## The Jarque-Bera test statistic is
 ## @tex
-## $ JB = \frac{n}{6} \left( s^2 + \frac{(k-3)^2}{4} \right) $,
+## $$ JB = \frac{n}{6} \left( s^2 + \frac{(k-3)^2}{4} \right), $$
+##
 ## @end tex
 ## @ifnottex
 ## @code{JB = (n / 6) * (s^2 + (k - 3)^2 / 4)},

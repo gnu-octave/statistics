@@ -24,7 +24,8 @@
 ## @code{fitlmematrix (@var{X}, @var{y}, @var{Z}, @var{G})} fits the linear
 ## mixed-effects model
 ## @tex
-## $y = X\beta + Zb + \varepsilon$
+## $$ y = X\beta + Zb + \varepsilon $$
+##
 ## @end tex
 ## @ifnottex
 ## @code{y = X*beta + Z*b + e}
