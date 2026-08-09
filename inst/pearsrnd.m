@@ -255,38 +255,38 @@ endfunction
 ## Type and coefficients against MATLAB
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 0, 3);
-%! assert (type, 0);
-%! assert (coefs, [1, 0, 0], 1e-12);
+%! assert_equal (type, 0);
+%! assert_equal (coefs, [1, 0, 0], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 0, 4.5);
-%! assert (type, 7);
-%! assert (coefs, [0.666666666666667, 0, 0.111111111111111], 1e-12);
+%! assert_equal (type, 7);
+%! assert_equal (coefs, [0.666666666666667, 0, 0.111111111111111], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 0, 2.5);
-%! assert (type, 2);
-%! assert (coefs, [1.42857142857143, 0, -0.142857142857143], 1e-12);
+%! assert_equal (type, 2);
+%! assert_equal (coefs, [1.42857142857143, 0, -0.142857142857143], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 0.5, 3.5);
-%! assert (type, 4);
-%! assert (coefs, ...
+%! assert_equal (type, 4);
+%! assert_equal (coefs, ...
 %!         [0.946428571428571, 0.232142857142857, 0.0178571428571429], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 0.75, 4);
-%! assert (type, 6);
-%! assert (coefs, ...
+%! assert_equal (type, 6);
+%! assert_equal (coefs, ...
 %!         [0.938524590163934, 0.344262295081967, 0.0204918032786885], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (2, 3, 1, 5);
-%! assert (type, 4);
-%! assert (coefs, [0.85, 0.4, 0.05], 1e-12);
+%! assert_equal (type, 4);
+%! assert_equal (coefs, [0.85, 0.4, 0.05], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 1, 4.5);
-%! assert (type, 3);
-%! assert (coefs, [1, 0.5, 0], 1e-12);
+%! assert_equal (type, 3);
+%! assert_equal (coefs, [1, 0.5, 0], 1e-12);
 %!test
 %! [~, type, coefs] = pearsrnd (0, 1, 2, 9);
-%! assert (type, 3);
-%! assert (coefs, [1, 1, 0], 1e-12);
+%! assert_equal (type, 3);
+%! assert_equal (coefs, [1, 1, 0], 1e-12);
 
 ## Generated samples reproduce the target moments (each type is exercised)
 %!test
@@ -304,25 +304,25 @@ endfunction
 %!   r = pearsrnd (m, s, sk, ku, 200000, 1);
 %!   mr = mean (r); sr = std (r);
 %!   g1 = mean (((r - mr) ./ sr) .^ 3); g2 = mean (((r - mr) ./ sr) .^ 4);
-%!   assert (mr, m, 0.05 .* s + 0.02);
-%!   assert (sr, s, 0.05 .* s + 0.02);
-%!   assert (g1, sk, 0.1);
-%!   assert (g2, ku, 0.4);
+%!   assert_equal (mr, m, 0.05 .* s + 0.02);
+%!   assert_equal (sr, s, 0.05 .* s + 0.02);
+%!   assert_equal (g1, sk, 0.1);
+%!   assert_equal (g2, ku, 0.4);
 %! endfor
 
 ## Negative skewness reflects the positive-skew shape
 %!test
 %! rand ("state", 7); randn ("state", 7);
 %! r = pearsrnd (0, 1, -1, 5, 100000, 1);
-%! assert (mean (((r - mean (r)) ./ std (r)) .^ 3), -1, 0.1);
+%! assert_equal (mean (((r - mean (r)) ./ std (r)) .^ 3), -1, 0.1);
 
 ## Size handling follows randn
 %!test
-%! assert (size (pearsrnd (0, 1, 0, 3, 3, 4)), [3, 4]);
-%! assert (size (pearsrnd (0, 1, 0, 3, [2, 5])), [2, 5]);
+%! assert_equal (size (pearsrnd (0, 1, 0, 3, 3, 4)), [3, 4]);
+%! assert_equal (size (pearsrnd (0, 1, 0, 3, [2, 5])), [2, 5]);
 %! assert (isscalar (pearsrnd (0, 1, 0, 3)));
-%! assert (size (pearsrnd (0, 1, 0, 3, -1)), [0, 0]);
-%! assert (size (pearsrnd (0, 1, 0, 3, 2, -1, 5)), [2, 0, 5]);
+%! assert_equal (size (pearsrnd (0, 1, 0, 3, -1)), [0, 0]);
+%! assert_equal (size (pearsrnd (0, 1, 0, 3, 2, -1, 5)), [2, 0, 5]);
 
 ## Test input validation
 %!error <Invalid call to pearsrnd> pearsrnd (0, 1, 0)

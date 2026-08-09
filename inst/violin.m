@@ -443,9 +443,9 @@ endfunction
 %!   clf;
 %!   c = violin (randn (60, 1));
 %!   ncol = numel (findobj (gca (), "Type", "patch"));
-%!   assert (nrow, 1);
-%!   assert (ncol, 1);
-%!   assert (numel (r.violin), numel (c.violin));
+%!   assert_equal (nrow, 1);
+%!   assert_equal (ncol, 1);
+%!   assert_equal (numel (r.violin), numel (c.violin));
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -455,8 +455,8 @@ endfunction
 %! hf = figure ("visible", "off");
 %! unwind_protect
 %!   h = violin (randn (40, 3));
-%!   assert (numel (findobj (gca (), "Type", "patch")), 3);
-%!   assert (numel (h.violin), 3);
+%!   assert_equal (numel (findobj (gca (), "Type", "patch")), 3);
+%!   assert_equal (numel (h.violin), 3);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -466,7 +466,7 @@ endfunction
 %! hf = figure ("visible", "off");
 %! unwind_protect
 %!   violin ({[1, 2, 3, 4], [3, 4, 5, 6]});
-%!   assert (numel (findobj (gca (), "Type", "patch")), 2);
+%!   assert_equal (numel (findobj (gca (), "Type", "patch")), 2);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -482,10 +482,10 @@ endfunction
 %!   clf;
 %!   violin (double (v));
 %!   nd = numel (findobj (gca (), "Type", "patch"));
-%!   assert (ni, nd);
+%!   assert_equal (ni, nd);
 %!   clf;
 %!   violin (logical ([1 0 1 1 0 0 1 0 1 1]));
-%!   assert (numel (findobj (gca (), "Type", "patch")), 1);
+%!   assert_equal (numel (findobj (gca (), "Type", "patch")), 1);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

@@ -166,18 +166,18 @@ endfunction
 %! c = nancov (x, 'pairwise')
 
 ## Test output
-%!assert (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15]), ...
+%!assert_equal (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15]), ...
 %!        40.5 * ones (3))
-%!assert (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15], 1), ...
+%!assert_equal (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15], 1), ...
 %!        20.25 * ones (3))
-%!assert (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15], 'pairwise'), ...
-%!        [15, 21, 21; 21, 30, 39; 21, 39, 26.25])
-%!assert (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15], 1, ...
+%!assert_equal (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15], ...
+%!        'pairwise'), [15, 21, 21; 21, 30, 39; 21, 39, 26.25])
+%!assert_equal (nancov ([1 2 3; 4 5 NaN; 7 NaN 9; 10 11 12; NaN 14 15], 1, ...
 %!        'pairwise'), [11.25, 14, 14; 14, 22.5, 26; 14, 26, 19.6875])
-%!assert (nancov ([1 2 3 NaN 5]', [2 NaN 6 8 10]'), [4, 8; 8, 16])
-%!assert (nancov ([1 2 3 4 5]'), 2.5)
-%!assert (nancov (5), 0)
-%!assert (nancov (NaN (3, 2)), NaN (2, 2))
+%!assert_equal (nancov ([1 2 3 NaN 5]', [2 NaN 6 8 10]'), [4, 8; 8, 16])
+%!assert_equal (nancov ([1 2 3 4 5]'), 2.5)
+%!assert_equal (nancov (5), 0)
+%!assert_equal (nancov (NaN (3, 2)), NaN (2, 2))
 
 ## Test input validation
 %!error <Invalid call to nancov> nancov ()

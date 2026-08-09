@@ -356,13 +356,13 @@ endfunction
 %!   X = [10 20; 11 25; 12 21; 13 28; 14 23; 15 29];
 %!   g = [1 1 1 2 2 2]';
 %!   [h, ax, bigax] = gplotmatrix (X, [], g);
-%!   assert (size (h), [2, 2, 2]);
-%!   assert (size (ax), [3, 2]);
+%!   assert_equal (size (h), [2, 2, 2]);
+%!   assert_equal (size (ax), [3, 2]);
 %!   assert (isscalar (bigax) && isaxes (bigax));
-%!   assert (get (h(1,2,1), "xdata"), [20 25 21]);
-%!   assert (get (h(1,2,1), "ydata"), [10 11 12]);
-%!   assert (get (h(2,1,1), "xdata"), [10 11 12]);
-%!   assert (get (h(2,1,1), "ydata"), [20 25 21]);
+%!   assert_equal (get (h(1,2,1), "xdata"), [20 25 21]);
+%!   assert_equal (get (h(1,2,1), "ydata"), [10 11 12]);
+%!   assert_equal (get (h(2,1,1), "xdata"), [10 11 12]);
+%!   assert_equal (get (h(2,1,1), "ydata"), [20 25 21]);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -374,10 +374,10 @@ endfunction
 %!        130 280 240; 140 230 220; 150 290 210];
 %!   g = [1 1 1 2 2 2]';
 %!   [h, ax] = gplotmatrix (X, Y, g);
-%!   assert (size (h), [3, 2, 2]);
-%!   assert (size (ax), [3, 2]);
-%!   assert (get (h(1,2,1), "xdata"), [20 25 21]);
-%!   assert (get (h(1,2,1), "ydata"), [100 110 120]);
+%!   assert_equal (size (h), [3, 2, 2]);
+%!   assert_equal (size (ax), [3, 2]);
+%!   assert_equal (get (h(1,2,1), "xdata"), [20 25 21]);
+%!   assert_equal (get (h(1,2,1), "ydata"), [100 110 120]);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -385,8 +385,8 @@ endfunction
 %! hf = figure ("visible", "off");
 %! unwind_protect
 %!   [h, ax] = gplotmatrix (randn (20, 3), [], []);
-%!   assert (size (h), [3, 3]);
-%!   assert (size (ax), [4, 3]);
+%!   assert_equal (size (h), [3, 3]);
+%!   assert_equal (size (ax), [4, 3]);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

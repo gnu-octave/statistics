@@ -99,7 +99,7 @@ endfunction
 %!          0.0657154294128386, 0.201576145758624, 0.462186560100778, ...
 %!          0.712063555515659, 0.855535196378772, 0.921201224725992, ...
 %!          0.951409668616683, 0.966845678836178];
-%! assert (p, exp_p, 1e-8);
+%! assert_equal (p, exp_p, 1e-8);
 %!test
 %! x = -5:5;
 %! p = stblcdf (x, 0.8, 0.5, 1, 0);
@@ -107,7 +107,7 @@ endfunction
 %!          0.0849086757683013, 0.150275591315296, 0.431333711402679, ...
 %!          0.641248581720908, 0.74188789948898, 0.797926083610673, ...
 %!          0.833292740693924, 0.857610462691116];
-%! assert (p, exp_p, 1e-8);
+%! assert_equal (p, exp_p, 1e-8);
 %!test  # scaled and shifted (gam = 2, delta = 3)
 %! x = -5:5;
 %! p = stblcdf (x, 1.5, 0.5, 2, 3);
@@ -115,15 +115,16 @@ endfunction
 %!          0.0392075905274278, 0.0657154294128386, 0.116299801968237, ...
 %!          0.201576145758624, 0.321987153858349, 0.462186560100778, ...
 %!          0.598389078433622, 0.712063555515659];
-%! assert (p, exp_p, 1e-8);
+%! assert_equal (p, exp_p, 1e-8);
 %!test  # normal special case
 %! x = -5:5;
-%! assert (stblcdf (x, 2, 0, 1, 0), normcdf (x, 0, sqrt (2)), 1e-12);
+%! assert_equal (stblcdf (x, 2, 0, 1, 0), normcdf (x, 0, sqrt (2)), 1e-12);
 %!test  # Cauchy special case
 %! x = -5:5;
-%! assert (stblcdf (x, 1, 0, 1, 0), 0.5 + atan (x) ./ pi, 1e-12);
+%! assert_equal (stblcdf (x, 1, 0, 1, 0), 0.5 + atan (x) ./ pi, 1e-12);
 %!test  # cdf is the integral of the pdf
-%! assert (stblcdf (0.7, 1.3, -0.4, 1, 0) - stblcdf (-1.2, 1.3, -0.4, 1, 0), ...
+%! assert_equal (stblcdf (0.7, 1.3, -0.4, 1, 0) - ...
+%!               stblcdf (-1.2, 1.3, -0.4, 1, 0), ...
 %!         quadgk (@(x) stblpdf (x, 1.3, -0.4, 1, 0), -1.2, 0.7), 1e-8);
 
 ## Test input validation

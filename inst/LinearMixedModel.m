@@ -593,69 +593,71 @@ endclassdef
 
 %!test  # returns a LinearMixedModel and basic properties
 %! assert (isa (lme, "LinearMixedModel"));
-%! assert (lme.NumObservations, 42);
-%! assert (lme.NumCoefficients, 3);
-%! assert (lme.DFE, 39);
-%! assert (lme.FitMethod, "REML");
+%! assert_equal (lme.NumObservations, 42);
+%! assert_equal (lme.NumCoefficients, 3);
+%! assert_equal (lme.DFE, 39);
+%! assert_equal (lme.FitMethod, "REML");
 
 %!test  # Coefficients table -- SE / tStat / DF / pValue / CI vs MATLAB
 %! C = lme.Coefficients;
-%! assert (C.Estimate, [1.96839; -1.37926; 0.811747], 1e-4);
-%! assert (C.SE, [0.376509; 0.113264; 0.0966571], 1e-5);
-%! assert (C.tStat, [5.22801; -12.1773; 8.39822], 1e-4);
-%! assert (C.DF, [39; 39; 39]);
-%! assert (C.pValue, [6.08512e-06; 7.30179e-15; 2.8079e-10], 1e-8);
-%! assert (C.Lower, [1.20683; -1.60835; 0.61624], 1e-4);
-%! assert (C.Upper, [2.72996; -1.15016; 1.00725], 1e-4);
+%! assert_equal (C.Estimate, [1.96839; -1.37926; 0.811747], 1e-4);
+%! assert_equal (C.SE, [0.376509; 0.113264; 0.0966571], 1e-5);
+%! assert_equal (C.tStat, [5.22801; -12.1773; 8.39822], 1e-4);
+%! assert_equal (C.DF, [39; 39; 39]);
+%! assert_equal (C.pValue, [6.08512e-06; 7.30179e-15; 2.8079e-10], 1e-8);
+%! assert_equal (C.Lower, [1.20683; -1.60835; 0.61624], 1e-4);
+%! assert_equal (C.Upper, [2.72996; -1.15016; 1.00725], 1e-4);
 
 %!test  # anova with Residual DF (default): F = t^2, DF2 = n - p
 %! a = anova (lme);
-%! assert (a.FStat, [27.3321; 148.287; 70.5301], 1e-3);
-%! assert (a.DF1, [1; 1; 1]);
-%! assert (a.DF2, [39; 39; 39]);
+%! assert_equal (a.FStat, [27.3321; 148.287; 70.5301], 1e-3);
+%! assert_equal (a.DF1, [1; 1; 1]);
+%! assert_equal (a.DF2, [39; 39; 39]);
 
 %!test  # anova with Satterthwaite DF vs MATLAB
 %! a = anova (lme, "DFMethod", "Satterthwaite");
-%! assert (a.DF2, [4.95056; 34.5037; 34.3302], 1e-3);
-%! assert (a.pValue, [0.00348739; 4.79374e-14; 7.71731e-10], 1e-6);
+%! assert_equal (a.DF2, [4.95056; 34.5037; 34.3302], 1e-3);
+%! assert_equal (a.pValue, [0.00348739; 4.79374e-14; 7.71731e-10], 1e-6);
 
 %!test  # coefTest: joint test of the non-intercept coefficients
 %! [p, F, df1, df2] = coefTest (lme);
-%! assert (F, 106.847, 1e-2);
-%! assert (df1, 2);  assert (df2, 39);
+%! assert_equal (F, 106.847, 1e-2);
+%! assert_equal (df1, 2);  assert_equal (df2, 39);
 %! assert (p < 1e-12);   # ~1e-16, below the precision of 1 - fcdf
 
 %!test  # coefTest with an explicit single-row hypothesis (the x coefficient)
 %! [p, F, df1] = coefTest (lme, [0 1 0]);
-%! assert (F, 148.287, 1e-2);
-%! assert (df1, 1);
+%! assert_equal (F, 148.287, 1e-2);
+%! assert_equal (df1, 1);
 
 %!test  # coefCI matches the Coefficients table bounds
 %! ci = coefCI (lme);
-%! assert (ci(:,1), lme.Coefficients.Lower, 1e-12);
-%! assert (ci(:,2), lme.Coefficients.Upper, 1e-12);
+%! assert_equal (ci(:,1), lme.Coefficients.Lower, 1e-12);
+%! assert_equal (ci(:,2), lme.Coefficients.Upper, 1e-12);
 
 %!test  # residuals: raw, Pearson (= raw/sqrt(mse)), Standardized vs MATLAB
 %! [~, mse] = covarianceParameters (lme);
 %! raw = residuals (lme);
-%! assert (raw, yL - fitted (lme), 1e-12);
-%! assert (residuals (lme, "ResidualType", "Pearson"), raw / sqrt (mse), 1e-12);
+%! assert_equal (raw, yL - fitted (lme), 1e-12);
+%! assert_equal (residuals (lme, "ResidualType", "Pearson"), ...
+%!               raw / sqrt (mse), 1e-12);
 %! rs = residuals (lme, "ResidualType", "Standardized");
-%! assert (rs(1:3), [0.1824776; -0.4452186; -2.057201], 1e-5);
+%! assert_equal (rs(1:3), [0.1824776; -0.4452186; -2.057201], 1e-5);
 
 %!test  # fitted: conditional includes random effects, marginal does not
 %! fc = fitted (lme);
 %! fm = fitted (lme, "Conditional", false);
-%! assert (fm, X * fixedEffects (lme), 1e-12);
+%! assert_equal (fm, X * fixedEffects (lme), 1e-12);
 %! assert (any (abs (fc - fm) > 1e-3));
 
 %!test  # predict: conditional (unseen group falls back to marginal) + marginal
 %! Xn = [1 0.5 0; 1 -0.5 1; 1 1 -1];
 %! yc = predict (lme, Xn, ones (3, 1), [1; 2; 7]);
 %! ym = predict (lme, Xn, ones (3, 1), [1; 2; 7], "Conditional", false);
-%! assert (yc, [2.254803; 2.351467; -0.2226094], 1e-4);
-%! assert (ym, [1.278766; 3.469768; -0.2226094], 1e-4);
-%! assert (yc(3), ym(3), 1e-10);   # group 7 unseen -> conditional == marginal
+%! assert_equal (yc, [2.254803; 2.351467; -0.2226094], 1e-4);
+%! assert_equal (ym, [1.278766; 3.469768; -0.2226094], 1e-4);
+%! # group 7 unseen -> conditional == marginal
+%! assert_equal (yc(3), ym(3), 1e-10);
 
 %!test  # predict confidence intervals bracket the marginal mean
 %! Xn = [1 0.5 0; 1 -0.5 1];
@@ -664,20 +666,20 @@ endclassdef
 
 %!test  # effect extraction and design matrices
 %! [beta, names] = fixedEffects (lme);
-%! assert (beta, lme.Coefficients.Estimate, 1e-12);
-%! assert (names, {"(Intercept)", "x", "x2"});
+%! assert_equal (beta, lme.Coefficients.Estimate, 1e-12);
+%! assert_equal (names, {"(Intercept)", "x", "x2"});
 %! b = randomEffects (lme);
-%! assert (numel (b), 6);                 # 6 intercept BLUPs
-%! assert (b, [0.9760378; -1.118301; -0.1922078; 0.8754252; ...
+%! assert_equal (numel (b), 6);                 # 6 intercept BLUPs
+%! assert_equal (b, [0.9760378; -1.118301; -0.1922078; 0.8754252; ...
 %!            -0.7955462; 0.2545924], 1e-4);   # BLUPs vs MATLAB
-%! assert (size (designMatrix (lme, "Fixed")), [42, 3]);
-%! assert (size (designMatrix (lme, "Random")), [42, 6]);
+%! assert_equal (size (designMatrix (lme, "Fixed")), [42, 3]);
+%! assert_equal (size (designMatrix (lme, "Random")), [42, 6]);
 
 %!test  # R-squared and sums of squares (MATLAB SST = SSE + SSR convention)
-%! assert (lme.Rsquared.Ordinary, 0.8758549, 1e-6);
-%! assert (lme.Rsquared.Adjusted, 0.8694885, 1e-6);
-%! assert (lme.SST, lme.SSE + lme.SSR, 1e-10);
-%! assert (lme.ModelCriterion.Deviance, -2 * lme.LogLikelihood, 1e-10);
+%! assert_equal (lme.Rsquared.Ordinary, 0.8758549, 1e-6);
+%! assert_equal (lme.Rsquared.Adjusted, 0.8694885, 1e-6);
+%! assert_equal (lme.SST, lme.SSE + lme.SSR, 1e-10);
+%! assert_equal (lme.ModelCriterion.Deviance, -2 * lme.LogLikelihood, 1e-10);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (lme, "ResidualType", "xxx")

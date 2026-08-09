@@ -99,35 +99,35 @@ endfunction
 %! x = stblinv (p, 1.5, 0.5, 1, 0);
 %! exp_x = [-1.63127009138493, -0.783313648587273, 0.133853042315326, ...
 %!          1.20341055131626, 2.58231785139714];
-%! assert (x, exp_x, 1e-6);
+%! assert_equal (x, exp_x, 1e-6);
 %!test
 %! p = [0.1, 0.25, 0.5, 0.75, 0.9];
 %! x = stblinv (p, 0.8, 0.5, 1, 0);
 %! exp_x = [-1.62200033048034, -0.553853652413272, 0.250487323305453, ...
 %!          2.11601429745393, 8.03924696271835];
-%! assert (x, exp_x, 1e-5);
+%! assert_equal (x, exp_x, 1e-5);
 %!test  # scaled and shifted (gam = 2, delta = 3)
 %! p = [0.1, 0.25, 0.5, 0.75, 0.9];
 %! x = stblinv (p, 1.5, 0.5, 2, 3);
 %! exp_x = [-0.26254018276987, 1.43337270282545, 3.26770608463065, ...
 %!          5.40682110263252, 8.16463570279428];
-%! assert (x, exp_x, 1e-6);
+%! assert_equal (x, exp_x, 1e-6);
 %!test  # symmetric case (beta = 0): quantiles antisymmetric about delta
 %! p = [0.1, 0.25, 0.5, 0.75, 0.9];
 %! x = stblinv (p, 1.5, 0, 1, 0);
 %! exp_x = [-2.06146263813919, -0.968933181710917, 0, ...
 %!          0.968933181710917, 2.06146263813919];
-%! assert (x, exp_x, 1e-6);
+%! assert_equal (x, exp_x, 1e-6);
 %!test  # normal and Cauchy special cases
 %! p = [0.1, 0.3, 0.5, 0.7, 0.9];
-%! assert (stblinv (p, 2, 0, 1, 0), norminv (p, 0, sqrt (2)), 1e-12);
-%! assert (stblinv (p, 1, 0, 1, 0), tan (pi .* (p - 0.5)), 1e-12);
+%! assert_equal (stblinv (p, 2, 0, 1, 0), norminv (p, 0, sqrt (2)), 1e-12);
+%! assert_equal (stblinv (p, 1, 0, 1, 0), tan (pi .* (p - 0.5)), 1e-12);
 %!test  # inverts stblcdf
 %! x0 = [-3, -0.5, 0.8, 4];
 %! p = stblcdf (x0, 1.4, 0.3, 1.5, -1);
-%! assert (stblinv (p, 1.4, 0.3, 1.5, -1), x0, 1e-6);
+%! assert_equal (stblinv (p, 1.4, 0.3, 1.5, -1), x0, 1e-6);
 %!test  # boundaries
-%! assert (stblinv ([0, 1], 1.5, 0.5, 1, 0), [-Inf, Inf]);
+%! assert_equal (stblinv ([0, 1], 1.5, 0.5, 1, 0), [-Inf, Inf]);
 
 ## Test input validation
 %!error<stblinv: P, ALPHA, BETA, GAM, and DELTA must be double or single.> stblinv (int32 (2), 1.5, 0, 1, 0)

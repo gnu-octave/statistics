@@ -1253,8 +1253,8 @@ endfunction
 %! pd = fitdist (x, 'Stable');
 %! assert_equal (class (pd), 'prob.StableDistribution');
 %! assert (! any (pd.ParameterIsFixed));
-%! assert (pd.alpha, 1.5, 0.4);
-%! assert (pd.gam, 2, 0.5);
+%! assert_equal (pd.alpha, 1.5, 0.4);
+%! assert_equal (pd.gam, 2, 0.5);
 %!test
 %! x = tlsrnd (0, 1, 1, 100, 1);
 %! pd = fitdist (x, 'tlocationscale');

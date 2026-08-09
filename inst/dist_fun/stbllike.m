@@ -151,12 +151,13 @@ endfunction
 %!      # that differs from stblpdf by a few parts in 1e-5
 %! x = [-2.3, -0.9, 0.1, 0.4, 1.2, 2.8, 5.1];
 %! nlogL = stbllike ([1.5, 0.5, 1, 0], x);
-%! assert (nlogL, - sum (log (stblpdf (x, 1.5, 0.5, 1, 0))), 1e-3);
+%! assert_equal (nlogL, - sum (log (stblpdf (x, 1.5, 0.5, 1, 0))), 1e-3);
 %!test  # frequency weights replicate observations
 %! x = [-1, 0.5, 2];
 %! f = [2, 1, 3];
 %! xr = [-1, -1, 0.5, 2, 2, 2];
-%! assert (stbllike ([1.2, 0, 1, 0], x, f), stbllike ([1.2, 0, 1, 0], xr), 1e-6);
+%! assert_equal (stbllike ([1.2, 0, 1, 0], x, f), ...
+%!               stbllike ([1.2, 0, 1, 0], xr), 1e-6);
 %!test  # acov is symmetric positive (co)variance at a sensible parameter
 %! rand ("seed", 1);
 %! x = stblrnd (1.6, 0, 1, 0, 150, 1);

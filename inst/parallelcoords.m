@@ -223,10 +223,10 @@ endfunction
 %! unwind_protect
 %!   X = [1 2 3; 4 5 6; 7 8 9; 2 1 5];
 %!   h = parallelcoords (X);
-%!   assert (numel (h), 4);
-%!   assert (get (h(1), "xdata"), [1 2 3]);
-%!   assert (get (h(1), "ydata"), [1 2 3]);
-%!   assert (get (h(2), "ydata"), [4 5 6]);
+%!   assert_equal (numel (h), 4);
+%!   assert_equal (get (h(1), "xdata"), [1 2 3]);
+%!   assert_equal (get (h(1), "ydata"), [1 2 3]);
+%!   assert_equal (get (h(2), "ydata"), [4 5 6]);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -235,7 +235,7 @@ endfunction
 %! unwind_protect
 %!   X = [1 2 3; 4 5 6; 7 8 9; 2 1 5];
 %!   h = parallelcoords (X, "Standardize", "on");
-%!   assert (get (h(1), "ydata"), [-0.94491, -0.63246, -1.1], 1e-4);
+%!   assert_equal (get (h(1), "ydata"), [-0.94491, -0.63246, -1.1], 1e-4);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -244,7 +244,7 @@ endfunction
 %! unwind_protect
 %!   X = [1 2 3; 4 5 6; 7 8 9; 2 1 5];
 %!   h = parallelcoords (X, "Standardize", "pca");
-%!   assert (get (h(1), "ydata")(1:2), [-4.1082, 0.9670], 1e-4);
+%!   assert_equal (get (h(1), "ydata")(1:2), [-4.1082, 0.9670], 1e-4);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -253,10 +253,10 @@ endfunction
 %! unwind_protect
 %!   X = [1 2 3; 4 5 6; 7 8 9; 2 1 5];
 %!   h = parallelcoords (X, "Quantile", 0.25);
-%!   assert (numel (h), 3);
-%!   assert (get (h(1), "ydata"), [3, 3.5, 5.5], 1e-12);
-%!   assert (get (h(2), "ydata"), [1.5, 1.5, 4], 1e-12);
-%!   assert (get (h(3), "ydata"), [5.5, 6.5, 7.5], 1e-12);
+%!   assert_equal (numel (h), 3);
+%!   assert_equal (get (h(1), "ydata"), [3, 3.5, 5.5], 1e-12);
+%!   assert_equal (get (h(2), "ydata"), [1.5, 1.5, 4], 1e-12);
+%!   assert_equal (get (h(3), "ydata"), [5.5, 6.5, 7.5], 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -264,8 +264,8 @@ endfunction
 %! hf = figure ("visible", "off");
 %! unwind_protect
 %!   h = parallelcoords ([1 2 3; 4 5 6], "Labels", {"a", "b", "c"});
-%!   assert (get (gca, "xtick"), [1 2 3]);
-%!   assert (get (gca, "xticklabel"), {"a"; "b"; "c"});
+%!   assert_equal (get (gca, "xtick"), [1 2 3]);
+%!   assert_equal (get (gca, "xticklabel"), {"a"; "b"; "c"});
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

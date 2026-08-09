@@ -284,21 +284,21 @@ endfunction
 
 %!test  # numeric design returns a p-by-d beta equal to OLS (complete data)
 %! [beta, Sigma, E] = mvregress (X, Ycomp, "algorithm", "mvn");
-%! assert (size (beta), [2, 3]);
-%! assert (beta, (X'*X)\(X'*Ycomp), 1e-8);
-%! assert (Sigma, E'*E/12, 1e-8);
+%! assert_equal (size (beta), [2, 3]);
+%! assert_equal (beta, (X'*X)\(X'*Ycomp), 1e-8);
+%! assert_equal (Sigma, E'*E/12, 1e-8);
 
 %!test  # cell design returns the vectorised (K-by-1) beta
 %! Xc = cell (12, 1);
 %! for i = 1:12, Xc{i} = kron (eye (3), X(i,:)); end
 %! bnum = mvregress (X, Ycomp);
 %! bcell = mvregress (Xc, Ycomp);
-%! assert (bcell, bnum(:), 1e-8);
+%! assert_equal (bcell, bnum(:), 1e-8);
 
 %!test  # logL equals -mvregresslike at the fit (mvn, complete)
 %! [beta, Sigma, E, CovB, logL] = mvregress (X, Ycomp, "algorithm", "mvn");
-%! assert (logL, -mvregresslike (X, Ycomp, beta, Sigma, "mvn"), 1e-8);
-%! assert (CovB, kron (Sigma, inv (X'*X)), 1e-8);
+%! assert_equal (logL, -mvregresslike (X, Ycomp, beta, Sigma, "mvn"), 1e-8);
+%! assert_equal (CovB, kron (Sigma, inv (X'*X)), 1e-8);
 
 %!test  # ecm uses all observed data; the log-likelihood improves on listwise
 %! b_ecm = mvregress (X, Ymiss, "algorithm", "ecm");
@@ -308,12 +308,12 @@ endfunction
 %!test  # default algorithm: mvn without missing data, ecm with
 %! [b1, ~, ~, ~, L1] = mvregress (X, Ycomp);
 %! [b2, ~, ~, ~, L2] = mvregress (X, Ycomp, "algorithm", "mvn");
-%! assert (L1, L2, 1e-10);
+%! assert_equal (L1, L2, 1e-10);
 
 %!test  # cwls: logL and CovB use the identity weight
 %! [beta, Sigma, E, CovB, logL] = mvregress (X, Ycomp, "algorithm", "cwls");
-%! assert (logL, -mvregresslike (X, Ycomp, beta, eye (3), "cwls"), 1e-8);
-%! assert (CovB, kron (eye (3), inv (X'*X)), 1e-8);
+%! assert_equal (logL, -mvregresslike (X, Ycomp, beta, eye (3), "cwls"), 1e-8);
+%! assert_equal (CovB, kron (eye (3), inv (X'*X)), 1e-8);
 
 
 ## MATLAB-verified parity (mvregress R2026a): 25 observations, 3 responses.
@@ -396,36 +396,36 @@ endfunction
 
 %!test  # complete data: beta (=OLS), Sigma (ML), logL, CovB vs MATLAB
 %! [beta, Sigma, ~, CovB, logL] = mvregress (Xc, Yc, "algorithm", "mvn");
-%! assert (beta, [0.9290602475, -0.4513207572, 1.79229326; ...
+%! assert_equal (beta, [0.9290602475, -0.4513207572, 1.79229326; ...
 %!                0.2367436851, 1.147222011, -0.7755015141], 1e-6);
-%! assert (Sigma, [1.332860184, 0.1860841493, 0.3727350368; ...
+%! assert_equal (Sigma, [1.332860184, 0.1860841493, 0.3727350368; ...
 %!                 0.1860841493, 0.9491200208, 0.328607071; ...
 %!                 0.3727350368, 0.328607071, 0.8648578221], 1e-6);
-%! assert (logL, -104.1503454, 1e-5);
-%! assert (CovB, kron (Sigma, inv (Xc'*Xc)), 1e-8);
+%! assert_equal (logL, -104.1503454, 1e-5);
+%! assert_equal (CovB, kron (Sigma, inv (Xc'*Xc)), 1e-8);
 
 %!test  # cwls reports the log-likelihood under the identity weight
 %! [~, ~, ~, ~, logL] = mvregress (Xc, Yc, "algorithm", "cwls");
-%! assert (logL, -108.2558653, 1e-5);
+%! assert_equal (logL, -108.2558653, 1e-5);
 
 %!test  # missing data, ecm (uses every observed response) vs MATLAB
 %! [beta, Sigma, ~, ~, logL] = mvregress (Xc, Ym, "algorithm", "ecm");
-%! assert (beta, [0.9290602475, -0.4380875727, 1.82736137; ...
+%! assert_equal (beta, [0.9290602475, -0.4380875727, 1.82736137; ...
 %!                0.2367436851, 1.173891485, -0.825576035], 1e-5);
-%! assert (Sigma, [1.332860184, 0.2265958964, 0.3918376495; ...
+%! assert_equal (Sigma, [1.332860184, 0.2265958964, 0.3918376495; ...
 %!                 0.2265958964, 1.034602545, 0.4028401374; ...
 %!                 0.3918376495, 0.4028401374, 0.8842430898], 1e-5);
-%! assert (logL, -98.2574859, 1e-5);
+%! assert_equal (logL, -98.2574859, 1e-5);
 
 %!test  # missing data, mvn (listwise deletion) vs MATLAB
 %! [beta, ~, ~, ~, logL] = mvregress (Xc, Ym, "algorithm", "mvn");
-%! assert (beta, [1.025969216, -0.3367657906, 1.885558095; ...
+%! assert_equal (beta, [1.025969216, -0.3367657906, 1.885558095; ...
 %!                0.3142894292, 1.09915421, -0.8366732999], 1e-5);
-%! assert (logL, -85.21502995, 1e-5);
+%! assert_equal (logL, -85.21502995, 1e-5);
 
 %!test  # missing data, cwls logL under identity weight vs MATLAB
 %! [~, ~, ~, ~, logL] = mvregress (Xc, Ym, "algorithm", "cwls");
-%! assert (logL, -102.6628017, 1e-5);
+%! assert_equal (logL, -102.6628017, 1e-5);
 
 %!error <Invalid call> mvregress (1)
 %!error <Y must be a real numeric matrix> mvregress (ones (3), {1})

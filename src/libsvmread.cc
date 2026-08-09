@@ -233,10 +233,10 @@ function. \
 %! D = libsvmread ("filename");
 %!test
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
-%! assert (size (L), [270, 1]);
-%! assert (size (D), [270, 13]);
+%! assert_equal (size (L), [270, 1]);
+%! assert_equal (size (D), [270, 13]);
 %!test
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
-%! assert (issparse (L), false);
-%! assert (issparse (D), true);
+%! assert_equal (issparse (L), false);
+%! assert_equal (issparse (D), true);
 */

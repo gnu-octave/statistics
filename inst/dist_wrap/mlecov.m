@@ -331,7 +331,7 @@ endfunction
 %! phat = [mean(x), std(x, 1)];
 %! nll = @(p, data, cens, freq) -sum (log (normpdf (data, p(1), p(2))));
 %! acov = mlecov (phat, x, 'nloglf', nll);
-%! assert (acov, [0.0887673606073251, 0; 0, 0.0443836789388774], 1e-6);
+%! assert_equal (acov, [0.0887673606073251, 0; 0, 0.0443836789388774], 1e-6);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
@@ -340,7 +340,7 @@ endfunction
 %! acov = mlecov (phat, x, 'nloglf', nll);
 %! ref = [0.0841894975321553, 0.00570776282157731; ...
 %!        0.00570776282157731, 0.0380517511049636];
-%! assert (acov, ref, 1e-6);
+%! assert_equal (acov, ref, 1e-6);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
@@ -349,7 +349,7 @@ endfunction
 %! acov = mlecov (phat, x, 'nloglf', nll);
 %! ref = [17.6711714212941, -0.553235139352906; ...
 %!        -0.553235139352906, 0.0181745610037496];
-%! assert (acov, ref, 5e-4);
+%! assert_equal (acov, ref, 5e-4);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
@@ -359,7 +359,7 @@ endfunction
 %! acov = mlecov (phat, x, 'nloglf', nll, 'Frequency', f);
 %! ref = [0.0630373869314514, -0.00427967204059965; ...
 %!        -0.00427967204059965, 0.0484445550668851];
-%! assert (acov, ref, 1e-6);
+%! assert_equal (acov, ref, 1e-6);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
@@ -371,7 +371,7 @@ endfunction
 %! acov = mlecov (phat, x, 'nloglf', nll, 'Censoring', c);
 %! ref = [0.100361972376949, -0.0148199117431384; ...
 %!        -0.0148199117431384, 0.054254671056408];
-%! assert (acov, ref, 1e-6);
+%! assert_equal (acov, ref, 1e-6);
 
 ## The 'pdf', 'logpdf', and 'nloglf' forms differentiate the same aggregate
 ## negative log-likelihood, so they agree (unlike MATLAB, whose density-based
@@ -383,14 +383,14 @@ endfunction
 %! a_logpdf = mlecov (phat, x, 'logpdf', @(x, mu, s) log (normpdf (x, mu, s)));
 %! a_nloglf = mlecov (phat, x, 'nloglf', ...
 %!                    @(p, d, c, f) -sum (log (normpdf (d, p(1), p(2)))));
-%! assert (a_pdf, a_nloglf, 1e-10);
-%! assert (a_logpdf, a_nloglf, 1e-10);
-%! assert (a_pdf, [0.0887673606073251, 0; 0, 0.0443836789388774], 1e-6);
+%! assert_equal (a_pdf, a_nloglf, 1e-10);
+%! assert_equal (a_logpdf, a_nloglf, 1e-10);
+%! assert_equal (a_pdf, [0.0887673606073251, 0; 0, 0.0443836789388774], 1e-6);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! acov = mlecov (mean (x), x, 'pdf', @(x, mu) exppdf (x, mu));
-%! assert (acov, 0.977552156166645, 1e-6);
+%! assert_equal (acov, 0.977552156166645, 1e-6);
 
 ## Censored 'pdf' form (with a 'cdf' handle) matches the hand-built censored
 ## 'nloglf' likelihood.
@@ -402,7 +402,7 @@ endfunction
 %!                'cdf', @(x, mu, s) normcdf (x, mu, s), 'Censoring', c);
 %! ref = [0.100361972376949, -0.0148199117431384; ...
 %!        -0.0148199117431384, 0.054254671056408];
-%! assert (acov, ref, 1e-6);
+%! assert_equal (acov, ref, 1e-6);
 
 ## A user-supplied 'DerivStep' still yields the correct covariance.
 %!test
@@ -411,7 +411,7 @@ endfunction
 %! nll = @(p, data, cens, freq) -sum (log (normpdf (data, p(1), p(2))));
 %! acov = mlecov (phat, x, 'nloglf', nll, ...
 %!                'Options', struct ('DerivStep', 1e-4));
-%! assert (acov, [0.0887673606073251, 0; 0, 0.0443836789388774], 1e-5);
+%! assert_equal (acov, [0.0887673606073251, 0; 0, 0.0443836789388774], 1e-5);
 
 ## A non-positive-definite Hessian yields a warning and an all-NaN matrix.
 %!warning <mlecov: unable to compute a covariance matrix because the computed Hessian matrix is not positive definite.> ...

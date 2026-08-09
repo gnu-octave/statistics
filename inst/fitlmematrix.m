@@ -228,9 +228,9 @@ endfunction
 %! SSE = sum ((yv - gmeans(grp)) .^ 2);  MSE = SSE / (n - a);
 %! tau2 = (MSB - MSE) / r;
 %! [psi, mse] = covarianceParameters (lme);
-%! assert (fixedEffects (lme), gm, 1e-8);
-%! assert (mse, MSE, 1e-6);
-%! assert (psi{1}, tau2, 1e-6);
+%! assert_equal (fixedEffects (lme), gm, 1e-8);
+%! assert_equal (mse, MSE, 1e-6);
+%! assert_equal (psi{1}, tau2, 1e-6);
 
 ## --- Internal consistency: sigma2 and covbeta satisfy their defining GLS
 ## relations at the returned fit. ---
@@ -249,8 +249,8 @@ endfunction
 %! V = psi{1} * (Zx * Zx') + mse * eye (n);
 %! Vi = inv (V);
 %! beta = (X' * Vi * X) \ (X' * Vi * yv);
-%! assert (fixedEffects (lme), beta, 1e-6);
-%! assert (lme.CoefficientCovariance, inv (X' * Vi * X), 1e-5);
+%! assert_equal (fixedEffects (lme), beta, 1e-6);
+%! assert_equal (lme.CoefficientCovariance, inv (X' * Vi * X), 1e-5);
 
 ## --- MATLAB-verified parity: unbalanced random-intercept fit (ML). ---
 ## Reference values are MATLAB fitlmematrix (R2026a) on this exact data.
@@ -287,19 +287,20 @@ endfunction
 %!test  # random intercept, ML -- matches MATLAB fitlmematrix
 %! lme = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
 %! [psi, mse] = covarianceParameters (lme);
-%! assert (fixedEffects (lme), [1.9685543; -1.3771207; 0.81016147], 1e-4);
-%! assert (mse, 0.36422151, 1e-4);
-%! assert (psi{1}, 0.65265828, 1e-4);
-%! assert (lme.LogLikelihood, -46.203282, 1e-4);
+%! assert_equal (fixedEffects (lme), [1.9685543; -1.3771207; 0.81016147], 1e-4);
+%! assert_equal (mse, 0.36422151, 1e-4);
+%! assert_equal (psi{1}, 0.65265828, 1e-4);
+%! assert_equal (lme.LogLikelihood, -46.203282, 1e-4);
 
 %!test  # correlated random intercept + slope, REML -- matches MATLAB
 %! Z = [ones(42,1), xL];
 %! lme = fitlmematrix (X, yL, Z, grp, "FitMethod", "REML");
 %! [psi, mse] = covarianceParameters (lme);
-%! assert (fixedEffects (lme), [2.0034354; -1.3374715; 0.83788802], 1e-3);
-%! assert (mse, 0.36649172, 1e-3);
-%! assert (lme.LogLikelihood, -48.280962, 1e-3);
-%! assert (psi{1}, [0.7846112, -0.14287556; -0.14287556, 0.026017248], 1e-3);
+%! assert_equal (fixedEffects (lme), [2.0034354; -1.3374715; 0.83788802], 1e-3);
+%! assert_equal (mse, 0.36649172, 1e-3);
+%! assert_equal (lme.LogLikelihood, -48.280962, 1e-3);
+%! assert_equal (psi{1}, ...
+%!               [0.7846112, -0.14287556; -0.14287556, 0.026017248], 1e-3);
 
 %!test  # ML and REML give different (both sensible) variance components
 %! lme_ml = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
@@ -307,17 +308,18 @@ endfunction
 %! pml = covarianceParameters (lme_ml);
 %! pre = covarianceParameters (lme_re);
 %! assert (pre{1} > pml{1});
-%! assert (fixedEffects (lme_ml), fixedEffects (lme_re), 5e-3);  # close, not equal
+%! # close, not equal
+%! assert_equal (fixedEffects (lme_ml), fixedEffects (lme_re), 5e-3);
 
 %!test  # default FitMethod is ML
 %! l1 = fitlmematrix (X, yL, ones (42, 1), grp);
 %! l2 = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
-%! assert (l1.LogLikelihood, l2.LogLikelihood, 1e-10);
+%! assert_equal (l1.LogLikelihood, l2.LogLikelihood, 1e-10);
 
 %!test  # names propagate to the fitted object
 %! lme = fitlmematrix (X, yL, ones (42, 1), grp, ...
 %!                     "FixedEffectPredictors", {"Int", "x", "x2"});
-%! assert (lme.CoefficientNames, {"Int", "x", "x2"});
+%! assert_equal (lme.CoefficientNames, {"Int", "x", "x2"});
 
 ## Input validation
 %!error <Invalid call> fitlmematrix (1, 2)

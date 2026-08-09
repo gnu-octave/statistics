@@ -110,32 +110,32 @@ endfunction
 %! r = stblrnd (1.5, 0.5, 1, 0, 1, 200000);
 %! xs = [-2, -0.5, 0.5, 2];
 %! ec = arrayfun (@(x) mean (r <= x), xs);
-%! assert (ec, stblcdf (xs, 1.5, 0.5, 1, 0), 0.01);
+%! assert_equal (ec, stblcdf (xs, 1.5, 0.5, 1, 0), 0.01);
 %!test  # heavy-tailed alpha < 1, scaled and shifted
 %! rand ("state", 7);
 %! r = stblrnd (0.8, -0.3, 2, 1, 1, 200000);
 %! xs = [-3, 0, 1, 4];
 %! ec = arrayfun (@(x) mean (r <= x), xs);
-%! assert (ec, stblcdf (xs, 0.8, -0.3, 2, 1), 0.01);
+%! assert_equal (ec, stblcdf (xs, 0.8, -0.3, 2, 1), 0.01);
 %!test  # alpha = 1 with beta ~= 0
 %! rand ("state", 99);
 %! r = stblrnd (1, 0.5, 1.5, -2, 1, 200000);
 %! xs = [-5, -2, 0, 3];
 %! ec = arrayfun (@(x) mean (r <= x), xs);
-%! assert (ec, stblcdf (xs, 1, 0.5, 1.5, -2), 0.01);
+%! assert_equal (ec, stblcdf (xs, 1, 0.5, 1.5, -2), 0.01);
 %!test  # alpha = 2 is normal with variance 2*gam^2
 %! rand ("state", 1);
 %! r = stblrnd (2, 0, 1, 0, 1, 200000);
-%! assert (mean (r), 0, 0.02);
-%! assert (var (r), 2, 0.05);
+%! assert_equal (mean (r), 0, 0.02);
+%! assert_equal (var (r), 2, 0.05);
 
 ## Size handling follows rand
 %!test
-%! assert (size (stblrnd (1.5, 0.5, 1, 0, 3, 4)), [3, 4]);
-%! assert (size (stblrnd (1.5, 0.5, 1, 0, [2, 5])), [2, 5]);
+%! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, 3, 4)), [3, 4]);
+%! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, [2, 5])), [2, 5]);
 %! assert (isscalar (stblrnd (1.5, 0.5, 1, 0)));
-%! assert (size (stblrnd (1.5, 0.5, 1, 0, -1)), [0, 0]);
-%! assert (size (stblrnd (1.5, 0.5, 1, 0, 2, -1, 5)), [2, 0, 5]);
+%! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, -1)), [0, 0]);
+%! assert_equal (size (stblrnd (1.5, 0.5, 1, 0, 2, -1, 5)), [2, 0, 5]);
 
 ## Test input validation
 %!error <Invalid call to stblrnd> stblrnd (1.5, 0.5, 1)

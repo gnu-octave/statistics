@@ -293,20 +293,20 @@ endfunction
 %!   coefs = [0.6 -0.3; -0.2 0.7; 0.5 0.5];
 %!   score = [1 2; -3 1; 0.5 -2; 4 0];
 %!   h = biplot (coefs, "Scores", score);
-%!   assert (numel (h), 11);
+%!   assert_equal (numel (h), 11);
 %!   ## variable vector lines (origin to coefficient)
-%!   assert (get (h(1), "xdata"), [0 0.6], 1e-12);
-%!   assert (get (h(1), "ydata"), [0 -0.3], 1e-12);
-%!   assert (get (h(2), "xdata"), [0 -0.2], 1e-12);
+%!   assert_equal (get (h(1), "xdata"), [0 0.6], 1e-12);
+%!   assert_equal (get (h(1), "ydata"), [0 -0.3], 1e-12);
+%!   assert_equal (get (h(2), "xdata"), [0 -0.2], 1e-12);
 %!   ## variable tip markers
-%!   assert (get (h(4), "xdata"), 0.6, 1e-12);
-%!   assert (get (h(4), "ydata"), -0.3, 1e-12);
+%!   assert_equal (get (h(4), "xdata"), 0.6, 1e-12);
+%!   assert_equal (get (h(4), "ydata"), -0.3, 1e-12);
 %!   ## observation markers (scaled scores)
-%!   assert (get (h(7), "xdata"), 0.182, 1e-4);
-%!   assert (get (h(7), "ydata"), 0.364, 1e-4);
-%!   assert (get (h(10), "xdata"), 0.728, 1e-4);
+%!   assert_equal (get (h(7), "xdata"), 0.182, 1e-4);
+%!   assert_equal (get (h(7), "ydata"), 0.364, 1e-4);
+%!   assert_equal (get (h(10), "xdata"), 0.728, 1e-4);
 %!   ## reference axis extent
-%!   assert (get (h(11), "xdata"), [-0.77 0.77 NaN 0 0], 1e-12);
+%!   assert_equal (get (h(11), "xdata"), [-0.77 0.77 NaN 0 0], 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -315,12 +315,12 @@ endfunction
 %! unwind_protect
 %!   coefs = [0.6 -0.3 0.2; -0.2 0.7 0.1; 0.5 0.5 -0.6];
 %!   h = biplot (coefs);
-%!   assert (numel (h), 7);
+%!   assert_equal (numel (h), 7);
 %!   ## column 3 has its largest-magnitude element (-0.6) forced positive,
 %!   ## so the whole column is negated: [0.2 0.1 -0.6] -> [-0.2 -0.1 0.6]
-%!   assert (get (h(1), "zdata"), [0 -0.2], 1e-12);
-%!   assert (get (h(6), "zdata"), 0.6, 1e-12);
-%!   assert (get (h(7), "zdata"), [0 0 NaN 0 0 NaN -0.77 0.77], 1e-12);
+%!   assert_equal (get (h(1), "zdata"), [0 -0.2], 1e-12);
+%!   assert_equal (get (h(6), "zdata"), 0.6, 1e-12);
+%!   assert_equal (get (h(7), "zdata"), [0 0 NaN 0 0 NaN -0.77 0.77], 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -329,10 +329,10 @@ endfunction
 %! unwind_protect
 %!   coefs = [-0.8 0.1; 0.2 0.9; -0.5 0.5];
 %!   h = biplot (coefs);
-%!   assert (get (h(1), "xdata"), [0 0.8], 1e-12);
-%!   assert (get (h(2), "xdata"), [0 -0.2], 1e-12);
-%!   assert (get (h(3), "xdata"), [0 0.5], 1e-12);
-%!   assert (get (h(1), "ydata"), [0 0.1], 1e-12);
+%!   assert_equal (get (h(1), "xdata"), [0 0.8], 1e-12);
+%!   assert_equal (get (h(2), "xdata"), [0 -0.2], 1e-12);
+%!   assert_equal (get (h(3), "xdata"), [0 0.5], 1e-12);
+%!   assert_equal (get (h(1), "ydata"), [0 0.1], 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -344,7 +344,7 @@ endfunction
 %!   h = biplot (coefs, "Scores", score, "VarLabels", {"a", "b"}, ...
 %!               "ObsLabels", {"x", "y"});
 %!   ## 2 varlines + 2 varmarks + 2 vartext + 2 obsmarks + 2 obstext + 1 axis
-%!   assert (numel (h), 11);
+%!   assert_equal (numel (h), 11);
 %!   assert (strcmp (get (h(5), "string"), "a"));
 %!   assert (strcmp (get (h(9), "string"), "x"));
 %! unwind_protect_cleanup

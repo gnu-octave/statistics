@@ -253,10 +253,10 @@ package:\n\n\
 %! MODEL = fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 100, false);
 %!test
 %! [Y_pred, Y_scores] = fcnnpredict (MODEL, X);
-%! assert (numel (Y_pred), numel (Y));
-%! assert (isequal (size (Y_pred), size (Y)), true);
-%! assert (columns (Y_scores), numel (unique (Y)));
-%! assert (rows (Y_scores), numel (Y));
+%! assert_equal (numel (Y_pred), numel (Y));
+%! assert_equal (isequal (size (Y_pred), size (Y)), true);
+%! assert_equal (columns (Y_scores), numel (unique (Y)));
+%! assert_equal (rows (Y_scores), numel (Y));
 %!error <fcnnpredict: too few input arguments.> ...
 %! fcnnpredict (MODEL);
 %!error <fcnnpredict: too many output arguments.> ...

@@ -703,49 +703,49 @@ insertions, deletions, and substitutions required to convert document \
 %! d = editDistance ({"AS","SD","AD"}, {"AS", "AS"});
 %!test
 %! d = editDistance ({"AS","SD","AD"});
-%! assert (d, [2; 1; 1]);
-%! assert (class (d), "double");
+%! assert_equal (d, [2; 1; 1]);
+%! assert_equal (class (d), "double");
 %!test
 %! C = editDistance ({"AS","SD","AD"}, 1);
-%! assert (iscellstr (C), true);
-%! assert (C, {"AS";"SD"});
+%! assert_equal (iscellstr (C), true);
+%! assert_equal (C, {"AS";"SD"});
 %!test
 %! [C, IA] = editDistance ({"AS","SD","AD"}, 1);
-%! assert (class (IA), "double");
-%! assert (IA, [1;2]);
+%! assert_equal (class (IA), "double");
+%! assert_equal (IA, [1;2]);
 %!test
 %! A = {"ASS"; "SDS"; "FDE"; "EDS"; "OPA"};
 %! [C, IA] = editDistance (A, 2, "OutputAllIndices", false);
-%! assert (class (IA), "double");
-%! assert (A(IA), C);
+%! assert_equal (class (IA), "double");
+%! assert_equal (A(IA), C);
 %!test
 %! A = {"ASS"; "SDS"; "FDE"; "EDS"; "OPA"};
 %! [C, IA] = editDistance (A, 2, "OutputAllIndices", true);
-%! assert (class (IA), "cell");
-%! assert (C, {"ASS"; "FDE"; "OPA"});
-%! assert (A(IA{1}), {"ASS"; "SDS"; "EDS"});
-%! assert (A(IA{2}), {"FDE"; "EDS"});
-%! assert (A(IA{3}), {"OPA"});
+%! assert_equal (class (IA), "cell");
+%! assert_equal (C, {"ASS"; "FDE"; "OPA"});
+%! assert_equal (A(IA{1}), {"ASS"; "SDS"; "EDS"});
+%! assert_equal (A(IA{2}), {"FDE"; "EDS"});
+%! assert_equal (A(IA{3}), {"OPA"});
 %!test
 %! A = {"ASS"; "SDS"; "FDE"; "EDS"; "OPA"};
 %! [C, IA, IC] = editDistance (A, 2);
-%! assert (class (IA), "double");
-%! assert (A(IA), C);
-%! assert (IC, [1; 1; 3; 1; 5]);
+%! assert_equal (class (IA), "double");
+%! assert_equal (A(IA), C);
+%! assert_equal (IC, [1; 1; 3; 1; 5]);
 %!test
 %! d = editDistance ({"AS","SD","AD"}, {"AS", "AD", "SE"});
-%! assert (d, [0; 1; 2]);
-%! assert (class (d), "double");
+%! assert_equal (d, [0; 1; 2]);
+%! assert_equal (class (d), "double");
 %!test
 %! d = editDistance ({"AS","SD","AD"}, {"AS"});
-%! assert (d, [0; 2; 1]);
-%! assert (class (d), "double");
+%! assert_equal (d, [0; 2; 1]);
+%! assert_equal (class (d), "double");
 %!test
 %! d = editDistance ({"AS"}, {"AS","SD","AD"});
-%! assert (d, [0; 2; 1]);
-%! assert (class (d), "double");
+%! assert_equal (d, [0; 2; 1]);
+%! assert_equal (class (d), "double");
 %!test
 %! b = editDistance ("Octave", "octave");
-%! assert (b, 1);
-%! assert (class (b), "double");
+%! assert_equal (b, 1);
+%! assert_equal (class (b), "double");
 */

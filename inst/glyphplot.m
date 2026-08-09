@@ -233,14 +233,14 @@ endfunction
 %! unwind_protect
 %!   X = [1 4 2; 3 2 5; 5 5 1; 2 1 4];
 %!   g = glyphplot (X);
-%!   assert (size (g), [4, 3]);
+%!   assert_equal (size (g), [4, 3]);
 %!   ## star perimeter of observation 1 (column standardize, radius 0.4)
-%!   assert (get (g(1,1), "xdata"), [1.04 0.845 0.935 1.04], 1e-4);
-%!   assert (get (g(1,1), "ydata"), [2 2.2685 1.8874 2], 1e-4);
-%!   assert (get (g(1,1), "userdata"), [1 2 1], 1e-12);
+%!   assert_equal (get (g(1,1), "xdata"), [1.04 0.845 0.935 1.04], 1e-4);
+%!   assert_equal (get (g(1,1), "ydata"), [2 2.2685 1.8874 2], 1e-4);
+%!   assert_equal (get (g(1,1), "userdata"), [1 2 1], 1e-12);
 %!   ## observation 2
-%!   assert (get (g(2,1), "xdata"), [2.22 1.935 1.8 2.22], 1e-4);
-%!   assert (get (g(2,1), "ydata"), [2 2.1126 1.6536 2], 1e-4);
+%!   assert_equal (get (g(2,1), "xdata"), [2.22 1.935 1.8 2.22], 1e-4);
+%!   assert_equal (get (g(2,1), "ydata"), [2 2.1126 1.6536 2], 1e-4);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -250,7 +250,7 @@ endfunction
 %!   X = [1 4 2; 3 2 5; 5 5 1; 2 1 4];
 %!   g = glyphplot (X, "Radius", 0.8);
 %!   ## perimeter x of obs 1 spoke 1: cx + 0.8*(0.1+0.9*0) = 1 + 0.08
-%!   assert (get (g(1,1), "xdata")(1), 1.08, 1e-12);
+%!   assert_equal (get (g(1,1), "xdata")(1), 1.08, 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

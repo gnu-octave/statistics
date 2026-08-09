@@ -104,7 +104,7 @@ endfunction
 %!          0.0729514702833168, 0.208194435543156, 0.284283800988578, ...
 %!          0.198573023913399, 0.0958317325744725, 0.0428461930184788, ...
 %!          0.0207819141087301, 0.0113306451818624];
-%! assert (y, exp_y, 1e-9);
+%! assert_equal (y, exp_y, 1e-9);
 %!test
 %! x = -5:5;
 %! y = stblpdf (x, 0.8, 0.5, 1, 0);
@@ -112,7 +112,7 @@ endfunction
 %!          0.0326882516316453, 0.135673711418341, 0.298698147231422, ...
 %!          0.139071606104264, 0.0722555300098094, 0.0433943212392174, ...
 %!          0.0288186423689968, 0.020522989417733];
-%! assert (y, exp_y, 1e-9);
+%! assert_equal (y, exp_y, 1e-9);
 %!test
 %! x = -5:5;
 %! y = stblpdf (x, 1.2, -0.5, 1, 0);
@@ -120,7 +120,7 @@ endfunction
 %!          0.0881296016218348, 0.177627321920986, 0.288106176914537, ...
 %!          0.196803906514695, 0.0520585692918225, 0.0173156565634881, ...
 %!          0.00836895075945555, 0.00490202402183536];
-%! assert (y, exp_y, 1e-9);
+%! assert_equal (y, exp_y, 1e-9);
 %!test  # scaled and shifted (gam = 2, delta = 3)
 %! x = -5:5;
 %! y = stblpdf (x, 1.5, 0.5, 2, 3);
@@ -128,18 +128,18 @@ endfunction
 %!          0.0184406959152125, 0.0364757351416584, 0.0666533040480966, ...
 %!          0.104097217771578, 0.134023248277231, 0.142141900494289, ...
 %!          0.127056343301115, 0.0992865119566997];
-%! assert (y, exp_y, 1e-9);
+%! assert_equal (y, exp_y, 1e-9);
 %!test  # normal special case (alpha = 2)
 %! x = -5:5;
-%! assert (stblpdf (x, 2, 0, 1, 0), normpdf (x, 0, sqrt (2)), 1e-12);
+%! assert_equal (stblpdf (x, 2, 0, 1, 0), normpdf (x, 0, sqrt (2)), 1e-12);
 %!test  # Cauchy special case (alpha = 1, beta = 0)
 %! x = -5:5;
-%! assert (stblpdf (x, 1, 0, 1, 0), 1 ./ (pi .* (1 + x .^ 2)), 1e-12);
+%! assert_equal (stblpdf (x, 1, 0, 1, 0), 1 ./ (pi .* (1 + x .^ 2)), 1e-12);
 %!test  # Levy (alpha = 0.5, beta = 1): S0 support boundary at x = -1
 %! x = -5:5;
 %! y = stblpdf (x, 0.5, 1, 1, 0);
-%! assert (y(x < 0), zeros (1, 5), 1e-6);
-%! assert (y(x == 0), 0.241970724519143, 1e-9);
+%! assert_equal (y(x < 0), zeros (1, 5), 1e-6);
+%! assert_equal (y(x == 0), 0.241970724519143, 1e-9);
 
 ## Test input validation
 %!error<stblpdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblpdf (int32 (2), 1.5, 0, 1, 0)

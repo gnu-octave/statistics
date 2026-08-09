@@ -225,14 +225,14 @@ endfunction
 %! unwind_protect
 %!   X = [1 2 3 4; 5 6 7 8; 2 3 1 4];
 %!   h = andrewsplot (X);
-%!   assert (numel (h), 3);
+%!   assert_equal (numel (h), 3);
 %!   t = get (h(1), "xdata");
-%!   assert (numel (t), 1001);
-%!   assert (t([1, 501, 1001]), [0, 0.5, 1], 1e-12);
+%!   assert_equal (numel (t), 1001);
+%!   assert_equal (t([1, 501, 1001]), [0, 0.5, 1], 1e-12);
 %!   y1 = get (h(1), "ydata");
-%!   assert (y1([1, 501, 1001]), [3.70711, -2.29289, 3.70711], 1e-4);
+%!   assert_equal (y1([1, 501, 1001]), [3.70711, -2.29289, 3.70711], 1e-4);
 %!   y3 = get (h(3), "ydata");
-%!   assert (y3([1, 501, 1001]), [2.41421, 0.41421, 2.41421], 1e-4);
+%!   assert_equal (y3([1, 501, 1001]), [2.41421, 0.41421, 2.41421], 1e-4);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -242,7 +242,7 @@ endfunction
 %!   X = [1 2 3 4; 5 6 7 8; 2 3 1 4];
 %!   h = andrewsplot (X, "Standardize", "on");
 %!   y1 = get (h(1), "ydata");
-%!   assert (y1([1, 501, 1001]), [-0.78436, -0.34792, -0.78436], 1e-4);
+%!   assert_equal (y1([1, 501, 1001]), [-0.78436, -0.34792, -0.78436], 1e-4);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -252,7 +252,7 @@ endfunction
 %!   X = [1 2 3 4; 5 6 7 8; 2 3 1 4];
 %!   h = andrewsplot (X, "Standardize", "pca");
 %!   y1 = get (h(1), "ydata");
-%!   assert (y1([1, 501, 1001]), [-1.76701, -1.76701, -1.76701], 1e-4);
+%!   assert_equal (y1([1, 501, 1001]), [-1.76701, -1.76701, -1.76701], 1e-4);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -262,7 +262,7 @@ endfunction
 %!   X = [1 2 3 4; 5 6 7 8; 2 3 1 4; 3 1 4 1; 5 9 2 6; 4 2 1 3];
 %!   g = [1 1 1 2 2 2]';
 %!   h = andrewsplot (X, "Group", g, "Quantile", 0.25);
-%!   assert (numel (h), 6);
+%!   assert_equal (numel (h), 6);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

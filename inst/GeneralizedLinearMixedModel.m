@@ -407,57 +407,58 @@ endfunction
 
 %!test  # object type and basic properties
 %! assert (isa (glme, "GeneralizedLinearMixedModel"));
-%! assert (glme.NumObservations, 42);
-%! assert (glme.NumCoefficients, 2);
-%! assert (glme.DFE, 40);
-%! assert (glme.Dispersion, 1);
+%! assert_equal (glme.NumObservations, 42);
+%! assert_equal (glme.NumCoefficients, 2);
+%! assert_equal (glme.DFE, 40);
+%! assert_equal (glme.Dispersion, 1);
 
 %!test  # Coefficients table
 %! C = glme.Coefficients;
-%! assert (C.Estimate, [0.23092; 0.67809], 1e-3);
-%! assert (C.SE, [0.15395; 0.15220], 1e-3);
-%! assert (C.DF, [40; 40]);
-%! assert (C.tStat, C.Estimate ./ C.SE, 1e-10);
+%! assert_equal (C.Estimate, [0.23092; 0.67809], 1e-3);
+%! assert_equal (C.SE, [0.15395; 0.15220], 1e-3);
+%! assert_equal (C.DF, [40; 40]);
+%! assert_equal (C.tStat, C.Estimate ./ C.SE, 1e-10);
 
 %!test  # effect extraction and covariance parameters
 %! [beta, names] = fixedEffects (glme);
-%! assert (beta, glme.Coefficients.Estimate, 1e-12);
-%! assert (names(:), {"(Intercept)"; "xL"});
+%! assert_equal (beta, glme.Coefficients.Estimate, 1e-12);
+%! assert_equal (names(:), {"(Intercept)"; "xL"});
 %! b = randomEffects (glme);
-%! assert (numel (b), 6);
+%! assert_equal (numel (b), 6);
 %! [psi, dispn] = covarianceParameters (glme);
-%! assert (psi{1}, 0.015918, 1e-3);
-%! assert (dispn, 1);
+%! assert_equal (psi{1}, 0.015918, 1e-3);
+%! assert_equal (dispn, 1);
 
 %!test  # anova F-tests: F = tStat^2 with residual DF
 %! a = anova (glme);
-%! assert (a.FStat, (glme.Coefficients.tStat) .^ 2, 1e-8);
-%! assert (a.DF2, [40; 40]);
+%! assert_equal (a.FStat, (glme.Coefficients.tStat) .^ 2, 1e-8);
+%! assert_equal (a.DF2, [40; 40]);
 
 %!test  # coefTest and coefCI
 %! [p, F, df1, df2] = coefTest (glme, [0 1]);
-%! assert (F, glme.Coefficients.tStat(2) ^ 2, 1e-6);
-%! assert (df1, 1);  assert (df2, 40);
+%! assert_equal (F, glme.Coefficients.tStat(2) ^ 2, 1e-6);
+%! assert_equal (df1, 1);  assert_equal (df2, 40);
 %! ci = coefCI (glme);
-%! assert (ci(:,1), glme.Coefficients.Lower, 1e-12);
+%! assert_equal (ci(:,1), glme.Coefficients.Lower, 1e-12);
 
 %!test  # fitted values are positive counts (log link) and residuals sum sensibly
 %! mu = fitted (glme);
 %! assert (all (mu > 0));
-%! assert (residuals (glme), tbl.yPois - mu, 1e-12);
-%! assert (residuals (glme, "ResidualType", "Pearson"), (tbl.yPois - mu) ./ sqrt (mu), 1e-10);
+%! assert_equal (residuals (glme), tbl.yPois - mu, 1e-12);
+%! assert_equal (residuals (glme, "ResidualType", "Pearson"), ...
+%!               (tbl.yPois - mu) ./ sqrt (mu), 1e-10);
 
 %!test  # predict: conditional (known group) and marginal (unseen group)
 %! ym = predict (glme, [1 0.5], [], [], "Conditional", false);
 %! yc = predict (glme, [1 0.5], 1, 1);
 %! yu = predict (glme, [1 0.5], 1, 99);   # unseen group -> marginal
-%! assert (ym, exp (glme.Coefficients.Estimate' * [1; 0.5]), 1e-10);
-%! assert (yu, ym, 1e-12);
+%! assert_equal (ym, exp (glme.Coefficients.Estimate' * [1; 0.5]), 1e-10);
+%! assert_equal (yu, ym, 1e-12);
 
 %!test  # designMatrix and ModelCriterion
-%! assert (size (designMatrix (glme, "Fixed")), [42, 2]);
-%! assert (size (designMatrix (glme, "Random")), [42, 6]);
-%! assert (glme.ModelCriterion.Deviance, -2 * glme.LogLikelihood, 1e-10);
+%! assert_equal (size (designMatrix (glme, "Fixed")), [42, 2]);
+%! assert_equal (size (designMatrix (glme, "Random")), [42, 6]);
+%! assert_equal (glme.ModelCriterion.Deviance, -2 * glme.LogLikelihood, 1e-10);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (glme, "ResidualType", "xxx")

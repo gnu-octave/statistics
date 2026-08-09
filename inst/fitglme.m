@@ -250,35 +250,35 @@ endfunction
 %!test  # binomial logit, MPL -- matches MATLAB fitglme
 %! glme = fitglme (tbl, "yBin ~ xL + (1 | g)", "Distribution", "binomial");
 %! assert (isa (glme, "GeneralizedLinearMixedModel"));
-%! assert (glme.Coefficients.Estimate, [-0.55912; 0.76062], 1e-3);
-%! assert (glme.Coefficients.SE, [0.33856; 0.39971], 1e-3);
-%! assert (glme.LogLikelihood, -92.58872, 1e-2);
+%! assert_equal (glme.Coefficients.Estimate, [-0.55912; 0.76062], 1e-3);
+%! assert_equal (glme.Coefficients.SE, [0.33856; 0.39971], 1e-3);
+%! assert_equal (glme.LogLikelihood, -92.58872, 1e-2);
 
 %!test  # poisson log, REMPL -- non-degenerate random-effect variance
 %! glme = fitglme (tbl, "yPois ~ xL + (1 | g)", "Distribution", "poisson", ...
 %!                 "FitMethod", "REMPL");
-%! assert (glme.Coefficients.Estimate, [0.23092; 0.67809], 1e-3);
+%! assert_equal (glme.Coefficients.Estimate, [0.23092; 0.67809], 1e-3);
 %! [psi, ~] = covarianceParameters (glme);
-%! assert (psi{1}, 0.015918, 1e-3);
-%! assert (glme.LogLikelihood, -56.90298, 1e-2);
+%! assert_equal (psi{1}, 0.015918, 1e-3);
+%! assert_equal (glme.LogLikelihood, -56.90298, 1e-2);
 
 %!test  # Laplace reports the marginal log-likelihood
 %! glme = fitglme (tbl, "yBin ~ xL + (1 | g)", "Distribution", "binomial", ...
 %!                 "FitMethod", "Laplace");
-%! assert (glme.LogLikelihood, -25.36010, 1e-2);
+%! assert_equal (glme.LogLikelihood, -25.36010, 1e-2);
 
 %!test  # coefficient stats: DF = n - p, tStat = Estimate / SE
 %! glme = fitglme (tbl, "yPois ~ xL + (1 | g)", "Distribution", "poisson");
 %! C = glme.Coefficients;
-%! assert (C.DF, [40; 40]);
-%! assert (C.tStat, C.Estimate ./ C.SE, 1e-10);
+%! assert_equal (C.DF, [40; 40]);
+%! assert_equal (C.tStat, C.Estimate ./ C.SE, 1e-10);
 
 %!test  # metadata
 %! glme = fitglme (tbl, "yBin ~ xL + (1 | g)", "Distribution", "binomial");
-%! assert (glme.Distribution, "binomial");
-%! assert (glme.Link, "logit");
-%! assert (glme.FitMethod, "MPL");
-%! assert (glme.ResponseName, "yBin");
+%! assert_equal (glme.Distribution, "binomial");
+%! assert_equal (glme.Link, "logit");
+%! assert_equal (glme.FitMethod, "MPL");
+%! assert_equal (glme.ResponseName, "yBin");
 
 
 %!test  # all 8 fits (binomial/poisson x MPL/REMPL/Laplace/ApproximateLaplace)
@@ -295,9 +295,9 @@ endfunction
 %!   if (strcmp (fits{k,1}, "yPois")), dist = "poisson"; endif
 %!   glme = fitglme (tbl, [fits{k,1} " ~ xL + (1 | g)"], "Distribution", dist, ...
 %!                   "FitMethod", fits{k,2});
-%!   assert (glme.Coefficients.Estimate, fits{k,3}, 1e-3);
-%!   assert (glme.Coefficients.SE, fits{k,4}, 1e-3);
-%!   assert (glme.LogLikelihood, fits{k,5}, 1e-2);
+%!   assert_equal (glme.Coefficients.Estimate, fits{k,3}, 1e-3);
+%!   assert_equal (glme.Coefficients.SE, fits{k,4}, 1e-3);
+%!   assert_equal (glme.LogLikelihood, fits{k,5}, 1e-2);
 %! endfor
 
 ## Input validation

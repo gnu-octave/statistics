@@ -814,51 +814,51 @@ endfunction
 %!shared pd
 %! pd = makedist ("Stable", "alpha", 1.5, "beta", 0.5, "gam", 1, "delta", 0);
 %!test
-%! assert (pd.alpha, 1.5);
-%! assert (pd.beta, 0.5);
-%! assert (pd.gam, 1);
-%! assert (pd.delta, 0);
-%! assert (pd.DistributionName, "Stable");
-%! assert (pd.NumParameters, 4);
+%! assert_equal (pd.alpha, 1.5);
+%! assert_equal (pd.beta, 0.5);
+%! assert_equal (pd.gam, 1);
+%! assert_equal (pd.delta, 0);
+%! assert_equal (pd.DistributionName, "Stable");
+%! assert_equal (pd.NumParameters, 4);
 %!test
 %! x = -5:5;
 %! exp_p = [0.00961772128347771, 0.0143422747723476, 0.0257902242195547, ...
 %!          0.0657154294128386, 0.201576145758624, 0.462186560100778, ...
 %!          0.712063555515659, 0.855535196378772, 0.921201224725992, ...
 %!          0.951409668616683, 0.966845678836178];
-%! assert (cdf (pd, x), exp_p, 1e-8);
+%! assert_equal (cdf (pd, x), exp_p, 1e-8);
 %!test
-%! assert (icdf (pd, [0.1, 0.5, 0.9]), ...
+%! assert_equal (icdf (pd, [0.1, 0.5, 0.9]), ...
 %!         [-1.63127009138493, 0.133853042315326, 2.58231785139714], 1e-6);
 %!test  # mean, variance, median of a skewed stable (alpha = 1.5)
-%! assert (mean (pd), 0.5, 1e-12);
+%! assert_equal (mean (pd), 0.5, 1e-12);
 %! assert (isnan (var (pd)));
-%! assert (median (pd), 0.133853042315326, 1e-6);
+%! assert_equal (median (pd), 0.133853042315326, 1e-6);
 
 ## alpha = 2 is the normal distribution with variance 2*gam^2
 %!test
 %! pn = makedist ("Stable", "alpha", 2, "beta", 0, "gam", 1, "delta", 0);
-%! assert (mean (pn), 0);
-%! assert (var (pn), 2, 1e-12);
-%! assert (std (pn), sqrt (2), 1e-12);
-%! assert (pdf (pn, 0:2), normpdf (0:2, 0, sqrt (2)), 1e-12);
+%! assert_equal (mean (pn), 0);
+%! assert_equal (var (pn), 2, 1e-12);
+%! assert_equal (std (pn), sqrt (2), 1e-12);
+%! assert_equal (pdf (pn, 0:2), normpdf (0:2, 0, sqrt (2)), 1e-12);
 
 ## alpha <= 1 has no finite mean
 %!test
 %! pc = makedist ("Stable", "alpha", 0.8, "beta", 0.5, "gam", 1, "delta", 0);
 %! assert (isnan (mean (pc)));
 %! assert (isnan (var (pc)));
-%! assert (median (pc), 0.250487323305453, 1e-5);
+%! assert_equal (median (pc), 0.250487323305453, 1e-5);
 
 ## Scale and location, and a truncated distribution
 %!test
 %! ps = makedist ("Stable", "alpha", 1.5, "beta", 0.5, "gam", 2, "delta", 3);
-%! assert (mean (ps), 4, 1e-12);
-%! assert (median (ps), 3.26770608463065, 1e-6);
+%! assert_equal (mean (ps), 4, 1e-12);
+%! assert_equal (median (ps), 3.26770608463065, 1e-6);
 %!test  # truncation renormalizes and bounds the support
 %! pt = truncate (pd, -1, 3);
 %! assert (pt.IsTruncated);
-%! assert (cdf (pt, [-2, 3]), [0, 1]);
+%! assert_equal (cdf (pt, [-2, 3]), [0, 1]);
 %! assert (isfinite (mean (pt)));
 %! assert (all (random (pt, 100, 1) >= -1 & random (pt, 100, 1) <= 3));
 

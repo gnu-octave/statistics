@@ -177,16 +177,17 @@ endfunction
 %!assert_equal (nanvar (NaN), NaN)
 %!assert_equal (nanvar (5), 0)
 %!assert_equal (nanvar ([2, 4, NaN, 8]), 9.333333333333334, 1e-14)
-%!assert (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12]), [15, 21, 9])
-%!assert (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], 1), [11.25, 14, 6])
-%!assert (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], 0, 2), [0.5; 2; 1; 1])
-%!assert (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], [1 2 3 4]'), ...
+%!assert_equal (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12]), [15, 21, 9])
+%!assert_equal (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], 1), [11.25, 14, 6])
+%!assert_equal (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], 0, 2), ...
+%!        [0.5; 2; 1; 1])
+%!assert_equal (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], [1 2 3 4]'), ...
 %!        [9, 8.4375, 50/9], 1e-13)
 %!assert_equal (nanvar (NaN (2, 3)), [NaN, NaN, NaN])
 %!test
 %! x = reshape (1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
-%! assert (nanvar (x, 0, 'all'), nanvar (x(! isnan (x))(:)), 1e-12)
+%! assert_equal (nanvar (x, 0, 'all'), nanvar (x(! isnan (x))(:)), 1e-12)
 
 ## Test input validation
 %!error <Invalid call to nanvar> nanvar ()

@@ -7132,7 +7132,7 @@ endfunction
 %!test  # every level is coded, and the estimates are the group means
 %! m = fitlm (ct1, 'resp ~ h2 - 1');
 %! assert_equal (m.CoefficientNames, {'h2_b', 'h2_c', 'h2_a'});
-%! assert (m.Coefficients.Estimate', [8.05, 9.15, 10.25], 1e-12);
+%! assert_equal (m.Coefficients.Estimate', [8.05, 9.15, 10.25], 1e-12);
 %! assert (m.Rsquared.Ordinary > 0);
 
 %!test  # the keyword path codes it the same way

@@ -151,51 +151,51 @@ endfunction
 ## Type and coefficients against MATLAB
 %!test
 %! [~, type, coefs] = johnsrnd ([-1.5, -0.5, 0.5, 1.5]);
-%! assert (type, "SN");
-%! assert (coefs, [0, 1, 0, 1], 1e-12);
+%! assert_equal (type, "SN");
+%! assert_equal (coefs, [0, 1, 0, 1], 1e-12);
 %!test
 %! [~, type, coefs] = johnsrnd ([-1, -0.25, 0.75, 3]);
-%! assert (type, "SU");
-%! assert (coefs, [-0.843945656908448, 1.03904346061751, ...
+%! assert_equal (type, "SU");
+%! assert_equal (coefs, [-0.843945656908448, 1.03904346061751, ...
 %!                 -0.5, 0.741619848709566], 1e-10);
 %!test
 %! [~, type, coefs] = johnsrnd ([0.2, 0.9, 1.4, 1.8]);
-%! assert (type, "SU");
-%! assert (coefs, ...
+%! assert_equal (type, "SU");
+%! assert_equal (coefs, ...
 %!         [1.76613094093528, 2.25444447413448, 1.9, 0.845154254728516], 1e-10);
 %!test
 %! [~, type, coefs] = johnsrnd ([1, 2, 4, 9]);
-%! assert (type, "SU");
-%! assert (coefs, [-1.5, 1.03904346061751, 1, 0.894427190999916], 1e-10);
+%! assert_equal (type, "SU");
+%! assert_equal (coefs, [-1.5, 1.03904346061751, 1, 0.894427190999916], 1e-10);
 %!test
 %! [~, type, coefs] = johnsrnd ([-3, -0.75, 0.25, 1]);
-%! assert (type, "SU");
-%! assert (coefs, [0.843945656908448, 1.03904346061751, ...
+%! assert_equal (type, "SU");
+%! assert_equal (coefs, [0.843945656908448, 1.03904346061751, ...
 %!                 0.5, 0.741619848709566], 1e-10);
 
 ## Bounded and lognormal fits reproduce their input quantiles (unique fit)
 %!test
 %! q = [0.1, 0.3, 0.8, 0.95];
 %! [~, type, c] = johnsrnd (q);
-%! assert (type, "SB");
+%! assert_equal (type, "SB");
 %! z = [-1.5, -0.5, 0.5, 1.5];
 %! xz = c(3) + c(4) ./ (1 + exp (-(z - c(1)) ./ c(2)));
-%! assert (xz, q, 1e-12);
+%! assert_equal (xz, q, 1e-12);
 %!test
 %! q = [0, 1, 3, 7];
 %! [~, type, c] = johnsrnd (q);
-%! assert (type, "SL");
+%! assert_equal (type, "SL");
 %! z = [-1.5, -0.5, 0.5, 1.5];
 %! xz = c(3) + c(4) .* exp ((z - c(1)) ./ c(2));
-%! assert (xz, q, 1e-10);
+%! assert_equal (xz, q, 1e-10);
 
 ## Size handling follows randn; bounded draws stay within the support
 %!test
 %! r = johnsrnd ([-1, -0.25, 0.75, 3], 3, 4);
-%! assert (size (r), [3, 4]);
+%! assert_equal (size (r), [3, 4]);
 %! assert (all (isfinite (r(:))));
-%! assert (size (johnsrnd ([-1, -0.25, 0.75, 3], -1)), [0, 0]);
-%! assert (size (johnsrnd ([-1, -0.25, 0.75, 3], 2, -1, 5)), [2, 0, 5]);
+%! assert_equal (size (johnsrnd ([-1, -0.25, 0.75, 3], -1)), [0, 0]);
+%! assert_equal (size (johnsrnd ([-1, -0.25, 0.75, 3], 2, -1, 5)), [2, 0, 5]);
 %!test
 %! [r, ~, c] = johnsrnd ([0.1, 0.3, 0.8, 0.95], 1, 500);
 %! assert (all (r > c(3) & r < c(3) + c(4)));

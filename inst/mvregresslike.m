@@ -140,8 +140,8 @@ endfunction
 %! n1 = mvregresslike (X, Y, B, S, "ecm");
 %! n2 = mvregresslike (X, Y, B, S, "cwls");
 %! n3 = mvregresslike (X, Y, B, S, "mvn");
-%! assert (n1, n2, 1e-12);
-%! assert (n1, n3, 1e-12);
+%! assert_equal (n1, n2, 1e-12);
+%! assert_equal (n1, n3, 1e-12);
 
 %!test  # COVB of complete common design equals kron (Sigma, inv (X'X))
 %! X = [ones(15,1), linspace(-1,1,15)'];
@@ -149,7 +149,7 @@ endfunction
 %! Y = X * B + 0.1 * cos ((1:15)' * [1 2 3]);
 %! S = cov (Y - X*B);
 %! [~, COVB] = mvregresslike (X, Y, B, S, "ecm");
-%! assert (COVB, kron (S, inv (X'*X)), 1e-10);
+%! assert_equal (COVB, kron (S, inv (X'*X)), 1e-10);
 
 %!test  # cell and numeric designs give the same nll
 %! X = [ones(10,1), (1:10)'];
@@ -158,7 +158,8 @@ endfunction
 %! S = cov (Y - X*B);
 %! Xc = cell (10, 1);
 %! for i = 1:10, Xc{i} = kron (eye (2), X(i,:)); end
-%! assert (mvregresslike (Xc, Y, B(:), S), mvregresslike (X, Y, B, S), 1e-12);
+%! assert_equal (mvregresslike (Xc, Y, B(:), S), ...
+%!               mvregresslike (X, Y, B, S), 1e-12);
 
 
 ## MATLAB-verified parity (mvregresslike R2026a): 25 observations, 3 responses,
@@ -249,7 +250,8 @@ endfunction
 %! ref = [111.8681339; 179.5391646; 120.2543928; 116.9416069];
 %! for k = 1:4
 %!   for alg = {"ecm", "cwls", "mvn"}
-%!     assert (mvregresslike (Xc, Yc, anch{k,1}, anch{k,2}, alg{1}), ref(k), 1e-6);
+%!     assert_equal (mvregresslike (Xc, Yc, anch{k,1}, anch{k,2}, alg{1}), ...
+%!                   ref(k), 1e-6);
 %!   endfor
 %! endfor
 
@@ -257,15 +259,18 @@ endfunction
 %! ref_ecm = [105.2323495; 169.1339808; 112.8053693; 110.1131617];
 %! ref_mvn = [91.35955956; 146.830606; 97.1466466; 96.69358201];
 %! for k = 1:4
-%!   assert (mvregresslike (Xc, Ym, anch{k,1}, anch{k,2}, "ecm"), ref_ecm(k), 1e-6);
-%!   assert (mvregresslike (Xc, Ym, anch{k,1}, anch{k,2}, "cwls"), ref_ecm(k), 1e-6);
-%!   assert (mvregresslike (Xc, Ym, anch{k,1}, anch{k,2}, "mvn"), ref_mvn(k), 1e-6);
+%!   assert_equal (mvregresslike (Xc, Ym, anch{k,1}, anch{k,2}, "ecm"), ...
+%!                 ref_ecm(k), 1e-6);
+%!   assert_equal (mvregresslike (Xc, Ym, anch{k,1}, anch{k,2}, "cwls"), ...
+%!                 ref_ecm(k), 1e-6);
+%!   assert_equal (mvregresslike (Xc, Ym, anch{k,1}, anch{k,2}, "mvn"), ...
+%!                 ref_mvn(k), 1e-6);
 %! endfor
 
 %!test  # COVB vs MATLAB (complete data) = kron (Sigma, inv (X'X))
 %! for k = 1:4
 %!   [~, COVB] = mvregresslike (Xc, Yc, anch{k,1}, anch{k,2}, "ecm");
-%!   assert (COVB, kron (anch{k,2}, inv (Xc'*Xc)), 1e-8);
+%!   assert_equal (COVB, kron (anch{k,2}, inv (Xc'*Xc)), 1e-8);
 %! endfor
 
 %!error <Invalid call> mvregresslike (1, 2, 3)

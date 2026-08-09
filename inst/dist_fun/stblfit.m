@@ -254,9 +254,9 @@ endfunction
 %! x = stblrnd (1.5, 0.5, 2, 1, 150, 1);
 %! [phat, pci] = stblfit (x);
 %! ## Exact-density estimate on this sample (recovers the generating [1.5 0.5 2 1])
-%! assert (phat, [1.5469000, 0.4732298, 2.0097077, 1.1640279], 1e-3);
+%! assert_equal (phat, [1.5469000, 0.4732298, 2.0097077, 1.1640279], 1e-3);
 %! ## MATLAB fitdist (x, 'Stable') on the same data agrees to ~1.5e-2
-%! assert (phat, [1.5449145, 0.4693139, 2.0000225, 1.1646526], 1.5e-2);
+%! assert_equal (phat, [1.5449145, 0.4693139, 2.0000225, 1.1646526], 1.5e-2);
 %! ## Confidence intervals bracket the estimate; gam CI is positive
 %! assert (all (pci(1,:) <= phat) && all (pci(2,:) >= phat));
 %! assert (pci(1,3) > 0);

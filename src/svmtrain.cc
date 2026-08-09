@@ -609,33 +609,33 @@ probability of the instance being an inlier. \n\
 %! model = svmtrain(L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict(L, D, model);
 %!
-%! assert (isstruct (model), true);
-%! assert (isfield (model, "Parameters"), true);
-%! assert (model.totalSV, 130);
-%! assert (model.nr_class, 2);
-%! assert (size (model.Label), [2, 1]);
+%! assert_equal (isstruct (model), true);
+%! assert_equal (isfield (model, "Parameters"), true);
+%! assert_equal (model.totalSV, 130);
+%! assert_equal (model.nr_class, 2);
+%! assert_equal (size (model.Label), [2, 1]);
 %!
 %! # Check prediction output sizes
-%! assert (size (predict_label), [length(L), 1]);
-%! assert (size (dec_values), [length(L), 1]);
+%! assert_equal (size (predict_label), [length(L), 1]);
+%! assert_equal (size (dec_values), [length(L), 1]);
 %!
 %!
 %! # Test 2: One-Class SVM Model Structure Check
 %! # Ensures training with -s 2 is functional and the model structure is valid (accommodating 3.36 changes).
 %! model_oc = svmtrain(L, D, '-s 2 -n 0.5 -g 0.07');
-%! assert (isstruct (model_oc), true);
-%! assert (model_oc.Parameters(1), 2); # Check svm_type is ONE_CLASS
-%! assert (model_oc.nr_class, 2);
-%! assert (model_oc.totalSV > 0, true);
+%! assert_equal (isstruct (model_oc), true);
+%! assert_equal (model_oc.Parameters(1), 2); # Check svm_type is ONE_CLASS
+%! assert_equal (model_oc.nr_class, 2);
+%! assert_equal (model_oc.totalSV > 0, true);
 %! clear model_oc
 %!
 %!
 %! # Test 3: Regression SVR Test
 %! # Check training of Epsilon SVR (-s 3)
 %! model_svr = svmtrain (L, D, '-s 3 -p 0.1 -c 10');
-%! assert (isstruct (model_svr), true);
-%! assert (model_svr.Parameters(1), 3); # Check svm_type is EPSILON_SVR
-%! assert (model_svr.nr_class, 2);
+%! assert_equal (isstruct (model_svr), true);
+%! assert_equal (model_svr.Parameters(1), 3); # Check svm_type is EPSILON_SVR
+%! assert_equal (model_svr.nr_class, 2);
 %! clear model_svr
 %!
 %!
@@ -662,9 +662,9 @@ probability of the instance being an inlier. \n\
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07 -b 1');
 %!
-%! assert (isstruct (model), true);
-%! assert (model.Parameters(1), 2); # Check svm_type is ONE_CLASS
+%! assert_equal (isstruct (model), true);
+%! assert_equal (model.Parameters(1), 2); # Check svm_type is ONE_CLASS
 %! # CRITICAL CHECK: Verify the new field exists (Specific to upgrade)
-%! assert (isfield (model, "ProbDensityMarks"), true);
+%! assert_equal (isfield (model, "ProbDensityMarks"), true);
 %! clear model
 */

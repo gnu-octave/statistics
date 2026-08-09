@@ -486,11 +486,11 @@ probability of the instance being an inlier. \n\
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict (L, D, model);
-%! assert (size (predict_label), size (dec_values));
-%! assert (accuracy, [86.666, 0.533, 0.533]', [1e-3, 1e-3, 1e-3]');
-%! assert (dec_values(1), 1.225836001973273, 1e-14);
-%! assert (dec_values(2), -0.3212992933043805, 1e-14);
-%! assert (predict_label(1), 1);
+%! assert_equal (size (predict_label), size (dec_values));
+%! assert_equal (accuracy, [86.666, 0.533, 0.533]', [1e-3, 1e-3, 1e-3]');
+%! assert_equal (dec_values(1), 1.225836001973273, 1e-14);
+%! assert_equal (dec_values(2), -0.3212992933043805, 1e-14);
+%! assert_equal (predict_label(1), 1);
 %!
 %!test
 %! # A single testing instance used to write through a freed pointer, since
@@ -501,9 +501,9 @@ probability of the instance being an inlier. \n\
 %! [bl, ~, bd] = svmpredict (L, D, model);
 %! for i = [1, 2, 7, 130, numel(L)]
 %!   [l, ~, d] = svmpredict (L(i), D(i,:), model);
-%!   assert (size (l), [1, 1]);
-%!   assert (l, bl(i));
-%!   assert (d, bd(i), 1e-12);
+%!   assert_equal (size (l), [1, 1]);
+%!   assert_equal (l, bl(i));
+%!   assert_equal (d, bd(i), 1e-12);
 %! endfor
 %!
 %!test
@@ -512,15 +512,15 @@ probability of the instance being an inlier. \n\
 %! # Train One-Class (-s 2) with Probability (-b 1)
 %! model_oc = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07 -b 1');
 %! # FIX: Changed // to # below to fix syntax error
-%! assert (isstruct(model_oc), true, "svmtrain failed to return a valid struct model."); # <-- FIXED COMMENT HERE
+%! assert_equal (isstruct (model_oc), true);
 %! # Predict with Probability (-b 1)
 %! [pred, acc, probs] = svmpredict (L, D, model_oc, '-b 1');
 %!
 %! # Detail Check A: Output must be N x 2 (Column 1: Normal, Column 2: Outlier)
-%! assert (size (probs), [length(L), 2]);
+%! assert_equal (size (probs), [length(L), 2]);
 %!
 %! # Detail Check B: Probabilities must sum to 1.0 for every instance
-%! assert (sum (probs, 2), ones (length(L), 1), 1e-5);
+%! assert_equal (sum (probs, 2), ones (length(L), 1), 1e-5);
 %!
 %! # Detail Check C: Values must be valid probabilities [0, 1]
 %! assert (all (all (probs >= 0 & probs <= 1)));
@@ -533,7 +533,7 @@ probability of the instance being an inlier. \n\
 %! model_oc = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07');
 %! [pred, acc, dec] = svmpredict (L, D, model_oc);
 %! # Standard One-Class output is N x 1 (Scalar decision values)
-%! assert (size (dec), [length(L), 1]);
+%! assert_equal (size (dec), [length(L), 1]);
 %! clear model_oc
 %!
 %!shared L, D, model

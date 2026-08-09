@@ -463,12 +463,12 @@ endfunction
 %!   g = [1 1 1 1 2 2 2 2]';
 %!   h = scatterhist (x, y, "Group", g, "LineWidth", 3);
 %!   ch = get (h(2), "children");
-%!   assert (get (ch(1), "linewidth"), 3);
-%!   assert (get (ch(2), "linewidth"), 3);
+%!   assert_equal (get (ch(1), "linewidth"), 3);
+%!   assert_equal (get (ch(2), "linewidth"), 3);
 %!   h = scatterhist (x, y, "Group", g, "LineStyle", {"--", ":"});
 %!   ch = get (h(2), "children");
-%!   assert (get (ch(2), "linestyle"), "--");
-%!   assert (get (ch(1), "linestyle"), ":");
+%!   assert_equal (get (ch(2), "linestyle"), "--");
+%!   assert_equal (get (ch(1), "linestyle"), ":");
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -501,7 +501,7 @@ endfunction
 %!   h = scatterhist (x, y, "Parent", hf);
 %!   assert (all (arrayfun (@(a) get (a, "parent"), h) == hf));
 %!   ## the caller's own axes are left alone
-%!   assert (ishghandle (pre), true);
+%!   assert_equal (ishghandle (pre), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -523,7 +523,7 @@ endfunction
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   old = axes ("parent", hf);
 %!   h = scatterhist (x, y);
-%!   assert (ishghandle (old), false);
+%!   assert_equal (ishghandle (old), false);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -539,12 +539,12 @@ endfunction
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   h = scatterhist (x, y, "Location", "SouthWest");
 %!   ps = get (h(1), "position");  px = get (h(2), "position");
-%!   assert (ps(1:2), [0.10, 0.10], 1e-12);
-%!   assert (px(2) > ps(2), true);          # x marginal above the scatter
+%!   assert_equal (ps(1:2), [0.10, 0.10], 1e-12);
+%!   assert_equal (px(2) > ps(2), true);          # x marginal above the scatter
 %!   h = scatterhist (x, y, "Location", "NorthEast");
 %!   ps = get (h(1), "position");  px = get (h(2), "position");
-%!   assert (ps(1:2), [0.30, 0.30], 1e-12);
-%!   assert (px(2) < ps(2), true);          # and below it here
+%!   assert_equal (ps(1:2), [0.30, 0.30], 1e-12);
+%!   assert_equal (px(2) < ps(2), true);          # and below it here
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -555,21 +555,21 @@ endfunction
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   ## "in" points the bars at the scatter from whichever side they sit on
 %!   h = scatterhist (x, y, "Location", "SouthWest");
-%!   assert (get (h(2), "ydir"), "reverse");
-%!   assert (get (h(3), "xdir"), "reverse");
+%!   assert_equal (get (h(2), "ydir"), "reverse");
+%!   assert_equal (get (h(3), "xdir"), "reverse");
 %!   h = scatterhist (x, y, "Location", "NorthEast");
-%!   assert (get (h(2), "ydir"), "normal");
-%!   assert (get (h(3), "xdir"), "normal");
+%!   assert_equal (get (h(2), "ydir"), "normal");
+%!   assert_equal (get (h(3), "xdir"), "normal");
 %!   h = scatterhist (x, y, "Location", "SouthEast");
-%!   assert (get (h(2), "ydir"), "reverse");
-%!   assert (get (h(3), "xdir"), "normal");
+%!   assert_equal (get (h(2), "ydir"), "reverse");
+%!   assert_equal (get (h(3), "xdir"), "normal");
 %!   h = scatterhist (x, y, "Location", "NorthWest");
-%!   assert (get (h(2), "ydir"), "normal");
-%!   assert (get (h(3), "xdir"), "reverse");
+%!   assert_equal (get (h(2), "ydir"), "normal");
+%!   assert_equal (get (h(3), "xdir"), "reverse");
 %!   ## and "out" inverts each of them
 %!   h = scatterhist (x, y, "Location", "NorthEast", "Direction", "out");
-%!   assert (get (h(2), "ydir"), "reverse");
-%!   assert (get (h(3), "xdir"), "reverse");
+%!   assert_equal (get (h(2), "ydir"), "reverse");
+%!   assert_equal (get (h(3), "xdir"), "reverse");
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -579,11 +579,11 @@ endfunction
 %! unwind_protect
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   h = scatterhist (x, y);
-%!   assert (get (h(2), "ydir"), "reverse");
-%!   assert (get (h(3), "xdir"), "reverse");
+%!   assert_equal (get (h(2), "ydir"), "reverse");
+%!   assert_equal (get (h(3), "xdir"), "reverse");
 %!   h = scatterhist (x, y, "Direction", "out");
-%!   assert (get (h(2), "ydir"), "normal");
-%!   assert (get (h(3), "xdir"), "normal");
+%!   assert_equal (get (h(2), "ydir"), "normal");
+%!   assert_equal (get (h(3), "xdir"), "normal");
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -595,8 +595,8 @@ endfunction
 %!   g = [1 1 1 1 2 2 2 2]';
 %!   h = scatterhist (x, y, "Group", g, "Color", "rb");
 %!   c = get (get (h(1), "children"), "color");
-%!   assert (c{2}, [1, 0, 0]);
-%!   assert (c{1}, [0, 0, 1]);
+%!   assert_equal (c{2}, [1, 0, 0]);
+%!   assert_equal (c{1}, [0, 0, 1]);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -607,9 +607,9 @@ endfunction
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   g = [1 1 1 1 2 2 2 2]';
 %!   h = scatterhist (x, y, "Group", g, "PlotGroup", "off");
-%!   assert (numel (get (h(2), "children")), 1);
+%!   assert_equal (numel (get (h(2), "children")), 1);
 %!   h = scatterhist (x, y, "Group", g, "PlotGroup", "on");
-%!   assert (numel (get (h(2), "children")), 2);
+%!   assert_equal (numel (get (h(2), "children")), 2);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -650,11 +650,11 @@ endfunction
 %!   x = [2.1 3.4 1.9 5.6 4.2 3.3 2.8 6.1 4.9 3.7 2.2 5.1 4.4 3.9 2.6]';
 %!   y = [1.2 2.4 3.1 2.6 4.5 3.3 5.1 2.8 4.0 3.6 1.9 4.4 3.2 2.1 5.0]';
 %!   h = scatterhist (x, y);
-%!   assert (numel (h), 3);
+%!   assert_equal (numel (h), 3);
 %!   assert (all (isaxes (h)));
 %!   ## the scatter axes hold the data
 %!   sc = get (h(1), "children");
-%!   assert (get (sc(1), "xdata")(:), x, 1e-12);
+%!   assert_equal (get (sc(1), "xdata")(:), x, 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -665,7 +665,7 @@ endfunction
 %!   y = [2 1 4 3 6 5]';
 %!   g = [1 1 1 2 2 2]';
 %!   h = scatterhist (x, y, "Group", g);
-%!   assert (numel (h), 3);
+%!   assert_equal (numel (h), 3);
 %!   assert (all (isaxes (h)));
 %! unwind_protect_cleanup
 %!   close (hf);
@@ -676,7 +676,7 @@ endfunction
 %!   x = randn (50, 1);
 %!   y = randn (50, 1);
 %!   h = scatterhist (x, y, "Kernel", "on");
-%!   assert (numel (h), 3);
+%!   assert_equal (numel (h), 3);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -686,7 +686,7 @@ endfunction
 %!   x = randn (40, 1);
 %!   y = randn (40, 1);
 %!   h = scatterhist (x, y, "NBins", [5 8]);
-%!   assert (numel (h), 3);
+%!   assert_equal (numel (h), 3);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

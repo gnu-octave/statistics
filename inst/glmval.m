@@ -302,13 +302,13 @@ endfunction
 %!test  # numeric 0/1 are accepted for 'simultaneous' (MATLAB compatibility)
 %! b = [0.2; 0.5];
 %! X = [1; 2; 3];
-%! assert (numel (glmval (b, X, 'logit', 'simultaneous', 0)), 3);
-%! assert (numel (glmval (b, X, 'logit', 'simultaneous', 1)), 3);
+%! assert_equal (numel (glmval (b, X, 'logit', 'simultaneous', 0)), 3);
+%! assert_equal (numel (glmval (b, X, 'logit', 'simultaneous', 1)), 3);
 
 %!test  # 'BinomialSize' is accepted as an alias for 'size'
 %! b = [0.2; 0.5; -0.3];
 %! X = [0.1 0.2; 0.3 0.4; 0.5 0.6; 0.7 0.8];
-%! assert (glmval (b, X, 'logit', 'BinomialSize', 10), ...
+%! assert_equal (glmval (b, X, 'logit', 'BinomialSize', 10), ...
 %!         glmval (b, X, 'logit', 'size', 10));
 
 %!test  # CI: fixed-dispersion uses the normal quantile; rows are independent

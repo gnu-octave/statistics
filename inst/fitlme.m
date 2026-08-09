@@ -272,32 +272,36 @@ endfunction
 %!           "yL ~ xL + x2 + (1 + xL + x2|g)", -48.162461 };
 %! for k = 1:rows (forms)
 %!   lme = fitlme (tbl, forms{k,1}, "FitMethod", "REML");
-%!   assert (lme.LogLikelihood, forms{k,2}, 1e-4);
+%!   assert_equal (lme.LogLikelihood, forms{k,2}, 1e-4);
 %! endfor
 
 %!test  # random intercept via formula -- matches MATLAB fitlme
 %! lme = fitlme (tbl, "yL ~ xL + x2 + (1 | g)", "FitMethod", "REML");
 %! assert (isa (lme, "LinearMixedModel"));
-%! assert (lme.Coefficients.Estimate, [1.96839; -1.37926; 0.811747], 1e-4);
-%! assert (lme.Coefficients.SE, [0.376509; 0.113264; 0.0966571], 1e-5);
-%! assert (lme.LogLikelihood, -49.016009, 1e-4);
+%! assert_equal (lme.Coefficients.Estimate, ...
+%!               [1.96839; -1.37926; 0.811747], 1e-4);
+%! assert_equal (lme.Coefficients.SE, [0.376509; 0.113264; 0.0966571], 1e-5);
+%! assert_equal (lme.LogLikelihood, -49.016009, 1e-4);
 %! [psi, mse] = covarianceParameters (lme);
-%! assert (psi{1}, 0.79429917, 1e-3);
-%! assert (mse, 0.38539058, 1e-3);
+%! assert_equal (psi{1}, 0.79429917, 1e-3);
+%! assert_equal (mse, 0.38539058, 1e-3);
 
 %!test  # correlated random intercept + slope via formula -- matches MATLAB
 %! lme = fitlme (tbl, "yL ~ xL + x2 + (1 + xL | g)", "FitMethod", "REML");
-%! assert (lme.Coefficients.Estimate, [2.0034354; -1.3374715; 0.83788802], 1e-3);
-%! assert (lme.LogLikelihood, -48.280962, 1e-3);
+%! assert_equal (lme.Coefficients.Estimate, ...
+%!               [2.0034354; -1.3374715; 0.83788802], 1e-3);
+%! assert_equal (lme.LogLikelihood, -48.280962, 1e-3);
 %! psi = covarianceParameters (lme);
-%! assert (psi{1}, [0.7846112, -0.14287556; -0.14287556, 0.026017248], 1e-3);
+%! assert_equal (psi{1}, ...
+%!               [0.7846112, -0.14287556; -0.14287556, 0.026017248], 1e-3);
 
 %!test  # formula fit equals the equivalent fitlmematrix fit
 %! lme_f = fitlme (tbl, "yL ~ xL + x2 + (1 | g)", "FitMethod", "REML");
 %! X = [ones(42,1), xL, tbl.x2];
 %! lme_m = fitlmematrix (X, tbl.yL, ones (42, 1), tbl.g, "FitMethod", "REML");
-%! assert (lme_f.Coefficients.Estimate, lme_m.Coefficients.Estimate, 1e-8);
-%! assert (lme_f.LogLikelihood, lme_m.LogLikelihood, 1e-8);
+%! assert_equal (lme_f.Coefficients.Estimate, ...
+%!               lme_m.Coefficients.Estimate, 1e-8);
+%! assert_equal (lme_f.LogLikelihood, lme_m.LogLikelihood, 1e-8);
 
 %!test  # slope-only random term (no random intercept)
 %! lme = fitlme (tbl, "yL ~ xL + x2 + (xL - 1 | g)", "FitMethod", "REML");
@@ -306,15 +310,15 @@ endfunction
 
 %!test  # metadata: Formula and ResponseName are stored
 %! lme = fitlme (tbl, "yL ~ xL + (1 | g)");
-%! assert (lme.Formula, "yL ~ xL + (1 | g)");
-%! assert (lme.ResponseName, "yL");
-%! assert (lme.FitMethod, "ML");      # default
+%! assert_equal (lme.Formula, "yL ~ xL + (1 | g)");
+%! assert_equal (lme.ResponseName, "yL");
+%! assert_equal (lme.FitMethod, "ML");      # default
 
 %!test  # rows with missing values are dropped before fitting
 %! t2 = tbl;
 %! t2.yL(3) = NaN;  t2.xL(10) = NaN;
 %! lme = fitlme (t2, "yL ~ xL + x2 + (1 | g)");
-%! assert (lme.NumObservations, 40);
+%! assert_equal (lme.NumObservations, 40);
 
 ## Input validation
 %!error <Invalid call> fitlme (table ())

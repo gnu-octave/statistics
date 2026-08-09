@@ -849,28 +849,28 @@ endfunction
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! [phat, pci] = mle (x, 'pdf', @(x, mu, s) normpdf (x, mu, s), ...
 %!                    'start', [mean(x), std(x)]);
-%! assert (phat, [3.42499970800201, 1.03208912390818], 1e-4);
-%! assert (pci, [2.8410510441517, 0.619175174501268; ...
+%! assert_equal (phat, [3.42499970800201, 1.03208912390818], 1e-4);
+%! assert_equal (pci, [2.8410510441517, 0.619175174501268; ...
 %!               4.00894837185232, 1.44500307331509], 1e-4);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! nll = @(p, d, c, f) -sum (log (normpdf (d, p(1), p(2))));
 %! phat = mle (x, 'nloglf', nll, 'start', [3, 1]);
-%! assert (phat, [3.42499959294639, 1.03208933560634], 1e-4);
+%! assert_equal (phat, [3.42499959294639, 1.03208933560634], 1e-4);
 
 %!test
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! phat = mle (x, 'logpdf', @(x, mu, s) log (normpdf (x, mu, s)), ...
 %!             'start', [3, 1]);
-%! assert (phat, [3.42499959294639, 1.03208933560634], 1e-4);
+%! assert_equal (phat, [3.42499959294639, 1.03208933560634], 1e-4);
 
 %!test
 %! ## Alpha propagates into the Wald interval
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! [~, pci] = mle (x, 'pdf', @(x, mu, s) normpdf (x, mu, s), ...
 %!                 'start', [mean(x), std(x)], 'alpha', 0.10);
-%! assert (pci, [2.93493454085403, 0.685560813868748; ...
+%! assert_equal (pci, [2.93493454085403, 0.685560813868748; ...
 %!               3.91506487514999, 1.37861743394761], 1e-4);
 
 %!test
@@ -879,7 +879,7 @@ endfunction
 %! f = [1, 2, 1, 1, 3, 1, 2, 1, 1, 1, 2, 1];
 %! phat = mle (x, 'pdf', @(x, mu, s) normpdf (x, mu, s), ...
 %!             'start', [mean(x), std(x)], 'frequency', f);
-%! assert (phat, [3.47058837030174, 0.902783454993327], 1e-4);
+%! assert_equal (phat, [3.47058837030174, 0.902783454993327], 1e-4);
 
 %!test
 %! ## Right-censored fit (needs a cdf)
@@ -888,13 +888,13 @@ endfunction
 %! phat = mle (x, 'pdf', @(x, mu, s) normpdf (x, mu, s), ...
 %!             'cdf', @(x, mu, s) normcdf (x, mu, s), ...
 %!             'start', [mean(x), std(x)], 'censoring', c);
-%! assert (phat, [3.62195934926527, 1.03307264832117], 1e-4);
+%! assert_equal (phat, [3.62195934926527, 1.03307264832117], 1e-4);
 
 %!test
 %! ## Bounded fit via reparameterization (lower bound inactive at the optimum)
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! phat = mle (x, 'pdf', @(x, mu) exppdf (x, mu), 'start', 3, 'lowerbound', 0);
-%! assert (phat, 3.42499980926514, 1e-4);
+%! assert_equal (phat, 3.42499980926514, 1e-4);
 
 %!test
 %! ## Truncated fit on [1, 6]
@@ -902,7 +902,7 @@ endfunction
 %! phat = mle (x, 'pdf', @(x, mu, s) normpdf (x, mu, s), ...
 %!             'cdf', @(x, mu, s) normcdf (x, mu, s), ...
 %!             'start', [mean(x), std(x)], 'truncationbounds', [1, 6]);
-%! assert (phat, [3.41148048015442, 1.12176348358835], 1e-4);
+%! assert_equal (phat, [3.41148048015442, 1.12176348358835], 1e-4);
 
 %!test
 %! ## The BirnbaumSaunders distribution is reachable by its full name, not only
