@@ -286,6 +286,7 @@ Model Fitting
  stepwiseglm
  GeneralizedLinearMixedModel
  GeneralizedLinearModel
+ LinearFormula
  LinearMixedModel
  LinearModel
  NonLinearModel
