@@ -136,7 +136,9 @@
 ## distance from a query point.  When @qcode{true}, @code{knnsearch} includes
 ## all nearest neighbors whose distances are equal to the @math{K^th} smallest
 ## distance in the output arguments.  To specify @math{K}, use the @qcode{'K'}
-## name-value pair argument.
+## name-value pair argument.  In that case @var{idx} and @var{D} are
+## @math{M}-by-@math{1} cell arrays and each cell holds a @emph{row} vector,
+## whichever search method is used.
 ## @end multitable
 ##
 ## @seealso{rangesearch, pdist2, fitcknn}
@@ -299,13 +301,19 @@ function [idx, dist] = knnsearch (X, Y, varargin)
                                                 X, Distance, DistParameter, ...
                                                 false);
         r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
-        [idx{i}, dist{i}] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
-                                               Distance, DistParameter, ...
-                                               true, r);
+        [tied_idx, tied_D] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
+                                                Distance, DistParameter, ...
+                                                true, r);
+        ## Each cell holds a row vector, as MATLAB returns and as both the
+        ## exhaustive path below and RANGESEARCH already did.  The kd-tree
+        ## search returns columns, so they are laid down explicitly here.
         if (SI)
-          [sorted_D, sort_idx] = sort (dist{i});
-          dist{i} = sorted_D;
-          idx{i} = idx{i}(sort_idx);
+          [sorted_D, sort_idx] = sort (tied_D);
+          idx{i}  = tied_idx(sort_idx)(:).';
+          dist{i} = sorted_D(:).';
+        else
+          idx{i}  = tied_idx(:).';
+          dist{i} = tied_D(:).';
         endif
       endfor
     endif
@@ -531,9 +539,9 @@ endfunction
 %! assert_equal (iscell (idx), true);
 %! assert_equal (iscell (D), true)
 %! assert_equal (idx {1}, [1]);
-%! assert_equal (idx {2}', [1, 2]);
+%! assert_equal (idx {2}, [1, 2]);
 %! assert_equal (D{1}, ones (1, 1) * sqrt (2));
-%! assert_equal (D{2}', ones (1, 2) * sqrt (2));
+%! assert_equal (D{2}, ones (1, 2) * sqrt (2));
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'euclidean', 'k', 2);
 %! assert_equal (idx, [1, 2; 1, 2]);
@@ -598,8 +606,8 @@ endfunction
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree', 'includeties', true);
 %! assert_equal (iscell (idx), true);
 %! assert_equal (iscell (D), true)
-%! assert_equal (cell2mat (idx)', [4, 2, 3, 6, 1, 5, 7, 9]);
-%! assert_equal (cell2mat (D)', [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
+%! assert_equal (cell2mat (idx), [4, 2, 3, 6, 1, 5, 7, 9]);
+%! assert_equal (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
@@ -653,8 +661,26 @@ endfunction
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'includeties', true);
 %! assert_equal (iscell (idx), true);
 %! assert_equal (iscell (D), true);
-%! assert_equal (cell2mat (idx)', [118, 132, 110, 106, 136]);
-%! assert_equal (cell2mat (D)', [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
+%! assert_equal (cell2mat (idx), [118, 132, 110, 106, 136]);
+%! assert_equal (cell2mat (D), [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
+
+%!test  # IncludeTies gives a row per cell, whichever method is used
+%! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
+%! b = [1, 1];
+%! [ik, dk] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree', 'includeties', true);
+%! [ie, de] = knnsearch (a, b, 'K', 5, 'NSMethod', 'exhaustive', 'includeties', true);
+%! assert_equal (size (ik{1}), [1, 8]);
+%! assert_equal (size (dk{1}), [1, 8]);
+%! assert_equal (ik{1}, ie{1});
+%! assert_equal (dk{1}, de{1}, 1e-12);
+
+%!test  # the cell array itself is one column, as MATLAB returns
+%! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
+%! [idx, D] = knnsearch (a, [1, 1; 2, 2], 'K', 3, 'includeties', true);
+%! assert_equal (size (idx), [2, 1]);
+%! assert_equal (size (D), [2, 1]);
+%! assert_equal (rows (idx{1}), 1);
+%! assert_equal (rows (idx{2}), 1);
 
 ## Test input validation
 %!error<knnsearch: too few input arguments.> knnsearch (1)
