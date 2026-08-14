@@ -65,6 +65,11 @@
 ## to print each accepted step.
 ## @end multitable
 ##
+## As in @code{fitglm}, a @qcode{'binomial'} response is the number of
+## successes, and the trials come either from @qcode{'BinomialSize'} or from
+## passing @var{y} as an @math{n}-by-@math{2} matrix of successes and trials.
+## @strong{Changed in 1.9.0}: @var{y} was previously read as the proportion.
+##
 ## All @var{Name}/@var{Value} pairs accepted by @code{fitglm} (such as
 ## @qcode{'Distribution'}, @qcode{'Link'}, @qcode{'Weights'}, @qcode{'Offset'},
 ## @qcode{'BinomialSize'}, @qcode{'Intercept'}, @qcode{'DispersionFlag'}, and
@@ -113,6 +118,9 @@ function mdl = stepwiseglm (varargin)
   ## ------------------------------------------------------------------------ ##
   ## Intake: numeric predictor matrix, response, names, and fitting subset.
   ## ------------------------------------------------------------------------ ##
+  ## Trial counts taken from a two-column binomial response, empty otherwise.
+  binom_2col = [];
+
   start_is_formula = ischar (start_spec) && any (start_spec == '~');
   if (istable (data))
     col_names = data.Properties.VariableNames;
@@ -145,11 +153,23 @@ function mdl = stepwiseglm (varargin)
     if (! (isnumeric (data) && isreal (data) && ismatrix (data)))
       error ("stepwiseglm: X must be a real matrix.");
     endif
-    if (! (isnumeric (resp) && isreal (resp) && isvector (resp)))
+    ## A binomial response may be given as an N-by-2 matrix of successes and
+    ## trials, as MATLAB accepts and as GeneralizedLinearModel accepts; the
+    ## trials are carried alongside and the final model is handed the original
+    ## response, which validates it.
+    is_2col = strcmp (opts.Distribution, 'binomial') && isnumeric (resp) ...
+              && isreal (resp) && ismatrix (resp) && ! isvector (resp) ...
+              && columns (resp) == 2;
+    if (! (is_2col || (isnumeric (resp) && isreal (resp) && isvector (resp))))
       error ("stepwiseglm: Y must be a real vector.");
     endif
     X = double (data);
-    y = double (resp(:));
+    if (is_2col)
+      binom_2col = double (resp(:,2));
+      y          = double (resp(:,1));
+    else
+      y = double (resp(:));
+    endif
     p = columns (X);
     if (rows (X) != numel (y))
       error (strcat ("stepwiseglm: X and Y must have the same number of", ...
@@ -215,12 +235,20 @@ function mdl = stepwiseglm (varargin)
     off_sub = double (opts.Offset(:))(subset);
   endif
   N_sub = [];
-  if (strcmp (distr, 'binomial') && ! isempty (opts.BinomialSize))
-    N = opts.BinomialSize(:);
-    if (isscalar (N))
-      N = N * ones (rows (X), 1);
+  N_all = [];
+  if (strcmp (distr, 'binomial'))
+    if (! isempty (binom_2col))
+      ## The trials came with the response and win over 'BinomialSize'.
+      N_all = binom_2col;
+    elseif (! isempty (opts.BinomialSize))
+      N_all = opts.BinomialSize(:);
+      if (isscalar (N_all))
+        N_all = N_all * ones (rows (X), 1);
+      endif
     endif
-    N_sub = N(subset);
+  endif
+  if (! isempty (N_all))
+    N_sub = N_all(subset);
   endif
   w_ll = w_sub;
   if (isempty (w_ll))
@@ -250,7 +278,10 @@ function mdl = stepwiseglm (varargin)
   endif
   yfit = ys;
   if (strcmp (distr, 'binomial') && ! isempty (N_sub))
-    yfit = [ys .* N_sub, N_sub];
+    ## YS is the number of successes: GLMFIT takes [successes, trials], while
+    ## the log-likelihood below takes the proportion.
+    yfit = [ys, N_sub];
+    ys   = ys ./ N_sub;
   endif
 
   ## Whether dispersion is estimated (chooses the F- vs chi-squared test and
@@ -994,3 +1025,23 @@ endfunction
 %! stepwiseglm ([1, 2; 3, 4], [1; 0], 'linear', 'foo', 1)
 %!error<categorical predictors are not supported> ...
 %! stepwiseglm ([1, 2; 3, 4], [1; 0], 'CategoricalVars', 1)
+
+%!test  # a two-column binomial response matches MATLAB R2024a
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]';
+%! mdl = stepwiseglm (x, [S, 10 * ones(10, 1)], 'constant', 'upper', ...
+%!                    'linear', 'Distribution', 'binomial', 'Verbose', 0);
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [-4.07619632416318; 0.639874139429377], 1e-10);
+%! assert_equal (mdl.Deviance, 1.37328920133713, 1e-10);
+
+%!test  # the two-column and BinomialSize forms select the same model
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]';
+%! N = 10 * ones (10, 1);
+%! m1 = stepwiseglm (x, [S, N], 'constant', 'upper', 'linear', ...
+%!                   'Distribution', 'binomial', 'Verbose', 0);
+%! m2 = stepwiseglm (x, S, 'constant', 'upper', 'linear', ...
+%!                   'Distribution', 'binomial', 'BinomialSize', N, ...
+%!                   'Verbose', 0);
+%! assert_equal (m2.Coefficients.Estimate, m1.Coefficients.Estimate, 1e-12);

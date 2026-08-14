@@ -44,10 +44,14 @@
 ## still carry a fitted value and a residual, since the model can be evaluated
 ## there; rows dropped because a variable was missing carry @code{NaN}.
 ##
-## For a binomial response given together with a @qcode{'BinomialSize'} vector
-## @math{N}, the response is the @emph{proportion} of successes, as
+## For a binomial response carrying a number of trials @math{N} -- given
+## either by the @qcode{'BinomialSize'} pair or as the second column of a
+## two-column response -- the response is the @emph{number of successes}, as
 ## @code{fitglm} documents.  @code{Fitted.Response} is then the fitted count
-## @math{N p} and @code{Residuals.Raw} is on that same count scale.
+## @math{N p} and @code{Residuals.Raw} is on that same count scale, while
+## @code{Fitted.Probability} carries @math{p} itself.  @code{predict} returns
+## the probability, never a count: a trial count belongs to an observation,
+## and new predictor values do not carry one.
 ##
 ## A categorical predictor expands to indicator columns, one per level bar the
 ## reference level, which the intercept carries.  When the model has no
@@ -318,17 +322,47 @@ classdef GeneralizedLinearModel
       ## ------------------------------------------------------------------ ##
       ## Intake: resolve predictors, response, names, and the response vector.
       ## ------------------------------------------------------------------ ##
+      ## Trial counts taken from a two-column binomial response, empty for
+      ## every other input form.  Set here so the table branch below and the
+      ## fitting code further down can both test it unconditionally.
+      binom_2col = [];
+
+      ## The response on the scale the caller gave it, which is the number of
+      ## successes for a binomial fit carrying trial counts and the response
+      ## itself everywhere else.  Y_FULL is always the proportion the fit
+      ## works in; this is what the Variables table reports.
+      y_input = [];
+
       if (! istable (data))
         if (! (isnumeric (data) && isreal (data) && ismatrix (data)))
           error ("GeneralizedLinearModel: X must be a real matrix.");
         endif
-        if (! (isnumeric (resp) && isreal (resp) && isvector (resp)))
+        ## A binomial response may be given as an N-by-2 matrix holding the
+        ## successes and the trials, as MATLAB accepts.  A row vector stays a
+        ## response vector: [3, 10] is two observations, never one pair.
+        is_2col = strcmp (opts.Distribution, 'binomial') && isnumeric (resp) ...
+                  && isreal (resp) && ismatrix (resp) && ! isvector (resp) ...
+                  && columns (resp) == 2;
+        if (! (is_2col || (isnumeric (resp) && isreal (resp) ...
+                           && isvector (resp))))
           error ("GeneralizedLinearModel: Y must be a real vector.");
         endif
         X_raw   = double (data);
         n_total = rows (X_raw);
         p_raw   = columns (X_raw);
-        y_full  = double (resp(:));
+        if (is_2col)
+          binom_2col = double (resp(:,2));
+          emsg = check_binomial_counts (double (resp(:,1)), binom_2col);
+          if (! isempty (emsg))
+            error ("GeneralizedLinearModel: %s", emsg);
+          endif
+          ## The fit works in proportions; the counts are kept for the
+          ## Variables table, which reports what the caller supplied.
+          y_input = double (resp(:,1));
+          y_full  = y_input ./ binom_2col;
+        else
+          y_full = double (resp(:));
+        endif
         if (rows (X_raw) != numel (y_full))
           error (strcat ("GeneralizedLinearModel: X and Y must have the", ...
                          " same number of observations."));
@@ -416,6 +450,48 @@ classdef GeneralizedLinearModel
         endfor
       endif
 
+      ## ------------------------------------------------------------------ ##
+      ## Binomial trial counts.  Y is the number of successes in both accepted
+      ## forms -- the two-column response and 'BinomialSize' -- while the fit
+      ## works in the proportion.  Both are resolved before the missing mask
+      ## is taken, so that a missing count makes its proportion missing too.
+      ## ------------------------------------------------------------------ ##
+      N_full = [];
+      if (strcmp (opts.Distribution, 'binomial'))
+        if (! isempty (binom_2col))
+          ## The trials came with the response.  A 'BinomialSize' passed as
+          ## well is ignored rather than refused, which is what MATLAB does.
+          N_full = binom_2col;
+        elseif (! isempty (opts.BinomialSize))
+          Nb = double (opts.BinomialSize(:));
+          if (! isscalar (Nb) && numel (Nb) != n_total)
+            error (strcat ("GeneralizedLinearModel: BinomialSize must be a", ...
+                           " scalar or have one element per observation."));
+          endif
+          N_full = expand_to_rows (Nb, n_total);
+          emsg   = check_binomial_counts (y_full, N_full);
+          if (! isempty (emsg))
+            error ("GeneralizedLinearModel: %s", emsg);
+          endif
+          ## Up to v1.8.4 this response was read as the proportion, so one
+          ## lying wholly within [0, 1] against more than one trial is almost
+          ## certainly written for the old meaning.  Warn rather than raise:
+          ## an all-0/1 count vector is legitimate rare-event data.
+          obs = y_full(! isnan (y_full));
+          if (! isempty (obs) && all (obs <= 1) && any (N_full > 1))
+            warning (strcat ("GeneralizedLinearModel: with 'BinomialSize'", ...
+                             " the response is the number of successes,", ...
+                             " not the proportion, from statistics 1.9.0;", ...
+                             " multiply by the trials for the old meaning."));
+          endif
+          y_input = y_full;
+          y_full  = y_full ./ N_full;
+        endif
+      endif
+      if (isempty (y_input))
+        y_input = y_full;
+      endif
+
       ## Missing/excluded masks and the fitting subset.  Only the variables the
       ## model actually uses can make a row missing; an unused table column with
       ## a gap in it does not cost an observation.
@@ -460,12 +536,10 @@ classdef GeneralizedLinearModel
       endif
       off_sub = off_full(subset_mask);
 
-      distr  = opts.Distribution;
-      N_full = [];
-      N_sub  = [];
-      if (strcmp (distr, 'binomial') && ! isempty (opts.BinomialSize))
-        N_full = expand_to_rows (double (opts.BinomialSize(:)), n_total);
-        N_sub  = N_full(subset_mask);
+      distr = opts.Distribution;
+      N_sub = [];
+      if (! isempty (N_full))
+        N_sub = N_full(subset_mask);
       endif
 
       y_sub = y_full(subset_mask);
@@ -675,7 +749,7 @@ classdef GeneralizedLinearModel
         elseif (j <= p_raw)
           col = X_raw(:, j);
         else
-          col = y_full;
+          col = y_input;
         endif
         [vi_class{j}, vi_range{j}] = variable_class_and_range (col);
       endfor
@@ -686,7 +760,7 @@ classdef GeneralizedLinearModel
       if (istable (data))
         this.Variables = tbl;
       else
-        this.Variables = array2table ([X_raw, y_full], ...
+        this.Variables = array2table ([X_raw, y_input], ...
                                       'VariableNames', var_names_all);
       endif
       this.ObservationInfo = table (w_full, excluded_mask, missing_mask, ...
@@ -720,7 +794,13 @@ classdef GeneralizedLinearModel
       this.stats_      = stats;
       this.distr_      = distr;
       this.linkarg_    = linkspec;
-      this.binomsize_  = opts.BinomialSize;
+      ## Trials from a two-column response stand in for 'BinomialSize', which
+      ## is ignored when both are given.
+      if (! isempty (binom_2col))
+        this.binomsize_ = binom_2col;
+      else
+        this.binomsize_ = opts.BinomialSize;
+      endif
       this.terms_      = terms;
       this.catinfo_    = cat_info;
       this.encnames_   = enc_names;
@@ -817,13 +897,13 @@ classdef GeneralizedLinearModel
       if (! isempty (offnew))
         valargs = [valargs, {'offset', offnew(:)}];
       endif
-      if (! isempty (mdl.binomsize_))
-        N = mdl.binomsize_(:);
-        if (isscalar (N))
-          N = N * ones (rows (X_design), 1);
-        endif
-        valargs = [valargs, {'size', N}];
-      endif
+      ## A binomial prediction is the probability of success, never a count:
+      ## the number of trials belongs to an observation, and new predictor
+      ## values do not carry one.  Measured against R2024a, whose PREDICT
+      ## returns the probability for the two-column response and for
+      ## 'BinomialSize' alike.  Passing the fitted trial counts through to
+      ## GLMVAL as 'size' also could not work for new data of a different
+      ## height, which is what exposed this.
 
       if (nargout > 1)
         [yhat, ylo, yhi] = glmval (mdl.b_, X_design, mdl.linkarg_, ...
@@ -1230,6 +1310,38 @@ function v = expand_to_rows (v, n)
   if (isscalar (v))
     v = v * ones (n, 1);
   endif
+endfunction
+
+## Check a binomial response given as counts S against its trial counts N.
+## Returns a message body rather than raising, so that the caller names
+## itself; empty when the pair is good.  Shared by the two-column response and
+## the 'BinomialSize' form, which mean the same thing.
+##
+## The rules are MATLAB's, measured against R2024a: the trials must be
+## non-negative integers, while the successes need not be integral, only
+## within [0, trials].  A NaN success count is left alone, so that the
+## proportion becomes NaN and the row is dropped as missing exactly as a NaN
+## in a plain response vector is.  A non-finite trial count is refused here;
+## MATLAB does not check it and leaks 'X must be in the interval [0,1]' out of
+## the fitter instead.
+function emsg = check_binomial_counts (S, N)
+
+  emsg = '';
+  ## Deliberately stricter than MATLAB on one point: a trial count of zero is
+  ## refused rather than accepted.  MATLAB rejects it for any row with a
+  ## success (the [0,N] rule), leaving only the wholly empty observation,
+  ## which carries no information and would divide zero by zero here.
+  if (! all (isfinite (N)) || any (N < 1) || any (N != fix (N)))
+    emsg = strcat ("the number of binomial trials must be finite", ...
+                   " positive integers.");
+    return;
+  endif
+  if (! all (isnan (S) | (S >= 0 & S <= N)))
+    emsg = strcat ("a binomial response holds the number of successes and", ...
+                   " must be between zero and the corresponding number of", ...
+                   " trials.");
+  endif
+
 endfunction
 
 ## Base names of the variables a Wilkinson formula refers to (response
@@ -1703,12 +1815,104 @@ endfunction
 %! assert_equal (mdl.Fitted.Properties.VariableNames, ...
 %!               {'Response', 'LinearPredictor'});
 
-%!test  # with BinomialSize the response is a proportion and the fit a count
+%!test  # with BinomialSize the response is a count and so is the fit
 %! N = 5 * ones (16, 1);
-%! y = [3 4 5 1 0 4 3 5 4 5 5 1 0 2 1 5]' ./ N;
+%! y = [3 4 5 1 0 4 3 5 4 5 5 1 0 2 1 5]';
 %! mdl = fitglm (X, y, "Distribution", "binomial", "BinomialSize", N);
 %! assert_equal (mdl.Fitted.Response, N .* mdl.Fitted.Probability, 1e-12);
-%! assert_equal (mdl.Residuals.Raw, (y - mdl.Fitted.Probability) .* N, 1e-12);
+%! assert_equal (mdl.Residuals.Raw, y - mdl.Fitted.Response, 1e-12);
+
+%!test  # a two-column response and BinomialSize describe the same model
+%! N = 5 * ones (16, 1);
+%! y = [3 4 5 1 0 4 3 5 4 5 5 1 0 2 1 5]';
+%! m1 = fitglm (X, [y, N], "Distribution", "binomial");
+%! m2 = fitglm (X, y, "Distribution", "binomial", "BinomialSize", N);
+%! assert_equal (m1.Coefficients.Estimate, m2.Coefficients.Estimate, 1e-12);
+%! assert_equal (m1.Deviance, m2.Deviance, 1e-12);
+
+%!test  # the two-column fit matches MATLAB R2024a
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]';
+%! mdl = fitglm (x, [S, 10 * ones(10, 1)], "Distribution", "binomial");
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [-4.07619632416318; 0.639874139429377], 1e-10);
+%! assert_equal (mdl.Deviance, 1.37328920133713, 1e-10);
+%! assert_equal (mdl.LogLikelihood, -11.0853057442458, 1e-10);
+%! assert_equal (mdl.Fitted.Probability(1), 0.0311793894382727, 1e-10);
+%! assert_equal (mdl.Fitted.Response(1), 0.311793894382727, 1e-10);
+%! assert_equal (mdl.Residuals.Raw(1), -0.311793894382727, 1e-10);
+
+%!test  # a two-column fit over the shared predictors matches MATLAB R2024a
+%! N = 5 * ones (16, 1);
+%! y = [3 4 5 1 0 4 3 5 4 5 5 1 0 2 1 5]';
+%! mdl = fitglm (X, [y, N], "Distribution", "binomial");
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [-0.130914595525068; 2.08707009838652; ...
+%!                -0.640296111095014; 0.746404482784674], 1e-10);
+%! assert_equal (mdl.Deviance, 30.7821361135612, 1e-10);
+%! assert_equal (mdl.LogLikelihood, -23.9339330144783, 1e-10);
+%! assert_equal (mdl.Fitted.Response(1), 4.35876915277425, 1e-10);
+%! assert_equal (mdl.Residuals.Raw(1), -1.35876915277425, 1e-10);
+
+%!test  # the trials given with the response win over BinomialSize
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]';
+%! N = 10 * ones (10, 1);
+%! mdl = fitglm (x, [S, N], "Distribution", "binomial", "BinomialSize", (2:2:20)');
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [-4.07619632416318; 0.639874139429377], 1e-10);
+
+%!test  # a binomial prediction is a probability, not a count
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]';
+%! mdl = fitglm (x, [S, 10 * ones(10, 1)], "Distribution", "binomial");
+%! assert_equal (predict (mdl, [2; 5; 8]), ...
+%!               [0.0575164189082781; 0.293836018581318; ...
+%!                0.739389288247498], 1e-10);
+
+%!test  # Variables reports the successes, not the proportion fitted
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]';
+%! mdl = fitglm (x, [S, 10 * ones(10, 1)], "Distribution", "binomial");
+%! assert_equal (mdl.Variables{:, 'y'}, S);
+
+%!test  # a missing success count drops its observation
+%! x = (1:10)';
+%! S = [0 1 NaN 2 3 4 6 7 9 9]';
+%! mdl = fitglm (x, [S, 10 * ones(10, 1)], "Distribution", "binomial");
+%! assert_equal (mdl.NumObservations, 9);
+
+%!test  # the successes need not be whole numbers, as in MATLAB
+%! x = (1:10)';
+%! S = [0 1 1 2 3 4 6 7 9 9]' + 0.5;
+%! mdl = fitglm (x, [S, 10 * ones(10, 1)], "Distribution", "binomial");
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [-3.55186660705826; 0.609271573628808], 1e-10);
+
+%!warning<with 'BinomialSize' the response is the number of successes, not the proportion, from statistics 1.9.0; multiply by the trials for the old meaning.> ...
+%! N = 5 * ones (16, 1);
+%! fitglm (X, [3 4 5 1 0 4 3 5 4 5 5 1 0 2 1 5]' ./ N, ...
+%!         "Distribution", "binomial", "BinomialSize", N);
+
+%!error<GeneralizedLinearModel: the number of binomial trials must be finite positive integers.> ...
+%! fitglm ((1:4)', [1 1 1 1]', "Distribution", "binomial", ...
+%!         "BinomialSize", [2 2 2 2.5]')
+
+%!error<GeneralizedLinearModel: the number of binomial trials must be finite positive integers.> ...
+%! fitglm ((1:4)', [1 1 1 1; 2 2 2 0]', "Distribution", "binomial")
+
+%!error<GeneralizedLinearModel: a binomial response holds the number of successes and must be between zero and the corresponding number of trials.> ...
+%! fitglm ((1:4)', [1 1 1 5; 2 2 2 2]', "Distribution", "binomial")
+
+%!error<GeneralizedLinearModel: BinomialSize must be a scalar or have one element per observation.> ...
+%! fitglm ((1:4)', [1 1 1 1]', "Distribution", "binomial", ...
+%!         "BinomialSize", [2 2]')
+
+%!error<GeneralizedLinearModel: Y must be a real vector.> ...
+%! fitglm ((1:4)', [1 1 1 1; 2 2 2 2; 3 3 3 3]', "Distribution", "binomial")
+
+%!error<GeneralizedLinearModel: Y must be a real vector.> ...
+%! fitglm ((1:4)', [1 1 1 1; 2 2 2 2]', "Distribution", "poisson")
 
 %!test  # residuals gain the linear-predictor column, in MATLAB's order
 %! mdl = fitglm (X, yp, "Distribution", "poisson");

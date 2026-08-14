@@ -32,6 +32,14 @@
 ## overridden).  By default the response is @qcode{'normal'} with an identity
 ## link, an intercept is included, and the model is additive in the predictors.
 ##
+## For the @qcode{'binomial'} distribution @var{y} holds the @emph{number of
+## successes}, and the number of trials is given either by the
+## @qcode{'BinomialSize'} pair or by passing @var{y} as an
+## @math{n}-by-@math{2} matrix whose first column holds the successes and
+## whose second holds the trials.  The two forms describe the same model; when
+## both are given, the trials supplied with the response are used.  A trial
+## count must be a positive integer, while a success count need not be whole.
+##
 ## @var{modelspec} selects the model terms.  It is either a Wilkinson formula
 ## string (e.g.@: @qcode{'y ~ x1 + x2*x3'}), a keyword (@qcode{'constant'},
 ## @qcode{'linear'}, @qcode{'interactions'}, @qcode{'purequadratic'},
@@ -52,7 +60,9 @@
 ## predictor.
 ## @item @qcode{'BinomialSize'} @tab for the @qcode{'binomial'} distribution,
 ## the number of trials (a scalar or a per-observation vector); @var{y} holds
-## the proportion of successes.
+## the number of successes.  @strong{Changed in 1.9.0}: @var{y} was previously
+## read as the proportion of successes.  Multiply an existing proportion by
+## the trials to keep its meaning.
 ## @item @qcode{'Intercept'} @tab a logical value (default @qcode{true}) whether
 ## to include an intercept term.
 ## @item @qcode{'DispersionFlag'} @tab a logical value forcing the dispersion
