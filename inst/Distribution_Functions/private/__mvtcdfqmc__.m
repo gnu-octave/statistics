@@ -16,18 +16,22 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} mvtcdfqmc (@var{A}, @var{B}, @var{Rho}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun})
-## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals})
-## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
-## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvtcdfqmc (@dots{})
-## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} mvtcdfqmc (@dots{})
+## @deftypefn  {statistics} {@var{p} =} __mvtcdfqmc__ (@var{fname}, @var{A}, @var{B}, @var{Rho}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun})
+## @deftypefnx {statistics} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun}, @var{MaxFunEvals})
+## @deftypefnx {statistics} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
+## @deftypefnx {statistics} {[@var{p}, @var{err}] =} __mvtcdfqmc__ (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} __mvtcdfqmc__ (@dots{})
 ##
 ## Quasi-Monte-Carlo computation of the multivariate Student's T CDF.
 ##
 ## The QMC multivariate Student's t distribution is evaluated between the lower
 ## limit @var{A} and upper limit @var{B} of the hyper-rectangle with a
 ## correlation matrix @var{Rho} and degrees of freedom @var{df}.
+##
+## @var{fname} is the name of the calling function, which prefixes every error
+## and warning this helper emits so that a user sees the function they called
+## rather than this private one.
 ##
 ## @multitable @columnfractions 0.2 0.8
 ## @item "TolFun" @tab --- Maximum absolute error tolerance.  Default is 1e-4.
@@ -39,41 +43,41 @@
 ## integrand has converged successfully.
 ## @end multitable
 ##
-## @code{[@var{p}, @var{err}, @var{FunEvals}] = mvtcdfqmc (@dots{})} returns the
-## estimated probability, @var{p}, an estimate of the error, @var{err}, and the
-## number of iterations until a successful convergence is met, unless the value
-## in @var{MaxFunEvals} was reached.
+## @code{[@var{p}, @var{err}, @var{FunEvals}] = __mvtcdfqmc__ (@dots{})} returns
+## the estimated probability, @var{p}, an estimate of the error, @var{err}, and
+## the number of iterations until a successful convergence is met, unless the
+## value in @var{MaxFunEvals} was reached.
 ##
 ## @seealso{mvtcdf, mvtpdf, mvtrnd}
 ## @end deftypefn
 
-function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
+function [p, err, FunEvals] = __mvtcdfqmc__ (fname, A, B, Rho, df, varargin)
 
   ## Check for input arguments
-  narginchk (4,7);
+  narginchk (5,8);
   ## Add defaults
   TolFun = 1e-4;
   MaxFunEvals = 1e7;
   Display = 'off';
   ## Parse optional arguments (TolFun, MaxFunEvals, Display)
-  if (nargin > 4)
+  if (nargin > 5)
     TolFun = varargin{1};
     if (! isscalar (TolFun) || ! isreal (TolFun))
-      error ("mvtcdfqmc: TolFun must be a scalar.");
+      error ("%s: TolFun must be a scalar.", fname);
     endif
   endif
-  if (nargin > 5)
+  if (nargin > 6)
     MaxFunEvals = varargin{2};
     if (! isscalar (MaxFunEvals) || ! isreal (MaxFunEvals))
-      error ("mvtcdfqmc: MaxFunEvals must be a scalar.");
+      error ("%s: MaxFunEvals must be a scalar.", fname);
     endif
     MaxFunEvals = floor (MaxFunEvals);
   endif
-  if (nargin > 6)
+  if (nargin > 7)
     Display = varargin{3};
     DispOptions = {'off', 'final', 'iter'};
     if (sum (any (strcmpi (Display, DispOptions))) == 0)
-      error ("mvtcdfqmc: invalid value for 'Display' argument.");
+      error ("%s: invalid value for 'Display' argument.", fname);
     endif
   endif
   ## Check if input is single or double class
@@ -84,13 +88,13 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   ## Check for appropriate lower upper limits and NaN values in data
   if (! all (A < B))
     if (any (A > B))
-      error ("mvtcdfqmc: inconsistent lower upper limits.");
+      error ("%s: inconsistent lower upper limits.", fname);
     elseif (any (isnan (A) | isnan (B)))
-      warning ("mvtcdfqmc: NaNs in data.");
+      warning ("%s: NaNs in data.", fname);
       p = NaN (is_type);
       err = NaN (is_type);
     else
-      warning ("mvtcdfqmc: zero distance between lower upper limits.");
+      warning ("%s: zero distance between lower upper limits.", fname);
       p = zeros (is_type);
       err = zeros (is_type);
     endif
@@ -101,7 +105,7 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   InfLim_idx = (A == -Inf) & (B == Inf);
   if (any (InfLim_idx))
     if (all (InfLim_idx))
-      warning ("mvtcdfqmc: infinite distance between lower upper limits.");
+      warning ("%s: infinite distance between lower upper limits.", fname);
       p = 1;
       err = 0;
       FunEvals = 0;
@@ -121,7 +125,7 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   Rho = Rho(ord, ord);
   ## Check for highly correlated covariance matrix
   if any (any (abs (tril (Rho,-1)) > .999))
-    warning ("mvtcdfqmc: highly correlated covariance matrix Rho.");
+    warning ("%s: highly correlated covariance matrix Rho.", fname);
   endif
   ## Scale the integration limits and the Cholesky factor of Rho
   C = chol (Rho);
@@ -158,19 +162,19 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
     err = 3.5 * sqrt (sigsq);
     ## Display output for every iteration
     if (strcmpi (Display, 'iter'))
-      printf ("mvtcdfqmc: Probability estimate: %0.4f ",p);
+      printf ("%s: Probability estimate: %0.4f ", fname, p);
       printf ("Error estimate: %0.4e Iterations: %d\n", err, FunEvals);
     endif
     if (err < TolFun)
       if (strcmpi (Display, 'final'))
-        printf ("mvtcdfqmc: Successfully converged!\n");
+        printf ("%s: Successfully converged!\n", fname);
         printf ("Final probability estimate: %0.4f ",p);
         printf ("Final error estimate: %0.4e Iterations: %d\n", err, FunEvals);
       endif
       return
     endif
   endfor
-  warning ("mvtcdfqmc: Error tolerance did NOT converge!");
+  warning ("%s: Error tolerance did NOT converge!", fname);
   printf ("Error tolerance: %0.4f Total Iterations: %d\n", TolFun, MaxFunEvals);
 endfunction
 
@@ -234,7 +238,5 @@ function a = chi_inv (b,df)
   a = sqrt (gammaincinv (b, df ./ 2) .* 2);
 endfunction
 
-%!error mvtcdfqmc (1, 2, 3);
-%!error mvtcdfqmc (1, 2, 3, 4, 5, 6, 7, 8);
 
 

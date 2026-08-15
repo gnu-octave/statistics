@@ -1,85 +1,9 @@
 statistics >> Statistics
-Clustering Functions
- cluster
- clusterdata
- cmdscale
- confusionmat
- cophenet
- createns
- crossval
- dbscan
- editDistance
- evalclusters
- iforest
- inconsistent
- johnsrnd
- kmeans
- kmedoids
- knnsearch
- linkage
- lof
- mahal
- mdscale
- mhsample
- ocsvm
- optimalleaforder
- pdist
- pdist2
- pearsrnd
- procrustes
- rangesearch
- robustcov
- slicesample
- spectralcluster
- squareform
-Clustering Classes
- CalinskiHarabaszEvaluation
- ClusterCriterion
- cvpartition
- DaviesBouldinEvaluation
- ExhaustiveSearcher
- GapEvaluation
- gmdistribution
- hnswSearcher
- IsolationForest
- KDTreeSearcher
- LocalOutlierFactor
- OneClassSVM
- SilhouetteEvaluation
-Classification Learning
- ClassificationDiscriminant
- ClassificationGAM
- ClassificationKNN
- ClassificationNeuralNetwork
- ClassificationPartitionedModel
- ClassificationSVM
- CompactClassificationDiscriminant
- CompactClassificationGAM
- CompactClassificationNeuralNetwork
- CompactClassificationSVM
- ConfusionMatrixChart
- rocmetrics
-Regression Learning
- RegressionGAM
-Regression Modeling
-Data Manipulation
- combnk
- crosstab
- datasample
- dummyvar
- fillmissing
- grp2idx
- ismissing
- isoutlier
- multiway
- normalise_distribution
- randsample
- rmmissing
- standardizeMissing
- tabulate
 Descriptive Statistics
  cdfcalc
  cl_multinom
+ dcov
+ ecdf
  geomean
  grpstats
  harmmean
@@ -96,7 +20,203 @@ Descriptive Statistics
  nanvar
  partialcorr
  partialcorri
+ tabulate
  trimmean
+Data Manipulation
+ combnk
+ crosstab
+ datasample
+ dummyvar
+ fillmissing
+ grp2idx
+ ismissing
+ isoutlier
+ multiway
+ normalise_distribution
+ randsample
+ rmmissing
+ standardizeMissing
+ tiedrank
+Hypothesis Testing
+ adtest
+ anova
+ anova1
+ anova2
+ anovan
+ ansaribradley
+ bartlett_test
+ barttest
+ binotest
+ chi2gof
+ chi2test
+ correlation_test
+ dwtest
+ fishertest
+ friedman
+ hotelling_t2test
+ hotelling_t2test2
+ jbtest
+ kruskalwallis
+ kstest
+ kstest2
+ levene_test
+ lillietest
+ manova1
+ mcnemar_test
+ multcompare
+ ranksum
+ regression_ftest
+ regression_ttest
+ runstest
+ sampsizepwr
+ signrank
+ signtest
+ ttest
+ ttest2
+ vartest
+ vartest2
+ vartestn
+ ztest
+ ztest2
+Experimental Design
+ ff2n
+ fullfact
+ parseWilkinsonFormula
+ sigma_pts
+ x2fx
+Regression
+ coxphfit
+ fitglm
+ fitglme
+ fitlm
+ fitlme
+ fitlmematrix
+ fitnlm
+ GeneralizedLinearMixedModel
+ GeneralizedLinearModel
+ glmfit
+ glmval
+ lasso
+ lassoglm
+ LinearFormula
+ LinearMixedModel
+ LinearModel
+ logistic_regression
+ mnrfit
+ mnrval
+ monotone_smooth
+ mvregress
+ mvregresslike
+ nlinfit
+ nlparci
+ nlpredci
+ NonLinearModel
+ plsregress
+ regress
+ regress_gp
+ ridge
+ robustfit
+ stepwisefit
+ stepwiseglm
+Supervised Learning
+ ClassificationDiscriminant
+ ClassificationGAM
+ ClassificationKNN
+ ClassificationNeuralNetwork
+ ClassificationPartitionedModel
+ ClassificationSVM
+ CompactClassificationDiscriminant
+ CompactClassificationGAM
+ CompactClassificationNeuralNetwork
+ CompactClassificationSVM
+ fcnnpredict
+ fcnntrain
+ fitcdiscr
+ fitcgam
+ fitcknn
+ fitcnet
+ fitcsvm
+ fitrgam
+ RegressionGAM
+ svmpredict
+ svmtrain
+Clustering
+ CalinskiHarabaszEvaluation
+ cluster
+ ClusterCriterion
+ clusterdata
+ cophenet
+ DaviesBouldinEvaluation
+ dbscan
+ evalclusters
+ fitgmdist
+ GapEvaluation
+ gmdistribution
+ inconsistent
+ kmeans
+ kmedoids
+ linkage
+ optimalleaforder
+ SilhouetteEvaluation
+ spectralcluster
+Nearest Neighbors
+ createns
+ editDistance
+ ExhaustiveSearcher
+ hnswSearcher
+ KDTreeSearcher
+ knnsearch
+ mahal
+ pdist
+ pdist2
+ rangesearch
+ squareform
+Anomaly Detection
+ iforest
+ IsolationForest
+ LocalOutlierFactor
+ lof
+ ocsvm
+ OneClassSVM
+ robustcov
+Dimensionality Reduction
+ canoncorr
+ cmdscale
+ factoran
+ mdscale
+ nnmf
+ pca
+ pcacov
+ pcares
+ ppca
+ princomp
+ procrustes
+ rica
+ ReconstructionICA
+ rotatefactors
+ sparsefilt
+ SparseFiltering
+ tsne
+Model Evaluation
+ confusionchart
+ confusionmat
+ ConfusionMatrixChart
+ crossval
+ cvpartition
+ perfcurve
+ rocmetrics
+Markov Models
+ hmmdecode
+ hmmestimate
+ hmmgenerate
+ hmmtrain
+ hmmviterbi
+Random Sampling
+ johnsrnd
+ mhsample
+ pearsrnd
+ qrandn
+ slicesample
 Distribution Classes
  paretotails
  prob.ProbabilityDistribution
@@ -134,6 +254,7 @@ Distribution Fitting
  binofit binolike
  bisafit bisalike
  burrfit burrlike
+ copulafit
  evfit evlike
  expfit explike
  gamfit gamlike
@@ -168,7 +289,6 @@ Distribution Functions
  cauchycdf cauchyinv cauchypdf cauchyrnd
  chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
- copulafit copulaparam copulastat
  evcdf evinv evpdf evrnd
  expcdf expinv exppdf exprnd
  fcdf finv fpdf frnd
@@ -189,7 +309,6 @@ Distribution Functions
  mnpdf mnrnd
  mvncdf mvnpdf mvnrnd
  mvtcdf mvtpdf mvtrnd
- mvtcdfqmc
  nakacdf nakainv nakapdf nakarnd
  nbincdf nbininv nbinpdf nbinrnd
  ncfcdf ncfinv ncfpdf ncfrnd
@@ -216,6 +335,8 @@ Distribution Statistics
  bisastat
  burrstat
  chi2stat
+ copulaparam
+ copulastat
  evstat
  expstat
  fstat
@@ -254,94 +375,6 @@ Distribution Wrappers
  mlecov
  pdf
  random
-Experimental Design
- fullfact
- ff2n
- parseWilkinsonFormula
- sigma_pts
- x2fx
-Machine Learning
- fcnnpredict
- fcnntrain
- hmmdecode
- hmmestimate
- hmmgenerate
- hmmtrain
- hmmviterbi
- perfcurve
- svmpredict
- svmtrain
-Model Fitting
- fitcdiscr
- fitcgam
- fitcknn
- fitcnet
- fitcsvm
- fitglm
- fitglme
- fitgmdist
- fitlm
- fitlme
- fitlmematrix
- fitnlm
- fitrgam
- GeneralizedLinearMixedModel
- GeneralizedLinearModel
- LinearFormula
- LinearMixedModel
- LinearModel
- NonLinearModel
- statget
- statset
- stepwiseglm
-Hypothesis Testing
- adtest
- anova
- anova1
- anova2
- anovan
- ansaribradley
- bartlett_test
- barttest
- binotest
- chi2gof
- chi2test
- correlation_test
- dwtest
- fishertest
- friedman
- hotelling_t2test
- hotelling_t2test2
- jbtest
- kruskalwallis
- kstest
- kstest2
- levene_test
- lillietest
- manova1
- mcnemar_test
- multcompare
- ranksum
- regression_ftest
- regression_ttest
- runstest
- sampsizepwr
- signrank
- signtest
- tiedrank
- ttest
- ttest2
- vartest
- vartest2
- vartestn
- ztest
- ztest2
-I/O
- libsvmread
- libsvmwrite
- loadmodel
-Interpolation
- makima
 Plotting
  andrewsplot
  bar3
@@ -349,16 +382,14 @@ Plotting
  biplot
  boxplot
  cdfplot
- confusionchart
  dendrogram
- ecdf
  ecdfhist
  einstein
  glyphplot
  gplotmatrix
  gscatter
- histfit
  hist3
+ histfit
  manovacluster
  normplot
  parallelcoords
@@ -369,43 +400,14 @@ Plotting
  silhouette
  violin
  wblplot
-Regression
- canoncorr
+I/O
+ libsvmread
+ libsvmwrite
+ loadmodel
+Utilities
  cholcov
- coxphfit
- dcov
- factoran
- glmfit
- glmval
- lasso
- lassoglm
- logistic_regression
- mnrfit
- mnrval
- monotone_smooth
- mvregress
- mvregresslike
- nlinfit
- nlparci
- nlpredci
- nnmf
- pca
- pcacov
- pcares
- plsregress
- ppca
- princomp
- regress
- regress_gp
- rica
- ReconstructionICA
- ridge
- robustfit
- rotatefactors
- sparsefilt
- SparseFiltering
- stepwisefit
- tsne
-Transforms
  logit
+ makima
  probit
+ statget
+ statset

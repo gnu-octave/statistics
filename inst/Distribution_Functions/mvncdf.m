@@ -334,8 +334,9 @@ function [p, err] = mvncdf (varargin)
     p = zeros (n_x, 1, is_type);
     err = zeros (n_x, 1, is_type);
     for i = 1:n_x
-      [p(i), err(i)] = mvtcdfqmc (XLo0(i,:), XUp0(i,:), Rho, Inf, ...
-                                  TolFun, MaxFunEvals, Display);
+      [p(i), err(i)] = __mvtcdfqmc__ ("mvncdf", XLo0(i,:), XUp0(i,:), ...
+                                      Rho, Inf, TolFun, MaxFunEvals, ...
+                                      Display);
     endfor
 
   else

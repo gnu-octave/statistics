@@ -15,8 +15,10 @@
 # Usage:
 #   ./regen-doc-cache.sh                 # FULL: rebuild every directory (~minutes)
 #   ./regen-doc-cache.sh <directory>     # rebuild one directory's cache only,
-#                                        #   e.g.  ./regen-doc-cache.sh inst/dist_fun
-#                                        #   (a bare name like 'dist_fun' is
+#                                        #   e.g. ./regen-doc-cache.sh \
+#                                        #          inst/Distribution_Functions
+#                                        #   (a bare name like
+#                                        #    'Distribution_Functions' is
 #                                        #    resolved under inst/ as well)
 #   ./regen-doc-cache.sh <name>          # update ONE function/class entry in its
 #                                        #   directory's existing cache, e.g.

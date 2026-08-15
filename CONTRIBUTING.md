@@ -389,7 +389,7 @@ Use the repo-root helper (build the oct-files first with `make -C src` so
 ```
 ./regen-doc-cache.sh                 # rebuild every directory (slow, ~minutes)
 ./regen-doc-cache.sh anova1          # update just this function/class entry (fast)
-./regen-doc-cache.sh inst/dist_fun   # rebuild one directory's cache
+./regen-doc-cache.sh inst/Distribution_Functions   # rebuild one directory's cache
 ```
 
 The single-name form is the fast path: it edits only that one entry in the

@@ -80,7 +80,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{bvtcdf, mvtpdf, mvtrnd, mvtcdfqmc}
+## @seealso{bvtcdf, mvtpdf, mvtrnd}
 ## @end deftypefn
 
 function [p, err] = mvtcdf (varargin)
@@ -273,8 +273,9 @@ function [p, err] = mvtcdf (varargin)
       df = repmat (df, n_x, 1);
     endif
     for i = 1:n_x
-      [p(i), err(i)] = mvtcdfqmc (x_lo(i,:), x_up(i,:), rho, df(i), ...
-                                  TolFun, MaxFunEvals, Display);
+      [p(i), err(i)] = __mvtcdfqmc__ ("mvtcdf", x_lo(i,:), x_up(i,:), ...
+                                      rho, df(i), TolFun, MaxFunEvals, ...
+                                      Display);
     endfor
 
   else

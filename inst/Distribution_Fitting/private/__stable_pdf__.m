@@ -97,3 +97,23 @@ function v = cf_invert (z, alpha, beta)
   v = (w' * M)' ./ pi;
 
 endfunction
+
+## Characteristic function of the standard stable S(alpha, beta, 1, 0) in the
+## Nolan S0 parameterization.  Local copy of Distribution_Functions/private/
+## __stable_cf__.m, which stblpdf and stblcdf need and a private/ directory
+## cannot share across folders.  A closed form -- keep the two identical.
+function phi = __stable_cf__ (t, alpha, beta)
+
+  at = abs (t);
+  st = sign (t);
+  if (abs (alpha - 1) < eps)
+    ## The |t|*log|t| term vanishes at the origin
+    lt = at .* log (at);
+    lt(at == 0) = 0;
+    phi = exp (-at - 1i .* beta .* (2 ./ pi) .* st .* lt);
+  else
+    phi = exp (-at .^ alpha - 1i .* beta .* tan (pi .* alpha ./ 2) ...
+               .* st .* (at - at .^ alpha));
+  endif
+
+endfunction

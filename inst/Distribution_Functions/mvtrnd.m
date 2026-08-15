@@ -85,7 +85,7 @@
 ## Their Applications}. Cambridge University Press, Cambridge, 2004.
 ## @end enumerate
 ##
-## @seealso{mvtcdf, mvtcdfqmc, mvtpdf}
+## @seealso{mvtcdf, mvtpdf}
 ## @end deftypefn
 
 function r = mvtrnd (rho, df, n)
