@@ -231,6 +231,15 @@ function [Y, stress, disparities] = mdscale (D, p, varargin)
     endif
   endfor
 
+  ## A non-finite criterion value compares false against every bound, so a
+  ## replicate returning one leaves bestY empty rather than raising.  Catch it
+  ## here: otherwise the empty configuration reaches eval_stress and fails as
+  ## an out-of-bound index, naming nothing that led to it.
+  if (isempty (bestY))
+    error (strcat ("mdscale: no replicate produced a finite criterion", ...
+                   " value; the optimization did not converge."));
+  endif
+
   Y = orient (bestY);
   [stress, disparities] = eval_stress (Y, critid, delta, w, n, p, P, nonmetric);
 
@@ -378,14 +387,28 @@ function [f, g] = crit_grad (Yv, critid, delta, w, n, p, P, nonmetric)
       T = sum (w .* d .^ 2);
       N = sum (w .* res .^ 2);
       f = sqrt (N / T);
-      dfdd = (w .* res * T - N * (w .* d)) / (f * T ^ 2);
+      ## A nonmetric fit needs only monotonicity, so distances already ordered
+      ## like the dissimilarities give res == 0 exactly, hence f == 0 and a 0/0
+      ## gradient.  That configuration is the global minimum: the gradient is
+      ## zero there.  Only exact zero is singular -- the expression has a finite
+      ## limit for any res != 0, however small.
+      if (f == 0)
+        dfdd = zeros (size (d));
+      else
+        dfdd = (w .* res * T - N * (w .* d)) / (f * T ^ 2);
+      endif
     case 5   ## sstress (nonmetric)
       dh = pav (d, delta);
       res = d .^ 2 - dh .^ 2;
       T = sum (w .* d .^ 4);
       N = sum (w .* res .^ 2);
       f = sqrt (N / T);
-      dfdd = (2 * w .* d .* res * T - N * (2 * w .* d .^ 3)) / (f * T ^ 2);
+      ## Zero stress is the global minimum; see the note in case 4.
+      if (f == 0)
+        dfdd = zeros (size (d));
+      else
+        dfdd = (2 * w .* d .* res * T - N * (2 * w .* d .^ 3)) / (f * T ^ 2);
+      endif
   endswitch
 
   gg = (dfdd ./ d) .* dif;
@@ -570,6 +593,30 @@ endfunction
 %! ## Nonmetric 'sstress' stress value.
 %! [Y, s] = mdscale (D, 2, "Criterion", "sstress", "Start", Y0, "Options", opt);
 %! assert_equal (s <= 0.089488341028430 + 1e-6, true);
+
+%!test
+%! ## Near-collinear data: the nonmetric fit is perfect, so the residuals are
+%! ## exactly zero and the criterion gradient is 0/0.  R2024a returns
+%! ## 1.122356541711999e-16 here and does not raise.
+%! A = [1, 2; 2, 4.1; 3, 5.9; 4, 8.2; 5, 9.8; 6, 12.1; 7, 13.9; 8, 16.2];
+%! [Y, s] = mdscale (pdist (A), 2, 'Criterion', 'stress');
+%! assert_equal (size (Y), [8, 2]);
+%! assert_equal (s < 1e-9, true);
+
+%!test
+%! ## The same degeneracy under 'sstress'; R2024a returns 2.0818624071994747e-16.
+%! A = [1, 2; 2, 4.1; 3, 5.9; 4, 8.2; 5, 9.8; 6, 12.1; 7, 13.9; 8, 16.2];
+%! [Y, s] = mdscale (pdist (A), 2, 'Criterion', 'sstress');
+%! assert_equal (size (Y), [8, 2]);
+%! assert_equal (s < 1e-9, true);
+
+%!test
+%! ## The default criterion is 'stress'.  No other block calls mdscale without
+%! ## naming a criterion, so this is the only cover of the default path.
+%! A = [1, 2; 2, 4.1; 3, 5.9; 4, 8.2; 5, 9.8; 6, 12.1; 7, 13.9; 8, 16.2];
+%! [Y1, s1] = mdscale (pdist (A), 2);
+%! [Y2, s2] = mdscale (pdist (A), 2, 'Criterion', 'stress');
+%! assert_equal (s1, s2, 1e-12);
 
 %!test
 %! ## Accepts a square dissimilarity matrix as well as a vector.
