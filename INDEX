@@ -1,5 +1,5 @@
 statistics >> Statistics
-Clustering
+Clustering Functions
  cluster
  clusterdata
  cmdscale
@@ -32,7 +32,21 @@ Clustering
  slicesample
  spectralcluster
  squareform
-Classification Classes
+Clustering Classes
+ CalinskiHarabaszEvaluation
+ ClusterCriterion
+ cvpartition
+ DaviesBouldinEvaluation
+ ExhaustiveSearcher
+ GapEvaluation
+ gmdistribution
+ hnswSearcher
+ IsolationForest
+ KDTreeSearcher
+ LocalOutlierFactor
+ OneClassSVM
+ SilhouetteEvaluation
+Classification Learning
  ClassificationDiscriminant
  ClassificationGAM
  ClassificationKNN
@@ -45,21 +59,9 @@ Classification Classes
  CompactClassificationSVM
  ConfusionMatrixChart
  rocmetrics
-Clustering Classes
- CalinskiHarabaszEvaluation
- ClusterCriterion
- cvpartition
- DaviesBouldinEvaluation
- ExhaustiveSearcher
- GapEvaluation
- hnswSearcher
- IsolationForest
- KDTreeSearcher
- LocalOutlierFactor
- OneClassSVM
- SilhouetteEvaluation
-Regression Classes
+Regression Learning
  RegressionGAM
+Regression Modeling
 Data Manipulation
  combnk
  crosstab
