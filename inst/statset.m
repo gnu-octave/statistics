@@ -100,8 +100,9 @@
 ## @end multitable
 ##
 ## @var{funcname} may name any of the following functions, each of which
-## documents an @qcode{"Options"} argument: @code{copulafit}, @code{crossval},
-## @code{evfit}, @code{factoran}, @code{fitglm}, @code{fitglme}, @code{fitlme},
+## documents an @qcode{"Options"} argument: @code{copulafit}, @code{coxphfit},
+## @code{crossval}, @code{evfit}, @code{factoran}, @code{fitglm},
+## @code{fitglme}, @code{fitlme},
 ## @code{fitlmematrix}, @code{fitnlm}, @code{gamfit}, @code{gevfit},
 ## @code{glmfit}, @code{gmdistribution}, @code{gpfit}, @code{kmeans},
 ## @code{kmedoids}, @code{lasso}, @code{lassoglm}, @code{lognfit},
@@ -127,7 +128,7 @@ function options = statset (varargin)
 
   ## The recognized option names, in MATLAB's own field order.  'Robust' and
   ## 'WgtFun' are present in MATLAB's structure but absent from its published
-  ## published table; they are kept because nlinfit and fitnlm consume them.
+  ## table; they are kept because nlinfit and fitnlm consume them.
   names = {'Display', 'MaxFunEvals', 'MaxIter', 'TolBnd', 'TolFun', ...
            'TolTypeFun', 'TolX', 'TolTypeX', 'GradObj', 'Jacobian', ...
            'DerivStep', 'FunValCheck', 'Robust', 'RobustWgtFun', 'WgtFun', ...
@@ -400,6 +401,13 @@ function options = func_defaults (options, fname)
       options.TolFun = 1e-6;
       options.TolX = 1e-6;
 
+    case 'coxphfit'
+      options.Display = 'off';
+      options.MaxFunEvals = 200;
+      options.MaxIter = 100;
+      options.TolFun = 1e-8;
+      options.TolX = 1e-8;
+
     case 'copulafit'
       options.Display = 'off';
       options.MaxFunEvals = 200;
@@ -561,6 +569,13 @@ endfunction
 %! options = statset ('mlecov');
 %! assert_equal (options.GradObj, 'off');
 %! assert_equal (options.DerivStep, 0.0001220703125);
+
+%!test
+%! options = statset ('coxphfit');
+%! assert_equal (options.MaxFunEvals, 200);
+%! assert_equal (options.MaxIter, 100);
+%! assert_equal (options.TolFun, 1e-8);
+%! assert_equal (options.TolX, 1e-8);
 
 %!test
 %! options = statset ('mvncdf');

@@ -370,6 +370,7 @@ Plotting
 Regression
  canoncorr
  cholcov
+ coxphfit
  dcov
  factoran
  glmfit
