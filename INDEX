@@ -283,13 +283,15 @@ Model Fitting
  fitlmematrix
  fitnlm
  fitrgam
- stepwiseglm
  GeneralizedLinearMixedModel
  GeneralizedLinearModel
  LinearFormula
  LinearMixedModel
  LinearModel
  NonLinearModel
+ statget
+ statset
+ stepwiseglm
 Hypothesis Testing
  adtest
  anova
@@ -384,7 +386,6 @@ Regression
  nlparci
  nlpredci
  nnmf
- parseWilkinsonFormula
  pca
  pcacov
  pcares
