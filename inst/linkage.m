@@ -41,6 +41,15 @@
 ## two columns are the numbers of the two component clusters and column
 ## 3 contains their distance.
 ##
+## When several pairs of clusters are equally close, which of them is merged
+## first is not determined by the data, and the cluster numbers in the first two
+## columns are therefore implementation-defined.  Only column 3, the sequence of
+## merge distances, is reproducible across implementations, and even that is so
+## only for the methods whose recomputation rule does not depend on the merge
+## order (@qcode{"weighted"}, @qcode{"centroid"} and @qcode{"median"} do depend
+## on it).  Code that must be portable should read column 3, or the cluster
+## assignment obtained from @code{cluster}, rather than the raw numbering.
+##
 ## @var{method} defines the way the distance between two clusters is
 ## computed and how they are recomputed when two clusters are merged:
 ##
@@ -241,67 +250,129 @@ endfunction
 %! x = reshape (mod (magic (6),5), [], 3);
 %! t = 1e-6;
 
-%!assert_equal (cond (linkage (pdist (x))),                   34.119045, t);
-%!assert_equal (cond (linkage (pdist (x), 'complete')),       21.793345, t);
-%!assert_equal (cond (linkage (pdist (x), 'average')),        27.045012, t);
-%!assert_equal (cond (linkage (pdist (x), 'weighted')),       27.412889, t);
+## Z(:,3) holds the merge heights and is the meaningful output; Z(:,1:2) are
+## cluster labels whose values depend on how ties in the distance matrix are
+## broken.  This fixture has only 20 distinct distances among its 66 pairs, so
+## the labels are implementation-defined and are deliberately not asserted.
+## Do not reintroduce cond (Z) here: it mixes the labels into the metric, is
+## blind to the merge order (a row permutation cannot move a matrix's singular
+## values) and ranges over 32.6 to 95.5 on this fixture under nothing but a
+## different tie-break.  The heights below are exact against MATLAB R2024a.
+
+%!test
+%! Z = linkage (pdist (x));
+%! assert_equal (Z(:,3), [1; 1; 1; 1.414214; 1.414214; 1.414214; ...
+%!                        2.236068; 2.236068; 2.236068; 2.236068; 3], t);
+
+%!test
+%! Z = linkage (pdist (x), 'complete');
+%! assert_equal (Z(:,3), [1; 1; 1.414214; 1.414214; 1.414214; 2.236068; ...
+%!                        2.236068; 3.162278; 3.741657; 4.690416; 6], t);
+
+%!test
+%! Z = linkage (pdist (x), 'average');
+%! assert_equal (Z(:,3), [1; 1; 1.207107; 1.414214; 1.414214; 1.962117; ...
+%!                        2.236068; 2.948887; 3.081139; 3.515667; ...
+%!                        4.177650], t);
+
+## 'weighted' (McQuitty) feeds the Lance-Williams recursion with whichever pair
+## merged first, so its later heights follow the tie-break.  Three pairs of this
+## fixture lie at distance exactly 1 and observation 10 belongs to two of them,
+## so at most two can merge as singletons and the choice is forced to be
+## arbitrary: we take {9,10} then {1,7}, MATLAB takes {1,7} then {4,10}, and the
+## heights part company from row 8.  Both replay correctly through the WPGMA
+## recursion.  Only the first seven merges are tie-break invariant, so only they
+## are asserted by value; a tie-free fixture would restore the rest.
+%!test
+%! Z = linkage (pdist (x), 'weighted');
+%! assert_equal (Z(1:7,3), [1; 1; 1.207107; 1.414214; 1.414214; ...
+%!                          2.030604; 2.236068], t);
+%! assert_equal (all (diff (Z(:,3)) >= -eps), true);
 
 %! lastwarn (); # Clear last warning before the test
 %!warning <cluster distances> linkage (pdist (x), 'centroid');
 
+## Regression values only -- 'centroid' and 'median' were not measured against
+## MATLAB, so these pin our own behaviour rather than parity.  Both build a
+## non-monotonic tree, which is what the warning above reports.
 %!test
 %! warning off Octave:clustering
-%! assert_equal (cond (linkage (pdist (x), 'centroid')),      27.457477, t);
+%! Z = linkage (pdist (x), 'centroid');
+%! assert_equal (Z(:,3), [1; 1; 1.118034; 1.414214; 1.224745; 1.885618; ...
+%!                        2.236068; 2.708013; 2.980378; 3.041381; ...
+%!                        3.529418], t);
 %! warning on Octave:clustering
 
 %!warning <cluster distances> linkage (pdist (x), 'median');
 
 %!test
 %! warning off Octave:clustering
-%! assert_equal (cond (linkage (pdist (x), 'median')),        27.683325, t);
+%! Z = linkage (pdist (x), 'median');
+%! assert_equal (Z(:,3), [1; 1; 1.118034; 1.414214; 1.224745; 1.952562; ...
+%!                        2.236068; 2.452677; 3.041381; 3.057394; ...
+%!                        3.163667], t);
 %! warning on Octave:clustering
 
-%!assert_equal (cond (linkage (pdist (x), 'ward')),           17.195198, t);
-%!assert_equal (cond (linkage (x, 'ward', 'euclidean')),      17.195198, t);
-%!assert_equal (cond (linkage (x, 'ward', {'euclidean'})),    17.195198, t);
-%!assert_equal (cond (linkage (x, 'ward', {'minkowski', 2})), 17.195198, t);
+%!test
+%! Z = linkage (pdist (x), 'ward');
+%! assert_equal (Z(:,3), [1; 1; 1.290994; 1.414214; 1.414214; 2.236068; ...
+%!                        2.309401; 3.511885; 4.690416; 5.228129; ...
+%!                        7.713624], t);
+
+## All four ward call forms must return the same tree, labels included.  MATLAB
+## does not manage this -- its raw-data and distance-vector paths break the ties
+## differently and return different trees for this fixture, at identical merge
+## heights.  Ours agree exactly, so assert the whole of Z.
+%!test
+%! Z = linkage (pdist (x), 'ward');
+%! assert_equal (linkage (x, 'ward', 'euclidean'), Z);
+%! assert_equal (linkage (x, 'ward', {'euclidean'}), Z);
+%! assert_equal (linkage (x, 'ward', {'minkowski', 2}), Z);
+
+## Structural validity of Z, which no cond value could ever check.  The merge
+## bookkeeping is shared by every method, so one method exercises it: each of
+## the 2*n-2 labels is consumed exactly once and every row is sorted.
+%!test
+%! Z = linkage (pdist (x));
+%! assert_equal (sort ([Z(:,1); Z(:,2)])', 1:22);
+%! assert_equal (all (Z(:,1) < Z(:,2)), true);
 
 ## Additional tests for method/metric combinations
 %!test
 %! y = [1 2; 3 5; 4 6; 7 8; 9 11];
 %! L = linkage (y, 'single', 'cityblock');
 %! assert_equal (size (L), [4, 3]);
-%! assert_equal (all ((L(:,3) >= 0)(:)), true);  # distances non-negative
+%! assert_equal (all (L(:,3) >= 0), true);  # distances non-negative
 
 %!test
 %! y = [1 2; 3 5; 4 6; 7 8; 9 11];
 %! L = linkage (y, 'complete', 'cityblock');
 %! assert_equal (size (L), [4, 3]);
-%! assert_equal (all ((all (diff (L(:,3)) >= -eps))(:)), true);  # monotonically increasing
+%! assert_equal (all (diff (L(:,3)) >= -eps), true);  # monotonically increasing
 
 %!test
 %! y = [1 2; 3 5; 4 6; 7 8; 9 11];
 %! L = linkage (y, 'average', 'chebychev');
 %! assert_equal (size (L), [4, 3]);
-%! assert_equal (all ((L(:,3) >= 0)(:)), true);
+%! assert_equal (all (L(:,3) >= 0), true);
 
 %!test
 %! y = [1 2 3; 4 5 6; 7 8 9; 10 11 12];
 %! L = linkage (y, 'weighted', {'minkowski', 3});
 %! assert_equal (size (L), [3, 3]);
-%! assert_equal (all ((L(:,3) >= 0)(:)), true);
+%! assert_equal (all (L(:,3) >= 0), true);
 
 %!test
 %! y = [1 0 1; 0 1 1; 1 1 0; 0 0 1];
 %! L = linkage (y, 'single', 'cosine');
 %! assert_equal (size (L), [3, 3]);
-%! assert_equal (all ((L(:,3) >= 0)(:)), true);
+%! assert_equal (all (L(:,3) >= 0), true);
 
 %!test
 %! y = [1 2 3; 2 3 4; 5 6 7];
 %! L = linkage (y, 'complete', 'correlation');
 %! assert_equal (size (L), [2, 3]);
-%! assert_equal (all ((L(:,3) >= 0)(:)), true);
+%! assert_equal (all (L(:,3) >= 0), true);
 
 ## Test with 2 observations (minimal case)
 %!test
@@ -314,6 +385,6 @@ endfunction
 %!test
 %! y = rand (6, 3);
 %! L = linkage (y, 'average', 'euclidean');
-%! assert_equal (all ((all (L(:,1) >= 1 & L(:,1) <= 11))(:)), true);  # valid cluster refs
-%! assert_equal (all ((all (L(:,2) >= 1 & L(:,2) <= 11))(:)), true);
-%! assert_equal (all ((all (L(:,1) < L(:,2)))(:)), true);  # sorted within rows
+%! assert_equal (all (L(:,1) >= 1 & L(:,1) <= 11), true);  # valid cluster refs
+%! assert_equal (all (L(:,2) >= 1 & L(:,2) <= 11), true);
+%! assert_equal (all (L(:,1) < L(:,2)), true);  # sorted within rows
