@@ -1,8 +1,8 @@
-# doc-cache created by Octave 11.2.0
+# doc-cache created by Octave 11.3.0
 # name: cache
 # type: cell
 # rows: 3
-# columns: 182
+# columns: 176
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13,7 +13,7 @@ betacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1066
+# length: 1062
  -- statistics: P = betacdf (X, A, B)
  -- statistics: P = betacdf (X, A, B, 'upper')
 
@@ -24,7 +24,7 @@ betacdf
      common size of X, A, and B.  A scalar input functions as a constant matrix
      of the same size as the other inputs.
 
-     ‘P = betacdf (X, A, B, "upper")’ computes the upper tail probability of the
+     'P = betacdf (X, A, B, "upper")' computes the upper tail probability of the
      Beta distribution with parameters A and B, at the values in X.
 
      Further information about the Beta distribution can be found at
@@ -134,7 +134,7 @@ betarnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1074
+# length: 1066
  -- statistics: R = betarnd (A, B)
  -- statistics: R = betarnd (A, B, ROWS)
  -- statistics: R = betarnd (A, B, ROWS, COLS, ...)
@@ -142,12 +142,12 @@ betarnd
 
      Random arrays from the Beta distribution.
 
-     ‘R = betarnd (A, B)’ returns an array of random numbers chosen from the
+     'R = betarnd (A, B)' returns an array of random numbers chosen from the
      Beta distribution with shape parameters A and B.  The size of R is the
      common size of A and B.  A scalar input functions as a constant matrix of
      the same size as the other inputs.
 
-     When called with a single size argument, ‘betarnd’ returns a square matrix
+     When called with a single size argument, 'betarnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -177,7 +177,7 @@ binocdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1248
+# length: 1244
  -- statistics: P = binocdf (X, N, PS)
  -- statistics: P = binocdf (X, N, PS, 'upper')
 
@@ -189,7 +189,7 @@ binocdf
      the common size of X, N, and PS.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     ‘P = binocdf (X, N, PS, "upper")’ computes the upper tail probability of
+     'P = binocdf (X, N, PS, "upper")' computes the upper tail probability of
      the binomial distribution with parameters N and PS, at the values in X.
 
      Further information about the binomial distribution can be found at
@@ -262,7 +262,7 @@ binopdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1260
+# length: 1256
  -- statistics: Y = binopdf (X, N, PS)
 
      Binomial probability density function (PDF).
@@ -273,7 +273,7 @@ binopdf
      common size of X, N, and PS.  A scalar input functions as a constant matrix
      of the same size as the other inputs.
 
-     Matlab incompatibility: Octave's ‘binopdf’ does not allow complex input
+     Matlab incompatibility: Octave's 'binopdf' does not allow complex input
      values.  Matlab 2021b returns values for complex inputs despite the
      documentation indicates integer and real value inputs are required.
 
@@ -307,7 +307,7 @@ binornd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1169
+# length: 1161
  -- statistics: R = binornd (N, PS)
  -- statistics: R = binornd (N, PS, ROWS)
  -- statistics: R = binornd (N, PS, ROWS, COLS, ...)
@@ -315,13 +315,13 @@ binornd
 
      Random arrays from the Binomial distribution.
 
-     ‘R = binornd (N, PS)’ returns a matrix of random samples from the binomial
+     'R = binornd (N, PS)' returns a matrix of random samples from the binomial
      distribution with parameters N and PS, where N is the number of trials and
      PS is the probability of success.  The size of R is the common size of N
      and PS.  A scalar input functions as a constant matrix of the same size as
      the other inputs.
 
-     When called with a single size argument, ‘binornd’ returns a square matrix
+     When called with a single size argument, 'binornd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -351,7 +351,7 @@ bisacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1211
+# length: 1207
  -- statistics: P = bisacdf (X, BETA, GAMMA)
  -- statistics: P = bisacdf (X, BETA, GAMMA, 'upper')
 
@@ -363,7 +363,7 @@ bisacdf
      scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     ‘P = bisacdf (X, BETA, GAMMA, "upper")’ computes the upper tail probability
+     'P = bisacdf (X, BETA, GAMMA, "upper")' computes the upper tail probability
      of the Birnbaum-Saunders distribution with parameters BETA and GAMMA, at
      the values in X.
 
@@ -476,7 +476,7 @@ bisarnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1203
+# length: 1195
  -- statistics: R = bisarnd (BETA, GAMMA)
  -- statistics: R = bisarnd (BETA, GAMMA, ROWS)
  -- statistics: R = bisarnd (BETA, GAMMA, ROWS, COLS, ...)
@@ -484,13 +484,13 @@ bisarnd
 
      Random arrays from the Birnbaum-Saunders distribution.
 
-     ‘R = bisarnd (BETA, GAMMA)’ returns an array of random numbers chosen from
+     'R = bisarnd (BETA, GAMMA)' returns an array of random numbers chosen from
      the Birnbaum-Saunders distribution with scale parameter BETA and shape
      parameter GAMMA.  The size of R is the common size of BETA and GAMMA.  A
      scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     When called with a single size argument, ‘bisarnd’ returns a square matrix
+     When called with a single size argument, 'bisarnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -520,7 +520,7 @@ burrcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1202
+# length: 1198
  -- statistics: P = burrcdf (X, LAMBDA, C, K)
  -- statistics: P = burrcdf (X, LAMBDA, C, K, 'upper')
 
@@ -532,7 +532,7 @@ burrcdf
      size of X, LAMBDA, C, and K.  A scalar input functions as a constant matrix
      of the same size as the other inputs.
 
-     ‘P = burrcdf (X, LAMBDA, C, K, "upper")’ computes the upper tail
+     'P = burrcdf (X, LAMBDA, C, K, "upper")' computes the upper tail
      probability of the Burr type XII distribution with parameters LAMBDA, C and
      K, at the values in X.
 
@@ -645,7 +645,7 @@ burrrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1204
+# length: 1196
  -- statistics: R = burrrnd (LAMBDA, C, K)
  -- statistics: R = burrrnd (LAMBDA, C, K, ROWS)
  -- statistics: R = burrrnd (LAMBDA, C, K, ROWS, COLS, ...)
@@ -653,13 +653,13 @@ burrrnd
 
      Random arrays from the Burr type XII distribution.
 
-     ‘R = burrrnd (LAMBDA, C, K)’ returns an array of random numbers chosen from
+     'R = burrrnd (LAMBDA, C, K)' returns an array of random numbers chosen from
      the Burr type XII distribution with scale parameter LAMBDA, first shape
      parameter C, and second shape parameter K.  The size of R is the common
      size of LAMBDA, C, and K.  LAMBDA scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     When called with a single size argument, ‘burrrnd’ returns a square matrix
+     When called with a single size argument, 'burrrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -689,21 +689,21 @@ bvncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1021
+# length: 1011
  -- statistics: P = bvncdf (X, MU, SIGMA)
  -- statistics: P = bvncdf (X, [], SIGMA)
 
      Bivariate normal cumulative distribution function (CDF).
 
-     ‘P = bvncdf (X, MU, SIGMA)’ will compute the bivariate normal cumulative
+     'P = bvncdf (X, MU, SIGMA)' will compute the bivariate normal cumulative
      distribution function of X given a mean parameter MU and a scale parameter
      SIGMA.
 
-        • X must be an N*2 matrix with each variable as a column vector.
-        • MU can be either a scalar (common mean) or a two-element row vector
+        * X must be an N*2 matrix with each variable as a column vector.
+        * MU can be either a scalar (common mean) or a two-element row vector
           (each element corresponds to a variable).  If empty, a zero mean is
           assumed.
-        • SIGMA can be a scalar (common variance) or a 2*2 covariance matrix,
+        * SIGMA can be a scalar (common variance) or a 2*2 covariance matrix,
           which must be positive definite.
 
      Input arguments must be double or single; integer, logical, and character
@@ -732,19 +732,19 @@ bvtcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 888
+# length: 880
  -- statistics: P = bvtcdf (X, RHO, DF)
  -- statistics: P = bvtcdf (X, RHO, DF, TOL)
 
      Bivariate Student's t cumulative distribution function (CDF).
 
-     ‘P = bvtcdf (X, RHO, DF)’ will compute the bivariate student's t cumulative
+     'P = bvtcdf (X, RHO, DF)' will compute the bivariate student's t cumulative
      distribution function of X, which must be an N*2 matrix, given a
      correlation coefficient RHO, which must be a scalar, and DF degrees of
      freedom, which can be a scalar or a vector of positive numbers commensurate
      with X.
 
-     TOL is the tolerance for numerical integration and by default ‘TOL = 1e-8’.
+     TOL is the tolerance for numerical integration and by default 'TOL = 1e-8'.
 
      Input arguments must be double or single; integer, logical, and character
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
@@ -772,7 +772,7 @@ cauchycdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1118
+# length: 1114
  -- statistics: P = cauchycdf (X, X0, GAMMA)
  -- statistics: P = cauchycdf (X, X0, GAMMA, 'upper')
 
@@ -783,7 +783,7 @@ cauchycdf
      GAMMA.  The size of P is the common size of X, X0, and GAMMA.  A scalar
      input functions as a constant matrix of the same size as the other inputs.
 
-     ‘P = cauchycdf (X, X0, GAMMA, "upper")’ computes the upper tail probability
+     'P = cauchycdf (X, X0, GAMMA, "upper")' computes the upper tail probability
      of the Cauchy distribution with parameters X0 and GAMMA, at the values in
      X.
 
@@ -894,7 +894,7 @@ cauchyrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1124
+# length: 1116
  -- statistics: R = cauchyrnd (X0, GAMMA)
  -- statistics: R = cauchyrnd (X0, GAMMA, ROWS)
  -- statistics: R = cauchyrnd (X0, GAMMA, ROWS, COLS, ...)
@@ -902,12 +902,12 @@ cauchyrnd
 
      Random arrays from the Cauchy distribution.
 
-     ‘R = cauchyrnd (X0, GAMMA)’ returns an array of random numbers chosen from
+     'R = cauchyrnd (X0, GAMMA)' returns an array of random numbers chosen from
      the Cauchy distribution with location parameter X0 and scale parameter
      GAMMA.  The size of R is the common size of X0 and GAMMA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
 
-     When called with a single size argument, ‘cauchyrnd’ returns a square
+     When called with a single size argument, 'cauchyrnd' returns a square
      matrix with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -937,7 +937,7 @@ chi2cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1217
+# length: 1213
  -- statistics: P = chi2cdf (X, DF)
  -- statistics: P = chi2cdf (X, DF, 'upper')
 
@@ -951,7 +951,7 @@ chi2cdf
      The size of P is the common size of X and DF.  A scalar input functions as
      a constant matrix of the same size as the other input.
 
-     ‘P = chi2cdf (X, DF, "upper")’ computes the upper tail probability of the
+     'P = chi2cdf (X, DF, "upper")' computes the upper tail probability of the
      chi-squared distribution with DF degrees of freedom, at the values in X.
 
      Further information about the chi-squared distribution can be found at
@@ -1061,7 +1061,7 @@ chi2rnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 968
+# length: 960
  -- statistics: R = chi2rnd (DF)
  -- statistics: R = chi2rnd (DF, ROWS)
  -- statistics: R = chi2rnd (DF, ROWS, COLS, ...)
@@ -1069,11 +1069,11 @@ chi2rnd
 
      Random arrays from the chi-squared distribution.
 
-     ‘R = chi2rnd (DF)’ returns an array of random numbers chosen from the
+     'R = chi2rnd (DF)' returns an array of random numbers chosen from the
      chi-squared distribution with DF degrees of freedom.  The size of R is the
      size of DF.
 
-     When called with a single size argument, ‘chi2rnd’ returns a square matrix
+     When called with a single size argument, 'chi2rnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -1103,7 +1103,7 @@ copulacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2543
+# length: 2501
  -- statistics: P = copulacdf (FAMILY, X, THETA)
  -- statistics: P = copulacdf ('t', X, THETA, DF)
 
@@ -1112,16 +1112,16 @@ copulacdf
      Arguments
      ---------
 
-        • FAMILY is the copula family name.  Currently, FAMILY can be
-          ‘'Gaussian'’ for the Gaussian family, ‘'t'’ for the Student's t
-          family, ‘'Clayton'’ for the Clayton family, ‘'Gumbel'’ for the
-          Gumbel-Hougaard family, ‘'Frank'’ for the Frank family, ‘'AMH'’ for
-          the Ali-Mikhail-Haq family, or ‘'FGM'’ for the
+        * FAMILY is the copula family name.  Currently, FAMILY can be
+          ''Gaussian'' for the Gaussian family, ''t'' for the Student's t
+          family, ''Clayton'' for the Clayton family, ''Gumbel'' for the
+          Gumbel-Hougaard family, ''Frank'' for the Frank family, ''AMH'' for
+          the Ali-Mikhail-Haq family, or ''FGM'' for the
           Farlie-Gumbel-Morgenstern family.
 
-        • X is the support where each row corresponds to an observation.
+        * X is the support where each row corresponds to an observation.
 
-        • THETA is the parameter of the copula.  For the Gaussian and Student's
+        * THETA is the parameter of the copula.  For the Gaussian and Student's
           t copula, THETA must be a correlation matrix.  For bivariate copulas
           THETA can also be a correlation coefficient.  For the Clayton family,
           the Gumbel-Hougaard family, the Frank family, and the Ali-Mikhail-Haq
@@ -1132,14 +1132,14 @@ copulacdf
           set of coefficients for an observation in X.  A single row is
           expanded.  The coefficients are in binary order.
 
-        • DF is the degrees of freedom for the Student's t family.  DF must be a
+        * DF is the degrees of freedom for the Student's t family.  DF must be a
           vector with the same number of elements as observations in X or be
           scalar.
 
      Return values
      -------------
 
-        • P is the cumulative distribution of the copula at each row of X and
+        * P is the cumulative distribution of the copula at each row of X and
           corresponding parameter THETA.
 
      Examples
@@ -1156,7 +1156,7 @@ copulacdf
      References
      ----------
 
-       1. Roger B. Nelsen.  ‘An Introduction to Copulas’.  Springer, New York,
+       1. Roger B. Nelsen.  'An Introduction to Copulas'.  Springer, New York,
           second edition, 2006.
 
      Input arguments must be double or single; integer, logical, and character
@@ -1179,136 +1179,13 @@ Copula family cumulative distribution functions (CDF).
 # type: sq_string
 # elements: 1
 # length: 9
-copulafit
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2167
- -- statistics: RHO = copulafit ("Gaussian", U)
- -- statistics: [RHO, NU] = copulafit ("t", U)
- -- statistics: [PARAM, CI] = copulafit (FAMILY, U)
- -- statistics: [...] = copulafit (..., "alpha", A)
-
-     Fit a copula to data.
-
-     ‘copulafit (FAMILY, U)’ returns the maximum-likelihood estimate of the
-     parameter of a copula of the family FAMILY, fit to the data in U.  The rows
-     of U are observations and its columns are variables; all entries must lie
-     strictly inside the unit interval (0,1), as produced for example by a
-     probability-integral transform or by ‘ecdf’/‘ksdensity’.
-
-     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
-     family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, or "Frank" for the Frank family.
-
-     The returned value depends on the family:
-
-        • For "Gaussian", ‘RHO = copulafit ("Gaussian", U)’ returns the
-          estimated linear correlation matrix RHO, computed as the sample
-          correlation of the normal scores ‘norminv (U)’.  The data may have two
-          or more columns.
-
-        • For "t", ‘copulafit ("t", U)’ returns the estimated correlation matrix
-          RHO and the degrees of freedom NU as ‘[RHO, NU]’, obtained by
-          maximizing the copula log-likelihood.  Only bivariate data (two
-          columns) are supported.
-
-        • For the Archimedean families "Clayton", "Gumbel", and "Frank",
-          ‘[PARAM, CI] = copulafit (FAMILY, U)’ returns the scalar copula
-          parameter PARAM and, optionally, a two-element vector CI with the
-          lower and upper confidence bounds.  Only bivariate data are supported.
-
-     ‘copulafit (..., "alpha", A)’ sets the significance level for the
-     confidence interval to A, so that CI has coverage ‘100 * (1 - A)’ percent.
-     The default is ‘A = 0.05’.  The confidence interval is a Wald interval
-     whose standard error is obtained from the outer-product-of-gradients
-     estimate of the information.
-
-     See also: copulastat, copulaparam, copulacdf, copulapdf, copularnd.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 21
-Fit a copula to data.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 11
-copulaparam
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2265
- -- statistics: PARAM = copulaparam (FAMILY, R)
- -- statistics: PARAM = copulaparam (..., "type", TYPE)
-
-     Copula parameter as a function of rank correlation.
-
-     ‘PARAM = copulaparam (FAMILY, R)’ returns the linear or copula parameter
-     PARAM corresponding to a copula of the family FAMILY that has Kendall's
-     rank correlation R.  It is the inverse of ‘copulastat’.
-
-     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
-     family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, "Frank" for the Frank family,
-     "AMH" for the Ali-Mikhail-Haq family, or "FGM" for the
-     Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
-     MATLAB does not provide, and are treated as bivariate.  Neither reaches the
-     whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
-     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
-     family one in ‘[-2/9, 2/9]’.
-
-     For the Gaussian and Student's t families, R is a scalar rank correlation
-     or a matrix of pairwise rank correlations, and PARAM is the corresponding
-     linear correlation of the same size.  For the Clayton, Gumbel-Hougaard, and
-     Frank families, R is a scalar rank correlation and PARAM is the scalar
-     copula parameter.  The Gumbel-Hougaard family models positive dependence
-     only, so R must be non-negative for that family.
-
-     ‘PARAM = copulaparam (..., "type", TYPE)’ selects the measure of rank
-     correlation given in R.  TYPE can be "Kendall" (the default) for Kendall's
-     tau, or "Spearman" for Spearman's rho.
-
-     The Gaussian and Student's t families and the Kendall's tau of the Clayton
-     and Gumbel-Hougaard families are inverted in closed form.  The remaining
-     cases are inverted numerically from ‘copulastat’.
-
-     *Note:* for the Archimedean families with "Spearman", the underlying
-     relationship is computed by exact numerical integration rather than the
-     interpolated table used by MATLAB, so results may differ from MATLAB by up
-     to about 10^{-4}.  See ‘copulastat’.
-
-     See also: copulastat, copulafit, copulacdf, copulapdf, copularnd.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 51
-Copula parameter as a function of rank correlation.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 9
 copulapdf
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2823
+# length: 2753
  -- statistics: Y = copulapdf (FAMILY, X, THETA)
  -- statistics: Y = copulapdf ('t', X, THETA, DF)
 
@@ -1317,38 +1194,38 @@ copulapdf
      Arguments
      ---------
 
-        • FAMILY is the copula family name.  Currently, FAMILY can be
-          ‘'Gaussian'’ for the Gaussian family, ‘'t'’ for the Student's t
-          family, ‘'Clayton'’ for the Clayton family, ‘'Gumbel'’ for the
-          Gumbel-Hougaard family, ‘'Frank'’ for the Frank family, ‘'AMH'’ for
-          the Ali-Mikhail-Haq family, or ‘'FGM'’ for the
+        * FAMILY is the copula family name.  Currently, FAMILY can be
+          ''Gaussian'' for the Gaussian family, ''t'' for the Student's t
+          family, ''Clayton'' for the Clayton family, ''Gumbel'' for the
+          Gumbel-Hougaard family, ''Frank'' for the Frank family, ''AMH'' for
+          the Ali-Mikhail-Haq family, or ''FGM'' for the
           Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions
           that MATLAB does not provide.
 
-        • X is the support where each row corresponds to an observation.
+        * X is the support where each row corresponds to an observation.
 
-        • THETA is the parameter of the copula.  For the Gaussian and Student's
+        * THETA is the parameter of the copula.  For the Gaussian and Student's
           t families it is the linear correlation matrix, and a scalar is
           expanded to a bivariate one.  For the remaining families the elements
-          of THETA must be greater than or equal to ‘-1’ for the Clayton family,
-          greater than or equal to ‘1’ for the Gumbel-Hougaard family, arbitrary
-          for the Frank family, and greater than or equal to ‘-1’ and lower than
-          ‘1’ for the Ali-Mikhail-Haq family.  Moreover, THETA must be
-          non-negative for dimensions greater than ‘2’.  THETA must be a column
+          of THETA must be greater than or equal to '-1' for the Clayton family,
+          greater than or equal to '1' for the Gumbel-Hougaard family, arbitrary
+          for the Frank family, and greater than or equal to '-1' and lower than
+          '1' for the Ali-Mikhail-Haq family.  Moreover, THETA must be
+          non-negative for dimensions greater than '2'.  THETA must be a column
           vector with the same number of rows as X or be scalar.  The
           Farlie-Gumbel-Morgenstern family instead takes one parameter for every
           subset of the variables of order two or more, so THETA is a row vector
-          of length ‘2^d-d-1’ or a matrix with one such row per observation;
-          parameter sets violating the family's linear constraints give ‘NaN’.
+          of length '2^d-d-1' or a matrix with one such row per observation;
+          parameter sets violating the family's linear constraints give 'NaN'.
 
-        • DF is the degrees of freedom of the Student's t family, and is
+        * DF is the degrees of freedom of the Student's t family, and is
           required by it.  It must be a vector with the same number of rows as X
           or be scalar.
 
      Return values
      -------------
 
-        • Y is the probability density of the copula at each row of X and
+        * Y is the probability density of the copula at each row of X and
           corresponding parameter THETA.
 
      Examples
@@ -1363,7 +1240,7 @@ copulapdf
      References
      ----------
 
-       1. Roger B. Nelsen.  ‘An Introduction to Copulas’.  Springer, New York,
+       1. Roger B. Nelsen.  'An Introduction to Copulas'.  Springer, New York,
           second edition, 2006.
 
      Input arguments must be double or single; integer, logical, and character
@@ -1392,7 +1269,7 @@ copularnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2664
+# length: 2600
  -- Function File: R = copularnd (FAMILY, THETA, N)
  -- Function File: R = copularnd (FAMILY, THETA, N, D)
  -- Function File: R = copularnd ('t', THETA, DF, N)
@@ -1402,40 +1279,40 @@ copularnd
      Arguments
      ---------
 
-        • FAMILY is the copula family name.  Currently, FAMILY can be
-          ‘'Gaussian'’ for the Gaussian family, ‘'t'’ for the Student's t
-          family, ‘'Clayton'’ for the Clayton family, ‘'Frank'’ for the Frank
-          family, ‘'Gumbel'’ for the Gumbel-Hougaard family, ‘'AMH'’ for the
-          Ali-Mikhail-Haq family, or ‘'FGM'’ for the Farlie-Gumbel-Morgenstern
+        * FAMILY is the copula family name.  Currently, FAMILY can be
+          ''Gaussian'' for the Gaussian family, ''t'' for the Student's t
+          family, ''Clayton'' for the Clayton family, ''Frank'' for the Frank
+          family, ''Gumbel'' for the Gumbel-Hougaard family, ''AMH'' for the
+          Ali-Mikhail-Haq family, or ''FGM'' for the Farlie-Gumbel-Morgenstern
           family.  The last two are Octave extensions that MATLAB does not
           provide.  Every family but Clayton is generated as bivariate only.
 
-        • THETA is the parameter of the copula.  For the Gaussian and Student's
+        * THETA is the parameter of the copula.  For the Gaussian and Student's
           t copula, THETA must be a correlation matrix.  For bivariate copulas
           THETA can also be a correlation coefficient.  For the Clayton, Frank
           and Gumbel-Hougaard families, THETA must be a vector with the same
           number of elements as samples to be generated or be scalar.  Values
-          outside a family's range give ‘NaN’ rows: at or above ‘1’ for the
-          Gumbel-Hougaard family, at or above ‘-1’ for the bivariate Clayton
+          outside a family's range give 'NaN' rows: at or above '1' for the
+          Gumbel-Hougaard family, at or above '-1' for the bivariate Clayton
           family, and any finite value for the Frank family.  The
-          Ali-Mikhail-Haq family takes THETA in ‘[-1, 1)’ and the
-          Farlie-Gumbel-Morgenstern family in ‘[-1, 1]’.
+          Ali-Mikhail-Haq family takes THETA in '[-1, 1)' and the
+          Farlie-Gumbel-Morgenstern family in '[-1, 1]'.
 
-        • DF is the degrees of freedom for the Student's t family.  DF must be a
+        * DF is the degrees of freedom for the Student's t family.  DF must be a
           vector with the same number of elements as samples to be generated or
           be scalar.
 
-        • N is the number of rows of the matrix to be generated.  N must be a
+        * N is the number of rows of the matrix to be generated.  N must be a
           non-negative integer and corresponds to the number of samples to be
           generated.
 
-        • D is the number of columns of the matrix to be generated.  D must be a
+        * D is the number of columns of the matrix to be generated.  D must be a
           positive integer and corresponds to the dimension of the copula.
 
      Return values
      -------------
 
-        • R is a matrix of random samples from the copula with N samples of
+        * R is a matrix of random samples from the copula with N samples of
           distribution dimension D.
 
      Examples
@@ -1455,7 +1332,7 @@ copularnd
      References
      ----------
 
-       1. Roger B. Nelsen.  ‘An Introduction to Copulas’.  Springer, New York,
+       1. Roger B. Nelsen.  'An Introduction to Copulas'.  Springer, New York,
           second edition, 2006.
 
 
@@ -1470,70 +1347,6 @@ Random arrays from the copula family distributions.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10
-copulastat
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2362
- -- statistics: R = copulastat (FAMILY, PARAM)
- -- statistics: R = copulastat (..., "type", TYPE)
-
-     Rank correlation for a copula family.
-
-     ‘R = copulastat (FAMILY, PARAM)’ returns Kendall's rank correlation R
-     corresponding to a copula of the family FAMILY with linear or copula
-     parameter PARAM.
-
-     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
-     family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, "Frank" for the Frank family,
-     "AMH" for the Ali-Mikhail-Haq family, or "FGM" for the
-     Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
-     MATLAB does not provide, and are treated as bivariate.  Neither reaches the
-     whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
-     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
-     family one in ‘[-2/9, 2/9]’.
-
-     For the Gaussian and Student's t families, PARAM is a linear correlation
-     coefficient RHO in the range [-1,1], or a p-by-p correlation matrix, in
-     which case R has the same size and each element is computed elementwise.
-     For the Clayton, Gumbel-Hougaard, and Frank families, PARAM is the scalar
-     copula parameter.
-
-     ‘R = copulastat (..., "type", TYPE)’ selects the measure of rank
-     correlation.  TYPE can be "Kendall" (the default) for Kendall's tau, or
-     "Spearman" for Spearman's rho.
-
-     The relationships are closed form for the Gaussian and Student's t families
-     (r = 2 \arcsin(\rho) / \pi for Kendall's tau and r = 6 \arcsin(\rho/2) /
-     \pi for Spearman's rho) and for the Kendall's tau of the Archimedean
-     families.  Spearman's rho of the Archimedean families has no closed form
-     and is computed by accurate numerical integration of the copula.
-
-     *Note:* MATLAB returns the Archimedean Spearman's rho by interpolating an
-     internal precomputed table, whose values deviate from the true relationship
-     by up to about 10^{-4}.  This implementation returns the mathematically
-     exact value instead, so results for ‘copulastat (FAMILY, PARAM, "type",
-     "Spearman")’ with an Archimedean FAMILY may differ from MATLAB at that
-     level.
-
-     See also: copulaparam, copulafit, copulacdf, copulapdf, copularnd.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 37
-Rank correlation for a copula family.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
 # length: 5
 evcdf
 
@@ -1541,7 +1354,7 @@ evcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2331
+# length: 2319
  -- statistics: P = evcdf (X)
  -- statistics: P = evcdf (X, MU)
  -- statistics: P = evcdf (X, MU, SIGMA)
@@ -1561,7 +1374,7 @@ evcdf
 
      Default values are MU = 0 and SIGMA = 1.
 
-     When called with three output arguments, i.e.  [P, PLO, PUP], ‘evcdf’
+     When called with three output arguments, i.e.  [P, PLO, PUP], 'evcdf'
      computes the confidence bounds for P when the input parameters MU and SIGMA
      are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -1569,14 +1382,14 @@ evcdf
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
      the lower and upper confidence bounds.
 
-     ‘[...] = evcdf (..., "upper")’ computes the upper tail probability of the
+     '[...] = evcdf (..., "upper")' computes the upper tail probability of the
      extreme value distribution with parameters X0 and GAMMA, at the values in
      X.
 
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling minima.  For modeling maxima, use the
-     alternative Gumbel CDF, ‘gumbelcdf’.
+     alternative Gumbel CDF, 'gumbelcdf'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -1607,7 +1420,7 @@ evinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2059
+# length: 2051
  -- statistics: X = evinv (P)
  -- statistics: X = evinv (P, MU)
  -- statistics: X = evinv (P, MU, SIGMA)
@@ -1625,7 +1438,7 @@ evinv
 
      Default values are MU = 0 and SIGMA = 1.
 
-     When called with three output arguments, i.e.  [X, XLO, XUP], ‘evinv’
+     When called with three output arguments, i.e.  [X, XLO, XUP], 'evinv'
      computes the confidence bounds for X when the input parameters MU and SIGMA
      are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -1636,7 +1449,7 @@ evinv
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling minima.  For modeling maxima, use the
-     alternative Gumbel iCDF, ‘gumbelinv’.
+     alternative Gumbel iCDF, 'gumbelinv'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -1667,7 +1480,7 @@ evpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1394
+# length: 1390
  -- statistics: Y = evpdf (X)
  -- statistics: Y = evpdf (X, MU)
  -- statistics: Y = evpdf (X, MU, SIGMA)
@@ -1686,7 +1499,7 @@ evpdf
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling minima.  For modeling maxima, use the
-     alternative Gumbel iCDF, ‘gumbelinv’.
+     alternative Gumbel iCDF, 'gumbelinv'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -1717,7 +1530,7 @@ evrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1493
+# length: 1481
  -- statistics: R = evrnd (MU, SIGMA)
  -- statistics: R = evrnd (MU, SIGMA, ROWS)
  -- statistics: R = evrnd (MU, SIGMA, ROWS, COLS, ...)
@@ -1725,14 +1538,14 @@ evrnd
 
      Random arrays from the extreme value distribution.
 
-     ‘R = evrnd (MU, SIGMA)’ returns an array of random numbers chosen from the
+     'R = evrnd (MU, SIGMA)' returns an array of random numbers chosen from the
      extreme value distribution (also known as the Gumbel or the type I
      generalized extreme value distribution) with location parameter MU and
      scale parameter SIGMA.  The size of R is the common size of MU and SIGMA.
      A scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     When called with a single size argument, ‘evrnd’ returns a square matrix
+     When called with a single size argument, 'evrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -1741,7 +1554,7 @@ evrnd
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling minima.  For modeling maxima, use the
-     alternative Gumbel iCDF, ‘gumbelinv’.
+     alternative Gumbel iCDF, 'gumbelinv'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -1767,7 +1580,7 @@ expcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2106
+# length: 2098
  -- statistics: P = expcdf (X)
  -- statistics: P = expcdf (X, MU)
  -- statistics: P = expcdf (..., 'upper')
@@ -1789,7 +1602,7 @@ expcdf
      opposed to the parameter μ, which is the mean wait time for an event to
      occur.  λ and μ are reciprocals, i.e.  μ = 1 / λ.
 
-     When called with three output arguments, i.e.  [P, PLO, PUP], ‘expcdf’
+     When called with three output arguments, i.e.  [P, PLO, PUP], 'expcdf'
      computes the confidence bounds for P when the input parameter MU is an
      estimate.  In such case, PCOV, a scalar value with the variance of the
      estimated parameter MU, is necessary.  Optionally, ALPHA, which has a
@@ -1797,7 +1610,7 @@ expcdf
      bounds.  PLO and PUP are arrays of the same size as P containing the lower
      and upper confidence bounds.
 
-     ‘[...] = expcdf (..., "upper")’ computes the upper tail probability of the
+     '[...] = expcdf (..., "upper")' computes the upper tail probability of the
      exponential distribution with parameter MU, at the values in X.
 
      Further information about the exponential distribution can be found at
@@ -1829,7 +1642,7 @@ expinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1857
+# length: 1853
  -- statistics: X = expinv (P)
  -- statistics: X = expinv (P, MU)
  -- statistics: [X, XLO, XUP] = expinv (P, MU, PCOV)
@@ -1849,7 +1662,7 @@ expinv
      opposed to the parameter μ, which is the mean wait time for an event to
      occur.  λ and μ are reciprocals, i.e.  μ = 1 / λ.
 
-     When called with three output arguments, i.e.  [X, XLO, XUP], ‘expinv’
+     When called with three output arguments, i.e.  [X, XLO, XUP], 'expinv'
      computes the confidence bounds for X when the input parameter MU is an
      estimate.  In such case, PCOV, a scalar value with the variance of the
      estimated parameter MU, is necessary.  Optionally, ALPHA, which has a
@@ -1933,7 +1746,7 @@ exprnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1271
+# length: 1263
  -- statistics: R = exprnd (MU)
  -- statistics: R = exprnd (MU, ROWS)
  -- statistics: R = exprnd (MU, ROWS, COLS, ...)
@@ -1941,11 +1754,11 @@ exprnd
 
      Random arrays from the exponential distribution.
 
-     ‘R = exprnd (MU)’ returns an array of random numbers chosen from the
+     'R = exprnd (MU)' returns an array of random numbers chosen from the
      exponential distribution with mean parameter MU.  The size of R is the size
      of MU.
 
-     When called with a single size argument, ‘exprnd’ returns a square matrix
+     When called with a single size argument, 'exprnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -1980,7 +1793,7 @@ fcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1051
+# length: 1047
  -- statistics: P = fcdf (X, DF1, DF2)
  -- statistics: P = fcdf (X, DF1, DF2, 'upper')
 
@@ -1991,7 +1804,7 @@ fcdf
      is the common size of X, DF1, and DF2.  A scalar input functions as a
      constant matrix of the same size as the other inputs.
 
-     ‘P = fcdf (X, DF1, DF2, "upper")’ computes the upper tail probability of
+     'P = fcdf (X, DF1, DF2, "upper")' computes the upper tail probability of
      the F-distribution with DF1 and DF2 degrees of freedom, at the values in X.
 
      Further information about the F-distribution can be found at
@@ -2101,7 +1914,7 @@ frnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1043
+# length: 1035
  -- statistics: R = frnd (DF1, DF2)
  -- statistics: R = frnd (DF1, DF2, ROWS)
  -- statistics: R = frnd (DF1, DF2, ROWS, COLS, ...)
@@ -2109,12 +1922,12 @@ frnd
 
      Random arrays from the F-distribution.
 
-     ‘R = frnd (DF1, DF2)’ returns an array of random numbers chosen from the
+     'R = frnd (DF1, DF2)' returns an array of random numbers chosen from the
      F-distribution with DF1 and DF2 degrees of freedom.  The size of R is the
      common size of DF1 and DF2.  A scalar input functions as a constant matrix
      of the same size as the other inputs.
 
-     When called with a single size argument, ‘frnd’ returns a square matrix
+     When called with a single size argument, 'frnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -2144,7 +1957,7 @@ gamcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2291
+# length: 2283
  -- statistics: P = gamcdf (X, A)
  -- statistics: P = gamcdf (X, A, B)
  -- statistics: P = gamcdf (..., 'upper')
@@ -2160,7 +1973,7 @@ gamcdf
      is the common size of X, A, and B.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     When called with three output arguments, i.e.  [P, PLO, PUP], ‘gamcdf’
+     When called with three output arguments, i.e.  [P, PLO, PUP], 'gamcdf'
      computes the confidence bounds for P when the input parameters A and B are
      estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -2168,7 +1981,7 @@ gamcdf
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
      the lower and upper confidence bounds.
 
-     ‘[...] = gamcdf (..., "upper")’ computes the upper tail probability of the
+     '[...] = gamcdf (..., "upper")' computes the upper tail probability of the
      Gamma distribution with parameters A and B, at the values in X.
 
      OCTAVE/MATLAB use the alternative parameterization given by the pair α, β,
@@ -2299,7 +2112,7 @@ gamrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1507
+# length: 1499
  -- statistics: R = gamrnd (A, B)
  -- statistics: R = gamrnd (A, B, ROWS)
  -- statistics: R = gamrnd (A, B, ROWS, COLS, ...)
@@ -2307,12 +2120,12 @@ gamrnd
 
      Random arrays from the Gamma distribution.
 
-     ‘R = gamrnd (A, B)’ returns an array of random numbers chosen from the
+     'R = gamrnd (A, B)' returns an array of random numbers chosen from the
      Gamma distribution with shape parameter A and scale parameter B.  The size
      of R is the common size of A and B.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     When called with a single size argument, ‘gamrnd’ returns a square matrix
+     When called with a single size argument, 'gamrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -2349,7 +2162,7 @@ geocdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1284
+# length: 1280
  -- statistics: P = geocdf (X, PS)
  -- statistics: P = geocdf (X, PS, 'upper')
 
@@ -2360,7 +2173,7 @@ geocdf
      The size of P is the common size of X and PS.  A scalar input functions as
      a constant matrix of the same size as the other inputs.
 
-     ‘P = geocdf (X, PS, "upper")’ computes the upper tail probability of the
+     'P = geocdf (X, PS, "upper")' computes the upper tail probability of the
      geometric distribution with parameter PS, at the values in X.
 
      The geometric distribution models the number of failures (X) of a Bernoulli
@@ -2481,7 +2294,7 @@ geornd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1118
+# length: 1110
  -- statistics: R = geornd (PS)
  -- statistics: R = geornd (PS, ROWS)
  -- statistics: R = geornd (PS, ROWS, COLS, ...)
@@ -2489,11 +2302,11 @@ geornd
 
      Random arrays from the geometric distribution.
 
-     ‘R = geornd (PS)’ returns an array of random numbers chosen from the
+     'R = geornd (PS)' returns an array of random numbers chosen from the
      Birnbaum-Saunders distribution with probability of success parameter PS.
      The size of R is the size of PS.
 
-     When called with a single size argument, ‘geornd’ returns a square matrix
+     When called with a single size argument, 'geornd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -2526,7 +2339,7 @@ gevcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1964
+# length: 1952
  -- statistics: P = gevcdf (X, K, SIGMA, MU)
  -- statistics: P = gevcdf (X, K, SIGMA, MU, 'upper')
 
@@ -2538,17 +2351,17 @@ gevcdf
      and MU.  A scalar input functions as a constant matrix of the same size as
      the other inputs.
 
-     ‘[...] = gevcdf (X, K, SIGMA, MU, "upper")’ computes the upper tail
+     '[...] = gevcdf (X, K, SIGMA, MU, "upper")' computes the upper tail
      probability of the GEV distribution with parameters K, SIGMA, and MU, at
      the values in X.
 
      When K < 0, the GEV is the type III extreme value distribution.  When K >
      0, the GEV distribution is the type II, or Frechet, extreme value
-     distribution.  If W has a Weibull distribution as computed by the ‘wblcdf’
+     distribution.  If W has a Weibull distribution as computed by the 'wblcdf'
      function, then -W has a type III extreme value distribution and 1/W has a
      type II extreme value distribution.  In the limit as K approaches 0, the
      GEV is the mirror image of the type I extreme value distribution as
-     computed by the ‘evcdf’ function.
+     computed by the 'evcdf' function.
 
      The mean of the GEV distribution is not finite when K >= 1, and the
      variance is not finite when K >= 1/2.  The GEV distribution has positive
@@ -2584,7 +2397,7 @@ gevinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1748
+# length: 1740
  -- statistics: X = gevinv (P, K, SIGMA, MU)
 
      Inverse of the generalized extreme value (GEV) cumulative distribution
@@ -2598,11 +2411,11 @@ gevinv
 
      When K < 0, the GEV is the type III extreme value distribution.  When K >
      0, the GEV distribution is the type II, or Frechet, extreme value
-     distribution.  If W has a Weibull distribution as computed by the ‘wblcdf’
+     distribution.  If W has a Weibull distribution as computed by the 'wblcdf'
      function, then -W has a type III extreme value distribution and 1/W has a
      type II extreme value distribution.  In the limit as K approaches 0, the
      GEV is the mirror image of the type I extreme value distribution as
-     computed by the ‘evcdf’ function.
+     computed by the 'evcdf' function.
 
      The mean of the GEV distribution is not finite when K >= 1, and the
      variance is not finite when K >= 1/2.  The GEV distribution has positive
@@ -2638,7 +2451,7 @@ gevpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1724
+# length: 1716
  -- statistics: Y = gevpdf (X, K, SIGMA, MU)
 
      Generalized extreme value (GEV) probability density function (PDF).
@@ -2651,11 +2464,11 @@ gevpdf
 
      When K < 0, the GEV is the type III extreme value distribution.  When K >
      0, the GEV distribution is the type II, or Frechet, extreme value
-     distribution.  If W has a Weibull distribution as computed by the ‘wblcdf’
+     distribution.  If W has a Weibull distribution as computed by the 'wblcdf'
      function, then -W has a type III extreme value distribution and 1/W has a
      type II extreme value distribution.  In the limit as K approaches 0, the
      GEV is the mirror image of the type I extreme value distribution as
-     computed by the ‘evcdf’ function.
+     computed by the 'evcdf' function.
 
      The mean of the GEV distribution is not finite when K >= 1, and the
      variance is not finite when K >= 1/2.  The GEV distribution has positive
@@ -2691,7 +2504,7 @@ gevrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1962
+# length: 1946
  -- statistics: R = gevrnd (K, SIGMA, MU)
  -- statistics: R = gevrnd (K, SIGMA, MU, ROWS)
  -- statistics: R = gevrnd (K, SIGMA, MU, ROWS, COLS, ...)
@@ -2699,13 +2512,13 @@ gevrnd
 
      Random arrays from the generalized extreme value (GEV) distribution.
 
-     ‘R = gevrnd (K, SIGMA, MU’ returns an array of random numbers chosen from
+     'R = gevrnd (K, SIGMA, MU' returns an array of random numbers chosen from
      the GEV distribution with shape parameter K, scale parameter SIGMA, and
      location parameter MU.  The size of R is the common size of K, SIGMA, and
      MU.  A scalar input functions as a constant matrix of the same size as the
      other inputs.
 
-     When called with a single size argument, ‘gevrnd’ returns a square matrix
+     When called with a single size argument, 'gevrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -2713,11 +2526,11 @@ gevrnd
 
      When K < 0, the GEV is the type III extreme value distribution.  When K >
      0, the GEV distribution is the type II, or Frechet, extreme value
-     distribution.  If W has a Weibull distribution as computed by the ‘wblcdf’
+     distribution.  If W has a Weibull distribution as computed by the 'wblcdf'
      function, then -W has a type III extreme value distribution and 1/W has a
      type II extreme value distribution.  In the limit as K approaches 0, the
      GEV is the mirror image of the type I extreme value distribution as
-     computed by the ‘evcdf’ function.
+     computed by the 'evcdf' function.
 
      The mean of the GEV distribution is not finite when K >= 1, and the
      variance is not finite when K >= 1/2.  The GEV distribution has positive
@@ -2748,7 +2561,7 @@ gpcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1710
+# length: 1702
  -- statistics: P = gpcdf (X, K, SIGMA, THETA)
  -- statistics: P = gpcdf (X, K, SIGMA, THETA, 'upper')
 
@@ -2760,12 +2573,12 @@ gpcdf
      size of X, K, SIGMA, and THETA.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     ‘[...] = gpcdf(X, K, SIGMA, THETA, "upper")’ computes the upper tail
+     '[...] = gpcdf(X, K, SIGMA, THETA, "upper")' computes the upper tail
      probability of the generalized Pareto distribution with parameters K,
      SIGMA, and THETA, at the values in X.
 
      When K = 0 and THETA = 0, the Generalized Pareto is equivalent to the
-     exponential distribution.  When K > 0 and ‘THETA = K / K’ the Generalized
+     exponential distribution.  When K > 0 and 'THETA = K / K' the Generalized
      Pareto is equivalent τπ the Pareto distribution.  The mean of the
      Generalized Pareto is not finite when K >= 1 and the variance is not finite
      when K >= 1/2.  When K >= 0, the Generalized Pareto has positive density
@@ -2800,7 +2613,7 @@ gpinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1466
+# length: 1462
  -- statistics: X = gpinv (P, K, SIGMA, THETA)
 
      Inverse of the generalized Pareto cumulative distribution function (iCDF).
@@ -2812,7 +2625,7 @@ gpinv
      the same size as the other inputs.
 
      When K = 0 and THETA = 0, the Generalized Pareto is equivalent to the
-     exponential distribution.  When K > 0 and ‘THETA = K / K’ the Generalized
+     exponential distribution.  When K > 0 and 'THETA = K / K' the Generalized
      Pareto is equivalent to the Pareto distribution.  The mean of the
      Generalized Pareto is not finite when K >= 1 and the variance is not finite
      when K >= 1/2.  When K >= 0, the Generalized Pareto has positive density
@@ -2847,7 +2660,7 @@ gppdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1447
+# length: 1443
  -- statistics: Y = gppdf (X, K, SIGMA, THETA)
 
      Generalized Pareto probability density function (PDF).
@@ -2859,7 +2672,7 @@ gppdf
      the same size as the other inputs.
 
      When K = 0 and THETA = 0, the Generalized Pareto is equivalent to the
-     exponential distribution.  When K > 0 and ‘THETA = K / K’ the Generalized
+     exponential distribution.  When K > 0 and 'THETA = K / K' the Generalized
      Pareto is equivalent to the Pareto distribution.  The mean of the
      Generalized Pareto is not finite when K >= 1 and the variance is not finite
      when K >= 1/2.  When K >= 0, the Generalized Pareto has positive density
@@ -2894,7 +2707,7 @@ gprnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1693
+# length: 1681
  -- statistics: R = gprnd (K, SIGMA, THETA)
  -- statistics: R = gprnd (K, SIGMA, THETA, ROWS)
  -- statistics: R = gprnd (K, SIGMA, THETA, ROWS, COLS, ...)
@@ -2902,20 +2715,20 @@ gprnd
 
      Random arrays from the generalized Pareto distribution.
 
-     ‘R = gprnd (K, SIGMA, THETA)’ returns an array of random numbers chosen
+     'R = gprnd (K, SIGMA, THETA)' returns an array of random numbers chosen
      from the generalized Pareto distribution with shape parameter K, scale
      parameter SIGMA, and location parameter THETA.  The size of R is the common
      size of K, SIGMA, and THETA.  A scalar input functions as a constant matrix
      of the same size as the other inputs.
 
-     When called with a single size argument, ‘gprnd’ returns a square matrix
+     When called with a single size argument, 'gprnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
      The size may also be specified with a row vector of dimensions, SZ.
 
      When K = 0 and THETA = 0, the Generalized Pareto is equivalent to the
-     exponential distribution.  When K > 0 and ‘THETA = K / K’ the Generalized
+     exponential distribution.  When K > 0 and 'THETA = K / K' the Generalized
      Pareto is equivalent to the Pareto distribution.  The mean of the
      Generalized Pareto is not finite when K >= 1 and the variance is not finite
      when K >= 1/2.  When K >= 0, the Generalized Pareto has positive density
@@ -2945,7 +2758,7 @@ gumbelcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2484
+# length: 2464
  -- statistics: P = gumbelcdf (X)
  -- statistics: P = gumbelcdf (X, MU)
  -- statistics: P = gumbelcdf (X, MU, BETA)
@@ -2965,7 +2778,7 @@ gumbelcdf
 
      Default values are MU = 0 and BETA = 1.
 
-     When called with three output arguments, i.e.  ‘[P, PLO, PUP]’, ‘gumbelcdf’
+     When called with three output arguments, i.e.  '[P, PLO, PUP]', 'gumbelcdf'
      computes the confidence bounds for P when the input parameters MU and BETA
      are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -2973,15 +2786,15 @@ gumbelcdf
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
      the lower and upper confidence bounds.
 
-     ‘[...] = gumbelcdf (..., "upper")’ computes the upper tail probability of
+     '[...] = gumbelcdf (..., "upper")' computes the upper tail probability of
      the Gumbel distribution with parameters MU and BETA, at the values in X.
 
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling maxima.  For modeling minima, use the
-     alternative extreme value CDF, ‘evcdf’.
+     alternative extreme value CDF, 'evcdf'.
 
-     ‘[...] = gumbelcdf (..., "upper")’ computes the upper tail probability of
+     '[...] = gumbelcdf (..., "upper")' computes the upper tail probability of
      the extreme value (Gumbel) distribution.
 
      Further information about the Gumbel distribution can be found at
@@ -3014,7 +2827,7 @@ gumbelinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2096
+# length: 2088
  -- statistics: X = gumbelinv (P)
  -- statistics: X = gumbelinv (P, MU)
  -- statistics: X = gumbelinv (P, MU, BETA)
@@ -3032,7 +2845,7 @@ gumbelinv
 
      Default values are MU = 0 and BETA = 1.
 
-     When called with three output arguments, i.e.  [X, XLO, XUP], ‘gumbelinv’
+     When called with three output arguments, i.e.  [X, XLO, XUP], 'gumbelinv'
      computes the confidence bounds for X when the input parameters MU and BETA
      are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -3043,7 +2856,7 @@ gumbelinv
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling maxima.  For modeling minima, use the
-     alternative extreme value iCDF, ‘evinv’.
+     alternative extreme value iCDF, 'evinv'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -3075,7 +2888,7 @@ gumbelpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1422
+# length: 1418
  -- statistics: Y = gumbelpdf (X)
  -- statistics: Y = gumbelpdf (X, MU)
  -- statistics: Y = gumbelpdf (X, MU, BETA)
@@ -3094,7 +2907,7 @@ gumbelpdf
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling maxima.  For modeling minima, use the
-     alternative extreme value iCDF, ‘evpdf’.
+     alternative extreme value iCDF, 'evpdf'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -3126,7 +2939,7 @@ gumbelrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1543
+# length: 1531
  -- statistics: R = gumbelrnd (MU, BETA)
  -- statistics: R = gumbelrnd (MU, BETA, ROWS)
  -- statistics: R = gumbelrnd (MU, BETA, ROWS, COLS, ...)
@@ -3134,14 +2947,14 @@ gumbelrnd
 
      Random arrays from the Gumbel distribution.
 
-     ‘R = gumbelrnd (MU, BETA)’ returns an array of random numbers chosen from
+     'R = gumbelrnd (MU, BETA)' returns an array of random numbers chosen from
      the Gumbel distribution (also known as the extreme value or the type I
      generalized extreme value distribution) with location parameter MU and
      scale parameter BETA.  The size of R is the common size of MU and BETA.  A
      scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     When called with a single size argument, ‘gumbelrnd’ returns a square
+     When called with a single size argument, 'gumbelrnd' returns a square
      matrix with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -3150,7 +2963,7 @@ gumbelrnd
      The Gumbel distribution is used to model the distribution of the maximum
      (or the minimum) of a number of samples of various distributions.  This
      version is suitable for modeling maxima.  For modeling minima, use the
-     alternative extreme value iCDF, ‘evinv’.
+     alternative extreme value iCDF, 'evinv'.
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
@@ -3177,7 +2990,7 @@ hncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1205
+# length: 1201
  -- statistics: P = hncdf (X, MU, SIGMA)
  -- statistics: P = hncdf (X, MU, SIGMA, 'upper')
 
@@ -3189,7 +3002,7 @@ hncdf
      scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     ‘[...] = hncdf (X, MU, SIGMA, "upper")’ computes the upper tail probability
+     '[...] = hncdf (X, MU, SIGMA, "upper")' computes the upper tail probability
      of the half-normal distribution with parameters MU and SIGMA, at the values
      in X.
 
@@ -3304,7 +3117,7 @@ hnrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1131
+# length: 1123
  -- statistics: R = hnrnd (MU, SIGMA)
  -- statistics: R = hnrnd (MU, SIGMA, ROWS)
  -- statistics: R = hnrnd (MU, SIGMA, ROWS, COLS, ...)
@@ -3312,12 +3125,12 @@ hnrnd
 
      Random arrays from the half-normal distribution.
 
-     ‘R = hnrnd (MU, SIGMA)’ returns an array of random numbers chosen from the
+     'R = hnrnd (MU, SIGMA)' returns an array of random numbers chosen from the
      half-normal distribution with location parameter MU and scale parameter
      SIGMA.  The size of R is the common size of MU and SIGMA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
 
-     When called with a single size argument, ‘hnrnd’ returns a square matrix
+     When called with a single size argument, 'hnrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -3347,7 +3160,7 @@ hygecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1504
+# length: 1500
  -- statistics: P = hygecdf (X, M, K, N)
  -- statistics: P = hygecdf (X, M, K, N, 'upper')
 
@@ -3363,7 +3176,7 @@ hygecdf
      population of total size M containing K marked items.  The parameters M, K,
      and N must be positive integers with K and N not greater than M.
 
-     ‘[...] = hygecdf (X, M, K, N, "upper")’ computes the upper tail probability
+     '[...] = hygecdf (X, M, K, N, "upper")' computes the upper tail probability
      of the hypergeometric distribution with parameters M, K, and N, at the
      values in X.
 
@@ -3493,7 +3306,7 @@ hygernd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1209
+# length: 1201
  -- statistics: R = hygernd (M, K, N)
  -- statistics: R = hygernd (M, K, N, ROWS)
  -- statistics: R = hygernd (M, K, N, ROWS, COLS, ...)
@@ -3501,7 +3314,7 @@ hygernd
 
      Random arrays from the hypergeometric distribution.
 
-     ‘R = hygernd ((M, K, N’ returns an array of random numbers chosen from the
+     'R = hygernd ((M, K, N' returns an array of random numbers chosen from the
      hypergeometric distribution with parameters M, K, and N.  The size of R is
      the common size of M, K, and N.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
@@ -3509,7 +3322,7 @@ hygernd
      The parameters M, K, and N must be positive integers with K and N not
      greater than M.
 
-     When called with a single size argument, ‘hygernd’ returns a square matrix
+     When called with a single size argument, 'hygernd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -3539,7 +3352,7 @@ invgcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1266
+# length: 1262
  -- statistics: P = invgcdf (X, MU, LAMBDA)
  -- statistics: P = invgcdf (X, MU, LAMBDA, 'upper')
 
@@ -3551,7 +3364,7 @@ invgcdf
      scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     ‘P = invgcdf (X, MU, LAMBDA, "upper")’ computes the upper tail probability
+     'P = invgcdf (X, MU, LAMBDA, "upper")' computes the upper tail probability
      of the inverse Gaussian distribution with parameters MU and LAMBDA, at the
      values in X.
 
@@ -3669,7 +3482,7 @@ invgrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1261
+# length: 1253
  -- statistics: R = invgrnd (MU, LAMBDA)
  -- statistics: R = invgrnd (MU, LAMBDA, ROWS)
  -- statistics: R = invgrnd (MU, LAMBDA, ROWS, COLS, ...)
@@ -3677,13 +3490,13 @@ invgrnd
 
      Random arrays from the inverse Gaussian distribution.
 
-     ‘R = invgrnd (MU, LAMBDA)’ returns an array of random numbers chosen from
+     'R = invgrnd (MU, LAMBDA)' returns an array of random numbers chosen from
      the inverse Gaussian distribution with location parameter MU and scale
      parameter LAMBDA.  The size of R is the common size of MU and LAMBDA.  A
      scalar input functions as a constant matrix of the same size as the other
      inputs.
 
-     When called with a single size argument, ‘invgrnd’ returns a square matrix
+     When called with a single size argument, 'invgrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -3756,7 +3569,7 @@ iwishrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1085
+# length: 1073
  -- statistics: [W, DI] = iwishrnd (TAU, DF, DI, N=1)
 
      Return a random matrix sampled from the inverse Wishart distribution with
@@ -3764,12 +3577,12 @@ iwishrnd
 
      Inputs: the p * p positive definite matrix TAU and scalar degrees of
      freedom parameter DF (and optionally the transposed Cholesky factor DI of
-     SIGMA = ‘inv(Tau)’).
+     SIGMA = 'inv(Tau)').
 
      DF can be non-integer as long as DF > d
 
      Output: a random p * p matrix W from the inverse Wishart(TAU, DF)
-     distribution.  (‘inv(W)’ is from the Wishart(‘inv(Tau)’, DF) distribution.)
+     distribution.  ('inv(W)' is from the Wishart('inv(Tau)', DF) distribution.)
      If N > 1, then W is P x P x N and holds N such random matrices.
      (Optionally, the transposed Cholesky factor DI of SIGMA is also returned.)
 
@@ -3886,7 +3699,7 @@ laplacecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1236
+# length: 1232
  -- statistics: P = laplacecdf (X, MU, BETA)
  -- statistics: P = laplacecdf (X, MU, BETA, 'upper')
 
@@ -3901,7 +3714,7 @@ laplacecdf
      Both parameters must be reals and BETA > 0.  For BETA <= 0, NaN is
      returned.
 
-     ‘P = laplacecdf (X, MU, BETA, "upper")’ computes the upper tail probability
+     'P = laplacecdf (X, MU, BETA, "upper")' computes the upper tail probability
      of the Laplace distribution with parameters MU and BETA, at the values in
      X.
 
@@ -4020,7 +3833,7 @@ laplacernd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1218
+# length: 1210
  -- statistics: R = laplacernd (MU, BETA)
  -- statistics: R = laplacernd (MU, BETA, ROWS)
  -- statistics: R = laplacernd (MU, BETA, ROWS, COLS, ...)
@@ -4028,7 +3841,7 @@ laplacernd
 
      Random arrays from the Laplace distribution.
 
-     ‘R = laplacernd (MU, BETA)’ returns an array of random numbers chosen from
+     'R = laplacernd (MU, BETA)' returns an array of random numbers chosen from
      the Laplace distribution with location parameter MU and scale parameter
      BETA.  The size of R is the common size of MU and BETA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
@@ -4036,7 +3849,7 @@ laplacernd
      Both parameters must be reals and BETA > 0.  For BETA <= 0, NaN is
      returned.
 
-     When called with a single size argument, ‘laplacernd’ returns a square
+     When called with a single size argument, 'laplacernd' returns a square
      matrix with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -4066,7 +3879,7 @@ logicdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1235
+# length: 1231
  -- statistics: P = logicdf (X, MU, SIGMA)
  -- statistics: P = logicdf (X, MU, SIGMA, 'upper')
 
@@ -4080,7 +3893,7 @@ logicdf
      Both parameters must be reals and SIGMA > 0.  For SIGMA <= 0, NaN is
      returned.
 
-     ‘P = logicdf (X, MU, SIGMA, "upper")’ computes the upper tail probability
+     'P = logicdf (X, MU, SIGMA, "upper")' computes the upper tail probability
      of the logistic distribution with parameters MU and SIGMA, at the values in
      X.
 
@@ -4197,7 +4010,7 @@ logirnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1232
+# length: 1224
  -- statistics: R = logirnd (MU, SIGMA)
  -- statistics: R = logirnd (MU, SIGMA, ROWS)
  -- statistics: R = logirnd (MU, SIGMA, ROWS, COLS, ...)
@@ -4205,7 +4018,7 @@ logirnd
 
      Random arrays from the logistic distribution.
 
-     ‘R = logirnd (MU, SIGMA)’ returns an array of random numbers chosen from
+     'R = logirnd (MU, SIGMA)' returns an array of random numbers chosen from
      the logistic distribution with location parameter MU and scale parameter
      SIGMA.  The size of R is the common size of MU and SIGMA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
@@ -4213,7 +4026,7 @@ logirnd
      Both parameters must be reals and SIGMA > 0.  For SIGMA <= 0, NaN is
      returned.
 
-     When called with a single size argument, ‘logirnd’ returns a square matrix
+     When called with a single size argument, 'logirnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -4243,7 +4056,7 @@ loglcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1666
+# length: 1658
  -- statistics: P = loglcdf (X, MU, SIGMA)
  -- statistics: P = loglcdf (X, MU, SIGMA, 'upper')
 
@@ -4258,7 +4071,7 @@ loglcdf
      parameter of logarithmic values SIGMA must be a positive real value and X
      is supported in the range [0,Inf), otherwise NaN is returned.
 
-     ‘P = loglcdf (X, MU, SIGMA, "upper")’ computes the upper tail probability
+     'P = loglcdf (X, MU, SIGMA, "upper")' computes the upper tail probability
      of the log-logistic distribution with parameters MU and SIGMA, at the
      values in X.
 
@@ -4269,8 +4082,8 @@ loglcdf
      i.e.  MU and SIGMA, in analogy with the logistic distribution.  Their
      relation to the α and b parameters used in Wikipedia are given below:
 
-        • MU = log (A)
-        • SIGMA = 1 / A
+        * MU = log (A)
+        * SIGMA = 1 / A
 
      Input arguments must be double or single; integer, logical, and character
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
@@ -4298,7 +4111,7 @@ loglinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1447
+# length: 1443
  -- statistics: X = loglinv (P, MU, SIGMA)
 
      Inverse of the log-logistic cumulative distribution function (iCDF).
@@ -4319,8 +4132,8 @@ loglinv
      i.e.  MU and SIGMA, in analogy with the logistic distribution.  Their
      relation to the α and b parameters used in Wikipedia are given below:
 
-        • MU = log (A)
-        • SIGMA = 1 / A
+        * MU = log (A)
+        * SIGMA = 1 / A
 
      Input arguments must be double or single; integer, logical, and character
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
@@ -4348,7 +4161,7 @@ loglpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1427
+# length: 1423
  -- statistics: Y = loglpdf (X, MU, SIGMA)
 
      Loglogistic probability density function (PDF).
@@ -4369,8 +4182,8 @@ loglpdf
      i.e.  MU and SIGMA, in analogy with the logistic distribution.  Their
      relation to the α and b parameters used in Wikipedia are given below:
 
-        • MU = log (A)
-        • SIGMA = 1 / A
+        * MU = log (A)
+        * SIGMA = 1 / A
 
      Input arguments must be double or single; integer, logical, and character
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
@@ -4398,7 +4211,7 @@ loglrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1594
+# length: 1582
  -- statistics: R = loglrnd (MU, SIGMA)
  -- statistics: R = loglrnd (MU, SIGMA, ROWS)
  -- statistics: R = loglrnd (MU, SIGMA, ROWS, COLS, ...)
@@ -4406,7 +4219,7 @@ loglrnd
 
      Random arrays from the loglogistic distribution.
 
-     ‘R = loglrnd (MU, SIGMA)’ returns an array of random numbers chosen from
+     'R = loglrnd (MU, SIGMA)' returns an array of random numbers chosen from
      the loglogistic distribution with mean parameter MU and scale parameter
      SIGMA.  The size of R is the common size of MU and SIGMA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
@@ -4414,7 +4227,7 @@ loglrnd
      Mean of logarithmic values MU must be a non-negative real value and scale
      parameter of logarithmic values SIGMA must be a positive real value.
 
-     When called with mu single size argument, ‘loglrnd’ returns mu square
+     When called with mu single size argument, 'loglrnd' returns mu square
      matrix with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -4427,8 +4240,8 @@ loglrnd
      i.e.  MU and SIGMA, in analogy with the logistic distribution.  Their
      relation to the α and b parameters used in Wikipedia are given below:
 
-        • MU = log (A)
-        • SIGMA = 1 / A
+        * MU = log (A)
+        * SIGMA = 1 / A
 
      See also: loglcdf, loglinv, loglpdf, loglfit, logllike, loglstat.
 
@@ -4451,7 +4264,7 @@ logncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2261
+# length: 2253
  -- statistics: P = logncdf (X)
  -- statistics: P = logncdf (X, MU)
  -- statistics: P = logncdf (X, MU, SIGMA)
@@ -4474,7 +4287,7 @@ logncdf
      Default parameter values are MU = 0 and SIGMA = 1.  Both parameters must be
      reals and SIGMA > 0.  For SIGMA <= 0, NaN is returned.
 
-     When called with three output arguments, i.e.  [P, PLO, PUP], ‘logncdf’
+     When called with three output arguments, i.e.  [P, PLO, PUP], 'logncdf'
      computes the confidence bounds for P when the input parameters MU and SIGMA
      are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -4482,7 +4295,7 @@ logncdf
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
      the lower and upper confidence bounds.
 
-     ‘[...] = logncdf (..., "upper")’ computes the upper tail probability of the
+     '[...] = logncdf (..., "upper")' computes the upper tail probability of the
      log-normal distribution with parameters MU and SIGMA, at the values in X.
 
      Further information about the lognormal distribution can be found at
@@ -4610,7 +4423,7 @@ lognrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1395
+# length: 1387
  -- statistics: R = lognrnd (MU, SIGMA)
  -- statistics: R = lognrnd (MU, SIGMA, ROWS)
  -- statistics: R = lognrnd (MU, SIGMA, ROWS, COLS, ...)
@@ -4618,7 +4431,7 @@ lognrnd
 
      Random arrays from the lognormal distribution.
 
-     ‘R = lognrnd (MU, SIGMA)’ returns an array of random numbers chosen from
+     'R = lognrnd (MU, SIGMA)' returns an array of random numbers chosen from
      the lognormal distribution with mean parameter MU and standard deviation
      parameter SIGMA, each corresponding to the associated normal distribution.
      The size of R is the common size of MU, and SIGMA.  A scalar input
@@ -4628,7 +4441,7 @@ lognrnd
      Both parameters must be reals and SIGMA > 0.  For SIGMA <= 0, NaN is
      returned.
 
-     When called with a single size argument, ‘lognrnd’ returns a square matrix
+     When called with a single size argument, 'lognrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -4658,7 +4471,7 @@ mnpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2061
+# length: 2039
  -- statistics: Y = mnpdf (X, PK)
 
      Multinomial probability density function (PDF).
@@ -4666,24 +4479,24 @@ mnpdf
      Arguments
      ---------
 
-        • X is vector with a single sample of a multinomial distribution with
+        * X is vector with a single sample of a multinomial distribution with
           parameter PK or a matrix of random samples from multinomial
           distributions.  In the latter case, each row of X is a sample from a
           multinomial distribution with the corresponding row of PK being its
           parameter.
 
-        • PK is a vector with the probabilities of the categories or a matrix
+        * PK is a vector with the probabilities of the categories or a matrix
           with each row containing the probabilities of a multinomial sample.
 
      Return values
      -------------
 
-        • Y is a vector of probabilities of the random samples X from the
+        * Y is a vector of probabilities of the random samples X from the
           multinomial distribution with corresponding parameter PK.  The
           parameter N of the multinomial distribution is the sum of the elements
           of each row of X.  The length of Y is the number of columns of X.  If
-          a row of PK does not sum to ‘1’, then the corresponding element of Y
-          will be ‘NaN’.
+          a row of PK does not sum to '1', then the corresponding element of Y
+          will be 'NaN'.
 
      Examples
      --------
@@ -4699,12 +4512,12 @@ mnpdf
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
-          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
+          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
-       2. Merran Evans, Nicholas Hastings and Brian Peacock.  ‘Statistical
-          Distributions’.  pages 134-136, Wiley, New York, third edition, 2000.
+       2. Merran Evans, Nicholas Hastings and Brian Peacock.  'Statistical
+          Distributions'.  pages 134-136, Wiley, New York, third edition, 2000.
 
      Input arguments must be double, single, or an integer type; logical and
      character arrays are rejected.  Integer input is promoted to double, so the
@@ -4733,7 +4546,7 @@ mnrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2232
+# length: 2208
  -- statistics: R = mnrnd (N, PK)
  -- statistics: R = mnrnd (N, PK, S)
 
@@ -4742,30 +4555,30 @@ mnrnd
      Arguments
      ---------
 
-        • N is the first parameter of the multinomial distribution.  N can be
+        * N is the first parameter of the multinomial distribution.  N can be
           scalar or a vector containing the number of trials of each multinomial
           sample.  The elements of N must be non-negative integers.
 
-        • PK is the second parameter of the multinomial distribution.  PK can be
+        * PK is the second parameter of the multinomial distribution.  PK can be
           a vector with the probabilities of the categories or a matrix with
           each row containing the probabilities of a multinomial sample.  If PK
           has more than one row and N is non-scalar, then the number of rows of
           PK must match the number of elements of N.
 
-        • S is the number of multinomial samples to be generated.  S must be a
+        * S is the number of multinomial samples to be generated.  S must be a
           non-negative integer.  If S is specified, then N must be scalar and PK
           must be a vector.
 
      Return values
      -------------
 
-        • R is a matrix of random samples from the multinomial distribution with
+        * R is a matrix of random samples from the multinomial distribution with
           corresponding parameters N and PK.  Each row corresponds to one
           multinomial sample.  The number of columns, therefore, corresponds to
           the number of columns of PK.  If S is not specified, then the number
           of rows of R is the maximum of the number of elements of N and the
-          number of rows of PK.  If a row of PK does not sum to ‘1’, then the
-          corresponding row of R will contain only ‘NaN’ values.
+          number of rows of PK.  If a row of PK does not sum to '1', then the
+          corresponding row of R will contain only 'NaN' values.
 
      Examples
      --------
@@ -4785,12 +4598,12 @@ mnrnd
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
-          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
+          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
-       2. Merran Evans, Nicholas Hastings and Brian Peacock.  ‘Statistical
-          Distributions’.  pages 134-136, Wiley, New York, third edition, 2000.
+       2. Merran Evans, Nicholas Hastings and Brian Peacock.  'Statistical
+          Distributions'.  pages 134-136, Wiley, New York, third edition, 2000.
 
      See also: mnpdf.
 
@@ -4813,7 +4626,7 @@ mvncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3260
+# length: 3238
  -- statistics: P = mvncdf (X)
  -- statistics: P = mvncdf (X, MU, SIGMA)
  -- statistics: P = mvncdf (X_LO, X_UP, MU, SIGMA)
@@ -4822,13 +4635,13 @@ mvncdf
 
      Multivariate normal cumulative distribution function (CDF).
 
-     ‘P = mvncdf (X)’ returns the cumulative probability of the multivariate
+     'P = mvncdf (X)' returns the cumulative probability of the multivariate
      normal distribution evaluated at each row of X with zero mean and an
      identity covariance matrix.  The rows of matrix X correspond to
      observations and its columns to variables.  The return argument P is a
      column vector with the same number of rows as in X.
 
-     ‘P = mvncdf (X, MU, SIGMA)’ returns cumulative probability of the
+     'P = mvncdf (X, MU, SIGMA)' returns cumulative probability of the
      multivariate normal distribution evaluated at each row of X with mean MU
      and a covariance matrix SIGMA.  MU can be either a scalar (the same of
      every variable) or a row vector with the same number of elements as the
@@ -4843,16 +4656,16 @@ mvncdf
      probability that a random vector V, distributed as multivariate normal,
      will fall within the semi-infinite rectangle with upper limits defined by
      X.
-        • Pr{V(1)<=X(1), V(2)<=X(2), ... V(D)<=X(D)}.
+        * Pr{V(1)<=X(1), V(2)<=X(2), ... V(D)<=X(D)}.
 
-     ‘P = mvncdf (X_LO, X_HI, MU, SIGMA)’ returns the multivariate normal
+     'P = mvncdf (X_LO, X_HI, MU, SIGMA)' returns the multivariate normal
      cumulative probability evaluated over the rectangle (hyper-rectangle for
      multivariate data in X) with lower and upper limits defined by X_LO and
      X_HI, respectively.
 
-     ‘[P, ERR] = mvncdf (...)’ also returns an error estimate ERR in P.
+     '[P, ERR] = mvncdf (...)' also returns an error estimate ERR in P.
 
-     ‘P = mvncdf (..., OPTIONS)’ specifies the structure, which controls
+     'P = mvncdf (..., OPTIONS)' specifies the structure, which controls
      specific parameters for the numerical integration used to compute P.  The
      required fields are:
 
@@ -4896,36 +4709,36 @@ mvnpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2041
+# length: 2021
  -- statistics: Y = mvnpdf (X, MU, SIGMA)
 
      Multivariate normal probability density function (PDF).
 
-     ‘Y = mvnpdf (X)’ returns the probability density of the multivariate normal
+     'Y = mvnpdf (X)' returns the probability density of the multivariate normal
      distribution with zero mean and identity covariance matrix, evaluated at
      each row of X.  Rows of the N-by-D matrix X correspond to observations
      orpoints, and columns correspond to variables or coordinates.  Y is an
      N-by-1 vector.
 
-     ‘Y = mvnpdf (X, MU)’ returns the density of the multivariate normal
+     'Y = mvnpdf (X, MU)' returns the density of the multivariate normal
      distribution with mean MU and identity covariance matrix, evaluated at each
      row of X.  MU is a 1-by-D vector, or an N-by-D matrix, in which case the
      density is evaluated for each row of X with the corresponding row of MU.
      MU can also be a scalar value, which MVNPDF replicates to match the size of
      X.
 
-     ‘Y = mvnpdf (X, MU, SIGMA)’ returns the density of the multivariate normal
+     'Y = mvnpdf (X, MU, SIGMA)' returns the density of the multivariate normal
      distribution with mean MU and covariance SIGMA, evaluated at each row of X.
      SIGMA is a D-by-D matrix, or an D-by-D-by-N array, in which case the
      density is evaluated for each row of X with the corresponding page of
-     SIGMA, i.e., ‘mvnpdf’ computes Y(I) using X(I,:) and SIGMA(:,:,I).  If the
+     SIGMA, i.e., 'mvnpdf' computes Y(I) using X(I,:) and SIGMA(:,:,I).  If the
      covariance matrix is diagonal, containing variances along the diagonal and
      zero covariances off the diagonal, SIGMA may also be specified as a 1-by-D
      matrix or a 1-by-D-by-N array, containing just the diagonal.  Pass in the
      empty matrix for MU to use its default value when you want to only specify
      SIGMA.
 
-     If X is a 1-by-D vector, ‘mvnpdf’ replicates it to match the leading
+     If X is a 1-by-D vector, 'mvnpdf' replicates it to match the leading
      dimension of MU or the trailing dimension of SIGMA.
 
      Input arguments must be double or single; integer, logical, and character
@@ -4954,7 +4767,7 @@ mvnrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1814
+# length: 1782
  -- statistics: R = mvnrnd (MU, SIGMA)
  -- statistics: R = mvnrnd (MU, SIGMA, N)
  -- statistics: R = mvnrnd (MU, SIGMA, N, T)
@@ -4962,28 +4775,28 @@ mvnrnd
 
      Random vectors from the multivariate normal distribution.
 
-     ‘R = mvnrnd (MU, SIGMA)’ returns an N-by-D matrix R of random vectors
+     'R = mvnrnd (MU, SIGMA)' returns an N-by-D matrix R of random vectors
      chosen from the multivariate normal distribution with mean vector MU and
-     covariance matrix SIGMA.  MU is an N-by-D matrix, and ‘mvnrnd’ generates
+     covariance matrix SIGMA.  MU is an N-by-D matrix, and 'mvnrnd' generates
      each N of R using the corresponding N of MU.  SIGMA is a D-by-D symmetric
      positive semi-definite matrix, or a D-by-D-by-N array.  If SIGMA is an
-     array, ‘mvnrnd’ generates each N of R using the corresponding page of
-     SIGMA, i.e., ‘mvnrnd’ computes R(I,:) using MU(I,:) and SIGMA(:,:,I).  If
+     array, 'mvnrnd' generates each N of R using the corresponding page of
+     SIGMA, i.e., 'mvnrnd' computes R(I,:) using MU(I,:) and SIGMA(:,:,I).  If
      the covariance matrix is diagonal, containing variances along the diagonal
      and zero covariances off the diagonal, SIGMA may also be specified as a
      1-by-D matrix or a 1-by-D-by-N array, containing just the diagonal.  If MU
-     is a 1-by-D vector, ‘mvnrnd’ replicates it to match the trailing dimension
+     is a 1-by-D vector, 'mvnrnd' replicates it to match the trailing dimension
      of SIGMA.
 
-     ‘R = mvnrnd (MU, SIGMA, N)’ returns a N-by-D matrix R of random vectors
+     'R = mvnrnd (MU, SIGMA, N)' returns a N-by-D matrix R of random vectors
      chosen from the multivariate normal distribution with 1-by-D mean vector
      MU, and D-by-D covariance matrix SIGMA.
 
-     ‘R = mvnrnd (MU, SIGMA, N, T)’ supplies the Cholesky factor T of SIGMA, so
+     'R = mvnrnd (MU, SIGMA, N, T)' supplies the Cholesky factor T of SIGMA, so
      that SIGMA(:,:,J) == T(:,:,J)'*T(:,:,J) if SIGMA is a 3D array or SIGMA ==
      T'*T if SIGMA is a matrix.  No error checking is done on T.
 
-     ‘[R, T] = mvnrnd (...)’ returns the Cholesky factor T, so it can be re-used
+     '[R, T] = mvnrnd (...)' returns the Cholesky factor T, so it can be re-used
      to make later calls more efficient, although there are greater efficiency
      gains when SIGMA can be specified as a diagonal instead.
 
@@ -5008,7 +4821,7 @@ mvtcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2984
+# length: 2939
  -- statistics: P = mvtcdf (X, RHO, DF)
  -- statistics: P = mvncdf (X_LO, X_UP, RHO, DF)
  -- statistics: P = mvncdf (..., OPTIONS)
@@ -5016,7 +4829,7 @@ mvtcdf
 
      Multivariate Student's t cumulative distribution function (CDF).
 
-     ‘P = mvtcdf (X, RHO, DF)’ returns the cumulative probability of the
+     'P = mvtcdf (X, RHO, DF)' returns the cumulative probability of the
      multivariate student's t distribution with correlation parameters RHO and
      degrees of freedom DF, evaluated at each row of X.  The rows of the N*D
      matrix X correspond to sample observations and its columns correspond to
@@ -5026,26 +4839,26 @@ mvtcdf
      RHO is a symmetric, positive definite, D*D correlation matrix.  DF is a
      scalar or a vector with N elements.
 
-     Note: ‘mvtcdf’ computes the CDF for the standard multivariate Student's t
+     Note: 'mvtcdf' computes the CDF for the standard multivariate Student's t
      distribution, centered at the origin, with no scale parameters.  If RHO is
-     a covariance matrix, i.e.  ‘diag(RHO)’ is not all ones, ‘mvtcdf’ rescales
-     RHO to transform it to a correlation matrix.  ‘mvtcdf’ does not rescale X,
+     a covariance matrix, i.e.  'diag(RHO)' is not all ones, 'mvtcdf' rescales
+     RHO to transform it to a correlation matrix.  'mvtcdf' does not rescale X,
      though.
 
      The multivariate Student's t cumulative probability at X is defined as the
      probability that a random vector T, distributed as multivariate normal,
      will fall within the semi-infinite rectangle with upper limits defined by
      X.
-        • Pr{T(1)<=X(1), T(2)<=X(2), ... T(D)<=X(D)}.
+        * Pr{T(1)<=X(1), T(2)<=X(2), ... T(D)<=X(D)}.
 
-     ‘P = mvtcdf (X_LO, X_HI, RHO, DF)’ returns the multivariate Student's t
+     'P = mvtcdf (X_LO, X_HI, RHO, DF)' returns the multivariate Student's t
      cumulative probability evaluated over the rectangle (hyper-rectangle for
      multivariate data in X) with lower and upper limits defined by X_LO and
      X_HI, respectively.
 
-     ‘[P, ERR] = mvtcdf (...)’ also returns an error estimate ERR in P.
+     '[P, ERR] = mvtcdf (...)' also returns an error estimate ERR in P.
 
-     ‘P = mvtcdf (..., OPTIONS)’ specifies the structure, which controls
+     'P = mvtcdf (..., OPTIONS)' specifies the structure, which controls
      specific parameters for the numerical integration used to compute P.  The
      required fields are:
 
@@ -5066,7 +4879,7 @@ mvtcdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: bvtcdf, mvtpdf, mvtrnd, mvtcdfqmc.
+     See also: bvtcdf, mvtpdf, mvtrnd.
 
 
 # name: <cell-element>
@@ -5080,53 +4893,6 @@ Multivariate Student's t cumulative distribution function (CDF).
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 9
-mvtcdfqmc
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1381
- -- statistics: P = mvtcdfqmc (A, B, RHO, DF)
- -- statistics: P = mvtcdfqmc (..., TOLFUN)
- -- statistics: P = mvtcdfqmc (..., TOLFUN, MAXFUNEVALS)
- -- statistics: P = mvtcdfqmc (..., TOLFUN, MAXFUNEVALS, DISPLAY)
- -- statistics: [P, ERR] = mvtcdfqmc (...)
- -- statistics: [P, ERR, FUNEVALS] = mvtcdfqmc (...)
-
-     Quasi-Monte-Carlo computation of the multivariate Student's T CDF.
-
-     The QMC multivariate Student's t distribution is evaluated between the
-     lower limit A and upper limit B of the hyper-rectangle with a correlation
-     matrix RHO and degrees of freedom DF.
-
-     "TolFun"         -- Maximum absolute error tolerance.  Default is 1e-4.
-     "MaxFunEvals"    -- Maximum number of integrand evaluations.  Default is 1e7
-                      for D > 4.
-     "Display"        -- Display options.  Choices are "off" (default), "iter",
-                      which shows the probability and estimated error at each
-                      repetition, and "final", which shows the final probability and
-                      related error after the integrand has converged successfully.
-
-     ‘[P, ERR, FUNEVALS] = mvtcdfqmc (...)’ returns the estimated probability,
-     P, an estimate of the error, ERR, and the number of iterations until a
-     successful convergence is met, unless the value in MAXFUNEVALS was reached.
-
-     See also: mvtcdf, mvtpdf, mvtrnd.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 66
-Quasi-Monte-Carlo computation of the multivariate Student's T CDF.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
 # length: 6
 mvtpdf
 
@@ -5134,7 +4900,7 @@ mvtpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1331
+# length: 1312
  -- statistics: Y = mvtpdf (X, RHO, DF)
 
      Multivariate Student's t probability density function (PDF).
@@ -5142,20 +4908,20 @@ mvtpdf
      Arguments
      ---------
 
-        • X are the points at which to find the probability, where each row
+        * X are the points at which to find the probability, where each row
           corresponds to an observation.  (N*D matrix)
 
-        • RHO is the correlation matrix.  (D*D symmetric positive definite
+        * RHO is the correlation matrix.  (D*D symmetric positive definite
           matrix)
 
-        • DF is the degrees of freedom.  (scalar or vector of length N)
+        * DF is the degrees of freedom.  (scalar or vector of length N)
 
      The distribution is assumed to be centered (zero mean).
 
      Return values
      -------------
 
-        • Y is the probability density for each row of X.  (N*1 vector)
+        * Y is the probability density for each row of X.  (N*1 vector)
 
      Examples
      --------
@@ -5177,7 +4943,7 @@ mvtpdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: mvtcdf, mvtcdfqmc, mvtrnd.
+     See also: mvtcdf, mvtrnd.
 
 
 # name: <cell-element>
@@ -5198,7 +4964,7 @@ mvtrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2053
+# length: 2018
  -- statistics: R = mvtrnd (RHO, DF)
  -- statistics: R = mvtrnd (RHO, DF, N)
 
@@ -5207,28 +4973,28 @@ mvtrnd
      Arguments
      ---------
 
-        • RHO is the matrix of correlation coefficients.  If there are any
+        * RHO is the matrix of correlation coefficients.  If there are any
           non-unit diagonal elements then RHO will be normalized, so that the
-          resulting covariance of the obtained samples R follows: ‘cov (r) =
-          df/(df-2) * rho ./ (sqrt (diag (rho) * diag (rho)))’.  In order to
+          resulting covariance of the obtained samples R follows: 'cov (r) =
+          df/(df-2) * rho ./ (sqrt (diag (rho) * diag (rho)))'.  In order to
           obtain samples distributed according to a standard multivariate
           student's t-distribution, RHO must be equal to the identity matrix.
           To generate multivariate student's t-distribution samples R with
           arbitrary covariance matrix RHO, the following scaling might be used:
-          ‘r = mvtrnd (rho, df, n) * diag (sqrt (diag (rho)))’.
+          'r = mvtrnd (rho, df, n) * diag (sqrt (diag (rho)))'.
 
-        • DF is the degrees of freedom for the multivariate t-distribution.  DF
+        * DF is the degrees of freedom for the multivariate t-distribution.  DF
           must be a vector with the same number of elements as samples to be
           generated or be scalar.
 
-        • N is the number of rows of the matrix to be generated.  N must be a
+        * N is the number of rows of the matrix to be generated.  N must be a
           non-negative integer and corresponds to the number of samples to be
           generated.
 
      Return values
      -------------
 
-        • R is a matrix of random samples from the multivariate t-distribution
+        * R is a matrix of random samples from the multivariate t-distribution
           with N row samples.
 
      Examples
@@ -5247,14 +5013,14 @@ mvtrnd
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
-          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
+          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
-       2. Samuel Kotz and Saralees Nadarajah.  ‘Multivariate t Distributions and
-          Their Applications’.  Cambridge University Press, Cambridge, 2004.
+       2. Samuel Kotz and Saralees Nadarajah.  'Multivariate t Distributions and
+          Their Applications'.  Cambridge University Press, Cambridge, 2004.
 
-     See also: mvtcdf, mvtcdfqmc, mvtpdf.
+     See also: mvtcdf, mvtpdf.
 
 
 # name: <cell-element>
@@ -5275,7 +5041,7 @@ nakacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1253
+# length: 1249
  -- statistics: P = nakacdf (X, MU, OMEGA)
  -- statistics: P = nakacdf (X, MU, OMEGA, 'upper')
 
@@ -5289,7 +5055,7 @@ nakacdf
      Both parameters must be positive reals and MU >= 0.5.  For MU < 0.5 or
      OMEGA <= 0, NaN is returned.
 
-     ‘P = nakacdf (X, MU, OMEGA, "upper")’ computes the upper tail probability
+     'P = nakacdf (X, MU, OMEGA, "upper")' computes the upper tail probability
      of the Nakagami distribution with parameters MU and BETA, at the values in
      X.
 
@@ -5406,7 +5172,7 @@ nakarnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1252
+# length: 1244
  -- statistics: R = nakarnd (MU, OMEGA)
  -- statistics: R = nakarnd (MU, OMEGA, ROWS)
  -- statistics: R = nakarnd (MU, OMEGA, ROWS, COLS, ...)
@@ -5414,7 +5180,7 @@ nakarnd
 
      Random arrays from the Nakagami distribution.
 
-     ‘R = nakarnd (MU, OMEGA)’ returns an array of random numbers chosen from
+     'R = nakarnd (MU, OMEGA)' returns an array of random numbers chosen from
      the Nakagami distribution with shape parameter MU and spread parameter
      OMEGA.  The size of R is the common size of MU and OMEGA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
@@ -5422,7 +5188,7 @@ nakarnd
      Both parameters must be positive reals and MU >= 0.5.  For MU < 0.5 or
      OMEGA <= 0, NaN is returned.
 
-     When called with a single size argument, ‘nakarnd’ returns a square matrix
+     When called with a single size argument, 'nakarnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -5452,7 +5218,7 @@ nbincdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2638
+# length: 2634
  -- statistics: P = nbincdf (X, R, PS)
  -- statistics: P = nbincdf (X, R, PS, 'upper')
 
@@ -5467,7 +5233,7 @@ nbincdf
 
      The algorithm uses the cumulative sums of the binomial masses.
 
-     ‘P = nbincdf (X, R, PS, "upper")’ computes the upper tail probability of
+     'P = nbincdf (X, R, PS, "upper")' computes the upper tail probability of
      the negative binomial distribution with parameters R and PS, at the values
      in X.
 
@@ -5638,7 +5404,7 @@ nbinrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2475
+# length: 2471
  -- statistics: RND = nbinrnd (R, PS)
  -- statistics: RND = nbinrnd (R, PS, ROWS)
  -- statistics: RND = nbinrnd (R, PS, ROWS, COLS, ...)
@@ -5646,7 +5412,7 @@ nbinrnd
 
      Random arrays from the negative binomial distribution.
 
-     ‘RND = nbinrnd (R, PS)’ returns an array of random numbers chosen from the
+     'RND = nbinrnd (R, PS)' returns an array of random numbers chosen from the
      negative binomial distribution with parameters R and PS, where R is the
      number of successes until the experiment is stopped and PS is the
      probability of success in each experiment, given the number of failures in
@@ -5701,7 +5467,7 @@ ncfcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1204
+# length: 1200
  -- statistics: P = ncfcdf (X, DF1, DF2, LAMBDA)
  -- statistics: P = ncfcdf (X, DF1, DF2, LAMBDA, 'upper')
 
@@ -5713,7 +5479,7 @@ ncfcdf
      DF1, DF2, and LAMBDA.  A scalar input functions as a constant matrix of the
      same size as the other inputs.
 
-     ‘P = ncfcdf (X, DF1, DF2, LAMBDA, "upper")’ computes the upper tail
+     'P = ncfcdf (X, DF1, DF2, LAMBDA, "upper")' computes the upper tail
      probability of the noncentral F-distribution with parameters DF1, DF2, and
      LAMBDA, at the values in X.
 
@@ -5746,7 +5512,7 @@ ncfinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1035
+# length: 1031
  -- statistics: X = ncfinv (P, DF1, DF2, LAMBDA)
 
      Inverse of the noncentral F-cumulative distribution function (iCDF).
@@ -5757,7 +5523,7 @@ ncfinv
      DF1, DF2, and LAMBDA.  A scalar input functions as a constant matrix of the
      same size as the other inputs.
 
-     ‘ncfinv’ uses Newton's method to converge to the solution.
+     'ncfinv' uses Newton's method to converge to the solution.
 
      Further information about the noncentral F-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_F-distribution>
@@ -5828,24 +5594,24 @@ ncfrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1368
+# length: 1356
  -- statistics: R = ncfrnd (DF1, DF2, LAMBDA)
  -- statistics: R = ncfrnd (DF1, DF2, LAMBDA, ROWS, COLS, ...)
  -- statistics: R = ncfrnd (DF1, DF2, LAMBDA, [SZ])
 
      Random arrays from the noncentral F-distribution.
 
-     ‘X = ncfrnd (P, DF1, DF2, LAMBDA)’ returns an array of random numbers
+     'X = ncfrnd (P, DF1, DF2, LAMBDA)' returns an array of random numbers
      chosen from the noncentral F-distribution with DF1 and DF2 degrees of
      freedom and noncentrality parameter LAMBDA.  The size of R is the common
      size of DF1, DF2, and LAMBDA.  A scalar input functions as a constant
      matrix of the same size as the other input.
 
-     ‘ncfrnd’ generates values using the definition of a noncentral F random
+     'ncfrnd' generates values using the definition of a noncentral F random
      variable, as the ratio of a noncentral chi-squared distribution and a
      (central) chi-squared distribution.
 
-     When called with a single size argument, ‘ncfrnd’ returns a square matrix
+     When called with a single size argument, 'ncfrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -5875,7 +5641,7 @@ nctcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1140
+# length: 1136
  -- statistics: P = nctcdf (X, DF, MU)
  -- statistics: P = nctcdf (X, DF, MU, 'upper')
 
@@ -5887,7 +5653,7 @@ nctcdf
      MU.  A scalar input functions as a constant matrix of the same size as the
      other inputs.
 
-     ‘P = nctcdf (X, DF, MU, "upper")’ computes the upper tail probability of
+     'P = nctcdf (X, DF, MU, "upper")' computes the upper tail probability of
      the noncentral t-distribution with parameters DF and MU, at the values in
      X.
 
@@ -5920,7 +5686,7 @@ nctinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 999
+# length: 995
  -- statistics: X = ncx2inv (P, DF, MU)
 
      Inverse of the non-central t-cumulative distribution function (iCDF).
@@ -5930,7 +5696,7 @@ nctinv
      parameter MU.  The size of X is the common size of P, DF, and MU.  A scalar
      input functions as a constant matrix of the same size as the other inputs.
 
-     ‘nctinv’ uses Newton's method to converge to the solution.
+     'nctinv' uses Newton's method to converge to the solution.
 
      Further information about the noncentral t-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_t-distribution>
@@ -6000,23 +5766,23 @@ nctrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1304
+# length: 1292
  -- statistics: R = nctrnd (DF, MU)
  -- statistics: R = nctrnd (DF, MU, ROWS, COLS, ...)
  -- statistics: R = nctrnd (DF, MU, [SZ])
 
      Random arrays from the noncentral t-distribution.
 
-     ‘X = nctrnd (P, DF, MU)’ returns an array of random numbers chosen from the
+     'X = nctrnd (P, DF, MU)' returns an array of random numbers chosen from the
      noncentral t-distribution with DF degrees of freedom and noncentrality
      parameter MU.  The size of R is the common size of DF and MU.  A scalar
      input functions as a constant matrix of the same size as the other input.
 
-     ‘nctrnd’ generates values using the definition of a noncentral t random
+     'nctrnd' generates values using the definition of a noncentral t random
      variable, as the ratio of a normal distribution with non-zero mean and the
      sqrt of a chi-squared distribution.
 
-     When called with a single size argument, ‘nctrnd’ returns a square matrix
+     When called with a single size argument, 'nctrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -6046,7 +5812,7 @@ ncx2cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1229
+# length: 1225
  -- statistics: P = ncx2cdf (X, DF, LAMBDA)
  -- statistics: P = ncx2cdf (X, DF, LAMBDA, 'upper')
 
@@ -6058,7 +5824,7 @@ ncx2cdf
      and LAMBDA.  A scalar input functions as a constant matrix of the same size
      as the other inputs.
 
-     ‘P = ncx2cdf (X, DF, LAMBDA, "upper")’ computes the upper tail probability
+     'P = ncx2cdf (X, DF, LAMBDA, "upper")' computes the upper tail probability
      of the noncentral chi-squared distribution with parameters DF and LAMBDA,
      at the values in X.
 
@@ -6092,7 +5858,7 @@ ncx2inv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1065
+# length: 1061
  -- statistics: X = ncx2inv (P, DF, LAMBDA)
 
      Inverse of the noncentral chi-squared cumulative distribution function
@@ -6104,7 +5870,7 @@ ncx2inv
      MU.  A scalar input functions as a constant matrix of the same size as the
      other inputs.
 
-     ‘ncx2inv’ uses Newton's method to converge to the solution.
+     'ncx2inv' uses Newton's method to converge to the solution.
 
      Further information about the noncentral chi-squared distribution can be
      found at
@@ -6177,20 +5943,20 @@ ncx2rnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1157
+# length: 1149
  -- statistics: R = ncx2rnd (DF, LAMBDA)
  -- statistics: R = ncx2rnd (DF, LAMBDA, ROWS, COLS, ...)
  -- statistics: R = ncx2rnd (DF, LAMBDA, [SZ])
 
      Random arrays from the noncentral chi-squared distribution.
 
-     ‘R = ncx2rnd (DF, LAMBDA)’ returns an array of random numbers chosen from
+     'R = ncx2rnd (DF, LAMBDA)' returns an array of random numbers chosen from
      the noncentral chi-squared distribution with DF degrees of freedom and
      noncentrality parameter LAMBDA.  The size of R is the common size of DF and
      LAMBDA.  A scalar input functions as a constant matrix of the same size as
      the other input.
 
-     When called with a single size argument, ‘ncx2rnd’ returns a square matrix
+     When called with a single size argument, 'ncx2rnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -6221,7 +5987,7 @@ normcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2065
+# length: 2053
  -- statistics: P = normcdf (X)
  -- statistics: P = normcdf (X, MU)
  -- statistics: P = normcdf (X, MU, SIGMA)
@@ -6239,7 +6005,7 @@ normcdf
 
      Default values are MU = 0, SIGMA = 1.
 
-     When called with three output arguments, i.e.  [P, PLO, PUP], ‘normcdf’
+     When called with three output arguments, i.e.  [P, PLO, PUP], 'normcdf'
      computes the confidence bounds for P when the input parameters MU and SIGMA
      are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
@@ -6247,10 +6013,10 @@ normcdf
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
      the lower and upper confidence bounds.
 
-     ‘[...] = normcdf (..., "upper")’ computes the upper tail probability of the
+     '[...] = normcdf (..., "upper")' computes the upper tail probability of the
      normal distribution with parameters MU and SIGMA, at the values in X.  This
      can be used to compute a right-tailed p-value.  To compute a two-tailed
-     p-value, use ‘2 * normcdf (-abs (X), MU, SIGMA)’.
+     p-value, use '2 * normcdf (-abs (X), MU, SIGMA)'.
 
      Further information about the normal distribution can be found at
      <https://en.wikipedia.org/wiki/Normal_distribution>
@@ -6281,7 +6047,7 @@ norminv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1260
+# length: 1256
  -- statistics: X = norminv (P)
  -- statistics: X = norminv (P, MU)
  -- statistics: X = norminv (P, MU, SIGMA)
@@ -6296,7 +6062,7 @@ norminv
      Default values are MU = 0, SIGMA = 1.
 
      The default values correspond to the standard normal distribution and
-     computing its quantile function is also possible with the ‘probit’
+     computing its quantile function is also possible with the 'probit'
      function, which is faster but it does not perform any input validation.
 
      Further information about the normal distribution can be found at
@@ -6371,7 +6137,7 @@ normrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1216
+# length: 1208
  -- statistics: R = normrnd (MU, SIGMA)
  -- statistics: R = normrnd (MU, SIGMA, ROWS)
  -- statistics: R = normrnd (MU, SIGMA, ROWS, COLS, ...)
@@ -6379,13 +6145,13 @@ normrnd
 
      Random arrays from the normal distribution.
 
-     ‘R = normrnd (MU, SIGMA)’ returns an array of random numbers chosen from
+     'R = normrnd (MU, SIGMA)' returns an array of random numbers chosen from
      the normal distribution with mean MU and standard deviation SIGMA.  The
      size of R is the common size of MU and SIGMA.  A scalar input functions as
      a constant matrix of the same size as the other inputs.  Both parameters
      must be finite real numbers and SIGMA > 0, otherwise NaN is returned.
 
-     When called with a single size argument, ‘normrnd’ returns a square matrix
+     When called with a single size argument, 'normrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -6415,7 +6181,7 @@ plcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1195
+# length: 1191
  -- statistics: P = plcdf (DATA, X, FX)
  -- statistics: P = plcdf (DATA, X, FX, 'upper')
 
@@ -6427,7 +6193,7 @@ plcdf
      to each value in X.  Both X and FX must be vectors of the same size and at
      least 2-elements long.  The size of P is the same as DATA.
 
-     ‘P = plcdf (DATA, X, FX, "upper")’ computes the upper tail probability of
+     'P = plcdf (DATA, X, FX, "upper")' computes the upper tail probability of
      the piecewise linear distribution with parameters X and FX, at the values
      in DATA.
 
@@ -6544,7 +6310,7 @@ plrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1116
+# length: 1108
  -- statistics: R = plrnd (X, FX)
  -- statistics: R = plrnd (X, FX, ROWS)
  -- statistics: R = plrnd (X, FX, ROWS, COLS, ...)
@@ -6552,13 +6318,13 @@ plrnd
 
      Random arrays from the piecewise linear distribution.
 
-     ‘R = plrnd (X, FX)’ returns a random number chosen from the piecewise
+     'R = plrnd (X, FX)' returns a random number chosen from the piecewise
      linear distribution with a vector of X values at which the CDF changes
      slope and a vector of CDF values FX that correspond to each value in X.
      Both X and FX must be vectors of the same size and at least 2-elements
      long.
 
-     When called with a single size argument, ‘plrnd’ returns a square matrix
+     When called with a single size argument, 'plrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -6588,7 +6354,7 @@ poisscdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1168
+# length: 1164
  -- statistics: P = poisscdf (X, LAMBDA)
  -- statistics: P = poisscdf (X, LAMBDA, 'upper')
 
@@ -6599,7 +6365,7 @@ poisscdf
      the common size of X and LAMBDA.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     ‘P = poisscdf (X, LAMBDA, "upper")’ computes the upper tail probability of
+     'P = poisscdf (X, LAMBDA, "upper")' computes the upper tail probability of
      the Poisson distribution with parameter LAMBDA, at the values in X.
 
      Further information about the Poisson distribution can be found at
@@ -6711,7 +6477,7 @@ poissrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1198
+# length: 1190
  -- statistics: R = poissrnd (LAMBDA)
  -- statistics: R = poissrnd (LAMBDA, ROWS)
  -- statistics: R = poissrnd (LAMBDA, ROWS, COLS, ...)
@@ -6719,13 +6485,13 @@ poissrnd
 
      Random arrays from the Poisson distribution.
 
-     ‘R = normrnd (LAMBDA)’ returns an array of random numbers chosen from the
+     'R = normrnd (LAMBDA)' returns an array of random numbers chosen from the
      Poisson distribution with rate parameter LAMBDA.  The size of R is the
      common size of LAMBDA.  A scalar input functions as a constant matrix of
      the same size as the other inputs.  LAMBDA must be a finite real number and
      greater or equal to 0, otherwise NaN is returned.
 
-     When called with a single size argument, ‘poissrnd’ returns a square matrix
+     When called with a single size argument, 'poissrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -6755,7 +6521,7 @@ raylcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1089
+# length: 1085
  -- statistics: P = raylcdf (X, SIGMA)
  -- statistics: P = raylcdf (X, SIGMA, 'upper')
 
@@ -6766,7 +6532,7 @@ raylcdf
      the common size of X and SIGMA.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     ‘P = raylcdf (X, SIGMA, "upper")’ computes the upper tail probability of
+     'P = raylcdf (X, SIGMA, "upper")' computes the upper tail probability of
      the Rayleigh distribution with parameter SIGMA, at the values in X.
 
      Further information about the Rayleigh distribution can be found at
@@ -6876,7 +6642,7 @@ raylrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1167
+# length: 1159
  -- statistics: R = raylrnd (SIGMA)
  -- statistics: R = raylrnd (SIGMA, ROWS)
  -- statistics: R = raylrnd (SIGMA, ROWS, COLS, ...)
@@ -6884,13 +6650,13 @@ raylrnd
 
      Random arrays from the Rayleigh distribution.
 
-     ‘R = raylrnd (SIGMA)’ returns an array of random numbers chosen from the
+     'R = raylrnd (SIGMA)' returns an array of random numbers chosen from the
      Rayleigh distribution with scale parameter SIGMA.  The size of R is the
      size of SIGMA.  A scalar input functions as a constant matrix of the same
      size as the other inputs.  SIGMA must be a finite real number greater than
      0, otherwise NaN is returned.
 
-     When called with a single size argument, ‘raylrnd’ returns a square matrix
+     When called with a single size argument, 'raylrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -6920,7 +6686,7 @@ ricecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1144
+# length: 1140
  -- statistics: P = ricecdf (X, S, SIGMA)
  -- statistics: P = ricecdf (X, S, SIGMA, 'upper')
 
@@ -6932,7 +6698,7 @@ ricecdf
      SIGMA.  A scalar input functions as a constant matrix of the same size as
      the other inputs.
 
-     ‘P = ricecdf (X, S, SIGMA, "upper")’ computes the upper tail probability of
+     'P = ricecdf (X, S, SIGMA, "upper")' computes the upper tail probability of
      the Rician distribution with parameters S and SIGMA, at the values in X.
 
      Further information about the Rician distribution can be found at
@@ -7044,7 +6810,7 @@ ricernd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1131
+# length: 1123
  -- statistics: R = ricernd (S, SIGMA)
  -- statistics: R = ricernd (S, SIGMA, ROWS)
  -- statistics: R = ricernd (S, SIGMA, ROWS, COLS, ...)
@@ -7052,12 +6818,12 @@ ricernd
 
      Random arrays from the Rician distribution.
 
-     ‘R = ricernd (S, SIGMA)’ returns an array of random numbers chosen from the
+     'R = ricernd (S, SIGMA)' returns an array of random numbers chosen from the
      Rician distribution with noncentrality parameter S and scale parameter
      SIGMA.  The size of R is the common size of S and SIGMA.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
 
-     When called with a single size argument, ‘ricernd’ returns a square matrix
+     When called with a single size argument, 'ricernd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -7087,7 +6853,7 @@ stblcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1180
+# length: 1168
  -- statistics: P = stblcdf (X, ALPHA, BETA, GAM, DELTA)
 
      Stable cumulative distribution function (CDF).
@@ -7101,8 +6867,8 @@ stblcdf
      ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
      real.  The parameters must be scalars.
 
-     The cumulative probability has a closed form for ALPHA equal to ‘2’
-     (normal) and for ‘1’ with BETA equal to ‘0’ (Cauchy); otherwise it is
+     The cumulative probability has a closed form for ALPHA equal to '2'
+     (normal) and for '1' with BETA equal to '0' (Cauchy); otherwise it is
      computed by numerical inversion of the characteristic function (the
      Gil-Pelaez formula).
 
@@ -7126,86 +6892,13 @@ Stable cumulative distribution function (CDF).
 # type: sq_string
 # elements: 1
 # length: 7
-stblfit
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2762
- -- statistics: PARAMHAT = stblfit (X)
- -- statistics: [PARAMHAT, PARAMCI] = stblfit (X)
- -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA)
- -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA, FREQ)
- -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA, OPTIONS)
- -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA, FREQ, OPTIONS)
-
-     Estimate parameters and confidence intervals for the stable distribution.
-
-     ‘PARAMHAT = stblfit (X)’ returns the maximum likelihood estimates of the
-     parameters of the stable distribution, in the Nolan S0 parameterization,
-     given the data in X.  PARAMHAT(1) is the tail index ALPHA, PARAMHAT(2) is
-     the skewness BETA, PARAMHAT(3) is the scale GAM, and PARAMHAT(4) is the
-     location DELTA.
-
-     ‘[PARAMHAT, PARAMCI] = stblfit (X)’ returns the 95% confidence intervals
-     for the parameter estimates.  The intervals are Wald intervals from the
-     observed Fisher information.
-
-     ‘[...] = stblfit (X, ALPHA)’ also returns the 100 * (1 - ALPHA) percent
-     confidence intervals for the parameter estimates.  By default, the optional
-     argument ALPHA is 0.05 corresponding to 95% confidence intervals.  Pass in
-     [] for ALPHA to use the default value.
-
-     ‘[...] = stblfit (X, ALPHA, FREQ)’ accepts a frequency vector, FREQ, of the
-     same size as X.  FREQ must contain non-negative integer frequencies for the
-     corresponding elements in X.  By default, or if left empty, FREQ = ones
-     (size (X)).
-
-     ‘[PARAMHAT, PARAMCI] = stblfit (X, ALPHA, OPTIONS)’ specifies control
-     parameters for the iterative algorithm used to compute the ML estimates
-     with the ‘fminsearch’ function.  OPTIONS is a structure with the following
-     fields and their default values:
-        • OPTIONS.Display = "off"
-        • OPTIONS.MaxFunEvals = 400
-        • OPTIONS.MaxIter = 200
-        • OPTIONS.TolX = 1e-6
-
-     The stable density has no closed form; it is evaluated by numerical
-     inversion of the characteristic function, which makes fitting considerably
-     slower than for the closed-form distributions.  Censoring is not supported.
-
-     The estimates are the maximum-likelihood estimates under the mathematically
-     exact density.  MATLAB fits an interpolation-based approximation of the
-     stable density, whose maximum-likelihood estimates deviate from the exact
-     ones by about 10^{-2} (and the resulting confidence intervals by up to
-     roughly 20%); ‘stblfit’ returns the exact (more accurate) estimates.
-
-     Further information about the stable distribution can be found at
-     <https://en.wikipedia.org/wiki/Stable_distribution>
-
-     See also: stbllike, stblpdf, stblcdf, stblinv, stblrnd, fitdist, makedist.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 73
-Estimate parameters and confidence intervals for the stable distribution.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
 stblinv
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1125
+# length: 1109
  -- statistics: X = stblinv (P, ALPHA, BETA, GAM, DELTA)
 
      Inverse of the stable cumulative distribution function (iCDF).
@@ -7218,9 +6911,9 @@ stblinv
      ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
      real.  The parameters must be scalars.
 
-     The quantile has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
-     with BETA equal to ‘0’ (Cauchy); otherwise it is found by numerical
-     inversion of ‘stblcdf’.
+     The quantile has a closed form for ALPHA equal to '2' (normal) and for '1'
+     with BETA equal to '0' (Cauchy); otherwise it is found by numerical
+     inversion of 'stblcdf'.
 
      Input arguments must be double or single; integer, logical, and character
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
@@ -7241,54 +6934,6 @@ Inverse of the stable cumulative distribution function (iCDF).
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8
-stbllike
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1396
- -- statistics: NLOGL = stbllike (PARAMS, X)
- -- statistics: [NLOGL, ACOV] = stbllike (PARAMS, X)
- -- statistics: [NLOGL, ACOV] = stbllike (PARAMS, X, FREQ)
-
-     Negative log-likelihood for the stable distribution.
-
-     ‘NLOGL = stbllike (PARAMS, X)’ returns the negative log-likelihood of the
-     data in X corresponding to the stable distribution, in the Nolan S0
-     parameterization, with (1) tail index ALPHA, (2) skewness BETA, (3) scale
-     GAM, and (4) location DELTA given in the four-element vector PARAMS.
-
-     ‘[NLOGL, ACOV] = stbllike (PARAMS, X)’ also returns the inverse of the
-     observed Fisher information matrix, ACOV.  If the input parameter values in
-     PARAMS are the maximum likelihood estimates, the diagonal elements of ACOV
-     are their asymptotic variances.  ACOV is based on the numerically evaluated
-     Hessian of the negative log-likelihood, since the stable density has no
-     closed form.
-
-     ‘[...] = stbllike (PARAMS, X, FREQ)’ accepts a frequency vector, FREQ, of
-     the same size as X.  FREQ must contain non-negative integer frequencies for
-     the corresponding elements in X.  By default, or if left empty, FREQ = ones
-     (size (X)).
-
-     Further information about the stable distribution can be found at
-     <https://en.wikipedia.org/wiki/Stable_distribution>
-
-     See also: stblfit, stblpdf, stblcdf, stblinv, stblrnd.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 52
-Negative log-likelihood for the stable distribution.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
 # length: 7
 stblpdf
 
@@ -7296,7 +6941,7 @@ stblpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1127
+# length: 1115
  -- statistics: Y = stblpdf (X, ALPHA, BETA, GAM, DELTA)
 
      Stable probability density function (PDF).
@@ -7310,8 +6955,8 @@ stblpdf
      ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
      real.  The parameters must be scalars.
 
-     The density has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
-     with BETA equal to ‘0’ (Cauchy); otherwise it is computed by numerical
+     The density has a closed form for ALPHA equal to '2' (normal) and for '1'
+     with BETA equal to '0' (Cauchy); otherwise it is computed by numerical
      inversion of the characteristic function.
 
      Input arguments must be double or single; integer, logical, and character
@@ -7340,7 +6985,7 @@ stblrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1018
+# length: 1002
  -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA)
  -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M)
  -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)
@@ -7348,7 +6993,7 @@ stblrnd
 
      Random arrays from the stable distribution.
 
-     ‘R = stblrnd (ALPHA, BETA, GAM, DELTA)’ returns a random value drawn from
+     'R = stblrnd (ALPHA, BETA, GAM, DELTA)' returns a random value drawn from
      the stable distribution with tail index (first shape parameter) ALPHA,
      skewness (second shape parameter) BETA, scale parameter GAM, and location
      parameter DELTA, in the Nolan S0 parameterization.
@@ -7356,9 +7001,9 @@ stblrnd
      ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
      real.  The parameters must be scalars.
 
-     ‘stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)’ or ‘stblrnd (..., [M, N,
-     ...])’ returns an M-by-N-by-... array, following the size conventions of
-     ‘rand’.
+     'stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)' or 'stblrnd (..., [M, N,
+     ...])' returns an M-by-N-by-... array, following the size conventions of
+     'rand'.
 
      The values are generated with the Chambers-Mallows-Stuck method.
 
@@ -7383,7 +7028,7 @@ tcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1059
+# length: 1055
  -- statistics: P = tcdf (X, DF)
  -- statistics: P = tcdf (X, DF, 'upper')
 
@@ -7394,7 +7039,7 @@ tcdf
      is the common size of X and DF.  A scalar input functions as a constant
      matrix of the same size as the other input.
 
-     ‘P = tcdf (X, DF, "upper")’ computes the upper tail probability of the
+     'P = tcdf (X, DF, "upper")' computes the upper tail probability of the
      Student's T distribution with DF degrees of freedom, at the values in X.
 
      Further information about the Student's T distribution can be found at
@@ -7469,7 +7114,7 @@ tlscdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1298
+# length: 1294
  -- statistics: P = tlscdf (X, MU, SIGMA, NU)
  -- statistics: P = tlscdf (X, MU, SIGMA, NU, 'upper')
 
@@ -7481,7 +7126,7 @@ tlscdf
      common size of X, MU, SIGMA, and NU.  A scalar input functions as a
      constant matrix of the same size as the other inputs.
 
-     ‘P = tlscdf (X, MU, SIGMA, NU, "upper")’ computes the upper tail
+     'P = tlscdf (X, MU, SIGMA, NU, "upper")' computes the upper tail
      probability of the location-scale Student's T distribution with parameters
      MU, SIGMA, and NU, at the values in X.
 
@@ -7599,7 +7244,7 @@ tlsrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1445
+# length: 1437
  -- statistics: R = tlsrnd (MU, SIGMA, NU)
  -- statistics: R = tlsrnd (MU, SIGMA, NU, ROWS)
  -- statistics: R = tlsrnd (MU, SIGMA, NU, ROWS, COLS, ...)
@@ -7611,13 +7256,13 @@ tlsrnd
      distribution with location parameter MU, scale parameter SIGMA, and NU
      degrees of freedom.
 
-     ‘R = tlsrnd (NU)’ returns an array of random numbers chosen from the
+     'R = tlsrnd (NU)' returns an array of random numbers chosen from the
      location-scale Student's T distribution with location parameter MU, scale
      parameter SIGMA, and NU degrees of freedom.  The size of R is the common
      size of MU, SIGMA, and NU.  A scalar input functions as a constant matrix
      of the same size as the other inputs.
 
-     When called with a single size argument, ‘tlsrnd’ returns a square matrix
+     When called with a single size argument, 'tlsrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -7687,7 +7332,7 @@ tricdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1852
+# length: 1848
  -- statistics: P = tricdf (X, A, B, C)
  -- statistics: P = tricdf (X, A, B, C, 'upper')
 
@@ -7699,7 +7344,7 @@ tricdf
      common size of the input arguments.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     ‘P = tricdf (X, A, B, C, "upper")’ computes the upper tail probability of
+     'P = tricdf (X, A, B, C, "upper")' computes the upper tail probability of
      the triangular distribution with parameters A, B, and C, at the values in
      X.
 
@@ -7844,7 +7489,7 @@ trirnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1653
+# length: 1645
  -- statistics: R = trirnd (A, B, C)
  -- statistics: R = trirnd (A, B, C, ROWS)
  -- statistics: R = trirnd (A, B, C, ROWS, COLS, ...)
@@ -7852,13 +7497,13 @@ trirnd
 
      Random arrays from the triangular distribution.
 
-     ‘R = trirnd (SIGMA)’ returns an array of random numbers chosen from the
+     'R = trirnd (SIGMA)' returns an array of random numbers chosen from the
      triangular distribution with lower limit parameter A, peak location (mode)
      parameter B, and upper limit parameter C.  The size of R is the common size
      of A, B, and C.  A scalar input functions as a constant matrix of the same
      size as the other inputs.
 
-     When called with a single size argument, ‘trirnd’ returns a square matrix
+     When called with a single size argument, 'trirnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -7896,7 +7541,7 @@ trnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1219
+# length: 1211
  -- statistics: R = trnd (DF)
  -- statistics: R = trnd (DF, ROWS)
  -- statistics: R = trnd (DF, ROWS, COLS, ...)
@@ -7907,13 +7552,13 @@ trnd
      Return a matrix of random samples from the Students's T distribution with
      DF degrees of freedom.
 
-     ‘R = trnd (DF)’ returns an array of random numbers chosen from the
+     'R = trnd (DF)' returns an array of random numbers chosen from the
      Student's T distribution with DF degrees of freedom.  The size of R is the
      size of DF.  A scalar input functions as a constant matrix of the same size
      as the other inputs.  DF must be a finite real number greater than 0,
      otherwise NaN is returned.
 
-     When called with a single size argument, ‘trnd’ returns a square matrix
+     When called with a single size argument, 'trnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -7943,7 +7588,7 @@ unidcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1590
+# length: 1578
  -- statistics: P = unidcdf (X, N)
  -- statistics: P = unidcdf (X, N, 'upper')
 
@@ -7951,7 +7596,7 @@ unidcdf
 
      For each element of X, compute the cumulative distribution function (CDF)
      of a discrete uniform distribution with parameter N, which corresponds to
-     the maximum observable value.  ‘unidcdf’ assumes the integer values in the
+     the maximum observable value.  'unidcdf' assumes the integer values in the
      range [1,N] with equal probability.  The size of P is the common size of X
      and N.  A scalar input functions as a constant matrix of the same size as
      the other inputs.
@@ -7959,12 +7604,12 @@ unidcdf
      The maximum observable values in N must be positive integers, otherwise NaN
      is returned.
 
-     ‘[...] = unidcdf (X, N, "upper")’ computes the upper tail probability of
+     '[...] = unidcdf (X, N, "upper")' computes the upper tail probability of
      the discrete uniform distribution with maximum observable value N, at the
      values in X.
 
      Warning: The underlying implementation uses the double class and will only
-     be accurate for N < ‘flintmax’ (2^{53} on IEEE 754 compatible systems).
+     be accurate for N < 'flintmax' (2^{53} on IEEE 754 compatible systems).
 
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
@@ -7996,14 +7641,14 @@ unidinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1308
+# length: 1300
  -- statistics: X = unidinv (P, N)
 
      Inverse of the discrete uniform cumulative distribution function (iCDF).
 
      For each element of P, compute the quantile (the inverse of the CDF) of the
      discrete uniform distribution with parameter N, which corresponds to the
-     maximum observable value.  ‘unidinv’ assumes the integer values in the
+     maximum observable value.  'unidinv' assumes the integer values in the
      range [1,N] with equal probability.  The size of X is the common size of P
      and N.  A scalar input functions as a constant matrix of the same size as
      the other inputs.
@@ -8012,7 +7657,7 @@ unidinv
      is returned.
 
      Warning: The underlying implementation uses the double class and will only
-     be accurate for N < ‘flintmax’ (2^{53} on IEEE 754 compatible systems).
+     be accurate for N < 'flintmax' (2^{53} on IEEE 754 compatible systems).
 
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
@@ -8043,14 +7688,14 @@ unidpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1360
+# length: 1352
  -- statistics: Y = unidpdf (X, N)
 
      Discrete uniform probability density function (PDF).
 
      For each element of X, compute the probability density function (PDF) of
      the discrete uniform distribution with parameter N, which corresponds to
-     the maximum observable value.  ‘unidpdf’ assumes the integer values in the
+     the maximum observable value.  'unidpdf' assumes the integer values in the
      range [1,N] with equal probability.  The size of X is the common size of P
      and N.  A scalar input functions as a constant matrix of the same size as
      the other inputs.
@@ -8059,7 +7704,7 @@ unidpdf
      is returned.
 
      Warning: The underlying implementation uses the double class and will only
-     be accurate for N < ‘flintmax’ (2^{53} on IEEE 754 compatible systems).
+     be accurate for N < 'flintmax' (2^{53} on IEEE 754 compatible systems).
 
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
@@ -8091,7 +7736,7 @@ unidrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1479
+# length: 1463
  -- statistics: R = unidrnd (N)
  -- statistics: R = unidrnd (N, ROWS)
  -- statistics: R = unidrnd (N, ROWS, COLS, ...)
@@ -8099,9 +7744,9 @@ unidrnd
 
      Random arrays from the discrete uniform distribution.
 
-     ‘R = unidrnd (N)’ returns an array of random numbers chosen from the
+     'R = unidrnd (N)' returns an array of random numbers chosen from the
      discrete uniform distribution with parameter N, which corresponds to the
-     maximum observable value.  ‘unidrnd’ assumes the integer values in the
+     maximum observable value.  'unidrnd' assumes the integer values in the
      range [1,N] with equal probability.  The size of R is the size of N.  A
      scalar input functions as a constant matrix of the same size as the other
      inputs.
@@ -8109,14 +7754,14 @@ unidrnd
      The maximum observable values in N must be positive integers, otherwise NaN
      is returned.
 
-     When called with a single size argument, ‘unidrnd’ returns a square matrix
+     When called with a single size argument, 'unidrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
      The size may also be specified with a row vector of dimensions, SZ.
 
      Warning: The underlying implementation uses the double class and will only
-     be accurate for N < ‘flintmax’ (2^{53} on IEEE 754 compatible systems).
+     be accurate for N < 'flintmax' (2^{53} on IEEE 754 compatible systems).
 
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
@@ -8142,7 +7787,7 @@ unifcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1387
+# length: 1383
  -- statistics: P = unifcdf (X, A, B)
  -- statistics: P = unifcdf (X, A, B, 'upper')
 
@@ -8154,7 +7799,7 @@ unifcdf
      the common size of X, A, and B.  A scalar input functions as a constant
      matrix of the same size as the other inputs.
 
-     ‘[...] = unifcdf (X, A, B, "upper")’ computes the upper tail probability of
+     '[...] = unifcdf (X, A, B, "upper")' computes the upper tail probability of
      the continuous uniform distribution with parameters A, and B, at the values
      in X.
 
@@ -8275,7 +7920,7 @@ unifrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1182
+# length: 1174
  -- statistics: R = unifrnd (A, B)
  -- statistics: R = unifrnd (A, B, ROWS)
  -- statistics: R = unifrnd (A, B, ROWS, COLS, ...)
@@ -8283,13 +7928,13 @@ unifrnd
 
      Random arrays from the continuous uniform distribution.
 
-     ‘R = unifrnd (A, B)’ returns an array of random numbers chosen from the
+     'R = unifrnd (A, B)' returns an array of random numbers chosen from the
      continuous uniform distribution with parameters A and B, which define the
      lower and upper bounds of the interval [A, B].  The size of R is the common
      size of A and B.  A scalar input functions as a constant matrix of the same
      size as the other inputs.
 
-     When called with a single size argument, ‘unifrnd’ returns a square matrix
+     When called with a single size argument, 'unifrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -8319,7 +7964,7 @@ vmcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1490
+# length: 1486
  -- statistics: P = vmcdf (X, MU, K)
  -- statistics: P = vmcdf (X, MU, K, 'upper')
 
@@ -8331,7 +7976,7 @@ vmcdf
      X, MU, and K.  A scalar input functions as a constant matrix of the same
      same size as the other inputs.
 
-     ‘P = vmcdf (X, MU, K, "upper")’ computes the upper tail probability of the
+     'P = vmcdf (X, MU, K, "upper")' computes the upper tail probability of the
      von Mises distribution with parameters MU and K, at the values in X.
 
      Note: the CDF of the von Mises distribution is not analytic.  Hence, it is
@@ -8455,7 +8100,7 @@ vmrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1195
+# length: 1187
  -- statistics: R = vmrnd (MU, K)
  -- statistics: R = vmrnd (MU, K, ROWS)
  -- statistics: R = vmrnd (MU, K, ROWS, COLS, ...)
@@ -8463,14 +8108,14 @@ vmrnd
 
      Random arrays from the von Mises distribution.
 
-     ‘R = vmrnd (MU, K)’ returns an array of random angles chosen from a von
+     'R = vmrnd (MU, K)' returns an array of random angles chosen from a von
      Mises distribution with location parameter MU and concentration parameter K
      on the interval [-pi, pi].  The size of R is the common size of MU and K.
      A scalar input functions as a constant matrix of the same size as the other
      inputs.  Both parameters must be finite real numbers and K > 0, otherwise
      NaN is returned.
 
-     When called with a single size argument, ‘vmrnd’ returns a square matrix
+     When called with a single size argument, 'vmrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.
@@ -8500,7 +8145,7 @@ wblcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1847
+# length: 1839
  -- statistics: P = wblcdf (X)
  -- statistics: P = wblcdf (X, LAMBDA)
  -- statistics: P = wblcdf (X, LAMBDA, K)
@@ -8518,7 +8163,7 @@ wblcdf
 
      Default values are LAMBDA = 1, K = 1.
 
-     When called with three output arguments, ‘[P, PLO, PUP]’ it computes the
+     When called with three output arguments, '[P, PLO, PUP]' it computes the
      confidence bounds for P when the input parameters LAMBDA and K are
      estimates.  In such case, PCOV, a 2-by-2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA has a
@@ -8526,7 +8171,7 @@ wblcdf
      PLO and PUP are arrays of the same size as P containing the lower and upper
      confidence bounds.
 
-     ‘[...] = wblcdf (..., "upper")’ computes the upper tail probability of the
+     '[...] = wblcdf (..., "upper")' computes the upper tail probability of the
      lognormal distribution.
 
      Further information about the Weibull distribution can be found at
@@ -8644,7 +8289,7 @@ wblrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1178
+# length: 1170
  -- statistics: R = wblrnd (LAMBDA, K)
  -- statistics: R = wblrnd (LAMBDA, K, ROWS)
  -- statistics: R = wblrnd (LAMBDA, K, ROWS, COLS, ...)
@@ -8652,13 +8297,13 @@ wblrnd
 
      Random arrays from the Weibull distribution.
 
-     ‘R = wblrnd (LAMBDA, K)’ returns an array of random numbers chosen from the
+     'R = wblrnd (LAMBDA, K)' returns an array of random numbers chosen from the
      Weibull distribution with scale parameter LAMBDA and shape parameter K.
      The size of R is the common size of LAMBDA and K.  A scalar input functions
      as a constant matrix of the same size as the other inputs.  Both parameters
      must be positive reals.
 
-     When called with a single size argument, ‘wblrnd’ returns a square matrix
+     When called with a single size argument, 'wblrnd' returns a square matrix
      with the dimension specified.  When called with more than one scalar
      argument, the first two arguments are taken as the number of rows and
      columns and any further arguments specify additional matrix dimensions.

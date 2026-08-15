@@ -1,0 +1,385 @@
+# doc-cache created by Octave 11.3.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 7
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+ConfusionMatrixChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 837
+ -- statistics: ConfusionMatrixChart
+
+     Confusion matrix chart for classification results
+
+     The 'ConfusionMatrixChart' class implements a confusion matrix chart
+     object, which displays the classification performance of a classifier by
+     showing the counts of true positive, true negative, false positive, and
+     false negative predictions.
+
+     A confusion matrix chart is a visual representation of the performance of a
+     classification algorithm.  The rows represent the true classes and the
+     columns represent the predicted classes.  The diagonal elements represent
+     the correctly classified observations, while the off-diagonal elements
+     represent the misclassified observations.
+
+     Create a 'ConfusionMatrixChart' object by using the 'confusionchart'
+     function.
+
+     See also: confusionchart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Confusion matrix chart for classification results
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+confusionchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1852
+ -- statistics: confusionchart (TRUELABELS, PREDICTEDLABELS)
+ -- statistics: confusionchart (M)
+ -- statistics: confusionchart (M, CLASSLABELS)
+ -- statistics: confusionchart (PARENT, ...)
+ -- statistics: confusionchart (..., PROP, VAL, ...)
+ -- statistics: CM = confusionchart (...)
+
+     Display a chart of a confusion matrix.
+
+     The two vectors of values TRUELABELS and PREDICTEDLABELS, which are used to
+     compute the confusion matrix, must be defined with the same format as the
+     inputs of 'confusionmat'.  Otherwise a confusion matrix M as computed by
+     'confusionmat' can be given.
+
+     CLASSLABELS is an array of labels, i.e.  the list of the class names.
+
+     If the first argument is a handle to a 'figure' or to a 'uipanel', then the
+     confusion matrix chart is displayed inside that object.
+
+     Optional property/value pairs are passed directly to the underlying
+     objects, e.g.  'xlabel', 'ylabel', 'title', 'fontname', 'fontsize' etc.
+
+     The optional return value CM is a 'ConfusionMatrixChart' object.  Specific
+     properties of a 'ConfusionMatrixChart' object are:
+        * 'DiagonalColor' The color of the patches on the diagonal, default is
+          [0.0, 0.4471, 0.7412].
+
+        * 'OffDiagonalColor' The color of the patches off the diagonal, default
+          is [0.851, 0.3255, 0.098].
+
+        * 'GridVisible' Available values: on (default), off.
+
+        * 'Normalization' Available values: absolute (default),
+          column-normalized, row-normalized, total-normalized.
+
+        * 'ColumnSummary' Available values: off (default), absolute,
+          column-normalized,total-normalized.
+
+        * 'RowSummary' Available values: off (default), absolute,
+          row-normalized, total-normalized.
+
+     Run 'demo confusionchart' to see some examples.
+
+     See also: confusionmat, sortClasses.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Display a chart of a confusion matrix.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+confusionmat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1349
+ -- statistics: C = confusionmat (GROUP, GROUPHAT)
+ -- statistics: C = confusionmat (GROUP, GROUPHAT, "Order", GROUPORDER)
+ -- statistics: [C, ORDER] = confusionmat (GROUP, GROUPHAT)
+
+     Compute a confusion matrix for classification problems
+
+     'confusionmat' returns the confusion matrix C for the group of actual
+     values GROUP and the group of predicted values GROUPHAT.  The row indices
+     of the confusion matrix represent actual values, while the column indices
+     represent predicted values.  The indices are the same for both actual and
+     predicted values, so the confusion matrix is a square matrix.  Each element
+     of the matrix represents the number of matches between a given actual value
+     (row index) and a given predicted value (column index), hence correct
+     matches lie on the main diagonal of the matrix.  The order of the rows and
+     columns is returned in ORDER.
+
+     GROUP and GROUPHAT must have the same number of observations and the same
+     data type.  Valid data types are numeric vectors, logical vectors,
+     character arrays, string arrays, cell arrays of strings, and categorical
+     arrays.
+
+     The order of the rows and columns can be specified by setting the
+     GROUPORDER variable.  The data type of GROUPORDER must be the same of GROUP
+     and GROUPHAT.
+
+     See also: crosstab.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Compute a confusion matrix for classification problems
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+crossval
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2160
+ -- statistics: RESULTS = crossval (F, X, Y)
+ -- statistics: RESULTS = crossval (F, X, Y, NAME, VALUE)
+
+     Perform cross validation on given data.
+
+     F should be a function that takes 4 inputs XTRAIN, YTRAIN, XTEST, YTEST,
+     fits a model based on XTRAIN, YTRAIN, applies the fitted model to XTEST,
+     and returns a goodness of fit measure based on comparing the predicted and
+     actual YTEST.  'crossval' returns an array containing the values returned
+     by F for every cross-validation fold or resampling applied to the given
+     data.
+
+     X should be an N by M matrix of predictor values
+
+     Y should be an N by 1 vector of predicand values
+
+     Optional arguments may include name-value pairs as follows:
+
+     'KFold'
+          Divide set into K equal-size subsets, using each one successively for
+          validation.
+
+     'HoldOut'
+          Divide set into two subsets, training and validation.  If the value K
+          is a fraction, that is the fraction of values put in the validation
+          subset (by default K=0.1); if it is a positive integer, that is the
+          number of values in the validation subset.
+
+     'LeaveOut'
+          Leave-one-out partition (each element is placed in its own subset).
+          The value is ignored, but it is required.
+
+     'Partition'
+          The value should be a CVPARTITION object.
+
+     'Given'
+          The value should be an N by 1 vector specifying in which partition to
+          put each element.
+
+     'stratify'
+          The value should be an N by 1 vector containing class designations for
+          the elements, in which case the 'KFold' and 'HoldOut' partitionings
+          attempt to ensure each partition represents the classes
+          proportionately.
+
+     'mcreps'
+          The value should be a positive integer specifying the number of times
+          to resample based on different partitionings.  Currently only works
+          with the partition type 'HoldOut'.
+
+     Only one of 'KFold', 'HoldOut', 'LeaveOut', 'Given', 'Partition' should be
+     specified.  If none is specified, the default is 'KFold' with K = 10.
+
+     See also: cvpartition.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Perform cross validation on given data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 288
+ -- statistics: cvpartition
+
+     Partition data for cross-validation
+
+     The 'cvpartition' class generates a partitioning scheme on a dataset to
+     facilitate cross-validation of statistical models utilizing training and
+     testing subsets of the dataset.
+
+     See also: crossval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Partition data for cross-validation
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+perfcurve
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3140
+ -- statistics: [X, Y] = perfcurve (LABELS, SCORES, POSCLASS)
+ -- statistics: [X, Y, T, AUC, OPTROCPT] = perfcurve (...)
+ -- statistics: [...] = perfcurve (..., NAME, VALUE)
+
+     Receiver operating characteristic (ROC) and other classifier performance
+     curves.
+
+     '[X, Y] = perfcurve (LABELS, SCORES, POSCLASS)' returns the ROC curve for
+     the classifier scores in SCORES given the true class LABELS and the
+     positive class POSCLASS.  LABELS is a numeric vector or a cell array of
+     character vectors; SCORES is a numeric vector of the same length, where
+     larger values indicate stronger evidence for the positive class.  By
+     default X is the false positive rate and Y the true positive rate.
+
+     '[X, Y, T, AUC, OPTROCPT] = perfcurve (...)' also returns the thresholds T
+     on the scores, the area AUC under the (X, Y) curve, and the optimal
+     operating point OPTROCPT '= [FPR, TPR]' of the ROC curve.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     ----------------------------------------------------------------------------------
+     'XCrit'        The criterion for X.  The default is 'FPR'.
+                    
+     'YCrit'        The criterion for Y.  The default is 'TPR'. Supported criteria
+                    are 'TPR' ('sens', 'reca'), 'FNR', 'FPR' ('fall'), 'TNR'
+                    ('spec'), 'PPV' ('prec'), 'NPV', 'accu', the counts 'TP', 'FN',
+                    'FP', 'TN', and the rates 'RPP', 'RNP'.
+                    
+     'NegClass'     The negative class(es).  The default, 'all', treats every label
+                    other than POSCLASS as negative.
+                    
+     'Weights'      A vector of non-negative observation weights.
+                    
+     'Cost'         A 2*2 misclassification-cost matrix '[C(P|P) C(N|P); C(P|N)
+                    C(N|N)]' used for OPTROCPT.  The default is '[0 1; 1 0]'.
+                    
+     'XVals'        Values of the X criterion at which to return the curve.  'TVals'
+                    does the same for the thresholds.
+                    
+     'ProcessNaN'   How to treat 'NaN' scores: 'ignore' (default) or 'addtofalse'.
+                    
+     'NBoot'        Number of bootstrap replicates for confidence bounds on Y and
+                    AUC.  The default 0 computes no bounds.
+                    
+     'BootType'     The bootstrap interval: 'bca' (default, bias-corrected and
+                    accelerated), 'percentile', or 'normal'.
+                    
+     'Alpha'        The significance level for the bounds, so the confidence level
+                    is 1 - ALPHA.  The default is 0.05.
+
+     With 'NBoot' greater than zero, Y is returned as an m*3 array '[Y, YLOW,
+     YHIGH]' and AUC as '[AUC, AUCLOW, AUCHIGH]'.  The bootstrap uses an
+     independent random stream, so the bounds do not match MATLAB numerically.
+     '[..., SUBY, SUBYNAMES] = perfcurve (...)' returns the Y values for each
+     negative subclass and their names.
+
+     When called with no output arguments the curve is plotted.
+
+     See also: fitcsvm, fitcknn, glmfit.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Receiver operating characteristic (ROC) and other classifier performance curv...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+rocmetrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 864
+ -- statistics: rocmetrics
+
+     Receiver operating characteristic (ROC) metrics for classifier output.
+
+     The 'rocmetrics' class evaluates a classifier's performance by computing,
+     for each class, a one-versus-all ROC curve together with a set of
+     threshold-dependent performance metrics.  It stores the results in the
+     'Metrics' table and the per-class area under the curve in 'AUC', and
+     provides the 'addMetrics', 'average', and 'plot' methods for follow-up
+     analysis.
+
+     For a problem with K classes and scores supplied as an N-by-K matrix, the
+     discriminant score used for class K is the one-versus-all margin
+     'Scores(:,k) - max (Scores(:,j))' over 'j != k', matching MATLAB's
+     'rocmetrics'.  Every metric is evaluated at each distinct value of that
+     margin.
+
+     See also: perfcurve, confusionmat, confusionchart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+Receiver operating characteristic (ROC) metrics for classifier output.
+
+
+
+
+

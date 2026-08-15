@@ -1,0 +1,1423 @@
+# doc-cache created by Octave 11.3.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 17
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ClassificationDiscriminant
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 760
+ -- statistics: ClassificationDiscriminant
+
+     Discriminant analysis classification
+
+     The 'ClassificationDiscriminant' class implements a linear discriminant
+     analysis classifier object, which can predict responses for new data using
+     the 'predict' method.
+
+     Discriminant analysis classification is a statistical method used to
+     classify observations into predefined groups based on their
+     characteristics.  It estimates the parameters of different distributions
+     for each class and predicts the class of new observations by finding the
+     one with the smallest misclassification cost.
+
+     Create a 'ClassificationDiscriminant' object by using the 'fitcdiscr'
+     function or the class constructor.
+
+     See also: fitcdiscr.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Discriminant analysis classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ClassificationGAM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 816
+ -- statistics: ClassificationGAM
+
+     Generalized additive model classification
+
+     The 'ClassificationGAM' class implements a gradient boosting algorithm for
+     classification, using spline fitting as the weak learner.  This approach
+     allows the model to capture non-linear relationships between predictors and
+     the binary response variable.
+
+     Generalized additive model classification is a statistical method that
+     extends linear models by allowing non-linear relationships between each
+     predictor and the response variable through smooth functions.  It combines
+     the interpretability of linear models with the flexibility of
+     non-parametric methods.
+
+     Create a 'ClassificationGAM' object by using the 'fitcgam' function or the
+     class constructor.
+
+     See also: fitcgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Generalized additive model classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ClassificationKNN
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 787
+ -- statistics: ClassificationKNN
+
+     K-nearest neighbors classification
+
+     The 'ClassificationKNN' class implements a K-nearest neighbor classifier
+     object, which can predict responses for new data using the 'predict'
+     method.  The implemented algorithm allows you choose a range of different
+     distance metrics, the number of nearest neighbors, as well as the searching
+     algorithm.
+
+     The K-nearest neighbors (k-NN) classifier is a simple, non-parametric
+     machine learning algorithm used for classification tasks.  It classifies a
+     data point based on the majority class of its k closest neighbors in the
+     feature space.
+
+     Create a 'ClassificationKNN' object by using the 'fitcknn' function or the
+     class constructor.
+
+     See also: fitcknn.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+K-nearest neighbors classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationNeuralNetwork
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 659
+ -- statistics: ClassificationNeuralNetwork
+
+     Neural network classification
+
+     The 'ClassificationNeuralNetwork' class implements a neural network
+     classifier object, which can predict responses for new data using the
+     'predict' method.
+
+     Neural network classification is a machine learning method that uses
+     interconnected nodes in multiple layers to learn complex patterns in data.
+     It processes inputs through hidden layers with activation functions to
+     produce classification outputs.
+
+     Create a 'ClassificationNeuralNetwork' object by using the 'fitcnet'
+     function or the class constructor.
+
+     See also: fitcnet.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Neural network classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+ClassificationPartitionedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 461
+ -- statistics: ClassificationPartitionedModel
+
+     Cross-validated classification model
+
+     The 'ClassificationPartitionedModel' class stores cross-validated
+     classification models trained on different partitions of the data.  It can
+     predict responses for observations not used for training using the
+     'kfoldPredict' method.
+
+     Create a 'ClassificationPartitionedModel' object by using the 'crossval'
+     function.
+
+     See also: crossval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Cross-validated classification model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ClassificationSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 784
+ -- statistics: ClassificationSVM
+
+     Support Vector Machine classification
+
+     The 'ClassificationSVM' class implements a Support Vector Machine
+     classifier object for one-class or two-class problems, which can predict
+     responses for new data using the 'predict' method.
+
+     Support Vector Machine classification is a supervised learning method used
+     for classification tasks.  It works by finding the optimal hyperplane that
+     separates classes in the feature space with the maximum margin.  For
+     non-linearly separable data, it uses kernel functions to map data to a
+     higher-dimensional space where separation is possible.
+
+     Create a 'ClassificationSVM' object by using the 'fitcsvm' function or the
+     class constructor.
+
+     See also: fitcsvm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Support Vector Machine classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+CompactClassificationDiscriminant
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 989
+ -- statistics: CompactClassificationDiscriminant
+
+     Compact discriminant analysis classification
+
+     The 'CompactClassificationDiscriminant' class implements a compact version
+     of a linear discriminant analysis classifier object, which can predict
+     responses for new data using the 'predict' method but does not store the
+     training data.
+
+     A 'CompactClassificationDiscriminant' object is a compact version of a
+     discriminant analysis model, 'ClassificationDiscriminant'.  It does not
+     include the training data resulting in a smaller classifier size, which can
+     be used for making predictions from new data, but not for tasks such as
+     cross validation.  It can only be created from a
+     'ClassificationDiscriminant' model by using the 'compact' object method.
+
+     Create a 'CompactClassificationDiscriminant' object by using the 'compact'
+     method of a 'ClassificationDiscriminant' object.
+
+     See also: fitcdiscr, ClassificationDiscriminant.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Compact discriminant analysis classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+CompactClassificationGAM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 598
+ -- statistics: CompactClassificationGAM
+
+     Compact generalized additive model classification
+
+     The 'CompactClassificationGAM' class is a compact version of a Generalized
+     Additive Model classifier, 'ClassificationGAM'.  It does not include the
+     training data, resulting in a smaller classifier size that can be used for
+     making predictions from new data, but not for tasks such as cross
+     validation.
+
+     A 'CompactClassificationGAM' object can only be created from a
+     'ClassificationGAM' model by using the 'compact' method.
+
+     See also: ClassificationGAM, fitcgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Compact generalized additive model classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationNeuralNetwork
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 831
+ -- statistics: CompactClassificationNeuralNetwork
+
+     Compact neural network classification
+
+     The 'CompactClassificationNeuralNetwork' class implements a compact version
+     of the neural network classifier object, which can predict responses for
+     new data using the 'predict' method, but does not store the training data.
+
+     A compact neural network classification model is a smaller version of the
+     full 'ClassificationNeuralNetwork' model that does not include the training
+     data.  It consumes less memory than the full model, but cannot perform
+     tasks that require the training data, such as cross-validation.
+
+     Create a 'CompactClassificationNeuralNetwork' object by using the 'compact'
+     method on a 'ClassificationNeuralNetwork' object.
+
+     See also: ClassificationNeuralNetwork, fitcnet.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Compact neural network classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+CompactClassificationSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 784
+ -- statistics: CompactClassificationSVM
+
+     Compact Support Vector Machine classification
+
+     The 'CompactClassificationSVM' class implements a compact version of a
+     Support Vector Machine classifier object for one-class or two-class
+     problems, which can predict responses for new data using the 'predict'
+     method.
+
+     A 'CompactClassificationSVM' object is a compact version of a support
+     vector machine model, 'ClassificationSVM'.  It does not include the
+     training data resulting in a smaller classifier size, which can be used for
+     making predictions from new data, but not for tasks such as cross
+     validation.  It can only be created from a 'ClassificationSVM' model by
+     using the 'compact' object method.
+
+     See also: ClassificationSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Compact Support Vector Machine classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+RegressionGAM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6269
+ -- statistics: OBJ = RegressionGAM (X, Y)
+ -- statistics: OBJ = RegressionGAM (..., NAME, VALUE)
+
+     Create a RegressionGAM class object containing a Generalized Additive Model
+     (GAM) for regression.
+
+     A RegressionGAM class object can store the predictors and response data
+     along with various parameters for the GAM model.  It is recommended to use
+     the 'fitrgam' function to create a RegressionGAM object.
+
+     'OBJ = RegressionGAM (X, Y)' returns an object of class RegressionGAM, with
+     matrix X containing the predictor data and vector Y containing the
+     continuous response data.
+
+        * X must be a N*P numeric matrix of input data where rows correspond to
+          observations and columns correspond to features or variables.  X will
+          be used to train the GAM model.
+        * Y must be N*1 numeric vector containing the response data
+          corresponding to the predictor data in X.  Y must have same number of
+          rows as X.
+
+     'OBJ = RegressionGAM (..., NAME, VALUE)' returns an object of class
+     RegressionGAM with additional properties specified by Name-Value pair
+     arguments listed below.
+
+     NAME             VALUE
+                      
+     ------------------------------------------------------------------------------
+     'predictors'     Predictor Variable names, specified as a row vector cell
+                      of strings with the same length as the columns in X.  If
+                      omitted, the program will generate default variable names
+                      (x1, x2, ..., xn) for each column in X.
+                      
+     'responsename'   Response Variable Name, specified as a string.  If
+                      omitted, the default value is 'Y'.
+                      
+     'formula'        a model specification given as a string in the form 'Y ~
+                      terms' where Y represents the response variable and terms
+                      the predictor variables.  The formula can be used to
+                      specify a subset of variables for training model.  For
+                      example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies
+                      four linear terms for the first four columns of for
+                      predictor data, and x1:x2 and x2:x3 specify the two
+                      interaction terms for 1st-2nd and 3rd-4th columns
+                      respectively.  Only these terms will be used for training
+                      the model, but X must have at least as many columns as
+                      referenced in the formula.  If Predictor Variable names
+                      have been defined, then the terms in the formula must
+                      reference to those.  When 'formula' is specified, all
+                      terms used for training the model are referenced in the
+                      IntMatrix field of the OBJ class object as a matrix
+                      containing the column indexes for each term including both
+                      the predictors and the interactions used.
+                      
+     'interactions'   a logical matrix, a positive integer scalar, or the string
+                      'all' for defining the interactions between predictor
+                      variables.  When given a logical matrix, it must have the
+                      same number of columns as X and each row corresponds to a
+                      different interaction term combining the predictors
+                      indexed as true.  Each interaction term is appended as a
+                      column vector after the available predictor column in X.
+                      When 'all' is defined, then all possible combinations of
+                      interactions are appended in X before training.  At the
+                      moment, parsing a positive integer has the same effect as
+                      the 'all' option.  When 'interactions' is specified, only
+                      the interaction terms appended to X are referenced in the
+                      IntMatrix field of the OBJ class object.
+                      
+     'knots'          a scalar or a row vector with the same columns as X.  It
+                      defines the knots for fitting a polynomial when training
+                      the GAM. As a scalar, it is expanded to a row vector.  The
+                      default value is 5, hence expanded to ones (1, columns
+                      (X)) * 5.  You can parse a row vector with different
+                      number of knots for each predictor variable to be fitted
+                      with, although not recommended.
+                      
+     'order'          a scalar or a row vector with the same columns as X.  It
+                      defines the order of the polynomial when training the GAM.
+                      As a scalar, it is expanded to a row vector.  The default
+                      values is 3, hence expanded to ones (1, columns (X)) * 3.
+                      You can parse a row vector with different number of
+                      polynomial order for each predictor variable to be fitted
+                      with, although not recommended.
+                      
+     'dof'            a scalar or a row vector with the same columns as X.  It
+                      defines the degrees of freedom for fitting a polynomial
+                      when training the GAM. As a scalar, it is expanded to a
+                      row vector.  The default value is 8, hence expanded to
+                      ones (1, columns (X)) * 8.  You can parse a row vector
+                      with different degrees of freedom for each predictor
+                      variable to be fitted with, although not recommended.
+                      
+     'tol'            a positive scalar to set the tolerance for convergence
+                      during training.  By default, it is set to 1e-3.
+
+     You can parse either a 'formula' or an 'interactions' optional parameter.
+     Parsing both parameters will result an error.  Accordingly, you can only
+     pass up to two parameters among 'knots', 'order', and 'dof' to define the
+     required polynomial for training the GAM model.
+
+     See also: fitrgam, regress, regress_gp.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a RegressionGAM class object containing a Generalized Additive Model
+(...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+fitcdiscr
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3660
+ -- statistics: MDL = fitcdiscr (X, Y)
+ -- statistics: MDL = fitcdiscr (..., NAME, VALUE)
+
+     Fit a Linear Discriminant Analysis classification model.
+
+     'MDL = fitcdiscr (X, Y)' returns a Linear Discriminant Analysis (LDA)
+     classification model, MDL, with X being the predictor data, and Y the class
+     labels of observations in X.
+
+        * 'X' must be a N*P numeric matrix of predictor data where rows
+          correspond to observations and columns correspond to features or
+          variables.
+        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+          corresponding predictor data in X.  Y can be numerical, logical, char
+          array or cell array of character vectors.  Y must have same number of
+          rows as X.
+
+     'MDL = fitcdiscr (..., NAME, VALUE)' returns a Linear Discriminant Analysis
+     model with additional options specified by Name-Value pair arguments listed
+     below.
+
+     Model Parameters
+     ----------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'PredictorNames'A cell array of character vectors specifying the names of the
+                    predictors.  The length of this array must match the number of
+                    columns in X.
+                    
+     'ResponseName' A character vector specifying the name of the response
+                    variable.
+                    
+     'ClassNames'   Names of the classes in the class labels, Y, used for fitting
+                    the Discriminant model.  ClassNames are of the same type as
+                    the class labels in Y.
+                    
+     'Prior'        A numeric vector specifying the prior probabilities for each
+                    class.  The order of the elements in Prior corresponds to the
+                    order of the classes in ClassNames.  Alternatively, you can
+                    specify 'empirical' to use the empirical class probabilities
+                    or 'uniform' to assume equal class probabilities.
+                    
+     'Cost'         A N*R numeric matrix containing misclassification cost for the
+                    corresponding instances in X where R is the number of unique
+                    categories in Y.  If an instance is correctly classified into
+                    its category the cost is calculated to be 1, otherwise 0.
+                    cost matrix can be altered use 'MDL.COST = somecost'.  default
+                    value COST = ones(rows(X),numel(unique(Y))).
+                    
+     'DiscrimType'  A character vector or string scalar specifying the type of
+                    discriminant analysis to perform.  The only supported value is
+                    'linear'.
+                    
+     'FillCoeffs'   A character vector or string scalar with values 'on' or 'off'
+                    specifying whether to fill the coefficients after fitting.  If
+                    set to 'on', the coefficients are computed during model
+                    fitting, which can be useful for prediction.
+                    
+     'Gamma'        A numeric scalar specifying the regularization parameter for
+                    the covariance matrix.  It adjusts the linear discriminant
+                    analysis to make the model more stable in the presence of
+                    multicollinearity or small sample sizes.  A value of 0
+                    corresponds to no regularization, while a value of 1
+                    corresponds to a completely regularized model.
+                    
+
+     See also: ClassificationDiscriminant.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+Fit a Linear Discriminant Analysis classification model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitcgam
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6174
+ -- statistics: MDL = fitcgam (X, Y)
+ -- statistics: MDL = fitcgam (..., NAME, VALUE)
+
+     Fit a Generalized Additive Model (GAM) for binary classification.
+
+     'MDL = fitcgam (X, Y)' returns a GAM classification model, MDL, with X
+     being the predictor data, and Y the binary class labels of observations in
+     X.
+
+        * 'X' must be a N*P numeric matrix of predictor data where rows
+          correspond to observations and columns correspond to features or
+          variables.
+        * 'Y' is N*1 numeric vector containing binary class labels, typically 0
+          or 1.
+
+     'MDL = fitcgam (..., NAME, VALUE)' returns a GAM classification model with
+     additional options specified by Name-Value pair arguments listed below.
+
+     Model Parameters
+     ----------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'PredictorNames'A cell array of character vectors specifying the names of the
+                    predictors.  The length of this array must match the number of
+                    columns in X.
+                    
+     'ResponseName' A character vector specifying the name of the response
+                    variable.
+                    
+     'ClassNames'   Names of the classes in the class labels, Y, used for fitting
+                    the Discriminant model.  ClassNames are of the same type as
+                    the class labels in Y.
+                    
+     'Cost'         A N*R numeric matrix containing misclassification cost for the
+                    corresponding instances in X where R is the number of unique
+                    categories in Y.  If an instance is correctly classified into
+                    its category the cost is calculated to be 1, otherwise 0.
+                    cost matrix can be altered use 'MDL.COST = somecost'.  default
+                    value COST = ones(rows(X),numel(unique(Y))).
+                    
+     'Formula'      A model specification given as a string in the form 'Y ~
+                    terms' where Y represents the response variable and terms the
+                    predictor variables.  The formula can be used to specify a
+                    subset of variables for training model.  For example: 'Y ~ x1
+                    + x2 + x3 + x4 + x1:x2 + x2:x3' specifies four linear terms
+                    for the first four columns of for predictor data, and x1:x2
+                    and x2:x3 specify the two interaction terms for 1st-2nd and
+                    3rd-4th columns respectively.  Only these terms will be used
+                    for training the model, but X must have at least as many
+                    columns as referenced in the formula.  If Predictor Variable
+                    names have been defined, then the terms in the formula must
+                    reference to those.  When 'formula' is specified, all terms
+                    used for training the model are referenced in the IntMatrix
+                    field of the OBJ class object as a matrix containing the
+                    column indexes for each term including both the predictors and
+                    the interactions used.
+                    
+     'Interactions' A logical matrix, a positive integer scalar, or the string
+                    'all' for defining the interactions between predictor
+                    variables.  When given a logical matrix, it must have the same
+                    number of columns as X and each row corresponds to a different
+                    interaction term combining the predictors indexed as true.
+                    Each interaction term is appended as a column vector after the
+                    available predictor column in X.  When 'all' is defined, then
+                    all possible combinations of interactions are appended in X
+                    before training.  At the moment, parsing a positive integer
+                    has the same effect as the 'all' option.  When 'interactions'
+                    is specified, only the interaction terms appended to X are
+                    referenced in the IntMatrix field of the OBJ class object.
+                    
+     'Knots'        A scalar or a row vector with the same columns as X.  It
+                    defines the knots for fitting a polynomial when training the
+                    GAM. As a scalar, it is expanded to a row vector.  The default
+                    value is 5, hence expanded to ones (1, columns (X)) * 5.  You
+                    can parse a row vector with different number of knots for each
+                    predictor variable to be fitted with, although not
+                    recommended.
+                    
+     'Order'        A scalar or a row vector with the same columns as X.  It
+                    defines the order of the polynomial when training the GAM. As
+                    a scalar, it is expanded to a row vector.  The default values
+                    is 3, hence expanded to ones (1, columns (X)) * 3.  You can
+                    parse a row vector with different number of polynomial order
+                    for each predictor variable to be fitted with, although not
+                    recommended.
+                    
+     'DoF'          A scalar or a row vector with the same columns as X.  It
+                    defines the degrees of freedom for fitting a polynomial when
+                    training the GAM. As a scalar, it is expanded to a row vector.
+                    The default value is 8, hence expanded to ones (1, columns
+                    (X)) * 8.  You can parse a row vector with different degrees
+                    of freedom for each predictor variable to be fitted with,
+                    although not recommended.
+                    
+     You can parse either a 'Formula' or an 'Interactions' optional parameter.
+     Parsing both parameters will result an error.  Accordingly, you can only
+     pass up to two parameters among 'Knots', 'Order', and 'DoF' to define the
+     required polynomial for training the GAM model.
+
+     See also: ClassificationGAM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+Fit a Generalized Additive Model (GAM) for binary classification.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitcknn
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14596
+ -- statistics: MDL = fitcknn (X, Y)
+ -- statistics: MDL = fitcknn (..., NAME, VALUE)
+
+     Fit a k-Nearest Neighbor classification model.
+
+     'MDL = fitcknn (X, Y)' returns a k-Nearest Neighbor classification model,
+     MDL, with X being the predictor data, and Y the class labels of
+     observations in X.
+
+        * 'X' must be a N*P numeric matrix of predictor data where rows
+          correspond to observations and columns correspond to features or
+          variables.
+        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+          corresponding predictor data in X.  Y can be numerical, logical, char
+          array or cell array of character vectors.  Y must have same number of
+          rows as X.
+
+     'MDL = fitcknn (..., NAME, VALUE)' returns a k-Nearest Neighbor
+     classification model with additional options specified by Name-Value pair
+     arguments listed below.
+
+     Model Parameters
+     ----------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Standardize'  A boolean flag indicating whether the data in X should be
+                    standardized prior to training.
+                    
+     'PredictorNames'A cell array of character vectors specifying the predictor
+                    variable names.  The variable names are assumed to be in the
+                    same order as they appear in the training data X.
+                    
+     'ResponseName' A character vector specifying the name of the response
+                    variable.
+                    
+     'ClassNames'   Names of the classes in the class labels, Y, used for fitting
+                    the kNN model.  ClassNames are of the same type as the class
+                    labels in Y.
+                    
+     'Prior'        A numeric vector specifying the prior probabilities for each
+                    class.  The order of the elements in Prior corresponds to the
+                    order of the classes in ClassNames.
+                    
+     'Cost'         A N*R numeric matrix containing misclassification cost for the
+                    corresponding instances in X where R is the number of unique
+                    categories in Y.  If an instance is correctly classified into
+                    its category the cost is calculated to be 1, otherwise 0.
+                    cost matrix can be altered use 'MDL.COST = somecost'.  default
+                    value COST = ones(rows(X),numel(unique(Y))).
+                    
+     'ScoreTransform'A character vector defining one of the following functions or
+                    a user defined function handle, which is used for transforming
+                    the prediction scores returned by the 'predict' and
+                    'resubPredict' methods.  Default value is 'none'.
+
+     VALUE            DESCRIPTION
+     ------------------------------------------------------------------------------
+     'doublelogit'    1 ./ (1 + exp (-2 * x))
+     'invlogit'       log (x ./ (1 - x))
+     'ismax'          Sets the score for the class with the largest score to 1,
+                      and sets the scores for all other classes to 0
+     'logit'          1 ./ (1 + exp (-x))
+     'none'           x (no transformation)
+     'identity'       x (no transformation)
+     'sign'           -1 for x < 0, 0 for x = 0, 1 for x > 0
+     'symmetric'      2 * x - 1
+     'symmetricismax' Sets the score for the class with the largest score to 1,
+                      and sets the scores for all other classes to -1
+     'symmetriclogit' 2 ./ (1 + exp (-x)) - 1
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'BreakTies'    Tie-breaking algorithm used by predict when multiple classes
+                    have the same smallest cost.  By default, ties occur when
+                    multiple classes have the same number of nearest points among
+                    the k nearest neighbors.  The available options are specified
+                    by the following character arrays:
+
+     VALUE            DESCRIPTION
+                      
+     ------------------------------------------------------------------------------
+     'smallest'       This is the default and it favors the class with the
+                      smallest index among the tied groups, i.e.  the one that
+                      appears first in the training labelled data.
+     'nearest'        This favors the class with the nearest neighbor among the
+                      tied groups, i.e.  the class with the closest member point
+                      according to the distance metric used.
+     'random'         This randomly picks one class among the tied groups.
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'BucketSize'   The maximum number of data points in the leaf node of the
+                    Kd-tree and it must be a positive integer.  By default, it is
+                    50.  This argument is meaningful only when the selected search
+                    method is 'kdtree'.
+                    
+     'NumNeighbors' A positive integer value specifying the number of nearest
+                    neighbors to be found in the kNN search.  By default, it is 1.
+                    
+     'Exponent'     A positive scalar (usually an integer) specifying the
+                    Minkowski distance exponent.  This argument is only valid when
+                    the selected distance metric is 'minkowski'.  By default it is
+                    2.
+                    
+     'Scale'        A nonnegative numeric vector specifying the scale parameters
+                    for the standardized Euclidean distance.  The vector length
+                    must be equal to the number of columns in X.  This argument is
+                    only valid when the selected distance metric is 'seuclidean',
+                    in which case each coordinate of X is scaled by the
+                    corresponding element of 'scale', as is each query point in Y.
+                    By default, the scale parameter is the standard deviation of
+                    each coordinate in X.  If a variable in X is constant, i.e.
+                    zero variance, this value is forced to 1 to avoid division by
+                    zero.  This is the equivalent of this variable not being
+                    standardized.
+                    
+     'Cov'          A square matrix with the same number of columns as X
+                    specifying the covariance matrix for computing the mahalanobis
+                    distance.  This must be a positive definite matrix matching.
+                    This argument is only valid when the selected distance metric
+                    is 'mahalanobis'.
+                    
+     'Distance'     is the distance metric used by 'knnsearch' as specified below:
+
+     VALUE            DESCRIPTION
+                      
+     ------------------------------------------------------------------------------
+     'euclidean'      Euclidean distance.
+     'seuclidean'     standardized Euclidean distance.  Each coordinate
+                      difference between the rows in X and the query matrix Y is
+                      scaled by dividing by the corresponding element of the
+                      standard deviation computed from X.  To specify a
+                      different scaling, use the 'Scale' name-value argument.
+     'cityblock'      City block distance.
+     'chebychev'      Chebychev distance (maximum coordinate difference).
+     'minkowski'      Minkowski distance.  The default exponent is 2.  To
+                      specify a different exponent, use the 'P' name-value
+                      argument.
+     'mahalanobis'    Mahalanobis distance, computed using a positive definite
+                      covariance matrix.  To change the value of the covariance
+                      matrix, use the 'Cov' name-value argument.
+     'cosine'         Cosine distance.
+     'correlation'    One minus the sample linear correlation between
+                      observations (treated as sequences of values).
+     'spearman'       One minus the sample Spearman's rank correlation between
+                      observations (treated as sequences of values).
+     'hamming'        Hamming distance, which is the percentage of coordinates
+                      that differ.
+     'jaccard'        One minus the Jaccard coefficient, which is the percentage
+                      of nonzero coordinates that differ.
+     @DISTFUN         Custom distance function handle.  A distance function of
+                      the form 'function D2 = distfun (XI, YI)', where XI is a
+                      1*P vector containing a single observation in
+                      P-dimensional space, YI is an N*P matrix containing an
+                      arbitrary number of observations in the same P-dimensional
+                      space, and D2 is an N*P vector of distances, where (D2k)
+                      is the distance between observations XI and (YIk,:).
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'DistanceWeight'A distance weighting function, specified either as a function
+                    handle, which accepts a matrix of nonnegative distances and
+                    returns a matrix the same size containing nonnegative distance
+                    weights, or one of the following values: 'equal', which
+                    corresponds to no weighting; 'inverse', which corresponds to a
+                    weight equal to 1/distance; 'squaredinverse', which
+                    corresponds to a weight equal to 1/distance^2.
+                    
+     'IncludeTies'  A boolean flag to indicate if the returned values should
+                    contain the indices that have same distance as the K^th
+                    neighbor.  When false, 'knnsearch' chooses the observation
+                    with the smallest index among the observations that have the
+                    same distance from a query point.  When true, 'knnsearch'
+                    includes all nearest neighbors whose distances are equal to
+                    the K^th smallest distance in the output arguments.  To
+                    specify K, use the 'K' name-value pair argument.
+                    
+     'NSMethod'     is the nearest neighbor search method used by 'knnsearch' as
+                    specified below.
+
+     VALUE            DESCRIPTION
+                      
+     ------------------------------------------------------------------------------
+     'kdtree'         Creates and uses a Kd-tree to find nearest neighbors.
+                      'kdtree' is the default value when the number of columns
+                      in X is less than or equal to 10, X is not sparse, and the
+                      distance metric is 'euclidean', 'cityblock', 'manhattan',
+                      'chebychev', or 'minkowski'.  Otherwise, the default value
+                      is 'exhaustive'.  This argument is only valid when the
+                      distance metric is one of the four aforementioned metrics.
+     'exhaustive'     Uses the exhaustive search algorithm by computing the
+                      distance values from all the points in X to each point in
+                      Y.
+
+     Cross Validation Options
+     ------------------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Crossval'     Cross-validation flag specified as 'on' or 'off'.  If 'on' is
+                    specified, a 10-fold cross validation is performed and a
+                    'ClassificationPartitionedModel' is returned in MDL.  To
+                    override this cross-validation setting, use only one of the
+                    following Name-Value pair arguments.
+                    
+     'CVPartition'  A 'cvpartition' object that specifies the type of
+                    cross-validation and the indexing for the training and
+                    validation sets.  A 'ClassificationPartitionedModel' is
+                    returned in MDL and the trained model is stored in the
+                    'Trained' property.
+                    
+     'Holdout'      Fraction of the data used for holdout validation, specified as
+                    a scalar value in the range [0,1].  When specified, a randomly
+                    selected percentage is reserved as validation data and the
+                    remaining set is used for training.  The trained model is
+                    stored in the 'Trained' property of the
+                    'ClassificationPartitionedModel' returned in MDL.  'Holdout'
+                    partitioning attempts to ensure that each partition represents
+                    the classes proportionately.
+                    
+     'KFold'        Number of folds to use in the cross-validated model, specified
+                    as a positive integer value greater than 1.  When specified,
+                    then the data is randomly partitioned in k sets and for each
+                    set, the set is reserved as validation data while the
+                    remaining k-1 sets are used for training.  The trained models
+                    are stored in the 'Trained' property of the
+                    'ClassificationPartitionedModel' returned in MDL.  'KFold'
+                    partitioning attempts to ensure that each partition represents
+                    the classes proportionately.
+                    
+     'Leaveout'     Leave-one-out cross-validation flag specified as 'on' or
+                    'off'.  If 'on' is specified, then for each of the n
+                    observations (where n is the number of observations, excluding
+                    missing observations, specified in the 'NumObservations'
+                    property of the model), one observation is reserved as
+                    validation data while the remaining observations are used for
+                    training.  The trained models are stored in the 'Trained'
+                    property of the 'ClassificationPartitionedModel' returned in
+                    MDL.
+
+     See also: ClassificationKNN, ClassificationPartitionedModel, knnsearch,
+     rangesearch, pdist2.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Fit a k-Nearest Neighbor classification model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitcnet
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5492
+ -- statistics: MDL = fitcnet (X, Y)
+ -- statistics: MDL = fitcnet (..., NAME, VALUE)
+
+     Fit a Neural Network classification model.
+
+     'MDL = fitcnet (X, Y)' returns a Neural Network classification model, MDL,
+     with X being the predictor data, and Y the class labels of observations in
+     X.
+
+        * 'X' must be a N*P numeric matrix of predictor data where rows
+          correspond to observations and columns correspond to features or
+          variables.
+        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+          corresponding predictor data in X.  Y can contain any type of
+          categorical data.  Y must have same numbers of rows as X.
+
+     'MDL = fitcnet (..., NAME, VALUE)' returns a Neural Network classification
+     model with additional options specified by Name-Value pair arguments listed
+     below.
+
+     Model Parameters
+     ----------------
+
+     NAME                       VALUE
+                                
+     --------------------------------------------------------------------------------------------
+     'Standardize'              A boolean flag indicating whether the data in X should be
+                                standardized prior to training.
+                                
+     'PredictorNames'           A cell array of character vectors specifying the predictor
+                                variable names.  The variable names are assumed to be in the
+                                same order as they appear in the training data X.
+                                
+     'ResponseName'             A character vector specifying the name of the response
+                                variable.
+                                
+     'ClassNames'               Names of the classes in the class labels, Y, used for fitting
+                                the Neural Network model.  ClassNames are of the same type as
+                                the class labels in Y.
+                                
+     'Prior'                    A numeric vector specifying the prior probabilities for each
+                                class.  The order of the elements in Prior corresponds to the
+                                order of the classes in ClassNames.
+                                
+     'LayerSizes'               A vector of positive integers that defines the sizes of the
+                                fully connected layers in the neural network model.  Each
+                                element in LayerSizes corresponds to the number of outputs for
+                                the respective fully connected layer in the neural network
+                                model.  The default value is 10.
+                                
+     'LearningRate'             A positive scalar value that defines the learning rate during
+                                the gradient descent.  Default value is 0.01.
+                                
+     'Activations'              A character vector or a cellstr vector specifying the
+                                activation functions for the hidden layers of the neural
+                                network (excluding the output layer).  The available
+                                activation functions are 'linear', 'sigmoid', 'tanh',
+                                'sigmoid', and 'none'.  The default value is 'sigmoid'.
+                                
+     'OutputLayerActivation'    A character vector specifying the activation function for the
+                                output layer of the neural network.  The available activation
+                                functions are 'linear', 'sigmoid', 'tanh', 'sigmoid', and
+                                'none'.  The default value is 'sigmoid'.
+                                
+     'IterationLimit'           A positive integer scalar that specifies the maximum number of
+                                training iterations.  The default value is 1000.
+                                
+     'DisplayInfo'              A boolean flag indicating whether to print information during
+                                training.  Default is false.
+                                
+     'ScoreTransform'           A character vector defining one of the following functions or
+                                a user defined function handle, which is used for transforming
+                                the prediction scores returned by the 'predict' and
+                                'resubPredict' methods.  Default value is 'none'.
+
+     VALUE                    DESCRIPTION
+     --------------------------------------------------------------------------------------
+     'doublelogit'            1 ./ (1 + exp (-2 * x))
+     'invlogit'               log (x ./ (1 - x))
+     'ismax'                  Sets the score for the class with the largest score to 1,
+                              and sets the scores for all other classes to 0
+     'logit'                  1 ./ (1 + exp (-x))
+     'none'                   x (no transformation)
+     'identity'               x (no transformation)
+     'sign'                   -1 for x < 0, 0 for x = 0, 1 for x > 0
+     'symmetric'              2 * x - 1
+     'symmetricismax'         Sets the score for the class with the largest score to 1,
+                              and sets the scores for all other classes to -1
+     'symmetriclogit'         2 ./ (1 + exp (-x)) - 1
+
+     See also: ClassificationNeuralNetwork.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Fit a Neural Network classification model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitcsvm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10550
+ -- statistics: MDL = fitcsvm (X, Y)
+ -- statistics: MDL = fitcsvm (..., NAME, VALUE)
+
+     Fit a Support Vector Machine classification model.
+
+     'MDL = fitcsvm (X, Y)' returns a Support Vector Machine classification
+     model, MDL, with X being the predictor data, and Y the class labels of
+     observations in X.
+
+        * 'X' must be a N*P numeric matrix of predictor data where rows
+          correspond to observations and columns correspond to features or
+          variables.
+        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+          corresponding predictor data in X.  Y can be numerical, logical, char
+          array or cell array of character vectors.  Y must have same number of
+          rows as X.
+
+     'MDL = fitcsvm (..., NAME, VALUE)' returns a Support Vector Machine model
+     with additional options specified by Name-Value pair arguments listed
+     below.
+
+     Model Parameters
+     ----------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Standardize'  A boolean flag indicating whether the data in X should be
+                    standardized prior to training.
+                    
+     'PredictorNames'A cell array of character vectors specifying the predictor
+                    variable names.  The variable names are assumed to be in the
+                    same order as they appear in the training data X.
+                    
+     'ResponseName' A character vector specifying the name of the response
+                    variable.
+                    
+     'ClassNames'   Names of the classes in the class labels, Y, used for fitting
+                    the kNN model.  ClassNames are of the same type as the class
+                    labels in Y.
+                    
+     'SVMtype'      Specifies the type of SVM used for training the
+                    'ClassificationSVM' model.  By default, the type of SVM is
+                    defined by setting other parameters and/or by the data itself.
+                    Setting the 'SVMtype' parameter overrides the default behavior
+                    and it accepts the following options:
+
+     VALUE            DESCRIPTION
+     ------------------------------------------------------------------------------
+     'C_SVC'          It is the standard SVM formulation for classification
+                      tasks.  It aims to find the optimal hyperplane that
+                      separates different classes by maximizing the margin
+                      between them while allowing some misclassifications.  The
+                      parameter 'C' controls the trade-off between maximizing
+                      the margin and minimizing the classification error.  It is
+                      the default type, unless otherwise specified.
+     'nu_SVC'         It is a variation of the standard SVM that introduces a
+                      parameter ν (nu) as an upper bound on the fraction of
+                      margin errors and a lower bound on the fraction of support
+                      vectors.  This formulation provides more control over the
+                      number of support vectors and the margin errors, making it
+                      useful for specific classification scenarios.  It is the
+                      default type, when the 'OutlierFraction' parameter is set.
+     'one_class_SVM'  It is used for anomaly detection and novelty detection
+                      tasks.  It aims to separate the data points of a single
+                      class from the origin in a high-dimensional feature space.
+                      This method is particularly useful for identifying
+                      outliers or unusual patterns in the data.  It is the
+                      default type, when the 'Nu' parameter is set or when there
+                      is a single class in Y.  When 'one_class_SVM' is set by
+                      the 'SVMtype' pair argument, Y has no effect and any
+                      classes are ignored.
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'OutlierFraction'The expected proportion of outliers in the training data,
+                    specified as a scalar value in the range [0,1].  When
+                    specified, the type of SVM model is switched to 'nu_SVC' and
+                    'OutlierFraction' defines the ν (nu) parameter.
+                    
+     'KernelFunction'A character vector specifying the method for computing
+                    elements of the Gram matrix.  The available kernel functions
+                    are 'gaussian' or 'rbf', 'linear', 'polynomial', and
+                    'sigmoid'.  For one-class learning, the default Kernel
+                    function is 'rbf'.  For two-class learning the default is
+                    'linear'.
+                    
+     'PolynomialOrder'A positive integer that specifies the order of polynomial in
+                    kernel function.  The default value is 3.  Unless the
+                    'KernelFunction' is set to 'polynomial', this parameter is
+                    ignored.
+                    
+     'KernelScale'  A positive scalar that specifies a scaling factor for the γ
+                    (gamma) parameter, which can be seen as the inverse of the
+                    radius of influence of samples selected by the model as
+                    support vectors.  The γ (gamma) parameter is computed as gamma
+                    = KernelScale / (number of features).  The default value for
+                    'KernelScale' is 1.
+                    
+     'KernelOffset' A nonnegative scalar that specifies the coef0 in kernel
+                    function.  For the polynomial kernel, it influences the
+                    polynomial's shift, and for the sigmoid kernel, it affects the
+                    hyperbolic tangent's shift.  The default value for
+                    'KernelOffset' is 0.
+                    
+     'BoxConstraint'A positive scalar that specifies the upper bound of the
+                    Lagrange multipliers, i.e.  the parameter C, which is used for
+                    training 'C_SVC' and 'one_class_SVM' type of models.  It
+                    determines the trade-off between maximizing the margin and
+                    minimizing the classification error.  The default value for
+                    'BoxConstraint' is 1.
+                    
+     'Nu'           A positive scalar, in the range (0,1] that specifies the
+                    parameter ν (nu) for training 'nu_SVC' and 'one_class_SVM'
+                    type of models.  Unless overridden by setting the 'SVMtype'
+                    parameter, setting the 'Nu' parameter always forces the
+                    training model type to 'one_class_SVM', in which case, the
+                    number of classes in Y is ignored.  The default value for 'Nu'
+                    is 1.
+                    
+     'CacheSize'    A positive scalar that specifies the memory requirements (in
+                    MB) for storing the Gram matrix.  The default is 1000.
+                    
+     'Tolerance'    A nonnegative scalar that specifies the tolerance of
+                    termination criterion.  The default value is 1e-6.
+                    
+     'Shrinking'    Specifies whether to use shrinking heuristics.  It accepts
+                    either 0 or 1.  The default value is 1.
+
+     Cross Validation Options
+     ------------------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Crossval'     Cross-validation flag specified as 'on' or 'off'.  If 'on' is
+                    specified, a 10-fold cross validation is performed and a
+                    'ClassificationPartitionedModel' is returned in MDL.  To
+                    override this cross-validation setting, use only one of the
+                    following Name-Value pair arguments.
+                    
+     'CVPartition'  A 'cvpartition' object that specifies the type of
+                    cross-validation and the indexing for the training and
+                    validation sets.  A 'ClassificationPartitionedModel' is
+                    returned in MDL and the trained model is stored in the
+                    'Trained' property.
+                    
+     'Holdout'      Fraction of the data used for holdout validation, specified as
+                    a scalar value in the range [0,1].  When specified, a randomly
+                    selected percentage is reserved as validation data and the
+                    remaining set is used for training.  The trained model is
+                    stored in the 'Trained' property of the
+                    'ClassificationPartitionedModel' returned in MDL.  'Holdout'
+                    partitioning attempts to ensure that each partition represents
+                    the classes proportionately.
+                    
+     'KFold'        Number of folds to use in the cross-validated model, specified
+                    as a positive integer value greater than 1.  When specified,
+                    then the data is randomly partitioned in k sets and for each
+                    set, the set is reserved as validation data while the
+                    remaining k-1 sets are used for training.  The trained models
+                    are stored in the 'Trained' property of the
+                    'ClassificationPartitionedModel' returned in MDL.  'KFold'
+                    partitioning attempts to ensure that each partition represents
+                    the classes proportionately.
+                    
+     'Leaveout'     Leave-one-out cross-validation flag specified as 'on' or
+                    'off'.  If 'on' is specified, then for each of the n
+                    observations (where n is the number of observations, excluding
+                    missing observations, specified in the 'NumObservations'
+                    property of the model), one observation is reserved as
+                    validation data while the remaining observations are used for
+                    training.  The trained models are stored in the 'Trained'
+                    property of the 'ClassificationPartitionedModel' returned in
+                    MDL.
+
+     See also: ClassificationSVM, ClassificationPartitionedModel, svmtrain,
+     svmpredict.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Fit a Support Vector Machine classification model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitrgam
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5984
+ -- statistics: OBJ = fitrgam (X, Y)
+ -- statistics: OBJ = fitrgam (X, Y, NAME, VALUE)
+
+     Fit a Generalized Additive Model (GAM) for regression.
+
+     'OBJ = fitrgam (X, Y)' returns an object of class RegressionGAM, with
+     matrix X containing the predictor data and vector Y containing the
+     continuous response data.
+
+        * X must be a N*P numeric matrix of input data where rows correspond to
+          observations and columns correspond to features or variables.  X will
+          be used to train the GAM model.
+        * Y must be N*1 numeric vector containing the response data
+          corresponding to the predictor data in X.  Y must have same number of
+          rows as X.
+
+     'OBJ = fitrgam (..., NAME, VALUE)' returns an object of class RegressionGAM
+     with additional properties specified by Name-Value pair arguments listed
+     below.
+
+     NAME             VALUE
+                      
+     ------------------------------------------------------------------------------
+     'predictors'     Predictor Variable names, specified as a row vector cell
+                      of strings with the same length as the columns in X.  If
+                      omitted, the program will generate default variable names
+                      (x1, x2, ..., xn) for each column in X.
+                      
+     'responsename'   Response Variable Name, specified as a string.  If
+                      omitted, the default value is 'Y'.
+                      
+     'formula'        a model specification given as a string in the form 'Y ~
+                      terms' where Y represents the response variable and terms
+                      the predictor variables.  The formula can be used to
+                      specify a subset of variables for training model.  For
+                      example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies
+                      four linear terms for the first four columns of for
+                      predictor data, and x1:x2 and x2:x3 specify the two
+                      interaction terms for 1st-2nd and 3rd-4th columns
+                      respectively.  Only these terms will be used for training
+                      the model, but X must have at least as many columns as
+                      referenced in the formula.  If Predictor Variable names
+                      have been defined, then the terms in the formula must
+                      reference to those.  When 'formula' is specified, all
+                      terms used for training the model are referenced in the
+                      IntMatrix field of the OBJ class object as a matrix
+                      containing the column indexes for each term including both
+                      the predictors and the interactions used.
+                      
+     'interactions'   a logical matrix, a positive integer scalar, or the string
+                      'all' for defining the interactions between predictor
+                      variables.  When given a logical matrix, it must have the
+                      same number of columns as X and each row corresponds to a
+                      different interaction term combining the predictors
+                      indexed as true.  Each interaction term is appended as a
+                      column vector after the available predictor column in X.
+                      When 'all' is defined, then all possible combinations of
+                      interactions are appended in X before training.  At the
+                      moment, parsing a positive integer has the same effect as
+                      the 'all' option.  When 'interactions' is specified, only
+                      the interaction terms appended to X are referenced in the
+                      IntMatrix field of the OBJ class object.
+                      
+     'knots'          a scalar or a row vector with the same columns as X.  It
+                      defines the knots for fitting a polynomial when training
+                      the GAM. As a scalar, it is expanded to a row vector.  The
+                      default value is 5, hence expanded to ones (1, columns
+                      (X)) * 5.  You can parse a row vector with different
+                      number of knots for each predictor variable to be fitted
+                      with, although not recommended.
+                      
+     'order'          a scalar or a row vector with the same columns as X.  It
+                      defines the order of the polynomial when training the GAM.
+                      As a scalar, it is expanded to a row vector.  The default
+                      values is 3, hence expanded to ones (1, columns (X)) * 3.
+                      You can parse a row vector with different number of
+                      polynomial order for each predictor variable to be fitted
+                      with, although not recommended.
+                      
+     'dof'            a scalar or a row vector with the same columns as X.  It
+                      defines the degrees of freedom for fitting a polynomial
+                      when training the GAM. As a scalar, it is expanded to a
+                      row vector.  The default value is 8, hence expanded to
+                      ones (1, columns (X)) * 8.  You can parse a row vector
+                      with different degrees of freedom for each predictor
+                      variable to be fitted with, although not recommended.
+                      
+     'tol'            a positive scalar to set the tolerance for convergence
+                      during training.  By default, it is set to 1e-3.
+
+     You can parse either a 'formula' or an 'interactions' optional parameter.
+     Parsing both parameters will result an error.  Accordingly, you can only
+     pass up to two parameters among 'knots', 'order', and 'dof' to define the
+     required polynomial for training the GAM model.
+
+     See also: RegressionGAM, regress, regress_gp.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Fit a Generalized Additive Model (GAM) for regression.
+
+
+
+
+

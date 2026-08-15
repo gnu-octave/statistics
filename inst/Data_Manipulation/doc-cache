@@ -1,0 +1,971 @@
+# doc-cache created by Octave 11.3.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 14
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+combnk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+ -- statistics: C = combnk (DATA, K)
+
+     Return all combinations of K elements in DATA.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Return all combinations of K elements in DATA.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+crosstab
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 607
+ -- statistics: T = crosstab (X1, X2)
+ -- statistics: T = crosstab (X1, ..., XN)
+ -- statistics: [T, CHISQ, P, LABELS] = crosstab (...)
+
+     Create a cross-tabulation (contingency table) T from data vectors.
+
+     The inputs X1, X2, ...  XN must be vectors of equal length with a data type
+     of numeric, logical, char array, categorical, strings, or cell array of
+     character vectors.
+
+     As additional return values 'crosstab' returns the chi-square statistics
+     CHISQ, its p-value P and a cell array LABELS, containing the labels of each
+     input argument.
+
+     See also: grp2idx, tabulate.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+Create a cross-tabulation (contingency table) T from data vectors.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+datasample
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1147
+ -- statistics: Y = datasample (DATA, K)
+ -- statistics: Y = datasample (DATA, K, DIM)
+ -- statistics: Y = datasample (..., NAME, VALUE)
+ -- statistics: [Y IDCS] = datasample (...)
+
+     Randomly sample data.
+
+     Return K observations randomly sampled from DATA.  DATA can be a vector or
+     a matrix of any data.  When DATA is a matrix or a n-dimensional array, the
+     samples are the subarrays of size n - 1, taken along the dimension DIM.
+     The default value for DIM is 1, that is the row vectors when sampling a
+     matrix.
+
+     Output Y is the returned sampled data.  Optional output IDCS is the vector
+     of the indices to build Y from DATA.
+
+     Additional options are set through pairs of parameter name and value.
+     Available parameters are:
+
+     'Replace'
+          a logical value that can be 'true' (default) or 'false': when set to
+          'true', 'datasample' returns data sampled with replacement.
+
+     'Weights'
+          a vector of positive numbers that sets the probability of each
+          element.  It must have the same size as DATA along dimension DIM.
+
+     See also: rand, randi, randperm, randsample.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Randomly sample data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+dummyvar
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1510
+ -- statistics: D = dummyvar (GROUP)
+
+     Create dummy variables.
+
+     'D = dummyvar (GROUP)' returns a matrix D containing the dummy variables
+     associated with the grouping variables in GROUP.  Each row in D corresponds
+     to the same observation across all variables in GROUP and each column in D
+     corresponds to a separate dummy variable.  D is a numeric matrix of double
+     data type containing ones and zeros.
+
+     The grouping variable in GROUP can be specified in one of the following
+     options:
+
+        * a positive integer vector representing the different group levels in
+          the ordered range '1:max (GROUP)'.
+
+        * a positive integer matrix with each column corresponding to a separate
+          grouping variable and the integer values representing the group levels
+          within that grouping variable in the ordered range '1:max (GROUP)'.
+
+        * a categorical column vector, in which case the number and order of
+          columns in D correspond to the categories returned by 'categories
+          (GROUP)'.  Categories that are defined but not present in GROUP
+          produce columns of zeros.  Elements of GROUP that are '<undefined>'
+          result in rows of 'NaN' values in D.
+
+        * a cell array with its elements containing grouping variables specified
+          as any of the above options.  Note that all grouping variables in the
+          cell array must have the same number of observations.
+
+     See also: tabulate, grp2idx, grpstats.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Create dummy variables.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+fillmissing
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8128
+ -- statistics: B = fillmissing (A, "constant", V)
+ -- statistics: B = fillmissing (A, METHOD)
+ -- statistics: B = fillmissing (A, MOVE_METHOD, WINDOW_SIZE)
+ -- statistics: B = fillmissing (A, FILL_FUNCTION, WINDOW_SIZE)
+ -- statistics: B = fillmissing (..., DIM)
+ -- statistics: B = fillmissing (..., PROPERTYNAME, PROPERTYVALUE)
+ -- statistics: [B, IDX] = fillmissing (...)
+
+     Fill missing data in arrays.
+
+     Replace missing entries of array A either with values in V or as determined
+     by other specified methods.  'missing' values are determined by the data
+     type of A as identified by the function ismissing, currently defined as:
+
+     Standard missing values and their corresponding data types are:
+
+        * NaN - for double, single, duration, and calendarDuration arrays.
+        * NaT - for datetime arrays.
+        * <missing> - for string arrays.
+        * <undefined> - for categorical arrays.
+        * {0x0 char} - for cell arrays of character vectors.
+
+     For any data types that do not support missing values, 'ismissing' returns
+     'TF = false (size (A))'.
+
+     A can be a numeric scalar or array, a character vector or array, or a cell
+     array of character vectors (a.k.a.  string cells).
+
+     V can be a scalar or an array containing values for replacing the missing
+     values in A with a compatible data type for insertion into A.  The shape of
+     V must be a scalar or an array with number of elements in V equal to the
+     number of elements orthogonal to the operating dimension.  E.g., if
+     'size(A)' = [3 5 4], operating along 'dim' = 2 requires V to contain either
+     1 or 3x4=12 elements.
+
+     If requested, the optional output IDX will contain a logical array the same
+     shape as A indicating with 1's which locations in A were filled.
+
+     Alternate Input Arguments and Values:
+        * METHOD - replace missing values with:
+
+          'next'
+          'previous'
+          'nearest'
+               next, previous, or nearest non-missing value (nearest defaults to
+               next when equidistant as determined by 'SamplePoints'.)
+
+          'linear'
+               linear interpolation of neighboring, non-missing values
+
+          'spline'
+               piecewise cubic spline interpolation of neighboring, non-missing
+               values
+
+          'pchip'
+               'shape preserving' piecewise cubic spline interpolation of
+               neighboring, non-missing values
+
+        * MOVE_METHOD - moving window calculated replacement values:
+
+          'movmean'
+          'movmedian'
+               moving average or median using a window determined by
+               WINDOW_SIZE.  WINDOW_SIZE must be either a positive scalar value
+               or a two element positive vector of sizes '[NB, NA]' measured in
+               the same units as 'SamplePoints'.  For scalar values, the window
+               is centered on the missing element and includes all data points
+               within a distance of half of WINDOW_SIZE on either side of the
+               window center point.  Note that for compatibility, when using a
+               scalar value, the backward window limit is inclusive and the
+               forward limit is exclusive.  If a two-element WINDOW_SIZE vector
+               is specified, the window includes all points within a distance of
+               NB backward and NA forward from the current element at the window
+               center (both limits inclusive).
+
+        * FILL_FUNCTION - custom method specified as a function handle.  The
+          supplied fill function must accept three inputs in the following order
+          for each missing gap in the data:
+          A_VALUES -
+               elements of A within the window on either side of the gap as
+               determined by WINDOW_SIZE.  (Note these elements can include
+               missing values from other nearby gaps.)
+          A_LOCS -
+               locations of the reference data, A_VALUES, in terms of the
+               default or specified 'SamplePoints'.
+          GAP_LOCS -
+               location of the gap data points that need to be filled in terms
+               of the default or specified 'SamplePoints'.
+
+          The supplied function must return a scalar or vector with the same
+          number of elements in GAP_LOCS.  The required WINDOW_SIZE parameter
+          follows similar rules as for the moving average and median methods
+          described above, with the two exceptions that (1) each gap is
+          processed as a single element, rather than gap elements being
+          processed individually, and (2) the window extended on either side of
+          the gap has inclusive endpoints regardless of how WINDOW_SIZE is
+          specified.
+
+        * DIM - specify a dimension for vector operation (default = first
+          non-singeton dimension)
+
+        * PROPERTYNAME-PROPERTYVALUE pairs
+          'SamplePoints'
+               PROPERTYVALUE is a vector of sample point values representing the
+               sorted and unique x-axis values of the data in A.  If
+               unspecified, the default is assumed to be the vector [1 : SIZE
+               (A, DIM)].  The values in 'SamplePoints' will affect methods and
+               properties that rely on the effective distance between data
+               points in A, such as interpolants and moving window functions
+               where the WINDOW_SIZE specified for moving window functions is
+               measured relative to the 'SamplePoints'.
+
+          'EndValues'
+               Apply a separate handling method for missing values at the front
+               or back of the array.  PROPERTYVALUE can be:
+                  * A constant scalar or array with the same shape requirements
+                    as V.
+                  * 'none' - Do not fill end gap values.
+                  * 'extrap' - Use the same procedure as METHOD to fill the end
+                    gap values.
+                  * Any valid METHOD listed above except for 'movmean',
+                    'movmedian', and 'fill_function'.  Those methods can only be
+                    applied to end gap values with 'extrap'.
+
+          'MissingLocations'
+               PROPERTYVALUE must be a logical array the same size as A
+               indicating locations of known missing data with a value of
+               'true'.  (cannot be combined with MaxGap)
+
+          'MaxGap'
+               PROPERTYVALUE is a numeric scalar indicating the maximum gap
+               length to fill, and assumes the same distance scale as the sample
+               points.  Gap length is calculated by the difference in locations
+               of the sample points on either side of the gap, and gaps larger
+               than MaxGap are ignored by FILLMISSING.  (cannot be combined with
+               MissingLocations)
+
+     Compatibility Notes:
+        * Numerical and logical inputs for A and V may be specified in any
+          combination.  The output will be the same class as A, with the V
+          converted to that data type for filling.  Only 'single' and 'double'
+          have defined 'missing' values, so except for when the
+          'missinglocations' option specifies the missing value identification
+          of logical and other numeric data types, the output will always be 'B
+          = A' with 'IDX = false(size(A))'.
+        * All interpolation methods can be individually applied to 'EndValues'.
+        * MATLAB's FILL_FUNCTION method currently has several inconsistencies
+          with the other methods (tested against version 2022a), and Octave's
+          implementation has chosen the following consistent behavior over
+          compatibility: (1) a column full of missing data is considered part of
+          'EndValues', (2) such columns are then excluded from FILL_FUNCTION
+          processing because the moving window is always empty.  (3) operation
+          in dimensions higher than 2 perform identically to operations in dims
+          1 and 2, most notable on vectors.
+
+     See also: ismissing, rmmissing, standardizeMissing.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Fill missing data in arrays.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+grp2idx
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1757
+ -- statistics: G = grp2idx (S)
+ -- statistics: [G, GN] = grp2idx (S)
+ -- statistics: [G, GN, GL] = grp2idx (S)
+
+     Get index for grouping variable.
+
+     'G = grp2idx (S)' returns a numeric column vector of integer values G
+     indexing the distinct groups in the grouping variable S.  S can specified
+     as any of the following data types:
+
+        * categorical vector
+        * cell array of character vectors
+        * character array
+        * duration vector
+        * logical vector
+        * numeric vector
+
+     S must be a vector, unless it is a 2-D character array.  In the case of
+     numerical and logical data types, the group indices are ordered in sorted
+     order of S.  In the case of categorical arrays, the group indices are
+     allocated by the order of the categories in S.  For the rest of the data
+     types, the group indices are allocated by order of first appearance in S.
+     Note that in case of a categorical grouping variable, the indexing integer
+     values might not be continuous, since S may contain unassigned categories.
+     For every other data type, G will contain integer values in the range
+     [1:K], where K is the number of distinct groups in S.
+
+     '[G, GN] = grp2idx (S)' also returns a cell array of character vectors GN
+     representing the list of group names.  The order of the group names in GN
+     follow the same pattern as the group indices in G according to the data
+     type of S, as described above.
+
+     '[G, GN, GL] = grp2idx (S)' further returns a column vector GL representing
+     the list of the group levels with the same data type as S.
+
+     Note that standard missing values in S appear as NaN in G and are not
+     present on either GN and GL.
+
+     See also: grpstats.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Get index for grouping variable.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+ismissing
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2369
+ -- statistics: TF = ismissing (A)
+ -- statistics: TF = ismissing (A, INDICATOR)
+
+     Find missing data in arrays.
+
+     'TF = ismissing (A)' returns a logical array, TF, with the same dimensions
+     as A, where 'true' values match the standard missing values in the input
+     data according to their data type.
+
+     Standard missing values and their corresponding data types are:
+
+        * NaN - for double, single, duration, and calendarDuration arrays.
+        * NaT - for datetime arrays.
+        * <missing> - for string arrays.
+        * <undefined> - for categorical arrays.
+        * {0x0 char} - for cell arrays of character vectors.
+
+     For any data types that do not support missing values, 'ismissing' returns
+     'TF = false (size (A))'.
+
+     Note: the generic 'ismissing' function from the statistics package only
+     operates on core Octave datatypes and it explicitly identifies missing
+     values in double and single arrays, as well as in cell arrays of character
+     vectors.  All other data types are handled by the overloaded methods from
+     their respective data class from the datatypes package.  Use 'help
+     class_name.ismissing' to find more information about the functional
+     specialization of their respective class implementation.
+
+     The optional input INDICATOR can be a scalar or a vector, of the same type
+     as the input data A, specifying alternative missing values in the input
+     data.  When specifying INDICATOR values, the standard missing values are
+     ignored, unless explicitly stated in the INDICATOR.
+
+     Additional data type matches between INDICATOR and A are:
+
+        * double indicators also match single, all integer types, and logical
+          data in A.
+
+        * string and char indicators also match categorical data in A.
+
+        * char and cellstr indicators also match string data in A.
+
+     Note: the generic 'ismissing' function from the statistics package only
+     accepts INDICATOR argument for numeric, logical, and char arrays, as well
+     as for cell arrays of character vectors.  For all other core Octave data
+     types, 'ismissing' produces an error.  However, INDICATOR is supported for
+     data classes from the datatypes package through their respective class
+     implementation of overloaded methods.
+
+     See also: fillmissing, rmmissing, standardizeMissing.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Find missing data in arrays.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+isoutlier
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7712
+ -- statistics: TF = isoutlier (X)
+ -- statistics: TF = isoutlier (X, METHOD)
+ -- statistics: TF = isoutlier (X, 'percentiles', THRESHOLD)
+ -- statistics: TF = isoutlier (X, MOVMETHOD, WINDOW)
+ -- statistics: TF = isoutlier (..., DIM)
+ -- statistics: TF = isoutlier (..., NAME, VALUE)
+ -- statistics: [TF, L, U, C] = isoutlier (...)
+
+     Find outliers in data
+
+     'isoutlier (X)' returns a logical array whose elements are true when an
+     outlier is detected in the corresponding element of X.  'isoutlier' treats
+     NaNs as missing values and removes them.
+
+        * If X is a matrix, then 'isoutlier' operates on each column of X
+          separately.
+        * If X is a multidimensional array, then 'isoutlier' operates along the
+          first dimension of X whose size does not equal 1.
+
+     By default, an outlier is a value that is more than three scaled median
+     absolute deviations (MAD) from the median.  The scaled median is defined as
+     'c*median(abs(A-median(A)))', where 'c=-1/(sqrt(2)*erfcinv(3/2))'.
+
+     'isoutlier (X, METHOD)' specifies a method for detecting outliers.  The
+     following methods are available:
+
+     Method     Description
+     ----------------------------------------------------------------------------
+     'median'   Outliers are defined as elements more than three scaled MAD
+                from the median.
+     'mean'     Outliers are defined as elements more than three standard
+                deviations from the mean.
+     'quartiles'Outliers are defined as elements more than 1.5 interquartile
+                ranges above the upper quartile (75 percent) or below the
+                lower quartile (25 percent).  This method is useful when the
+                data in X is not normally distributed.
+     'grubbs'   Outliers are detected using Grubbs’ test for outliers, which
+                removes one outlier per iteration based on hypothesis testing.
+                This method assumes that the data in X is normally
+                distributed.
+     'gesd'     Outliers are detected using the generalized extreme
+                Studentized deviate test for outliers.  This iterative method
+                is similar to 'grubbs', but can perform better when there are
+                multiple outliers masking each other.
+
+     'isoutlier (X, 'percentiles', THRESHOLD)' detects outliers based on a
+     percentile thresholds, specified as a two-element row vector whose elements
+     are in the interval [0, 100].  The first element indicates the lower
+     percentile threshold, and the second element indicates the upper percentile
+     threshold.  The first element of threshold must be less than the second
+     element.
+
+     'isoutlier (X, MOVMETHOD, WINDOW)' specifies a moving method for detecting
+     outliers.  The following methods are available:
+
+     Method     Description
+     ----------------------------------------------------------------------------
+     'movmedian'Outliers are defined as elements more than three local scaled
+                MAD from the local median over a window length specified by
+                WINDOW.
+     'movmean'  Outliers are defined as elements more than three local
+                standard deviations from the from the local mean over a window
+                length specified by WINDOW.
+
+     WINDOW must be a positive integer scalar or a two-element vector of
+     positive integers.  When WINDOW is a scalar, if it is an odd number, the
+     window is centered about the current element and contains WINDOW - 1
+     neighboring elements.  If even, then the window is centered about the
+     current and previous elements.  When WINDOW is a two-element vector of
+     positive integers [nb, na], the window contains the current element, nb
+     elements before the current element, and na elements after the current
+     element.  When 'SamplePoints' are also specified, WINDOW can take any real
+     positive values (either as a scalar or a two-element vector) and in this
+     case, the windows are computed relative to the sample points.
+
+     DIM specifies the operating dimension and it must be a positive integer
+     scalar.  If not specified, then, by default, 'isoutlier' operates along the
+     first non-singleton dimension of X.
+
+     The following optional parameters can be specified as NAME/VALUE paired
+     arguments.
+
+        * 'SamplePoints' can be specified as a vector of sample points with
+          equal length as the operating dimension.  The sample points represent
+          the x-axis location of the data and must be sorted and contain unique
+          elements.  Sample points do not need to be uniformly sampled.  By
+          default, the vector is [1, 2, 3, ..., N], where N = size (X, DIM).
+          You can use unequally spaced 'SamplePoints' to define a
+          variable-length window for one of the moving methods available.
+
+        * 'ThresholdFactor' can be specified as a nonnegative scalar.  For
+          methods 'median' and 'movmedian', the detection threshold factor
+          replaces the number of scaled MAD, which is 3 by default.  For methods
+          'mean' and 'movmean', the detection threshold factor replaces the
+          number of standard deviations, which is 3 by default.  For methods
+          'grubbs' and 'gesd', the detection threshold factor ranges from 0 to
+          1, specifying the critical alpha-value of the respective test, and it
+          is 0.05 by default.  For the 'quartiles' method, the detection
+          threshold factor replaces the number of interquartile ranges, which is
+          1.5 by default.  'ThresholdFactor' is not supported for the
+          'quartiles' method.
+
+        * 'MaxNumOutliers' is only relevant to the 'gesd' method and it must be
+          a positive integer scalar specifying the maximum number of outliers
+          returned by the 'gesd' method.  By default, it is the integer nearest
+          to the 10% of the number of elements along the operating dimension in
+          X.  The 'gesd' method assumes the nonoutlier input data is sampled
+          from an approximate normal distribution.  When the data is not sampled
+          in this way, the number of returned outliers might exceed the
+          MaxNumOutliers value.
+
+     '[TF, L, U, C] = isoutlier (...)' returns up to 4 output arguments as
+     described below.
+
+        * TF is the outlier indicator with the same size a X.
+
+        * L is the lower threshold used by the outlier detection method.  If
+          METHOD is used for outlier detection, then L has the same size as X in
+          all dimensions except for the operating dimension where the length is
+          1.  If MOVMETHOD is used, then L has the same size as X.
+
+        * U is the upper threshold used by the outlier detection method.  If
+          METHOD is used for outlier detection, then U has the same size as X in
+          all dimensions except for the operating dimension where the length is
+          1.  If MOVMETHOD is used, then U has the same size as X.
+
+        * C is the center value used by the outlier detection method.  If METHOD
+          is used for outlier detection, then C has the same size as X in all
+          dimensions except for the operating dimension where the length is 1.
+          If MOVMETHOD is used, then C has the same size as X.  For 'median',
+          'movmedian', 'mean', and 'movmean' methods, C is computed by taking
+          into account the outlier values.  For 'grubbs' and 'gesd' methods, C
+          is computed by excluding the outliers.  For the 'percentiles' method,
+          C is the average between U and L thresholds.
+
+     See also: filloutliers, rmoutliers, ismissing.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Find outliers in data
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+multiway
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2069
+ -- statistics: GROUPINDEX = multiway (NUMBERS, NUM_PARTS)
+ -- statistics: GROUPINDEX = multiway (NUMBERS, NUM_PARTS, METHOD)
+ -- statistics: [GROUPINDEX, PARTITION] = multiway (...)
+ -- statistics: [GROUPINDEX, PARTITION, GROUPSIZES] = multiway (...)
+
+     Solve the multiway number partitioning problem.
+
+     'GROUPINDEX = multiway (NUMBERS, NUM_PARTS)' splits a set of numbers in
+     NUMBERS into a number of subsets specified in NUM_PARTS such that the sums
+     of the subsets are nearly as equal as possible and returns a vector of
+     group indices in GROUPINDEX with each index corresponding to the set of
+     numbers provided as input.
+
+        * NUMBERS is a vector of positive real numbers to be partitioned.
+        * NUM_PARTS is a positive integer scalar specifying the number of
+          partitions (subsets) to split the numbers into.
+
+     'GROUPINDEX = multiway (NUMBERS, NUM_PARTS, METHOD)' also specifies the
+     algorithm used for partitioning the set of numbers.  By default, 'multiway'
+     uses the complete Karmarkar-Karp algorithm, when the set of numbers
+     contains up to 10 elements and the requested number of subsets does not
+     exceed 5, otherwise it defaults to the greedy algorithm, which is optimized
+     for speed, but may not return the optimal partitioning.  The following
+     methods are supported:
+
+        * 'greedy' (Greedy algorithm)
+        * 'completeKK' (Complete Karmarkar-Karp algorithm)
+
+     The 'multiway' function may return up to three output arguments described
+     below:
+
+        * GROUPINDEX: A vector of the same length as NUMBERS containing the
+          group index (from 1 to NUM_PARTS) for each number.
+        * PARTITION: A cell array of length NUM_PARTS with each cell containing
+          the numbers assigned to that partition.
+        * GROUPSIZES: A vector of the sums of the numbers in each partition.
+
+     Example:
+          numbers = [4, 5, 6, 7, 8];
+          num_parts = 2;
+          [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+
+     See also: cvpartition.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Solve the multiway number partitioning problem.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+normalise_distribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2068
+ -- statistics: NORMALISED = normalise_distribution (DATA)
+ -- statistics: NORMALISED = normalise_distribution (DATA, DISTRIBUTION)
+ -- statistics: NORMALISED = normalise_distribution (DATA, DISTRIBUTION,
+          DIMENSION)
+
+     Transform a set of data so as to be N(0,1) distributed according to an idea
+     by van Albada and Robinson.
+
+     This is achieved by first passing it through its own cumulative
+     distribution function (CDF) in order to get a uniform distribution, and
+     then mapping the uniform to a normal distribution.
+
+     The data must be passed as a vector or matrix in DATA.  If the CDF is
+     unknown, then [] can be passed in DISTRIBUTION, and in this case the
+     empirical CDF will be used.  Otherwise, if the CDFs for all data are known,
+     they can be passed in DISTRIBUTION, either in the form of a single function
+     name as a string, or a single function handle, or a cell array consisting
+     of either all function names as strings, or all function handles.  In the
+     latter case, the number of CDFs passed must match the number of rows, or
+     columns respectively, to normalise.  If the data are passed as a matrix,
+     then the transformation will operate either along the first non-singleton
+     dimension, or along DIMENSION if present.
+
+     Notes: The empirical CDF will map any two sets of data having the same size
+     and their ties in the same places after sorting to some permutation of the
+     same normalised data:
+          normalise_distribution([1 2 2 3 4])
+          => -1.28  0.00  0.00  0.52  1.28
+
+          normalise_distribution([1 10 100 10 1000])
+          => -1.28  0.00  0.52  0.00  1.28
+
+     Original source: S.J. van Albada, P.A. Robinson "Transformation of
+     arbitrary distributions to the normal distribution with application to EEG
+     test-retest reliability" Journal of Neuroscience Methods, Volume 161, Issue
+     2, 15 April 2007, Pages 205-211 ISSN 0165-0270,
+     10.1016/j.jneumeth.2006.11.004.
+     (http://www.sciencedirect.com/science/article/pii/S0165027006005668)
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Transform a set of data so as to be N(0,1) distributed according to an idea b...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+randsample
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 711
+ -- statistics: Y = randsample (V, K)
+ -- statistics: Y = randsample (V, K, REPLACEMENT=false)
+ -- statistics: Y = randsample (V, K, REPLACEMENT=false, [W=[]])
+
+     Sample elements from a vector.
+
+     Returns K random elements from a vector V with N elements, sampled without
+     or with REPLACEMENT, with an optional weight vector.
+
+     If V is a scalar, samples from 1:V.
+
+     If a weight vector W of the same size as V is specified, the probability of
+     each element being sampled is proportional to W.  Unlike Matlab's function
+     of the same name, this can be done for sampling with or without
+     replacement.
+
+     Randomization is performed using rand().
+
+     See also: datasample, randperm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Sample elements from a vector.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+rmmissing
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2339
+ -- statistics: R = rmmissing (A)
+ -- statistics: R = rmmissing (A, DIM)
+ -- statistics: R = rmmissing (..., NAME, VALUE)
+ -- statistics: [R, TF] = rmmissing (...)
+
+     Remove missing data from arrays.
+
+     Given an input vector or matrix (2-D array) A, 'R = rmmissing (A)' returns
+     an output vector or matrix R of the same type as input A and any missing
+     elements removed.  If A is a vector, missing elements are removed
+     individually, if A is a matrix, then rows containing missing elements are
+     removed.
+
+     Standard missing values and their corresponding data types are:
+
+        * NaN - for double, single, duration, and calendarDuration arrays.
+        * NaT - for datetime arrays.
+        * <missing> - for string arrays.
+        * <undefined> - for categorical arrays.
+        * {0x0 char} - for cell arrays of character vectors.
+
+     For any data types that do not support missing values, 'rmmissing' returns
+     'R == A' and if a second output argument is requested it also returns 'TF =
+     false (size (A))'.
+
+     Given an input matrix (2-D array) A, 'R = rmmissing (A, DIM)' further
+     specifies whether rows or columns containing missing data are removed from
+     the output R based on the value of DIM, which must be either 1 or 0.
+
+        * 1: remove rows.
+
+        * 2: remove columns.
+
+     'R = rmmissing (..., NAME, VALUE)' also accepts the following paired
+     arguments.
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'MinNumMissing'  A positive integer scalar value specifying the required
+                      minimum number of missing values for removing any
+                      particular row or column from a matrix input.  Note that
+                      this argument is ignored if input A is a vector.
+                      
+     'MissingLocations'A logical array of the same size as input A indexing the
+                      locations of missing values in input array A.  Note that
+                      specifying 'MissingLocations' overrides any standard
+                      missing values in A.
+
+     Optional return value TF is a logical array where 'true' values represent
+     removed entries, rows or columns from the original data A.
+
+     See also: fillmissing, ismissing, standardizeMissing.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Remove missing data from arrays.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+standardizeMissing
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1716
+ -- statistics: B = standardizeMissing (A, INDICATOR)
+
+     Replace selected values by standard missing values.
+
+     'Β = standardizeMissing (A, INDICATOR)' returns a standardized array B of
+     the same size and data type as the input array A and with all elements
+     specified by INDICATOR replaced by the standard missing value corresponding
+     the data type of A.  INDICATOR can be either a scalar or a vector.
+
+     Standard missing values and their corresponding data types are:
+
+        * NaN - for double, single, duration, and calendarDuration arrays.
+        * NaT - for datetime arrays.
+        * <missing> - for string arrays.
+        * <undefined> - for categorical arrays.
+        * {0x0 char} - for cell arrays of character vectors.
+
+     For any other data type input that does not support missing values,
+     'standardizeMissing' returns 'B = A' and any INDICATOR value is ignored.
+
+     The nonstandard missing value INDICATOR must be of the same type as the
+     data input A or have a compatible data types according to the following
+     rules:
+
+        * all numeric indicators match both double and single data types in A.
+        * indicators specified as string arrays, char vectors, and 'cell' arrays
+          of character vectors match categorical data type in A.
+        * a char vector matches a cell array of character vectors in A.
+
+     Note: the generic 'standardizeMissing' function from the statistics does
+     not operate on table inputs, which is handled by the overloaded method of
+     the table class.  Use 'help table.standardizeMissing' to find more
+     information about the functional specialization on tables.
+
+     See also: fillmissing, ismissing, rmmissing.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Replace selected values by standard missing values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+tiedrank
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1311
+ -- statistics: [R, TIEADJ] = tiedrank (X)
+ -- statistics: [R, TIEADJ] = tiedrank (X, TIEFLAG)
+ -- statistics: [R, TIEADJ] = tiedrank (X, TIEFLAG, BIDIR)
+
+     X may be a vector or an array.  An array is ranked along its first
+     dimension, so a matrix is ranked column by column, and TIEADJ then carries
+     one entry per column: its first dimension has length 1 by default, or 3
+     when TIEFLAG is set, and its higher dimensions are those of X.
+
+     Compute rank adjusted for ties.
+
+     '[R, TIEADJ] = tiedrank (X)' computes the ranks of the values in vector X.
+     If any values in X are tied, 'tiedrank' computes their average rank.  The
+     return value TIEADJ is an adjustment for ties required by the nonparametric
+     tests 'signrank' and 'ranksum', and for the computation of Spearman's rank
+     correlation.
+
+     '[R, TIEADJ] = tiedrank (X, 1)' computes the ranks of the values in the
+     vector X.  TIEADJ is a vector of three adjustments for ties required in the
+     computation of Kendall's tau.  'tiedrank (X, 0)' is the same as 'tiedrank
+     (X)'.
+
+     '[R, TIEADJ] = tiedrank (X, 0, 1)' computes the ranks from each end, so
+     that the smallest and largest values get rank 1, the next smallest and
+     largest get rank 2, etc.  These ranks are used in the Ansari-Bradley test.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+X may be a vector or an array.
+
+
+
+
+
