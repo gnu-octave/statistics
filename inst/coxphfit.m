@@ -35,7 +35,10 @@
 ## @end ifnottex
 ##
 ## fitted to the @math{n}-by-@math{p} matrix of predictors @var{X} and the
-## @math{n}-by-1 vector of event times @var{T}.  @math{h_0(t)} is the baseline
+## @math{n}-by-1 vector of event times @var{T}.  @var{T} may instead be an
+## @math{n}-by-2 matrix whose rows give a @math{(start, stop]} interval of
+## exposure, the counting process form, in which an observation joins the risk
+## set only after its start time.  @math{h_0(t)} is the baseline
 ## hazard, which is left unspecified: the coefficients are estimated by
 ## maximizing the Cox partial likelihood, which does not involve it.
 ##
@@ -55,7 +58,12 @@
 ## @var{H} is a two-column matrix whose first column holds the distinct event
 ## times and whose second holds the estimated cumulative hazard at those times,
 ## evaluated at the predictor values given by @qcode{"Baseline"}.  Its first
-## row is the earliest time with a cumulative hazard of zero.
+## row is the first event time with a cumulative hazard of zero; an observation
+## censored before any event contributes no row.  In a stratified model
+## @var{H} gains a third column carrying the stratum, the blocks appear in
+## ascending stratum order, and each block leads with its own zero row at its
+## own first event time.  A stratum holding no event contributes a single row
+## of @qcode{NaN} with its label.
 ##
 ## The following @var{name}/@var{value} pairs are accepted:
 ##
@@ -63,9 +71,11 @@
 ## @headitem Name @tab Value
 ## @item @qcode{"Baseline"} @tab The @var{X} values at which the baseline
 ## hazard is computed, either a scalar or a 1-by-@math{p} vector.  The default
-## is @code{mean (@var{X})}, so the hazard is that of an average observation;
-## pass @qcode{0} for a hazard relative to the origin.  The coefficients do not
-## depend on this choice, only @var{H} does.
+## is the mean of @var{X} weighted by @qcode{"Frequency"} and taken within each
+## stratum, so the hazard is that of an average observation of its stratum;
+## pass @qcode{0} for a hazard relative to the origin.  A value given
+## explicitly is used for every stratum.  The coefficients do not depend on
+## this choice, only @var{H} does.
 ## @item @qcode{"Censoring"} @tab A logical or 0/1 vector of length @math{n},
 ## where 1 marks an observation right-censored at its recorded time.  The
 ## default is a vector of zeros, so every observation is a recorded event.
@@ -79,6 +89,11 @@
 ## @item @qcode{"Options"} @tab A structure of iteration settings, as built by
 ## @code{statset ("coxphfit")}.  The fields used are @qcode{"MaxIter"},
 ## @qcode{"TolX"} and @qcode{"Display"}.
+## @item @qcode{"Strata"} @tab A vector of length @math{n} of stratum labels.
+## Each stratum carries its own baseline hazard and its own risk sets, while
+## the coefficients are shared across all of them.  A predictor that does not
+## vary within any stratum cannot be estimated from a stratified fit; it is
+## reported by a warning and held at zero.
 ## @end multitable
 ##
 ## The fields of @var{stats} are:
@@ -104,20 +119,27 @@
 ## likelihood ratio test against the model with no predictors.
 ## @end multitable
 ##
-## Stratified models and the counting-process form of @var{T}, in which each
-## row gives a @math{(start, stop]} interval, are not yet implemented and are
-## rejected rather than silently ignored.
+## @strong{Two documented deviations, both where R2024a disagrees with
+## itself.}  The martingale residual is defined as the event indicator minus
+## the cumulative hazard the observation actually experienced, so
+## @qcode{"csres"} and @qcode{"martres"} must sum to that indicator.  They do
+## here, always.
 ##
-## @strong{One documented deviation, for @qcode{"efron"} ties only.}  The
-## martingale residual is defined as the event indicator minus the estimated
-## cumulative hazard, so @qcode{"csres"} and @qcode{"martres"} must sum to that
-## indicator.  They do here, for both tie methods.  In MATLAB R2024a they do so
-## only for @qcode{"breslow"}: under @qcode{"efron"} its @qcode{"martres"} is
-## computed from a cumulative hazard that agrees neither with its own
-## @qcode{"csres"} nor with the @var{H} it returns, and the two residuals sum
-## to 1.0437 and @math{-0.0414} where they must give 1 and 0.  Every other
-## output, and every residual under @qcode{"breslow"}, agrees with R2024a to
-## machine precision.
+## Under @qcode{"efron"} ties MATLAB's do not: its @qcode{"martres"} comes from
+## a cumulative hazard agreeing neither with its own @qcode{"csres"} nor with
+## the @var{H} it returns, and the two sum to 1.0437 and @math{-0.0414} where
+## they must give 1 and 0.
+##
+## In the counting process form MATLAB's @qcode{"martres"} correctly subtracts
+## the hazard accrued before the observation entered, but its @qcode{"csres"}
+## does not, so the two disagree by exactly that amount for any row whose start
+## time follows an event.  Here both account for it, so @qcode{"csres"}
+## differs from MATLAB's by @math{\Lambda(start) \exp (x'b)} and the identity
+## is preserved.
+##
+## Every other output agrees with R2024a to machine precision, across
+## censoring, weights, both tie methods, stratification, and the counting
+## process form.
 ##
 ## @seealso{statset, ecdf, fitlm}
 ## @end deftypefn
@@ -135,14 +157,22 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   if (! (isnumeric (T) && isreal (T) && ! isempty (T)))
     error ("coxphfit: T must be a real numeric vector.");
   endif
-  if (columns (T) == 2)
-    error (strcat ("coxphfit: the counting process form of T, giving a", ...
-                   " (start, stop] interval per row, is not implemented."));
+  ## T is either a vector of event times or, in the counting process form, an
+  ## N-by-2 matrix whose rows give a (start, stop] interval of exposure.
+  if (columns (T) == 2 && rows (T) == rows (X))
+    Tstart = T(:,1);
+    T = T(:,2);
+    if (any (Tstart >= T))
+      error (strcat ("coxphfit: each row of T must give a (start, stop]", ...
+                     " interval with start strictly less than stop."));
+    endif
+  elseif (isvector (T))
+    T = T(:);
+    Tstart = -Inf (numel (T), 1);
+  else
+    error (strcat ("coxphfit: T must be a vector of event times or an", ...
+                   " N-by-2 matrix of (start, stop] intervals."));
   endif
-  if (! isvector (T))
-    error ("coxphfit: T must be a real numeric vector.");
-  endif
-  T = T(:);
   n = numel (T);
   if (rows (X) != n)
     error ("coxphfit: T must have one element for each row of X.");
@@ -156,6 +186,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   Ties = 'breslow';
   B0 = [];
   Options = [];
+  Strata = [];
 
   if (mod (numel (varargin), 2) != 0)
     error ("coxphfit: optional arguments must occur in NAME/VALUE pairs.");
@@ -179,7 +210,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
       case 'options'
         Options = varargin{i+1};
       case 'strata'
-        error ("coxphfit: stratified models are not implemented.");
+        Strata = varargin{i+1};
       otherwise
         error ("coxphfit: unknown parameter name '%s'.", name);
     endswitch
@@ -209,6 +240,15 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
                    " non-negative values."));
   endif
 
+  if (isempty (Strata))
+    Strata = ones (n, 1);
+  endif
+  if (! (isnumeric (Strata) || islogical (Strata)) || numel (Strata) != n)
+    error (strcat ("coxphfit: 'Strata' must have one element for each row", ...
+                   " of X."));
+  endif
+  Strata = double (Strata(:));
+
   if (! isempty (B0) && (! isnumeric (B0) || numel (B0) != p))
     error (strcat ("coxphfit: 'B0' must be a real vector with %d", ...
                    " elements."), p);
@@ -228,32 +268,57 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   display = statget (Options, 'Display', 'off');
 
   ## --- drop incomplete rows ----------------------------------------------
-  ok = all (isfinite (X), 2) & isfinite (T) & isfinite (Frequency);
+  ok = all (isfinite (X), 2) & isfinite (T) & isfinite (Frequency) ...
+       & ! isnan (Strata);
   if (! all (ok))
     X = X(ok,:);
     T = T(ok);
+    Tstart = Tstart(ok);
     Censoring = Censoring(ok);
     Frequency = Frequency(ok);
+    Strata = Strata(ok);
     n = numel (T);
   endif
   if (n == 0)
     error ("coxphfit: no complete observations remain after removing NaNs.");
   endif
 
-  ## A constant column carries no information: the Cox model has no intercept.
+  ## A column with no variation carries no information.  Globally, that is a
+  ## constant term, which the Cox model has no place for; within a stratified
+  ## model it is a column constant inside every stratum, which the partial
+  ## likelihood never compares across strata and so cannot estimate either.
+  ## Both are held at zero rather than estimated.
+  usc = unique (Strata);
   const = false (1, p);
+  gconst = false (1, p);
   for j = 1:p
-    const(j) = all (X(:,j) == X(1,j));
+    gconst(j) = all (X(:,j) == X(1,j));
+    cj = true;
+    for si = 1:numel (usc)
+      xs = X(Strata == usc(si), j);
+      if (! all (xs == xs(1)))
+        cj = false;
+        break;
+      endif
+    endfor
+    const(j) = cj;
   endfor
-  if (any (const))
+  if (any (gconst))
     warning ("coxphfit: the Cox model cannot have a constant term in X.");
+  elseif (any (const))
+    warning (strcat ("coxphfit: a column of X is constant within every", ...
+                     " stratum and cannot be estimated."));
   endif
 
-  ## The default baseline is the mean of X weighted by 'Frequency'.  MathWorks
-  ## documents it as mean (X) without qualification, but the weighted mean is
-  ## what R2024a computes -- measured, since the two agree whenever every
-  ## frequency is 1 and the documentation is therefore not wrong, only partial.
-  if (isempty (Baseline))
+  ## The default baseline is the mean of X weighted by 'Frequency', taken
+  ## within each stratum rather than over the whole sample -- each stratum
+  ## carries its own baseline hazard, so each is centred on its own average
+  ## observation.  MathWorks documents it as mean (X) without qualification;
+  ## the weighted, per-stratum mean is what R2024a computes.  The two agree
+  ## whenever every frequency is 1 and there is a single stratum, so the
+  ## documentation is partial rather than wrong.
+  baseline_default = isempty (Baseline);
+  if (baseline_default)
     Baseline = sum (Frequency .* X, 1) / sum (Frequency);
   endif
   if (! (isnumeric (Baseline) && isreal (Baseline)
@@ -281,7 +346,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   ## --- Newton-Raphson on the partial likelihood --------------------------
   b = B0;
   for iter = 1:maxiter
-    [logl, g, F] = partial_lik (b, X, T, event, w, Ties);
+    [logl, g, F] = partial_lik (b, X, T, Tstart, event, w, Strata, Ties);
     if (all (! free))
       break;
     endif
@@ -300,7 +365,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
       break;
     endif
   endfor
-  [logl, g, F] = partial_lik (b, X, T, event, w, Ties);
+  [logl, g, F] = partial_lik (b, X, T, Tstart, event, w, Strata, Ties);
   b(const) = 0;
 
   if (nargout < 3)
@@ -312,17 +377,40 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   ## this scales the hazard by exp (Baseline * b) and leaves b untouched.
   eta = (X - Baseline) * b;
   ex = w .* exp (eta);
-  ut = unique (T(event));
-  h = zeros (numel (ut), 1);
   ## The hazard uses the Breslow estimator for both tie methods.  'Ties' enters
   ## only through the partial likelihood, and so through b; MATLAB does the
   ## same, which is why its Efron and Breslow hazards differ by the fit alone.
-  for k = 1:numel (ut)
-    D = event & T == ut(k);
-    R = T >= ut(k);
-    h(k) = sum (w(D)) / sum (ex(R));
+  ## Strata are emitted in ascending label order, each block leading with a
+  ## zero row at its own first event time -- not at its earliest observation,
+  ## since one censored before any event contributes no row.  A stratum holding
+  ## no event at all contributes a single row of NaN.
+  us = unique (Strata);
+  H = [];
+  for si = 1:numel (us)
+    ins = Strata == us(si);
+    ut = unique (T(event & ins));
+    if (isempty (ut))
+      blk = [NaN, NaN];
+    else
+      if (baseline_default)
+        bs = sum (w(ins) .* X(ins,:), 1) / sum (w(ins));
+      else
+        bs = Baseline;
+      endif
+      exs = w .* exp ((X - bs) * b);
+      h = zeros (numel (ut), 1);
+      for k = 1:numel (ut)
+        D = event & ins & T == ut(k);
+        R = ins & Tstart < ut(k) & T >= ut(k);
+        h(k) = sum (w(D)) / sum (exs(R));
+      endfor
+      blk = [ut(1), 0; ut, cumsum(h)];
+    endif
+    if (numel (us) > 1)
+      blk = [blk, repmat(us(si), rows (blk), 1)];
+    endif
+    H = [H; blk];
   endfor
-  H = [min(T), 0; ut, cumsum(h)];
 
   if (nargout < 4)
     return;
@@ -336,72 +424,84 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   pval = 2 * normcdf (-abs (z));
 
   ## Likelihood ratio against the model with no predictors.
-  logl0 = partial_lik (zeros (p, 1), X, T, event, w, Ties);
+  logl0 = partial_lik (zeros (p, 1), X, T, Tstart, event, w, Strata, Ties);
   df = sum (free);
   lrtp = 1 - chi2cdf (2 * (logl - logl0), df);
 
   ## --- residuals ----------------------------------------------------------
-  ## Cumulative hazard carried by each observation, on the uncentred scale.
+  ## Each stratum has its own baseline hazard, so every risk set below is
+  ## restricted to the stratum of the observation it belongs to.
   exu = w .* exp (X * b);
-  h0 = zeros (numel (ut), 1);
-  for k = 1:numel (ut)
-    D = event & T == ut(k);
-    R = T >= ut(k);
-    h0(k) = sum (w(D)) / sum (exu(R));
-  endfor
-  ch0 = cumsum (h0);
+  us = unique (Strata);
   Hi = zeros (n, 1);
-  for i = 1:n
-    idx = find (ut <= T(i), 1, 'last');
-    if (! isempty (idx))
-      Hi(i) = ch0(idx);
-    endif
+  xbar = NaN (n, p);              # risk-set mean at each observation's time
+  sh = cell (numel (us), 1);      # per-stratum event times, hazards and means
+
+  for si = 1:numel (us)
+    ins = Strata == us(si);
+    ut = unique (T(event & ins));
+    h0 = zeros (numel (ut), 1);
+    xb = zeros (numel (ut), p);
+    for k = 1:numel (ut)
+      D = event & ins & T == ut(k);
+      R = ins & Tstart < ut(k) & T >= ut(k);
+      h0(k) = sum (w(D)) / sum (exu(R));
+      xb(k,:) = (exu(R)' * X(R,:)) / sum (exu(R));
+    endfor
+    sh{si} = {ut, h0, cumsum(h0), xb};
+    for i = find (ins)'
+      j = find (ut <= T(i), 1, 'last');
+      if (! isempty (j))
+        Hi(i) = sh{si}{3}(j);
+      endif
+      ## In the counting process form the observation is only exposed over
+      ## (start, stop], so the hazard accrued before it entered is not its own.
+      j0 = find (ut <= Tstart(i), 1, 'last');
+      if (! isempty (j0))
+        Hi(i) -= sh{si}{3}(j0);
+      endif
+      j = find (ut == T(i), 1);
+      if (! isempty (j))
+        xbar(i,:) = xb(j,:);
+      endif
+    endfor
   endfor
 
   martres = double (event) - Hi .* exp (X * b);
   csres = double (event) - martres;
+
   ## Deviance residuals: the martingale residual symmetrized about zero.
-  dev = zeros (n, 1);
+  devres = zeros (n, 1);
   for i = 1:n
     m = martres(i);
     e = double (event(i));
     if (e - m <= 0)
-      dev(i) = sign (m) * sqrt (-2 * m);
+      devres(i) = sign (m) * sqrt (-2 * m);
     else
-      dev(i) = sign (m) * sqrt (-2 * (m + e * log (e - m)));
+      devres(i) = sign (m) * sqrt (-2 * (m + e * log (e - m)));
     endif
   endfor
-  devres = dev;
 
-  ## Schoenfeld residuals: the predictor minus the risk-set weighted mean, at
-  ## each event time.  Censored observations have none.
+  ## Schoenfeld residuals: the predictor minus the risk-set weighted mean at
+  ## the event time.  A censored observation contributes none.
   schres = NaN (n, p);
-  for i = 1:n
-    if (! event(i))
-      continue;
-    endif
-    R = T >= T(i);
-    xbar = (exu(R)' * X(R,:)) / sum (exu(R));
-    schres(i,:) = X(i,:) - xbar;
-  endfor
+  schres(event,:) = X(event,:) - xbar(event,:);
   nev = sum (event);
   sschres = repmat (b', n, 1) + nev * (schres * covb);
 
   ## Score residuals: the per-observation contribution to the score.
   scores = zeros (n, p);
   for i = 1:n
+    si = find (us == Strata(i), 1);
+    ut = sh{si}{1};
+    h0 = sh{si}{2};
+    xb = sh{si}{4};
     acc = zeros (1, p);
     if (event(i))
-      R = T >= T(i);
-      xbar = (exu(R)' * X(R,:)) / sum (exu(R));
-      acc += X(i,:) - xbar;
+      acc += X(i,:) - xbar(i,:);
     endif
-    idx = find (ut <= T(i));
-    for k = idx'
-      D = event & T == ut(k);
-      R = T >= ut(k);
-      xbar = (exu(R)' * X(R,:)) / sum (exu(R));
-      acc -= (X(i,:) - xbar) * exp (X(i,:) * b) * h0(k);
+    for k = find (ut <= T(i) & ut > Tstart(i))'
+      acc -= (X(i,:) - xb(k,:)) * exp (X(i,:) * b) * h0(k);
     endfor
     scores(i,:) = acc;
   endfor
@@ -415,20 +515,25 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
 endfunction
 
 ## Cox partial log-likelihood, its gradient, and the observed information.
-function [l, g, F] = partial_lik (b, X, T, event, w, ties)
+function [l, g, F] = partial_lik (b, X, T, Tstart, event, w, Strata, ties)
 
   p = columns (X);
   eta = X * b;
   ex = w .* exp (eta);
-  ut = unique (T(event));
   l = 0;
   g = zeros (p, 1);
   F = zeros (p);
+  us = unique (Strata);
 
-  for k = 1:numel (ut)
+  ## Each stratum carries its own baseline hazard, so the partial likelihood is
+  ## the sum of the within-stratum likelihoods and the risk sets never cross.
+  for si = 1:numel (us)
+   ins = Strata == us(si);
+   ut = unique (T(event & ins));
+   for k = 1:numel (ut)
     tk = ut(k);
-    D = find (event & T == tk);
-    R = find (T >= tk);
+    D = find (event & ins & T == tk);
+    R = find (ins & Tstart < tk & T >= tk);
     wD = w(D);
     WD = sum (wD);
     l += sum (wD .* eta(D));
@@ -460,6 +565,7 @@ function [l, g, F] = partial_lik (b, X, T, event, w, ties)
         F += (WD / m) * (A2 / A0 - (A1 / A0) * (A1 / A0)');
       endfor
     endif
+   endfor
   endfor
 
 endfunction
@@ -537,6 +643,16 @@ endfunction
 %! assert_equal (H(1,:), [4, 0]);
 %! assert_equal (H(:,1)', [4, 4, 6, 11, 13, 18, 21, 30]);
 %! assert_equal (H(end,2), 16.21202553, 1e-6);
+
+## The leading row is the first event time, not the earliest observation
+%!test
+%! Cc = [1; 0; 1; 0; 0; 1; 0; 0; 1; 0];
+%! [b, logl, H] = coxphfit (X, T, 'Censoring', Cc);
+%! assert_equal (b, [-0.94457242311897405; 3.4887572101921012], 1e-8);
+%! assert_equal (logl, -6.4545533447841414, 1e-10);
+%! assert_equal (size (H), [7, 2]);
+%! assert_equal (H(1,:), [6, 0]);
+%! assert_equal (H(:,1)', [6, 6, 11, 13, 18, 21, 30]);
 
 ## Baseline scales the hazard by exp (Baseline * b) and nothing else
 %!test
@@ -618,11 +734,121 @@ endfunction
 %!error<coxphfit: optional arguments must occur in NAME/VALUE pairs.> ...
 %! coxphfit (X, T, 'Ties')
 
-%!error<coxphfit: stratified models are not implemented.> ...
-%! coxphfit (X, T, 'Strata', ones (10, 1))
+%!error<coxphfit: 'Strata' must have one element for each row of X.> ...
+%! coxphfit (X, T, 'Strata', ones (5, 1))
 
-%!error<coxphfit: the counting process form of T, giving a \(start, stop\] interval per row, is not implemented.> ...
-%! coxphfit (X, [T, T+1])
+%!error<coxphfit: each row of T must give a \(start, stop\] interval with start strictly less than stop.> ...
+%! coxphfit (X, [T, T])
+
+%!error<coxphfit: T must be a vector of event times or an N-by-2 matrix of \(start, stop\] intervals.> ...
+%! coxphfit (X, ones (10, 3))
+
+## Stratified fits, against R2024a
+%!test
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! [b, logl, H] = coxphfit (X, T, 'Censoring', C, 'Strata', S);
+%! assert_equal (b, [-0.77050463891752163; 3.118196154424218], 1e-8);
+%! assert_equal (logl, -5.1821575033369704, 1e-10);
+%! assert_equal (size (H), [9, 3]);
+
+## Each stratum leads with a zero row at its own first event time
+%!test
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! [~, ~, H] = coxphfit (X, T, 'Censoring', C, 'Strata', S);
+%! assert_equal (H(1,:), [4, 0, 1]);
+%! assert_equal (H(6,:), [18, 0, 2]);
+%! assert_equal (H(:,3)', [1, 1, 1, 1, 1, 2, 2, 2, 2]);
+
+## Strata are emitted in ascending label order, whatever the input order
+%!test
+%! Sa = [2; 1; 2; 1; 2; 1; 2; 1; 2; 1];
+%! warning ('off', 'Octave:coxphfit-nostratvar', 'local');
+%! [b, logl, H] = coxphfit (X, T, 'Censoring', C, 'Strata', Sa);
+%! assert_equal (H(:,3)', [1, 1, 1, 1, 1, 2, 2, 2, 2]);
+%! assert_equal (H(1,1), 6);
+%! assert_equal (H(6,1), 4);
+
+## A column with no within-stratum variation is not estimable
+%!test
+%! Sa = [2; 1; 2; 1; 2; 1; 2; 1; 2; 1];
+%! [b, logl] = coxphfit (X, T, 'Censoring', C, 'Strata', Sa);
+%! assert_equal (b(2), 0);
+%! assert_equal (isfinite (logl), true);
+
+%!warning<coxphfit: a column of X is constant within every stratum and cannot be estimated.> ...
+%! coxphfit (X, T, 'Censoring', C, 'Strata', [2;1;2;1;2;1;2;1;2;1]);
+
+## A stratum holding no event contributes a single NaN row
+%!test
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! Call = [0; 0; 1; 0; 0; 1; 1; 1; 1; 1];
+%! [b, logl, H] = coxphfit (X, T, 'Censoring', Call, 'Strata', S);
+%! assert_equal (b, [-1.0429819735537043; 4.1236894294226589], 1e-6);
+%! assert_equal (size (H), [6, 3]);
+%! assert_equal (isnan (H(6,1:2)), [true, true]);
+%! assert_equal (H(6,3), 2);
+
+## Stratified fit with efron ties
+%!test
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! [b, logl] = coxphfit (X, Tt, 'Censoring', C, 'Strata', S, 'Ties', 'efron');
+%! assert_equal (b, [-0.55718778093112831; 3.2450469646639726], 1e-8);
+%! assert_equal (logl, -5.9561243977816423, 1e-10);
+
+## The counting process form of T
+%!test
+%! T2 = [0 4; 0 6; 2 8; 0 11; 3 13; 0 16; 5 18; 0 21; 7 25; 0 30];
+%! [b, logl, H] = coxphfit (X, T2, 'Censoring', C);
+%! assert_equal (b, [-1.0103738367681818; 3.2523078880768508], 1e-8);
+%! assert_equal (logl, -7.6542119934420016, 1e-10);
+%! assert_equal (size (H), [8, 2]);
+
+## A row leaves the risk set before its start time
+%!test
+%! T3 = [0 4; 1 6; 2 8; 3 11; 4 13; 5 16; 6 18; 7 21; 8 25; 9 30];
+%! [b, logl] = coxphfit (X, T3, 'Censoring', C);
+%! assert_equal (b, [-0.91180514501458609; 2.9397105827259509], 1e-6);
+%! assert_equal (logl, -7.4995427161575758, 1e-10);
+
+## Strata and the counting process form together
+%!test
+%! T3 = [0 4; 1 6; 2 8; 3 11; 4 13; 5 16; 6 18; 7 21; 8 25; 9 30];
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! [b, logl, H] = coxphfit (X, T3, 'Censoring', C, 'Strata', S);
+%! assert_equal (b, [-0.72488691909164049; 2.9281191508655646], 1e-8);
+%! assert_equal (logl, -5.1261267996693967, 1e-10);
+%! assert_equal (size (H), [9, 3]);
+
+## A single stratum is the unstratified fit, and H keeps two columns
+%!test
+%! [b1, l1, H1] = coxphfit (X, T, 'Censoring', C);
+%! [b2, l2, H2] = coxphfit (X, T, 'Censoring', C, 'Strata', ones (10, 1));
+%! assert_equal (b2, b1, 1e-12);
+%! assert_equal (l2, l1, 1e-12);
+%! assert_equal (H2, H1, 1e-12);
+
+## The residual identity holds in the counting process form too
+%!test
+%! T2 = [0 4; 0 6; 2 8; 0 11; 3 13; 0 16; 5 18; 0 21; 7 25; 0 30];
+%! [~, ~, ~, stats] = coxphfit (X, T2, 'Censoring', C);
+%! assert_equal (stats.csres + stats.martres, double (! C), 1e-12);
+
+## With every start at zero the counting form reduces to the plain one
+%!test
+%! [b1, l1, H1, s1] = coxphfit (X, T, 'Censoring', C);
+%! [b2, l2, H2, s2] = coxphfit (X, [zeros(10,1), T], 'Censoring', C);
+%! assert_equal (b2, b1, 1e-12);
+%! assert_equal (l2, l1, 1e-12);
+%! assert_equal (H2, H1, 1e-12);
+%! assert_equal (s2.csres, s1.csres, 1e-12);
+
+## Each stratum is centred on its own mean unless Baseline is given
+%!test
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! [~, ~, Ha] = coxphfit (X, T, 'Censoring', C, 'Strata', S);
+%! [~, ~, Hb] = coxphfit (X, T, 'Censoring', C, 'Strata', S, 'Baseline', 0);
+%! assert_equal (size (Ha), size (Hb));
+%! assert_equal (any (abs (Ha(:,2) - Hb(:,2)) > 1e-12), true);
 
 ## A constant column is reported, not silently absorbed
 %!warning<coxphfit: the Cox model cannot have a constant term in X.> ...
