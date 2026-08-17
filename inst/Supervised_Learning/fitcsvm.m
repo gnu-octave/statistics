@@ -327,8 +327,8 @@ endfunction
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'rbf'})
 %! assert_equal (a.ModelParameters.BoxConstraint, 2)
 %! assert_equal (a.ModelParameters.KernelOffset, 2)
-%! assert_equal (isempty (a.Alpha), true)
-%! assert_equal (isempty (a.Beta), false)
+%! assert_equal (isempty (a.Alpha), false)
+%! assert_equal (isempty (a.Beta), true)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
@@ -336,8 +336,8 @@ endfunction
 %! assert_equal (class (a), "ClassificationSVM");
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
 %! assert_equal (a.ModelParameters.PolynomialOrder, 3)
-%! assert_equal (isempty (a.Alpha), true)
-%! assert_equal (isempty (a.Beta), false)
+%! assert_equal (isempty (a.Alpha), false)
+%! assert_equal (isempty (a.Beta), true)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
@@ -346,7 +346,8 @@ endfunction
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
 %! assert_equal (a.ModelParameters.PolynomialOrder, 3)
 %! assert_equal (isempty (a.Alpha), false)
-%! assert_equal (isempty (a.Beta), true)
+%! assert_equal (isempty (a.Beta), false)
+%! assert_equal (size (a.Beta), [2, 1])
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
@@ -359,7 +360,7 @@ endfunction
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
 %! assert_equal (a.ModelParameters.PolynomialOrder, 3)
 %! assert_equal (isempty (a.Trained{1}.Alpha), false)
-%! assert_equal (isempty (a.Trained{1}.Beta), true)
+%! assert_equal (isempty (a.Trained{1}.Beta), false)
 
 ## Test input validation
 %!error<fitcsvm: too few arguments.> fitcsvm ()

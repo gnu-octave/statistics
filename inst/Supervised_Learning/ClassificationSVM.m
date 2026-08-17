@@ -249,9 +249,11 @@ classdef ClassificationSVM
     ##
     ## The coefficients of the trained SVM classifier specified as an @math{s*1}
     ## numeric vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
-    ## with a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
-    ## empty.  This property is read-only.
+    ## @qcode{sum (obj.IsSupportVector)}.  They are the magnitudes of the dual
+    ## coefficients and are never negative; the class each belongs to is given
+    ## by the corresponding entry of @qcode{SupportVectorLabels}.
+    ## @qcode{Alpha} is populated for every kernel function.  This property is
+    ## read-only.
     ##
     ## @end deftp
     Alpha               = [];
@@ -261,10 +263,13 @@ classdef ClassificationSVM
     ##
     ## Linear predictor coefficients
     ##
-    ## The linear predictor coefficients specified as an @math{s*1} numeric
-    ## vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
-    ## with a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
+    ## The linear predictor coefficients specified as a @math{p*1} numeric
+    ## vector, where @math{p} is the number of predictors.  @qcode{Beta} is
+    ## the primal representation of the fitted hyperplane and exists only when
+    ## the SVM classifier was trained with a @qcode{'linear'} kernel function;
+    ## for any other kernel there is no such representation and @qcode{Beta} is
+    ## empty.  It equals
+    ## @qcode{obj.SupportVectors' * (obj.Alpha .* obj.SupportVectorLabels)}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -362,10 +367,9 @@ classdef ClassificationSVM
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      if (isempty (this.Alpha))
-        fprintf ("%+25s: [%dx1 double]\n", 'Beta', numel (this.Alpha));
-      else
-        fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
+      fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
+      if (! isempty (this.Beta))
+        fprintf ("%+25s: [%dx1 double]\n", 'Beta', numel (this.Beta));
       endif
       fprintf ("%+25s: %f\n", 'Bias', this.Bias);
       fprintf ("%+25s: [1x1 struct]\n", 'KernelParameters');
@@ -880,25 +884,29 @@ classdef ClassificationSVM
       Model = svmtrain (Y, X, svm_options);
       this.Model = Model;
 
-      ## Populate ClassificationSVM object properties
-      if (t == 0)   # linear kernel
-        this.Alpha = Model.sv_coef;
-      else          # other kernels
-        this.Beta = Model.sv_coef;
-      endif
+      ## Populate ClassificationSVM object properties.  LIBSVM returns the
+      ## dual coefficients already multiplied by the class sign, whereas
+      ## MATLAB keeps their magnitudes in ALPHA and the sign in
+      ## SUPPORTVECTORLABELS, so the two are separated here.
+      this.Alpha = abs (Model.sv_coef);
       this.Bias = Model.rho;
 
-      this.IsSupportVector = zeros (this.NumObservations, 1);
-      this.IsSupportVector(Model.sv_indices) = 1;
-      this.SupportVectorLabels = zeros (size (Model.sv_indices));
-      ## Handle one class
-      if (isempty (Model.nSV))
-        this.SupportVectorLabels(Model.sv_indices) = -1;
+      ## One label per support vector, in the order of SupportVectors, taking
+      ## the sign from the coefficients themselves.  LIBSVM's sign is opposite
+      ## to the labelling MATLAB reports.
+      this.SupportVectorLabels = -sign (Model.sv_coef);
+
+      ## BETA holds the primal coefficients, one per predictor, and exists
+      ## only for a linear kernel; for any other kernel there is no primal
+      ## representation and MATLAB leaves it empty.
+      if (t == 0)
+        this.Beta = Model.SVs' * (this.Alpha .* this.SupportVectorLabels);
       else
-        idx = Model.nSV(1);
-        this.SupportVectorLabels(Model.sv_indices([1:idx])) = -1;
-        this.SupportVectorLabels(Model.sv_indices([idx+1:end])) = 1;
+        this.Beta = [];
       endif
+
+      this.IsSupportVector = false (this.NumObservations, 1);
+      this.IsSupportVector(Model.sv_indices) = true;
       this.SupportVectors = Model.SVs;
 
       ## Populate ModelParameters structure
@@ -1855,21 +1863,48 @@ endclassdef
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
-%! assert_equal (isempty (obj.Alpha), true)
-%! assert_equal (sum (obj.IsSupportVector), numel (obj.Beta))
+%! assert_equal (isempty (obj.Beta), true)
+%! assert_equal (sum (obj.IsSupportVector), numel (obj.Alpha))
 %! [label, score] = predict (obj, xc);
 %! assert_equal (label, [1; 2; 2]);
 %! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
 %! assert_equal (score(:,1), -score(:,2), eps)
 %!test
 %! obj = fitcsvm (x, y);
-%! assert_equal (isempty (obj.Beta), true)
+%! assert_equal (obj.Beta, [2.182926829268275; 2.253658536585344], 1e-5)
 %! assert_equal (sum (obj.IsSupportVector), numel (obj.Alpha))
 %! assert_equal (numel (obj.Alpha), 24)
 %! assert_equal (obj.Bias, -14.415, 1e-3)
 %! xc = [min(x); mean(x); max(x)];
 %! label = predict (obj, xc);
 %! assert_equal (label, [1; 2; 2]);
+
+## Values below are R2024a's, measured 2026-08-17.
+%!test
+%! ## a linear kernel has a primal representation, one coefficient per predictor
+%! obj = fitcsvm (x, y);
+%! assert_equal (size (obj.Beta), [2, 1]);
+%! assert_equal (obj.Beta, [2.182926829268275; 2.253658536585344], 1e-5);
+%! assert_equal (obj.Beta, ...
+%!               obj.SupportVectors' * (obj.Alpha .* obj.SupportVectorLabels));
+%!test
+%! ## a nonlinear kernel has none, but keeps the dual coefficients
+%! obj = fitcsvm (x, y, 'KernelFunction', 'rbf');
+%! assert_equal (isempty (obj.Beta), true);
+%! assert_equal (numel (obj.Alpha), sum (obj.IsSupportVector));
+%!test
+%! ## the dual coefficients are magnitudes; their class is in the labels
+%! obj = fitcsvm (x, y);
+%! assert_equal (any (obj.Alpha < 0), false);
+%! assert_equal (max (obj.Alpha) <= 1, true);
+%! assert_equal (size (obj.SupportVectorLabels), [24, 1]);
+%! assert_equal (unique (obj.SupportVectorLabels)', [-1, 1]);
+%!test
+%! ## the support vector indicator is logical, one entry per observation
+%! obj = fitcsvm (x, y);
+%! assert_equal (class (obj.IsSupportVector), 'logical');
+%! assert_equal (size (obj.IsSupportVector), [100, 1]);
+%! assert_equal (sum (obj.IsSupportVector), 24);
 
 ## A single-observation query used to corrupt the heap and abort the
 ## interpreter; each row on its own must agree with the batch answer.
