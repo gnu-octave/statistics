@@ -127,6 +127,13 @@
 ## @item @var{dim} - specify a dimension for vector operation (default =
 ## first non-singeton dimension)
 ##
+## A one-sided @var{window_size}, @qcode{[@var{nb}, 0]} or
+## @qcode{[0, @var{na}]}, leaves the gap at the corresponding end of the data
+## with no values in its window.  The fill function is still called there, with
+## empty value and location arguments, as MATLAB calls it: a fill function may
+## depend only on the gap's own sample points.  One that cannot take empty
+## arguments is reported as such.
+##
 ## Along a dimension in which @var{A} is singleton, every element is a vector
 ## of length one, so a missing value has no neighbour to be filled from and is
 ## returned unchanged.  MATLAB fills it regardless, which is a defect there and
@@ -924,9 +931,10 @@ function [A, idx_out] = fillmissing (A, varargin)
 
         ## Missing values can include more than just numeric inputs.
 
-        ## Windows containing no data points (e.g., endgaps when window
-        ## is one sided [3 0] or [0 2], will be dropped from processing,
-        ## not being passed to the mov_fcn.
+        ## Windows containing no data points (e.g. endgaps when the window is
+        ## one sided, [3 0] or [0 2]) are still passed to the mov_fcn, with
+        ## empty value and location vectors, as MATLAB passes them: the fill
+        ## function may depend only on the gap's own location.
 
         if (isscalar (window_size))
           window_size = window_size * [-0.5, 0.5];
@@ -983,31 +991,13 @@ function [A, idx_out] = fillmissing (A, varargin)
 
         ## Simple front/back gap trimming for either window size = 0.
 
-        if (! window_size(2))
-          ## If no back facing window, ignore front gaps.
-          removed_front_gap_count = sum (front_gap_locs(1,:));
-          removed_front_elements = sum (gapsizes(1 : removed_front_gap_count));
-          removed_element_idx(1 : removed_front_elements) = false;
-          gap_locations(1 : removed_front_gap_count ) = [];
-          gapsizes(1 : removed_front_gap_count ) = [];
-
-        elseif (any (missing_col_gaps = (gapsizes == sz_A_dim)))
+        if (any (missing_col_gaps = (gapsizes == sz_A_dim)))
           missing_col_elements = ...
             repelems (missing_col_gaps, [1:numel(gapsizes); gapsizes'])';
           removed_element_idx(missing_col_elements) = false;
           gap_locations(missing_col_gaps) = [];
           gapsizes(missing_col_gaps) = [];
 
-        endif
-
-        if (! window_size(1))
-          ## If no front facing window, ignore back gaps.
-          removed_back_gap_count = sum (back_gap_locs(end,:));
-          removed_back_elements = sum (...
-                            gapsizes(end - removed_back_gap_count + 1 : end));
-          removed_element_idx(end - removed_back_elements + 1 : end) = false;
-          gap_locations(end - removed_back_gap_count + 1 : end) = [];
-          gapsizes(end - removed_back_gap_count + 1 : end) = [];
         endif
 
         if (! isempty (gapsizes))
@@ -1027,18 +1017,6 @@ function [A, idx_out] = fillmissing (A, varargin)
                  gap_locations, window_points_r_c(:,1), 'UniformOutput',false);
 
 
-          ## If any window is empty, do not pass that gap to the move_fcn.
-          empty_gaps = cellfun ('isempty', window_points_r_c(:,1));
-          if (any (empty_gaps))
-            removed_element_idx(...
-                  repelems (empty_gaps, [1:numel(gapsizes); gapsizes'])')...
-                      = false;
-            window_points_r_c(empty_gaps,:) = [];
-            gap_sample_values(empty_gaps) = [];
-            gapsizes(empty_gaps) = [];
-            gap_locations(empty_gaps) = [];
-          endif
-
           if (! isempty (gapsizes))
             ## Aval = A values at window locations
             ## Aloc = sample values at window locations
@@ -1049,9 +1027,23 @@ function [A, idx_out] = fillmissing (A, varargin)
             Aloc = cellfun_subsref (window_points_r_c(:,1), false, ...
                                                             {samplepoints});
 
-            ## Build fill values.
-            fill_vals_C = cellfun (move_fcn, Aval, Aloc, ...
-                        gap_sample_values(:,1), 'UniformOutput', false);
+            ## Build fill values.  A window can be empty, when a one-sided
+            ## window meets a gap at that end of the data, and the fill
+            ## function is still called with empty values and locations, as
+            ## MATLAB calls it.  A function that cannot take them is reported
+            ## as such rather than leaking whatever it raised.
+            try
+              fill_vals_C = cellfun (move_fcn, Aval, Aloc, ...
+                          gap_sample_values(:,1), 'UniformOutput', false);
+            catch err
+              if (any (cellfun ('isempty', Aval)))
+                error (strcat ("fillmissing: invalid call to the fill", ...
+                               " function when its value and location", ...
+                               " arguments are empty."));
+              else
+                rethrow (err);
+              endif
+            end_try_catch
 
             ## Check for output of move_fcn having different size than gaps.
             if (! all (cellfun ('numel', fill_vals_C) == gapsizes))
@@ -1962,7 +1954,8 @@ endfunction
 
 ## Test movfcn
 %!assert_equal (fillmissing ([1, 2, 3], @(x,y,z) x+y+z, 2), [1, 2, 3])
-%!assert_equal (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, 1), [1, 2, NaN])
+%!error<fillmissing: fill function return values must be the same size as the gaps.> ...
+%! fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, 1)
 %!assert_equal (fillmissing ([1, 2, 3], @(x,y,z) x+y+z, 2), [1, 2, 3])
 %!assert_equal (fillmissing ([1, 2, 3], @(x,y,z) x+y+z, [1, 0]), [1, 2, 3])
 %!assert_equal (fillmissing ([1, 2, 3]', @(x,y,z) x+y+z, 2), [1, 2, 3]')
@@ -1970,11 +1963,15 @@ endfunction
 %!assert_equal (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, [1, 0]), [1, 2, 7])
 %!assert_equal (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, [1, 0]'), [1, 2, 7])
 %!assert_equal (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, 2), [5, 2, 7])
-%!assert_equal (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [1, 0]), [NaN, 2, 7])
-%!assert_equal (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [0, 1]), [5, 2, NaN])
-%!assert_equal (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [0, 1.1]), [5, 2, NaN])
+%!error<fillmissing: fill function return values must be the same size as the gaps.> ...
+%! fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [1, 0])
+%!error<fillmissing: fill function return values must be the same size as the gaps.> ...
+%! fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [0, 1])
+%!error<fillmissing: fill function return values must be the same size as the gaps.> ...
+%! fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [0, 1.1])
 %!assert_equal (fillmissing ([1, 2, NaN, NaN, 3, 4], @(x,y,z) x+y+z, 2), [1, 2, 7, 12, 3, 4])
-%!assert_equal (fillmissing ([1, 2, NaN, NaN, 3, 4], @(x,y,z) x+y+z, 0.5), [1, 2, NaN, NaN, 3, 4])
+%!error<fillmissing: invalid call to the fill function when its value and location arguments are empty.> ...
+%! fillmissing ([1, 2, NaN, NaN, 3, 4], @(x,y,z) x+y+z, 0.5)
 
 %!function A = testfcn (x, y, z)
 %!  if (isempty (y))
@@ -2249,7 +2246,7 @@ endfunction
 %!assert_equal (fillmissing (logical ([1, 0, 1, 0, 1]), 'nearest', 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
 %!assert_equal (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), 3), logical ([1, 0, 1, 0, 1]))
 %!assert_equal (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), 3, 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
-%!assert_equal (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([1, 0, 0, 0, 0]))
+%!assert_equal (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
 %!test
 %! x = logical ([1, 0, 1, 0, 1]);
 %! [~, idx] = fillmissing (x, 'constant', true);
@@ -2269,7 +2266,7 @@ endfunction
 %! [~, idx] = fillmissing (x, @(x,y,z) false (size (z)), 3, 'missinglocations', logical ([1, 0, 1, 0, 1]));
 %! assert_equal (idx, logical ([1, 0, 1, 0, 1]))
 %! [~, idx] = fillmissing (x, @(x,y,z) false (size (z)), [2 0], 'missinglocations', logical ([1, 0, 1, 0, 1]));
-%! assert_equal (idx, logical ([0, 0, 1, 0, 1]))
+%! assert_equal (idx, logical ([1, 0, 1, 0, 1]))
 
 %!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), 'constant', 0), int32 ([1, 2, 3, 4, 5]))
 %!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), 'constant', 0, 'missinglocations', logical ([1, 0, 1, 0, 1])), int32 ([0, 2, 0, 4, 0]))
@@ -2278,7 +2275,14 @@ endfunction
 %!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), 'nearest', 'missinglocations', logical ([1, 0, 1, 0, 1])), int32 ([2, 2, 4, 4, 4]))
 %!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, 3), int32 ([1, 2, 3, 4, 5]))
 %!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, 3, 'missinglocations', logical ([1, 0, 1, 0, 1])), int32 ([11, 2, 13, 4, 15]))
-%!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), int32 ([1, 2, 13, 4, 15]))
+%!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), int32 ([11, 2, 13, 4, 15]))
+## A one-sided window leaves the gap at that end of the data with nothing to
+## fill from, and the fill function is called there with empty value and
+## location arguments rather than being skipped.  Values are R2024a's,
+## measured 2026-08-17.
+%!assert_equal (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, [0, 2], 'missinglocations', logical ([1, 0, 1, 0, 1])), int32 ([11, 2, 13, 4, 15]))
+%!assert_equal (fillmissing ([1, 2, 3, 4, 5], @(x,y,z) numel (x), [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), [0, 2, 2, 4, 2])
+%!assert_equal (fillmissing ([1, 2, 3, 4, 5], @(x,y,z) numel (x), [0, 2], 'missinglocations', logical ([1, 0, 1, 0, 1])), [2, 2, 2, 4, 0])
 %!test
 %! x = int32 ([1, 2, 3, 4, 5]);
 %! [~, idx] = fillmissing (x, 'constant', 0);
@@ -2298,7 +2302,7 @@ endfunction
 %! [~, idx] = fillmissing (x, @(x,y,z) z+10, 3, 'missinglocations', logical ([1, 0, 1, 0, 1]));
 %! assert_equal (idx, logical ([1, 0, 1, 0, 1]));
 %! [~, idx] = fillmissing (x, @(x,y,z) z+10, [2 0], 'missinglocations', logical ([1, 0, 1, 0, 1]));
-%! assert_equal (idx, logical ([0, 0, 1, 0, 1]));
+%! assert_equal (idx, logical ([1, 0, 1, 0, 1]));
 
 ## Other data type passthrough
 %!test
