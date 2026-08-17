@@ -101,6 +101,10 @@ function y = gampdf (x, a, b)
                   - x(v) ./ b(v) - gammaln (a(v)));
   endif
 
+  ## The density at an infinite abscissa is zero: no proper distribution
+  ## places mass there.  The expressions above reach it as Inf - Inf.
+  y(isinf (x) & a > 0 & a < Inf & b > 0 & b < Inf) = 0;
+
 endfunction
 
 %!demo

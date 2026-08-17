@@ -85,8 +85,12 @@ function y = geopdf (x, ps)
   endif
 
   ## Return NaN for out of range parameters
-  k = isnan (x) | (x == Inf) | ! (ps >= 0) | ! (ps <= 1);
+  k = isnan (x) | ! (ps >= 0) | ! (ps <= 1);
   y(k) = NaN;
+
+  ## The density at an infinite abscissa is zero: no proper distribution
+  ## places mass there.
+  y(isinf (x) & (ps >= 0) & (ps <= 1)) = 0;
 
   ## Get valid instances
   k = (x >= 0) & (x < Inf) & (x == fix (x)) & (ps > 0) & (ps <= 1);
@@ -117,7 +121,7 @@ endfunction
 ## Test output
 %!shared x, y
 %! x = [-1 0 1 Inf];
-%! y = [0, 1/2, 1/4, NaN];
+%! y = [0, 1/2, 1/4, 0];
 %!assert_equal (geopdf (x, 0.5*ones (1,4)), y)
 %!assert_equal (geopdf (x, 0.5), y)
 %!assert_equal (geopdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN y(4)])

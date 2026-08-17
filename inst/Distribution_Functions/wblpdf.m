@@ -92,6 +92,10 @@ function y = wblpdf (x, varargin)
   xk = (x < 0) & ok;
   y(xk) = 0;
 
+  ## The density at an infinite abscissa is zero: no proper distribution
+  ## places mass there.
+  y(isinf (x) & (x > 0) & ok) = 0;
+
   xk = (x >= 0) & (x < Inf) & ok;
   if (isscalar (lambda) && isscalar (k))
     y(xk) = (k * (lambda .^ -k) ...
@@ -124,7 +128,7 @@ endfunction
 ## Test output
 %!shared x,y
 %! x = [-1 0 0.5 1 Inf];
-%! y = [0, exp(-x(2:4)), NaN];
+%! y = [0, exp(-x(2:4)), 0];
 %!assert_equal (wblpdf (x, ones (1,5), ones (1,5)), y)
 %!assert_equal (wblpdf (x, 1, ones (1,5)), y)
 %!assert_equal (wblpdf (x, ones (1,5), 1), y)

@@ -34,6 +34,12 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
+##
+## The density at an infinite abscissa is @math{0}, no proper distribution
+## placing mass there.  MATLAB returns @qcode{NaN} here, as it does for
+## @code{poisspdf} and for no other density, which is an inconsistency there rather
+## than a convention: it returns @math{0} at @math{Inf} for every other
+## distribution of the same support.
 ## @seealso{raylcdf, raylinv, raylrnd, raylfit, rayllike, raylstat}
 ## @end deftypefn
 
@@ -74,6 +80,11 @@ function y = raylpdf (x, sigma)
   if (any (k))
     y(k) = 0;
   endif
+
+  ## The density at an infinite abscissa is zero: no proper distribution
+  ## places mass there.  MATLAB returns NaN, as it does for POISSPDF and
+  ## nowhere else, which is an inconsistency there rather than a convention.
+  y(isinf (x) & (sigma > 0)) = 0;
 
 endfunction
 

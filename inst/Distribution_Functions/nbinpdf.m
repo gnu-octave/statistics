@@ -117,6 +117,10 @@ function y = nbinpdf (x, r, ps)
     y(k) = bincoeff (-r(k), x(k)) .* (ps(k) .^ r(k)) .* ((ps(k) - 1) .^ x(k));
   endif
 
+  ## The density at an infinite abscissa is zero: no proper distribution
+  ## places mass there.
+  y(isinf (x) & (r > 0) & (r < Inf) & (ps >= 0) & (ps <= 1)) = 0;
+
 
 endfunction
 
@@ -140,11 +144,12 @@ endfunction
 ## Test output
 %!shared x, y
 %! x = [-1 0 1 2 Inf];
-%! y = [0 1/2 1/4 1/8 NaN];
+%! y = [0 1/2 1/4 1/8 0];
 %!assert_equal (nbinpdf (x, ones (1,5), 0.5*ones (1,5)), y)
 %!assert_equal (nbinpdf (x, 1, 0.5*ones (1,5)), y)
 %!assert_equal (nbinpdf (x, ones (1,5), 0.5), y)
 %!assert_equal (nbinpdf (x, [0 1 NaN 1.5 Inf], 0.5), [NaN 1/2 NaN 1.875*0.5^1.5/4 NaN], eps)
+%!assert_equal (nbinpdf (Inf, 5, 0.4), 0)
 %!assert_equal (nbinpdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
 %!assert_equal (nbinpdf ([x, NaN], 1, 0.5), [y, NaN])
 
