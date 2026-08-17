@@ -187,14 +187,17 @@ function h = biplot (varargin)
     endif
   endfor
 
-  ## Variable markers at the vector tips
+  ## Variable markers at the vector tips.  Each marker's data carries the
+  ## trailing NaN MATLAB puts there; it draws nothing, but code reading XData
+  ## off the returned handle sees the same array in both.
   for i = 1:p
     if (d == 2)
-      varmarks(i) = line (hax, coefs(i,1), coefs(i,2), "linestyle", "none", ...
-                          "marker", "o", "color", vcol);
-    else
-      varmarks(i) = line (hax, coefs(i,1), coefs(i,2), coefs(i,3), ...
+      varmarks(i) = line (hax, [coefs(i,1), NaN], [coefs(i,2), NaN], ...
                           "linestyle", "none", "marker", "o", "color", vcol);
+    else
+      varmarks(i) = line (hax, [coefs(i,1), NaN], [coefs(i,2), NaN], ...
+                          [coefs(i,3), NaN], "linestyle", "none", ...
+                          "marker", "o", "color", vcol);
     endif
   endfor
 
@@ -215,11 +218,12 @@ function h = biplot (varargin)
     obsmarks = zeros (m, 1);
     for j = 1:m
       if (d == 2)
-        obsmarks(j) = line (hax, scores(j,1), scores(j,2), ...
+        obsmarks(j) = line (hax, [scores(j,1), NaN], [scores(j,2), NaN], ...
                             "linestyle", "none", "marker", ".", "color", ocol);
       else
-        obsmarks(j) = line (hax, scores(j,1), scores(j,2), scores(j,3), ...
-                            "linestyle", "none", "marker", ".", "color", ocol);
+        obsmarks(j) = line (hax, [scores(j,1), NaN], [scores(j,2), NaN], ...
+                            [scores(j,3), NaN], "linestyle", "none", ...
+                            "marker", ".", "color", ocol);
       endif
     endfor
     ## Observation text labels
@@ -299,12 +303,13 @@ endfunction
 %!   assert_equal (get (h(1), "ydata"), [0 -0.3], 1e-12);
 %!   assert_equal (get (h(2), "xdata"), [0 -0.2], 1e-12);
 %!   ## variable tip markers
-%!   assert_equal (get (h(4), "xdata"), 0.6, 1e-12);
-%!   assert_equal (get (h(4), "ydata"), -0.3, 1e-12);
+%!   ## the trailing NaN is MATLAB's own, and draws nothing
+%!   assert_equal (get (h(4), "xdata"), [0.6 NaN], 1e-12);
+%!   assert_equal (get (h(4), "ydata"), [-0.3 NaN], 1e-12);
 %!   ## observation markers (scaled scores)
-%!   assert_equal (get (h(7), "xdata"), 0.182, 1e-4);
-%!   assert_equal (get (h(7), "ydata"), 0.364, 1e-4);
-%!   assert_equal (get (h(10), "xdata"), 0.728, 1e-4);
+%!   assert_equal (get (h(7), "xdata"), [0.182 NaN], 1e-4);
+%!   assert_equal (get (h(7), "ydata"), [0.364 NaN], 1e-4);
+%!   assert_equal (get (h(10), "xdata"), [0.728 NaN], 1e-4);
 %!   ## reference axis extent
 %!   assert_equal (get (h(11), "xdata"), [-0.77 0.77 NaN 0 0], 1e-12);
 %! unwind_protect_cleanup
@@ -319,7 +324,7 @@ endfunction
 %!   ## column 3 has its largest-magnitude element (-0.6) forced positive,
 %!   ## so the whole column is negated: [0.2 0.1 -0.6] -> [-0.2 -0.1 0.6]
 %!   assert_equal (get (h(1), "zdata"), [0 -0.2], 1e-12);
-%!   assert_equal (get (h(6), "zdata"), 0.6, 1e-12);
+%!   assert_equal (get (h(6), "zdata"), [0.6 NaN], 1e-12);
 %!   assert_equal (get (h(7), "zdata"), [0 0 NaN 0 0 NaN -0.77 0.77], 1e-12);
 %! unwind_protect_cleanup
 %!   close (hf);
