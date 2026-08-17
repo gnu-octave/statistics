@@ -46,6 +46,19 @@
 ## For categorical arrays, the frequency table includes 0 counts for any
 ## categories that are defined but do not appear in @var{x}.
 ##
+## Missing values are not tabulated.  The percentage column is
+## @qcode{count / total * 100} taken literally, so a category with no
+## observations out of none at all is @qcode{NaN} rather than zero: there is no
+## total to take a proportion of.  A @qcode{categorical} carries its categories
+## independently of its data, so an all-undefined one still tabulates every
+## category with a zero count; a string array has no levels beyond those its
+## data carries, so an all-missing one tabulates to an empty table.  MATLAB
+## agrees on the categorical case but returns a malformed @math{1}-by-@math{2}
+## cell for the all-missing string, lacking the label column its own
+## documentation describes, while returning a well-formed
+## @math{0}-by-@math{3} for an empty string array.  This implementation returns
+## the empty table in both.
+##
 ## @seealso{bar, pareto}
 ## @end deftypefn
 
@@ -86,12 +99,11 @@ function tbl = tabulate (x)
       counts = accumarray (xi, 1, [nc, 1]);
     endif
 
+    ## The percentage is computed literally, so a category with no
+    ## observations out of none at all is NaN rather than zero: there is no
+    ## total to take a proportion of.  MATLAB does the same.
     total = sum (counts);
-    if (total == 0)
-      percents = zeros (size (counts));
-    else
-      percents = 100 * counts ./ total;
-    endif
+    percents = 100 * counts ./ total;
 
     ## Output format: Cell array
     out = cell (length (vals), 3);
@@ -391,14 +403,24 @@ endfunction
 %! assert_equal (counts(strcmp (vals, 'Male')), 47);
 %! assert_equal (counts(strcmp (vals, 'Female')), 53);
 
-## Test categorical with all undefined values (should return zero counts/percents)
+## Test categorical with all undefined values.  The categories survive with
+## zero counts, and the percentages are NaN: there is no total to take a
+## proportion of.  Values are R2024a's, measured 2026-08-17.
 %!test
 %! x = categorical ({'a','b','c'});
 %! x(:) = categorical (missing);
 %! tbl = tabulate (x);
 %! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [3, 3]);
 %! assert_equal ([tbl{:,2}]', [0; 0; 0]);
-%! assert_equal ([tbl{:,3}]', [0; 0; 0]);
+%! assert_equal ([tbl{:,3}]', [NaN; NaN; NaN]);
+%!test
+%! ## a zero count against a nonzero total is 0 per cent, not NaN
+%! x = categorical ({'a','b','c','a'});
+%! x(2) = categorical (missing);
+%! tbl = tabulate (x);
+%! assert_equal ([tbl{:,2}]', [2; 0; 1]);
+%! assert_equal ([tbl{:,3}]', [200/3; 0; 100/3], 1e-12);
 
 ## Test categorical with defined categories but no data
 %!test
@@ -406,9 +428,13 @@ endfunction
 %! tbl = tabulate (x);
 %! assert_equal (iscell (tbl), true);
 %! assert_equal ([tbl{:,2}]', [0; 0; 0]);
-%! assert_equal ([tbl{:,3}]', [0; 0; 0]);
+%! assert_equal ([tbl{:,3}]', [NaN; NaN; NaN]);
 
-## Test string array with all missing values (should return empty table)
+## Test string array with all missing values.  A string array has no levels
+## beyond those its data carries, so an all-missing one tabulates to nothing.
+## MATLAB returns a malformed 1-by-2 cell here, without the label column its
+## own documentation describes, and returns a well-formed 0-by-3 for an empty
+## string array; this is a deliberate divergence.  Measured 2026-08-17.
 %!test
 %! x = string ({'a','b'});
 %! x(:) = missing;
