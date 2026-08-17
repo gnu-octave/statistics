@@ -46,8 +46,9 @@
 ## @qcode{"overlay"} draws kernel density estimates instead.
 ##
 ## @item @qcode{"Location"}
-## Position of the marginal plots: @qcode{"SouthWest"} (default),
-## @qcode{"SouthEast"}, @qcode{"NorthEast"}, or @qcode{"NorthWest"}.
+## Corner occupied by the marginal plots, the scatter taking the opposite one:
+## @qcode{"SouthWest"} (default), @qcode{"SouthEast"}, @qcode{"NorthEast"}, or
+## @qcode{"NorthWest"}.
 ##
 ## @item @qcode{"Legend"}
 ## @qcode{"on"} or @qcode{"off"} to show or hide the group legend.  The default
@@ -62,15 +63,26 @@
 ## central scatter axes, the axes of the @var{x} (horizontal) histogram, and the
 ## axes of the @var{y} (vertical) histogram.
 ##
+## The @var{y} histogram's axes is built differently from MATLAB's and its
+## properties read accordingly.  We plot that marginal transposed, so its
+## @qcode{"XLim"} is the density and @qcode{"XDir"} carries the bar direction.
+## MATLAB plots it like the @var{x} one -- data along @qcode{"XLim"}, density
+## along @qcode{"YLim"} -- and rotates the whole axes by setting
+## @qcode{"View"} to @qcode{[270, 90]}, so there the direction is carried by
+## @qcode{"YDir"} and @qcode{"XDir"} is always @qcode{"normal"}.  The picture
+## is the same; code reading those properties off @code{@var{h}(3)} is not
+## portable between the two.
+##
 ## @seealso{gscatter, scatter, hist, ksdensity}
 ##
 ## @qcode{'Parent'} draws into a supplied figure or uipanel instead of the
 ## current figure.  The container is used as it stands and is never
 ## cleared, so a scatterhist can be placed alongside other axes.
 ##
-## @qcode{'Location'} names the corner the scatter occupies,
+## @qcode{'Location'} names the corner the marginal histograms occupy,
 ## @qcode{'SouthWest'} by default, or @qcode{'SouthEast'}, @qcode{'NorthEast'}
-## or @qcode{'NorthWest'}; the marginals take the two opposite sides.
+## or @qcode{'NorthWest'}; the scatter takes the opposite corner.  With the
+## default the histograms are drawn below and to the left of the scatter.
 ##
 ## @qcode{'Direction'} points the marginal bars toward the scatter plot,
 ## @qcode{'in'} by default, or away from it with @qcode{'out'}, whichever side
@@ -241,12 +253,14 @@ function h = scatterhist (varargin)
     nby = nbins(2);
   endif
 
-  ## Axes layout.  'Location' names the corner the scatter sits in, so the
-  ## marginals take the two opposite sides: with the default "southwest" the
-  ## scatter is lower left, the x marginal above it and the y marginal to its
-  ## right.
-  west = any (strcmpi (location, {"southwest", "northwest"}));
-  south = any (strcmpi (location, {"southwest", "southeast"}));
+  ## Axes layout.  'Location' names the corner the marginals sit in, as MATLAB
+  ## documents it, so the scatter takes the opposite one: with the default
+  ## "southwest" the x marginal is below the scatter and the y marginal to its
+  ## left, and the scatter itself is upper right.
+  marg_west = any (strcmpi (location, {"southwest", "northwest"}));
+  marg_south = any (strcmpi (location, {"southwest", "southeast"}));
+  west = ! marg_west;
+  south = ! marg_south;
   ## A container supplied through 'Parent' is drawn into as it stands: it
   ## belongs to the caller, so it is never cleared.  Only a figure of our own
   ## choosing is.
@@ -256,19 +270,16 @@ function h = scatterhist (varargin)
   else
     cf = parent;
   endif
-  if (west)
-    xs = 0.10;  ys_marg = 0.72;
-  else
-    xs = 0.30;  ys_marg = 0.08;
-  endif
-  if (south)
-    ys = 0.10;  xs_marg = 0.72;
-  else
-    ys = 0.30;  xs_marg = 0.08;
-  endif
-  pos_s = [xs, ys, 0.60, 0.60];
-  pos_x = [xs, xs_marg, 0.60, 0.20];
-  pos_y = [ys_marg, ys, 0.20, 0.60];
+  ## The scatter is 0.55 square and offset by 0.35 on whichever sides carry a
+  ## marginal, by 0.10 on the others -- R2024a's own geometry, measured.  Each
+  ## marginal then takes a 0.22 band in the strip its side frees.
+  xs = ternary (marg_west, 0.35, 0.10);
+  ys = ternary (marg_south, 0.35, 0.10);
+  ys_marg = ternary (marg_west, 0.05, 0.73);
+  xs_marg = ternary (marg_south, 0.05, 0.73);
+  pos_s = [xs, ys, 0.55, 0.55];
+  pos_x = [xs, xs_marg, 0.55, 0.22];
+  pos_y = [ys_marg, ys, 0.22, 0.55];
   ax_s = axes ("parent", cf, "position", pos_s, "box", "on", "nextplot", "add");
   ax_x = axes ("parent", cf, "position", pos_x, "nextplot", "add");
   ax_y = axes ("parent", cf, "position", pos_y, "nextplot", "add");
@@ -535,18 +546,29 @@ endfunction
 %!error <scatterhist: PARENT must be a figure or uipanel handle.> ...
 %! scatterhist ([1 2 3]', [1 2 3]', "Parent", -5)
 
-%!test  # Location moves the scatter to the named corner and the marginals with it
+%!test  # Location names the marginals' corner, so the scatter takes the other
 %! hf = figure ("visible", "off");
 %! unwind_protect
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   ## Offsets and size are R2024a's own, measured.
 %!   h = scatterhist (x, y, "Location", "SouthWest");
 %!   ps = get (h(1), "position");  px = get (h(2), "position");
-%!   assert_equal (ps(1:2), [0.10, 0.10], 1e-12);
-%!   assert_equal (px(2) > ps(2), true);          # x marginal above the scatter
+%!   assert_equal (ps(1:2), [0.35, 0.35], 1e-12);
+%!   assert_equal (ps(3:4), [0.55, 0.55], 1e-12);
+%!   assert_equal (px(2) < ps(2), true);          # x marginal below the scatter
 %!   h = scatterhist (x, y, "Location", "NorthEast");
 %!   ps = get (h(1), "position");  px = get (h(2), "position");
-%!   assert_equal (ps(1:2), [0.30, 0.30], 1e-12);
-%!   assert_equal (px(2) < ps(2), true);          # and below it here
+%!   assert_equal (ps(1:2), [0.10, 0.10], 1e-12);
+%!   assert_equal (px(2) > ps(2), true);          # and above it here
+%!   ## The y marginal follows the named corner in the same way.
+%!   h = scatterhist (x, y, "Location", "SouthEast");
+%!   ps = get (h(1), "position");  py = get (h(3), "position");
+%!   assert_equal (ps(1:2), [0.10, 0.35], 1e-12);
+%!   assert_equal (py(1) > ps(1), true);          # y marginal right of scatter
+%!   h = scatterhist (x, y, "Location", "NorthWest");
+%!   ps = get (h(1), "position");  py = get (h(3), "position");
+%!   assert_equal (ps(1:2), [0.35, 0.10], 1e-12);
+%!   assert_equal (py(1) < ps(1), true);          # and left of it here
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -555,23 +577,26 @@ endfunction
 %! hf = figure ("visible", "off");
 %! unwind_protect
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
-%!   ## "in" points the bars at the scatter from whichever side they sit on
+%!   ## "in" points the bars at the scatter from whichever side they sit on.
+%!   ## The x marginal's ydir is R2024a's, measured in all four corners; the y
+%!   ## marginal's xdir is ours, MATLAB rotating that axes instead (see the
+%!   ## note in the file header).
 %!   h = scatterhist (x, y, "Location", "SouthWest");
-%!   assert_equal (get (h(2), "ydir"), "reverse");
-%!   assert_equal (get (h(3), "xdir"), "reverse");
+%!   assert_equal (get (h(2), "ydir"), "normal");
+%!   assert_equal (get (h(3), "xdir"), "normal");
 %!   h = scatterhist (x, y, "Location", "NorthEast");
-%!   assert_equal (get (h(2), "ydir"), "normal");
-%!   assert_equal (get (h(3), "xdir"), "normal");
-%!   h = scatterhist (x, y, "Location", "SouthEast");
 %!   assert_equal (get (h(2), "ydir"), "reverse");
-%!   assert_equal (get (h(3), "xdir"), "normal");
-%!   h = scatterhist (x, y, "Location", "NorthWest");
+%!   assert_equal (get (h(3), "xdir"), "reverse");
+%!   h = scatterhist (x, y, "Location", "SouthEast");
 %!   assert_equal (get (h(2), "ydir"), "normal");
 %!   assert_equal (get (h(3), "xdir"), "reverse");
+%!   h = scatterhist (x, y, "Location", "NorthWest");
+%!   assert_equal (get (h(2), "ydir"), "reverse");
+%!   assert_equal (get (h(3), "xdir"), "normal");
 %!   ## and "out" inverts each of them
 %!   h = scatterhist (x, y, "Location", "NorthEast", "Direction", "out");
-%!   assert_equal (get (h(2), "ydir"), "reverse");
-%!   assert_equal (get (h(3), "xdir"), "reverse");
+%!   assert_equal (get (h(2), "ydir"), "normal");
+%!   assert_equal (get (h(3), "xdir"), "normal");
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -581,11 +606,11 @@ endfunction
 %! unwind_protect
 %!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
 %!   h = scatterhist (x, y);
-%!   assert_equal (get (h(2), "ydir"), "reverse");
-%!   assert_equal (get (h(3), "xdir"), "reverse");
-%!   h = scatterhist (x, y, "Direction", "out");
 %!   assert_equal (get (h(2), "ydir"), "normal");
 %!   assert_equal (get (h(3), "xdir"), "normal");
+%!   h = scatterhist (x, y, "Direction", "out");
+%!   assert_equal (get (h(2), "ydir"), "reverse");
+%!   assert_equal (get (h(3), "xdir"), "reverse");
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
