@@ -143,17 +143,10 @@ function [paramhat, paramci] = gpfit (x, alpha, options, freq)
     endif
   endif
 
-  ## Remove NaN from data and make a warning
-  if (any (isnan (x)))
-    x(isnan (x)) = [];
-    warning ("gpfit: X contains NaN values, which are ignored.");
-  endif
-
-  ## Remove Inf from data and make a warning
-  if (any (isinf (x)))
-    x(isnan (x)) = [];
-    warning ("gpfit: X contains Inf values, which are ignored.");
-  endif
+  ## Non-finite data is not removed: it propagates into the estimates, as it
+  ## does in MATLAB and in every iterative fitter of this package.  Dropping
+  ## missing observations belongs to the wrappers a user hands raw data to,
+  ## FITDIST and MLE, not to the estimator.
 
   ## Get sample size, max and range of X
   x_max = max (x);
@@ -325,6 +318,13 @@ endfunction
 %!test
 %! ## FREQ counts repeated observations
 %! assert_equal (gpfit (x, [], [], [2, ones(1,9)]), gpfit ([x(1), x]), 1e-10);
+%!test
+%! ## non-finite data propagates into the estimates instead of being dropped
+%! assert_equal (gpfit ([x, NaN]), [NaN, NaN]);
+%!test
+%! assert_equal (gpfit ([x, Inf]), [NaN, NaN]);
+%!test
+%! assert_equal (gpfit ([x, NaN, Inf]), [NaN, NaN]);
 
 ## Test input validation
 %!error<gpfit: function called with too few input arguments.> gpfit ()
