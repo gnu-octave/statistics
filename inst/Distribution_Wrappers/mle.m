@@ -522,10 +522,15 @@ function [phat, pci] = mle (x, varargin)
         error (strcat ("mle: censoring is not supported for", ...
                        " the Continuous Uniform distribution."));
       endif
+      ## UNIFIT returns one output per endpoint, as MATLAB's does, which MLE
+      ## packs into its own parameter vector and interval matrix.
       if (nargout < 2)
-        phat = unifit (x, alpha, freq);
+        [ahat, bhat] = unifit (x, alpha, freq);
+        phat = [ahat, bhat];
       else
-        [phat, pci] = unifit (x, alpha, freq);
+        [ahat, bhat, aci, bci] = unifit (x, alpha, freq);
+        phat = [ahat, bhat];
+        pci = [aci, bci];
       endif
 
     case {'wbl', 'weibull'}
@@ -802,9 +807,9 @@ endfunction
 %!test
 %! u = [0.2, 0.5, 0.7, 0.9, 0.35];
 %! [phat, pci] = mle (u, 'distribution', 'uniform');
-%! [a, b] = unifit (u, 0.05);
-%! assert_equal (phat, a);
-%! assert_equal (pci, b);
+%! [ahat, bhat, aci, bci] = unifit (u, 0.05);
+%! assert_equal (phat, [ahat, bhat]);
+%! assert_equal (pci, [aci, bci]);
 
 ## mle returns the maximum likelihood estimate, so the scale parameter is
 ## std (x, 1) and not normfit's unbiased std (x, 0).  It used to return the
@@ -932,6 +937,13 @@ endfunction
 %!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
 %! assert_equal (mle (x, 'distribution', 'gp', 'theta', 1), ...
 %!               [0.893710299404345, 1.322962458731574], 1e-6);
+%!test
+%! ## the Continuous Uniform interval holds one endpoint per column
+%! u = [0.2, 0.5, 0.7, 0.9, 0.35];
+%! [phat, pci] = mle (u, 'distribution', 'unif');
+%! assert_equal (phat, [0.2, 0.9], 1e-12);
+%! assert_equal (pci, [-0.374394942118256, 0.9; ...
+%!                      0.2, 1.474394942118256], 1e-12);
 
 ## Test input validation
 %!error <mle: X must be a numeric vector of real values.> mle (ones (2))
