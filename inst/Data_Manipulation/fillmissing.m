@@ -127,6 +127,14 @@
 ## @item @var{dim} - specify a dimension for vector operation (default =
 ## first non-singeton dimension)
 ##
+## Along a dimension in which @var{A} is singleton, every element is a vector
+## of length one, so a missing value has no neighbour to be filled from and is
+## returned unchanged.  MATLAB fills it regardless, which is a defect there and
+## not a convention this follows: it returns @code{[1, 1, 3, 1, 5]} for
+## @code{fillmissing ([1, NaN, 3, NaN, 5], @@testfcn, 99, 3)}, inventing values
+## from a window that contains nothing.  Measured against R2024a, two releases
+## after the behaviour was first recorded here.
+##
 ## @item @var{PropertyName}-@var{PropertyValue} pairs
 ## @table @code
 ## @item SamplePoints
@@ -1980,14 +1988,14 @@ endfunction
 %!assert_equal (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, [3, 0]), [1, 1, 3, NaN, 5])
 %!assert_equal (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 1), [1, 2, 6; 4, 2, 6])
 %!assert_equal (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 2), [1, 2, 2; 4, 5, 6])
-%!assert_equal (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 3), [1, 2, NaN; 4, NaN, 6])
+%!assert_equal (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 3), [1, 2, NaN; 4, NaN, 6]) ##known not-compatible. matlab bug ML2022a: [1, 2, 1; 4, 1, 6]
 %!assert_equal (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99), [1, 2, 3, 4, 5])
 %!assert_equal (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 1), [1, NaN, 3, NaN, 5]) ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]
 %!assert_equal (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 1), [1, 2, 3, 4, 5]')
 %!assert_equal (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 2), [1, 2, 3, 4, 5])
 %!assert_equal (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 2), [1, NaN, 3, NaN, 5]') ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]'
-%!assert_equal (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 3), [1, NaN, 3, NaN, 5])
-%!assert_equal (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 3), [1, NaN, 3, NaN, 5]')
+%!assert_equal (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 3), [1, NaN, 3, NaN, 5]) ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]
+%!assert_equal (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 3), [1, NaN, 3, NaN, 5]') ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]'
 %!assert_equal (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, 3, 'samplepoints', [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
 %!assert_equal (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, [1, 1], 'samplepoints', [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
 %!assert_equal (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, [1.5, 1.5], 'samplepoints', [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])

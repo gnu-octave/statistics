@@ -61,7 +61,9 @@
 ## also returns the p-value @var{p}, the test statistic @var{kstat}, and the
 ## critical value @var{critval}.  Without @qcode{'MCTol'} the p-value is clamped
 ## to the tabulated range @math{[0.001, 0.5]} and a warning is issued when it
-## lies outside.
+## lies outside.  The warning is an addition here: MATLAB clamps silently, so a
+## p-value reported as @math{0.001} or @math{0.5} there may be a bound rather
+## than an estimate, with nothing to say so.
 ##
 ## @seealso{kstest, adtest, jbtest}
 ## @end deftypefn

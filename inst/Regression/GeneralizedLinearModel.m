@@ -35,8 +35,11 @@
 ## @code{Dispersion}, @code{Residuals}, @code{Fitted}, @code{Diagnostics},
 ## @code{Distribution}, and @code{Link}.  @code{ObservationInfo} records which
 ## rows were weighted, excluded, or missing, and @code{Variables} holds the data
-## the model was built from.  Fitted models support the @code{predict} and
-## @code{feval} methods for prediction.
+## the model was built from.  For a binomial response given as an
+## @math{n}-by-@math{2} matrix of successes and trials, @code{Variables} holds
+## the @strong{success count} alone, that being the response the model fits;
+## MATLAB stores both columns there.  Fitted models support the
+## @code{predict} and @code{feval} methods for prediction.
 ##
 ## @code{Fitted}, @code{Residuals}, @code{Diagnostics}, and
 ## @code{ObservationInfo} have one row per @emph{input} observation, not per
@@ -356,8 +359,11 @@ classdef GeneralizedLinearModel
           if (! isempty (emsg))
             error ("GeneralizedLinearModel: %s", emsg);
           endif
-          ## The fit works in proportions; the counts are kept for the
-          ## Variables table, which reports what the caller supplied.
+          ## The fit works in proportions; the success counts are kept for
+          ## the Variables table.  Only the successes are kept, not the two
+          ## columns as handed in: Y is the number of successes by both routes
+          ## since cd9c81d0, so that is the response the model has.  MATLAB
+          ## stores the matrix exactly as given.
           y_input = double (resp(:,1));
           y_full  = y_input ./ binom_2col;
         else

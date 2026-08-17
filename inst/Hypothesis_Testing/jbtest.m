@@ -57,8 +57,10 @@
 ##
 ## @code{[@var{h}, @var{p}] = jbtest (@dots{})} also returns the p-value
 ## @var{p} of the test.  @var{p} is clamped to the tabulated range
-## @math{[0.001, 0.5]} and a warning is issued when the value lies outside it,
-## matching MATLAB.
+## @math{[0.001, 0.5]}, as MATLAB clamps it, and a warning is issued when the
+## value lies outside that range.  The warning is an addition here: MATLAB
+## clamps silently, so a p-value reported as @math{0.001} or @math{0.5} there
+## may be a bound rather than an estimate, with nothing to say so.
 ##
 ## @code{[@var{h}, @var{p}, @var{jbstat}, @var{critval}] = jbtest (@dots{})} also
 ## returns the test statistic @var{jbstat} and the critical value @var{critval}
