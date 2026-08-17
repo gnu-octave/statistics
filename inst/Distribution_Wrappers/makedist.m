@@ -912,12 +912,22 @@ endfunction
 %!test
 %! pd = makedist ('PiecewiseLinear');
 %! assert_equal (class (pd), "prob.PiecewiseLinearDistribution");
-%! assert_equal (pd.x, [0; 1]);
-%! assert_equal (pd.Fx, [0; 1]);
+%! assert_equal (pd.x, [0, 1]);
+%! assert_equal (pd.Fx, [0, 1]);
 %!test
 %! pd = makedist ('PiecewiseLinear', 'x', [0, 1, 2], 'Fx', [0, 0.5, 1]);
-%! assert_equal (pd.x, [0; 1; 2]);
-%! assert_equal (pd.Fx, [0; 0.5; 1]);
+%! assert_equal (pd.x, [0, 1, 2]);
+%! assert_equal (pd.Fx, [0, 0.5, 1]);
+%!test
+%! ## a column is stored the same way, as MATLAB stores it
+%! pd = makedist ('PiecewiseLinear', 'x', [0; 1; 2], 'Fx', [0; 0.5; 1]);
+%! assert_equal (pd.x, [0, 1, 2]);
+%! assert_equal (pd.Fx, [0, 0.5, 1]);
+%!test
+%! ## Multinomial already agreed with MATLAB and is unchanged
+%! pd = makedist ('Multinomial', 'Probabilities', [0.2, 0.3, 0.5]);
+%! assert_equal (pd.Probabilities, [0.2, 0.3, 0.5]);
+%! assert_equal (size (pd.Probabilities), [1, 3]);
 %!test
 %! pd = makedist ('Poisson');
 %! assert_equal (class (pd), "prob.PoissonDistribution");

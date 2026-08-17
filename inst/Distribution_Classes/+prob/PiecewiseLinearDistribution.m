@@ -58,8 +58,9 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
     ##
     ## Vector of x values
     ##
-    ## A numeric vector of @math{x} values at which the CDF changes slope.  You
-    ## can access the @qcode{x} property using dot name assignment.
+    ## A numeric row vector of @math{x} values at which the CDF changes slope,
+    ## reported as a row whichever way it was given.  You can access the
+    ## @qcode{x} property using dot name assignment.
     ##
     ## @end deftp
     x
@@ -68,8 +69,9 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
     ##
     ## Vector of CDF values
     ##
-    ## A numeric vector of CDF values that correspond to each value in @math{x}.
-    ## You can access the @qcode{Fx} property using dot name assignment.
+    ## A numeric row vector of CDF values that correspond to each value in
+    ## @math{x}, reported as a row whichever way it was given.  You can access
+    ## the @qcode{Fx} property using dot name assignment.
     ##
     ## @end deftp
     Fx
@@ -189,22 +191,25 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
       __disp__ (this, 'Piecewise Linear distribution');
     endfunction
 
+    ## X and FX are reported as rows, as MATLAB reports them, whichever way
+    ## they were given; they are held internally as the columns of
+    ## ParameterValues.
     function this = set.x (this, x)
-      checkparams (x, this.Fx);
-      this.ParameterValues(:,1) = x;
+      checkparams (x(:), this.Fx(:));
+      this.ParameterValues(:,1) = x(:);
     endfunction
 
     function x = get.x (this)
-      x = this.ParameterValues(:,1);
+      x = this.ParameterValues(:,1)';
     endfunction
 
     function this = set.Fx (this, Fx)
-      checkparams (this.x, Fx);
-      this.ParameterValues(:,2) = Fx;
+      checkparams (this.x(:), Fx(:));
+      this.ParameterValues(:,2) = Fx(:);
     endfunction
 
     function Fx = get.Fx (this)
-      Fx = this.ParameterValues(:,2);
+      Fx = this.ParameterValues(:,2)';
     endfunction
 
   endmethods
