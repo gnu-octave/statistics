@@ -1003,7 +1003,8 @@ classdef GeneralizedLinearModel
     ## Likelihood-ratio (deviance) test of the fitted model against the
     ## intercept-only model.  Returns a table with the deviance, degrees of
     ## freedom, and p-value of each model, the last row giving the chi-square
-    ## statistic (the drop in deviance) and its p-value.
+    ## statistic (the drop in deviance) and its p-value.  Each row is named by
+    ## the formula of the model it describes.
     ##
     ## @end deftypefn
     function tbl = devianceTest (mdl)
@@ -1016,9 +1017,12 @@ classdef GeneralizedLinearModel
       DFE        = [mdl.DFE + df_diff; mdl.DFE];
       chi2Stat   = [NaN; chi2stat];
       pValue     = [NaN; pval];
+      ## Both rows are named by their formula, as MATLAB renders them: the null
+      ## model is the same linked response against an intercept alone.
+      nullstr = sprintf ("%s ~ 1", strtrim (strtok (mdl.formulastr_, "~")));
       tbl = table (Deviance, DFE, chi2Stat, pValue, ...
         'VariableNames', {'Deviance', 'DFE', 'chi2Stat', 'pValue'}, ...
-        'RowNames', {'(Constant)', mdl.formulastr_});
+        'RowNames', {nullstr, mdl.formulastr_});
     endfunction
 
     ## -*- texinfo -*-
@@ -2096,11 +2100,15 @@ endfunction
 %! assert_equal (mdl.Formula.NTerms, 3);
 %! assert_equal (sort (mdl.Formula.TermNames), {'(Intercept)'; 'grp'; 'u'});
 
-%!test  # devianceTest labels the alternative with the rendered formula
+%!test  # devianceTest labels both rows with their rendered formula
 %! mdl = fitglm (X, yp, "Distribution", "poisson");
 %! dt = devianceTest (mdl);
 %! assert_equal (dt.Properties.RowNames, ...
-%!               {'(Constant)'; 'log(y) ~ 1 + x1 + x2 + x3'});
+%!               {'log(y) ~ 1'; 'log(y) ~ 1 + x1 + x2 + x3'});
+%! mdl = fitglm (X, yn);
+%! dt = devianceTest (mdl);
+%! assert_equal (dt.Properties.RowNames, ...
+%!               {'y ~ 1'; 'y ~ 1 + x1 + x2 + x3'});
 
 %!test  # a power keeps its exponent in the variable's own column
 %! u = [1;2;3;4;5;6;7;8;9;10;11;12];
