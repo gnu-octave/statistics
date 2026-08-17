@@ -27,8 +27,9 @@
 ## @code{@var{f} = ksdensity (@var{x})} computes a probability density estimate
 ## of the sample in the vector @var{x}, evaluated at 100 equally spaced points
 ## @var{xi} that span the range of the data.  @code{[@var{f}, @var{xi}] =
-## ksdensity (@var{x})} also returns those points.  When called without output
-## arguments, the estimate is plotted instead.
+## ksdensity (@var{x})} also returns those points.  Both are row vectors,
+## whichever way @var{x} itself lies.  When called without output arguments,
+## the estimate is plotted instead.
 ##
 ## @code{@var{f} = ksdensity (@var{x}, @var{pts})} evaluates the estimate at the
 ## values in @var{pts} instead; @var{f} is then the same size as @var{pts}.  For
@@ -206,10 +207,11 @@ function [f, xi, bw] = ksdensity (x, varargin)
     error ("ksdensity: 'Bandwidth' must be a positive scalar.");
   endif
 
-  ## Evaluation points.  For 'icdf' the points are probabilities.
+  ## Evaluation points.  For 'icdf' the points are probabilities.  A grid we
+  ## generate ourselves is a row, as MATLAB's is whatever the data's shape.
   if (strcmp (func, 'icdf'))
     if (isempty (pts))
-      xi = (((1:npoints) - 0.5) / npoints)';
+      xi = ((1:npoints) - 0.5) / npoints;
     else
       xi = pts;
     endif
@@ -218,7 +220,7 @@ function [f, xi, bw] = ksdensity (x, varargin)
     if (isempty (pts))
       if (dolog)
         gw = linspace (min (xw) - 3 * bw, max (xw) + 3 * bw, npoints);
-        xi = ksdensity_inv_ (gw, L, U)';
+        xi = ksdensity_inv_ (gw, L, U);
       else
         lo = min (x) - 3 * bw;
         hi = max (x) + 3 * bw;
@@ -228,7 +230,7 @@ function [f, xi, bw] = ksdensity (x, varargin)
         if (isfinite (U))
           hi = min (hi, U);
         endif
-        xi = linspace (lo, hi, npoints)';
+        xi = linspace (lo, hi, npoints);
       endif
     else
       xi = pts;
@@ -246,11 +248,12 @@ function [f, xi, bw] = ksdensity (x, varargin)
     endswitch
   endif
 
-  ## Match the orientation of a supplied PTS argument.
+  ## F takes XI's orientation, whether XI is the grid generated above or the
+  ## points the caller supplied.
   if (! isempty (pts))
-    f = reshape (f, ptssz);
     xi = reshape (xi, ptssz);
   endif
+  f = reshape (f, size (xi));
 
   ## With no output requested, plot the estimate (as MATLAB does) and return
   ## nothing.
@@ -395,8 +398,32 @@ endfunction
 %! assert_equal (F(1), 0, 5e-3);
 %! assert_equal (F(end), 1, 5e-3);
 %! [~, ~, bw] = ksdensity (x);
-%! Fdirect = mean (normcdf ((xi - x) / bw), 2);
+%! Fdirect = mean (normcdf ((xi(:) - x) / bw), 2)';
 %! assert_equal (F, Fdirect, 1e-12);
+
+## Orientation, measured against R2024a 2026-08-17: the grid generated here is
+## a row whatever the data's shape, while points supplied by the caller keep
+## their own shape.
+%!test
+%! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
+%! [f, xi] = ksdensity (x);
+%! assert_equal (size (f), [1, 100]);
+%! assert_equal (size (xi), [1, 100]);
+%!test
+%! ## a column of data still gives a row grid
+%! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
+%! [f, xi] = ksdensity (x, 'NumPoints', 500);
+%! assert_equal (size (f), [1, 500]);
+%! assert_equal (size (xi), [1, 500]);
+%!test
+%! ## supplied points keep their own orientation, and F follows them
+%! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
+%! [f, xi] = ksdensity (x, [0 0.5 1 1.5 2]);
+%! assert_equal (size (f), [1, 5]);
+%! assert_equal (size (xi), [1, 5]);
+%! [f, xi] = ksdensity (x, [0; 0.5; 1; 1.5; 2]);
+%! assert_equal (size (f), [5, 1]);
+%! assert_equal (size (xi), [5, 1]);
 
 %!test  # survivor and cumhazard are consistent with the cdf
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
