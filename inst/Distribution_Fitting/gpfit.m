@@ -216,9 +216,7 @@ function [paramhat, paramci] = gpfit (x, alpha, options, freq)
   if (nargout > 1)
     if (! reachedBnd)
       probs = [alpha/2; 1-alpha/2];
-      ## GPLIKE still takes the location as a third parameter, unlike
-      ## MATLAB's, and the data here is already at a zero location.
-      [~, acov] = gplike ([paramhat, 0], x);
+      [~, acov] = gplike (paramhat, x);
       se = sqrt (diag (acov))';
       ## Compute the CI for shape using a normal distribution for khat.
       kci = norminv (probs, paramhat(1), se(1));

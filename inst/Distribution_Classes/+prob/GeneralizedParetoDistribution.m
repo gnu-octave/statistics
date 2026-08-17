@@ -463,8 +463,9 @@ classdef GeneralizedParetoDistribution < prob.ProbabilityDistribution
         nlogL = [];
         return
       endif
-      nlogL = gplike ([this.k, this.sigma, this.theta], ...
-                        this.InputData.data, this.InputData.freq);
+      ## GPLIKE assumes a zero location, so shift the data by THETA.
+      nlogL = gplike ([this.k, this.sigma], ...
+                        this.InputData.data - this.theta, this.InputData.freq);
     endfunction
 
     ## -*- texinfo -*-
@@ -795,7 +796,10 @@ classdef GeneralizedParetoDistribution < prob.ProbabilityDistribution
       [phat, pci] = gpfit (x - theta, alpha, options, freq);
       phat = [phat, theta];
       pci = [pci, [theta; theta]];
-      [~, acov] = gplike (phat, x, freq);
+      ## GPLIKE covers the two estimated parameters; THETA is fixed, so the
+      ## covariance carries a zero row and column for it, as MATLAB's does.
+      [~, acov] = gplike (phat(1:2), x - theta, freq);
+      acov = [acov, [0; 0]; 0, 0, 0];
       ## Create fitted distribution object
       pd = prob.GeneralizedParetoDistribution.makeFitted (phat, pci, acov, x, freq);
     endfunction

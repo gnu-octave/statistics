@@ -25,21 +25,26 @@
 ##
 ## @code{@var{nlogL} = gplike (@var{params}, @var{x})} returns the negative
 ## log-likelihood of the data in @var{x} corresponding to the generalized Pareto
-## distribution with (1) shape parameter @var{k}, (2) scale parameter
-## @var{sigma}, and (3) location parameter @var{theta} given in the
-## three-element vector @var{params}.
+## distribution with (1) shape parameter @var{k} and (2) scale parameter
+## @var{sigma} given in the two-element vector @var{params}.
+##
+## @code{gplike} does not accept a location parameter @var{theta} and assumes it
+## to be zero.  If the location is known to be nonzero, subtract it from
+## @var{x} before calling @code{gplike}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = gplike (@var{params}, @var{x})} returns
-## the inverse of Fisher's information matrix, @var{acov}.  If the input
-## parameter values in @var{params} are the maximum likelihood estimates, the
-## diagonal elements of @var{acov} are their asymptotic variances.   @var{acov}
-## is based on the observed Fisher's information, not the expected information.
+## the inverse of Fisher's information matrix, @var{acov}, a
+## @math{2}-by-@math{2} matrix.  If the input parameter values in @var{params}
+## are the maximum likelihood estimates, the diagonal elements of @var{acov} are
+## their asymptotic variances.   @var{acov} is based on the observed Fisher's
+## information, not the expected information.
 ##
 ## @code{[@dots{}] = gplike (@var{params}, @var{x}, @var{freq})} accepts a
 ## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
 ## typically contains integer frequencies for the corresponding elements in
 ## @var{x}, but it can contain any non-integer non-negative values.  By default,
-## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.  This third
+## argument is an Octave extension; MATLAB's @code{gplike} takes two inputs.
 ##
 ## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
@@ -68,8 +73,8 @@ function [nlogL, acov] = gplike (params, x, freq)
     error ("gplike: X must be a vector.");
   endif
 
-  if (numel (params) != 3)
-    error ("gplike: PARAMS must be a three-element vector.");
+  if (numel (params) != 2)
+    error ("gplike: PARAMS must be a two-element vector.");
   endif
 
   ## Parse FREQ argument or add default
@@ -90,13 +95,13 @@ function [nlogL, acov] = gplike (params, x, freq)
     x = xf;
   endif
 
-  ## Get K, SIGMA, and THETA parameters
+  ## Get K and SIGMA parameters.  The location is assumed to be zero, the
+  ## caller having shifted the data by any known value.
   k = params(1);
   sigma = params(2);
-  theta = params(3);
   ## Get sample size and sigma x
   sz = numel (x);
-  z = (x - theta) ./ sigma;
+  z = x ./ sigma;
 
   ## For K > 0
   if (abs (k) > eps)
@@ -113,13 +118,12 @@ function [nlogL, acov] = gplike (params, x, freq)
         nH22 = (-sz + 2 * (k + 1) .* sumv - ...
                 k * (k + 1) .* sumvsq) ./ sigma ^ 2;
         acov = [nH22, -nH12; -nH12, nH11] / (nH11 * nH22 - nH12 * nH12);
-        acov = [acov, [0; 0]; 0, 0, 0];
       endif
     else
       ## The support of the GP when k<0 is 0 < y < abs(sigma/k)
       nlogL = Inf;
       if (nargout > 1)
-        acov = [NaN, NaN, 0; NaN, NaN, 0; 0, 0, 0];
+        acov = [NaN, NaN; NaN, NaN];
       endif
     endif
   else # For k = 0
@@ -132,39 +136,44 @@ function [nlogL, acov] = gplike (params, x, freq)
       nH12 = (-sumz + sumzsq) ./ sigma;
       nH22 = (-sz + 2 * sumz) ./ sigma ^ 2;
       acov = [nH22, -nH12; -nH12, nH11] / (nH11 * nH22 - nH12 * nH12);
-      acov = [acov, [0; 0]; 0, 0, 0];
     endif
   endif
 endfunction
 
 ## Test output
+## The first block's values are R2024a's, measured 2026-08-17.
 %!test
-%! k = 0.8937; sigma = 1.3230; theta = 1;
+%! k = 0.893710299404345; sigma = 1.322962458731574;
 %! x = [2.2196, 11.9301, 4.3673, 1.0949, 6.5626, ...
-%!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
-%! [nlogL, acov] = gplike ([k, sigma, theta], x);
-%! assert_equal (nlogL, 21.736, 1e-3);
-%! assert_equal (acov, [0.7249, -0.7351, 0; -0.7351, 1.3040, 0; 0, 0, 0], 1e-4);
-%!assert_equal (gplike ([2, 3, 0], 4), 3.047536764863501, 1e-14)
-%!assert_equal (gplike ([2, 3, 4], 8), 3.047536764863501, 1e-14)
-%!assert_equal (gplike ([1, 2, 0], 4), 2.890371757896165, 1e-14)
-%!assert_equal (gplike ([1, 2, 4], 8), 2.890371757896165, 1e-14)
-%!assert_equal (gplike ([2, 3, 0], [1:10]), 32.57864322725392, 1e-14)
-%!assert_equal (gplike ([2, 3, 2], [1:10] + 2), 32.57864322725392, 1e-14)
-%!assert_equal (gplike ([2, 3, 0], [1:10], ones (1,10)), 32.57864322725392, 1e-14)
-%!assert_equal (gplike ([1, 2, 0], [1:10]), 31.65666282460443, 1e-14)
-%!assert_equal (gplike ([1, 2, 3], [1:10] + 3), 31.65666282460443, 1e-14)
-%!assert_equal (gplike ([1, 2, 0], [1:10], ones (1,10)), 31.65666282460443, 1e-14)
-%!assert_equal (gplike ([1, NaN, 0], [1:10]), NaN)
+%!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590] - 1;
+%! [nlogL, acov] = gplike ([k, sigma], x);
+%! assert_equal (nlogL, 21.735838309709596, 1e-12);
+%! assert_equal (acov, [ 0.724871582460845, -0.735076013984010; ...
+%!                      -0.735076013984010,  1.303920812049488], 1e-12);
+%!test
+%! ## the covariance covers the two estimated parameters only
+%! [~, acov] = gplike ([2, 3], [1:10]);
+%! assert_equal (size (acov), [2, 2]);
+%!test
+%! ## a known location is handled by shifting the data
+%! assert_equal (gplike ([2, 3], ([1:10] + 2) - 2), ...
+%!               gplike ([2, 3], [1:10]), 1e-14);
+%!assert_equal (gplike ([2, 3], 4), 3.047536764863501, 1e-14)
+%!assert_equal (gplike ([1, 2], 4), 2.890371757896165, 1e-14)
+%!assert_equal (gplike ([2, 3], [1:10]), 32.57864322725392, 1e-14)
+%!assert_equal (gplike ([1, 2], [1:10]), 31.65666282460443, 1e-14)
+%!assert_equal (gplike ([2, 3], [1:10], ones (1,10)), 32.57864322725392, 1e-14)
+%!assert_equal (gplike ([1, 2], [1:10], ones (1,10)), 31.65666282460443, 1e-14)
+%!assert_equal (gplike ([1, NaN], [1:10]), NaN)
 
 ## Test input validation
 %!error<gplike: function called with too few input arguments.> gplike ()
 %!error<gplike: function called with too few input arguments.> gplike (1)
-%!error<gplike: X must be a vector.> gplike ([1, 2, 0], [])
-%!error<gplike: X must be a vector.> gplike ([1, 2, 0], ones (2))
-%!error<gplike: PARAMS must be a three-element vector.> gplike (2, [1:10])
-%!error<gplike: PARAMS must be a three-element vector.> gplike ([2, 3], [1:10])
+%!error<gplike: X must be a vector.> gplike ([1, 2], [])
+%!error<gplike: X must be a vector.> gplike ([1, 2], ones (2))
+%!error<gplike: PARAMS must be a two-element vector.> gplike (2, [1:10])
+%!error<gplike: PARAMS must be a two-element vector.> gplike ([1, 2, 0], [1:10])
 %!error<gplike: X and FREQ vectors mismatch.> ...
-%! gplike ([1, 2, 0], ones (10, 1), ones (8,1))
+%! gplike ([1, 2], ones (10, 1), ones (8,1))
 %!error<gplike: FREQ must not contain negative values.> ...
-%! gplike ([1, 2, 0], ones (1, 8), [1 1 1 1 1 1 1 -1])
+%! gplike ([1, 2], ones (1, 8), [1 1 1 1 1 1 1 -1])

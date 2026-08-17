@@ -830,7 +830,13 @@ endfunction
 ## four-argument form, and passing the frequencies positionally into the
 ## censoring slot marks every observation censored.
 function nll = like_value (fname, params, pd)
-  if (nargin (fname) > 3)
+  if (strcmp (fname, 'gplike'))
+    ## GPLIKE takes the two estimated parameters and assumes a zero location,
+    ## as MATLAB's does, so the fixed THETA is shifted out of the data instead
+    ## of being passed with them.
+    nll = feval (fname, params(1:2), pd.InputData.data - params(3), ...
+                 pd.InputData.freq);
+  elseif (nargin (fname) > 3)
     nll = feval (fname, params, pd.InputData.data, ...
                  pd.InputData.cens, pd.InputData.freq);
   else
