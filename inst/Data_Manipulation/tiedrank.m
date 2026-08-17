@@ -19,6 +19,7 @@
 ## @deftypefn  {statistics} {[@var{r}, @var{tieadj}] =} tiedrank (@var{x})
 ## @deftypefnx {statistics} {[@var{r}, @var{tieadj}] =} tiedrank (@var{x}, @var{tieflag})
 ## @deftypefnx {statistics} {[@var{r}, @var{tieadj}] =} tiedrank (@var{x}, @var{tieflag}, @var{bidir})
+## @deftypefnx {statistics} {[@var{r}, @var{tieadj}] =} tiedrank (@var{x}, @var{tieflag}, @var{bidir}, @var{tol})
 ##
 ## @var{x} may be a vector or an array.  An array is ranked along its first
 ## dimension, so a matrix is ranked column by column, and @var{tieadj} then
@@ -44,11 +45,21 @@
 ## smallest and largest get rank 2, etc.  These ranks are used in the
 ## Ansari-Bradley test.
 ##
+## @code{[@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag},
+## @var{bidir}, @var{tol})} treats two values as tied when they lie within a
+## tolerance of each other rather than only when they are exactly equal.
+## @var{tol} is either a scalar or an array the size of @var{x} giving each
+## element its own tolerance, and two neighbouring values are tied when the gap
+## between them does not exceed the @strong{sum} of their two tolerances.  The
+## default is @qcode{0}, which is exact comparison.  @code{signrank} uses this
+## to rank differences that are equal to within the precision of the values
+## they came from.
+##
 ## @end deftypefn
 
-function [r, tieadj] = tiedrank (x, tieflag, bidir)
+function [r, tieadj] = tiedrank (x, tieflag, bidir, tol)
   ## Check input arguments and add defaults
-  if (nargin < 1 || nargin > 3)
+  if (nargin < 1 || nargin > 4)
     print_usage ();
   endif
 
@@ -62,6 +73,16 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
   elseif (! isscalar (bidir) || ! (isnumeric (bidir) || isbool (bidir)))
     error ("tiedrank: BIDIR must be a numeric or boolean scalar.");
   endif
+  if (nargin < 4)
+    tol = 0;
+  elseif (! isnumeric (tol) || ! isreal (tol) || any (tol(:) < 0))
+    error ("tiedrank: TOL must be a non-negative numeric array.");
+  elseif (! isscalar (tol) && ! isequal (size (tol), size (x)))
+    error ("tiedrank: TOL must be a scalar or the same size as X.");
+  endif
+  if (isscalar (tol))
+    tol = repmat (tol, size (x));
+  endif
 
   ## A matrix is ranked column by column, as MATLAB does; a vector keeps its
   ## own orientation
@@ -70,10 +91,11 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
     ## is folded into columns and unfolded again afterwards
     sz = size (x);
     xm = reshape (x, sz(1), prod (sz(2:end)));
+    tm = reshape (tol, sz(1), prod (sz(2:end)));
     rm = zeros (size (xm), class (x));
     tieadj = [];
     for j = 1:columns (xm)
-      [rj, tj] = rank_vector (xm(:,j), tieflag, bidir);
+      [rj, tj] = rank_vector (xm(:,j), tieflag, bidir, tm(:,j));
       rm(:,j) = rj;
       tieadj = [tieadj, tj];
     endfor
@@ -84,15 +106,16 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
     return;
   endif
 
-  [r, tieadj] = rank_vector (x, tieflag, bidir);
+  [r, tieadj] = rank_vector (x, tieflag, bidir, tol);
 
 endfunction
 
 ## Rank one vector, leaving NaNs at the end
-function [r, tieadj] = rank_vector (x, tieflag, bidir)
+function [r, tieadj] = rank_vector (x, tieflag, bidir, tol)
 
   ## Sort X and leave NaNs at the end of vector
   [sx, idx] = sort (x(:));
+  stol = tol(:)(idx);
   NaNs = sum (isnan (x));
   xLen = length (x) - NaNs;
 
@@ -123,8 +146,14 @@ function [r, tieadj] = rank_vector (x, tieflag, bidir)
     tieadj = single (tieadj);
   endif
 
-  ## Adjust for ties
+  ## Adjust for ties.  Exact equality always ties -- which also keeps equal
+  ## infinities tied, their difference being NaN -- and a nonzero TOL ties a
+  ## neighbouring pair whose gap is within the sum of their two tolerances.
   ties = sx(1:xLen-1) >= sx(2:xLen);
+  if (any (stol(1:xLen) > 0))
+    ties = ties | (sx(2:xLen) - sx(1:xLen-1) <= ...
+                   stol(1:xLen-1) + stol(2:xLen));
+  endif
   tieloc = [find(ties); xLen+2];
   maxTies = length (tieloc);
   tiecount = 1;
@@ -174,6 +203,26 @@ endfunction
 %! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
 %! assert_equal (tieadj, [1; 0; 18]);
 
+%!test
+%! ## TOL ties a pair whose gap is within the SUM of their two tolerances, and
+%! ## separates it beyond.  Boundaries measured against R2024a.
+%! tol = [eps(1), 1e-10, 3e-10, eps(3)];
+%! assert_equal (tiedrank ([1.0, 1.9, 1.9+3.9e-10, 3.0], 0, 0, tol), ...
+%!               [1, 2.5, 2.5, 4]);
+%! assert_equal (tiedrank ([1.0, 1.9, 1.9+4.1e-10, 3.0], 0, 0, tol), ...
+%!               [1, 2, 3, 4]);
+
+%!test
+%! ## A scalar TOL applies to every element, and the default 0 is exact
+%! assert_equal (tiedrank ([1, 1+1e-9, 2], 0, 0, 1e-9), [1.5, 1.5, 3]);
+%! assert_equal (tiedrank ([1, 1+1e-9, 2], 0, 0, 0), [1, 2, 3]);
+%! assert_equal (tiedrank ([1, 1+1e-9, 2]), [1, 2, 3]);
+
+%!test
+%! ## Exact equality still ties whatever TOL says, infinities included
+%! assert_equal (tiedrank ([Inf, Inf, 1]), [2.5, 2.5, 1]);
+%! assert_equal (tiedrank ([Inf, Inf, 1], 0, 0, 0), [2.5, 2.5, 1]);
+
 ## Test input validation
 %!test
 %! ## A matrix is ranked column by column, as MATLAB does, and TIEADJ carries
@@ -222,3 +271,9 @@ endfunction
 %! tiedrank ([1, 2, 3, 4, 5], 0, 'A')
 %!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
 %! tiedrank ([1, 2, 3, 4, 5], 0, [true, true])
+%!error <tiedrank: TOL must be a non-negative numeric array.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, 0, -1)
+%!error <tiedrank: TOL must be a non-negative numeric array.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, 0, 'A')
+%!error <tiedrank: TOL must be a scalar or the same size as X.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, 0, [1, 2])
