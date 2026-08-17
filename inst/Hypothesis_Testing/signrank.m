@@ -175,9 +175,20 @@ function [p, h, stats] = signrank (x, my, varargin)
     error ("signrank: 'method' value must be either 'exact' or 'approximate'.");
   endif
 
-  ## Calculate differences between X and Y vectors: remove equal values of NaNs
+  ## Calculate differences between X and Y vectors: remove equal values of NaNs.
+  ## A difference smaller than the combined resolution of the two values it came
+  ## from is not a real difference, so it counts as equal, and the same
+  ## tolerance decides which differences rank as tied.  MATLAB defines it as
+  ## EPS (X) + EPS (Y) per pair.
   XY_diff = x(:) - my(:);
-  XY_diff(XY_diff == 0 | isnan (XY_diff)) = [];
+  if (isfloat (x) && isfloat (my))
+    epsdiff = eps (x(:)) + eps (my(:));
+  else
+    epsdiff = zeros (size (XY_diff));
+  endif
+  drop = abs (XY_diff) < epsdiff | XY_diff == 0 | isnan (XY_diff);
+  XY_diff(drop) = [];
+  epsdiff(drop) = [];
 
   ## Recalculate remaining length of X vector (after equal or NaNs removal)
   n = length (XY_diff);
@@ -201,7 +212,7 @@ function [p, h, stats] = signrank (x, my, varargin)
   endif
 
   ## Compute signed rank statistic
-  [tie_rank, tieadj] = tiedrank (abs (XY_diff));
+  [tie_rank, tieadj] = tiedrank (abs (XY_diff), 0, 0, epsdiff);
   w = sum (tie_rank(XY_diff > 0));
   stats.signedrank = w;
 
@@ -349,6 +360,29 @@ endfunction
 %! p_clean = signrank ([1, 2, 3, 4, 5]);
 %! p_nan   = signrank (x);
 %! assert_equal (p_nan, p_clean);
+
+%!test
+%! ## Differences equal to within the precision of the values they came from
+%! ## rank as tied, as MATLAB ranks them.  Two of these sit 2 ulps apart.
+%! big = [2.1 3.4 1.2 5.6 4.3 2.2 6.7 3.3 4.4 5.5 1.1 2.9 3.8 4.9 5.1 6.2 ...
+%!        7.3 2.4];
+%! [p, h, stats] = signrank (big, 3, 'method', 'approximate');
+%! assert_equal (stats.signedrank, 132);
+%! assert_equal (stats.zval, 2.025571814690999, 1e-12);
+
+%!test
+%! ## A difference below that precision counts as no difference at all, and is
+%! ## dropped exactly as an exact zero is.  Both forms measured against R2024a.
+%! x = [5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20];
+%! y = x + 1;
+%! y(16) = x(16) + eps (x(16));
+%! [p, h, stats] = signrank (x, y, 'method', 'approximate');
+%! assert_equal (stats.signedrank, 0);
+%! assert_equal (stats.zval, -3.872983346207417, 1e-12);
+%! y(16) = x(16);
+%! [p2, h2, stats2] = signrank (x, y, 'method', 'approximate');
+%! assert_equal (p2, p, 1e-15);
+%! assert_equal (stats2.zval, stats.zval, 1e-15);
 
 ## Test input validation
 %!error <signrank: X must be a vector.> signrank (ones (2))
