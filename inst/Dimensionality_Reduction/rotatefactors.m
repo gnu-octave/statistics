@@ -92,8 +92,9 @@
 ## @var{A}.  Required for that method.
 ##
 ## @item @qcode{'Type'}
-## @qcode{'orthogonal'} (default) or @qcode{'oblique'}, selecting the kind of
-## @qcode{'procrustes'} rotation.
+## @qcode{'oblique'} (default) or @qcode{'orthogonal'}, selecting the kind of
+## @qcode{'procrustes'} rotation.  The default follows MATLAB, whose
+## @qcode{'procrustes'} rotation is oblique unless told otherwise.
 ## @end table
 ##
 ## @strong{Note on the orthomax family:} for coefficients up to 1
@@ -125,7 +126,7 @@ function [B, T] = rotatefactors (A, varargin)
   ## Parse Name/Value options
   optNames = {'Method', 'Normalize', 'Reltol', 'Maxit', 'Coeff', ...
               'Power', 'Target', 'Type'};
-  dfValues = {'varimax', 'on', sqrt(eps), 250, 1, 4, [], 'orthogonal'};
+  dfValues = {'varimax', 'on', sqrt(eps), 250, 1, 4, [], 'oblique'};
   [Method, Normalize, Reltol, Maxit, Coeff, Power, Target, Type, rem] = ...
     parsePairedArguments (optNames, dfValues, varargin(:));
   if (! isempty (rem))
@@ -444,7 +445,8 @@ endfunction
 %!test
 %! A = reshape (mod ((1:18)*5, 11), 6, 3) - 5;
 %! Target = reshape (mod ((1:18)*3, 7), 6, 3) - 3;
-%! [B, T] = rotatefactors (A, 'Method', 'procrustes', 'Target', Target);
+%! [B, T] = rotatefactors (A, 'Method', 'procrustes', 'Target', Target, ...
+%!                         'Type', 'orthogonal');
 %! Bref = [ -1.222902114166934,  5.164166701208014, -2.415759239100699; ...
 %!           5.403127504320427, -0.893247624515622, -0.091224192807273; ...
 %!          -2.313297220899559,  5.148157805250635, -1.070106153619982; ...
@@ -457,8 +459,11 @@ endfunction
 %!test
 %! A = reshape (mod ((1:18)*5, 11), 6, 3) - 5;
 %! Target = reshape (mod ((1:18)*3, 7), 6, 3) - 3;
+%! ## 'oblique' is the default, so naming it must change nothing
 %! B = rotatefactors (A, 'Method', 'procrustes', 'Target', Target, ...
 %!                    'Type', 'oblique');
+%! assert_equal (B, rotatefactors (A, 'Method', 'procrustes', ...
+%!                                 'Target', Target), 1e-10);
 %! Bref = [   0.000000000000002,  -4.619308411881804, -10.370742303151150; ...
 %!           94.640566010004221, -97.005476649517561,  -1.152304700350133; ...
 %!          -31.546855336668067,  36.954467295054300,   0.000000000000000; ...
