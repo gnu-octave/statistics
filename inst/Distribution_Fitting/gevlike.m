@@ -48,6 +48,16 @@
 ## mirror image of the type I extreme value distribution as computed by the
 ## @code{evcdf} function.
 ##
+## @strong{MATLAB compatibility.}  At exactly @qcode{@var{k} = 0} the returned
+## @var{ACOV} deviates from MATLAB's deliberately.  Both implementations agree
+## to thirteen digits for any @qcode{@var{k} != 0}, and both their
+## @qcode{@var{k} != 0} expressions converge on the values returned here as
+## @var{k} approaches @qcode{0}; MATLAB's own @qcode{@var{k} = 0} branch
+## returns something else entirely, which its @qcode{@var{k} != 0} branch
+## therefore contradicts.  The Gumbel-limit expressions used here are the
+## limits of the general ones, so @var{ACOV} is continuous at @qcode{0}.  This
+## is independent of the sample size.
+##
 ## The mean of the GEV distribution is not finite when @qcode{@var{k} >= 1}, and
 ## the variance is not finite when @qcode{@var{k} >= 1/2}.  The GEV distribution
 ## has positive density only for values of @var{x} such that
@@ -225,7 +235,10 @@ endfunction
 function ACOV = gevfim (x, k, sigma, mu, k_terms, kk_terms)
 
   ACOV = ones (3);
-  ## Use the expressions for second derivatives that are the limits as k --> 0
+  ## Use the expressions for second derivatives that are the limits as k --> 0.
+  ## MATLAB's k == 0 branch returns a different matrix, and is wrong: walking
+  ## either library's k != 0 expressions toward zero converges on the values
+  ## below, MATLAB's included.  Deliberate deviation, see the docstring.
   if (k == 0)
     ## k, k
     a = (x - mu) ./ sigma;
@@ -371,6 +384,15 @@ endfunction
 %! expected_C = [0.090036 3.41229 2.047337; 3.412229 24.760027 12.510190; 2.047337 12.510190 2.098618];
 %! assert_equal (L, expected_L, 0.001);
 %! assert_equal (C, inv (expected_C), 0.001);
+%!test
+%! ## ACOV is continuous at k = 0: the Gumbel-limit branch agrees with the
+%! ## general expressions evaluated just off zero.  MATLAB's k = 0 branch does
+%! ## not, returning ACOV(1,1) = -0.3977 against the limit's -2.8133.
+%! [~, C0] = gevlike ([0, 0.3, 0.5], 1);
+%! [~, Ce] = gevlike ([1e-5, 0.3, 0.5], 1);
+%! assert_equal (C0, Ce, 1e-3);
+%! assert_equal (C0(1,1), -2.813275839387, 1e-9);
+
 %!test
 %! x = -5:-1;
 %! k = -0.2;
