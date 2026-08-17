@@ -64,6 +64,17 @@
 ## element of @var{x} was observed.  This fourth argument is an Octave
 ## extension; MATLAB's @code{gpfit} takes three inputs at most.
 ##
+## When the shape parameter falls below @math{-1} the likelihood is unbounded:
+## the density at the upper endpoint of the support diverges as that endpoint
+## closes onto the largest observation, so no maximum likelihood estimate
+## exists and whatever is returned is an arbitrary point on that ridge.
+## @code{gpfit} warns in this case and returns @code{NaN} confidence intervals.
+## The estimate it does return always keeps every observation strictly inside
+## the fitted support, since the likelihood is infinite outside it.  This is a
+## deliberate deviation: MATLAB has been measured returning parameters for such
+## data under which the largest observation has zero density and its own
+## @code{gplike} returns @code{Inf}.
+##
 ## When @qcode{@var{k} = 0} and @qcode{@var{theta} = 0}, the Generalized Pareto
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
 ## @code{@var{theta} = @var{k} / @var{k}} the Generalized Pareto is equivalent
@@ -196,10 +207,16 @@ function [paramhat, paramci] = gpfit (x, alpha, options, freq)
 
   ## Check if converged to boundaries
   if ((paramhat(1) < 0) && (x_max > -paramhat(2)/paramhat(1) - options.TolX))
-    warning ("gpfit: converged to boundary 1.");
+    warning (strcat ("gpfit: the fitted upper bound of the support has", ...
+                     " closed onto the largest observation, a boundary of", ...
+                     " the parameter space, so the estimates are unreliable", ...
+                     " and no confidence intervals are computed."));
     reachedBnd = true;
   elseif (paramhat(1) <= -1 / 2)
-    warning ("gpfit: converged to boundary 2.");
+    warning (strcat ("gpfit: the shape parameter has converged to", ...
+                     " K <= -1/2, where the maximum likelihood estimator is", ...
+                     " not regular, so standard errors and confidence", ...
+                     " intervals cannot be computed reliably."));
     reachedBnd = true;
   else
     reachedBnd = false;
@@ -325,6 +342,25 @@ endfunction
 %! assert_equal (gpfit ([x, Inf]), [NaN, NaN]);
 %!test
 %! assert_equal (gpfit ([x, NaN, Inf]), [NaN, NaN]);
+%!test
+%! ## below a shape of -1 the likelihood is unbounded, but the estimate still
+%! ## keeps every observation strictly inside the fitted support
+%! xb = [1.2 2.3 0.5 3.1 2.2 1.8 0.9 2.7 1.1 3.3];
+%! warning ('off', 'all');
+%! p = gpfit (xb);
+%! warning ('on', 'all');
+%! assert_equal (p(1) < -1, true);
+%! assert_equal (max (xb) < -p(2) / p(1), true);
+%! assert_equal (isfinite (gplike (p, xb)), true);
+%!test
+%! ## the confidence intervals are withheld there
+%! warning ('off', 'all');
+%! [~, ci] = gpfit ([1.2 2.3 0.5 3.1 2.2 1.8 0.9 2.7 1.1 3.3]);
+%! warning ('on', 'all');
+%! assert_equal (ci, [NaN, NaN; NaN, NaN]);
+
+%!warning<gpfit: the fitted upper bound of the support has closed onto the largest observation, a boundary of the parameter space, so the estimates are unreliable and no confidence intervals are computed.> ...
+%! gpfit ([1.2 2.3 0.5 3.1 2.2 1.8 0.9 2.7 1.1 3.3]);
 
 ## Test input validation
 %!error<gpfit: function called with too few input arguments.> gpfit ()
