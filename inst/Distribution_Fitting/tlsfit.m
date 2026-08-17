@@ -60,6 +60,8 @@
 ## fields and their default values:
 ## @itemize
 ## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
@@ -105,12 +107,16 @@ function [paramhat, paramci] = tlsfit (x, alpha, censor, freq, options)
   ## Get options structure or add defaults
   if (nargin < 5)
     options.Display = 'off';
+    options.MaxFunEvals = 400;
+    options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, 'Display') || ...
-                                ! isfield (options, 'TolX'))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("tlsfit: 'options' 5th argument must be a structure", ...
-                     " with 'Display' and 'TolX' fields present."));
+                     " with 'Display', 'MaxFunEvals', 'MaxIter', and", ...
+                     " 'TolX' fields present."));
     endif
   endif
 
@@ -242,5 +248,17 @@ endfunction
 %! tlsfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
 %!error<tlsfit: FREQ cannot have negative values.> ...
 %! tlsfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 -1]);
-%!error<tlsfit: 'options' 5th argument must be a structure> ...
+%!error<tlsfit: 'options' 5th argument must be a structure with 'Display', 'MaxFunEvals', 'MaxIter', and 'TolX' fields present.> ...
 %! tlsfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
+
+## A fit that stops at a limit warns; it used to die reading an option that
+## nothing set.
+%!warning<tlsfit: maximum number of function evaluations are exceeded.> ...
+%! opt = struct ('Display', 'off', 'MaxFunEvals', 1, 'MaxIter', 200, ...
+%!               'TolX', 1e-6);
+%! tlsfit ([1, 2, 3, 4, 5, 6, 7, 8], 0.05, [], [], opt);
+
+%!warning<tlsfit: maximum number of iterations are exceeded.> ...
+%! opt = struct ('Display', 'off', 'MaxFunEvals', 400, 'MaxIter', 1, ...
+%!               'TolX', 1e-6);
+%! tlsfit ([1, 2, 3, 4, 5, 6, 7, 8], 0.05, [], [], opt);
