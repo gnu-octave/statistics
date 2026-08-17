@@ -320,9 +320,8 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
         error ("mean: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2), ...
-                      'ArrayValued', 1);
+        m = truncated_moments (this.x, this.Fx, this.Truncation(1), ...
+                               this.Truncation(2));
       else
         m = plstat (this.x, this.Fx);
       endif
@@ -528,12 +527,9 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
         error ("var: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2), ...
-                      'ArrayValued', 1);
-        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
-        v = integral (fv, this.Truncation(1), this.Truncation(2), ...
-                      'ArrayValued', 1);
+        [m, m2] = truncated_moments (this.x, this.Fx, this.Truncation(1), ...
+                                     this.Truncation(2));
+        v = m2 - m ^ 2;
       else
         [~, v] = plstat (this.x, this.Fx);
       endif
@@ -542,6 +538,31 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
   endmethods
 
 endclassdef
+
+## First and second raw moments over the truncation interval, taken segment by
+## segment.  The pdf of a piecewise-linear cdf is piecewise constant, so
+## x^k * pdf(x) is a polynomial on each segment and integrates exactly;
+## adaptive quadrature instead sees a jump at every knot and costs four to
+## five digits, which is what this replaced.
+function [m1, m2] = truncated_moments (x, Fx, lx, ux)
+  x = x(:);
+  Fx = Fx(:);
+  Z = plcdf (ux, x, Fx) - plcdf (lx, x, Fx);
+  m1 = 0;
+  m2 = 0;
+  for i = 1:numel (x) - 1
+    a = max (x(i), lx);
+    b = min (x(i+1), ux);
+    if (b <= a)
+      continue;
+    endif
+    d = (Fx(i+1) - Fx(i)) / (x(i+1) - x(i));
+    m1 += d * (b ^ 2 - a ^ 2) / 2;
+    m2 += d * (b ^ 3 - a ^ 3) / 3;
+  endfor
+  m1 /= Z;
+  m2 /= Z;
+endfunction
 
 function checkparams (x, Fx)
   if (! (isvector (x) && isnumeric (x) && isreal (x) && isfinite (x)))
@@ -606,7 +627,7 @@ endfunction
 %!assert_equal (iqr (pd), 50.0833, 1e-4);
 %!assert_equal (iqr (t), 36.8077, 1e-4);
 %!assert_equal (mean (pd), 153.61, 1e-10);
-%!assert_equal (mean (t), 152.311, 1e-3);
+%!assert_equal (mean (t), 152.30321285140542, 1e-10);
 %!assert_equal (median (pd), 142, 1e-10);
 %!assert_equal (median (t), 141.9462, 1e-4);
 %!assert_equal (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0004], 6e-3);
@@ -617,9 +638,9 @@ endfunction
 %!assert_equal (any (random (t, 1000, 1) < 130), false);
 %!assert_equal (any (random (t, 1000, 1) > 180), false);
 %!assert_equal (std (pd), 26.5196, 1e-4);
-%!assert_equal (std (t), 18.2941, 1e-4);
+%!assert_equal (std (t), 18.293981947282326, 1e-10);
 %!assert_equal (var (pd), 703.2879, 1e-4);
-%!assert_equal (var (t), 334.6757, 1e-4);
+%!assert_equal (var (t), 334.66977548749168, 1e-10);
 
 ## Test input validation
 ## 'prob.PiecewiseLinearDistribution' constructor
