@@ -190,13 +190,12 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
     sigma = sqrt (diag (avar));
     ## Get normal quantiles
     probs = [alpha/2; 1-alpha/2];
-    ## Compute paramci using a normal approximation
+    ## Compute paramci using a normal approximation.  The bounds are not
+    ## restricted to the parameter space, as MATLAB does not restrict them: a
+    ## bound outside it is what tells the caller the normal approximation has
+    ## broken down, and clamping it away leaves an interval that looks ordinary
+    ## and is not.
     paramci = norminv ([probs, probs], [paramhat; paramhat], [sigma'; sigma']);
-    ## Restrict CI to valid values: r >= 0, 0 <= ps <= 1
-    paramci(paramci < 0) = 0;
-    if (paramci(2,2) > 1)
-      paramci(2,2) = 1;
-    endif
   endif
 
 endfunction
@@ -258,23 +257,34 @@ endfunction
 %!test
 %! [paramhat, paramci] = nbinfit ([1:20]);
 %! assert_equal (paramhat, [3.588233, 0.254697], 1e-6);
-%! assert_equal (paramci(:,1), [0.451693; 6.724774], 1e-6);
-%! assert_equal (paramci(:,2), [0.081143; 0.428251], 1e-6);
+%! ## The interval is a normal approximation over a numerical Hessian, and
+%! ## agrees with R2024a to a few parts in a million rather than exactly.
+%! assert_equal (paramci(:,1), [0.451693; 6.724772], 1e-5);
+%! assert_equal (paramci(:,2), [0.081143; 0.428251], 1e-5);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:10]);
 %! assert_equal (paramhat, [8.8067, 0.6156], 1e-4);
-%! assert_equal (paramci(:,1), [0; 30.7068], 1e-4);
-%! assert_equal (paramci(:,2), [0.0217; 1], 1e-4);
+%! assert_equal (paramci(:,1), [-13.0934; 30.7068], 1e-4);
+%! assert_equal (paramci(:,2), [0.0217; 1.2094], 1e-4);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:10], 0.05, ones (1, 10));
 %! assert_equal (paramhat, [8.8067, 0.6156], 1e-4);
-%! assert_equal (paramci(:,1), [0; 30.7068], 1e-4);
-%! assert_equal (paramci(:,2), [0.0217; 1], 1e-4);
+%! assert_equal (paramci(:,1), [-13.0934; 30.7068], 1e-4);
+%! assert_equal (paramci(:,2), [0.0217; 1.2094], 1e-4);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:11], 0.05, [ones(1, 10), 0]);
 %! assert_equal (paramhat, [8.8067, 0.6156], 1e-4);
-%! assert_equal (paramci(:,1), [0; 30.7068], 1e-4);
-%! assert_equal (paramci(:,2), [0.0217; 1], 1e-4);
+%! assert_equal (paramci(:,1), [-13.0934; 30.7068], 1e-4);
+%! assert_equal (paramci(:,2), [0.0217; 1.2094], 1e-4);
+
+## Values below are R2024a's, measured 2026-08-17.
+%!test
+%! ## a bound outside the parameter space is reported, not clamped away
+%! [~, paramci] = nbinfit ([1:10]);
+%! assert_equal (paramci(1,1) < 0, true);
+%! assert_equal (paramci(2,2) > 1, true);
+%! assert_equal (paramci(1,1), -13.093353591937408, 1e-5);
+%! assert_equal (paramci(2,2), 1.209414934623099, 1e-5);
 
 ## Test input validation
 %!error<nbinfit: X cannot have negative values.> nbinfit ([-1 2 3 3])
