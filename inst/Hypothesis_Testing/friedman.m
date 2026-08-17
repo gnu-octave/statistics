@@ -37,8 +37,9 @@
 ## If not provided, no replicates are assumed.
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the Friedman's ANOVA
-## table, when it is 'on' and suppressing the display when it is 'off'
-## (default).
+## table, when it is 'on' (default) and suppressing the display when it is
+## 'off'.  MATLAB renders the table in a figure window; this package prints it
+## to the standard output, as @code{anova2} does.
 ## @end itemize
 ##
 ## @qcode{friedman} returns up to three output arguments:
@@ -47,9 +48,11 @@
 ## @item
 ## @var{p} is the p-value of the null hypothesis that all group means are equal.
 ## @item
-## @var{tbl} is a table containing the results of the Friedman's test in ANOVA
-## table format.  The table includes columns for Source, SS, df, MS, Chi-sq, and
-## Prob>Chi-sq with rows for Columns, [Interaction], Error, and Total.
+## @var{tbl} is a cell array containing the results of the Friedman's test in
+## ANOVA table format.  Its first row holds the column labels Source, SS, df,
+## MS, Chi-sq and Prob>Chi-sq, followed by a row per source: Columns,
+## [Interaction], Error and Total.  An entry that does not apply to a row, such
+## as the chi-square statistic of the Error row, is empty.
 ## @item
 ## @var{stats} is a structure containing statistics useful for performing a
 ## multiple comparison of medians with the MULTCOMPARE function.
@@ -100,14 +103,14 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
     endif
   endif
 
-  ## Check for displayopt
-  disp_table = false;
+  ## Check for displayopt.  It is 'on' by default, as it is in MATLAB and in
+  ## ANOVA1 and ANOVA2.
+  disp_table = true;
   if (nargin == 3)
     if (! any (strcmp (displayopt, {'on', 'off'})))
       error ("friedman: displayopt must be either 'on' or 'off'.");
-    elseif (strcmp (displayopt, 'on'))
-      disp_table = true;
     endif
+    disp_table = strcmp (displayopt, 'on');
   endif
 
   ## Prepare a matrix of ranks. Replicates are ranked together.
@@ -143,24 +146,26 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
                anova_table{end - 1,2}; anova_table{end,2}];
     df_list = [anova_table{2,3}; anova_table{3,3}; ...
                anova_table{end - 1,3}; anova_table{end,3}];
-    ms_list = [anova_table{2,4}; anova_table{3,4}; ...
-               anova_table{end - 1,4}; 0];
-    chi_sq_list = [chi_r; anova_table{3,5}; 0; 0];
-    prob_list = [p; anova_table{3,6}; 0; 0];
+    ms_list = {anova_table{2,4}; anova_table{3,4}; ...
+               anova_table{end - 1,4}; []};
+    chi_sq_list = {chi_r; []; []; []};
+    prob_list = {p; []; []; []};
   else
     ## When there are no replicates (reps = 1), exclude interaction row
     source_list = {'Columns'; 'Error'; 'Total'};
     ss_list = [anova_table{2,2}; anova_table{end - 1,2}; anova_table{end,2}];
     df_list = [anova_table{2,3}; anova_table{end - 1,3}; anova_table{end,3}];
-    ms_list = [anova_table{2,4}; anova_table{end - 1,4}; 0];
-    chi_sq_list = [chi_r; 0; 0];
-    prob_list = [p; 0; 0];
+    ms_list = {anova_table{2,4}; anova_table{end - 1,4}; []};
+    chi_sq_list = {chi_r; []; []};
+    prob_list = {p; []; []};
   endif
 
-  ## Create output table using datatypes package
-  tbl = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
-               prob_list, 'VariableNames', {'Source', 'SS', 'df', 'MS', ...
-               'Chi_sq', 'Prob_Chi_sq'});
+  ## Create the output table as a cell array with a header row, as MATLAB
+  ## does.  Entries that do not apply to a row are empty, not zero, and the
+  ## column labels carry the characters a table variable name cannot hold.
+  tbl = [{'Source', 'SS', 'df', 'MS', 'Chi-sq', 'Prob>Chi-sq'}; ...
+         [source_list, num2cell(ss_list), num2cell(df_list), ...
+          ms_list, chi_sq_list, prob_list]];
 
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
@@ -170,10 +175,37 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
     stats.sigma = sqrt (sigmasq);
   endif
 
-  ## Display ANOVA table if opted or no output argument is requested
+  ## Display ANOVA table if opted or no output argument is requested.  MATLAB
+  ## renders it in a figure window; this package prints it, as ANOVA2 does.
   if (nargout == 0 || disp_table)
-    disp (tbl);
+    print_friedman_table (tbl);
   endif
+
+endfunction
+
+## Print the ANOVA table the way ANOVA2 prints its own: one header line, then
+## a row per source, with an empty field where the statistic does not apply.
+function print_friedman_table (tbl)
+
+  printf ("\n");
+  printf ("%-14s %10s %6s %10s %10s %12s\n", tbl{1,:});
+  for i = 2:rows (tbl)
+    printf ("%-14s", tbl{i,1});
+    for j = 2:columns (tbl)
+      v = tbl{i,j};
+      if (isempty (v))
+        printf (" %10s", "");
+      elseif (j == 3)
+        printf (" %6d", v);
+      elseif (j == 6)
+        printf (" %12.4f", v);
+      else
+        printf (" %10.4f", v);
+      endif
+    endfor
+    printf ("\n");
+  endfor
+  printf ("\n");
 
 endfunction
 
@@ -184,26 +216,29 @@ endfunction
 
 %!demo
 %! load popcorn;
-%! [p, atab] = friedman (popcorn, 3);
+%! [p, atab] = friedman (popcorn, 3, 'off');
 %! disp (p);
 
 ## testing against popcorn data and results from Matlab
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab] = friedman (popcorn, 3);
+%! [p, atab] = friedman (popcorn, 3, 'off');
 %! assert_equal (p, 0.001028853354594794, 1e-14);
-%! assert_equal (atab.SS(1), 99.75, 1e-14);
-%! assert_equal (atab.df(1), 2, 0);
-%! assert_equal (atab.MS(1), 49.875, 1e-14);
-%! assert_equal (atab.Chi_sq(1), 13.75862068965517, 1e-14);
-%! assert_equal (atab.Prob_Chi_sq(1), 0.001028853354594794, 1e-14);
+%! assert_equal (atab(1,:), {'Source', 'SS', 'df', 'MS', 'Chi-sq', 'Prob>Chi-sq'});
+%! assert_equal (atab{2,1}, 'Columns');
+%! assert_equal (atab{2,2}, 99.75, 1e-14);
+%! assert_equal (atab{2,3}, 2, 0);
+%! assert_equal (atab{2,4}, 49.875, 1e-14);
+%! assert_equal (atab{2,5}, 13.75862068965517, 1e-14);
+%! assert_equal (atab{2,6}, 0.001028853354594794, 1e-14);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab, stats] = friedman (popcorn, 3);
-%! assert_equal (atab.SS(end), 116, 0);
-%! assert_equal (atab.df(end), 17, 0);
+%! [p, atab, stats] = friedman (popcorn, 3, 'off');
+%! assert_equal (atab{end,1}, 'Total');
+%! assert_equal (atab{end,2}, 116, 0);
+%! assert_equal (atab{end,3}, 17, 0);
 %! assert_equal (stats.source, 'friedman');
 %! assert_equal (stats.n, 2);
 %! assert_equal (stats.meanranks, [8, 4.75, 2.25], 0);
@@ -211,7 +246,7 @@ endfunction
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! s = evalc ('[p, atab] = friedman (popcorn, 3);');
+%! s = evalc ('[p, atab] = friedman (popcorn, 3, "off");');
 %! assert_equal (isempty (strtrim (s)), true);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
@@ -219,16 +254,24 @@ endfunction
 %! s = evalc ('[p, atab] = friedman (popcorn, 3, "on");');
 %! assert_equal (! isempty (strtrim (s)), true);
 %!test
+%! ## the table is displayed by default, as in MATLAB and in anova1 and anova2
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab] = friedman (popcorn, 3);
-%! assert_equal (size (atab, 1), 4, 0);
-%! assert_equal (numel (atab.SS), size (atab, 1), 0);
+%! s = evalc ('[p, atab] = friedman (popcorn, 3);');
+%! assert_equal (! isempty (strtrim (s)), true);
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [p, atab] = friedman (popcorn, 3, 'off');
+%! assert_equal (size (atab), [5, 6], 0);
+%! assert_equal (iscell (atab), true);
+%! assert_equal (isempty (atab{end,4}), true);
 %!test
 %! x = [1, 2, 3; 2, 1, 3; 3, 2, 1];
-%! [p, atab] = friedman (x);
-%! assert_equal (size (atab, 1), 3, 0);
-%! assert_equal (numel (atab.SS), size (atab, 1), 0);
+%! [p, atab] = friedman (x, 1, 'off');
+%! assert_equal (size (atab), [4, 6], 0);
+%! assert_equal (atab{3,1}, 'Error');
+%! assert_equal (isempty (atab{2,5}), false);
 
 %!error<friedman: displayopt must be either 'on' or 'off'.> ...
 %! friedman ([5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; 6.5, 5.0, 4.0; ...
