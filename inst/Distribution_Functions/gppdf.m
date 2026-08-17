@@ -48,6 +48,17 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
+## With a negative shape parameter the support is the closed interval
+## @math{[@var{theta}, @var{theta} - @var{sigma}/@var{k}]}, and the density at
+## its upper endpoint follows the limit of the density there: @math{0} for
+## @math{-1 < @var{k} < 0}, @math{1/@var{sigma}} at @math{@var{k} = -1}, and
+## unbounded for @math{@var{k} < -1}.  MATLAB returns @math{0} at that endpoint
+## whatever the shape, which contradicts its own @code{unifpdf}: the
+## generalized Pareto with @math{@var{k} = -1} @emph{is} the uniform
+## distribution on @math{[@var{theta}, @var{theta} + @var{sigma}]}, for which
+## MATLAB's @code{unifpdf} returns @math{1/@var{sigma}} at the same point.  This
+## implementation returns the limit, and so agrees with @code{unifpdf}.
+##
 ## @seealso{gpcdf, gpinv, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
@@ -157,6 +168,25 @@ endfunction
 %! title ('Generalized Pareto PDF')
 %! xlabel ('values in x')
 %! ylabel ('density')
+
+## The upper endpoint of the support, measured against R2024a 2026-08-17, which
+## returns 0 for all three shapes and so disagrees with its own unifpdf.
+%!test
+%! ## at k = -1 the distribution is uniform, and the density is 1/sigma
+%! assert_equal (gppdf (1, -1, 1, 0), 1);
+%! assert_equal (gppdf (1, -1, 1, 0), unifpdf (1, 0, 1));
+%! assert_equal (gppdf (2, -1, 2, 0), 0.5);
+%! assert_equal (gppdf (2, -1, 2, 0), unifpdf (2, 0, 2));
+%!test
+%! ## between -1 and 0 the density vanishes at the endpoint
+%! assert_equal (gppdf (2, -0.5, 1, 0), 0);
+%!test
+%! ## below -1 it diverges there
+%! assert_equal (gppdf (0.5, -2, 1, 0), Inf);
+%!test
+%! ## and the endpoint agrees with the values approaching it
+%! assert_equal (gppdf (1 - 1e-12, -1, 1, 0), 1);
+%! assert_equal (gppdf (1.5, -1, 1, 0), 0);
 
 ## Test output
 %!shared x, y1, y2, y3
