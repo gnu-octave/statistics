@@ -60,6 +60,13 @@
 ## table class.  Use @code{help table.standardizeMissing} to find more
 ## information about the functional specialization on tables.
 ##
+## Standardizing a category of a @code{categorical} array removes that category
+## from the array's type, as MATLAB removes it: no element carries it once the
+## values are missing, so leaving it in the category list would be stale
+## metadata, and the codes of the remaining categories shift down accordingly.
+## Only the standardized categories are removed; one that is declared but
+## unused is left alone.
+##
 ## @seealso{fillmissing, ismissing, rmmissing}
 ## @end deftypefn
 
@@ -105,7 +112,15 @@ function A = standardizeMissing (A, indicator)
     elseif (! isvector (indicator))
       error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
     endif
+    ## Standardizing a category to missing removes that category from the
+    ## type, as MATLAB removes it: no element carries it afterwards, so
+    ## keeping it would leave stale metadata.  Only the standardized
+    ## categories go; a declared but unused category is left alone.
+    drop = intersect (categories (A), cellstr (indicator));
     A(ismember (A, indicator)) = categorical (NaN);
+    if (! isempty (drop))
+      A = removecats (A, drop);
+    endif
 
   elseif (isdatetime (A))
     if (! isdatetime (indicator))
@@ -192,6 +207,30 @@ endfunction
 %!assert_equal (standardizeMissing (struct ('a','b'), 1), struct ('a','b'))
 
 ## categorical array tests
+## Values below are R2024a's, measured 2026-08-17: standardizing a category
+## removes it from the type, and only it.
+%!test
+%! ## every instance goes, and the remaining codes shift down
+%! a = standardizeMissing (categorical ({'a','b','c','b','a'}), 'b');
+%! assert_equal (double (a), [1, NaN, 2, NaN, 1]);
+%! assert_equal (categories (a), {'a'; 'c'});
+%!test
+%! ## a category that is declared but unused is left alone
+%! A = categorical ({'a','b','c'}, {'a','b','c','d'});
+%! a = standardizeMissing (A, 'b');
+%! assert_equal (double (a), [1, NaN, 2]);
+%! assert_equal (categories (a), {'a'; 'c'; 'd'});
+%!test
+%! ## standardizing a level that is not present changes nothing
+%! a = standardizeMissing (categorical ({'a','b','c'}), 'z');
+%! assert_equal (double (a), [1, 2, 3]);
+%! assert_equal (categories (a), {'a'; 'b'; 'c'});
+%!test
+%! ## several at once
+%! a = standardizeMissing (categorical ({'a','b','c'}), {'a','b'});
+%! assert_equal (double (a), [NaN, NaN, 1]);
+%! assert_equal (categories (a), {'c'});
+
 %!assert_equal (double (standardizeMissing (categorical (1), categorical (1))), NaN)
 %!assert_equal (double (standardizeMissing (categorical (1), '1')), NaN)
 %!assert_equal (class (standardizeMissing (categorical (1), categorical (1))), 'categorical')
@@ -205,7 +244,8 @@ endfunction
 %! indicator = 'b';
 %! a = standardizeMissing (A , indicator);
 %! assert_equal (class (a), 'categorical');
-%! assert_equal (double (a), [1, NaN, 3]);
+%! assert_equal (double (a), [1, NaN, 2]);
+%! assert_equal (categories (a), {'a'; 'c'});
 
 ## datetime array tests
 %!assert_equal (isnat (standardizeMissing (datetime ('today'), datetime ('today'))), true)
