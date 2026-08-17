@@ -738,8 +738,8 @@ endclassdef
 %! xc = [min(x); mean(x); max(x)];
 %! Mdl = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
 %! CMdl = compact (Mdl);
-%! assert_equal (isempty (CMdl.Alpha), true)
-%! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Beta))
+%! assert_equal (isempty (CMdl.Beta), true)
+%! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Alpha))
 %! [label, score] = predict (CMdl, xc);
 %! assert_equal (label, [1; 2; 2]);
 %! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
@@ -747,7 +747,7 @@ endclassdef
 %!test
 %! Mdl = fitcsvm (x, y);
 %! CMdl = compact (Mdl);
-%! assert_equal (isempty (CMdl.Beta), true)
+%! assert_equal (CMdl.Beta, [2.182926829268275; 2.253658536585344], 1e-5)
 %! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Alpha))
 %! assert_equal (numel (CMdl.Alpha), 24)
 %! assert_equal (CMdl.Bias, -14.415, 1e-3)
