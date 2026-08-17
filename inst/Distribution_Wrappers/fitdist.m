@@ -41,7 +41,8 @@
 ## for the corresponding element of @var{x} for the binomial distribution.
 ##
 ## @item @qcode{'theta'} @tab A scalar specifying the location parameter
-## for the generalized Pareto distribution.
+## for the generalized Pareto distribution.  It defaults to 0, as MATLAB
+## assumes it, and is not estimated.
 ##
 ## @item @qcode{'mu'} @tab A scalar specifying the location parameter
 ## for the half-normal distribution.
@@ -140,7 +141,7 @@ function [varargout] = fitdist (varargin)
   alpha = 0.05;
   ntrials = 1;
   mu = 0;
-  theta = 1;
+  theta = 0;
   kernel = 'normal';
   ksupport = 'unbounded';
   kwidth = [];
@@ -974,7 +975,7 @@ endfunction
 %!          'By', [ones(1000, 1); 2*ones(1000, 1)]);
 %!test
 %! x = gprnd (1, 1, 1, 100, 1);
-%! pd = fitdist (x, 'GeneralizedPareto');
+%! pd = fitdist (x, 'GeneralizedPareto', 'theta', 1);
 %! [phat, pci] = gpfit (x - 1);
 %! assert_equal ([pd.k, pd.sigma, pd.theta], [phat, 1]);
 %! assert_equal (paramci (pd), [pci, [1; 1]]);
@@ -987,7 +988,8 @@ endfunction
 %!test
 %! x1 = gprnd (1, 1, 1, 100, 1);
 %! x2 = gprnd (0, 2, 1, 100, 1);
-%! pd = fitdist ([x1; x2], 'gp', 'By', [ones(100,1); 2*ones(100,1)]);
+%! pd = fitdist ([x1; x2], 'gp', 'theta', 1, ...
+%!               'By', [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = gpfit (x1 - 1);
 %! assert_equal ([pd{1}.k, pd{1}.sigma, pd{1}.theta], [phat, 1]);
 %! assert_equal (paramci (pd{1}), [pci, [1; 1]]);
