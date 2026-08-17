@@ -30,7 +30,8 @@
 ## @item @qcode{TransformWeights} — the @math{P * Q} matrix of learned
 ## transformation weights.
 ## @item @qcode{Mu}, @qcode{Sigma} — the per-predictor mean and standard
-## deviation used when @qcode{'Standardize'} is @qcode{true} (empty otherwise).
+## deviation used when @qcode{'Standardize'} is @qcode{true} (empty otherwise),
+## each a column vector with one entry per predictor.
 ## @item @qcode{FitInfo} — a structure with the number of @qcode{Iteration}s and
 ## the final @qcode{Objective} value of the fit.
 ## @item @qcode{ModelParameters} — a structure of the options used for the fit.
@@ -96,11 +97,13 @@ classdef SparseFiltering
       endfor
 
       if (opts.Standardize)
-        this.Mu = mean (X);
-        this.Sigma = std (X);
-        sig = this.Sigma;
+        ## MU and SIGMA are held as columns, one entry per predictor, as
+        ## MATLAB holds them, and transposed where the data is scaled.
+        this.Mu = mean (X)';
+        this.Sigma = std (X)';
+        sig = this.Sigma';
         sig(sig == 0) = 1;
-        X = (X - this.Mu) ./ sig;
+        X = (X - this.Mu') ./ sig;
       endif
 
       if (isempty (opts.InitialTransformWeights))
@@ -134,9 +137,9 @@ classdef SparseFiltering
         print_usage ();
       endif
       if (! isempty (this.Mu))
-        sig = this.Sigma;
+        sig = this.Sigma';
         sig(sig == 0) = 1;
-        X = (X - this.Mu) ./ sig;
+        X = (X - this.Mu') ./ sig;
       endif
       Z = __sparsefilt_features__ (X, this.TransformWeights);
     endfunction
@@ -206,6 +209,8 @@ endfunction
 %! Z = transform (Mdl, X);
 %! assert_equal (size (Z), [12, 2]);
 %! assert_equal (isempty (Mdl.Mu), false);
+%! assert_equal (size (Mdl.Mu), [5, 1]);
+%! assert_equal (size (Mdl.Sigma), [5, 1]);
 
 %!test
 %! ## The default constructor returns an empty model.

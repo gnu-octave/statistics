@@ -30,7 +30,8 @@
 ## @item @qcode{TransformWeights} — the @math{P * Q} matrix of learned
 ## transformation weights (unit-length columns).
 ## @item @qcode{Mu}, @qcode{Sigma} — the per-predictor mean and standard
-## deviation used when @qcode{'Standardize'} is @qcode{true} (empty otherwise).
+## deviation used when @qcode{'Standardize'} is @qcode{true} (empty otherwise),
+## each a column vector with one entry per predictor.
 ## @item @qcode{FitInfo} — a structure with the number of @qcode{Iteration}s and
 ## the final @qcode{Objective} value of the fit.
 ## @item @qcode{ModelParameters} — a structure of the options used for the fit.
@@ -104,11 +105,13 @@ classdef ReconstructionICA
 
       ## Standardize (center and scale) the data if requested
       if (opts.Standardize)
-        this.Mu = mean (X);
-        this.Sigma = std (X);
-        sig = this.Sigma;
+        ## MU and SIGMA are held as columns, one entry per predictor, as
+        ## MATLAB holds them, and transposed where the data is scaled.
+        this.Mu = mean (X)';
+        this.Sigma = std (X)';
+        sig = this.Sigma';
         sig(sig == 0) = 1;
-        X = (X - this.Mu) ./ sig;
+        X = (X - this.Mu') ./ sig;
       endif
 
       ## Initial weights
@@ -148,9 +151,9 @@ classdef ReconstructionICA
         print_usage ();
       endif
       if (! isempty (this.Mu))
-        sig = this.Sigma;
+        sig = this.Sigma';
         sig(sig == 0) = 1;
-        X = (X - this.Mu) ./ sig;
+        X = (X - this.Mu') ./ sig;
       endif
       Z = X * this.TransformWeights;
     endfunction
@@ -209,8 +212,16 @@ endfunction
 %! Mdl = ReconstructionICA (X, 2, "Standardize", true, "IterationLimit", 100, ...
 %!                          "InitialTransformWeights", W0(:,1:2));
 %! Z = transform (Mdl, X);
-%! Xs = (X - Mdl.Mu) ./ Mdl.Sigma;
+%! Xs = (X - Mdl.Mu') ./ Mdl.Sigma';
 %! assert_equal (Z, Xs * Mdl.TransformWeights, 1e-12);
+%!test
+%! ## Mu and Sigma are columns, one entry per predictor, as MATLAB reports them
+%! Mdl = ReconstructionICA (X, 2, "Standardize", true, "IterationLimit", 100, ...
+%!                          "InitialTransformWeights", W0(:,1:2));
+%! assert_equal (size (Mdl.Mu), [5, 1]);
+%! assert_equal (size (Mdl.Sigma), [5, 1]);
+%! assert_equal (Mdl.Mu, mean (X)', 1e-12);
+%! assert_equal (Mdl.Sigma, std (X)', 1e-12);
 
 %!test
 %! ## The default constructor returns an empty model.

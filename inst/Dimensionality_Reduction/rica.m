@@ -153,8 +153,8 @@ endfunction
 %! ## Standardize centers and scales the data before transforming.
 %! Mdl = rica (X, 2, "Standardize", true, "IterationLimit", 100, ...
 %!             "InitialTransformWeights", W0(:,1:2));
-%! assert_equal (size (Mdl.Mu), [1, 5]);
-%! assert_equal (size (Mdl.Sigma), [1, 5]);
+%! assert_equal (size (Mdl.Mu), [5, 1]);
+%! assert_equal (size (Mdl.Sigma), [5, 1]);
 
 ## Test input validation
 %!error<Invalid call to rica> rica (ones (5, 3))
