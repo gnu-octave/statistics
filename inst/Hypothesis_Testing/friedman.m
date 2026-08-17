@@ -141,12 +141,15 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
   ## Create ANOVA table data for output
   if (reps > 1)
     ## When there are replicates, include interaction row
+    ## ANOVA2 reports Columns, Rows, Interaction, Error and Total; the
+    ## Friedman table carries the interaction, row 4, and not the block
+    ## effect in row 3.
     source_list = {'Columns'; 'Interaction'; 'Error'; 'Total'};
-    ss_list = [anova_table{2,2}; anova_table{3,2}; ...
+    ss_list = [anova_table{2,2}; anova_table{4,2}; ...
                anova_table{end - 1,2}; anova_table{end,2}];
-    df_list = [anova_table{2,3}; anova_table{3,3}; ...
+    df_list = [anova_table{2,3}; anova_table{4,3}; ...
                anova_table{end - 1,3}; anova_table{end,3}];
-    ms_list = {anova_table{2,4}; anova_table{3,4}; ...
+    ms_list = {anova_table{2,4}; anova_table{4,4}; ...
                anova_table{end - 1,4}; []};
     chi_sq_list = {chi_r; []; []; []};
     prob_list = {p; []; []; []};
@@ -243,6 +246,37 @@ endfunction
 %! assert_equal (stats.n, 2);
 %! assert_equal (stats.meanranks, [8, 4.75, 2.25], 0);
 %! assert_equal (stats.sigma, 2.692582403567252, 1e-14);
+%!test
+%! ## every row of the table, not only Columns and Total
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [p, atab] = friedman (popcorn, 3, 'off');
+%! assert_equal (atab{3,1}, 'Interaction');
+%! assert_equal (atab{3,2}, 0.083333333333258, 1e-12);
+%! assert_equal (atab{3,3}, 2, 0);
+%! assert_equal (atab{3,4}, 0.041666666666629, 1e-12);
+%! assert_equal (atab{4,1}, 'Error');
+%! assert_equal (atab{4,2}, 16.166666666666742, 1e-12);
+%! assert_equal (atab{4,3}, 12, 0);
+%! assert_equal (atab{4,4}, 1.347222222222229, 1e-12);
+%!test
+%! ## the interaction carries (c-1)(r-1) degrees of freedom
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [p, atab] = friedman (popcorn, 3, 'off');
+%! c = 3;  r = 2;
+%! assert_equal (atab{3,3}, (c - 1) * (r - 1), 0);
+%! assert_equal (atab{2,3} + atab{3,3} + atab{4,3} < atab{5,3}, true);
+%!test
+%! ## without replicates the table has no interaction row
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [p, atab] = friedman (popcorn, 1, 'off');
+%! assert_equal (atab(:,1), {'Source'; 'Columns'; 'Error'; 'Total'});
+%! assert_equal (atab{2,2}, 12, 1e-12);
+%! assert_equal (atab{3,2}, 0, 1e-12);
+%! assert_equal (atab{3,3}, 10, 0);
+%! assert_equal (atab{4,3}, 17, 0);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
