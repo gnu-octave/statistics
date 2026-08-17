@@ -742,8 +742,10 @@ classdef GeneralizedLinearModel
       this.formulastr_ = char (this.Formula);
       in_model         = this.Formula.InModel;
 
-      ## Per-variable information, over the full data rather than the fitting
-      ## subset: a range is a property of the variable, not of the fit.
+      ## Per-variable information, over the fitting subset rather than the full
+      ## data, as MATLAB reports it: VariableInfo sits on a fitted model, so a
+      ## range describes the data the fit actually used.  Measured against
+      ## R2024a, which also drops a category appearing only in excluded rows.
       vi_class   = cell (n_vars, 1);
       vi_range   = cell (n_vars, 1);
       vi_inmodel = in_model(:);
@@ -756,6 +758,10 @@ classdef GeneralizedLinearModel
           col = X_raw(:, j);
         else
           col = y_input;
+        endif
+        col = col(subset_mask);
+        if (isa (col, 'categorical'))
+          col = removecats (col);
         endif
         [vi_class{j}, vi_range{j}] = variable_class_and_range (col);
       endfor
@@ -1981,10 +1987,21 @@ endfunction
 %! assert_equal (mdl.VariableInfo.IsCategorical, false (4, 1));
 %! assert_equal (mdl.VariableInfo.Class, repmat ({'double'}, 4, 1));
 
-%!test  # a range spans the whole variable, not just the fitted rows
+%!test  # a range spans the fitted rows, not the whole variable, as in MATLAB
 %! mdl = fitglm (X, yn, "Exclude", [1, 10]);
-%! assert_equal (mdl.VariableInfo.Range{1}, [-1.17, 2.09], 1e-14);
-%! assert_equal (mdl.VariableInfo.Range{4}, [-1.3, 2.9], 1e-14);
+%! assert_equal (mdl.VariableInfo.Range{1}, [-1.17, 2.04], 1e-14);
+%! assert_equal (mdl.VariableInfo.Range{4}, [-1.3, 2.5], 1e-14);
+%! ## the excluded rows carry the extremes that no longer appear
+%! assert_equal ([min(X(:,1)), max(X(:,1))], [-1.17, 2.09], 1e-14);
+%! assert_equal ([min(yn), max(yn)], [-1.3, 2.9], 1e-14);
+%!test  # a category appearing only in excluded rows drops out of the range
+%! u = (1:20)';
+%! g = categorical ([repmat({'a'}, 5, 1); repmat({'b'}, 5, 1); ...
+%!                   repmat({'c'}, 5, 1); repmat({'d'}, 5, 1)]);
+%! resp = u + 0.5;
+%! mdl = fitglm (table (u, g, resp), 'resp ~ u + g', 'Exclude', (16:20)');
+%! assert_equal (cellstr (mdl.VariableInfo.Range{2}), {'a', 'b', 'c'});
+%! assert_equal (mdl.VariableInfo.Range{1}, [1, 15], 1e-14);
 
 %!test  # the offset spans the input rows and is zero when none was given
 %! mdl = fitglm (X, yp, "Distribution", "poisson");
