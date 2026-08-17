@@ -95,6 +95,14 @@ function y = fpdf (x, df1, df2)
               .* (df1(k) ./ df2(k)) ./ beta (df1(k)/2, df2(k)/2));
   endif
 
+  ## Handle the origin, where the density has three regimes in DF1: it is
+  ## unbounded for DF1 < 2, unity for DF1 = 2 (whatever DF2 is), and zero
+  ## for DF1 > 2, which is the value Y already holds.  The logarithmic form
+  ## above cannot serve here, since it evaluates to 0 * -Inf at DF1 = 2.
+  k = x == 0 & df1 > 0 & df2 > 0;
+  y(k & df1 < 2) = Inf;
+  y(k & df1 == 2) = 1;
+
   ## Force instances with df1 = df2 = INF to 0 for valid x
   y(kz & ! isnan (x)) = 0;
 
@@ -121,13 +129,36 @@ endfunction
 ## Test output
 %!shared x, y
 %! x = [-1, 0, 0.5, 1, 2];
-%! y = [0, 0, 4/9, 1/4, 1/9];
+%! y = [0, 1, 4/9, 1/4, 1/9];
 %!assert_equal (fpdf (x, 2*ones (1,5), 2*ones (1,5)), y, eps)
 %!assert_equal (fpdf (x, 2, 2*ones (1,5)), y, eps)
 %!assert_equal (fpdf (x, 2*ones (1,5), 2), y, eps)
 %!assert_equal (fpdf (x, [0, NaN, Inf, 2, 2], 2), [NaN, NaN, 0.5413, y(4:5)], 1e-4)
 %!assert_equal (fpdf (x, 2, [0, NaN, Inf, 2, 2]), [NaN, NaN, 0.6065, y(4:5)], 1e-4)
 %!assert_equal (fpdf ([x, NaN], 2, 2), [y, NaN], eps)
+
+## Test the density at the origin, unbounded for DF1 < 2 and unity at DF1 = 2
+%!assert_equal (fpdf (0, 0.5, 2), Inf)
+%!assert_equal (fpdf (0, 1, 1), Inf)
+%!assert_equal (fpdf (0, 1, 7), Inf)
+%!assert_equal (fpdf (0, 1.9, 3), Inf)
+%!assert_equal (fpdf (0, 2, 1), 1)
+%!assert_equal (fpdf (0, 2, 2), 1)
+%!assert_equal (fpdf (0, 2, 5), 1)
+%!assert_equal (fpdf (0, 2, 100), 1)
+%!assert_equal (fpdf (0, 2, Inf), 1)
+%!assert_equal (fpdf (0, 2.1, 3), 0)
+%!assert_equal (fpdf (0, 3, 3), 0)
+%!assert_equal (fpdf (0, 10, 10), 0)
+%!assert_equal (fpdf (0, Inf, 4), 0)
+%!assert_equal (fpdf (0, Inf, Inf), 0)
+%!assert_equal (fpdf (0, [0.5, 1, 2, 3, Inf], 2), [Inf, Inf, 1, 0, 0])
+%!assert_equal (fpdf (0, 0, 2), NaN)
+%!assert_equal (fpdf (0, 2, 0), NaN)
+%!assert_equal (fpdf (0, NaN, 2), NaN)
+%!assert_equal (fpdf (0, 2, NaN), NaN)
+%!assert_equal (fpdf (single (0), 2, 2), single (1))
+
 %!test #F (x, 1, df1) == T distribution (sqrt (x), df1) / sqrt (x)
 %! rand ('seed', 1234);    # for reproducibility
 %! xr = rand (10,1);
