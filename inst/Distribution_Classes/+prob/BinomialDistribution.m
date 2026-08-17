@@ -417,11 +417,7 @@ classdef BinomialDistribution < prob.ProbabilityDistribution
         Fa_b = binocdf ([lx, ux], this.N, this.p);
         m = binoinv (sum (Fa_b) / 2, this.N, this.p);
       else
-        if (! __traditional__ () && this.p == 0.5 && rem (this.N, 2) == 1)
-          m = this.mean ();
-        else
-          m = binoinv (0.5, this.N, this.p);
-        endif
+        m = binoinv (0.5, this.N, this.p);
       endif
     endfunction
 
@@ -835,7 +831,13 @@ endfunction
 %!assert_equal (mean (pd), 2.5, 1e-10);
 %!assert_equal (mean (t), 2.8, 1e-10);
 %!assert_equal (mean (t_inf), 2.8846, 1e-4);
-%!assert_equal (median (pd), 2.5);
+## The median is the smallest attainable value whose CDF reaches 0.5, so it is
+## in the support: 2 for Binomial (5, 0.5), as R2024a returns.  Measured
+## 2026-08-17.
+%!assert_equal (median (pd), 2);
+%!assert_equal (median (prob.BinomialDistribution (7, 0.5)), 3);
+%!assert_equal (median (prob.BinomialDistribution (10, 0.5)), 5);
+%!assert_equal (icdf (pd, 0.5), 2);
 %!assert_equal (median (t), 3);
 %!assert_equal (pdf (pd, [0:5]), [0.0312, 0.1562, 0.3125, 0.3125, 0.1562, 0.0312], 1e-4);
 %!assert_equal (pdf (t, [0:5]), [0, 0, 0.4, 0.4, 0.2, 0], 1e-4);

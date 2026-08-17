@@ -111,7 +111,12 @@ function [m, k] = scalar_binoinv (p, n, ps)
   v = 0;
   do
     cdf = binocdf (prev_limit:limit-1, n, ps);
-    r = bsxfun (@le, p(k), cdf);
+    ## The CDF carries a relative error of a few eps, so an exactly attained
+    ## probability can read a couple of ulps short and step the search past
+    ## the right answer: binocdf (2, 5, 0.5) is 0.49999999999999989 where the
+    ## exact value, 16/32, is representable.  Compare with that slack, as
+    ## MATLAB does, whose own CDF is short there too.
+    r = bsxfun (@le, p(k), cdf .* (1 + 4 * eps));
     [v, m(k)] = max (r, [], 2);     # find first instance of p <= cdf
     m(k) += prev_limit - 1;
     k = k(v == 0);
@@ -142,7 +147,12 @@ function [m, k] = vector_binoinv (p, n, ps)
     pdf = binopdf (xx, nn, pp);
     pdf(:,1) += cdf(v==0, end);
     cdf = cumsum (pdf, 2);
-    r = bsxfun (@le, p(k), cdf);
+    ## The CDF carries a relative error of a few eps, so an exactly attained
+    ## probability can read a couple of ulps short and step the search past
+    ## the right answer: binocdf (2, 5, 0.5) is 0.49999999999999989 where the
+    ## exact value, 16/32, is representable.  Compare with that slack, as
+    ## MATLAB does, whose own CDF is short there too.
+    r = bsxfun (@le, p(k), cdf .* (1 + 4 * eps));
     [v, m(k)] = max (r, [], 2);     # find first instance of p <= cdf
     m(k) += prev_limit - 1;
     k = k(v == 0);
