@@ -204,6 +204,9 @@ function [p, h, stats] = signtest (x, my, varargin)
   pos_n = sum (XY_diff > 0);
   neg_n = n - pos_n;
 
+  ## Set before the Z-statistic so the fields come in MATLAB's order
+  stats.sign = pos_n;
+
   ## Calculate stats according to selected method and tail
   switch (lower (method))
 
@@ -234,7 +237,6 @@ function [p, h, stats] = signtest (x, my, varargin)
       stats.zval = z_value;
 
   endswitch
-  stats.sign = pos_n;
   h = p <= alpha;
 endfunction
 

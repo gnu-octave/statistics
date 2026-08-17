@@ -186,8 +186,8 @@ function [p, h, stats] = signrank (x, my, varargin)
   if (n == 0)
     p = 1;
     h = 0;
-    stats.sign = 0;
-    stats.zval = NaN;
+    stats.signedrank = 0;
+    stats.zval = [];
     return;
   endif
 
@@ -254,7 +254,10 @@ function [p, h, stats] = signrank (x, my, varargin)
             p =  1 - p + C(end);
           endif
       endswitch
-      stats.zval = NaN;
+      ## No Z-statistic exists for the exact test, so the field is created
+      ## empty rather than holding a value.  R2024a omits it altogether, but
+      ## R2026a and the documentation both give an empty one.
+      stats.zval = [];
 
     case 'approximate'
       ## Compute z-value
@@ -278,6 +281,31 @@ function [p, h, stats] = signrank (x, my, varargin)
 endfunction
 
 ## Test output
+## Field layouts below are R2024a's, measured 2026-08-17.
+%!test
+%! ## the exact test has no z-statistic, so no ZVAL field is created at all
+%! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
+%! y = [0.878 0.647 0.598 2.05 1.06 1.29 1.06 3.14 1.29];
+%! [p, h, stats] = signrank (x, y, 'method', 'exact');
+%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'});
+%! assert_equal (stats.signedrank, 40);
+%! assert_equal (isempty (stats.zval), true);
+%! assert_equal (p, 0.039062500000000, 1e-14);
+%!test
+%! ## the default method for a small sample is the exact one
+%! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
+%! [~, ~, stats] = signrank (x, 1);
+%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'});
+%! assert_equal (stats.signedrank, 43);
+%! assert_equal (isempty (stats.zval), true);
+%!test
+%! ## identical inputs give a zero statistic and no z-value
+%! [p, h, stats] = signrank ([1 2 3], [1 2 3]);
+%! assert_equal (p, 1);
+%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'});
+%! assert_equal (stats.signedrank, 0);
+%! assert_equal (isempty (stats.zval), true);
+
 %!test
 %! load gradespaired.mat
 %! [p, h, stats] = signrank (gradespaired(:,1), ...
@@ -292,21 +320,21 @@ endfunction
 %!                           'tail', 'left', 'method', 'exact');
 %! assert_equal (p, 0.0045, 1e-4);
 %! assert_equal (h, true);
-%! assert_equal (stats.zval, NaN);
+%! assert_equal (isempty (stats.zval), true);
 %! assert_equal (stats.signedrank, 2017.5);
 %!test
 %! load mileage
 %! [p, h, stats] = signrank (mileage(:,2), 33);
 %! assert_equal (p, 0.0312, 1e-4);
 %! assert_equal (h, true);
-%! assert_equal (stats.zval, NaN);
+%! assert_equal (isempty (stats.zval), true);
 %! assert_equal (stats.signedrank, 21);
 %!test
 %! load mileage
 %! [p, h, stats] = signrank (mileage(:,2), 33, 'tail', 'right');
 %! assert_equal (p, 0.0156, 1e-4);
 %! assert_equal (h, true);
-%! assert_equal (stats.zval, NaN);
+%! assert_equal (isempty (stats.zval), true);
 %! assert_equal (stats.signedrank, 21);
 %!test
 %! load mileage
