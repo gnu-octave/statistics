@@ -235,43 +235,52 @@ function [p, h, stats] = signtest (x, my, varargin)
 
   endswitch
   stats.sign = pos_n;
-  h = double (p <= alpha);
+  h = p <= alpha;
 endfunction
 
 ## Test output
 %!test
 %! [pval, h, stats] = signtest ([-ones(1, 1000) 1], 0, 'tail', 'left');
 %! assert_equal (pval, 1.091701889420221e-218, 1e-14);
-%! assert_equal (h, 1);
+%! assert_equal (h, true);
 %! assert_equal (stats.zval, -31.5437631079266, 1e-14);
 %!test
 %! [pval, h, stats] = signtest ([-2 -1 0 2 1 3 1], 0);
 %! assert_equal (pval, 0.6875000000000006, 1e-14);
-%! assert_equal (h, 0);
+%! assert_equal (h, false);
 %! assert_equal (stats.zval, NaN);
 %! assert_equal (stats.sign, 4);
 %!test
 %! [pval, h, stats] = signtest ([-2 -1 0 2 1 3 1], 0, 'method', 'approximate');
 %! assert_equal (pval, 0.6830913983096086, 1e-14);
-%! assert_equal (h, 0);
+%! assert_equal (h, false);
 %! assert_equal (stats.zval, 0.4082482904638631, 1e-14);
 %! assert_equal (stats.sign, 4);
 %!test
 %! x = [1, 2, 3, 4, NaN, NaN, NaN];
 %! [pval, h] = signtest (x);
 %! assert_equal (pval, 0.1250, 1e-4);
-%! assert_equal (h, 0);
+%! assert_equal (h, false);
 %!test
 %! x = [1, 2, 3, 4, 5];
 %! y = [1, 1, NaN, 5, 4];
 %! [pval, h] = signtest (x, y);
 %! assert_equal (pval, 1.0, 1e-4);
-%! assert_equal (h, 0);
+%! assert_equal (h, false);
 %!test
 %! x = [1, 2, 3, 4, 5, -1];
 %! [p_val, ~] = signtest (x);
 %! [p, h, stats] = signtest (x, 0, 'alpha', p_val);
-%! assert_equal (h, 1);
+%! assert_equal (h, true);
+%!test
+%! ## the decision is logical, as it is in MATLAB and in signrank and ranksum
+%! [~, h] = signtest ([1.2 2.3 0.5 3.1 2.2 1.8 0.9 2.7 1.1 3.3], 2);
+%! assert_equal (class (h), 'logical');
+%! assert_equal (h, false);
+%!test
+%! [~, h] = signtest ([1.2 2.3 0.5 3.1 2.2 1.8 0.9 2.7 1.1 3.3], 100);
+%! assert_equal (class (h), 'logical');
+%! assert_equal (h, true);
 
 ## Test input validation
 %!error <signtest: X must be a vector.> signtest (ones (2))
