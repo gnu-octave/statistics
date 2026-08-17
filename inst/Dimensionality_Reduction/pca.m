@@ -441,14 +441,22 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
   if (nargout > 3)
     ## Calculate the Hotelling T-Square statistic for the observations
     ## formally: tsquared = sumsq (zscore (score(:, 1:r)),2);
-    if (! isempty (optWeights))
-      tsquared = NaN (nobs, 1);
+    ## No component counts at one degree of freedom or fewer: two centered
+    ## observations define a single component passing exactly through both, so
+    ## no Mahalanobis distance is estimable and T-square is 0 -- where the
+    ## formula returns 0.5 for every such pair, whatever the data.  Uncentered
+    ## the same two observations carry two degrees of freedom and do count.
+    ## Measured against R2024a, which reports 0 and 2 respectively.
+    dof = numel (ridcs) - optCenteredB;
+    tsquared = NaN (nobs, 1);
+    if (dof <= 1)
+      tsquared(ridcs) = 0;
+    elseif (! isempty (optWeights))
       if (r > 0)
         standardized_scores = score(ridcs, 1:r) ./ sqrt (latent(1:r)');
         tsquared(ridcs) = sum (standardized_scores .^ 2, 2);
       endif
     else
-      tsquared = NaN (nobs, 1);
       if (r > 0)
         tsquared(ridcs) = mahal (score(ridcs, 1:r), score(ridcs, 1:r));
       endif
@@ -608,7 +616,9 @@ endfunction
 %!assert_equal (SCORE(:,1), -m(1:2,1), 10*eps);
 %!assert_equal (SCORE(:,2:3), zeros (2), 10*eps);
 %!assert_equal (latent, [1;0;0], 10*eps);
-%!assert_equal (tsquare, [0.5;0.5], 10*eps)
+%!## two centered observations carry one degree of freedom, so no component
+%!## counts and T-square is 0, as R2024a returns it
+%!assert_equal (tsquare, [0;0], 10*eps)
 
 %!test
 %! [COEFF, SCORE, latent, tsquare] = pca (x);
@@ -616,7 +626,7 @@ endfunction
 %!assert_equal (COEFF, m(:, 1), 10*eps);
 %!assert_equal (SCORE, -m(1:2,1), 10*eps);
 %!assert_equal (latent, [1], 10*eps);
-%!assert_equal (tsquare, [0.5;0.5], 10*eps)
+%!assert_equal (tsquare, [0;0], 10*eps)
 
 %!test
 %! ## Complex missing data test
