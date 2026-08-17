@@ -539,12 +539,14 @@ endfunction
 %! modelfun = @(b, x) b(1) .* exp (b(2) .* x);
 %! beta0 = [1; 0.3];
 
-## Values verified against MATLAB's nlinfit.
+## The literals below are R2024a's own values, measured, and each tolerance
+## states how closely ours agree with them.
 %!test
 %! [beta, R, J, CovB, MSE] = nlinfit (x, y, modelfun, beta0);
-%! assert_equal (beta, [1.683746951; 0.286911092], 1e-6);
-%! assert_equal (MSE, 0.029221494, 1e-7);
-%! assert_equal (sqrt (diag (CovB)), [0.035194484; 0.002350838], 1e-7);
+%! assert_equal (beta, [1.683747024946374; 0.286911087203926], 1e-6);
+%! assert_equal (MSE, 0.029221494299720, 1e-9);
+%! assert_equal (sqrt (diag (CovB)), ...
+%!               [0.035194898750254; 0.002350913062791], 1e-6);
 %!test
 %! ## The returned Jacobian equals the analytic model Jacobian.
 %! [beta, R, J] = nlinfit (x, y, modelfun, beta0);

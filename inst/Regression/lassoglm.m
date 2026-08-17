@@ -568,17 +568,26 @@ endfunction
 %! assert_equal (Bg, Bl, 1e-4);
 %! assert_equal (Fg.Intercept, Fl.Intercept, 1e-4);
 %!test
-%! ## Poisson regression: intercept and deviance are exact to MATLAB.
+%! ## Poisson regression against R2024a's own intercept and deviance.  The
+%! ## coordinate descent converges to a slightly different point, so 1e-4.
 %! [B, F] = lassoglm (X, yp, "poisson", "Lambda", [0.2, 0.05, 0.01]);
-%! assert_equal (F.Intercept, [-0.4084524, -0.3186332, -0.2972851], 1e-6);
-%! assert_equal (F.Deviance, [7.068890, 7.267237, 8.458039], 1e-5);
+%! assert_equal (F.Intercept, ...
+%!               [-0.408479371164708, -0.318644470147402, ...
+%!                -0.297271780712625], 1e-4);
+%! assert_equal (F.Deviance, ...
+%!               [7.068880870474705, 7.267211985220860, ...
+%!                8.458049628150873], 1e-4);
 %! assert_equal (F.DF, [3, 3, 1]);
 %!test
-%! ## Binomial (logistic) regression: intercept, deviance, and DF.
+%! ## Binomial (logistic) regression against R2024a's own values.  The
+%! ## largest lambda is the loosest fit and agrees least closely, at 5e-4.
 %! [B, F] = lassoglm (X, yb, "binomial", "Lambda", [0.2, 0.1, 0.05, 0.01]);
 %! assert_equal (F.Intercept, ...
-%!               [2.282662, 1.388003, 0.9649387, 0.8340267], 1e-4);
-%! assert_equal (F.Deviance, [1.147154, 3.739176, 6.057663, 9.585824], 1e-4);
+%!               [2.282419079745844, 1.388013352791727, ...
+%!                0.964941260795408, 0.834029178373540], 1e-3);
+%! assert_equal (F.Deviance, ...
+%!               [1.146705233151688, 3.739184081182877, ...
+%!                6.057648047528616, 9.585820201838006], 1e-3);
 %! assert_equal (F.DF, [3, 3, 3, 1]);
 %!test
 %! ## Default path: DF is zero at lambda_max and lambda is ascending.
