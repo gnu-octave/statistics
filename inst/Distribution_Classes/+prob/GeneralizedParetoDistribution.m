@@ -790,8 +790,11 @@ classdef GeneralizedParetoDistribution < prob.ProbabilityDistribution
       else
         options = varargin{3};
       endif
-      ## Fit data
-      [phat, pci] = gpfit (x, theta, alpha, freq, options);
+      ## Fit data.  GPFIT assumes a zero location, as MATLAB's does, so the
+      ## known THETA is shifted out of the data and put back into the estimates.
+      [phat, pci] = gpfit (x - theta, alpha, options, freq);
+      phat = [phat, theta];
+      pci = [pci, [theta; theta]];
       [~, acov] = gplike (phat, x, freq);
       ## Create fitted distribution object
       pd = prob.GeneralizedParetoDistribution.makeFitted (phat, pci, acov, x, freq);

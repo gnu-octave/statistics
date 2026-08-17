@@ -975,25 +975,25 @@ endfunction
 %!test
 %! x = gprnd (1, 1, 1, 100, 1);
 %! pd = fitdist (x, 'GeneralizedPareto');
-%! [phat, pci] = gpfit (x, 1);
-%! assert_equal ([pd.k, pd.sigma, pd.theta], phat);
-%! assert_equal (paramci (pd), pci);
+%! [phat, pci] = gpfit (x - 1);
+%! assert_equal ([pd.k, pd.sigma, pd.theta], [phat, 1]);
+%! assert_equal (paramci (pd), [pci, [1; 1]]);
 %!test
 %! x = gprnd (1, 1, 2, 100, 1);
 %! pd = fitdist (x, 'GeneralizedPareto', 'theta', 2);
-%! [phat, pci] = gpfit (x, 2);
-%! assert_equal ([pd.k, pd.sigma, pd.theta], phat);
-%! assert_equal (paramci (pd), pci);
+%! [phat, pci] = gpfit (x - 2);
+%! assert_equal ([pd.k, pd.sigma, pd.theta], [phat, 2]);
+%! assert_equal (paramci (pd), [pci, [2; 2]]);
 %!test
 %! x1 = gprnd (1, 1, 1, 100, 1);
 %! x2 = gprnd (0, 2, 1, 100, 1);
 %! pd = fitdist ([x1; x2], 'gp', 'By', [ones(100,1); 2*ones(100,1)]);
-%! [phat, pci] = gpfit (x1, 1);
-%! assert_equal ([pd{1}.k, pd{1}.sigma, pd{1}.theta], phat);
-%! assert_equal (paramci (pd{1}), pci);
-%! [phat, pci] = gpfit (x2, 1);
-%! assert_equal ([pd{2}.k, pd{2}.sigma, pd{2}.theta], phat);
-%! assert_equal (paramci (pd{2}), pci);
+%! [phat, pci] = gpfit (x1 - 1);
+%! assert_equal ([pd{1}.k, pd{1}.sigma, pd{1}.theta], [phat, 1]);
+%! assert_equal (paramci (pd{1}), [pci, [1; 1]]);
+%! [phat, pci] = gpfit (x2 - 1);
+%! assert_equal ([pd{2}.k, pd{2}.sigma, pd{2}.theta], [phat, 1]);
+%! assert_equal (paramci (pd{2}), [pci, [1; 1]]);
 %!warning <fitdist: no data in group '2' to fit a 'gp' distribution.> ...
 %! fitdist ([gprnd(1, 1, 1, 100, 1); nan(100, 1)], 'gp', ...
 %!          'By', [ones(100, 1); 2*ones(100, 1)]);
@@ -1002,12 +1002,12 @@ endfunction
 %! x2 = gprnd (2, 3, 2, 100, 1);
 %! pd = fitdist ([x1; x2], 'GeneralizedPareto', 'theta', 2, ...
 %!               'By', [ones(100,1); 2*ones(100,1)]);
-%! [phat, pci] = gpfit (x1, 2);
-%! assert_equal ([pd{1}.k, pd{1}.sigma, pd{1}.theta], phat);
-%! assert_equal (paramci (pd{1}), pci);
-%! [phat, pci] = gpfit (x2, 2);
-%! assert_equal ([pd{2}.k, pd{2}.sigma, pd{2}.theta], phat);
-%! assert_equal (paramci (pd{2}), pci);
+%! [phat, pci] = gpfit (x1 - 2);
+%! assert_equal ([pd{1}.k, pd{1}.sigma, pd{1}.theta], [phat, 2]);
+%! assert_equal (paramci (pd{1}), [pci, [2; 2]]);
+%! [phat, pci] = gpfit (x2 - 2);
+%! assert_equal ([pd{2}.k, pd{2}.sigma, pd{2}.theta], [phat, 2]);
+%! assert_equal (paramci (pd{2}), [pci, [2; 2]]);
 %!warning <fitdist: no data in group '2' to fit a 'gp' distribution.> ...
 %! fitdist ([gprnd(3, 2, 2, 100, 1); nan(100, 1)], 'gp', 'theta', 2, ...
 %!          'By', [ones(100, 1); 2*ones(100, 1)]);

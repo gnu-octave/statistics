@@ -150,15 +150,14 @@ classdef paretotails
       this.ql = paretotails.quantile_pp (xs, pp, pl);
       this.qu = paretotails.quantile_pp (xs, pp, pu);
 
-      ## Fit the generalized Pareto tails to the exceedances (gpfit returns
-      ## [k, sigma, theta]; theta is the fixed threshold 0, so keep [k, sigma]).
+      ## Fit the generalized Pareto tails to the exceedances, which are already
+      ## measured from their threshold and so have the zero location gpfit
+      ## assumes.
       if (pl > 0)
-        lp = gpfit (this.ql - xs(xs < this.ql), 0);
-        this.lowerP = lp(1:2);
+        this.lowerP = gpfit (this.ql - xs(xs < this.ql));
       endif
       if (pu < 1)
-        up = gpfit (xs(xs > this.qu) - this.qu, 0);
-        this.upperP = up(1:2);
+        this.upperP = gpfit (xs(xs > this.qu) - this.qu);
       endif
 
       ## Middle-segment interpolation knots: the interior data points, with the

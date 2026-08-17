@@ -17,36 +17,38 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{paramhat} =} gpfit (@var{x}, @var{theta})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{theta})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{theta}, @var{alpha})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{theta}, @var{alpha}, @var{options})
+## @deftypefn  {statistics} {@var{paramhat} =} gpfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{alpha}, @var{options})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{alpha}, @var{options}, @var{freq})
 ##
 ## Estimate parameters and confidence intervals for the generalized Pareto
 ## distribution.
 ##
-## @code{@var{paramhat} = gpfit (@var{x}, @var{theta})} returns the maximum
-## likelihood estimates of the parameters of the generalized Pareto distribution
-## given the data in @var{x} and the location parameter @var{theta}.
-## @qcode{@var{paramhat}(1)} is the shape parameter, @var{k},
-## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}, and
-## @qcode{@var{paramhat}(3)} is the location parameter, @var{theta}.  Although
-## @var{theta} is returned in the estimated @var{paramhat}, @code{gpfit} does
-## not estimate the location parameter @var{theta}, and it must be assumed to be
-## known, given as a fixed parameter in input argument @var{theta}.
+## @code{@var{paramhat} = gpfit (@var{x})} returns the maximum likelihood
+## estimates of the parameters of the generalized Pareto distribution given the
+## data in @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{k},
+## and @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.
 ##
-## @code{[@var{paramhat}, @var{paramci}] = gpfit (@var{x}, @var{theta})} returns
-## the 95% confidence intervals for the estimated parameter @var{k} and
-## @var{sigma}. The third column of @var{paramci} includes the location
-## parameter @var{theta} without any confidence bounds.
+## @code{gpfit} does not estimate the location parameter @var{theta} and assumes
+## it to be zero, so @var{x} must not contain negative values.  To fit data with
+## a known nonzero @var{theta}, subtract it from @var{x} before calling
+## @code{gpfit}; the estimates of @var{k} and @var{sigma} are unchanged by the
+## shift.
 ##
-## @code{[@dots{}] = gpfit (@var{x}, @var{theta}, @var{alpha})} also returns the
+## @code{[@var{paramhat}, @var{paramci}] = gpfit (@var{x})} returns the 95%
+## confidence intervals for the estimated parameters @var{k} and @var{sigma} as
+## a @math{2}-by-@math{2} matrix whose first row holds the lower bounds and
+## whose second row holds the upper bounds.
+##
+## @code{[@dots{}] = gpfit (@var{x}, @var{alpha})} also returns the
 ## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
 ## parameter estimates.  By default, the optional argument @var{alpha} is
 ## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
 ## @var{alpha} to use the default values.
 ##
-## @code{[@dots{}] = gpfit (@var{x}, @var{theta}, @var{alpha}, @var{options})}
+## @code{[@dots{}] = gpfit (@var{x}, @var{alpha}, @var{options})}
 ## specifies control parameters for the iterative algorithm used to compute ML
 ## estimates with the @code{fminsearch} function.  @var{options} is a structure
 ## with the following fields and their default values:
@@ -56,6 +58,11 @@
 ## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
+##
+## @code{[@dots{}] = gpfit (@var{x}, @var{alpha}, @var{options}, @var{freq})}
+## accepts a vector of the same size as @var{x} giving the number of times each
+## element of @var{x} was observed.  This fourth argument is an Octave
+## extension; MATLAB's @code{gpfit} takes three inputs at most.
 ##
 ## When @qcode{@var{k} = 0} and @qcode{@var{theta} = 0}, the Generalized Pareto
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
@@ -73,34 +80,30 @@
 ## @seealso{gpcdf, gpinv, gppdf, gprnd, gplike, gpstat}
 ## @end deftypefn
 
-function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
+function [paramhat, paramci] = gpfit (x, alpha, options, freq)
 
   ## Check for valid number of input arguments
-  if (nargin < 2)
+  if (nargin < 1)
     error ("gpfit: function called with too few input arguments.");
   endif
 
   ## Check X for being a vector
   if (isempty (x))
-    phat = nan (1, 3, class (x));
-    pci = nan (3, 3, class (x));
+    paramhat = nan (1, 2, class (x));
+    paramci = nan (2, 2, class (x));
     return
   elseif (! isvector (x) || ! isreal (x))
     error ("gpfit: X must be a vector of real values.");
   endif
 
-  ## Check for THETA being a scalar real value
-  if (! isscalar (theta) || ! isreal (theta))
-    error ("gpfit: THETA must be a real scalar value.");
-  endif
-
-  ## Check X >= THETA
-  if (any (x < theta))
-    error ("gpfit: X cannot contain values less than THETA.");
+  ## The location parameter is assumed to be zero, so no observation may fall
+  ## below it.  Data with a known nonzero location is shifted by the caller.
+  if (any (x < 0))
+    error ("gpfit: X must not contain negative values.");
   endif
 
   ## Parse ALPHA argument or add default
-  if (nargin < 3 || isempty (alpha))
+  if (nargin < 2 || isempty (alpha))
     alpha = 0.05;
   elseif (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
     error ("gpfit: wrong value for ALPHA.");
@@ -125,7 +128,7 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
   endif
 
   ## Get options structure or add defaults
-  if (nargin < 5)
+  if (nargin < 3 || isempty (options))
     options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
@@ -134,7 +137,7 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
     if (! isstruct (options) || ! isfield (options, 'Display') ||
         ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
                                            || ! isfield (options, 'TolX'))
-      error (strcat ("gpfit: 'options' 5th argument must be a", ...
+      error (strcat ("gpfit: 'options' 3rd argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
     endif
@@ -153,19 +156,18 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
   endif
 
   ## Get sample size, max and range of X
-  x = x - theta;
   x_max = max (x);
   x_size = length (x);
   x_range = range (x);
 
   ## Check for appropriate sample size or all observations being equal
   if (x_size == 0)
-    paramhat = [NaN(1, 2), theta];
-    paramci = [NaN(2, 2), [theta; theta]];
+    paramhat = NaN (1, 2);
+    paramci = NaN (2, 2);
     warning ("gpfit: X contains no data.");
     return
   elseif (x_range < realmin (class (x)))
-    paramhat = cast ([NaN, 0, theta], class (x));
+    paramhat = cast ([NaN, 0], class (x));
     paramci = [paramhat; paramhat];
     warning ("gpfit: X contains constant data.");
     return
@@ -187,7 +189,6 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
   f = @(paramhat) negloglike (paramhat, x);
   [paramhat, ~, err, output] = fminsearch (f, paramhat, options);
   paramhat(2) = exp (paramhat(2));
-  paramhat = [paramhat, theta];
 
   ## Check output of fminsearch and produce warnings or errors if applicable
   if (err == 0)
@@ -215,16 +216,18 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
   if (nargout > 1)
     if (! reachedBnd)
       probs = [alpha/2; 1-alpha/2];
-      [~, acov] = gplike (paramhat, x + theta);
+      ## GPLIKE still takes the location as a third parameter, unlike
+      ## MATLAB's, and the data here is already at a zero location.
+      [~, acov] = gplike ([paramhat, 0], x);
       se = sqrt (diag (acov))';
       ## Compute the CI for shape using a normal distribution for khat.
       kci = norminv (probs, paramhat(1), se(1));
       ## Compute the CI for scale using a normal approximation for
       ## log(sigmahat), and transform back to the original scale.
       lnsigci = norminv (probs, log (paramhat(2)), se(2) ./ paramhat(2));
-      paramci = [kci, exp(lnsigci), [theta; theta]];
+      paramci = [kci, exp(lnsigci)];
     else
-      paramci = [NaN, NaN, theta; NaN, NaN, theta];
+      paramci = [NaN, NaN; NaN, NaN];
     endif
   endif
 
@@ -270,8 +273,8 @@ endfunction
 %! hold on
 %!
 %! ## Estimate their α and β parameters
-%! k_sigmaA = gpfit (r(:,1), theta);
-%! k_sigmaB = gpfit (r(:,2), theta);
+%! k_sigmaA = gpfit (r(:,1));
+%! k_sigmaB = gpfit (r(:,2));
 %!
 %! ## Plot their estimated PDFs
 %! x = [0.01, 0.1:0.2:18];
@@ -291,32 +294,52 @@ endfunction
 %! hold off
 
 ## Test output
-%!test
-%! k = 0.8937; sigma = 1.3230; theta = 1;
+## Values below are R2024a's, measured 2026-08-17.  The estimates agree to the
+## convergence tolerance of fminsearch, which is what the 1e-4 covers.
+%!shared x
 %! x = [2.2196, 11.9301, 4.3673, 1.0949, 6.5626, ...
 %!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
-%! [hat, ci] = gpfit (x, theta);
-%! assert_equal (hat, [k, sigma, theta], 1e-4);
-%! assert_equal (ci, [-0.7750, 0.2437, 1; 2.5624, 7.1820, 1], 1e-4);
+%!test
+%! [hat, ci] = gpfit (x);
+%! assert_equal (hat, [-0.163107819293798, 5.305483917184919], 1e-4);
+%! assert_equal (ci, [-1.174106637867584,  1.627748133572634; ...
+%!                     0.847890999279987, 17.292699659699391], 1e-4);
+%!test
+%! [hat, ci] = gpfit (x, 0.10);
+%! assert_equal (ci, [-1.011564773958192,  1.968276868273005; ...
+%!                     0.685349135370595, 14.300914698146826], 1e-4);
+%!test
+%! ## a known location is fitted by shifting the data, and only shifts the fit
+%! [hat, ci] = gpfit (x - 1);
+%! assert_equal (hat, [0.893710299404345, 1.322962458731574], 1e-6);
+%! assert_equal (ci, [-0.774991092191746, 0.243695078371714; ...
+%!                     2.562411691000436, 7.182047659343478], 1e-5);
+%!assert_equal (size (gpfit (x)), [1, 2])
+%!test
+%! [~, ci] = gpfit (x);
+%! assert_equal (size (ci), [2, 2]);
+%!test
+%! ## the default confidence level is 95%
+%! [h1, c1] = gpfit (x);
+%! [h2, c2] = gpfit (x, 0.05);
+%! assert_equal (h1, h2);
+%! assert_equal (c1, c2);
+%!test
+%! ## FREQ counts repeated observations
+%! assert_equal (gpfit (x, [], [], [2, ones(1,9)]), gpfit ([x(1), x]), 1e-10);
 
 ## Test input validation
 %!error<gpfit: function called with too few input arguments.> gpfit ()
-%!error<gpfit: function called with too few input arguments.> gpfit (1)
-%!error<gpfit: X must be a vector of real values.> gpfit ([0.2, 0.5+i], 0);
-%!error<gpfit: X must be a vector of real values.> gpfit (ones (2,2) * 0.5, 0);
-%!error<gpfit: THETA must be a real scalar value.> ...
-%! gpfit ([0.5, 1.2], [0, 1]);
-%!error<gpfit: THETA must be a real scalar value.> ...
-%! gpfit ([0.5, 1.2], 5+i);
-%!error<gpfit: X cannot contain values less than THETA.> ...
-%! gpfit ([1:5], 2);
-%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], 0, 1.2);
-%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], 0, i);
-%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], 0, -1);
-%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], 0, [0.05, 0.01]);
-%!error<gpfit: X and FREQ vectors mismatch.>
-%! gpfit ([1 2 3], 0, [], [1 5])
-%!error<gpfit: FREQ must not contain negative values.>
-%! gpfit ([1 2 3], 0, [], [1 5 -1])
-%!error<gpfit: 'options' 5th argument must be a structure> ...
-%! gpfit ([1:10], 1, 0.05, [], 5)
+%!error<gpfit: X must be a vector of real values.> gpfit ([0.2, 0.5+i]);
+%!error<gpfit: X must be a vector of real values.> gpfit (ones (2,2) * 0.5);
+%!error<gpfit: X must not contain negative values.> gpfit ([-1, 2, 3]);
+%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], 1.2);
+%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], i);
+%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], -1);
+%!error<gpfit: wrong value for ALPHA.> gpfit ([0.01:0.1:0.99], [0.05, 0.01]);
+%!error<gpfit: X and FREQ vectors mismatch.> ...
+%! gpfit ([1 2 3], [], [], [1 5])
+%!error<gpfit: FREQ must not contain negative values.> ...
+%! gpfit ([1 2 3], [], [], [1 5 -1])
+%!error<gpfit: 'options' 3rd argument must be a structure> ...
+%! gpfit ([1:10], 0.05, 5)

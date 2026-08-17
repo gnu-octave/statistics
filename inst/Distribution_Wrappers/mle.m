@@ -40,7 +40,9 @@
 ## for the corresponding element of @var{x} for the binomial distribution.
 ##
 ## @item @qcode{'theta'} @tab A scalar specifying the location parameter
-## for the generalized Pareto distribution.
+## for the generalized Pareto distribution.  It defaults to 0 and is not
+## estimated: the data is shifted by it and only @var{k} and @var{sigma} are
+## returned.
 ##
 ## @item @qcode{'mu'} @tab A scalar specifying the location parameter
 ## for the half-normal distribution.
@@ -145,7 +147,7 @@ function [phat, pci] = mle (x, varargin)
   alpha = 0.05;
   ntrials = [];
   mu = 0;
-  theta = 1;
+  theta = 0;
   options.Display = 'off';
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
@@ -373,10 +375,12 @@ function [phat, pci] = mle (x, varargin)
         error (strcat ("mle: invalid 'theta' location parameter", ...
                        " for the Generalized Pareto distribution."));
       endif
+      ## GPFIT assumes a zero location, so shift the data by the known THETA,
+      ## which leaves the estimates of K and SIGMA unchanged.
       if (nargout < 2)
-        phat = gpfit (x, theta, alpha, freq, options);
+        phat = gpfit (x - theta, alpha, options, freq);
       else
-        [phat, pci] = gpfit (x, theta, alpha, freq, options);
+        [phat, pci] = gpfit (x - theta, alpha, options, freq);
       endif
 
     case 'gumbel'
@@ -914,6 +918,20 @@ endfunction
 %!               mle (x, 'distribution', 'bisa'));
 %! assert_equal (mle (x, 'distribution', 'birnbaumsaunders'), ...
 %!               mle (x, 'distribution', 'bisa'));
+
+## Values below are R2024a's, measured 2026-08-17.
+%!test
+%! ## the Generalized Pareto location defaults to zero and is not returned
+%! x = [2.2196, 11.9301, 4.3673, 1.0949, 6.5626, ...
+%!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
+%! assert_equal (mle (x, 'distribution', 'gp'), ...
+%!               [-0.163107819293798, 5.305483917184919], 1e-4);
+%!test
+%! ## a known location shifts the data, leaving two parameters estimated
+%! x = [2.2196, 11.9301, 4.3673, 1.0949, 6.5626, ...
+%!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
+%! assert_equal (mle (x, 'distribution', 'gp', 'theta', 1), ...
+%!               [0.893710299404345, 1.322962458731574], 1e-6);
 
 ## Test input validation
 %!error <mle: X must be a numeric vector of real values.> mle (ones (2))
