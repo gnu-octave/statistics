@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -256,7 +256,7 @@ statset
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5245
+# length: 5439
  -- statistics: OPTIONS = statset ()
  -- statistics: OPTIONS = statset (FUNCNAME)
  -- statistics: OPTIONS = statset (NAME, VALUE, ...)
@@ -266,29 +266,29 @@ statset
 
      Create or modify an options structure for iterative statistics algorithms.
 
-     'OPTIONS = statset ()' returns a structure carrying every recognized option
+     ‘OPTIONS = statset ()’ returns a structure carrying every recognized option
      name, each set to an empty value.  An empty option means "use the calling
      function's own default", so an all-empty structure changes nothing wherever
      it is passed.
 
-     'OPTIONS = statset (FUNCNAME)' returns the options that FUNCNAME uses by
+     ‘OPTIONS = statset (FUNCNAME)’ returns the options that FUNCNAME uses by
      default, with the remaining fields left empty.  FUNCNAME must name a
      function of this package that documents an "Options" argument; see the list
      below.  Unlike the name/value forms, this form takes no further arguments.
 
-     'OPTIONS = statset (NAME, VALUE, ...)' returns an otherwise empty structure
+     ‘OPTIONS = statset (NAME, VALUE, ...)’ returns an otherwise empty structure
      with the named options set.  Option names are matched case-insensitively
      and must be given in full.
 
-     'OPTIONS = statset (OLDOPTS, NAME, VALUE, ...)' copies OLDOPTS and applies
+     ‘OPTIONS = statset (OLDOPTS, NAME, VALUE, ...)’ copies OLDOPTS and applies
      the given name/value pairs to the copy.  OLDOPTS is left unchanged.
 
-     'OPTIONS = statset (OLDOPTS, NEWOPTS)' merges two structures: every
+     ‘OPTIONS = statset (OLDOPTS, NEWOPTS)’ merges two structures: every
      _non-empty_ field of NEWOPTS overrides its counterpart in OLDOPTS, while an
      empty field of NEWOPTS leaves the OLDOPTS value in place.  Fields that are
      not recognized option names are ignored in both structures.
 
-     'statset ()' called with no output argument displays the recognized option
+     ‘statset ()’ called with no output argument displays the recognized option
      names together with their permitted values, marking each default in braces.
 
      The recognized options are:
@@ -330,19 +330,19 @@ statset
                           each iteration.
 
      FUNCNAME may name any of the following functions, each of which documents
-     an "Options" argument: 'copulafit', 'coxphfit', 'crossval', 'evfit',
-     'factoran', 'fitglm', 'fitglme', 'fitlme', 'fitlmematrix', 'fitnlm',
-     'gamfit', 'gevfit', 'glmfit', 'gmdistribution', 'gpfit', 'kmeans',
-     'kmedoids', 'lasso', 'lassoglm', 'lognfit', 'mdscale', 'mlecov',
-     'mlecustom', 'mvncdf', 'mvtcdf', 'nbinfit', 'nlinfit', 'nnmf', 'normfit',
-     'pca', 'plsregress', 'ppca', 'rocmetrics', 'tsne', 'wblfit',
-     'GeneralizedLinearMixedModel', and 'LinearMixedModel'.
+     an "Options" argument: ‘copulafit’, ‘coxphfit’, ‘crossval’, ‘evfit’,
+     ‘factoran’, ‘fitcox’, ‘fitglm’, ‘fitglme’, ‘fitlme’, ‘fitlmematrix’,
+     ‘fitnlm’, ‘gamfit’, ‘gevfit’, ‘glmfit’, ‘gmdistribution’, ‘gpfit’,
+     ‘kmeans’, ‘kmedoids’, ‘lasso’, ‘lassoglm’, ‘lognfit’, ‘mdscale’, ‘mlecov’,
+     ‘mlecustom’, ‘mvncdf’, ‘mvtcdf’, ‘nbinfit’, ‘nlinfit’, ‘nnmf’, ‘normfit’,
+     ‘pca’, ‘plsregress’, ‘ppca’, ‘rocmetrics’, ‘tsne’, ‘wblfit’,
+     ‘GeneralizedLinearMixedModel’, and ‘LinearMixedModel’.
 
      Any function accepting an "Options" argument also accepts a plain structure
-     carrying only the fields it needs, so 'statset' is a convenience rather
+     carrying only the fields it needs, so ‘statset’ is a convenience rather
      than a requirement.
 
-     MATLAB's 'statset' additionally accepts the names of functions this package
+     MATLAB's ‘statset’ additionally accepts the names of functions this package
      does not provide.  Those names are rejected here rather than answered,
      since returning options for an absent function would assert a capability
      that does not exist.

@@ -51,17 +51,11 @@
 ## @qcode{@var{name}_@var{level}} and enter the default baseline as zero, while
 ## a numeric predictor enters it as its mean.
 ##
-## @strong{The proportional hazards test under @qcode{"efron"} ties does not
-## match MATLAB.}  The test regresses the scaled Schoenfeld residuals on the
-## mid-ranks of the event times, and those residuals come from
-## @code{coxphfit}, which forms them from the Breslow risk-set mean whatever
-## tie-breaking method the fit used.  With tied event times and
-## @qcode{"efron"} the residuals therefore differ from MATLAB's, and so do
-## @code{ProportionalHazardsPValue} and
-## @code{ProportionalHazardsPValueGlobal} -- by about a tenth of their value
-## on a small example.  Everything else agrees, @qcode{"breslow"} agrees
-## throughout, and untied data is unaffected, every ranking being the same
-## when no two events share a time.
+## @code{ProportionalHazardsPValue} is a Grambsch-Therneau test of each
+## coefficient against the mid-ranks of the event times, and
+## @code{ProportionalHazardsPValueGlobal} the same test taken over the whole
+## model.  A small p-value is evidence that the hazard ratio moves with time,
+## which is what proportionality denies.
 ##
 ## @strong{Deviations from MATLAB, all in naming.}  MATLAB derives the names
 ## reported by a fitted model from three different places and they need not
@@ -1275,6 +1269,10 @@ endfunction
 %! mdl = CoxModel (X, Tt, 'Censoring', C, 'TieBreakMethod', 'efron');
 %! assert_equal (mdl.Coefficients.SE, ...
 %!               [0.40807722610877606; 1.7349017938498392], 1e-8);
+%! assert_equal (mdl.ProportionalHazardsPValue, ...
+%!               [0.1946475346918406, 0.44447162515215921], 1e-8);
+%! assert_equal (mdl.ProportionalHazardsPValueGlobal, ...
+%!               0.29473648771539396, 1e-8);
 
 ## Confidence intervals
 %!test

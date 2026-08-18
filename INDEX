@@ -85,7 +85,9 @@ Experimental Design
  sigma_pts
  x2fx
 Regression
+ CoxModel
  coxphfit
+ fitcox
  fitglm
  fitglme
  fitlm

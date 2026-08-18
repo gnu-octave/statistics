@@ -111,7 +111,12 @@
 ## @item @qcode{"devres"} @tab The deviance residuals.
 ## @item @qcode{"martres"} @tab The martingale residuals.
 ## @item @qcode{"schres"} @tab The Schoenfeld residuals, @qcode{NaN} for a
-## censored observation.
+## censored observation.  The mean an event is measured against follows
+## @qcode{"Ties"}: under @qcode{"efron"} a tied death is measured against the
+## mean over the sub-risk sets that approximation splits the tie into, so that
+## every tied death at one time shares one mean and the residual does not
+## depend on the order the tie was recorded in.  Without a tie the two methods
+## agree.
 ## @item @qcode{"sschres"} @tab The scaled Schoenfeld residuals.
 ## @item @qcode{"scores"} @tab The score residuals.
 ## @item @qcode{"sscores"} @tab The scaled score residuals.
@@ -136,6 +141,12 @@
 ## time follows an event.  Here both account for it, so @qcode{"csres"}
 ## differs from MATLAB's by @math{\Lambda(start) \exp (x'b)} and the identity
 ## is preserved.
+##
+## The score residuals inherit the first of those two deviations, being an
+## integral against the martingale residual: under @qcode{"efron"} ties they
+## differ from MATLAB's, whose own do not sum to the score at the maximum,
+## while these sum to zero under both tie methods, weighted by
+## @qcode{"Frequency"} where one is given.
 ##
 ## Every other output agrees with R2024a to machine precision, across
 ## censoring, weights, both tie methods, stratification, and the counting
@@ -441,12 +452,38 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
     ins = Strata == us(si);
     ut = unique (T(event & ins));
     h0 = zeros (numel (ut), 1);
-    xb = zeros (numel (ut), p);
+    xb = zeros (numel (ut), p);     # Breslow mean, paired with h0
+    xbev = zeros (numel (ut), p);   # mean an event at that time is measured against
     for k = 1:numel (ut)
       D = event & ins & T == ut(k);
       R = ins & Tstart < ut(k) & T >= ut(k);
-      h0(k) = sum (w(D)) / sum (exu(R));
-      xb(k,:) = (exu(R)' * X(R,:)) / sum (exu(R));
+      SR = sum (exu(R));
+      AR = exu(R)' * X(R,:);
+      h0(k) = sum (w(D)) / SR;
+      xb(k,:) = AR / SR;
+      ## The mean an event is measured against follows the tie method the fit
+      ## used.  Efron's approximation splits a tie of d deaths into d terms,
+      ## the l-th removing a fraction l/d of the tied deaths from the risk
+      ## set, so the mean is averaged over those d sub-risk sets.  Without a
+      ## tie the two coincide, the sum having only its l = 0 term.
+      ##
+      ## Only the event term takes it.  The hazard term below pairs with h0,
+      ## which is the Breslow estimator under either method, and must use the
+      ## Breslow mean to match: it is that pairing, and only that pairing,
+      ## which leaves the score residuals summing to the score at the maximum,
+      ## namely zero.
+      dk = sum (D);
+      if (strcmp (Ties, 'efron') && dk > 1)
+        SD  = sum (exu(D));
+        AD  = exu(D)' * X(D,:);
+        acc = zeros (1, p);
+        for l = 0:dk-1
+          acc += (AR - (l / dk) * AD) / (SR - (l / dk) * SD);
+        endfor
+        xbev(k,:) = acc / dk;
+      else
+        xbev(k,:) = xb(k,:);
+      endif
     endfor
     sh{si} = {ut, h0, cumsum(h0), xb};
     for i = find (ins)'
@@ -462,7 +499,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
       endif
       j = find (ut == T(i), 1);
       if (! isempty (j))
-        xbar(i,:) = xb(j,:);
+        xbar(i,:) = xbev(j,:);
       endif
     endfor
   endfor
@@ -706,6 +743,63 @@ endfunction
 %! [~, ~, ~, stats] = coxphfit (X, T, 'Censoring', C);
 %! assert_equal (all (isnan (stats.schres(logical (C),:))(:)), true);
 %! assert_equal (any (isnan (stats.schres(! logical (C),:))(:)), false);
+
+## The Schoenfeld residual follows the tie method: the two tied deaths at
+## t = 4 are measured against Efron's mean over its sub-risk sets, not the
+## Breslow mean of the whole risk set, which would give -2.7871 and 0.2129
+%!test
+%! [~, ~, ~, stats] = coxphfit (X, Tt, 'Censoring', C, 'Ties', 'efron');
+%! assert_equal (stats.schres(1,:), ...
+%!               [-2.8979126429870807, -0.66427498564818011], 1e-8);
+%! assert_equal (stats.schres(2,:), ...
+%!               [0.10208735701291927, 0.33572501435181989], 1e-8);
+%! assert_equal (stats.schres(7,:), ...
+%!               [-1.438004413666758, -0.52896263729197179], 1e-8);
+
+## Both tied deaths are measured against the same mean, so the residual does
+## not depend on the order the tie was recorded in
+%!test
+%! [~, ~, ~, stats] = coxphfit (X, Tt, 'Censoring', C, 'Ties', 'efron');
+%! assert_equal (X(1,:) - stats.schres(1,:), X(2,:) - stats.schres(2,:), 1e-12);
+
+## Without a tie the two methods measure against the same mean
+%!test
+%! [~, ~, ~, sb] = coxphfit (X, T, 'Censoring', C);
+%! [~, ~, ~, se] = coxphfit (X, T, 'Censoring', C, 'Ties', 'efron');
+%! assert_equal (X - sb.schres, X - se.schres, 1e-8);
+
+## The scaled Schoenfeld residuals follow from them
+%!test
+%! [~, ~, ~, stats] = coxphfit (X, Tt, 'Censoring', C, 'Ties', 'efron');
+%! assert_equal (stats.sschres(1,:), ...
+%!               [-1.2234488884655339, 2.2036060014505958], 1e-6);
+
+## The score residuals sum to the score at the maximum, which is zero
+%!test
+%! for tie = {'breslow', 'efron'}
+%!   [~, ~, ~, stats] = coxphfit (X, Tt, 'Censoring', C, 'Ties', tie{1});
+%!   assert_equal (sum (stats.scores, 1), [0, 0], 1e-8);
+%! endfor
+
+## Weighted, they sum to zero against their own weights
+%!test
+%! [~, ~, ~, stats] = coxphfit (X, Tt, 'Censoring', C, 'Ties', 'efron', ...
+%!                              'Frequency', F);
+%! assert_equal (sum (F .* stats.scores, 1), [0, 0], 1e-8);
+
+## Stratified and counting-process fits keep the identity
+%!test
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! [~, ~, ~, stats] = coxphfit (X, Tt, 'Censoring', C, 'Ties', 'efron', ...
+%!                              'Strata', S);
+%! assert_equal (sum (stats.scores, 1), [0, 0], 1e-8);
+
+%!test
+%! T2 = [0 4; 0 4; 2 6; 0 6; 3 8; 0 8; 5 11; 0 11; 7 13; 0 13];
+%! [~, ~, ~, stats] = coxphfit (X, T2, 'Censoring', C, 'Ties', 'efron');
+%! assert_equal (sum (stats.scores, 1), [0, 0], 1e-8);
+%! assert_equal (stats.schres(1,:), ...
+%!               [-2.9010414762242362, -0.66966185365223341], 1e-6);
 
 ## Error conditions
 %!error<Invalid call to coxphfit> coxphfit (X)
