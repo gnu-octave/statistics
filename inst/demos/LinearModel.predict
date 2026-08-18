@@ -1,0 +1,82 @@
+%!demo
+%!
+%! ## Predicting with and without new data.
+%! ## Ten students study for varying numbers of hours before an exam, with
+%! ## their resulting scores recorded. Calling `predict` with no `Xnew`
+%! ## returns the fitted values for the training data itself (the same as
+%! ## `mdl.Fitted`); calling it with new hour values predicts scores at
+%! ## points not in the original sample, including one beyond the range of
+%! ## the data.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl = fitlm (Hours, Score);
+%!
+%! ## Fitted values for the original training data.
+%! fitted = predict (mdl)
+%!
+%! ## Predictions at 5.5 hours (interpolation) and 11 hours (extrapolation).
+%! ypred = predict (mdl, [5.5; 11])
+
+%!demo
+%!
+%! ## Confidence intervals versus prediction intervals, and simultaneous
+%! ## bounds.
+%! ## Twelve students' exam scores depend on both study hours and hours of
+%! ## sleep. The default output is a 95% confidence interval on the mean
+%! ## response; `'Prediction', 'observation'` widens it to account for a
+%! ## single future observation instead of the average; and
+%! ## `'Simultaneous', true` widens it further so the whole predicted
+%! ## surface, not just each point individually, holds at the stated
+%! ## confidence level.
+%! Hours = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7;9;8];
+%! Score = [50;54;56;62;64;70;71;73;79;78;85;84];
+%! X = [Hours, Sleep];
+%! mdl = fitlm (X, Score);
+%! Xnew = [6 7; 10 8];
+%!
+%! ## Default: 95% confidence interval on the mean response.
+%! [ypred, yci_curve] = predict (mdl, Xnew)
+%!
+%! ## Wider prediction interval for a single new observation.
+%! [ypred, yci_obs] = predict (mdl, Xnew, 'Prediction', 'observation')
+%!
+%! ## 90% simultaneous confidence band over both points at once.
+%! [ypred, yci_sim] = predict (mdl, Xnew, 'Alpha', 0.1, 'Simultaneous', true)
+
+%!demo
+%!
+%! ## Predicting fuel economy from a quadratic model of vehicle weight,
+%! ## using the `carsmall` data set.
+%! ## `fitlm` fits @math{MPG} as a quadratic function of @code{Weight}, and
+%! ## `predict` computes the fitted curve at every original weight value,
+%! ## showing how well the quadratic term captures the curvature that a
+%! ## straight line would miss.
+%! load carsmall
+%! X = Weight;
+%! y = MPG;
+%! mdl = fitlm (X, y, 'quadratic');
+%!
+%! ## Predicted fuel economy for the first five cars in the data set.
+%! ypred = predict (mdl, X);
+%! ypred(1:5)
+
+%!demo
+%!
+%! ## Predicting from a CompactLinearModel gives the same answer as the
+%! ## original model, at a fraction of the memory footprint.
+%! ## Eight months of advertising spend and sales are used to fit a simple
+%! ## model. `compact` discards the training data but keeps everything
+%! ## `predict` needs; unlike `LinearModel`, `Xnew` cannot be omitted here,
+%! ## since a compact model has no training data to fall back on.
+%! AdSpend = [10;20;30;40;50;60;70;80];
+%! Sales   = [15;18;24;27;33;36;42;45];
+%! mdl  = fitlm (AdSpend, Sales);
+%! cmdl = compact (mdl);
+%! Xnew = [25; 55];
+%!
+%! ## Predictions from the full model.
+%! [ypred_full, yci_full] = predict (mdl, Xnew)
+%!
+%! ## Predictions from the compact model match exactly.
+%! [ypred_compact, yci_compact] = predict (cmdl, Xnew)
