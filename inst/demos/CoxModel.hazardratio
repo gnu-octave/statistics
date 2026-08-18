@@ -1,0 +1,49 @@
+%!demo
+%! ## 1. The hazard of each observation relative to an average one
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## A ratio above 1 is an observation at greater risk than the baseline,
+%! ## which by default is the mean of the predictors
+%! hr = hazardratio (mdl, X);
+%! table (X(:,1), X(:,2), hr, 'VariableNames', {'X1', 'X2', 'HazardRatio'})
+
+%!demo
+%! ## 2. Choosing what the ratio is measured against
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Against the origin rather than the mean.  The coefficients do not
+%! ## change with the baseline; only what the ratio is relative to does
+%! mdl.Baseline
+%! hazardratio (mdl, X(1:3,:))
+%! hazardratio (mdl, X(1:3,:), 'Baseline', 0)
+
+%!demo
+%! ## 3. What a coefficient means
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Raising one predictor by one unit multiplies the hazard by exp (beta)
+%! x0 = mdl.Baseline;
+%! x1 = x0 + [1, 0];
+%! [hazardratio(mdl, x1), exp(mdl.Coefficients.Beta(1))]
+
+%!demo
+%! ## 4. A stratified model needs to be told the stratum
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! mdl = fitcox (X, T, 'Stratification', S);
+%!
+%! ## Each stratum is centred on its own baseline, so the same predictor
+%! ## values give a different ratio in each
+%! mdl.Baseline
+%! [hazardratio(mdl, X(1,:), 1), hazardratio(mdl, X(1,:), 2)]

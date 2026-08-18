@@ -1,0 +1,35 @@
+%!demo
+%! ## 1. Sequential tests on the coefficients
+%!
+%! X = [2 0 1; 5 1 3; 3 0 2; 8 1 5; 4 0 4; 7 1 6; 6 0 8; 9 1 7; 5 0 9; 10 1 10];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Each row tests that the predictors it does *not* name are jointly zero,
+%! ## so the first row tests the whole model against no model at all
+%! linhyptest (mdl)
+
+%!demo
+%! ## 2. The last row is the last coefficient's own p-value
+%!
+%! X = [2 0 1; 5 1 3; 3 0 2; 8 1 5; 4 0 4; 7 1 6; 6 0 8; 9 1 7; 5 0 9; 10 1 10];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Its hypothesis leaves every other predictor in the model, which is what
+%! ## the coefficient table already reports
+%! tbl = linhyptest (mdl);
+%! [tbl.pValue(end), mdl.Coefficients.pValue(end)]
+
+%!demo
+%! ## 3. Reading the sequence
+%!
+%! X = [2 0 1; 5 1 3; 3 0 2; 8 1 5; 4 0 4; 7 1 6; 6 0 8; 9 1 7; 5 0 9; 10 1 10];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## The order of the predictors is the order of the test, so the table
+%! ## answers "does what follows add anything?" at each step.  Reordering the
+%! ## columns of X asks a different question
+%! linhyptest (mdl)
+%! linhyptest (fitcox (X(:,[3 2 1]), T))

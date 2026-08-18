@@ -1,0 +1,23 @@
+%!demo
+%! ## 1. Dropping the residuals a fitted model carries
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Seven residual types, one row per observation, is the largest thing a
+%! ## fitted model holds and the only part that grows with the data
+%! size (mdl.Residuals)
+%! mdl = discardResiduals (mdl);
+%! size (mdl.Residuals)
+
+%!demo
+%! ## 2. Everything else survives
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = discardResiduals (fitcox (X, T));
+%!
+%! ## A model kept for prediction alone loses nothing it needs
+%! mdl.Coefficients
+%! hazardratio (mdl, X(1,:))

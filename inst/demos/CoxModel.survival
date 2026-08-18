@@ -1,0 +1,61 @@
+%!demo
+%! ## 1. The survival function at the model's baseline
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Without predictor values the curve is that of an average observation
+%! [s, t] = survival (mdl);
+%! table (t, s, 'VariableNames', {'Time', 'Survival'})
+
+%!demo
+%! ## 2. One curve per observation
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## The columns follow the rows of X, all on the one grid of event times
+%! s = survival (mdl, X(1:3,:));
+%! size (s)
+%! s(1:4,:)
+
+%!demo
+%! ## 3. Survival at times of your own
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## The baseline survival is interpolated linearly between the event times
+%! ## and then raised to the hazard ratio of the given predictors
+%! survival (mdl, X(1,:), 'Time', [5; 12; 20])
+
+%!demo
+%! ## 4. Outside the event times the extrapolation rule decides
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## The model knows nothing before t = 4 or after t = 30.  'nearest', the
+%! ## default, carries the end values outward; 'none' refuses to answer
+%! tq = [1; 15; 40];
+%! nearest = survival (mdl, 'Time', tq);
+%! none    = survival (mdl, 'Time', tq, 'ExtrapolationMethod', 'none');
+%! table (tq, nearest, none)
+
+%!demo
+%! ## 5. A stratified model gives each stratum its own curve
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! mdl = fitcox (X, T, 'Stratification', S);
+%!
+%! ## Each stratum carries its own baseline hazard, so the curves are
+%! ## returned separately, on their own event times
+%! [s, t] = survival (mdl);
+%! [t{1}, s{1}]
+%! [t{2}, s{2}]

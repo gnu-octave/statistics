@@ -1,0 +1,35 @@
+%!demo
+%! ## 1. Confidence intervals for the coefficients
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## One row per coefficient, 95% by default
+%! ci = coefci (mdl);
+%! table (mdl.Coefficients.Beta, ci(:,1), ci(:,2), ...
+%!        'VariableNames', {'Beta', 'Lower', 'Upper'}, ...
+%!        'RowNames', mdl.Coefficients.Properties.RowNames)
+
+%!demo
+%! ## 2. The argument is a significance level, not a coverage
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## 0.01 asks for a 99% interval, which is the wider of the two
+%! coefci (mdl, 0.05)
+%! coefci (mdl, 0.01)
+
+%!demo
+%! ## 3. On the hazard-ratio scale
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Exponentiating turns a coefficient interval into one for the hazard
+%! ## ratio of a unit change.  An interval covering 1 is one the data cannot
+%! ## tell from no effect
+%! exp (coefci (mdl))

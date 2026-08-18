@@ -101,8 +101,8 @@
 ##
 ## @var{funcname} may name any of the following functions, each of which
 ## documents an @qcode{"Options"} argument: @code{copulafit}, @code{coxphfit},
-## @code{crossval}, @code{evfit}, @code{factoran}, @code{fitglm},
-## @code{fitglme}, @code{fitlme},
+## @code{crossval}, @code{evfit}, @code{factoran}, @code{fitcox},
+## @code{fitglm}, @code{fitglme}, @code{fitlme},
 ## @code{fitlmematrix}, @code{fitnlm}, @code{gamfit}, @code{gevfit},
 ## @code{glmfit}, @code{gmdistribution}, @code{gpfit}, @code{kmeans},
 ## @code{kmedoids}, @code{lasso}, @code{lassoglm}, @code{lognfit},
@@ -401,7 +401,7 @@ function options = func_defaults (options, fname)
       options.TolFun = 1e-6;
       options.TolX = 1e-6;
 
-    case 'coxphfit'
+    case {'coxphfit', 'fitcox'}
       options.Display = 'off';
       options.MaxFunEvals = 200;
       options.MaxIter = 100;
@@ -576,6 +576,10 @@ endfunction
 %! assert_equal (options.MaxIter, 100);
 %! assert_equal (options.TolFun, 1e-8);
 %! assert_equal (options.TolX, 1e-8);
+
+## fitcox takes the same defaults as coxphfit, as it does in MATLAB
+%!test
+%! assert_equal (statset ('fitcox'), statset ('coxphfit'));
 
 %!test
 %! options = statset ('mvncdf');

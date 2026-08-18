@@ -1284,43 +1284,6 @@ function opts = glm_parse_nv (nv)
   endif
 endfunction
 
-## Convert raw predictor data (numeric matrix or table) to numeric level codes
-## for categorical columns; return the codes and the per-column level labels.
-function [X_num, cat_levels] = raw_to_codes (data, X_raw, tbl, pred_names, ...
-                                             cat_logical, n_total)
-  p = numel (pred_names);
-  X_num      = zeros (n_total, p);
-  cat_levels = cell (1, p);
-  for j = 1:p
-    if (istable (data))
-      col = tbl.(pred_names{j});
-      if (iscell (col))
-        ## Appearance order, so that the omitted reference level is the one the
-        ## data shows first; see parseWilkinsonFormula for the formula path.
-        [cat_levels{j}, ~, ic] = unique (col, 'stable');
-        X_num(:, j) = ic;
-      elseif (isa (col, 'categorical'))
-        cat_levels{j} = categories (col);
-        [~, ic] = ismember (cellstr (col), cat_levels{j});
-        X_num(:, j) = ic;
-      else
-        X_num(:, j) = double (col(:));
-        cat_levels{j} = {};
-      endif
-    else
-      if (cat_logical(j))
-        uvals = sort (unique (X_raw(isfinite (X_raw(:,j)), j)));
-        cat_levels{j} = strtrim (cellstr (num2str (uvals(:))));
-        [~, ic] = ismember (X_raw(:,j), uvals);
-        X_num(:, j) = ic;
-      else
-        X_num(:, j) = X_raw(:, j);
-        cat_levels{j} = {};
-      endif
-    endif
-  endfor
-endfunction
-
 ## Broadcast a scalar to N rows; otherwise pass the vector through.
 function v = expand_to_rows (v, n)
   if (isscalar (v))

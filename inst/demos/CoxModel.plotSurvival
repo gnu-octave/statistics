@@ -1,0 +1,35 @@
+%!demo
+%! ## 1. The survival curve of an average observation
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## The curve steps down at every event time, and nowhere else: the model
+%! ## learns about survival only where something happened
+%! plotSurvival (mdl);
+
+%!demo
+%! ## 2. Comparing two sets of predictor values
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! mdl = fitcox (X, T);
+%!
+%! ## Proportional hazards means the curves are powers of one another, so
+%! ## they cannot cross
+%! plotSurvival (mdl, [3 0; 8 1]);
+%! legend ({'X = [3 0]', 'X = [8 1]'});
+
+%!demo
+%! ## 3. One curve per stratum
+%!
+%! X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+%! T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+%! S = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
+%! mdl = fitcox (X, T, 'Stratification', S);
+%!
+%! ## Stratification is what to reach for when the baseline hazards differ:
+%! ## these two curves are under no obligation to be proportional
+%! plotSurvival (mdl);
+%! legend ({'stratum 1', 'stratum 2'});
