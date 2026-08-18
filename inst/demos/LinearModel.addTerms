@@ -1,0 +1,62 @@
+%!demo
+%!
+%! ## Wilkinson-notation shorthand, and the bare-power hierarchy rule.
+%! ## Ten students' exam scores depend on study hours and hours of sleep.
+%! ## `'x1*x2'` adds both main effects and their interaction in a single
+%! ## call; a bare power term such as `'x2^2'` pulls in `x2` itself
+%! ## alongside `x2^2` if it is not already present, following the same
+%! ## hierarchy convention used throughout the package.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score);
+%! mdl.CoefficientNames
+%!
+%! ## Adding the interaction between two existing main effects.
+%! mdl_int = addTerms (mdl, 'x1:x2');
+%! mdl_int.CoefficientNames
+%!
+%! ## Adding a bare power term.
+%! mdl_sq = addTerms (mdl, 'x2^2');
+%! mdl_sq.CoefficientNames
+
+%!demo
+%!
+%! ## Terms already in the model are silently skipped; specifying only
+%! ## terms that already exist issues a warning and returns the model
+%! ## unchanged.
+%! ## Reusing the same study-hours-and-sleep model, mixing an existing term
+%! ## with a new one adds only the new one; asking to add nothing but an
+%! ## existing term does nothing at all, beyond the warning.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score);
+%!
+%! ## x1 is already in the model, so only the interaction is actually added.
+%! mdl_mix = addTerms (mdl, 'x1 + x1:x2');
+%! mdl_mix.CoefficientNames
+%!
+%! ## Every term requested is already present: a warning, model unchanged.
+%! mdl_same = addTerms (mdl, 'x1');
+%! mdl_same.CoefficientNames
+
+%!demo
+%!
+%! ## A categorical predictor is added as one whole indicator group, not
+%! ## column by column.
+%! ## Nine stores in three regions report ad spend and sales. Starting
+%! ## from a model that only uses `AdSpend`, adding `Region` brings in
+%! ## both of its indicator columns together in a single call.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend', 'CategoricalVars', {'Region'}, ...
+%!   'PredictorVars', {'AdSpend', 'Region'});
+%! mdl.CoefficientNames
+%!
+%! ## Both Region indicator columns are added together.
+%! mdl_region = addTerms (mdl, 'Region');
+%! mdl_region.CoefficientNames
