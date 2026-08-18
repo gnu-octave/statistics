@@ -1,0 +1,72 @@
+%!demo
+%!
+%! ## Basic usage: the Durbin-Watson statistic and its p-value.
+%! ## Fifteen measurements are taken over time, with a small oscillation
+%! ## layered on top of an otherwise linear trend. The DW statistic comes
+%! ## out close to but above 2, and the default two-sided p-value gives no
+%! ## strong evidence of autocorrelation at the usual 0.05 threshold.
+%! Time = (1:15)';
+%! Value = 10 + 0.5*Time + 0.4*sin (Time*2.1);
+%! mdl = fitlm (Time, Value);
+%!
+%! ## The p-value and the DW statistic itself.
+%! [p, DW] = dwtest (mdl)
+
+%!demo
+%!
+%! ## Comparing the 'exact' and 'approximate' methods, and confirming the
+%! ## one-sided tails sum to 1.
+%! ## The DW statistic itself never depends on `method`; only the p-value
+%! ## computation changes. The right-tailed and left-tailed p-values
+%! ## always add up to exactly 1, and the two-sided p-value equals twice
+%! ## the smaller of the two.
+%! Time = (1:15)';
+%! Value = 10 + 0.5*Time + 0.4*sin (Time*2.1);
+%! mdl = fitlm (Time, Value);
+%!
+%! ## The exact and normal-approximation methods give close but distinct
+%! ## p-values, for the same DW statistic.
+%! [p_exact, DW] = dwtest (mdl, 'exact')
+%! [p_approx, DW] = dwtest (mdl, 'approximate')
+%!
+%! ## The two one-sided tails always sum to 1.
+%! p_right = dwtest (mdl, 'exact', 'right')
+%! p_left = dwtest (mdl, 'exact', 'left')
+%! sum_tails = p_right + p_left
+
+%!demo
+%!
+%! ## Detecting autocorrelation introduced by the natural row order of a
+%! ## real data set.
+%! ## Fitting fuel economy against weight in the `carsmall` data set gives
+%! ## a DW statistic well below 2 and a tiny p-value, since cars from the
+%! ## same manufacturer or model year tend to sit near each other in the
+%! ## table and share similar residuals -- autocorrelation can show up
+%! ## from any meaningful row ordering, not only from a time series.
+%! load carsmall
+%! mdl = fitlm (Weight, MPG);
+%!
+%! ## A DW statistic well below 2, with a highly significant p-value.
+%! [p, DW] = dwtest (mdl)
+
+%!demo
+%!
+%! ## Distinguishing positive from negative autocorrelation.
+%! ## Two series share the same linear trend but oscillate at different
+%! ## speeds. The fast oscillation makes neighbouring residuals swing to
+%! ## opposite signs, which `dwtest` reports as negative autocorrelation
+%! ## (DW pushed above 2); the slow oscillation makes neighbouring
+%! ## residuals stay similar for long stretches, which reads as positive
+%! ## autocorrelation instead (DW pushed toward 0). Both are strongly
+%! ## significant, just in opposite directions.
+%! x = (1:20)';
+%!
+%! ## Fast oscillation: negative autocorrelation (DW above 2).
+%! y_fast = 5 + 2*x + 3*sin (x*2.3);
+%! mdl_fast = fitlm (x, y_fast);
+%! [p_fast, DW_fast] = dwtest (mdl_fast)
+%!
+%! ## Slow oscillation: positive autocorrelation (DW near 0).
+%! y_slow = 5 + 2*x + 4*sin (x*0.3);
+%! mdl_slow = fitlm (x, y_slow);
+%! [p_slow, DW_slow] = dwtest (mdl_slow)
