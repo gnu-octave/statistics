@@ -1,0 +1,47 @@
+%!demo
+%!
+%! ## The default histogram, and the fitted-values plot with a chosen
+%! ## residual type.
+%! ## Ten students' exam scores are modeled against study hours. With no
+%! ## arguments, `plotResiduals` draws a probability density histogram of
+%! ## the raw residuals. Passing `'fitted'` instead plots residuals
+%! ## against the fitted values, and `'ResidualType'` selects which kind
+%! ## of residual is shown -- here, studentized rather than raw.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl = fitlm (Hours, Score);
+%!
+%! ## Default: a histogram of the raw residuals.
+%! plotResiduals (mdl);
+%!
+%! ## Studentized residuals against the fitted values.
+%! plotResiduals (mdl, 'fitted', 'ResidualType', 'studentized');
+
+%!demo
+%!
+%! ## The lagged residual plot, useful for spotting autocorrelation.
+%! ## Twenty observations follow a slow oscillation layered on top of a
+%! ## linear trend, so consecutive residuals tend to be similar to one
+%! ## another. Plotting each residual against the one before it makes
+%! ## that pattern visible as a diagonal trend rather than a random
+%! ## scatter.
+%! x = (1:20)';
+%! y = 5 + 2*x + 4*sin (x*0.3);
+%! mdl = fitlm (x, y);
+%!
+%! ## Each residual plotted against the residual immediately before it.
+%! plotResiduals (mdl, 'lagged');
+
+%!demo
+%!
+%! ## A normal probability plot of the residuals, using the `carsmall`
+%! ## data set.
+%! ## Fuel economy is modeled against vehicle weight. The probability
+%! ## plot sorts the residuals and compares them against a normal
+%! ## reference line, making departures from normality easy to spot at
+%! ## either tail.
+%! load carsmall
+%! mdl = fitlm (Weight, MPG);
+%!
+%! ## Normal probability plot of the residuals.
+%! plotResiduals (mdl, 'probability');
