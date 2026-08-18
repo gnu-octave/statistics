@@ -430,6 +430,84 @@ function [modelspec, nv_args] = lm_split_args (remaining)
 endfunction
 
 %!demo
+%!
+%! ## The simplest call: a matrix of predictor data and a response vector.
+%! ## Ten students study for varying numbers of hours before an exam, with
+%! ## their resulting scores recorded. With no `modelspec`, `fitlm` fits an
+%! ## intercept plus one linear term per column of the predictor matrix.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl = fitlm (Hours, Score)
+
+%!demo
+%!
+%! ## Table input with a Wilkinson formula, and a categorical predictor
+%! ## detected automatically from its cell-array type.
+%! ## Nine stores in three regions report ad spend and sales. `Region` is
+%! ## a cell array of strings, so it is expanded into indicator columns
+%! ## without needing `'CategoricalVars'` to say so explicitly.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales, ...
+%!   'VariableNames', {'AdSpend','Region','Sales'});
+%! mdl = fitlm (T, 'Sales ~ AdSpend + Region')
+
+%!demo
+%!
+%! ## A terms matrix used directly as modelspec, instead of a keyword or a
+%! ## formula string.
+%! ## Weekly sales depend on temperature and humidity. Each row of the
+%! ## terms matrix is one term, and each column is the exponent of one
+%! ## predictor in that term -- here, both main effects plus their
+%! ## interaction.
+%! Temp     = [60;65;70;75;80;85;90];
+%! Humidity = [30;35;40;45;50;55;60];
+%! Sales    = [200;230;260;300;340;370;410];
+%! T_terms  = [0 0; 1 0; 0 1; 1 1];
+%! mdl = fitlm ([Temp, Humidity], Sales, T_terms)
+
+%!demo
+%!
+%! ## Observation weights and an excluded observation used together.
+%! ## Ten observations follow a roughly linear trend, except one clear
+%! ## outlier. `'Exclude'` leaves that observation out of the fit
+%! ## entirely, while `'Weights'` gives the remaining observations
+%! ## unequal influence on the fit.
+%! x = [1;2;3;4;5;6;7;8;9;10];
+%! y = [10;13;15;40;22;25;29;33;35;39];
+%! w = [1;1;2;1;2;1;2;1;2;1];
+%! mdl = fitlm (x, y, 'Weights', w, 'Exclude', 4)
+
+%!demo
+%!
+%! ## Robust regression versus an ordinary fit, on data with a planted
+%! ## outlier.
+%! ## Twelve observations follow a linear trend with a small amount of
+%! ## noise, except one observation shifted far off the line. The
+%! ## ordinary fit is pulled toward the outlier; the robust fit, using
+%! ## iteratively reweighted least squares with the bisquare weighting
+%! ## function, downweights it instead.
+%! x = (1:12)';
+%! y = 3 + 2*x + 0.5*sin (x);
+%! y(10) = y(10) + 30;
+%! mdl_ols    = fitlm (x, y)
+%! mdl_robust = fitlm (x, y, 'RobustOpts', 'bisquare')
+
+%!demo
+%!
+%! ## Selecting specific predictors and a specific response by name from a
+%! ## larger table, using the `carsmall` data set.
+%! ## `'ResponseVar'` and `'PredictorVars'` pick out exactly which
+%! ## columns of the table to use, regardless of how many other variables
+%! ## the table also contains.
+%! load carsmall
+%! T = table (Weight, Acceleration, MPG);
+%! mdl = fitlm (T, 'ResponseVar', 'MPG', ...
+%!   'PredictorVars', {'Weight', 'Acceleration'})
+
+%!demo
 %! y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
 %!        22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
