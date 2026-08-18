@@ -1,0 +1,66 @@
+%!demo
+%!
+%! ## The main effect and conditional effects of two predictors, the
+%! ## default 'effects' plot.
+%! ## Ten observations depend on study hours and hours of sleep, fit with
+%! ## an interaction term. For each predictor, the top marker is its main
+%! ## effect; the markers below it are its effect recomputed with the
+%! ## other predictor held fixed at a few conditioning values. When those
+%! ## markers do not line up vertically, the predictors interact.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score, 'y ~ x1*x2');
+%!
+%! ## Main and conditional effects of x1 and x2.
+%! plotInteraction (mdl, 'x1', 'x2');
+
+%!demo
+%!
+%! ## The 'predictions' plot type: adjusted response curves for x2, one
+%! ## per conditioning value of x1.
+%! ## Reusing the same interaction model, each curve shows how the
+%! ## adjusted response changes with x2, holding x1 fixed at a different
+%! ## value. Curves with different slopes indicate an interaction; parallel
+%! ## curves would indicate none.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score, 'y ~ x1*x2');
+%!
+%! ## Adjusted response vs. x2, for three fixed values of x1.
+%! plotInteraction (mdl, 'x1', 'x2', 'predictions');
+
+%!demo
+%!
+%! ## A categorical predictor's main and conditional effects, alongside a
+%! ## numeric one.
+%! ## Nine stores in three regions report ad spend and sales, fit with an
+%! ## interaction between AdSpend and Region. The categorical predictor's
+%! ## conditional effects are shown once per level rather than at a
+%! ## handful of numeric conditioning points.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend*Region', 'CategoricalVars', {'Region'});
+%!
+%! ## Main and conditional effects of AdSpend and Region.
+%! plotInteraction (mdl, 'AdSpend', 'Region');
+
+%!demo
+%!
+%! ## plotInteraction on a CompactLinearModel gives the same plot as the
+%! ## original model.
+%! ## `compact` discards the training data but keeps everything
+%! ## `plotInteraction` needs: the coefficient estimates, their covariance,
+%! ## and the interaction contrasts computed at fit time.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl  = fitlm ([Hours, Sleep], Score, 'y ~ x1*x2');
+%! cmdl = compact (mdl);
+%!
+%! ## The same plot, produced from the compact model.
+%! plotInteraction (cmdl, 'x1', 'x2');
