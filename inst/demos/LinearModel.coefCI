@@ -1,0 +1,68 @@
+%!demo
+%!
+%! ## Default 95% confidence intervals versus a custom significance level.
+%! ## Ten students' exam scores are modeled against study hours. The
+%! ## default call gives 95% intervals; passing `alpha` explicitly gives
+%! ## intervals of a different width, always centered on the same point
+%! ## estimate.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl = fitlm (Hours, Score);
+%!
+%! ## Default 95% confidence intervals.
+%! ci95 = coefCI (mdl)
+%!
+%! ## Narrower 90% intervals, using alpha = 0.10.
+%! ci90 = coefCI (mdl, 0.10)
+
+%!demo
+%!
+%! ## A rank-deficient model: an aliased coefficient's interval collapses
+%! ## to [0, 0].
+%! ## `x2` is defined as exactly twice `x1`, so the design matrix is rank
+%! ## deficient and the two predictors cannot be told apart. The model
+%! ## keeps `x1` and aliases `x2`, whose standard error is zero and whose
+%! ## confidence interval is reported as `[0, 0]` rather than a
+%! ## meaningless point estimate with no uncertainty.
+%! x1 = [1;2;3;4;5;6;7;8];
+%! x2 = 2*x1;
+%! y = 3 + 1.5*x1 + 0.5*sin ((1:8)');
+%! mdl = fitlm ([x1, x2], y);
+%!
+%! ## The second row, for x2, is exactly [0, 0].
+%! ci = coefCI (mdl)
+
+%!demo
+%!
+%! ## Confidence intervals for a four-predictor model, at two confidence
+%! ## levels, using the `hald` cement data set.
+%! ## Four chemical percentages in cement (`ingredients`) are used to
+%! ## predict heat given off while hardening (`heat`). With only 13
+%! ## observations and four predictors, several intervals are wide enough
+%! ## to include zero.
+%! load hald
+%! mdl = fitlm (ingredients, heat);
+%!
+%! ## 95% confidence intervals for all four coefficients.
+%! ci_95 = coefCI (mdl)
+%!
+%! ## Narrower 90% confidence intervals for comparison.
+%! ci_90 = coefCI (mdl, 0.10)
+
+%!demo
+%!
+%! ## coefCI on a CompactLinearModel gives the same intervals as the
+%! ## original model.
+%! ## `compact` discards the training data but keeps everything `coefCI`
+%! ## needs: the coefficient estimates, their standard errors, and the
+%! ## error degrees of freedom.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl  = fitlm (Hours, Score);
+%! cmdl = compact (mdl);
+%!
+%! ## Confidence intervals from the full model.
+%! ci_full = coefCI (mdl)
+%!
+%! ## Confidence intervals from the compact model match exactly.
+%! ci_compact = coefCI (cmdl)
