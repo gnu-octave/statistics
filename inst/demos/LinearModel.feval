@@ -1,0 +1,85 @@
+%!demo
+%!
+%! ## The matrix form, the separate-argument form, and broadcasting a
+%! ## scalar against a vector.
+%! ## Ten students' exam scores depend on both study hours and hours of
+%! ## sleep. `feval` accepts predictors either as one matrix, one column
+%! ## per predictor, or as separate arguments in the same order; a scalar
+%! ## argument is broadcast against any non-scalar ones, so a single sleep
+%! ## value can be paired with several study-hour values at once.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score);
+%!
+%! ## Predictor data as a single matrix, one column per predictor.
+%! ypred_matrix = feval (mdl, [6 7; 10 8])
+%!
+%! ## The same points, as separate arguments instead.
+%! ypred_sep = feval (mdl, [6;10], [7;8])
+%!
+%! ## Three study-hour values, all paired with the same 7 hours of sleep.
+%! ypred_broadcast = feval (mdl, [4;6;8], 7)
+
+%!demo
+%!
+%! ## Passing a categorical predictor's level directly as a plain string,
+%! ## no table required.
+%! ## Nine stores in three regions report ad spend and sales. In the
+%! ## separate-argument form, a categorical predictor's value can be given
+%! ## as its level name directly, giving the same answer as building a
+%! ## one-row table by hand.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend + Region', 'CategoricalVars', {'Region'});
+%!
+%! ## A one-row table with AdSpend 20 and Region 'South'.
+%! ypred_table = feval (mdl, table (20, {'South'}, ...
+%!   'VariableNames', {'AdSpend','Region'}))
+%!
+%! ## The same prediction, passing the level name directly.
+%! ypred_sep = feval (mdl, 20, 'South')
+
+%!demo
+%!
+%! ## A fitted model behaves like an ordinary function handle, so it can be
+%! ## passed straight into routines such as `fminsearch`.
+%! ## A quadratic model of fuel economy against vehicle weight is fit on
+%! ## the `carsmall` data set. Wrapping `feval` in an anonymous function
+%! ## lets `fminsearch` search for the weight at which the model predicts
+%! ## exactly 25 MPG, without ever calling `predict` directly.
+%! load carsmall
+%! X = Weight;
+%! y = MPG;
+%! mdl = fitlm (X, y, 'quadratic');
+%! target = 25;
+%!
+%! ## Search for the weight giving a predicted fuel economy of 25 MPG.
+%! wopt = fminsearch (@(w) (feval (mdl, w) - target)^2, 3000)
+%!
+%! ## Confirm the prediction at that weight.
+%! mpg_at_wopt = feval (mdl, wopt)
+
+%!demo
+%!
+%! ## `feval` on a CompactLinearModel gives identical results to the
+%! ## original model, in both calling forms.
+%! ## Reusing the study-hours-and-sleep model, `compact` discards the
+%! ## training data but keeps everything `feval` needs, so both the matrix
+%! ## form and the separate-argument form still work exactly as before.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl  = fitlm ([Hours, Sleep], Score);
+%! cmdl = compact (mdl);
+%!
+%! ## Matrix form: full model versus compact model.
+%! ypred_full = feval (mdl, [6 7; 10 8])
+%! ypred_compact = feval (cmdl, [6 7; 10 8])
+%!
+%! ## Separate-argument form: full model versus compact model.
+%! ypred_full_sep = feval (mdl, [6;10], [7;8])
+%! ypred_compact_sep = feval (cmdl, [6;10], [7;8])
