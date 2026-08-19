@@ -1049,8 +1049,8 @@ function score = sw_criterion_score (criterion, n_obs, hi_without, hi_with, fit_
     score.Fstat  = Fs;
     return;
   endif
-  crit_without = LinearModel.lm_criteria (fit_without, n_obs, hi_without);
-  crit_with    = LinearModel.lm_criteria (fit_with,    n_obs, hi_with);
+  crit_without = LinearModel.lm_criteria (fit_without, hi_without);
+  crit_with    = LinearModel.lm_criteria (fit_with,    hi_with);
   switch (criterion)
     case 'aic'
       score.benefit     = crit_with.AIC - crit_without.AIC;

@@ -320,6 +320,35 @@ classdef LinearModel
     ## to the fitted value and variance equal to @math{SSE/n} (the MLE
     ## variance estimate).  This property is read-only.
     ##
+    ## For a weighted fit, observation @math{i} is taken to have variance
+    ## @math{s^2/w_i}, so the log-likelihood carries the term
+    ## @math{0.5 * sum (log (w))} and @math{n} counts only the observations
+    ## with nonzero weight:
+    ##
+    ## @math{logL = -n/2 * (1 + log (2*pi*SSE/n)) + 0.5 * sum (log (w))}
+    ##
+    ## This makes the value invariant to the scale of the weights, as it must
+    ## be: multiplying every weight by a constant rescales the estimated
+    ## variance by the same constant and leaves the fit unchanged.
+    ##
+    ## MATLAB omits the @math{0.5 * sum (log (w))} term and counts every
+    ## observation in @math{n}, so its @code{LogLikelihood} moves by
+    ## @math{n/2 * log (c)} when the weights are multiplied by @math{c}, and
+    ## the @code{ModelCriterion} values built on it move with it.  This
+    ## implementation follows R's @code{logLik.lm} instead.  Unweighted fits
+    ## are unaffected, and agree with MATLAB.
+    ##
+    ## A robust fit carries no weight term.  Its @code{SSE} is a robust scale
+    ## estimate rather than a weighted residual sum, so the two enter
+    ## separately and the general form is used:
+    ##
+    ## @math{logL = -n/2 * log (2*pi*SSE/n) - sum (w .* r.^2) / (2*SSE/n)}
+    ##
+    ## which is what MATLAB computes, and which reduces to the expression
+    ## above whenever @math{sum (w .* r.^2)} equals @code{SSE}, as it does for
+    ## any least-squares fit.  Robust fits therefore agree with MATLAB
+    ## exactly, weighted or not.
+    ##
     ## @end deftp
     LogLikelihood = [];
 
@@ -340,8 +369,13 @@ classdef LinearModel
     ##   @math{-2 * logL + m * (log(n) + 1)}
     ## @end itemize
     ## Here @math{logL} is @code{LogLikelihood}, @math{m} is
-    ## @code{NumEstimatedCoefficients}, and @math{n} is
-    ## @code{NumObservations}.  This property is read-only.
+    ## @code{NumEstimatedCoefficients}, and @math{n} is the number of
+    ## observations with nonzero weight, which is @code{NumObservations}
+    ## unless some weight is zero.  This property is read-only.
+    ##
+    ## Because these are built on @code{LogLikelihood}, they inherit its
+    ## treatment of weights; see that property for how it differs from
+    ## MATLAB's.
     ##
     ## @end deftp
     ModelCriterion = [];
@@ -1189,7 +1223,7 @@ classdef LinearModel
       MSE  = fit.MSE;
       RMSE = fit.RMSE;
 
-      crit          = LinearModel.lm_criteria (fit, n_obs, has_intercept);
+      crit          = LinearModel.lm_criteria (fit, has_intercept);
       LogLikelihood = crit.LogLikelihood;
       AIC           = crit.AIC;
       AICc          = crit.AICc;
@@ -4652,9 +4686,11 @@ classdef LinearModel
       fit.Fitted      = Fitted;
       fit.Raw         = Raw;
       fit.SumLogW     = SumLogW;
+      fit.n_eff       = n_eff;
+      fit.SSW         = SSE;
     endfunction
 
-    function crit = lm_criteria (fit, n_obs, has_intercept)
+    function crit = lm_criteria (fit, has_intercept)
       p   = fit.rank_X;
       SSE = fit.SSE;
       SSR = fit.SSR;
@@ -4662,7 +4698,19 @@ classdef LinearModel
       DFE = fit.DFE;
       MSE = fit.MSE;
 
-      LogLikelihood = -(n_obs / 2) * (1 + log (2 * pi * SSE / n_obs)) + 0.5 * fit.SumLogW;
+      ## Observations with zero weight contribute to neither SSE nor SumLogW,
+      ## so the likelihood, and every criterion built on it, is over the n_eff
+      ## observations that carry weight.  MATLAB counts all of them and drops
+      ## the 0.5 * sum (log (w)) term; see the LogLikelihood property.
+      n_obs = fit.n_eff;
+
+      ## The Gaussian log-likelihood at variance SSE/n_obs.  SSW is the
+      ## weighted residual sum, which equals SSE for a least-squares fit and
+      ## collapses the middle term to n_obs/2; a robust fit's SSE is a scale
+      ## estimate instead, so the two differ and both are needed.
+      s2            = SSE / n_obs;
+      LogLikelihood = -(n_obs / 2) * log (2 * pi * s2) - fit.SSW / (2 * s2) ...
+                      + 0.5 * fit.SumLogW;
 
       AIC  = -2 * LogLikelihood + 2 * p;
       dAIC = n_obs - p - 1;
@@ -5200,7 +5248,15 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
   p       = columns (X);
   w       = w(:);
   sw      = sqrt (w);
-  SumLogW = sum (log (w(w > 0)));
+
+  ## A robust fit's SSE is sigma^2 * DFE, a robust scale estimate rather than
+  ## the weighted residual sum, so the two enter the log-likelihood
+  ## separately; lm_criteria takes the residual sum from SSW.  The
+  ## 0.5 * sum (log (w)) correction of the OLS path does not apply here, sigma
+  ## being formed from residuals already divided by sqrt (w) and so carrying
+  ## no dependence on the scale of the weights.
+  SumLogW = 0;
+  n_eff   = n;
 
   Xw   = X .* sw;
   yw   = y .* sw;
@@ -5229,6 +5285,8 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
     fit.Raw           = y - fit.Fitted;
     fit.RobustWeights = ones (n, 1);
     fit.SumLogW       = SumLogW;
+    fit.n_eff         = n_eff;
+    fit.SSW           = sum (w .* fit.Raw.^2);
     return;
   endif
   ols_s = norm (y - X * beta) / sqrt (DFE);
@@ -5245,7 +5303,11 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
     if (iter > iterlim)
       break;
     endif
-    r    = (y - X * beta) ./ sw;
+    ## The prior weights enter through the fit and the leverage; the weight
+    ## function scores the raw residual, as MATLAB's does.  Dividing by
+    ## sqrt (w) here would make a precisely measured observation less likely
+    ## to be flagged as an outlier, not more.
+    r    = (y - X * beta);
     radj = r .* adjfactor;
 
     rs = sort (abs (radj));
@@ -5258,7 +5320,7 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
     beta = (X .* ww) \ (y .* ww);
   endwhile
 
-  r    = (y - X * beta) ./ sw;
+  r    = (y - X * beta);
   radj = r .* adjfactor;
   rs    = sort (abs (radj));
   mad_s = median (rs(max (1, p):end)) / 0.6745;
@@ -5318,6 +5380,8 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
   fit.Raw           = Raw;
   fit.RobustWeights = wts;
   fit.SumLogW       = SumLogW;
+  fit.n_eff         = n_eff;
+  fit.SSW           = sum (w .* Raw.^2);
 
 endfunction
 
@@ -5776,6 +5840,81 @@ endfunction
 %! ## uniform weights scale internals but leave point estimates unchanged
 %! m = fitlm (X, y, 'Weights', 2 * ones (n, 1));
 %! assert_equal (m.Coefficients.Estimate, mdl.Coefficients.Estimate, 1e-10);
+
+%!test
+%! ## the weighted log-likelihood does not depend on the scale of the weights
+%! ## (MATLAB's does, moving by n/2 * log (c); see the LogLikelihood property)
+%! xw = [1;2;3;4;5;6;7;8];
+%! yw = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1];
+%! w  = [0.5;1;2;1;3;1;0.25;4];
+%! m1 = fitlm (xw, yw, 'Weights', w);
+%! m2 = fitlm (xw, yw, 'Weights', 100 * w);
+%! assert_equal (m2.LogLikelihood, m1.LogLikelihood, 1e-12);
+%! assert_equal (m2.ModelCriterion.AIC, m1.ModelCriterion.AIC, 1e-12);
+
+%!test
+%! ## the weighted log-likelihood is R's logLik.lm, term for term
+%! xw = [1;2;3;4;5;6;7;8];
+%! yw = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1];
+%! w  = [0.5;1;2;1;3;1;0.25;4];
+%! m  = fitlm (xw, yw, 'Weights', w);
+%! nw = 8;
+%! rL = 0.5 * (sum (log (w)) - nw * (log (2*pi) + 1 - log (nw) + log (m.SSE)));
+%! assert_equal (m.LogLikelihood, rL, 1e-12);
+%! assert_equal (m.LogLikelihood, 4.55223335786031, 1e-12);
+
+%!test
+%! ## a zero weight drops the observation from n as well as from DFE, as in R
+%! xw = [1;2;3;4;5;6;7;8];
+%! yw = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1];
+%! w  = [0.5;1;0;1;3;1;0.25;4];
+%! m  = fitlm (xw, yw, 'Weights', w);
+%! wp = w(w > 0);
+%! nw = numel (wp);
+%! rL = 0.5 * (sum (log (wp)) - nw * (log (2*pi) + 1 - log (nw) + log (m.SSE)));
+%! assert_equal (m.LogLikelihood, rL, 1e-12);
+%! assert_equal (m.LogLikelihood, 4.68069254977738, 1e-12);
+%! assert_equal (m.DFE, 5);
+%! assert_equal (m.NumObservations, 8);
+
+%!test
+%! ## an unweighted fit carries no weight term and agrees with R2024a
+%! xw = [1;2;3;4;5;6;7;8];
+%! yw = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1];
+%! m  = fitlm (xw, yw);
+%! assert_equal (m.LogLikelihood, 3.51016777175681, 1e-12);
+%! assert_equal (m.ModelCriterion.AIC, -3.02033554351362, 1e-12);
+
+%!test
+%! ## an unweighted robust fit's log-likelihood matches R2024a exactly
+%! xr = [1;2;3;4;5;6;7;8;9;10];
+%! yr = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1;18.0;30.0];
+%! m  = fitlm (xr, yr, 'RobustOpts', 'bisquare');
+%! assert_equal (m.LogLikelihood, -38.7915287023322, 1e-10);
+%! assert_equal (m.SSE, 18.9400079498975, 1e-10);
+
+%!test
+%! ## a weighted robust fit matches R2024a in coefficients, SSE and likelihood
+%! xr = [1;2;3;4;5;6;7;8;9;10];
+%! yr = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1;18.0;30.0];
+%! w  = [0.5;1;2;1;3;1;0.25;4;1;2];
+%! m  = fitlm (xr, yr, 'RobustOpts', 'bisquare', 'Weights', w);
+%! assert_equal (m.Coefficients.Estimate, ...
+%!   [0.0606142999263569; 2.00273390115041], 1e-10);
+%! assert_equal (m.SSE, 19.6032720154597, 1e-10);
+%! assert_equal (m.MSE, 2.45040900193246, 1e-10);
+%! assert_equal (m.LogLikelihood, -62.7197604655733, 1e-9);
+
+%!test
+%! ## the robust log-likelihood takes SSE and the residual sum separately
+%! xr = [1;2;3;4;5;6;7;8;9;10];
+%! yr = [2.1;3.9;6.2;7.8;10.1;12.2;13.8;16.1;18.0;30.0];
+%! m  = fitlm (xr, yr, 'RobustOpts', 'bisquare');
+%! r  = m.Residuals.Raw;
+%! nr = 10;
+%! s2 = m.SSE / nr;
+%! assert_equal (m.LogLikelihood, ...
+%!   -(nr/2) * log (2*pi*s2) - sum (r.^2) / (2*s2), 1e-12);
 
 %!test
 %! ## constant linear and default modelspecs behave as expected
