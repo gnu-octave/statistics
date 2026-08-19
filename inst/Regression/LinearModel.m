@@ -2991,7 +2991,7 @@ classdef LinearModel
     function h = plotDiagnostics (this, varargin)
       [ax, mdl, args] = lm_plot_axes (this, varargin);
 
-      REF_COLOR = [0.8510, 0.8510, 0.8660];
+      REF_COLOR = [0.8510, 0.8510, 0.8510];
 
       valid_pt = {'leverage', 'cookd', 'covratio', 'dfbetas', ...
                   'dffits', 's2_i', 'contour'};
@@ -7669,7 +7669,7 @@ endfunction
 %! ax = axes (fig);
 %! h = plotDiagnostics (ax, mdl, 'leverage', 'Color', [1 0 0]);
 %! assert_equal (get (h(1), 'Color'), [1 0 0], 1e-10);
-%! assert_equal (get (h(2), 'Color'), [0.8510 0.8510 0.8660], 1e-4);
+%! assert_equal (get (h(2), 'Color'), [0.8510 0.8510 0.8510], 1e-4);
 %! assert_equal (get (h(2), 'LineStyle'), ':');
 %! close (fig);
 
@@ -7736,7 +7736,7 @@ endfunction
 %! for k = 1:p
 %! assert_equal (get (h(k), 'Color'), [1 0 0], 1e-10);
 %! endfor
-%! assert_equal (get (h(p+1), 'Color'), [0.8510 0.8510 0.8660], 1e-4);
+%! assert_equal (get (h(p+1), 'Color'), [0.8510 0.8510 0.8510], 1e-4);
 %! close (fig);
 
 %!test
