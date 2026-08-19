@@ -2777,6 +2777,15 @@ classdef LinearModel
         endif
       endwhile
 
+      ## Parse the plot properties before taking an axes: gca creates a
+      ## figure when none is current, and an unrecognised property would
+      ## otherwise leave that figure behind when the error is raised.  A
+      ## histogram is the exception, forwarding its properties to PATCH,
+      ## which accepts and validates its own.
+      if (! strcmp (plottype, 'histogram'))
+        props = lm_plot_props (nv_remaining);
+      endif
+
       if (isempty (ax))
         ax = gca ();
       endif
@@ -2830,7 +2839,6 @@ classdef LinearModel
         case 'fitted'
           fit   = mdl.Fitted;
           fin   = fit(! isnan (fit));
-          props = lm_plot_props (nv_remaining);
           hold (ax, 'on');
           h(1)  = lm_plot_data (ax, fit, r, props);
           h(2)  = line ([min(fin), max(fin)], [0, 0], ...
@@ -2842,7 +2850,6 @@ classdef LinearModel
 
         case 'caseorder'
           n_tot = numel (r);
-          props = lm_plot_props (nv_remaining);
           hold (ax, 'on');
           h(1)  = lm_plot_data (ax, 1:n_tot, r, props);
           h(2)  = line ([1, n_tot], [0, 0], ...
@@ -2857,7 +2864,6 @@ classdef LinearModel
           r_y    = r(2:end);
           rx_fin = r_x(! isnan (r_x));
           ry_fin = r_y(! isnan (r_y));
-          props  = lm_plot_props (nv_remaining);
           hold (ax, 'on');
           h(1)   = lm_plot_data (ax, r_x, r_y, props);
           h(2)   = line ([min(rx_fin), max(rx_fin)], [0, 0], ...
@@ -2886,7 +2892,6 @@ classdef LinearModel
           n_tot = numel (fit);
           xv    = reshape ([fit(:)'; fit(:)'; NaN(1, n_tot)], 1, []);
           yv    = reshape ([fit(:)'; obs(:)'; NaN(1, n_tot)], 1, []);
-          props = lm_plot_props (nv_remaining);
           hold (ax, 'on');
           h(1)  = lm_plot_data (ax, fit, obs, props);
           h(2)  = line (xl, xl, ...
@@ -2906,7 +2911,6 @@ classdef LinearModel
           x_sym = sort (med - r_s(1:m));
           y_sym = sort (r_s(end-m+1:end) - med);
           mx    = max ([x_sym(:); y_sym(:)]);
-          props = lm_plot_props (nv_remaining);
           hold (ax, 'on');
           h(1)  = lm_plot_data (ax, x_sym, y_sym, props);
           h(2)  = line ([0, mx], [0, mx], ...
@@ -9470,6 +9474,25 @@ endfunction
 %!error <lm_plot_props: unrecognized property 'BadOption'.> plotAdjustedResponse (mdl, 'x1', 'BadOption', 5)
 %!error <plotAdded: COEF must be a coefficient name or a vector of coefficient numbers.> plotAdded (mdl, {'x1', 'x2'})
 %!error <lm_plot_props: property name must be a character vector or string scalar, not a cell.> plotResiduals (mdl, 'fitted', {1}, 5)
+
+%!test
+%! ## a rejected plot property must not leave a figure behind: the properties
+%! ## are parsed before the axes is taken, gca creating a figure when none is
+%! ## current
+%! b = findall (0, 'type', 'figure');
+%! try
+%!   plotResiduals (mdl, 'fitted', {1}, 5);
+%! catch
+%! end
+%! assert_equal (isempty (setdiff (findall (0, 'type', 'figure'), b)), true);
+
+%!test
+%! ## a histogram forwards its properties to patch, which takes its own
+%! fig = figure ('visible', 'off');
+%! ax  = axes (fig);
+%! h   = plotResiduals (ax, mdl, 'histogram', 'FaceColor', [0 1 0]);
+%! assert_equal (get (h(1), 'FaceColor'), [0 1 0], 1e-10);
+%! close (fig);
 %!error <plotAdded: Bad coefficient number.> plotAdded (mdl, 99)
 %!error <plotAdded: Bad coefficient name.> plotAdded (mdl, 'NotACoef')
 %!error <lm_plot_props: unrecognized property 'BadOpt'.> plotAdded (mdl, 2, 'BadOpt', 5)
