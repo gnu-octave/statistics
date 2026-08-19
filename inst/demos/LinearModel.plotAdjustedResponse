@@ -1,0 +1,48 @@
+%!demo
+%!
+%! ## The adjusted response for one predictor, with the other predictor
+%! ## averaged out.
+%! ## Ten observations depend on study hours and hours of sleep.
+%! ## `plotAdjustedResponse` shows the fitted response as a function of
+%! ## `x1` alone, with `x2` held at its average observed value across the
+%! ## fit, alongside the actual adjusted data points (fitted value plus
+%! ## residual) for comparison.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score);
+%!
+%! ## Adjusted response for x1, with x2 averaged out.
+%! plotAdjustedResponse (mdl, 'x1');
+
+%!demo
+%!
+%! ## For a categorical predictor, the adjusted response function is
+%! ## evaluated at each level instead of a continuous grid.
+%! ## Nine stores in three regions report ad spend and sales. The adjusted
+%! ## response for `Region` is a step function through its three levels,
+%! ## with `AdSpend` averaged out.
+%! AdSpend = [200;350;500;220;370;520;240;390;540];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! RegionEffect = [0;0;0;300;300;300;700;700;700];
+%! Sales = 1000 + 0.5*AdSpend + RegionEffect + 5*sin ((1:9)');
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend + Region', 'CategoricalVars', {'Region'});
+%!
+%! ## Adjusted response for Region, with AdSpend averaged out.
+%! plotAdjustedResponse (mdl, 'Region');
+
+%!demo
+%!
+%! ## Isolating one predictor's adjusted response among several, using the
+%! ## `hald` cement data set.
+%! ## Four chemical percentages in cement (`ingredients`) are used to
+%! ## predict heat given off while hardening (`heat`). The adjusted
+%! ## response for the first ingredient is shown with the other three
+%! ## averaged out.
+%! load hald
+%! mdl = fitlm (ingredients, heat);
+%!
+%! ## Adjusted response for the first ingredient.
+%! plotAdjustedResponse (mdl, 'x1');

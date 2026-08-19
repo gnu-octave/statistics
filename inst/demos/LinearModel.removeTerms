@@ -1,0 +1,47 @@
+%!demo
+%!
+%! ## The star operator removes main effects together with their
+%! ## interaction; terms already absent are silently skipped, and
+%! ## specifying only absent terms warns and leaves the model unchanged.
+%! ## Ten students' exam scores depend on study hours and hours of sleep.
+%! ## `'x1*x2'` removes `x1`, `x2`, and `x1:x2` together in one call.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl_full = fitlm ([Hours, Sleep], Score, 'y ~ x1*x2');
+%! mdl_full.CoefficientNames
+%!
+%! ## Removing both main effects and their interaction in one call.
+%! mdl_empty = removeTerms (mdl_full, 'x1*x2');
+%! mdl_empty.CoefficientNames
+%!
+%! ## Starting over from an additive model with no interaction term.
+%! mdl_add = fitlm ([Hours, Sleep], Score);
+%! mdl_add.CoefficientNames
+%!
+%! ## x1 is removed; x1:x2 was never in the model, so it is silently skipped.
+%! mdl_mix = removeTerms (mdl_add, 'x1 + x1:x2');
+%! mdl_mix.CoefficientNames
+%!
+%! ## Requesting only a term that is not in the model: a warning, unchanged.
+%! mdl_same = removeTerms (mdl_add, 'x1:x2');
+%! mdl_same.CoefficientNames
+
+%!demo
+%!
+%! ## A categorical predictor is removed as one whole indicator group, not
+%! ## column by column.
+%! ## Nine stores in three regions report ad spend and sales. Removing
+%! ## `Region` drops both of its indicator columns together in a single
+%! ## call.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend + Region', 'CategoricalVars', {'Region'});
+%! mdl.CoefficientNames
+%!
+%! ## Both Region indicator columns are removed together.
+%! mdl_no_region = removeTerms (mdl, 'Region');
+%! mdl_no_region.CoefficientNames

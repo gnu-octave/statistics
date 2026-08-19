@@ -1,0 +1,77 @@
+%!demo
+%!
+%! ## The overall model F-test, with no `H` supplied.
+%! ## Ten students' exam scores are modeled against study hours.
+%! ## `coefTest` with no arguments tests the joint null hypothesis that
+%! ## every coefficient except the intercept is zero -- the same test
+%! ## summarized in the "F-statistic vs. constant model" line at the
+%! ## bottom of the model display.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl = fitlm (Hours, Score);
+%!
+%! ## The overall F-test: p-value, F-statistic, and numerator DF.
+%! [p, F, r] = coefTest (mdl)
+%!
+%! ## Compare against the F-statistic line printed for the model itself.
+%! mdl
+
+%!demo
+%!
+%! ## Jointly testing every indicator column of a categorical predictor
+%! ## at once.
+%! ## Nine stores in three regions report ad spend and sales. `Region`
+%! ## expands to two indicator coefficients, `Region_South` and
+%! ## `Region_East`; a two-row `H`, one row per indicator, tests whether
+%! ## both are zero together -- whether region has any effect on sales at
+%! ## all, as a single joint test rather than two separate ones.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend + Region', 'CategoricalVars', {'Region'});
+%!
+%! ## Coefficient order: (Intercept), AdSpend, Region_South, Region_East.
+%! mdl.CoefficientNames
+%!
+%! ## Joint test that both region coefficients are zero.
+%! [p, F, r] = coefTest (mdl, [0 0 1 0; 0 0 0 1])
+
+%!demo
+%!
+%! ## Testing a coefficient against a specific hypothesized value, not
+%! ## just zero, using the `H`, `C` form.
+%! ## Four chemical percentages in cement (`ingredients`) are used to
+%! ## predict heat given off while hardening (`heat`), using the `hald`
+%! ## data set. Rather than testing whether the coefficient for `x1` is
+%! ## zero, `H` picks out that coefficient and `C` supplies the
+%! ## hypothesized value 1.5 to test it against instead.
+%! load hald
+%! mdl = fitlm (ingredients, heat);
+%!
+%! ## Coefficient order: (Intercept), x1, x2, x3, x4.
+%! mdl.CoefficientNames
+%!
+%! ## Test whether the coefficient for x1 equals 1.5.
+%! [p, F, r] = coefTest (mdl, [0 1 0 0 0], 1.5)
+
+%!demo
+%!
+%! ## coefTest on a CompactLinearModel gives the same results as the
+%! ## original model, for both the overall test and a specific `H`.
+%! ## `compact` discards the training data but keeps everything
+%! ## `coefTest` needs: the coefficient estimates, their covariance, and
+%! ## the error degrees of freedom.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Score = [52;55;61;64;70;73;77;81;85;90];
+%! mdl  = fitlm (Hours, Score);
+%! cmdl = compact (mdl);
+%!
+%! ## The overall F-test matches exactly.
+%! [p_full, F_full, r_full] = coefTest (mdl)
+%! [p_compact, F_compact, r_compact] = coefTest (cmdl)
+%!
+%! ## A specific single-coefficient test also matches exactly.
+%! [p_full2, F_full2] = coefTest (mdl, [0 1])
+%! [p_compact2, F_compact2] = coefTest (cmdl, [0 1])

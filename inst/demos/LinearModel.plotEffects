@@ -1,0 +1,63 @@
+%!demo
+%!
+%! ## The main effect and 95% confidence interval for each predictor.
+%! ## Ten observations depend on study hours and hours of sleep.
+%! ## `plotEffects` shows, for each predictor, how much the fitted response
+%! ## changes when that predictor moves from its observed minimum to its
+%! ## observed maximum, with all other predictors held at their observed
+%! ## means. The dotted vertical line marks zero effect.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl = fitlm ([Hours, Sleep], Score);
+%!
+%! ## Main effect of each predictor, from its minimum to its maximum.
+%! plotEffects (mdl);
+
+%!demo
+%!
+%! ## A categorical predictor's effect is shown the same way, labeled by
+%! ## its levels rather than a numeric range.
+%! ## Nine stores in three regions report ad spend and sales. The
+%! ## categorical `Region` gets a y-axis label showing its reference and
+%! ## comparison levels, just as a numeric predictor's label shows its
+%! ## minimum and maximum.
+%! AdSpend = [10;20;30;15;25;35;12;22;32];
+%! Region  = {'North';'North';'North';'South';'South';'South'; ...
+%!            'East';'East';'East'};
+%! Sales   = [15;18;24;20;27;33;12;19;26];
+%! T = table (AdSpend, Region, Sales);
+%! mdl = fitlm (T, 'Sales ~ AdSpend + Region', 'CategoricalVars', {'Region'});
+%!
+%! ## Main effect of AdSpend and of moving between Region levels.
+%! plotEffects (mdl);
+
+%!demo
+%!
+%! ## Comparing the main effects of four predictors at once, using the
+%! ## `hald` cement data set.
+%! ## Four chemical percentages in cement (`ingredients`) are used to
+%! ## predict heat given off while hardening (`heat`). With four
+%! ## correlated predictors and only 13 observations, several confidence
+%! ## intervals are wide enough to cross zero.
+%! load hald
+%! mdl = fitlm (ingredients, heat);
+%!
+%! ## Main effect of each of the four ingredients.
+%! plotEffects (mdl);
+
+%!demo
+%!
+%! ## plotEffects on a CompactLinearModel gives the same plot as the
+%! ## original model.
+%! ## `compact` discards the training data but keeps everything
+%! ## `plotEffects` needs: the coefficient estimates, their covariance,
+%! ## and the effect contrasts computed at fit time.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl  = fitlm ([Hours, Sleep], Score);
+%! cmdl = compact (mdl);
+%!
+%! ## The same plot, produced from the compact model.
+%! plotEffects (cmdl);

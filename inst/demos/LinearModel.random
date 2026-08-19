@@ -1,0 +1,77 @@
+%!demo
+%!
+%! ## Simulating noisy responses versus the deterministic fitted value.
+%! ## Seven days' temperatures and ice-cream sales are used to fit a
+%! ## simple model. `predict` gives the deterministic fitted value at each
+%! ## new temperature; `random` adds independent Gaussian noise scaled by
+%! ## the model's mean squared error, giving a plausible simulated
+%! ## observation instead.
+%! Temp = [60;65;70;75;80;85;90];
+%! Sales = [200;230;260;300;340;370;410];
+%! mdl = fitlm (Temp, Sales);
+%! Xnew = [72; 88];
+%!
+%! ## The deterministic fitted value, with no noise.
+%! ypred = predict (mdl, Xnew)
+%!
+%! ## A simulated observation at the same points, with noise added.
+%! ysim = random (mdl, Xnew)
+
+%!demo
+%!
+%! ## Reproducible simulated responses by seeding the generator that
+%! ## `random` actually draws from.
+%! ## `random` adds its noise with `randn`, so reproducibility comes from
+%! ## seeding `randn` itself, not `rand`. Resetting to the same state
+%! ## before each call gives back the exact same simulated values.
+%! Temp = [60;65;70;75;80;85;90];
+%! Sales = [200;230;260;300;340;370;410];
+%! mdl = fitlm (Temp, Sales);
+%! Xnew = [72; 88];
+%!
+%! ## Two calls from the same seed give identical simulated responses.
+%! randn ('state', 42);
+%! ysimA = random (mdl, Xnew);
+%! randn ('state', 42);
+%! ysimB = random (mdl, Xnew);
+%! same_seed_matches = isequal (ysimA, ysimB)
+
+%!demo
+%!
+%! ## Simulating noisy fuel-economy readings from a quadratic model of
+%! ## vehicle weight, using the `carsmall` data set.
+%! ## The deterministic quadratic fit gives a smooth predicted curve;
+%! ## `random` adds noise scaled by the model's own MSE to produce
+%! ## plausible individual readings a new car of that weight might show.
+%! load carsmall
+%! X = Weight;
+%! y = MPG;
+%! mdl = fitlm (X, y, 'quadratic');
+%! Xsub = X(1:5);
+%!
+%! ## Deterministic predictions for the first five cars.
+%! ypred = predict (mdl, Xsub)
+%!
+%! ## Simulated readings for the same five cars, with noise added.
+%! randn ('state', 7);
+%! ysim = random (mdl, Xsub)
+
+%!demo
+%!
+%! ## `random` on a CompactLinearModel gives the same simulated draw as
+%! ## the original model, given the same seed.
+%! ## `compact` discards the training data but keeps everything `random`
+%! ## needs; reseeding identically before each call confirms the compact
+%! ## model simulates exactly the same values as the original.
+%! Temp = [60;65;70;75;80;85;90];
+%! Sales = [200;230;260;300;340;370;410];
+%! mdl  = fitlm (Temp, Sales);
+%! cmdl = compact (mdl);
+%! Xnew = [72; 88];
+%!
+%! ## Same seed, same simulated draw from either model.
+%! randn ('state', 99);
+%! ysim_full = random (mdl, Xnew);
+%! randn ('state', 99);
+%! ysim_compact = random (cmdl, Xnew);
+%! compact_matches_full = isequal (ysim_full, ysim_compact)

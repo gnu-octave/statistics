@@ -1,0 +1,46 @@
+%!demo
+%!
+%! ## A single default step, improving a starting model by one term.
+%! ## Ten observations depend on study hours and hours of sleep. Starting
+%! ## from a model containing only `x1`, `step` examines whether adding or
+%! ## removing a single term improves the fit and, by default, takes at
+%! ## most one such step.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl0 = fitlm ([Hours, Sleep], Score, 'y ~ x1');
+%! mdl0.CoefficientNames
+%!
+%! ## One improvement step, starting from x1 alone.
+%! mdl1 = step (mdl0);
+%! mdl1.CoefficientNames
+
+%!demo
+%!
+%! ## Taking several steps at once with `NSteps`, and following the trace
+%! ## with `Verbose`.
+%! ## Reusing the same predictors, starting from a constant model this
+%! ## time, `NSteps` lets `step` keep improving the model over more than
+%! ## one call, up to the given upper bound.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;6;8;7];
+%! Score = [50;54;56;62;64;70;71;73;79;78];
+%! mdl0 = fitlm ([Hours, Sleep], Score, 'y ~ 1');
+%!
+%! ## Up to three steps, bounded above by the full interaction model.
+%! mdl = step (mdl0, 'Upper', 'y ~ x1*x2', 'NSteps', 3, 'Verbose', 1);
+%! mdl.CoefficientNames
+
+%!demo
+%!
+%! ## Starting from a constant model on the `hald` cement data set.
+%! ## Four chemical percentages in cement (`ingredients`) are used to
+%! ## predict heat given off while hardening (`heat`). Starting from an
+%! ## intercept-only model, `step` adds the two most useful ingredients
+%! ## over several steps.
+%! load hald
+%! mdl0 = fitlm (ingredients, heat, 'y ~ 1');
+%!
+%! ## Up to four steps, bounded above by the additive model.
+%! mdl = step (mdl0, 'Upper', 'linear', 'NSteps', 4, 'Verbose', 1);
+%! mdl.CoefficientNames

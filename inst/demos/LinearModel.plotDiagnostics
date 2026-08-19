@@ -1,0 +1,50 @@
+%!demo
+%!
+%! ## The default leverage plot, and Cook's distance -- both flagging the
+%! ## same unusual observation.
+%! ## Ten students' exam scores are modeled against study hours, with one
+%! ## student whose hours and score are both far outside the rest of the
+%! ## group. With no arguments, `plotDiagnostics` plots each observation's
+%! ## leverage against its row number, with a dotted reference line at
+%! ## the conventional threshold @math{2p/n}. Passing `'cookd'` instead
+%! ## shows each observation's overall influence on the fitted model.
+%! Hours = [1;2;3;4;5;6;7;8;9;15];
+%! Score = [52;55;61;64;70;73;77;81;85;130];
+%! mdl = fitlm (Hours, Score);
+%!
+%! ## Default: leverage of each observation.
+%! plotDiagnostics (mdl);
+%!
+%! ## Cook's distance, measuring each observation's overall influence.
+%! plotDiagnostics (mdl, 'cookd');
+
+%!demo
+%!
+%! ## Delete-1 scaled change in each coefficient, one line per predictor.
+%! ## Ten observations depend on study hours and hours of sleep, with one
+%! ## observation whose sleep value and score are both unusually large.
+%! ## `'dfbetas'` shows how much each coefficient estimate would change if
+%! ## that single observation were removed, scaled to be comparable across
+%! ## coefficients -- useful for seeing which specific predictor a given
+%! ## observation is most influential on.
+%! Hours = [1;2;3;4;5;6;7;8;9;10];
+%! Sleep = [5;6;5;7;6;8;7;9;8;20];
+%! Score = [50;54;56;62;64;70;71;73;79;150];
+%! mdl = fitlm ([Hours, Sleep], Score);
+%!
+%! ## Scaled change in each coefficient if each observation were removed.
+%! plotDiagnostics (mdl, 'dfbetas');
+
+%!demo
+%!
+%! ## Delete-1 scaled change in the fitted value, using the `carsmall`
+%! ## data set.
+%! ## Fuel economy is modeled against vehicle weight. `'dffits'` shows how
+%! ## much each observation's own fitted value would change if that
+%! ## observation were removed from the fit, with a dotted reference line
+%! ## at the conventional threshold @math{2 sqrt(p/n)}.
+%! load carsmall
+%! mdl = fitlm (Weight, MPG);
+%!
+%! ## Scaled change in the fitted value if each observation were removed.
+%! plotDiagnostics (mdl, 'dffits');
