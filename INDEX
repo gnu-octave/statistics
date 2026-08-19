@@ -85,6 +85,7 @@ Experimental Design
  sigma_pts
  x2fx
 Regression
+ CompactLinearModel
  CoxModel
  coxphfit
  fitcox
@@ -120,6 +121,7 @@ Regression
  robustfit
  stepwisefit
  stepwiseglm
+ stepwiselm
 Supervised Learning
  ClassificationDiscriminant
  ClassificationGAM

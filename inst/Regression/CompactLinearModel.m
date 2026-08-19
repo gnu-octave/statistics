@@ -518,9 +518,13 @@ classdef CompactLinearModel
       s = s(1);
       switch (s.type)
         case '()'
-          error (strcat ("CompactLinearModel: () indexing is not supported.", "  Use dot notation to access properties."));
+          error (strcat ("CompactLinearModel: () indexing is not", ...
+                         " supported.  Use dot notation to access", ...
+                         " properties."));
         case '{}'
-          error (strcat ("CompactLinearModel: {} indexing is not supported.", "  Use dot notation to access properties."));
+          error (strcat ("CompactLinearModel: {} indexing is not", ...
+                         " supported.  Use dot notation to access", ...
+                         " properties."));
         case '.'
           if (! ischar (s.subs))
             error ("CompactLinearModel.subsref: property name must be a character vector.");
@@ -544,7 +548,7 @@ classdef CompactLinearModel
 
   endmethods
 
-    methods(Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactLinearModel} {@var{cmdl} =} CompactLinearModel ()
@@ -660,13 +664,16 @@ classdef CompactLinearModel
         alpha = 0.05;
       endif
       if (! isscalar (alpha))
-        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be a scalar."));
+        error (strcat ("coefCI: Invalid argument at position 2.", ...
+                       " Value must be a scalar."));
       endif
       if (! (alpha >= 0))
-        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be greater than or equal to 0."));
+        error (strcat ("coefCI: Invalid argument at position 2.", ...
+                       " Value must be greater than or equal to 0."));
       endif
       if (alpha > 1)
-        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be less than or equal to 1."));
+        error (strcat ("coefCI: Invalid argument at position 2.", ...
+                       " Value must be less than or equal to 1."));
       endif
 
       t  = tinv (1 - alpha / 2, mdl.DFE);
@@ -744,7 +751,8 @@ classdef CompactLinearModel
           error ("coefTest: H must be a %d-by-%d numeric matrix.", size (H, 1), k);
         endif
         if (any (any (isnan (H))))
-          error (strcat ("coefTest: H is not full rank and hypotheses", " are not consistent."));
+          error (strcat ("coefTest: H is not full rank and hypotheses", ...
+                         " are not consistent."));
         endif
         r = size (H, 1);
 
@@ -1021,7 +1029,8 @@ classdef CompactLinearModel
         if (istable (Xnew))
           for j = 1:p_raw
             if (! ismember (mdl.PredictorNames{j}, Xnew.Properties.VariableNames))
-              error (strcat ("feval: X does not contain one or more predictor", " variables needed for this model."));
+              error (strcat ("feval: X does not contain one or more", ...
+                             " predictor variables needed for this model."));
             endif
           endfor
         else
@@ -1087,7 +1096,10 @@ classdef CompactLinearModel
 
       else
 
-        error (strcat ("feval: Incorrect number of input arguments. You must provide", " either %d separate predictor variable arguments, or one", " predictor matrix with %d columns."), p_raw, p_raw);
+        error (strcat ("feval: Incorrect number of input arguments. You", ...
+                       " must provide either %d separate predictor", ...
+                       " variable arguments, or one predictor matrix with", ...
+                       " %d columns."), p_raw, p_raw);
 
       endif
 
@@ -1316,14 +1328,16 @@ classdef CompactLinearModel
         endif
       elseif (isnumeric (var1) && isscalar (var1))
         if (var1 != fix (var1) || var1 < 1)
-          error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+          error (strcat ("plotInteraction: Variable must be specified as a", ...
+                         " name or a positive integer."));
         endif
         if (var1 > numel (vnames))
           error ("plotInteraction: This model only contains %d variables.", numel (vnames));
         endif
         v1name = vnames{var1};
       else
-        error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+        error (strcat ("plotInteraction: Variable must be specified as a", ...
+                       " name or a positive integer."));
       endif
       if (strcmp (v1name, mdl.ResponseName))
         error ("plotInteraction: The variable '%s' is the response in this model.", v1name);
@@ -1336,14 +1350,16 @@ classdef CompactLinearModel
         endif
       elseif (isnumeric (var2) && isscalar (var2))
         if (var2 != fix (var2) || var2 < 1)
-          error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+          error (strcat ("plotInteraction: Variable must be specified as a", ...
+                         " name or a positive integer."));
         endif
         if (var2 > numel (vnames))
           error ("plotInteraction: This model only contains %d variables.", numel (vnames));
         endif
         v2name = vnames{var2};
       else
-        error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+        error (strcat ("plotInteraction: Variable must be specified as a", ...
+                       " name or a positive integer."));
       endif
       if (strcmp (v2name, mdl.ResponseName))
         error ("plotInteraction: The variable '%s' is the response in this model.", v2name);
@@ -1640,20 +1656,20 @@ classdef CompactLinearModel
         error ("anova: too many input arguments.");
       endif
 
-      anovatype = "components";
+      anovatype = 'components';
       if (numel (varargin) >= 1)
         anovatype = varargin{1};
-        valid_types = {"summary", "components", "oldcomponents", "newcomponents"};
+        valid_types = {'summary', 'components', 'oldcomponents', 'newcomponents'};
         if (! ischar (anovatype) || ! any (strcmpi (anovatype, valid_types)))
           error ("anova: ANOVATYPE must be 'summary' or 'components'.");
         endif
       endif
 
-      sstype = "h";
-      if (numel (varargin) == 2 && ! strcmpi (anovatype, "summary"))
+      sstype = 'h';
+      if (numel (varargin) == 2 && ! strcmpi (anovatype, 'summary'))
         sstype  = varargin{2};
         valid_n = isnumeric (sstype) && isscalar (sstype) && any (sstype == [1, 2, 3]);
-        valid_h = ischar (sstype) && strcmpi (sstype, "h");
+        valid_h = ischar (sstype) && strcmpi (sstype, 'h');
         if (! valid_n && ! valid_h)
           error ("anova: SSTYPE must be 1, 2, or 3.");
         endif
@@ -1676,7 +1692,7 @@ classdef CompactLinearModel
       DFE      = mdl.DFE;
       all_cols = 1:mdl.NumCoefficients;
 
-      if (strcmpi (anovatype, "summary"))
+      if (strcmpi (anovatype, 'summary'))
 
         is_nonlinear = false (nterm, 1);
         for k = 1:nterm
@@ -1686,7 +1702,7 @@ classdef CompactLinearModel
 
         SumSq = [mdl.SST; mdl.SSR];
         DF    = [mdl.NumObservations - 1; mdl.NumCoefficients - mdl.HasIntercept];
-        RowNm = {"Total", "Model"};
+        RowNm = {'Total', 'Model'};
 
         if (any (is_nonlinear))
           nl_cols = cell2mat (term_cols(is_nonlinear));
@@ -1694,12 +1710,12 @@ classdef CompactLinearModel
           DF_nl   = numel (nl_cols);
           SumSq   = [SumSq; SumSq(2) - SS_nl; SS_nl];
           DF      = [DF; DF(2) - DF_nl; DF_nl];
-          RowNm   = [RowNm, {". Linear", ". Nonlinear"}];
+          RowNm   = [RowNm, {'. Linear', '. Nonlinear'}];
         endif
 
         SumSq = [SumSq; mdl.SSE];
         DF    = [DF; DFE];
-        RowNm = [RowNm, {"Residual"}];
+        RowNm = [RowNm, {'Residual'}];
 
         MeanSq = SumSq ./ DF;
         F      = NaN (numel (SumSq), 1);
@@ -1713,7 +1729,7 @@ classdef CompactLinearModel
 
         use_seq   = isnumeric (sstype) && sstype == 1;
         use_type3 = isnumeric (sstype) && sstype == 3;
-        extended  = ischar (sstype) && strcmpi (sstype, "h");
+        extended  = ischar (sstype) && strcmpi (sstype, 'h');
 
         if (use_type3)
 
@@ -1722,8 +1738,9 @@ classdef CompactLinearModel
           is_hier = (max (max (abs (Dsyn - Xsyn * Mm))) < 1e-8 * max (max (abs (Dsyn)))) ...
                     && (rcond (Mm) > eps);
           if (! is_hier)
-            error (strcat ("Cannot perform anova with type 3 sums of squares", ...
-              " for a compacted model with missing lower-order terms."));
+            error (strcat ("Cannot perform anova with type 3 sums of", ...
+                           " squares for a compacted model with missing", ...
+                           " lower-order terms."));
           endif
 
           Hinv  = inv (Mm);
@@ -1792,7 +1809,7 @@ classdef CompactLinearModel
         MeanSq = [MeanSq; MSE];
         F      = [F; NaN];
         pValue = [pValue; NaN];
-        RowNm  = [term_name, {"Error"}];
+        RowNm  = [term_name, {'Error'}];
 
       endif
 
@@ -2957,8 +2974,8 @@ endfunction
 %! assert_equal (t.pValue(2), 8.6569383058211e-19, -1e-8);
 %! assert_equal (t.SumSq(3), 0.386545331386823, -1e-9);
 %! assert_equal (t.DF(3), 17);
-%! assert (isnan (t.F(3)));
-%! assert (isnan (t.pValue(3)));
+%! assert_equal (isnan (t.F(3)), true);
+%! assert_equal (isnan (t.pValue(3)), true);
 
 %!test
 %! t = anova (cmdl, 'components', 2);
@@ -2977,7 +2994,7 @@ endfunction
 %! assert_equal (t.Properties.RowNames, {'Total'; 'Model'; 'Residual'});
 %! assert_equal (t.SumSq(1), 583.910420002346, -1e-8);
 %! assert_equal (t.DF(1), 19);
-%! assert (isnan (t.F(1)));
+%! assert_equal (isnan (t.F(1)), true);
 %! assert_equal (t.SumSq(2), 583.523874670959, -1e-8);
 %! assert_equal (t.DF(2), 2);
 %! assert_equal (t.F(2), 12831.4909842738, -1e-6);
@@ -3154,56 +3171,56 @@ endfunction
 %! assert_equal (t.DF(5), 11);
 
 %!error <CompactLinearModel: invalid model object.> CompactLinearModel (123)
-%!error <() indexing is not supported> cmdl(1)
-%!error <{} indexing is not supported> cmdl{1}
-%!error <unknown property> cmdl.NotAProperty
-%!error <unknown property> cmdl.Fitted
-%!error <unknown property> cmdl.ObservationInfo
-%!error <unknown property> cmdl.Steps
-%!error <too many inputs> coefCI (cmdl, 0.05, 'extra')
-%!error <Value must be less than or equal to 1> coefCI (cmdl, 1.5)
-%!error <Value must be greater than or equal to 0> coefCI (cmdl, -0.1)
-%!error <Value must be greater than or equal to 0> coefCI (cmdl, NaN)
-%!error <Value must be a scalar> coefCI (cmdl, [0.01 0.05])
-%!error <Value must be a scalar> coefCI (cmdl, 'abc')
-%!error <H must be a 1-by-3 numeric matrix> coefTest (cmdl, [1 0])
-%!error <H must be a 1-by-3 numeric matrix> coefTest (cmdl, 'abc')
-%!error <C must be a numeric vector> coefTest (cmdl, [0 1 0], 'abc')
-%!error <H must be a 1-by-3 numeric matrix> coefTest (cmdl, [0 1 0; 0 0 1], [1])
-%!error <H is not full rank> coefTest (cmdl, [0 NaN 0])
-%!error <Too many input arguments> coefTest (cmdl, [0 1 0], 0, 'extra')
-%!error <too many outputs> [a, b, c, d] = coefTest (cmdl)
-%!error <Not enough input arguments> predict (cmdl)
-%!error <unknown option> predict (cmdl, [0.5 0.25], 'BadOption', 1)
-%!error <Prediction must be> predict (cmdl, [0.5 0.25], 'Prediction', 'bad')
-%!error <Xnew must have 2 columns> predict (cmdl, ones (3, 5))
-%!error <Xnew must have 2 columns> predict (cmdl, ones (3, 1))
-%!error <missing predictor> predict (cmdl, table ([1;2], 'VariableNames', {'z'}))
-%!error <Not enough input arguments> random (cmdl)
-%!error <Too many input arguments> random (cmdl, [0.5 0.25], 'extra')
-%!error <Xnew must have 2 columns> random (cmdl, ones (3, 5))
-%!error <Xnew must have 2 columns> random (cmdl, [])
-%!error <Not enough input arguments> feval (cmdl)
-%!error <Incorrect number of input arguments> feval (cmdl, [0.5;1.0], [0.25;1.0], [0.1;0.2])
-%!error <Predictor data matrix must have 2 columns> feval (cmdl, ones (3, 1))
-%!error <All input arguments must be the same size> feval (cmdl, [0.5;1.0;0.2], [0.25;1.0])
-%!error <X does not contain one or more predictor> feval (cmdl, table ([1;2], 'VariableNames', {'z'}))
-%!error <Predictor data matrix must have 2 columns> feval (cmdl, [])
-%!error <is not categorical> feval (cmdl, '2500', 0.25)
-%!error <Wrong number of arguments> plotEffects (cmdl, 'extra')
-%!error <Wrong number of arguments> plotEffects (cmdl, 'a', 'b')
-%!error <Model has no predictors> plotEffects (compact (fitlm (X(:,1), y, 'constant')))
-%!error <Not enough input arguments> plotInteraction (cmdl)
-%!error <Not enough input arguments> plotInteraction (cmdl, 'x1')
-%!error <PTYPE must be> plotInteraction (cmdl, 'x1', 'x2', 'badtype')
-%!error <Too many input arguments> plotInteraction (cmdl, 'x1', 'x2', 'effects', 'extra')
-%!error <is not a variable for this fit> plotInteraction (cmdl, 'z', 'x2')
-%!error <is not a variable for this fit> plotInteraction (cmdl, 'x1', 'z')
-%!error <This model only contains> plotInteraction (cmdl, 99, 'x2')
-%!error <Variable must be specified as a name or a positive integer> plotInteraction (cmdl, 1.5, 'x2')
-%!error <is the response in this model> plotInteraction (cmdl, 'y', 'x2')
-%!error <is the response in this model> plotInteraction (cmdl, 'x1', 'y')
-%!error <VAR1 and VAR2 must be different variables> plotInteraction (cmdl, 'x1', 'x1')
+%!error <CompactLinearModel: \(\) indexing is not supported.  Use dot notation to access properties.> cmdl(1)
+%!error <CompactLinearModel: {} indexing is not supported.  Use dot notation to access properties.> cmdl{1}
+%!error <CompactLinearModel.subsref: unknown property 'NotAProperty'.> cmdl.NotAProperty
+%!error <CompactLinearModel.subsref: unknown property 'Fitted'.> cmdl.Fitted
+%!error <CompactLinearModel.subsref: unknown property 'ObservationInfo'.> cmdl.ObservationInfo
+%!error <CompactLinearModel.subsref: unknown property 'Steps'.> cmdl.Steps
+%!error <coefCI: function called with too many inputs> coefCI (cmdl, 0.05, 'extra')
+%!error <coefCI: Invalid argument at position 2. Value must be less than or equal to 1.> coefCI (cmdl, 1.5)
+%!error <coefCI: Invalid argument at position 2. Value must be greater than or equal to 0.> coefCI (cmdl, -0.1)
+%!error <coefCI: Invalid argument at position 2. Value must be greater than or equal to 0.> coefCI (cmdl, NaN)
+%!error <coefCI: Invalid argument at position 2. Value must be a scalar.> coefCI (cmdl, [0.01 0.05])
+%!error <coefCI: Invalid argument at position 2. Value must be a scalar.> coefCI (cmdl, 'abc')
+%!error <coefTest: H must be a 1-by-3 numeric matrix.> coefTest (cmdl, [1 0])
+%!error <coefTest: H must be a 1-by-3 numeric matrix.> coefTest (cmdl, 'abc')
+%!error <coefTest: C must be a numeric vector.> coefTest (cmdl, [0 1 0], 'abc')
+%!error <coefTest: H must be a 1-by-3 numeric matrix.> coefTest (cmdl, [0 1 0; 0 0 1], [1])
+%!error <coefTest: H is not full rank and hypotheses are not consistent.> coefTest (cmdl, [0 NaN 0])
+%!error <coefTest: Too many input arguments.> coefTest (cmdl, [0 1 0], 0, 'extra')
+%!error <coefTest: function called with too many outputs> [a, b, c, d] = coefTest (cmdl)
+%!error <predict: Not enough input arguments.> predict (cmdl)
+%!error <predict: unknown option 'BadOption'.> predict (cmdl, [0.5 0.25], 'BadOption', 1)
+%!error <predict: Prediction must be 'curve' or 'observation'.> predict (cmdl, [0.5 0.25], 'Prediction', 'bad')
+%!error <predict: Xnew must have 2 columns.> predict (cmdl, ones (3, 5))
+%!error <predict: Xnew must have 2 columns.> predict (cmdl, ones (3, 1))
+%!error <predict: Xnew table is missing predictor 'x1'.> predict (cmdl, table ([1;2], 'VariableNames', {'z'}))
+%!error <random: Not enough input arguments.> random (cmdl)
+%!error <random: Too many input arguments.> random (cmdl, [0.5 0.25], 'extra')
+%!error <predict: Xnew must have 2 columns.> random (cmdl, ones (3, 5))
+%!error <random: Xnew must have 2 columns.> random (cmdl, [])
+%!error <feval: Not enough input arguments.> feval (cmdl)
+%!error <feval: Incorrect number of input arguments. You must provide either 2 separate predictor variable arguments, or one predictor matrix with 2 columns.> feval (cmdl, [0.5;1.0], [0.25;1.0], [0.1;0.2])
+%!error <feval: Predictor data matrix must have 2 columns.> feval (cmdl, ones (3, 1))
+%!error <feval: All input arguments must be the same size.> feval (cmdl, [0.5;1.0;0.2], [0.25;1.0])
+%!error <feval: X does not contain one or more predictor variables needed for this model.> feval (cmdl, table ([1;2], 'VariableNames', {'z'}))
+%!error <feval: Predictor data matrix must have 2 columns.> feval (cmdl, [])
+%!error <feval: predictor 'x1' is not categorical.> feval (cmdl, '2500', 0.25)
+%!error <plotEffects: Wrong number of arguments.> plotEffects (cmdl, 'extra')
+%!error <plotEffects: Wrong number of arguments.> plotEffects (cmdl, 'a', 'b')
+%!error <plotEffects: Model has no predictors.> plotEffects (compact (fitlm (X(:,1), y, 'constant')))
+%!error <plotInteraction: Not enough input arguments.> plotInteraction (cmdl)
+%!error <plotInteraction: Not enough input arguments.> plotInteraction (cmdl, 'x1')
+%!error <plotInteraction: PTYPE must be 'effects' or 'predictions'.> plotInteraction (cmdl, 'x1', 'x2', 'badtype')
+%!error <plotInteraction: Too many input arguments.> plotInteraction (cmdl, 'x1', 'x2', 'effects', 'extra')
+%!error <plotInteraction: 'z' is not a variable for this fit.> plotInteraction (cmdl, 'z', 'x2')
+%!error <plotInteraction: 'z' is not a variable for this fit.> plotInteraction (cmdl, 'x1', 'z')
+%!error <plotInteraction: This model only contains 3 variables.> plotInteraction (cmdl, 99, 'x2')
+%!error <plotInteraction: Variable must be specified as a name or a positive integer.> plotInteraction (cmdl, 1.5, 'x2')
+%!error <plotInteraction: The variable 'y' is the response in this model.> plotInteraction (cmdl, 'y', 'x2')
+%!error <plotInteraction: The variable 'y' is the response in this model.> plotInteraction (cmdl, 'x1', 'y')
+%!error <plotInteraction: VAR1 and VAR2 must be different variables.> plotInteraction (cmdl, 'x1', 'x1')
 %!error <anova: too many input arguments.> anova (cmdl, 'components', 'h', 'extra')
 %!error <anova: ANOVATYPE must be 'summary' or 'components'.> anova (cmdl, 'bogus')
 %!error <anova: SSTYPE must be 1, 2, or 3.> anova (cmdl, 'components', 4)

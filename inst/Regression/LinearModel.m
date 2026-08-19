@@ -52,8 +52,8 @@ classdef LinearModel
   ## the weighting function and tuning constant used when the model is fit by
   ## robust regression, and is empty for an ordinary least squares fit, and
   ## @code{Steps}, which records the stepwise fitting information whenever
-  ## the model was fit using stepwise regression.  This implementation
-  ## currently always returns @code{Steps} as an empty structure.
+  ## the model was fit using stepwise regression, and is currently always
+  ## empty.
   ##
   ## @item Input data properties @tab @code{Formula},
   ## @code{NumObservations}, @code{NumPredictors}, @code{NumVariables},
@@ -500,14 +500,13 @@ classdef LinearModel
     ## whenever the model was fit using stepwise regression, and empty
     ## otherwise.
     ##
-    ## This implementation always returns an empty struct, regardless of
-    ## whether the model was fit with @code{stepwiselm} or @code{step}; the
-    ## per-step history is not yet tracked.  This is a known deviation from
-    ## MATLAB and not a deliberate design choice.  This property is
-    ## read-only.
+    ## This implementation always returns @code{[]}, regardless of whether
+    ## the model was fit with @code{stepwiselm} or @code{step}; the per-step
+    ## history is not yet tracked.  This is a known deviation from MATLAB and
+    ## not a deliberate design choice.  This property is read-only.
     ##
     ## @end deftp
-    Steps = struct ();
+    Steps = [];
 
 
     ## Input data properties
@@ -771,9 +770,11 @@ classdef LinearModel
       s = s(1);
       switch (s.type)
         case '()'
-          error (strcat ("LinearModel: () indexing is not supported.", "  Use dot notation to access properties."));
+          error (strcat ("LinearModel: () indexing is not supported.", ...
+                         "  Use dot notation to access properties."));
         case '{}'
-          error (strcat ("LinearModel: {} indexing is not supported.", "  Use dot notation to access properties."));
+          error (strcat ("LinearModel: {} indexing is not supported.", ...
+                         "  Use dot notation to access properties."));
         case '.'
           if (! ischar (s.subs))
             error ("LinearModel.subsref: property name must be a character vector.");
@@ -1407,7 +1408,7 @@ classdef LinearModel
       this.SSR                      = SSR;
       this.SST                      = SST;
       this.Robust                   = RobustS;
-      this.Steps                    = struct ();
+      this.Steps                    = [];
       this.Formula                  = FormulaObj;
       this.NumObservations          = n_obs;
       this.NumPredictors            = p_raw;
@@ -1679,7 +1680,8 @@ classdef LinearModel
         if (istable (Xnew))
           for j = 1:p_raw
             if (! ismember (mdl.PredictorNames{j}, Xnew.Properties.VariableNames))
-              error (strcat ("feval: X does not contain one or more predictor", " variables needed for this model."));
+              error (strcat ("feval: X does not contain one or more", ...
+                             " predictor variables needed for this model."));
             endif
           endfor
         else
@@ -1745,7 +1747,10 @@ classdef LinearModel
 
       else
 
-        error (strcat ("feval: Incorrect number of input arguments. You must provide", " either %d separate predictor variable arguments, or one", " predictor matrix with %d columns."), p_raw, p_raw);
+        error (strcat ("feval: Incorrect number of input arguments. You", ...
+                       " must provide either %d separate predictor", ...
+                       " variable arguments, or one predictor matrix with", ...
+                       " %d columns."), p_raw, p_raw);
 
       endif
 
@@ -1793,13 +1798,16 @@ classdef LinearModel
         alpha = 0.05;
       endif
       if (! isscalar (alpha))
-        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be a scalar."));
+        error (strcat ("coefCI: Invalid argument at position 2.", ...
+                       " Value must be a scalar."));
       endif
       if (! (alpha >= 0))
-        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be greater than or equal to 0."));
+        error (strcat ("coefCI: Invalid argument at position 2.", ...
+                       " Value must be greater than or equal to 0."));
       endif
       if (alpha > 1)
-        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be less than or equal to 1."));
+        error (strcat ("coefCI: Invalid argument at position 2.", ...
+                       " Value must be less than or equal to 1."));
       endif
 
       t  = tinv (1 - alpha / 2, mdl.DFE);
@@ -1877,7 +1885,8 @@ classdef LinearModel
           error ("coefTest: H must be a %d-by-%d numeric matrix.", size (H, 1), k);
         endif
         if (any (any (isnan (H))))
-          error (strcat ("coefTest: H is not full rank and hypotheses", " are not consistent."));
+          error (strcat ("coefTest: H is not full rank and hypotheses", ...
+                         " are not consistent."));
         endif
         r = size (H, 1);
 
@@ -2145,7 +2154,9 @@ classdef LinearModel
         endfor
 
       else
-        error (strcat ("addTerms: Model update specification must be a model formula", " character vector or string scalar, or a terms matrix"));
+        error (strcat ("addTerms: Model update specification must be a", ...
+                       " model formula character vector or string scalar,", ...
+                       " or a terms matrix"));
       endif
 
       cat_info = mdl.CatLevelInfo;
@@ -2397,7 +2408,9 @@ classdef LinearModel
         endfor
 
       else
-        error (strcat ("removeTerms: Model update specification must be a model formula", " character vector or string scalar, or a terms matrix"));
+        error (strcat ("removeTerms: Model update specification must be a", ...
+                       " model formula character vector or string scalar,", ...
+                       " or a terms matrix"));
       endif
 
       nc = columns (mdl.TermsMatrix);
@@ -2672,7 +2685,9 @@ classdef LinearModel
           rt_val   = lower (char (args{i+1}));
           valid_rt = {'raw', 'pearson', 'standardized', 'studentized'};
           if (! any (strcmp (rt_val, valid_rt)))
-            error (strcat ("plotResiduals: invalid ResidualType '%s'.", " Valid values are: 'Raw', 'Pearson',", " 'Standardized', 'Studentized'."), args{i+1});
+            error (strcat ("plotResiduals: invalid ResidualType '%s'.", ...
+                           " Valid values are: 'Raw', 'Pearson',", ...
+                           " 'Standardized', 'Studentized'."), args{i+1});
           endif
           residtype = rt_val;
           i         = i + 2;
@@ -3297,7 +3312,8 @@ classdef LinearModel
         endif
       elseif (isnumeric (var) && isscalar (var))
         if (var != fix (var) || var < 1)
-          error (strcat ("plotAdjustedResponse: Variable must be specified as a", " name or a positive integer."));
+          error (strcat ("plotAdjustedResponse: Variable must be specified", ...
+                         " as a name or a positive integer."));
         endif
         if (var > numel (vnames))
           error ("plotAdjustedResponse: This model only contains %d variables.", ...
@@ -3305,7 +3321,8 @@ classdef LinearModel
         endif
         vname = vnames{var};
       else
-        error (strcat ("plotAdjustedResponse: Variable must be specified as a", " name or a positive integer."));
+        error (strcat ("plotAdjustedResponse: Variable must be specified", ...
+                       " as a name or a positive integer."));
       endif
 
       if (strcmp (vname, mdl.ResponseName))
@@ -3389,7 +3406,7 @@ classdef LinearModel
       xlabel (ax, pname);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
       title (ax, 'Adjusted Response Plot');
-      
+
       hleg = legend (ax, 'show');
       set (hleg, 'Location', lm_legend_corner (xdata, ydata));
 
@@ -3629,7 +3646,7 @@ classdef LinearModel
       xlabel (ax, ['Adjusted ', label]);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
       title (ax, ['Added Variable Plot for ', label]);
-      
+
       hleg = legend (ax, 'show');
       set (hleg, 'Location', lm_legend_corner (xdata, ydata));
 
@@ -3884,14 +3901,16 @@ classdef LinearModel
         endif
       elseif (isnumeric (var1) && isscalar (var1))
         if (var1 != fix (var1) || var1 < 1)
-          error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+          error (strcat ("plotInteraction: Variable must be specified as a", ...
+                         " name or a positive integer."));
         endif
         if (var1 > numel (vnames))
           error ("plotInteraction: This model only contains %d variables.", numel (vnames));
         endif
         v1name = vnames{var1};
       else
-        error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+        error (strcat ("plotInteraction: Variable must be specified as a", ...
+                       " name or a positive integer."));
       endif
       if (strcmp (v1name, mdl.ResponseName))
         error ("plotInteraction: The variable '%s' is the response in this model.", v1name);
@@ -3904,14 +3923,16 @@ classdef LinearModel
         endif
       elseif (isnumeric (var2) && isscalar (var2))
         if (var2 != fix (var2) || var2 < 1)
-          error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+          error (strcat ("plotInteraction: Variable must be specified as a", ...
+                         " name or a positive integer."));
         endif
         if (var2 > numel (vnames))
           error ("plotInteraction: This model only contains %d variables.", numel (vnames));
         endif
         v2name = vnames{var2};
       else
-        error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+        error (strcat ("plotInteraction: Variable must be specified as a", ...
+                       " name or a positive integer."));
       endif
       if (strcmp (v2name, mdl.ResponseName))
         error ("plotInteraction: The variable '%s' is the response in this model.", v2name);
@@ -4206,23 +4227,23 @@ classdef LinearModel
         error ("anova: too many input arguments.");
       endif
 
-      anovatype = "components";
+      anovatype = 'components';
       if (numel (varargin) >= 1)
         anovatype = varargin{1};
         if (! ischar (anovatype) ...
-            || ! any (strcmpi (anovatype, {"summary", "components"})))
+            || ! any (strcmpi (anovatype, {'summary', 'components'})))
           error ("anova: ANOVATYPE must be 'summary' or 'components'.");
         endif
       endif
 
-      sstype = "h";
+      sstype = 'h';
       if (numel (varargin) == 2)
-        if (! strcmpi (anovatype, "components"))
+        if (! strcmpi (anovatype, 'components'))
           error ("anova: SSTYPE can only be specified with ANOVATYPE 'components'.");
         endif
         sstype  = varargin{2};
         valid_n = isnumeric (sstype) && isscalar (sstype) && any (sstype == [1, 2, 3]);
-        valid_h = ischar (sstype) && strcmpi (sstype, "h");
+        valid_h = ischar (sstype) && strcmpi (sstype, 'h');
         if (! valid_n && ! valid_h)
           error ("anova: SSTYPE must be 1, 2, or 3.");
         endif
@@ -4244,7 +4265,7 @@ classdef LinearModel
       w = mdl.WeightVector (mdl.SubsetMask);
       all_cols = 1:columns (X);
 
-      if (strcmpi (anovatype, "summary"))
+      if (strcmpi (anovatype, 'summary'))
 
         is_nonlinear = false (nterm, 1);
         for k = 1:nterm
@@ -4254,7 +4275,7 @@ classdef LinearModel
 
         SumSq = [mdl.SST; mdl.SSR];
         DF    = [mdl.NumObservations - 1; mdl.NumCoefficients - mdl.HasIntercept];
-        RowNm = {"Total", "Model"};
+        RowNm = {'Total', 'Model'};
 
         if (any (is_nonlinear))
           lin_cols = union (icol, cell2mat (term_cols(! is_nonlinear)));
@@ -4262,12 +4283,12 @@ classdef LinearModel
           DF_nl    = numel (all_cols) - numel (lin_cols);
           SumSq    = [SumSq; SumSq(2) - SS_nl; SS_nl];
           DF       = [DF; DF(2) - DF_nl; DF_nl];
-          RowNm    = [RowNm, {". Linear", ". Nonlinear"}];
+          RowNm    = [RowNm, {'. Linear', '. Nonlinear'}];
         endif
 
         SumSq = [SumSq; mdl.SSE];
         DF    = [DF; mdl.DFE];
-        RowNm = [RowNm, {"Residual"}];
+        RowNm = [RowNm, {'Residual'}];
 
         MeanSq = SumSq ./ DF;
         F      = NaN (numel (SumSq), 1);
@@ -4308,14 +4329,14 @@ classdef LinearModel
           MeanSq = [MeanSq; lof_ms; pe_ms];
           F      = [F; lof_F; NaN];
           pValue = [pValue; lof_p; NaN];
-          RowNm  = [RowNm, {". Lack of fit", ". Pure error"}];
+          RowNm  = [RowNm, {'. Lack of fit', '. Pure error'}];
         endif
 
       else
 
         use_seq   = isnumeric (sstype) && sstype == 1;
         use_type3 = isnumeric (sstype) && sstype == 3;
-        extended  = ischar (sstype) && strcmpi (sstype, "h");
+        extended  = ischar (sstype) && strcmpi (sstype, 'h');
 
         if (use_type3)
 
@@ -4444,7 +4465,7 @@ classdef LinearModel
 
         F      = [F; NaN];
         pValue = [pValue; NaN];
-        RowNm  = [term_name, {"Error"}];
+        RowNm  = [term_name, {'Error'}];
 
       endif
 
@@ -4532,7 +4553,7 @@ classdef LinearModel
 
   endmethods
 
-  methods (Access = public, Static, Hidden)
+  methods(Access = public, Static, Hidden)
 
     ## weighted least-squares via pivoted QR; returns fit struct
     function fit = lm_fit (X, y, w, compute_H)
@@ -4874,7 +4895,7 @@ function D = lm_diagnostics (X, y, fit, w)
   Dffits        = r_stu .* sqrt (h ./ max (1 - h, eps)) .* sqrt (w);
   CovRatio      = (S2_i ./ max (MSE, eps)).^p ./ max (1 - h, eps);
 
-  p_full   = columns (X);  
+  p_full   = columns (X);
   active   = fit.active_cols;
   CovB_act = fit.CovBeta(active, active);
   XtXinv_d = diag (CovB_act) / max (MSE, eps);
@@ -5568,6 +5589,10 @@ endfunction
 %! assert_equal (mdl.ModelCriterion.CAIC, -10.180029940877,  1e-6);
 %! assert_equal (mdl.ModelFitVsNullModel.Fstat, 12831.4909842738, 1e-4);
 %! assert_equal (strcmp (mdl.ModelFitVsNullModel.NullModel, 'constant'), true);
+
+%!test
+%! ## Steps is empty for a non-stepwise fit, as in GeneralizedLinearModel
+%! assert_equal (size (mdl.Steps), [0, 0]);
 
 %!test
 %! ## constant-only model: SSR is exactly zero, SSE equals SST
@@ -7921,7 +7946,7 @@ endfunction
 %! close (fig);
 
 %!test
-%! ## robust regression 
+%! ## robust regression
 %! mr = fitlm (X, y, 'RobustOpts', 'on');
 %! fig = figure ('visible', 'off');
 %! h = plotAdjustedResponse (mr, 'x1');
@@ -8476,8 +8501,8 @@ endfunction
 %! assert_equal (t.SumSq(3), 0.386545331386823, -1e-9);
 %! assert_equal (t.DF(3), 17);
 %! assert_equal (t.MeanSq(3), 0.0227379606698131, -1e-9);
-%! assert (isnan (t.F(3)));
-%! assert (isnan (t.pValue(3)));
+%! assert_equal (isnan (t.F(3)), true);
+%! assert_equal (isnan (t.pValue(3)), true);
 
 %!test
 %! ## explicit Type 2 on shared fixture reaches the identical result as h
@@ -8512,7 +8537,7 @@ endfunction
 %! assert_equal (t.SumSq(1), 583.910420002346, -1e-9);
 %! assert_equal (t.DF(1), 19);
 %! assert_equal (t.MeanSq(1), 30.7321273685445, -1e-9);
-%! assert (isnan (t.F(1)));
+%! assert_equal (isnan (t.F(1)), true);
 %! assert_equal (t.SumSq(2), 583.523874670959, -1e-9);
 %! assert_equal (t.DF(2), 2);
 %! assert_equal (t.MeanSq(2), 291.761937335479, -1e-9);
@@ -8747,8 +8772,8 @@ endfunction
 %! assert_equal (t.Properties.RowNames, {'G1'; 'G2'; 'Error'});
 %! assert_equal (t.SumSq(1), 0, -1e-9);
 %! assert_equal (t.DF(1), 0);
-%! assert (isnan (t.F(1)));
-%! assert (isnan (t.pValue(1)));
+%! assert_equal (isnan (t.F(1)), true);
+%! assert_equal (isnan (t.pValue(1)), true);
 %! assert_equal (t.SumSq(2), 0, -1e-9);
 %! assert_equal (t.DF(2), 0);
 %! assert_equal (t.SumSq(3), 11.6666666666667, -1e-9);
@@ -9047,113 +9072,113 @@ endfunction
 %!warning <removeTerms: No specified terms appear in the model.> ...
 %! m = removeTerms (mdl, 'x1:x2');
 
-%!error <Unknown option 'NotAKey'> fitlm (X, y, 'NotAKey', 1)
-%!error <VarNames must have 3 elements> fitlm (X, y, 'VarNames', {'a','b','c','d'})
-%!error <Terms matrix must have 2 or 3 columns> fitlm (X, y, [1 2 3 4; 5 6 7 8])
-%!error <Last column of terms matrix must be all zeros> fitlm (X, y, [1 2 1; 0 1 1])
-%!error <No observations remain> fitlm (NaN (5, 2), NaN (5, 1))
-%!error <No observations remain> fitlm (NaN (3, 2), [1; 2; 3])
-%!error <No observations remain> fitlm ([1 2; 3 4; 5 6], NaN (3, 1))
-%!error <No observations remain> fitlm (X, y, 'Exclude', (1:n)')
-%!error <Not enough input arguments> fitlm ()
-%!error <Predictor variables must be numeric> fitlm ('hello', y)
-%!error <Predictor variables must be numeric> fitlm ({'a';'b'}, [1; 2])
-%!error <Y argument is required> fitlm (X)
-%!error <Y argument is required> fitlm (X, 'Weights', [1;1;1])
-%!error <Predictor and response variables must have the same length> fitlm (X, [1; 2])
-%!error <Predictor and response variables must have the same length> fitlm (X, [1 2])
-%!error <indexing is not supported> mdl(1)
-%!error <indexing is not supported> mdl {1}
-%!error <unknown option> predict (mdl, [0.5 0.25], 'BadOption', 1)
-%!error <Alpha must be a scalar> predict (mdl, [0.5 0.25], 'Alpha', -0.1)
-%!error <Alpha must be a scalar> predict (mdl, [0.5 0.25], 'Alpha', 1.5)
-%!error <Alpha must be a scalar> predict (mdl, [0.5 0.25], 'Alpha', [0.01 0.05])
-%!error <Prediction must be> predict (mdl, [0.5 0.25], 'Prediction', 'bad')
-%!error <Xnew must have 2 columns> predict (mdl, ones (3, 5))
-%!error <Xnew must have 2 columns> predict (mdl, ones (3, 1))
-%!error <missing predictor> predict (mdl, table ([1;2], 'VariableNames', {'z'}))
-%!error <Not enough input arguments> random (mdl)
-%!error <Too many input arguments> random (mdl, [0.5, 0.25], 'extra')
-%!error <Xnew must have 2 columns> random (mdl, ones (3, 5))
-%!error <Xnew must have 2 columns> random (mdl, [])
-%!error <Not enough input arguments> feval (mdl)
-%!error <Incorrect number of input arguments> feval (mdl, [0.5; 1.0], [0.25; 1.0], [0.1; 0.2])
-%!error <Predictor data matrix must have 2 columns> feval (mdl, ones (3, 1))
-%!error <All input arguments must be the same size> feval (mdl, [0.5; 1.0; 0.2], [0.25; 1.0])
-%!error <X does not contain one or more predictor> feval (mdl, table ([1; 2], 'VariableNames', {'z'}))
-%!error <Predictor data matrix must have 2 columns> feval (mdl, [])
-%!error <is not categorical> feval (mdl, '0.5', 0.25)
-%!error <too many inputs> coefCI (mdl, 0.05, 'extra')
-%!error <Value must be less than or equal to 1> coefCI (mdl, 1.5)
-%!error <Value must be greater than or equal to 0> coefCI (mdl, -0.1)
-%!error <Value must be a scalar> coefCI (mdl, [0.01 0.05])
-%!error <Value must be greater than or equal to 0> coefCI (mdl, NaN)
-%!error <Value must be a scalar> coefCI (mdl, 'abc')
-%!error <H must be a 1-by-3 numeric matrix> coefTest (mdl, [1 0])
-%!error <H must be a 1-by-3 numeric matrix> coefTest (mdl, 'abc')
-%!error <C must be a numeric vector> coefTest (mdl, [0 1 0], 'abc')
-%!error <H must be a 1-by-3 numeric matrix> coefTest (mdl, [0 1 0; 0 0 1], [1])
-%!error <H is not full rank> coefTest (mdl, [0 NaN 0])
-%!error <Too many input arguments> coefTest (mdl, [0 1 0], 0, 'extra')
-%!error <too many outputs> [a, b, c, d] = coefTest (mdl)
-%!error <The METHOD argument must be> dwtest (mdl, 'badmethod', 'both')
-%!error <The METHOD argument must be> dwtest (mdl, 123, 'both')
-%!error <Too many input arguments> dwtest (mdl, 'exact', 'both', 'extra')
-%!error <too many outputs> [a, b, c] = dwtest (mdl)
-%!error <Not enough input arguments> addTerms (mdl)
-%!error <too many inputs> addTerms (mdl, 'x1:x2', 'extra')
-%!error <Unrecognized variable> addTerms (mdl, 'z')
-%!error <Unrecognized variable> addTerms (mdl, 'X1')
-%!error <Unrecognized variable> addTerms (mdl, 'x1:z')
-%!error <Unrecognized variable> addTerms (mdl, 'x1*z')
-%!error <Terms matrix must have> addTerms (mdl, [1, 1, 1, 0])
-%!error <Terms matrix must have> addTerms (mdl, [])
-%!error <Model update specification> addTerms (mdl, {})
-%!error <Not enough input arguments> removeTerms (mdl)
-%!error <too many inputs> removeTerms (mdl, 'x1', 'extra')
-%!error <Unrecognized variable> removeTerms (mdl, 'z1')
-%!error <Terms matrix must have 3 columns> removeTerms (mdl, [0 1 0 0])
-%!error <Terms matrix must have 3 columns> removeTerms (mdl, [])
-%!error <Model update specification> removeTerms (mdl, {'x1'})
-%!error <Bad residuals plot type> plotResiduals (mdl, 'badtype')
-%!error <invalid ResidualType> plotResiduals (mdl, 'fitted', 'ResidualType', 'bad')
-%!error <Bad diagnostics plot type> plotDiagnostics (mdl, 'badtype')
-%!error <unrecognized property> plotDiagnostics (mdl, 'leverage', 'BadProp', 1)
-%!error <Wrong number of arguments> plotEffects (mdl, 'extra')
-%!error <Wrong number of arguments> plotEffects (mdl, 'a', 'b')
-%!error <Model has no predictors> plotEffects (fitlm (X(:,1), y, 'constant'))
-%!error <unrecognised RobustWgtFun> fitlm (X, y, 'RobustOpts', 'notarealfunction')
-%!error <invalid RobustOpts value> fitlm (X, y, 'RobustOpts', 42)
-%!error <Not enough input arguments> plotAdjustedResponse (mdl)
-%!error <is not a variable for this fit> plotAdjustedResponse (mdl, 'z')
-%!error <is the response in this model> plotAdjustedResponse (mdl, 3)
-%!error <This model only contains> plotAdjustedResponse (mdl, 99)
-%!error <Variable must be specified as a name or a positive integer> plotAdjustedResponse (mdl, 1.5)
-%!error <unrecognized property> plotAdjustedResponse (mdl, 'x1', 'BadOption', 5)
-%!error <Bad coefficient number> plotAdded (mdl, 99)
-%!error <Bad coefficient name> plotAdded (mdl, 'NotACoef')
-%!error <unrecognized property> plotAdded (mdl, 2, 'BadOpt', 5)
-%!error <Bad coefficient number> mdl0 = fitlm (ones (n, 1), y, 'Intercept', false); plotAdded (mdl0)
-%!error <Too many input arguments> plot (mdl, 'extra')
-%!error <Not enough input arguments> plotInteraction (mdl)
-%!error <Not enough input arguments> plotInteraction (mdl, 'x1')
-%!error <PTYPE must be> plotInteraction (mdl, 'x1', 'x2', 'badtype')
-%!error <Too many input arguments> plotInteraction (mdl, 'x1', 'x2', 'effects', 'extra')
-%!error <is not a variable for this fit> plotInteraction (mdl, 'z', 'x2')
-%!error <is not a variable for this fit> plotInteraction (mdl, 'x1', 'z')
-%!error <This model only contains> plotInteraction (mdl, 99, 'x2')
-%!error <Variable must be specified as a name or a positive integer> plotInteraction (mdl, 1.5, 'x2')
-%!error <is the response in this model> plotInteraction (mdl, 'y', 'x2')
-%!error <is the response in this model> plotInteraction (mdl, 'x1', 'y')
-%!error <VAR1 and VAR2 must be different variables> plotInteraction (mdl, 'x1', 'x1')
-%!error <too many inputs> compact (mdl, 'extra')
+%!error <LinearModel: Unknown option 'NotAKey'.> fitlm (X, y, 'NotAKey', 1)
+%!error <LinearModel: VarNames must have 3 elements.> fitlm (X, y, 'VarNames', {'a','b','c','d'})
+%!error <LinearModel: Terms matrix must have 2 or 3 columns.> fitlm (X, y, [1 2 3 4; 5 6 7 8])
+%!error <LinearModel: Last column of terms matrix must be all zeros.> fitlm (X, y, [1 2 1; 0 1 1])
+%!error <LinearModel: No observations remain after removing missing/excluded rows.> fitlm (NaN (5, 2), NaN (5, 1))
+%!error <LinearModel: No observations remain after removing missing/excluded rows.> fitlm (NaN (3, 2), [1; 2; 3])
+%!error <LinearModel: No observations remain after removing missing/excluded rows.> fitlm ([1 2; 3 4; 5 6], NaN (3, 1))
+%!error <LinearModel: No observations remain after removing missing/excluded rows.> fitlm (X, y, 'Exclude', (1:n)')
+%!error <fitlm: Not enough input arguments.> fitlm ()
+%!error <fitlm: Predictor variables must be numeric vectors, numeric matrices, or categorical vectors.> fitlm ('hello', y)
+%!error <fitlm: Predictor variables must be numeric vectors, numeric matrices, or categorical vectors.> fitlm ({'a';'b'}, [1; 2])
+%!error <fitlm: Y argument is required unless X is a dataset or table.> fitlm (X)
+%!error <fitlm: Y argument is required unless X is a dataset or table.> fitlm (X, 'Weights', [1;1;1])
+%!error <fitlm: Predictor and response variables must have the same length.> fitlm (X, [1; 2])
+%!error <fitlm: Predictor and response variables must have the same length.> fitlm (X, [1 2])
+%!error <LinearModel: \(\) indexing is not supported.  Use dot notation to access properties.> mdl(1)
+%!error <LinearModel: {} indexing is not supported.  Use dot notation to access properties.> mdl {1}
+%!error <predict: unknown option 'BadOption'.> predict (mdl, [0.5 0.25], 'BadOption', 1)
+%!error <predict: Alpha must be a scalar in \[0,1\].> predict (mdl, [0.5 0.25], 'Alpha', -0.1)
+%!error <predict: Alpha must be a scalar in \[0,1\].> predict (mdl, [0.5 0.25], 'Alpha', 1.5)
+%!error <predict: Alpha must be a scalar in \[0,1\].> predict (mdl, [0.5 0.25], 'Alpha', [0.01 0.05])
+%!error <predict: Prediction must be 'curve' or 'observation'.> predict (mdl, [0.5 0.25], 'Prediction', 'bad')
+%!error <predict: Xnew must have 2 columns.> predict (mdl, ones (3, 5))
+%!error <predict: Xnew must have 2 columns.> predict (mdl, ones (3, 1))
+%!error <predict: Xnew table is missing predictor 'x1'.> predict (mdl, table ([1;2], 'VariableNames', {'z'}))
+%!error <random: Not enough input arguments.> random (mdl)
+%!error <random: Too many input arguments.> random (mdl, [0.5, 0.25], 'extra')
+%!error <predict: Xnew must have 2 columns.> random (mdl, ones (3, 5))
+%!error <random: Xnew must have 2 columns.> random (mdl, [])
+%!error <feval: Not enough input arguments.> feval (mdl)
+%!error <feval: Incorrect number of input arguments. You must provide either 2 separate predictor variable arguments, or one predictor matrix with 2 columns.> feval (mdl, [0.5; 1.0], [0.25; 1.0], [0.1; 0.2])
+%!error <feval: Predictor data matrix must have 2 columns.> feval (mdl, ones (3, 1))
+%!error <feval: All input arguments must be the same size.> feval (mdl, [0.5; 1.0; 0.2], [0.25; 1.0])
+%!error <feval: X does not contain one or more predictor variables needed for this model.> feval (mdl, table ([1; 2], 'VariableNames', {'z'}))
+%!error <feval: Predictor data matrix must have 2 columns.> feval (mdl, [])
+%!error <feval: predictor 'x1' is not categorical.> feval (mdl, '0.5', 0.25)
+%!error <coefCI: function called with too many inputs> coefCI (mdl, 0.05, 'extra')
+%!error <coefCI: Invalid argument at position 2. Value must be less than or equal to 1.> coefCI (mdl, 1.5)
+%!error <coefCI: Invalid argument at position 2. Value must be greater than or equal to 0.> coefCI (mdl, -0.1)
+%!error <coefCI: Invalid argument at position 2. Value must be a scalar.> coefCI (mdl, [0.01 0.05])
+%!error <coefCI: Invalid argument at position 2. Value must be greater than or equal to 0.> coefCI (mdl, NaN)
+%!error <coefCI: Invalid argument at position 2. Value must be a scalar.> coefCI (mdl, 'abc')
+%!error <coefTest: H must be a 1-by-3 numeric matrix.> coefTest (mdl, [1 0])
+%!error <coefTest: H must be a 1-by-3 numeric matrix.> coefTest (mdl, 'abc')
+%!error <coefTest: C must be a numeric vector.> coefTest (mdl, [0 1 0], 'abc')
+%!error <coefTest: H must be a 1-by-3 numeric matrix.> coefTest (mdl, [0 1 0; 0 0 1], [1])
+%!error <coefTest: H is not full rank and hypotheses are not consistent.> coefTest (mdl, [0 NaN 0])
+%!error <coefTest: Too many input arguments.> coefTest (mdl, [0 1 0], 0, 'extra')
+%!error <coefTest: function called with too many outputs> [a, b, c, d] = coefTest (mdl)
+%!error <dwtest: The METHOD argument must be 'approximate' or 'exact'.> dwtest (mdl, 'badmethod', 'both')
+%!error <dwtest: The METHOD argument must be 'approximate' or 'exact'.> dwtest (mdl, 123, 'both')
+%!error <dwtest: Too many input arguments.> dwtest (mdl, 'exact', 'both', 'extra')
+%!error <dwtest: function called with too many outputs> [a, b, c] = dwtest (mdl)
+%!error <addTerms: Not enough input arguments.> addTerms (mdl)
+%!error <addTerms: function called with too many inputs> addTerms (mdl, 'x1:x2', 'extra')
+%!error <addTerms: Unrecognized variable: 'z'.> addTerms (mdl, 'z')
+%!error <addTerms: Unrecognized variable: 'X1'.> addTerms (mdl, 'X1')
+%!error <addTerms: Unrecognized variable: 'z'.> addTerms (mdl, 'x1:z')
+%!error <addTerms: Unrecognized variable: 'z'.> addTerms (mdl, 'x1*z')
+%!error <addTerms: Terms matrix must have 3 columns.> addTerms (mdl, [1, 1, 1, 0])
+%!error <addTerms: Terms matrix must have 3 columns.> addTerms (mdl, [])
+%!error <addTerms: Model update specification must be a model formula character vector or string scalar, or a terms matrix> addTerms (mdl, {})
+%!error <removeTerms: Not enough input arguments.> removeTerms (mdl)
+%!error <removeTerms: function called with too many inputs> removeTerms (mdl, 'x1', 'extra')
+%!error <removeTerms: Unrecognized variable: 'z1'.> removeTerms (mdl, 'z1')
+%!error <removeTerms: Terms matrix must have 3 columns.> removeTerms (mdl, [0 1 0 0])
+%!error <removeTerms: Terms matrix must have 3 columns.> removeTerms (mdl, [])
+%!error <removeTerms: Model update specification must be a model formula character vector or string scalar, or a terms matrix> removeTerms (mdl, {'x1'})
+%!error <plotResiduals: Bad residuals plot type.> plotResiduals (mdl, 'badtype')
+%!error <plotResiduals: invalid ResidualType 'bad'. Valid values are: 'Raw', 'Pearson', 'Standardized', 'Studentized'.> plotResiduals (mdl, 'fitted', 'ResidualType', 'bad')
+%!error <plotDiagnostics: Bad diagnostics plot type.> plotDiagnostics (mdl, 'badtype')
+%!error <lm_plot_props: unrecognized property 'BadProp'.> plotDiagnostics (mdl, 'leverage', 'BadProp', 1)
+%!error <plotEffects: Wrong number of arguments.> plotEffects (mdl, 'extra')
+%!error <plotEffects: Wrong number of arguments.> plotEffects (mdl, 'a', 'b')
+%!error <plotEffects: Model has no predictors.> plotEffects (fitlm (X(:,1), y, 'constant'))
+%!error <LinearModel: unrecognised RobustWgtFun 'notarealfunction'.> fitlm (X, y, 'RobustOpts', 'notarealfunction')
+%!error <LinearModel: invalid RobustOpts value.> fitlm (X, y, 'RobustOpts', 42)
+%!error <plotAdjustedResponse: Not enough input arguments.> plotAdjustedResponse (mdl)
+%!error <plotAdjustedResponse: 'z' is not a variable for this fit.> plotAdjustedResponse (mdl, 'z')
+%!error <plotAdjustedResponse: The variable 'y' is the response in this model.> plotAdjustedResponse (mdl, 3)
+%!error <plotAdjustedResponse: This model only contains 3 variables.> plotAdjustedResponse (mdl, 99)
+%!error <plotAdjustedResponse: Variable must be specified as a name or a positive integer.> plotAdjustedResponse (mdl, 1.5)
+%!error <lm_plot_props: unrecognized property 'BadOption'.> plotAdjustedResponse (mdl, 'x1', 'BadOption', 5)
+%!error <plotAdded: Bad coefficient number.> plotAdded (mdl, 99)
+%!error <plotAdded: Bad coefficient name.> plotAdded (mdl, 'NotACoef')
+%!error <lm_plot_props: unrecognized property 'BadOpt'.> plotAdded (mdl, 2, 'BadOpt', 5)
+%!error <plotAdded: Bad coefficient number.> mdl0 = fitlm (ones (n, 1), y, 'Intercept', false); plotAdded (mdl0)
+%!error <plot: Too many input arguments.> plot (mdl, 'extra')
+%!error <plotInteraction: Not enough input arguments.> plotInteraction (mdl)
+%!error <plotInteraction: Not enough input arguments.> plotInteraction (mdl, 'x1')
+%!error <plotInteraction: PTYPE must be 'effects' or 'predictions'.> plotInteraction (mdl, 'x1', 'x2', 'badtype')
+%!error <plotInteraction: Too many input arguments.> plotInteraction (mdl, 'x1', 'x2', 'effects', 'extra')
+%!error <plotInteraction: 'z' is not a variable for this fit.> plotInteraction (mdl, 'z', 'x2')
+%!error <plotInteraction: 'z' is not a variable for this fit.> plotInteraction (mdl, 'x1', 'z')
+%!error <plotInteraction: This model only contains 3 variables.> plotInteraction (mdl, 99, 'x2')
+%!error <plotInteraction: Variable must be specified as a name or a positive integer.> plotInteraction (mdl, 1.5, 'x2')
+%!error <plotInteraction: The variable 'y' is the response in this model.> plotInteraction (mdl, 'y', 'x2')
+%!error <plotInteraction: The variable 'y' is the response in this model.> plotInteraction (mdl, 'x1', 'y')
+%!error <plotInteraction: VAR1 and VAR2 must be different variables.> plotInteraction (mdl, 'x1', 'x1')
+%!error <compact: function called with too many inputs> compact (mdl, 'extra')
 %!error <anova: too many input arguments.> anova (mdl, 'components', 'h', 'extra')
 %!error <anova: ANOVATYPE must be 'summary' or 'components'.> anova (mdl, 'bogus')
 %!error <anova: SSTYPE can only be specified with ANOVATYPE 'components'.> anova (mdl, 'summary', 2)
 %!error <anova: SSTYPE must be 1, 2, or 3.> anova (mdl, 'components', 4)
-%!error <The STEP method is not available with a robust fit> ...
+%!error <step: The STEP method is not available with a robust fit.> ...
 %! mdl0 = fitlm (X, y, 'RobustOpts', 'on'); step (mdl0)
-%!error <Name-Value arguments must be in pairs> step (mdl, 'Verbose')
+%!error <step: Name-Value arguments must be in pairs.> step (mdl, 'Verbose')
 
 ## A factor reaching the model only through an interaction or a power has a
 ## column of the terms matrix without ever being a coefficient, so anything

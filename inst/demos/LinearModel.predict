@@ -48,7 +48,7 @@
 %!
 %! ## Predicting fuel economy from a quadratic model of vehicle weight,
 %! ## using the `carsmall` data set.
-%! ## `fitlm` fits @math{MPG} as a quadratic function of @code{Weight}, and
+%! ## `fitlm` fits `MPG` as a quadratic function of `Weight`, and
 %! ## `predict` computes the fitted curve at every original weight value,
 %! ## showing how well the quadratic term captures the curvature that a
 %! ## straight line would miss.
