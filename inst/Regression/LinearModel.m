@@ -738,6 +738,11 @@ classdef LinearModel
     ## Predictor names after categorical dummy expansion
     EncPredictorNames = {};
 
+    ## Predictors available to the fit, before those the model does not use
+    ## are dropped from the public PredictorNames.  Stepwise selection needs
+    ## the candidates, not the chosen ones.
+    PredictorNamesRaw = {};
+
     ## Cached per-predictor design contrasts used by plotEffects
     EffectContrasts = [];
 
@@ -1376,6 +1381,33 @@ classdef LinearModel
         VarsTable = tbl;
       endif
 
+      ## A variable the model does not actually use is not a predictor of it:
+      ## a table may carry columns the formula never mentions, and a terms
+      ## matrix may zero a predictor out.  MATLAB drops these from
+      ## PredictorNames and NumPredictors, and marks VariableInfo.InModel
+      ## false, keeping them in VariableNames.
+      pred_in_model = false (1, p_raw);
+      for j = 1:p_raw
+        ci = [];
+        if (! isempty (cat_info) && isfield (cat_info, 'names') ...
+            && ! isempty (cat_info.names))
+          ci = find (strcmp (cat_info.names, pred_names_raw{j}), 1);
+        endif
+        if (isempty (ci))
+          ecols = find (strcmp (enc_names, pred_names_raw{j}));
+        else
+          levels_j = cat_info.levels{ci};
+          ecols    = [];
+          for L = 2:numel (levels_j)
+            lvl_name = sprintf ("%s_%s", pred_names_raw{j}, char (levels_j{L}));
+            ecols    = [ecols, find(strcmp (enc_names, lvl_name))];
+          endfor
+        endif
+        pred_in_model(j) = ! isempty (ecols) ...
+                           && any (any (terms(:, ecols) != 0));
+      endfor
+      pred_names_used = pred_names_raw(pred_in_model);
+
       nv_total   = numel (var_names_all);
       vi_class   = cell (nv_total, 1);
       vi_range   = cell (nv_total, 1);
@@ -1408,7 +1440,7 @@ classdef LinearModel
           endif
         endif
 
-        if (! is_resp_var && ! isempty (j_pred))
+        if (! is_resp_var && ! isempty (j_pred) && pred_in_model(j_pred))
           vi_inmodel(j) = true;
         endif
       endfor
@@ -1446,12 +1478,12 @@ classdef LinearModel
       this.Steps                    = [];
       this.Formula                  = FormulaObj;
       this.NumObservations          = n_obs;
-      this.NumPredictors            = p_raw;
+      this.NumPredictors            = numel (pred_names_used);
       this.NumVariables             = n_vars;
       this.ObservationInfo          = ObsInfo;
       this.ObservationNames         = {};
       ## MATLAB returns these two as columns, and CoefficientNames as a row.
-      this.PredictorNames           = pred_names_raw(:);
+      this.PredictorNames           = pred_names_used(:);
       this.ResponseName             = resp_name;
       this.VariableInfo             = VarInfo;
       this.VariableNames            = var_names_all(:);
@@ -1466,6 +1498,7 @@ classdef LinearModel
       this.TermsMatrix              = terms;
       this.CatLevelInfo             = cat_info;
       this.EncPredictorNames        = enc_names;
+      this.PredictorNamesRaw        = pred_names_raw(:);
       this.EffectContrasts          = lm_effects_contrasts (this);
       this.InteractionContrasts     = lm_interaction_contrasts (this);
       this.TermGroups               = struct ('Name', disp_terms, 'Cols', grp_cols);
@@ -2102,7 +2135,9 @@ classdef LinearModel
       endif
 
       nv   = mdl.NumVariables;
-      pred = mdl.PredictorNames;
+      ## The candidates, not the chosen: a term may name a predictor the
+      ## current model does not use, and nv - 1 counts them all.
+      pred = mdl.PredictorNamesRaw;
 
       if (isnumeric (terms) || islogical (terms))
 
@@ -2356,7 +2391,9 @@ classdef LinearModel
       endif
 
       nv   = mdl.NumVariables;
-      pred = mdl.PredictorNames;
+      ## The candidates, not the chosen: a term may name a predictor the
+      ## current model does not use, and nv - 1 counts them all.
+      pred = mdl.PredictorNamesRaw;
 
       if (isnumeric (terms) || islogical (terms))
 
@@ -4581,7 +4618,7 @@ classdef LinearModel
         cat_vars = mdl.CatLevelInfo.names;
       endif
 
-      nv_list = {'PredictorVars', mdl.PredictorNames};
+      nv_list = {'PredictorVars', mdl.PredictorNamesRaw};
       if (! isempty (mdl.OrigOpts.Weights))
         nv_list = [nv_list, {'Weights', mdl.OrigOpts.Weights}];
       endif
@@ -4776,8 +4813,8 @@ classdef LinearModel
     endfunction
 
     function info = sw_extract (mdl0)
-      pred_names = mdl0.PredictorNames;
-      p_raw      = mdl0.NumPredictors;
+      pred_names = mdl0.PredictorNamesRaw;
+      p_raw      = numel (pred_names);
       cat_info   = mdl0.CatLevelInfo;
       enc_names  = mdl0.EncPredictorNames;
 
@@ -5682,6 +5719,62 @@ endfunction
 %!test
 %! ## Steps is empty for a non-stepwise fit, as in GeneralizedLinearModel
 %! assert_equal (size (mdl.Steps), [0, 0]);
+
+%!test
+%! ## a table column the formula never mentions is not a predictor of the fit
+%! xa = (1:n)' / n;
+%! xb = cos ((1:n)');
+%! gc = categorical (mod ((1:n)', 3));
+%! Tu = table (xa, xb, gc, y, 'VariableNames', {'xa', 'xb', 'gc', 'y'});
+%! m  = fitlm (Tu, 'y ~ xa + xb');
+%! assert_equal (m.PredictorNames, {'xa'; 'xb'});
+%! assert_equal (m.NumPredictors, 2);
+%! assert_equal (m.VariableNames, {'xa'; 'xb'; 'gc'; 'y'});
+%! assert_equal (m.NumVariables, 4);
+%! assert_equal (m.VariableInfo.InModel', [true, true, false, false]);
+
+%!test
+%! ## the unused variable being categorical no longer breaks type 3 sums of
+%! ## squares, which indexed past the end of the encoded matrix
+%! xa = (1:n)' / n;
+%! xb = cos ((1:n)');
+%! gc = categorical (mod ((1:n)', 3));
+%! Tu = table (xa, xb, gc, y, 'VariableNames', {'xa', 'xb', 'gc', 'y'});
+%! m  = fitlm (Tu, 'y ~ xa + xb');
+%! t  = anova (m, 'components', 3);
+%! assert_equal (t.Properties.RowNames, {'xa'; 'xb'; 'Error'});
+%! assert_equal (numel (t.SumSq), 3);
+
+%!test
+%! ## a model fit with no predictors at all reports none
+%! mc = fitlm (X, y, 'constant');
+%! assert_equal (isempty (mc.PredictorNames), true);
+%! assert_equal (mc.NumPredictors, 0);
+%! assert_equal (any (mc.VariableInfo.InModel), false);
+
+%!test
+%! ## a terms matrix that zeroes a predictor out drops it, as a formula does
+%! mt = fitlm (X, y, [0 0 0; 1 0 0]);
+%! mf = fitlm (X, y, 'y ~ x1');
+%! assert_equal (mt.PredictorNames, {'x1'});
+%! assert_equal (mt.NumPredictors, 1);
+%! assert_equal (mt.VariableInfo.InModel', [true, false, false]);
+%! assert_equal (mf.PredictorNames, {'x1'});
+%! assert_equal (mf.NumPredictors, 1);
+
+%!test
+%! ## a predictor reached only through an interaction is used, and stays
+%! mi = fitlm (X, y, 'y ~ x1 + x1:x2');
+%! assert_equal (mi.PredictorNames, {'x1'; 'x2'});
+%! assert_equal (mi.NumPredictors, 2);
+%! assert_equal (mi.VariableInfo.InModel', [true, true, false]);
+
+%!test
+%! ## addTerms and stepwise selection search the candidates, not the chosen
+%! mc = fitlm (X, y, 'constant');
+%! m1 = addTerms (mc, 'x1');
+%! assert_equal (m1.PredictorNames, {'x1'});
+%! assert_equal (m1.NumCoefficients, 2);
 
 %!test
 %! ## constant-only model: SSR is exactly zero, SSE equals SST
