@@ -302,10 +302,15 @@ classdef LinearModel
     ## Fitted response values
     ##
     ## An @math{n}-by-1 numeric vector of predicted response values based on
-    ## the training data, where @math{n} is the total number of observations
-    ## including excluded and missing rows, which contain @code{NaN}.  Use
-    ## @code{predict} to obtain predictions for new data or to compute
-    ## confidence bounds.  This property is read-only.
+    ## the training data, where @math{n} is the total number of observations,
+    ## excluded and missing rows included.  Every observation whose predictors
+    ## are available carries a fitted value, whether or not it was used in the
+    ## fit, so an excluded row and a row missing only its response are both
+    ## fitted; only a row whose predictors are missing is @code{NaN}.  The
+    ## corresponding @code{Residuals} are @code{NaN} for any row not used in
+    ## the fit, so @code{Fitted} and @code{Residuals.Raw} do not add back to
+    ## the response there.  Use @code{predict} to obtain predictions for new
+    ## data or to compute confidence bounds.  This property is read-only.
     ##
     ## @end deftp
     Fitted = [];
@@ -1237,9 +1242,6 @@ classdef LinearModel
       h        = fit.leverage;
       S2_i_sub = D.S2_i;
 
-      Fitted_full = NaN (n_total, 1);
-      Fitted_full(subset_mask) = fit.Fitted;
-
       Raw_full = NaN (n_total, 1);
       Raw_full(subset_mask) = fit.Raw;
 
@@ -1422,7 +1424,6 @@ classdef LinearModel
       this.NumEstimatedCoefficients = p;
       this.DFE                      = DFE;
       this.Diagnostics              = DiagTable;
-      this.Fitted                   = Fitted_full;
       this.LogLikelihood            = LogLikelihood;
       this.ModelCriterion           = struct ('AIC',  AIC, 'AICc', AICc, ...
                                              'BIC',  BIC, 'CAIC', CAIC);
@@ -1471,6 +1472,13 @@ classdef LinearModel
       if (! is_formula)
         this.EncodedPredMatrix      = X_enc_sub;
       endif
+
+      ## The fitted value of an observation is the model's prediction at its
+      ## predictors, whether or not the observation was used in the fit, so
+      ## excluded rows and rows missing only the response carry a value.  It
+      ## is computed through PREDICT, which cannot then disagree with it, and
+      ## which leaves NaN wherever a predictor itself is missing.
+      this.Fitted                   = predict (this, this.Variables);
 
     endfunction
 
@@ -5777,7 +5785,8 @@ endfunction
 %! m = fitlm (X, y3);
 %! assert_equal (m.NumObservations, 19);
 %! assert_equal (m.ObservationInfo.Missing(5), true);
-%! assert_equal (isnan (m.Fitted(5)), true);
+%! assert_equal (m.Fitted(5), -0.457777594993880, 1e-10);
+%! assert_equal (isnan (m.Residuals.Raw(5)), true);
 %! assert_equal (m.SSE, 0.337042910721425, 1e-9);
 %! assert_equal (m.SST, 558.654961265991,  1e-6);
 %! assert_equal (m.Coefficients.Estimate, ...
@@ -5785,6 +5794,7 @@ endfunction
 %! yp = predict (m, X);
 %! assert_equal (yp(5), -0.45777759499388, 1e-8);
 %! assert_equal (yp(1), 0.22047684204099, 1e-8);
+%! assert_equal (m.Fitted, yp, 1e-12);
 %! assert_equal (size (m.Diagnostics.HatMatrix), [20, 20]);
 %! assert_equal (m.Diagnostics.Leverage(1), 0.386399650026734, 1e-8);
 
@@ -5809,7 +5819,10 @@ endfunction
 %! m2 = fitlm (X, y, 'Exclude', excl);
 %! assert_equal (m.NumObservations, 18);
 %! assert_equal (sum (m.ObservationInfo.Excluded), 2);
-%! assert_equal (isnan (m.Fitted(3)) && isnan (m.Fitted(7)), true);
+%! assert_equal (m.Fitted(3), 0.045673486217021, 1e-10);
+%! assert_equal (m.Fitted(7), -1.416779188276219, 1e-10);
+%! assert_equal (isnan (m.Residuals.Raw(3)), true);
+%! assert_equal (isnan (m.Residuals.Raw(7)), true);
 %! assert_equal (m.Coefficients.Estimate, m2.Coefficients.Estimate, 1e-12);
 %! assert_equal (m.Coefficients.Estimate, ...
 %!         [0.118938102486219; 2.43606890944554; -0.974833228191174], 1e-7);
@@ -5822,6 +5835,31 @@ endfunction
 %! assert_equal (size (m.Diagnostics.HatMatrix), [20, 20]);
 %! assert_equal (m.Diagnostics.Leverage(1), 0.437780279893411, 1e-8);
 %! assert_equal (m.Diagnostics.CooksDistance(1), 0.110112457355807, 1e-7);
+
+%!test
+%! ## an excluded row is fitted, but keeps neither residuals nor diagnostics
+%! m = fitlm (X, y, 'Exclude', [3, 7]);
+%! assert_equal (m.Fitted(3), predict (m, X(3,:)), 1e-12);
+%! assert_equal (isnan (m.Residuals.Pearson(3)), true);
+%! assert_equal (isnan (m.Residuals.Studentized(3)), true);
+%! assert_equal (isnan (m.Residuals.Standardized(3)), true);
+%! assert_equal (m.Diagnostics.Leverage(3), 0);
+%! assert_equal (isnan (m.Diagnostics.CooksDistance(3)), true);
+
+%!test
+%! ## weighting does not change which rows carry a fitted value
+%! m = fitlm (X, y, 'Weights', ones (n, 1) / n, 'Exclude', [1, 3]);
+%! assert_equal (m.Fitted(1), 0.146089374212009, 1e-10);
+%! assert_equal (m.Fitted(2), 0.133765115244874, 1e-10);
+%! assert_equal (isnan (m.Residuals.Raw(1)), true);
+
+%!test
+%! ## a missing predictor is the one case that leaves the fitted value NaN
+%! X2 = X;  X2(2,1) = NaN;
+%! m = fitlm (X2, y);
+%! assert_equal (isnan (m.Fitted(2)), true);
+%! assert_equal (m.Fitted(1), 0.148994299022478, 1e-10);
+%! assert_equal (isnan (m.Residuals.Raw(2)), true);
 
 %!test
 %! ## NaN and exclude together remove both the missing and the excluded row
@@ -7206,9 +7244,10 @@ endfunction
 %! assert_equal (m.ObservationInfo.Excluded(2), false);
 %! assert_equal (m.ObservationInfo.Missing(1), false);
 %! assert_equal (height (m.Diagnostics), 20);
-%! assert_equal (isnan (m.Fitted(1)), true);
-%! assert_equal (isnan (m.Fitted(3)), true);
-%! assert_equal (isfinite (m.Fitted(2)), true);
+%! assert_equal (m.Fitted(1), 3.988005178806767, 1e-10);
+%! assert_equal (m.Fitted(3), 2.031824678378986, 1e-10);
+%! assert_equal (m.Fitted(2), 3.009914928592877, 1e-10);
+%! assert_equal (isnan (m.Residuals.Raw(1)), true);
 
 %!test
 %! ## removing x2 from a no-intercept model gives one slope term
