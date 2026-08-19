@@ -1743,10 +1743,27 @@ classdef CompactLinearModel
 
         if (use_type3)
 
-          [Xsyn, Dsyn] = cm_anova_synthetic_design (mdl);
-          Mm      = Xsyn \ Dsyn;
-          is_hier = (max (max (abs (Dsyn - Xsyn * Mm))) < 1e-8 * max (max (abs (Dsyn)))) ...
-                    && (rcond (Mm) > eps);
+          ## Deviation coding rewrites a categorical predictor's indicator
+          ## block and leaves everything else alone, so with no categorical
+          ## predictor the two designs are identical and the change of basis
+          ## is the identity.  Saying so avoids a synthetic design that
+          ## cannot represent them: it carries one row per term degree, which
+          ## is fewer rows than coefficients for an ordinary additive model,
+          ## and gives every numeric predictor the same values scaled by a
+          ## constant, which makes its numeric columns collinear whatever its
+          ## height.
+          ci_all  = mdl.CatLevelInfo;
+          has_cat = ! isempty (ci_all) && isfield (ci_all, 'names') ...
+                    && any (ismember (ci_all.names, mdl.PredictorNames));
+          if (! has_cat)
+            Mm      = eye (numel (mdl.CoefficientNames));
+            is_hier = true;
+          else
+            [Xsyn, Dsyn] = cm_anova_synthetic_design (mdl);
+            Mm      = Xsyn \ Dsyn;
+            is_hier = (max (max (abs (Dsyn - Xsyn * Mm))) < 1e-8 * max (max (abs (Dsyn)))) ...
+                      && (rcond (Mm) > eps);
+          endif
           if (! is_hier)
             error (strcat ("Cannot perform anova with type 3 sums of", ...
                            " squares for a compacted model with missing", ...
@@ -2033,17 +2050,36 @@ function [Xsyn, Dsyn] = cm_anova_synthetic_design (mdl)
   endif
 
   num_idx = find (! cat_logical);
+  n_num   = numel (num_idx);
   R       = max (2, max (mdl.TermsMatrix(:)) + 1);
-  n_syn   = cat_rows * R;
 
-  X_num_syn   = zeros (n_syn, p_raw);
-  primes_list = primes (200);
-  for r = 1:R
-    rows_r = (r - 1) * cat_rows + (1:cat_rows);
-    X_num_syn(rows_r, cat_idx) = cat_combo;
-    for k = 1:numel (num_idx)
-      X_num_syn(rows_r, num_idx(k)) = r * primes_list(k);
+  ## Cross the numeric predictors as a full factorial of R levels each, R
+  ## being one more than the highest degree any term raises them to.  Giving
+  ## them all the same values scaled by a constant instead would leave their
+  ## columns exact multiples of one another, and the design rank deficient
+  ## however many rows it had.
+  if (n_num == 0)
+    num_grid = zeros (1, 0);
+  else
+    num_grid  = zeros (R ^ n_num, n_num);
+    rep_inner = 1;
+    for k = 1:n_num
+      pattern        = repelem ((1:R)', rep_inner);
+      num_grid(:, k) = repmat (pattern, rows (num_grid) / numel (pattern), 1);
+      rep_inner      = rep_inner * R;
     endfor
+  endif
+
+  num_rows = rows (num_grid);
+  n_syn    = cat_rows * num_rows;
+
+  X_num_syn = zeros (n_syn, p_raw);
+  for a = 1:num_rows
+    rows_a = (a - 1) * cat_rows + (1:cat_rows);
+    X_num_syn(rows_a, cat_idx) = cat_combo;
+    if (n_num > 0)
+      X_num_syn(rows_a, num_idx) = repmat (num_grid(a,:), cat_rows, 1);
+    endif
   endfor
 
   X_enc_syn = encode_categorical (X_num_syn, cat_logical, pred_names, cat_levels);
@@ -2986,6 +3022,62 @@ endfunction
 %! assert_equal (t.DF(3), 17);
 %! assert_equal (isnan (t.F(3)), true);
 %! assert_equal (isnan (t.pValue(3)), true);
+
+%!test
+%! ## type 3 on a continuous-only model: no categorical, so deviation coding
+%! ## is a no-op and no synthetic design is needed (values from R2024a)
+%! xa = [1;2;3;4;5;6;7;8;9;10;1;2;3;4;5;6;7;8;9;10];
+%! xb = [2;1;4;3;6;5;8;7;10;9;2;1;4;3;6;5;8;7;10;9];
+%! yv = 3 + 2*xa - 0.5*xb + 0.4*sin ((1:20)');
+%! c  = compact (fitlm (table (xa, xb, yv), 'yv ~ xa + xb'));
+%! t  = anova (c, 'components', 3);
+%! assert_equal (t.Properties.RowNames, {'xa'; 'xb'; 'Error'});
+%! assert_equal (t.SumSq', ...
+%!   [78.1451599777569, 4.93546634617531, 1.6375633770915], -1e-9);
+
+%!test
+%! ## a model missing a lower-order relative is computed, not refused
+%! xa = [1;2;3;4;5;6;7;8;9;10;1;2;3;4;5;6;7;8;9;10];
+%! xb = [2;1;4;3;6;5;8;7;10;9;2;1;4;3;6;5;8;7;10;9];
+%! yv = 3 + 2*xa - 0.5*xb + 0.4*sin ((1:20)');
+%! c  = compact (fitlm (table (xa, xb, yv), 'yv ~ xa + xa:xb'));
+%! t  = anova (c, 'components', 3);
+%! assert_equal (t.SumSq', ...
+%!   [42.7962732581896, 1.58706426534189, 4.98596545792161], -1e-9);
+
+%!test
+%! ## a categorical beside two numeric predictors: the synthetic design must
+%! ## cross them, or its numeric columns come out collinear
+%! xa = [1;2;3;4;5;6;7;8;9;10;1;2;3;4;5;6;7;8;9;10];
+%! xb = [2;1;4;3;6;5;8;7;10;9;2;1;4;3;6;5;8;7;10;9];
+%! gc = categorical ([1;1;1;1;1;2;2;2;2;2;3;3;3;3;3;1;2;3;1;2]);
+%! yv = 3 + 2*xa - 0.5*xb + 0.4*sin ((1:20)');
+%! c  = compact (fitlm (table (xa, xb, gc, yv), 'yv ~ xa + xb + gc'));
+%! t  = anova (c, 'components', 3);
+%! assert_equal (t.Properties.RowNames, {'xa'; 'xb'; 'gc'; 'Error'});
+%! assert_equal (t.SumSq', [70.9172463138446, 4.93563224639584, ...
+%!   0.0327536552228964, 1.60480972186862], -1e-9);
+
+%!test
+%! ## a categorical interacting with a numeric predictor, beside another
+%! xa = [1;2;3;4;5;6;7;8;9;10;1;2;3;4;5;6;7;8;9;10];
+%! xb = [2;1;4;3;6;5;8;7;10;9;2;1;4;3;6;5;8;7;10;9];
+%! gc = categorical ([1;1;1;1;1;2;2;2;2;2;3;3;3;3;3;1;2;3;1;2]);
+%! yv = 3 + 2*xa - 0.5*xb + 0.4*sin ((1:20)');
+%! c  = compact (fitlm (table (xa, xb, gc, yv), 'yv ~ xa*gc + xb'));
+%! t  = anova (c, 'components', 3);
+%! assert_equal (t.SumSq', [69.1671592639563, 4.32040128576299, ...
+%!   0.106963060253346, 0.141990871527191, 1.46281885034151], -1e-9);
+
+%!test
+%! ## the compact table matches the full model's, term for term
+%! xa = [1;2;3;4;5;6;7;8;9;10;1;2;3;4;5;6;7;8;9;10];
+%! xb = [2;1;4;3;6;5;8;7;10;9;2;1;4;3;6;5;8;7;10;9];
+%! gc = categorical ([1;1;1;1;1;2;2;2;2;2;3;3;3;3;3;1;2;3;1;2]);
+%! yv = 3 + 2*xa - 0.5*xb + 0.4*sin ((1:20)');
+%! m  = fitlm (table (xa, xb, gc, yv), 'yv ~ xa + xb + gc');
+%! assert_equal (anova (compact (m), 'components', 3).SumSq, ...
+%!               anova (m, 'components', 3).SumSq, -1e-9);
 
 %!test
 %! t = anova (cmdl, 'components', 2);
