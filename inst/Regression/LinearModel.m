@@ -4280,6 +4280,15 @@ classdef LinearModel
     ## @code{MeanSq = @var{mdl}.MSE}, and @code{NaN} for @code{F} and
     ## @code{pValue}.
     ##
+    ## MATLAB reports @code{F = 1} and @code{pValue = 0.5} on that
+    ## @qcode{Error} row instead.  Those are not results: the row's @code{F}
+    ## is its own @code{MeanSq} divided by itself, so it is @code{1} for every
+    ## data set, and the @code{pValue} follows.  MATLAB does not use them
+    ## consistently either, reporting @code{NaN} for the same quantity on the
+    ## @qcode{Residual} row of its summary table.  This implementation reports
+    ## @code{NaN} in both places.  Every other value in both tables agrees
+    ## with MATLAB.
+    ##
     ## @code{anova (@var{mdl}, @var{anovatype})} selects
     ## @qcode{"components"} (default) or @qcode{"summary"}.  For
     ## @qcode{"summary"}, @var{tbl} always contains rows @qcode{Total},

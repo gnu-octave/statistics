@@ -1613,7 +1613,17 @@ classdef CompactLinearModel
     ## @code{pValue} for the corresponding term; the trailing @qcode{Error}
     ## row gives @code{SumSq = @var{mdl}.SSE}, @code{DF = @var{mdl}.DFE},
     ## @code{MeanSq = @var{mdl}.MSE}, and @code{NaN} for @code{F} and
-    ## @code{pValue}.  Every statistic is computed from
+    ## @code{pValue}.
+    ##
+    ## MATLAB reports @code{F = 1} and @code{pValue = 0.5} on that
+    ## @qcode{Error} row instead.  Those are not results: the row's @code{F}
+    ## is its own @code{MeanSq} divided by itself, so it is @code{1} for every
+    ## data set, and the @code{pValue} follows.  MATLAB does not use them
+    ## consistently either, reporting @code{NaN} for the same quantity on the
+    ## @qcode{Residual} row of its summary table.  This implementation reports
+    ## @code{NaN} in both places.
+    ##
+    ## Every statistic is computed from
     ## @code{@var{mdl}.Coefficients} and
     ## @code{@var{mdl}.CoefficientCovariance} alone; a @code{CompactLinearModel}
     ## never refits, because it does not retain the training data.
