@@ -284,6 +284,21 @@ function mdl = stepwiselm (varargin)
     premove = pr_tbl.(criterion);
   endif
 
+  ## A term must not qualify to enter and to leave at the same time.  Where
+  ## the thresholds are p-values PEnter sits below PRemove; where they are an
+  ## improvement in the criterion the sense is reversed.  Without this the
+  ## search adds and drops one term forever, NSteps being unlimited by
+  ## default, so the call never returns.
+  if (any (strcmp (criterion, {'sse', 'aic', 'bic'})))
+    if (penter >= premove)
+      error (strcat ("stepwiselm: PEnter (%g) must be less than PRemove", ...
+                     " (%g) for the '%s' criterion."), penter, premove, criterion);
+    endif
+  elseif (penter <= premove)
+    error (strcat ("stepwiselm: PEnter (%g) must be greater than PRemove", ...
+                   " (%g) for the '%s' criterion."), penter, premove, criterion);
+  endif
+
   fit_args = sw_ensure_modelspec (fit_args);
   sw_predictorvars_matrix_conflict (fit_args);
   [positional, first_nv] = sw_split_positional (fit_args);
@@ -1969,3 +1984,33 @@ endfunction
 %! stepwiselm (X, y, 'Upper', {1, 2})
 %!error <stepwiselm: the number of digits in a 'polyijk' specification must match the number of predictors.> stepwiselm (X, y, 'Upper', 'poly1')
 %!error <stepwiselm: 'bogusmodel' is not a valid model specification.> stepwiselm (X, y, 'Upper', 'bogusmodel')
+
+%!error <stepwiselm: PEnter \(0.5\) must be less than PRemove \(0.1\) for the 'sse' criterion.> stepwiselm (X, y, 'PEnter', 0.5)
+%!error <stepwiselm: PEnter \(0.1\) must be less than PRemove \(0.1\) for the 'sse' criterion.> stepwiselm (X, y, 'PEnter', 0.1, 'PRemove', 0.1)
+%!error <stepwiselm: PEnter \(0.5\) must be less than PRemove \(0.1\) for the 'aic' criterion.> stepwiselm (X, y, 'Criterion', 'aic', 'PEnter', 0.5, 'PRemove', 0.1)
+%!error <stepwiselm: PEnter \(0.001\) must be greater than PRemove \(0.5\) for the 'rsquared' criterion.> stepwiselm (X, y, 'Criterion', 'rsquared', 'PEnter', 0.001, 'PRemove', 0.5)
+
+%!test
+%! ## sse's default thresholds, 0.05 and 0.10, do not trip the guard
+%! assert_equal (isa (stepwiselm (X, y, 'Criterion', 'sse', 'Verbose', 0), ...
+%!                    'LinearModel'), true);
+
+%!test
+%! ## aic's, 0 and 0.01
+%! assert_equal (isa (stepwiselm (X, y, 'Criterion', 'aic', 'Verbose', 0), ...
+%!                    'LinearModel'), true);
+
+%!test
+%! ## bic's, 0 and 0.01
+%! assert_equal (isa (stepwiselm (X, y, 'Criterion', 'bic', 'Verbose', 0), ...
+%!                    'LinearModel'), true);
+
+%!test
+%! ## rsquared's, 0.1 and 0.05, which run the other way round
+%! assert_equal (isa (stepwiselm (X, y, 'Criterion', 'rsquared', 'Verbose', 0), ...
+%!                    'LinearModel'), true);
+
+%!test
+%! ## adjrsquared's, 0 and -0.05, the negative one
+%! assert_equal (isa (stepwiselm (X, y, 'Criterion', 'adjrsquared', 'Verbose', 0), ...
+%!                    'LinearModel'), true);
