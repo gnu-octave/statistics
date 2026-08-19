@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,12 +13,12 @@ betastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 593
+# length: 597
  -- statistics: [M, V] = betastat (A, B)
 
      Compute statistics of the Beta distribution.
 
-     '[M, V] = betastat (A, B)' returns the mean and variance of the Beta
+     ‘[M, V] = betastat (A, B)’ returns the mean and variance of the Beta
      distribution with shape parameters A and B.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -49,12 +49,12 @@ binostat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 691
+# length: 695
  -- statistics: [M, V] = binostat (N, PS)
 
      Compute statistics of the binomial distribution.
 
-     '[M, V] = binostat (N, PS)' returns the mean and variance of the binomial
+     ‘[M, V] = binostat (N, PS)’ returns the mean and variance of the binomial
      distribution with parameters N and PS, where N is the number of trials and
      PS is the probability of success.
 
@@ -86,12 +86,12 @@ bisastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 694
+# length: 698
  -- statistics: [M, V] = bisastat (BETA, GAMMA)
 
      Compute statistics of the Birnbaum-Saunders distribution.
 
-     '[M, V] = bisastat (BETA, GAMMA)' returns the mean and variance of the
+     ‘[M, V] = bisastat (BETA, GAMMA)’ returns the mean and variance of the
      Birnbaum-Saunders distribution with scale parameter BETA and shape
      parameter GAMMA.
 
@@ -123,12 +123,12 @@ burrstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 679
+# length: 683
  -- statistics: [M, V] = burrstat (LAMBDA, C, K)
 
      Compute statistics of the Burr type XII distribution.
 
-     '[M, V] = burrstat (LAMBDA, C, K)' returns the mean and variance of the
+     ‘[M, V] = burrstat (LAMBDA, C, K)’ returns the mean and variance of the
      Burr type XII distribution with scale parameter LAMBDA, first shape
      parameter C, and second shape parameter K.
 
@@ -160,12 +160,12 @@ chi2stat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 502
+# length: 506
  -- statistics: [M, V] = chi2stat (DF)
 
      Compute statistics of the chi-squared distribution.
 
-     '[M, V] = chi2stat (DF)' returns the mean and variance of the chi-squared
+     ‘[M, V] = chi2stat (DF)’ returns the mean and variance of the chi-squared
      distribution with DF degrees of freedom.
 
      The size of M (mean) and V (variance) is the same size of the input
@@ -195,15 +195,15 @@ copulaparam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2237
+# length: 2265
  -- statistics: PARAM = copulaparam (FAMILY, R)
  -- statistics: PARAM = copulaparam (..., "type", TYPE)
 
      Copula parameter as a function of rank correlation.
 
-     'PARAM = copulaparam (FAMILY, R)' returns the linear or copula parameter
+     ‘PARAM = copulaparam (FAMILY, R)’ returns the linear or copula parameter
      PARAM corresponding to a copula of the family FAMILY that has Kendall's
-     rank correlation R.  It is the inverse of 'copulastat'.
+     rank correlation R.  It is the inverse of ‘copulastat’.
 
      FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
      family, "t" for the Student's t family, "Clayton" for the Clayton family,
@@ -212,8 +212,8 @@ copulaparam
      Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
      MATLAB does not provide, and are treated as bivariate.  Neither reaches the
      whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
-     Kendall's tau in '[(5-8*log (2))/3, 1/3]' and the Farlie-Gumbel-Morgenstern
-     family one in '[-2/9, 2/9]'.
+     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
+     family one in ‘[-2/9, 2/9]’.
 
      For the Gaussian and Student's t families, R is a scalar rank correlation
      or a matrix of pairwise rank correlations, and PARAM is the corresponding
@@ -222,18 +222,18 @@ copulaparam
      copula parameter.  The Gumbel-Hougaard family models positive dependence
      only, so R must be non-negative for that family.
 
-     'PARAM = copulaparam (..., "type", TYPE)' selects the measure of rank
+     ‘PARAM = copulaparam (..., "type", TYPE)’ selects the measure of rank
      correlation given in R.  TYPE can be "Kendall" (the default) for Kendall's
      tau, or "Spearman" for Spearman's rho.
 
      The Gaussian and Student's t families and the Kendall's tau of the Clayton
      and Gumbel-Hougaard families are inverted in closed form.  The remaining
-     cases are inverted numerically from 'copulastat'.
+     cases are inverted numerically from ‘copulastat’.
 
      *Note:* for the Archimedean families with "Spearman", the underlying
      relationship is computed by exact numerical integration rather than the
      interpolated table used by MATLAB, so results may differ from MATLAB by up
-     to about 10^{-4}.  See 'copulastat'.
+     to about 10^{-4}.  See ‘copulastat’.
 
      See also: copulastat, copulafit, copulacdf, copulapdf, copularnd.
 
@@ -256,13 +256,13 @@ copulastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2342
+# length: 2362
  -- statistics: R = copulastat (FAMILY, PARAM)
  -- statistics: R = copulastat (..., "type", TYPE)
 
      Rank correlation for a copula family.
 
-     'R = copulastat (FAMILY, PARAM)' returns Kendall's rank correlation R
+     ‘R = copulastat (FAMILY, PARAM)’ returns Kendall's rank correlation R
      corresponding to a copula of the family FAMILY with linear or copula
      parameter PARAM.
 
@@ -273,8 +273,8 @@ copulastat
      Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
      MATLAB does not provide, and are treated as bivariate.  Neither reaches the
      whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
-     Kendall's tau in '[(5-8*log (2))/3, 1/3]' and the Farlie-Gumbel-Morgenstern
-     family one in '[-2/9, 2/9]'.
+     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
+     family one in ‘[-2/9, 2/9]’.
 
      For the Gaussian and Student's t families, PARAM is a linear correlation
      coefficient RHO in the range [-1,1], or a p-by-p correlation matrix, in
@@ -282,7 +282,7 @@ copulastat
      For the Clayton, Gumbel-Hougaard, and Frank families, PARAM is the scalar
      copula parameter.
 
-     'R = copulastat (..., "type", TYPE)' selects the measure of rank
+     ‘R = copulastat (..., "type", TYPE)’ selects the measure of rank
      correlation.  TYPE can be "Kendall" (the default) for Kendall's tau, or
      "Spearman" for Spearman's rho.
 
@@ -295,8 +295,8 @@ copulastat
      *Note:* MATLAB returns the Archimedean Spearman's rho by interpolating an
      internal precomputed table, whose values deviate from the true relationship
      by up to about 10^{-4}.  This implementation returns the mathematically
-     exact value instead, so results for 'copulastat (FAMILY, PARAM, "type",
-     "Spearman")' with an Archimedean FAMILY may differ from MATLAB at that
+     exact value instead, so results for ‘copulastat (FAMILY, PARAM, "type",
+     "Spearman")’ with an Archimedean FAMILY may differ from MATLAB at that
      level.
 
      See also: copulaparam, copulafit, copulacdf, copulapdf, copularnd.
@@ -320,12 +320,12 @@ evstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1053
+# length: 1061
  -- statistics: [M, V] = evstat (MU, SIGMA)
 
      Compute statistics of the extreme value distribution.
 
-     '[M, V] = evstat (MU, SIGMA)' returns the mean and variance of the extreme
+     ‘[M, V] = evstat (MU, SIGMA)’ returns the mean and variance of the extreme
      value distribution (also known as the Gumbel or the type I generalized
      extreme value distribution) with location parameter MU and scale parameter
      SIGMA.
@@ -337,7 +337,7 @@ evstat
      The type 1 extreme value distribution is also known as the Gumbel
      distribution.  This version is suitable for modeling minima.  The mirror
      image of this distribution can be used to model maxima by negating X.  If Y
-     has a Weibull distribution, then 'X = log (Y)' has the type 1 extreme value
+     has a Weibull distribution, then ‘X = log (Y)’ has the type 1 extreme value
      distribution.
 
      Further information about the Gumbel distribution can be found at
@@ -364,12 +364,12 @@ expstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 809
+# length: 813
  -- statistics: [M, V] = expstat (MU)
 
      Compute statistics of the exponential distribution.
 
-     '[M, V] = expstat (MU)' returns the mean and variance of the exponential
+     ‘[M, V] = expstat (MU)’ returns the mean and variance of the exponential
      distribution with mean parameter MU.
 
      The size of M (mean) and V (variance) is the same size of the input
@@ -404,12 +404,12 @@ fstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 558
+# length: 562
  -- statistics: [M, V] = fstat (DF1, DF2)
 
      Compute statistics of the F-distribution.
 
-     '[M, V] = fstat (DF1, DF2)' returns the mean and variance of the
+     ‘[M, V] = fstat (DF1, DF2)’ returns the mean and variance of the
      F-distribution with DF1 and DF2 degrees of freedom.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -440,12 +440,12 @@ gamstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1030
+# length: 1034
  -- statistics: [M, V] = gamstat (A, B)
 
      Compute statistics of the Gamma distribution.
 
-     '[M, V] = gamstat (A, B)' returns the mean and variance of the Gamma
+     ‘[M, V] = gamstat (A, B)’ returns the mean and variance of the Gamma
      distribution with shape parameter A and scale parameter B.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -483,12 +483,12 @@ geostat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 510
+# length: 514
  -- statistics: [M, V] = geostat (PS)
 
      Compute statistics of the geometric distribution.
 
-     '[M, V] = geostat (PS)' returns the mean and variance of the geometric
+     ‘[M, V] = geostat (PS)’ returns the mean and variance of the geometric
      distribution with probability of success parameter PS.
 
      The size of M (mean) and V (variance) is the same size of the input
@@ -518,12 +518,12 @@ gevstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 961
+# length: 965
  -- statistics: [M, V] = gevstat (K, SIGMA, MU)
 
      Compute statistics of the generalized extreme value distribution.
 
-     '[M, V] = gevstat (K, SIGMA, MU)' returns the mean and variance of the
+     ‘[M, V] = gevstat (K, SIGMA, MU)’ returns the mean and variance of the
      generalized extreme value distribution with shape parameter K, scale
      parameter SIGMA, and location parameter MU.
 
@@ -560,12 +560,12 @@ gpstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1243
+# length: 1279
  -- statistics: [M, V] = gpstat (K, SIGMA, THETA)
 
      Compute statistics of the generalized Pareto distribution.
 
-     '[M, V] = gpstat (K, SIGMA, THETA)' returns the mean and variance of the
+     ‘[M, V] = gpstat (K, SIGMA, THETA)’ returns the mean and variance of the
      generalized Pareto distribution with shape parameter K, scale parameter
      SIGMA, and location parameter THETA.
 
@@ -574,12 +574,12 @@ gpstat
      as the other inputs.
 
      When K = 0 and THETA = 0, the generalized Pareto distribution is equivalent
-     to the exponential distribution.  When 'K > 0' and 'THETA = SIGMA / K', the
+     to the exponential distribution.  When ‘K > 0’ and ‘THETA = SIGMA / K’, the
      generalized Pareto distribution is equivalent to the Pareto distribution.
-     The mean of the generalized Pareto distribution is not finite when 'K >=
-     1', and the variance is not finite when 'K >= 1/2'.  When 'K >= 0', the
-     generalized Pareto distribution has positive density for 'X > THETA', or,
-     when 'K < 0', for '0 <= (X - THETA) / SIGMA <= -1 / K'.
+     The mean of the generalized Pareto distribution is not finite when ‘K >=
+     1’, and the variance is not finite when ‘K >= 1/2’.  When ‘K >= 0’, the
+     generalized Pareto distribution has positive density for ‘X > THETA’, or,
+     when ‘K < 0’, for ‘0 <= (X - THETA) / SIGMA <= -1 / K’.
 
      Further information about the generalized Pareto distribution can be found
      at <https://en.wikipedia.org/wiki/Generalized_Pareto_distribution>
@@ -605,12 +605,12 @@ hnstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 672
+# length: 676
  -- statistics: [M, V] = hnstat (MU, SIGMA)
 
      Compute statistics of the half-normal distribution.
 
-     '[M, V] = hnstat (MU, SIGMA)' returns the mean and variance of the
+     ‘[M, V] = hnstat (MU, SIGMA)’ returns the mean and variance of the
      half-normal distribution with non-centrality (distance) parameter MU and
      scale parameter SIGMA.
 
@@ -642,21 +642,21 @@ hygestat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1039
+# length: 1049
  -- statistics: [MN, V] = hygestat (M, K, N)
 
      Compute statistics of the hypergeometric distribution.
 
-     '[MN, V] = hygestat (M, K, N)' returns the mean and variance of the
+     ‘[MN, V] = hygestat (M, K, N)’ returns the mean and variance of the
      hypergeometric distribution parameters M, K, and N.
 
-        * M is the total size of the population of the hypergeometric
+        • M is the total size of the population of the hypergeometric
           distribution.  The elements of M must be positive natural numbers.
 
-        * K is the number of marked items of the hypergeometric distribution.
+        • K is the number of marked items of the hypergeometric distribution.
           The elements of K must be natural numbers.
 
-        * N is the size of the drawn sample of the hypergeometric distribution.
+        • N is the size of the drawn sample of the hypergeometric distribution.
           The elements of N must be positive natural numbers.
 
      The size of MN (mean) and V (variance) is the common size of the input
@@ -687,12 +687,12 @@ invgstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 678
+# length: 682
  -- statistics: [M, V] = invgstat (MU, LAMBDA)
 
      Compute statistics of the inverse Gaussian distribution.
 
-     '[M, V] = invgstat (MU, LAMBDA)' returns the mean and variance of the
+     ‘[M, V] = invgstat (MU, LAMBDA)’ returns the mean and variance of the
      inverse Gaussian distribution with mean parameter MU and shape parameter
      LAMBDA.
 
@@ -724,12 +724,12 @@ logistat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 638
+# length: 642
  -- statistics: [M, V] = logistat (MU, SIGMA)
 
      Compute statistics of the logistic distribution.
 
-     '[M, V] = logistat (MU, SIGMA)' returns the mean and variance of the
+     ‘[M, V] = logistat (MU, SIGMA)’ returns the mean and variance of the
      logistic distribution with mean parameter MU and scale parameter SIGMA.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -760,12 +760,12 @@ loglstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 932
+# length: 940
  -- statistics: [M, V] = loglstat (MU, SIGMA)
 
      Compute statistics of the loglogistic distribution.
 
-     '[M, V] = loglstat (MU, SIGMA)' returns the mean and variance of the
+     ‘[M, V] = loglstat (MU, SIGMA)’ returns the mean and variance of the
      loglogistic distribution with mean parameter MU and scale parameter SIGMA.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -779,8 +779,8 @@ loglstat
      i.e.  MU and SIGMA, in analogy with the logistic distribution.  Their
      relation to the α and b parameters used in Wikipedia are given below:
 
-        * MU = log (A)
-        * SIGMA = 1 / A
+        • MU = log (A)
+        • SIGMA = 1 / A
 
      See also: logncdf, logninv, lognpdf, lognrnd, lognfit, lognlike.
 
@@ -803,12 +803,12 @@ lognstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 719
+# length: 723
  -- statistics: [M, V] = lognstat (MU, SIGMA)
 
      Compute statistics of the lognormal distribution.
 
-     '[M, V] = lognstat (MU, SIGMA)' returns the mean and variance of the
+     ‘[M, V] = lognstat (MU, SIGMA)’ returns the mean and variance of the
      lognormal distribution with mean parameter MU and standard deviation
      parameter SIGMA, each corresponding to the associated normal distribution.
 
@@ -840,12 +840,12 @@ nakastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 638
+# length: 642
  -- statistics: [M, V] = nakastat (MU, OMEGA)
 
      Compute statistics of the Nakagami distribution.
 
-     '[M, V] = nakastat (MU, OMEGA)' returns the mean and variance of the
+     ‘[M, V] = nakastat (MU, OMEGA)’ returns the mean and variance of the
      Nakagami distribution with shape parameter MU and spread parameter OMEGA.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -876,12 +876,12 @@ nbinstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 811
+# length: 815
  -- statistics: [M, V] = nbinstat (R, PS)
 
      Compute statistics of the negative binomial distribution.
 
-     '[M, V] = nbinstat (R, PS)' returns the mean and variance of the negative
+     ‘[M, V] = nbinstat (R, PS)’ returns the mean and variance of the negative
      binomial distribution with parameters R and PS, where R is the number of
      successes until the experiment is stopped and PS is the probability of
      success in each experiment, given the number of failures in X.
@@ -914,12 +914,12 @@ ncfstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 678
+# length: 682
  -- statistics: [M, V] = ncfstat (DF1, DF1, LAMBDA)
 
      Compute statistics for the noncentral F-distribution.
 
-     '[M, V] = ncfstat (DF1, DF1, LAMBDA)' returns the mean and variance of the
+     ‘[M, V] = ncfstat (DF1, DF1, LAMBDA)’ returns the mean and variance of the
      noncentral F-distribution with DF1 and DF2 degrees of freedom and
      noncentrality parameter LAMBDA.
 
@@ -951,12 +951,12 @@ nctstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 640
+# length: 644
  -- statistics: [M, V] = nctstat (DF, MU)
 
      Compute statistics for the noncentral t-distribution.
 
-     '[M, V] = nctstat (DF, MU)' returns the mean and variance of the noncentral
+     ‘[M, V] = nctstat (DF, MU)’ returns the mean and variance of the noncentral
      t-distribution with DF degrees of freedom and noncentrality parameter MU.
 
      The size of M (mean) and V (variance) is the common size of the input
@@ -987,12 +987,12 @@ ncx2stat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 701
+# length: 705
  -- statistics: [M, V] = ncx2stat (DF, LAMBDA)
 
      Compute statistics for the noncentral chi-squared distribution.
 
-     '[M, V] = ncx2stat (DF, LAMBDA)' returns the mean and variance of the
+     ‘[M, V] = ncx2stat (DF, LAMBDA)’ returns the mean and variance of the
      noncentral chi-squared distribution with DF degrees of freedom and
      noncentrality parameter LAMBDA.
 
@@ -1025,12 +1025,12 @@ normstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 656
+# length: 660
  -- statistics: [M, V] = normstat (MU, SIGMA)
 
      Compute statistics of the normal distribution.
 
-     '[M, V] = normstat (MU, SIGMA)' returns the mean and variance of the normal
+     ‘[M, V] = normstat (MU, SIGMA)’ returns the mean and variance of the normal
      distribution with non-centrality (distance) parameter MU and scale
      parameter SIGMA.
 
@@ -1062,12 +1062,12 @@ plstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 619
+# length: 623
  -- statistics: [M, V] = plstat (X, FX)
 
      Compute statistics of the piecewise linear distribution.
 
-     '[M, V] = plstat (X, FX)' returns the mean, M, and variance, V, of the
+     ‘[M, V] = plstat (X, FX)’ returns the mean, M, and variance, V, of the
      piecewise linear distribution with a vector of X values at which the CDF
      changes slope and a vector of CDF values FX that correspond to each value
      in X.  Both X and FX must be vectors of the same size and at least
@@ -1097,12 +1097,12 @@ poisstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 519
+# length: 523
  -- statistics: [M, V] = poisstat (LAMBDA)
 
      Compute statistics of the Poisson distribution.
 
-     '[M, V] = poisstat (LAMBDA)' returns the mean and variance of the Poisson
+     ‘[M, V] = poisstat (LAMBDA)’ returns the mean and variance of the Poisson
      distribution with rate parameter LAMBDA.
 
      The size of M (mean) and V (variance) is the same size of the input
@@ -1132,12 +1132,12 @@ raylstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 515
+# length: 519
  -- statistics: [M, V] = raylstat (SIGMA)
 
      Compute statistics of the Rayleigh distribution.
 
-     '[M, V] = raylstat (SIGMA)' returns the mean and variance of the Rayleigh
+     ‘[M, V] = raylstat (SIGMA)’ returns the mean and variance of the Rayleigh
      distribution with scale parameter SIGMA.
 
      The size of M (mean) and V (variance) is the same size of the input
@@ -1167,12 +1167,12 @@ ricestat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 651
+# length: 655
  -- statistics: [M, V] = ricestat (S, SIGMA)
 
      Compute statistics of the Rician distribution.
 
-     '[M, V] = ricestat (S, SIGMA)' returns the mean and variance of the Rician
+     ‘[M, V] = ricestat (S, SIGMA)’ returns the mean and variance of the Rician
      distribution with non-centrality (distance) parameter S and scale parameter
      SIGMA.
 
@@ -1204,12 +1204,12 @@ tlsstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 765
+# length: 769
  -- statistics: [M, V] = tlsstat (MU, SIGMA, NU)
 
      Compute statistics of the location-scale Student's T distribution.
 
-     '[M, V] = tlsstat (MU, SIGMA, NU)' returns the mean and variance of the
+     ‘[M, V] = tlsstat (MU, SIGMA, NU)’ returns the mean and variance of the
      location-scale Student's T distribution with location parameter MU, scale
      parameter SIGMA, and NU degrees of freedom.
 
@@ -1242,12 +1242,12 @@ tristat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1157
+# length: 1161
  -- statistics: [M, V] = tristat (A, B, C)
 
      Compute statistics of the Triangular distribution.
 
-     '[M, V] = tristat (A, B, C)' returns the mean and variance of the
+     ‘[M, V] = tristat (A, B, C)’ returns the mean and variance of the
      Triangular distribution with lower limit parameter A, peak location (mode)
      parameter B, and upper limit parameter C.
 
@@ -1287,12 +1287,12 @@ tstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 486
+# length: 490
  -- statistics: [M, V] = tstat (DF)
 
      Compute statistics of the Student's T distribution.
 
-     '[M, V] = tstat (DF)' returns the mean and variance of the Student's T
+     ‘[M, V] = tstat (DF)’ returns the mean and variance of the Student's T
      distribution with DF degrees of freedom.
 
      The size of M (mean) and V (variance) is the same size of the input
@@ -1322,12 +1322,12 @@ unidstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 637
+# length: 641
  -- statistics: [M, V] = unidstat (DF)
 
      Compute statistics of the discrete uniform cumulative distribution.
 
-     '[M, V] = unidstat (DF)' returns the mean and variance of the discrete
+     ‘[M, V] = unidstat (DF)’ returns the mean and variance of the discrete
      uniform cumulative distribution with parameter N, which corresponds to the
      maximum observable value and must be a positive natural number.
 
@@ -1358,12 +1358,12 @@ unifstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 719
+# length: 723
  -- statistics: [M, V] = unifstat (DF)
 
      Compute statistics of the continuous uniform cumulative distribution.
 
-     '[M, V] = unifstat (DF)' returns the mean and variance of the continuous
+     ‘[M, V] = unifstat (DF)’ returns the mean and variance of the continuous
      uniform cumulative distribution with parameters A and B, which define the
      lower and upper bounds of the interval [A, B].
 
@@ -1395,12 +1395,12 @@ wblstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 636
+# length: 640
  -- statistics: [M, V] = wblstat (LAMBDA, K)
 
      Compute statistics of the Weibull distribution.
 
-     '[M, V] = wblstat (LAMBDA, K)' returns the mean and variance of the Weibull
+     ‘[M, V] = wblstat (LAMBDA, K)’ returns the mean and variance of the Weibull
      distribution with scale parameter LAMBDA and shape parameter K.
 
      The size of M (mean) and V (variance) is the common size of the input

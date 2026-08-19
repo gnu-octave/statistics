@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,7 +13,7 @@ hmmdecode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2959
+# length: 3047
  -- statistics: PSTATES = hmmdecode (SEQUENCE, TRANSPROB, OUTPROB)
  -- statistics: [PSTATES, LOGPSEQ] = hmmdecode (...)
  -- statistics: [PSTATES, LOGPSEQ, FS, BS, S] = hmmdecode (...)
@@ -24,40 +24,40 @@ hmmdecode
      Calculate the posterior state probabilities of the sequence SEQUENCE from a
      hidden Markov model.  The posterior state probabilities are the conditional
      probabilities of being in each state given the whole observed sequence.
-     The model assumes that the generation starts in state '1' at step '0' but
-     does not include step '0' in the sequence.
+     The model assumes that the generation starts in state ‘1’ at step ‘0’ but
+     does not include step ‘0’ in the sequence.
 
      Arguments
      ---------
 
-        * SEQUENCE is a vector of length LEN of given outputs.  The outputs must
-          be integers ranging from '1' to 'columns (outprob)'.
+        • SEQUENCE is a vector of length LEN of given outputs.  The outputs must
+          be integers ranging from ‘1’ to ‘columns (outprob)’.
 
-        * TRANSPROB is the matrix of transition probabilities of the states.
-          'transprob(i, j)' is the probability of a transition to state 'j'
-          given state 'i'.
+        • TRANSPROB is the matrix of transition probabilities of the states.
+          ‘transprob(i, j)’ is the probability of a transition to state ‘j’
+          given state ‘i’.
 
-        * OUTPROB is the matrix of output probabilities.  'outprob(i, j)' is the
-          probability of generating output 'j' given state 'i'.
+        • OUTPROB is the matrix of output probabilities.  ‘outprob(i, j)’ is the
+          probability of generating output ‘j’ given state ‘i’.
 
      Return values
      -------------
 
-        * PSTATES is the matrix of posterior state probabilities.  It has one
+        • PSTATES is the matrix of posterior state probabilities.  It has one
           row for each state and one column for each element of SEQUENCE.
-          'pstates(i, j)' is the conditional probability that the model is in
-          state 'i' when it generates the 'j'-th output of SEQUENCE, given that
+          ‘pstates(i, j)’ is the conditional probability that the model is in
+          state ‘i’ when it generates the ‘j’-th output of SEQUENCE, given that
           SEQUENCE is emitted.
 
-        * LOGPSEQ is the logarithm of the probability of the sequence SEQUENCE.
+        • LOGPSEQ is the logarithm of the probability of the sequence SEQUENCE.
 
-        * FS and BS are the scaled forward and backward probabilities,
+        • FS and BS are the scaled forward and backward probabilities,
           respectively, and S is the vector of scale factors used to keep the
           computation numerically stable.
 
-     If '"symbols"' is specified, then SEQUENCE is expected to be a sequence of
-     the elements of SYMBOLS instead of integers ranging from '1' to 'columns
-     (outprob)'.  SYMBOLS can be a cell array.
+     If ‘"symbols"’ is specified, then SEQUENCE is expected to be a sequence of
+     the elements of SYMBOLS instead of integers ranging from ‘1’ to ‘columns
+     (outprob)’.  SYMBOLS can be a cell array.
 
      Examples
      --------
@@ -75,12 +75,12 @@ hmmdecode
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
-          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
        2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  'Proceedings of the IEEE', 77(2),
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
           pages 257-286, February 1989.
 
 
@@ -102,7 +102,7 @@ hmmestimate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4506
+# length: 4598
  -- statistics: [TRANSPROBEST, OUTPROBEST] = hmmestimate (SEQUENCE, STATES)
  -- statistics: [...] = hmmestimate (..., "statenames", STATENAMES)
  -- statistics: [...] = hmmestimate (..., "symbols", SYMBOLS)
@@ -122,43 +122,43 @@ hmmestimate
      Arguments
      ---------
 
-        * SEQUENCE is a vector of a sequence of given outputs.  The outputs must
-          be integers ranging from '1' to the number of outputs of the hidden
+        • SEQUENCE is a vector of a sequence of given outputs.  The outputs must
+          be integers ranging from ‘1’ to the number of outputs of the hidden
           Markov model.
 
-        * STATES is a vector of the same length as SEQUENCE of given states.
-          The states must be integers ranging from '1' to the number of states
+        • STATES is a vector of the same length as SEQUENCE of given states.
+          The states must be integers ranging from ‘1’ to the number of states
           of the hidden Markov model.
 
      Return values
      -------------
 
-        * TRANSPROBEST is the matrix of the estimated transition probabilities
-          of the states.  'transprobest(i, j)' is the estimated probability of a
-          transition to state 'j' given state 'i'.
+        • TRANSPROBEST is the matrix of the estimated transition probabilities
+          of the states.  ‘transprobest(i, j)’ is the estimated probability of a
+          transition to state ‘j’ given state ‘i’.
 
-        * OUTPROBEST is the matrix of the estimated output probabilities.
-          'outprobest(i, j)' is the estimated probability of generating output
-          'j' given state 'i'.
+        • OUTPROBEST is the matrix of the estimated output probabilities.
+          ‘outprobest(i, j)’ is the estimated probability of generating output
+          ‘j’ given state ‘i’.
 
-     If ''symbols'' is specified, then SEQUENCE is expected to be a sequence of
+     If ‘'symbols'’ is specified, then SEQUENCE is expected to be a sequence of
      the elements of SYMBOLS instead of integers.  SYMBOLS can be a cell array.
 
-     If ''statenames'' is specified, then STATES is expected to be a sequence of
+     If ‘'statenames'’ is specified, then STATES is expected to be a sequence of
      the elements of STATENAMES instead of integers.  STATENAMES can be a cell
      array.
 
-     If ''pseudotransitions'' is specified then the integer matrix
+     If ‘'pseudotransitions'’ is specified then the integer matrix
      PSEUDOTRANSITIONS is used as an initial number of counted transitions.
-     'pseudotransitions(i, j)' is the initial number of counted transitions from
-     state 'i' to state 'j'.  TRANSPROBEST will have the same size as
+     ‘pseudotransitions(i, j)’ is the initial number of counted transitions from
+     state ‘i’ to state ‘j’.  TRANSPROBEST will have the same size as
      PSEUDOTRANSITIONS.  Use this if you have transitions that are very unlikely
      to occur.
 
-     If ''pseudoemissions'' is specified then the integer matrix PSEUDOEMISSIONS
-     is used as an initial number of counted outputs.  'pseudoemissions(i, j)'
-     is the initial number of counted outputs 'j' given state 'i'.  If
-     ''pseudoemissions'' is also specified then the number of rows of
+     If ‘'pseudoemissions'’ is specified then the integer matrix PSEUDOEMISSIONS
+     is used as an initial number of counted outputs.  ‘pseudoemissions(i, j)’
+     is the initial number of counted outputs ‘j’ given state ‘i’.  If
+     ‘'pseudoemissions'’ is also specified then the number of rows of
      PSEUDOEMISSIONS must be the same as the number of rows of
      PSEUDOTRANSITIONS.  OUTPROBEST will have the same size as PSEUDOEMISSIONS.
      Use this if you have outputs or states that are very unlikely to occur.
@@ -190,12 +190,12 @@ hmmestimate
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
-          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
        2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  'Proceedings of the IEEE', 77(2),
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
           pages 257-286, February 1989.
 
 
@@ -217,7 +217,7 @@ hmmgenerate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2567
+# length: 2661
  -- statistics: [SEQUENCE, STATES] = hmmgenerate (LEN, TRANSPROB, OUTPROB)
  -- statistics: [...] = hmmgenerate (..., "symbols", SYMBOLS)
  -- statistics: [...] = hmmgenerate (..., "statenames", STATENAMES)
@@ -225,38 +225,38 @@ hmmgenerate
      Output sequence and hidden states of a hidden Markov model.
 
      Generate an output sequence and hidden states of a hidden Markov model.
-     The model starts in state '1' at step '0' but will not include step '0' in
+     The model starts in state ‘1’ at step ‘0’ but will not include step ‘0’ in
      the generated states and sequence.
 
      Arguments
      ---------
 
-        * LEN is the number of steps to generate.  SEQUENCE and STATES will have
+        • LEN is the number of steps to generate.  SEQUENCE and STATES will have
           LEN entries each.
 
-        * TRANSPROB is the matrix of transition probabilities of the states.
-          'transprob(i, j)' is the probability of a transition to state 'j'
-          given state 'i'.
+        • TRANSPROB is the matrix of transition probabilities of the states.
+          ‘transprob(i, j)’ is the probability of a transition to state ‘j’
+          given state ‘i’.
 
-        * OUTPROB is the matrix of output probabilities.  'outprob(i, j)' is the
-          probability of generating output 'j' given state 'i'.
+        • OUTPROB is the matrix of output probabilities.  ‘outprob(i, j)’ is the
+          probability of generating output ‘j’ given state ‘i’.
 
      Return values
      -------------
 
-        * SEQUENCE is a vector of length LEN of the generated outputs.  The
-          outputs are integers ranging from '1' to 'columns (outprob)'.
+        • SEQUENCE is a vector of length LEN of the generated outputs.  The
+          outputs are integers ranging from ‘1’ to ‘columns (outprob)’.
 
-        * STATES is a vector of length LEN of the generated hidden states.  The
-          states are integers ranging from '1' to 'columns (transprob)'.
+        • STATES is a vector of length LEN of the generated hidden states.  The
+          states are integers ranging from ‘1’ to ‘columns (transprob)’.
 
-     If '"symbols"' is specified, then the elements of SYMBOLS are used for the
-     output sequence instead of integers ranging from '1' to 'columns
-     (outprob)'.  SYMBOLS can be a cell array.
+     If ‘"symbols"’ is specified, then the elements of SYMBOLS are used for the
+     output sequence instead of integers ranging from ‘1’ to ‘columns
+     (outprob)’.  SYMBOLS can be a cell array.
 
-     If '"statenames"' is specified, then the elements of STATENAMES are used
-     for the states instead of integers ranging from '1' to 'columns
-     (transprob)'.  STATENAMES can be a cell array.
+     If ‘"statenames"’ is specified, then the elements of STATENAMES are used
+     for the states instead of integers ranging from ‘1’ to ‘columns
+     (transprob)’.  STATENAMES can be a cell array.
 
      Examples
      --------
@@ -274,12 +274,12 @@ hmmgenerate
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
-          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
        2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  'Proceedings of the IEEE', 77(2),
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
           pages 257-286, February 1989.
 
 
@@ -301,7 +301,7 @@ hmmtrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4058
+# length: 4188
  -- statistics: [ESTTR, ESTOUT] = hmmtrain (SEQUENCE, TRANSGUESS, OUTGUESS)
  -- statistics: [...] = hmmtrain (..., "algorithm", ALGORITHM)
  -- statistics: [...] = hmmtrain (..., "symbols", SYMBOLS)
@@ -314,62 +314,62 @@ hmmtrain
      Estimate the parameters of a hidden Markov model from emitted sequences.
 
      Given one or more observed output sequences and initial guesses for the
-     transition and output probability matrices, 'hmmtrain' finds maximum
+     transition and output probability matrices, ‘hmmtrain’ finds maximum
      likelihood estimates of the two matrices using the Baum-Welch algorithm
      (the default) or Viterbi training.  The model assumes that the generation
-     starts in state '1' at step '0' but does not include step '0' in the
+     starts in state ‘1’ at step ‘0’ but does not include step ‘0’ in the
      sequence.
 
      Arguments
      ---------
 
-        * SEQUENCE is a vector of a sequence of given outputs, or, for training
+        • SEQUENCE is a vector of a sequence of given outputs, or, for training
           from several sequences, a cell array of such vectors or a matrix whose
           rows are individual sequences.  The outputs must be integers ranging
-          from '1' to 'columns (outguess)'.
+          from ‘1’ to ‘columns (outguess)’.
 
-        * TRANSGUESS is the initial guess for the matrix of transition
-          probabilities.  'transguess(i, j)' is the probability of a transition
-          to state 'j' given state 'i'.
+        • TRANSGUESS is the initial guess for the matrix of transition
+          probabilities.  ‘transguess(i, j)’ is the probability of a transition
+          to state ‘j’ given state ‘i’.
 
-        * OUTGUESS is the initial guess for the matrix of output probabilities.
-          'outguess(i, j)' is the probability of generating output 'j' given
-          state 'i'.
+        • OUTGUESS is the initial guess for the matrix of output probabilities.
+          ‘outguess(i, j)’ is the probability of generating output ‘j’ given
+          state ‘i’.
 
      Return values
      -------------
 
-        * ESTTR is the estimated matrix of transition probabilities.
+        • ESTTR is the estimated matrix of transition probabilities.
 
-        * ESTOUT is the estimated matrix of output probabilities.
+        • ESTOUT is the estimated matrix of output probabilities.
 
      Name-Value pair arguments
      -------------------------
 
-        * '"algorithm"' selects the training algorithm, either '"BaumWelch"'
-          (default) or '"Viterbi"'.  '"BaumWelch"' performs the standard
+        • ‘"algorithm"’ selects the training algorithm, either ‘"BaumWelch"’
+          (default) or ‘"Viterbi"’.  ‘"BaumWelch"’ performs the standard
           forward-backward re-estimation and is recommended for most uses.
-          '"Viterbi"' performs segmental (hard) re-estimation from the most
+          ‘"Viterbi"’ performs segmental (hard) re-estimation from the most
           likely state path of each sequence; it is faster but only approximates
           the maximum-likelihood estimate.
 
-        * '"symbols"' specifies the possible outputs.  If given, SEQUENCE is
+        • ‘"symbols"’ specifies the possible outputs.  If given, SEQUENCE is
           expected to hold the elements of SYMBOLS instead of integers.  SYMBOLS
           can be a cell array.
 
-        * '"tolerance"' is the convergence tolerance (default '1e-6').  The
+        • ‘"tolerance"’ is the convergence tolerance (default ‘1e-6’).  The
           algorithm terminates when the change in the log-likelihood and in both
           estimated matrices falls below TOL.
 
-        * '"maxiterations"' is the maximum number of iterations (default '500').
+        • ‘"maxiterations"’ is the maximum number of iterations (default ‘500’).
           A warning is issued if the algorithm has not converged within this
           many iterations.
 
-        * '"pseudotransitions"' and '"pseudoemissions"' supply pseudo-count
+        • ‘"pseudotransitions"’ and ‘"pseudoemissions"’ supply pseudo-count
           matrices for Viterbi training, used to keep transitions or outputs
           that are very unlikely to occur from collapsing to zero probability.
 
-        * '"verbose"', when true, prints the log-likelihood and the change in
+        • ‘"verbose"’, when true, prints the log-likelihood and the change in
           the estimates at each iteration.
 
      Examples
@@ -385,12 +385,12 @@ hmmtrain
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
-          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
        2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  'Proceedings of the IEEE', 77(2),
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
           pages 257-286, February 1989.
 
 
@@ -412,7 +412,7 @@ hmmviterbi
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2666
+# length: 2758
  -- statistics: VPATH = hmmviterbi (SEQUENCE, TRANSPROB, OUTPROB)
  -- statistics: VPATH = hmmviterbi (..., "symbols", SYMBOLS)
  -- statistics: VPATH = hmmviterbi (..., "statenames", STATENAMES)
@@ -421,36 +421,36 @@ hmmviterbi
 
      Use the Viterbi algorithm to find the Viterbi path of a hidden Markov model
      given a sequence of outputs.  The model assumes that the generation starts
-     in state '1' at step '0' but does not include step '0' in the generated
+     in state ‘1’ at step ‘0’ but does not include step ‘0’ in the generated
      states and sequence.
 
      Arguments
      ---------
 
-        * SEQUENCE is the vector of length LEN of given outputs.  The outputs
-          must be integers ranging from '1' to 'columns (outprob)'.
+        • SEQUENCE is the vector of length LEN of given outputs.  The outputs
+          must be integers ranging from ‘1’ to ‘columns (outprob)’.
 
-        * TRANSPROB is the matrix of transition probabilities of the states.
-          'transprob(i, j)' is the probability of a transition to state 'j'
-          given state 'i'.
+        • TRANSPROB is the matrix of transition probabilities of the states.
+          ‘transprob(i, j)’ is the probability of a transition to state ‘j’
+          given state ‘i’.
 
-        * OUTPROB is the matrix of output probabilities.  'outprob(i, j)' is the
-          probability of generating output 'j' given state 'i'.
+        • OUTPROB is the matrix of output probabilities.  ‘outprob(i, j)’ is the
+          probability of generating output ‘j’ given state ‘i’.
 
      Return values
      -------------
 
-        * VPATH is the vector of the same length as SEQUENCE of the estimated
-          hidden states.  The states are integers ranging from '1' to 'columns
-          (transprob)'.
+        • VPATH is the vector of the same length as SEQUENCE of the estimated
+          hidden states.  The states are integers ranging from ‘1’ to ‘columns
+          (transprob)’.
 
-     If '"symbols"' is specified, then SEQUENCE is expected to be a sequence of
-     the elements of SYMBOLS instead of integers ranging from '1' to 'columns
-     (outprob)'.  SYMBOLS can be a cell array.
+     If ‘"symbols"’ is specified, then SEQUENCE is expected to be a sequence of
+     the elements of SYMBOLS instead of integers ranging from ‘1’ to ‘columns
+     (outprob)’.  SYMBOLS can be a cell array.
 
-     If '"statenames"' is specified, then the elements of STATENAMES are used
-     for the states in VPATH instead of integers ranging from '1' to 'columns
-     (transprob)'.  STATENAMES can be a cell array.
+     If ‘"statenames"’ is specified, then the elements of STATENAMES are used
+     for the states in VPATH instead of integers ranging from ‘1’ to ‘columns
+     (transprob)’.  STATENAMES can be a cell array.
 
      Examples
      --------
@@ -470,12 +470,12 @@ hmmviterbi
      References
      ----------
 
-       1. Wendy L. Martinez and Angel R. Martinez.  'Computational Statistics
-          Handbook with MATLAB'. Appendix E, pages 547-557, Chapman & Hall/CRC,
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
           2001.
 
        2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  'Proceedings of the IEEE', 77(2),
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
           pages 257-286, February 1989.
 
 

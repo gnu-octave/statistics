@@ -13,14 +13,14 @@ cholcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1375
+# length: 1399
  -- statistics: T = cholcov (SIGMA)
  -- statistics: [T, P = cholcov (SIGMA)
  -- statistics: [...] = cholcov (SIGMA, FLAG)
 
      Cholesky-like decomposition for covariance matrix.
 
-     'T = cholcov (SIGMA)' computes matrix T such that SIGMA = T' T.  SIGMA must
+     ‘T = cholcov (SIGMA)’ computes matrix T such that SIGMA = T' T.  SIGMA must
      be square, symmetric, and positive semi-definite.
 
      If SIGMA is positive definite, then T is the square, upper triangular
@@ -30,19 +30,19 @@ cholcov
      close to zero (within a tolerance) are omitted.  If any remaining
      eigenvalues are negative, T is empty.
 
-     The tolerance is calculated as '10 * eps (max (abs (diag (sigma))))'.
+     The tolerance is calculated as ‘10 * eps (max (abs (diag (sigma))))’.
 
-     '[T, P = cholcov (SIGMA)' returns in P the number of negative eigenvalues
+     ‘[T, P = cholcov (SIGMA)’ returns in P the number of negative eigenvalues
      of SIGMA.  If P > 0, then T is empty, whereas if P = 0, SIGMA) is positive
      semi-definite.
 
      If SIGMA is not square and symmetric, P is NaN and T is empty.
 
-     '[T, P = cholcov (SIGMA, 0)' returns P = 0 if SIGMA is positive definite,
+     ‘[T, P = cholcov (SIGMA, 0)’ returns P = 0 if SIGMA is positive definite,
      in which case T is the Cholesky factor.  If SIGMA is not positive definite,
      P is a positive integer and T is empty.
 
-     '[...] = cholcov (SIGMA, 1)' is equivalent to ' [...] = cholcov (SIGMA)'.
+     ‘[...] = cholcov (SIGMA, 1)’ is equivalent to ‘ [...] = cholcov (SIGMA)’.
 
      See also: chov.
 
@@ -65,12 +65,12 @@ loadmodel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 431
+# length: 435
  -- ClassificationSVM: OBJ = loadmodel (FILENAME)
 
      Load a Classification or Regression model from a file.
 
-     'OBJ = loadmodel (FILENAME)' loads a Classification or Regression object,
+     ‘OBJ = loadmodel (FILENAME)’ loads a Classification or Regression object,
      OBJ, from a file defined in FILENAME.
 
      See also: savemodel, ClassificationDiscriminant, ClassificationGAM,
@@ -126,7 +126,7 @@ makima
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1766
+# length: 1778
  -- statistics: YI = makima (X, Y, XQ)
  -- statistics: YI = makima (Y, XQ)
  -- statistics: YI = makima (..., 'extrap')
@@ -138,7 +138,7 @@ makima
      piecewise cubic interpolant.  It differs from standard splines by avoiding
      excessive local undulations and overshoots, and it connects collinear
      points (flat regions) with straight lines.  It is particularly well-suited
-     for oscillatory data where 'pchip' might aggressively flatten local
+     for oscillatory data where ‘pchip’ might aggressively flatten local
      extrema.
 
      The sample points X must be a vector of unique values.  If X is not sorted,
@@ -150,14 +150,14 @@ makima
      supported.
 
      If query points XQ are provided, the function evaluates the interpolant and
-     returns the interpolated values YI.  By default, 'makima' uses the boundary
+     returns the interpolated values YI.  By default, ‘makima’ uses the boundary
      polynomials to extrapolate for points outside the range of X.  The optional
      string argument 'extrap' is accepted for compatibility with other
      interpolation functions.
 
      If only X and Y are provided, the function returns a piecewise polynomial
      structure PP that represents the interpolant.  This structure can be
-     evaluated later at specific query points using 'ppval'.
+     evaluated later at specific query points using ‘ppval’.
 
      Evaluating the interpolant at query points outside the domain of X
      automatically extrapolates using the boundary polynomials.
@@ -213,24 +213,24 @@ statget
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1116
+# length: 1140
  -- statistics: VALUE = statget (OPTIONS, NAME)
  -- statistics: VALUE = statget (OPTIONS, NAME, DEFAULT)
 
      Read one option out of a statistics options structure.
 
-     'VALUE = statget (OPTIONS, NAME)' returns the value the option NAME carries
-     in OPTIONS, or '[]' when that option is unset.  OPTIONS is a structure as
-     built by 'statset', although any structure is accepted.
+     ‘VALUE = statget (OPTIONS, NAME)’ returns the value the option NAME carries
+     in OPTIONS, or ‘[]’ when that option is unset.  OPTIONS is a structure as
+     built by ‘statset’, although any structure is accepted.
 
-     'VALUE = statget (OPTIONS, NAME, DEFAULT)' returns DEFAULT instead whenever
+     ‘VALUE = statget (OPTIONS, NAME, DEFAULT)’ returns DEFAULT instead whenever
      the option is unset, which is the form a calling function uses to fall back
      on its own default.  Note that DEFAULT is returned when the option is
      _empty_, not only when it is absent, since an empty option is precisely how
-     'statset' spells "unset".
+     ‘statset’ spells "unset".
 
      NAME is matched case-insensitively, and may be abbreviated to any leading
-     portion that singles out one option: 'statget (OPTIONS, "MaxI")' reads
+     portion that singles out one option: ‘statget (OPTIONS, "MaxI")’ reads
      "MaxIter".  An abbreviation matching more than one option raises, rather
      than choosing between them; an exact match is taken as exact even where it
      is also a prefix of a longer name.

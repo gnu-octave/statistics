@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,7 +13,7 @@ andrewsplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1704
+# length: 1720
  -- statistics: andrewsplot (X)
  -- statistics: andrewsplot (X, NAME, VALUE, ...)
  -- statistics: andrewsplot (AX, ...)
@@ -21,7 +21,7 @@ andrewsplot
 
      Create an Andrews plot of the multivariate data in X.
 
-     'andrewsplot (X)' plots each observation (row) of the 'n'-by-'p' matrix X
+     ‘andrewsplot (X)’ plots each observation (row) of the ‘n’-by-‘p’ matrix X
      as a smooth curve defined by the finite Fourier series
 
           f_i(t) = x_i1/sqrt(2) + x_i2 sin(2*pi*t) + x_i3 cos(2*pi*t)
@@ -49,7 +49,7 @@ andrewsplot
           observation, only three curves per group are drawn: the pointwise
           median and the ALPHA and 1-ALPHA quantiles of the group's curves.
 
-     'andrewsplot (AX, ...)' plots into the axes AX.
+     ‘andrewsplot (AX, ...)’ plots into the axes AX.
 
      The optional output H is a vector of handles to the plotted lines: one per
      observation, or three per group when "Quantile" is used.
@@ -75,7 +75,7 @@ bar3
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4224
+# length: 4260
  -- statistics: bar3 (Z)
  -- statistics: bar3 (Y, Z)
  -- statistics: bar3 (..., WIDTH)
@@ -87,7 +87,7 @@ bar3
 
      Plot a 3D bar graph.
 
-     'bar3 (Z)' plots 3D bar graph for the elements of Z.  Each bar corresponds
+     ‘bar3 (Z)’ plots 3D bar graph for the elements of Z.  Each bar corresponds
      to an element in Z, which can be a scalar, vector, or 2D matrix.  By
      default, each column in Z is considered as a series and it is handled as a
      distinct series of bars.  When Z is a vector, unlike MATLAB, which plots it
@@ -98,13 +98,13 @@ bar3
      function plots the bars corresponding to each row on the y-axis ranging
      from 1 to M and each column on the x-axis ranging from 1 to N.
 
-     'bar3 (Y, Z)' plots a 3D bar graph of the elements in Z at the y-values
+     ‘bar3 (Y, Z)’ plots a 3D bar graph of the elements in Z at the y-values
      specified in Y.  It should be noted that Y only affects the tick names
      along the y-axis rather the actual values.  If you want to specify
      non-numerical values for Y, you can specify it with the paired NAME/VALUE
      syntax shown below.
 
-     'bar3 (..., WIDTH)' sets the width of the bars along the x- and y-axes and
+     ‘bar3 (..., WIDTH)’ sets the width of the bars along the x- and y-axes and
      controls the separation of bars among each other.  WIDTH can take any value
      in the range (0,1].  By default, WIDTH is 0.8 and the bars have a small
      separation.  If width is 1, the bars touch one another.  Alternatively, you
@@ -112,10 +112,10 @@ bar3
      syntax shown below, in which case you can control the bar separation along
      each axis independently.
 
-     'bar3 (..., STYLE)' specifies the style of the bars, where STYLE can be
+     ‘bar3 (..., STYLE)’ specifies the style of the bars, where STYLE can be
      'detached', 'grouped', or 'stacked'.  The default style is 'detached'.
 
-     'bar3 (..., COLOR)' displays all bars using the color specified by color.
+     ‘bar3 (..., COLOR)’ displays all bars using the color specified by color.
      For example, use 'red' or 'r' to specify all red bars.  When you want to
      specify colors for several groups, COLOR can be a cellstr vector with each
      element specifying the color of each group.  COLOR can also be specified as
@@ -127,7 +127,7 @@ bar3
      particular color.  You can also define COLOR using the paired NAME/VALUE
      syntax shown below.
 
-     'bar3 (..., NAME, VALUE)' specifies one or more of the following name/value
+     ‘bar3 (..., NAME, VALUE)’ specifies one or more of the following name/value
      pairs:
 
      Name             Value
@@ -146,12 +146,12 @@ bar3
      'ylabel'         A cellstr vector specifying the names of the bars in the
                       same series along the y-axis.
 
-     'bar3 (AX, ...)' can also take an axes handle AX as a first argument in
+     ‘bar3 (AX, ...)’ can also take an axes handle AX as a first argument in
      which case it plots into the axes specified by AX instead of into the
-     current axes specified by 'gca ()'.  The optional argument AX can precede
+     current axes specified by ‘gca ()’.  The optional argument AX can precede
      any of the input argument combinations in the previous syntaxes.
 
-     'P = bar3 (...)' returns a patch handle P, which can be used to set
+     ‘P = bar3 (...)’ returns a patch handle P, which can be used to set
      properties of the bars after displaying the 3D bar graph.
 
      See also: boxplot, hist3.
@@ -175,7 +175,7 @@ bar3h
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4251
+# length: 4287
  -- statistics: bar3h (Y)
  -- statistics: bar3h (Z, Y)
  -- statistics: bar3h (..., WIDTH)
@@ -187,7 +187,7 @@ bar3h
 
      Plot a horizontal 3D bar graph.
 
-     'bar3h (Y)' plots 3D bar graph for the elements of Y.  Each bar corresponds
+     ‘bar3h (Y)’ plots 3D bar graph for the elements of Y.  Each bar corresponds
      to an element in Y, which can be a scalar, vector, or 2D matrix.  By
      default, each column in Y is considered as a series and it is handled as a
      distinct series of bars.  When Y is a vector, unlike MATLAB, which plots it
@@ -198,13 +198,13 @@ bar3h
      function plots the bars corresponding to each row on the z-axis ranging
      from 1 to M and each column on the x-axis ranging from 1 to N.
 
-     'bar3h (Z, Y)' plots a 3D bar graph of the elements in Y at the z-values
+     ‘bar3h (Z, Y)’ plots a 3D bar graph of the elements in Y at the z-values
      specified in Z.  It should be noted that Z only affects the tick names
      along the z-axis rather the actual values.  If you want to specify
      non-numerical values for Z, you can specify it with the paired NAME/VALUE
      syntax shown below.
 
-     'bar3h (..., WIDTH)' sets the width of the bars along the x- and z-axes and
+     ‘bar3h (..., WIDTH)’ sets the width of the bars along the x- and z-axes and
      controls the separation of bars among each other.  WIDTH can take any value
      in the range (0,1].  By default, WIDTH is 0.8 and the bars have a small
      separation.  If width is 1, the bars touch one another.  Alternatively, you
@@ -212,10 +212,10 @@ bar3h
      syntax shown below, in which case you can control the bar separation along
      each axis independently.
 
-     'bar3h (..., STYLE)' specifies the style of the bars, where STYLE can be
+     ‘bar3h (..., STYLE)’ specifies the style of the bars, where STYLE can be
      'detached', 'grouped', or 'stacked'.  The default style is 'detached'.
 
-     'bar3h (..., COLOR)' displays all bars using the color specified by color.
+     ‘bar3h (..., COLOR)’ displays all bars using the color specified by color.
      For example, use 'red' or 'r' to specify all red bars.  When you want to
      specify colors for several groups, COLOR can be a cellstr vector with each
      element specifying the color of each group.  COLOR can also be specified as
@@ -227,7 +227,7 @@ bar3h
      particular color.  You can also define COLOR using the paired NAME/VALUE
      syntax shown below.
 
-     'bar3h (..., NAME, VALUE)' specifies one or more of the following
+     ‘bar3h (..., NAME, VALUE)’ specifies one or more of the following
      name/value pairs:
 
      Name             Value
@@ -246,12 +246,12 @@ bar3h
      'zlabel'         A cellstr vector specifying the names of the bars in the
                       same series along the z-axis.
 
-     'bar3h (AX, ...)' can also take an axes handle AX as a first argument in
+     ‘bar3h (AX, ...)’ can also take an axes handle AX as a first argument in
      which case it plots into the axes specified by AX instead of into the
-     current axes specified by 'gca ()'.  The optional argument AX can precede
+     current axes specified by ‘gca ()’.  The optional argument AX can precede
      any of the input argument combinations in the previous syntaxes.
 
-     'P = bar3h (...)' returns a patch handle P, which can be used to set
+     ‘P = bar3h (...)’ returns a patch handle P, which can be used to set
      properties of the bars after displaying the 3D bar graph.
 
      See also: boxplot, hist3.
@@ -275,7 +275,7 @@ biplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2057
+# length: 2077
  -- statistics: biplot (COEFS)
  -- statistics: biplot (COEFS, NAME, VALUE, ...)
  -- statistics: biplot (AX, ...)
@@ -283,9 +283,9 @@ biplot
 
      Create a biplot of the coefficients in COEFS.
 
-     'biplot (COEFS)' plots the rows of COEFS, typically the principal component
-     coefficients returned by 'pca' or 'pcacov' or the factor loadings returned
-     by 'factoran', as vectors from the origin.  COEFS has one row per observed
+     ‘biplot (COEFS)’ plots the rows of COEFS, typically the principal component
+     coefficients returned by ‘pca’ or ‘pcacov’ or the factor loadings returned
+     by ‘factoran’, as vectors from the origin.  COEFS has one row per observed
      variable and either two columns (for a 2-D biplot) or three columns (for a
      3-D biplot).
 
@@ -316,7 +316,7 @@ biplot
      largest-magnitude element is positive; the same sign change is applied to
      the corresponding column of the scores.
 
-     'biplot (AX, ...)' plots into the axes AX.
+     ‘biplot (AX, ...)’ plots into the axes AX.
 
      The optional output H is a column vector of handles to the plotted graphics
      objects, ordered as the variable vector lines, the variable markers, the
@@ -344,7 +344,7 @@ boxplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 9020
+# length: 9054
  -- statistics: S = boxplot (DATA)
  -- statistics: S = boxplot (DATA, GROUP)
  -- statistics: S = boxplot (DATA, NOTCHED, SYMBOL, ORIENTATION, WHISKER, ...)
@@ -363,12 +363,12 @@ boxplot
 
      Input arguments (case-insensitive) recognized by boxplot are:
 
-        * DATA is a matrix with one column for each data set, or a cell vector
+        • DATA is a matrix with one column for each data set, or a cell vector
           with one cell for each data set.  Each cell must contain a numerical
           row or column vector (NaN and NA are ignored) and not a nested vector
           of cells.
 
-        * NOTCHED = 1 produces a notched-box plot.  Notches represent a robust
+        • NOTCHED = 1 produces a notched-box plot.  Notches represent a robust
           estimate of the uncertainty about the median.
 
           NOTCHED = 0 (default) produces a rectangular box plot.
@@ -377,7 +377,7 @@ boxplot
           depth.  Notched values outside (0,1) are amusing if not exactly
           impractical.
 
-        * SYMBOL sets the symbol for the outlier values.  The default symbol for
+        • SYMBOL sets the symbol for the outlier values.  The default symbol for
           points that lie outside 3 times the interquartile range is 'o'; the
           default symbol for points between 1.5 and 3 times the interquartile
           range is '+'.
@@ -389,25 +389,25 @@ boxplot
           SYMBOL = ['x','*']: points between 1.5 and 3 times the IQR are marked
           with 'x' and points outside 3 times IQR with '*'.
 
-        * ORIENTATION = 0 makes the boxes horizontally.
+        • ORIENTATION = 0 makes the boxes horizontally.
           ORIENTATION = 1 plots the boxes vertically (default).  Alternatively,
           orientation can be passed as a string, e.g., 'vertical' or
           'horizontal'.
 
-        * WHISKER defines the length of the whiskers as a function of the IQR
-          (default = 1.5).  If WHISKER = 0 then 'boxplot' displays all data
+        • WHISKER defines the length of the whiskers as a function of the IQR
+          (default = 1.5).  If WHISKER = 0 then ‘boxplot’ displays all data
           values outside the box using the plotting symbol for points that lie
           outside 3 times the IQR.
 
-        * GROUP may be passed as an optional argument only in the second
+        • GROUP may be passed as an optional argument only in the second
           position after DATA.  GROUP can be a numeric, character, string, or
           categorical vector defining separate categories.  To group by multiple
           variables simultaneously, pass a cell array of grouping vectors (e.g.,
-          '{group1, group2}').  A separate box is plotted for each unique
+          ‘{group1, group2}’).  A separate box is plotted for each unique
           combination of group values.  All grouping variables must have the
           same length as DATA.
 
-        * OPTIONS are additional paired arguments passed with the formalism
+        • OPTIONS are additional paired arguments passed with the formalism
           (Name, Value) that provide extra functionality as listed below.
           OPTIONS can be passed at any order after the initial arguments and are
           case-insensitive.
@@ -489,9 +489,9 @@ boxplot
      6        Lower confidence limit for median
      7        Upper confidence limit for median
 
-     The quartiles are those of 'quantile' at its default method, which is also
-     what 'prctile' returns, so the box edges of a data set always agree with
-     'prctile (DATA, [25, 75])'.  They set the inter-quartile range, and so the
+     The quartiles are those of ‘quantile’ at its default method, which is also
+     what ‘prctile’ returns, so the box edges of a data set always agree with
+     ‘prctile (DATA, [25, 75])’.  They set the inter-quartile range, and so the
      whisker fences and which observations are reported as outliers.
 
      The returned structure H contains handles to the plot elements, allowing
@@ -523,18 +523,18 @@ cdfplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1198
+# length: 1210
  -- statistics: HCDF = cdfplot (X)
  -- statistics: [HCDF, STATS] = cdfplot (X)
 
      Display an empirical cumulative distribution function.
 
-     'HCDF = cdfplot (X)' plots an empirical cumulative distribution function
+     ‘HCDF = cdfplot (X)’ plots an empirical cumulative distribution function
      (CDF) of the observations in the data sample vector X.  X may be a row or
      column vector, and represents a random sample of observations from some
      underlying distribution.
 
-     'cdfplot' plots F(x), the empirical (or sample) CDF versus the observations
+     ‘cdfplot’ plots F(x), the empirical (or sample) CDF versus the observations
      in X.  The empirical CDF, F(x), is defined as follows:
 
      F(x) = (Number of observations <= x) / (Total number of observations)
@@ -542,7 +542,7 @@ cdfplot
      for all values in the sample vector X.  NaNs are ignored.  HCDF is the
      handle of the empirical CDF curve (a handle graphics 'line' object).
 
-     '[HCDF, STATS] = cdfplot (X)' also returns a structure with the following
+     ‘[HCDF, STATS] = cdfplot (X)’ also returns a structure with the following
      fields as a statistical summary.
 
      STATS.min                minimum value of X
@@ -572,7 +572,7 @@ dendrogram
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2257
+# length: 2277
  -- statistics: dendrogram (TREE)
  -- statistics: dendrogram (TREE, P)
  -- statistics: dendrogram (TREE, PROP, VAL)
@@ -582,15 +582,15 @@ dendrogram
 
      Plot a dendrogram of a hierarchical binary cluster tree.
 
-     Given TREE, a hierarchical binary cluster tree as the output of 'linkage',
+     Given TREE, a hierarchical binary cluster tree as the output of ‘linkage’,
      plot a dendrogram of the tree.  The number of leaves shown by the
      dendrogram plot is limited to P.  The default value for P is 30.  Set P to
      0 to plot all leaves.
 
      The optional outputs are H, T and PERM:
-        * H is a handle to the lines of the plot.
+        • H is a handle to the lines of the plot.
 
-        * T is the vector with the numbers assigned to each leaf.  Each element
+        • T is the vector with the numbers assigned to each leaf.  Each element
           of T is a leaf of TREE and its value is the number shown in the plot.
           When the dendrogram plot is collapsed, that is when the number of
           shown leaves P is inferior to the total number of leaves, a single
@@ -599,23 +599,23 @@ dendrogram
           leaf of the plot.  When the dendrogram plot is not collapsed, each
           leaf of the plot is the leaf of TREE with the same number.
 
-        * PERM is the vector list of the leaves as ordered as in the plot.
+        • PERM is the vector list of the leaves as ordered as in the plot.
 
      Additional input properties can be specified by pairs of properties and
      values.  Known properties are:
-        * 'Reorder' Reorder the leaves of the dendrogram plot using a numerical
+        • 'Reorder' Reorder the leaves of the dendrogram plot using a numerical
           vector of size n, the number of leaves.  When P is smaller than N, the
           reordering cannot break the P groups of leaves.
 
-        * 'Orientation' Change the orientation of the plot.  Available values:
+        • 'Orientation' Change the orientation of the plot.  Available values:
           top (default), bottom, left, right.
 
-        * 'CheckCrossing' Check if the lines of a reordered dendrogram cross
+        • 'CheckCrossing' Check if the lines of a reordered dendrogram cross
           each other.  Available values: true (default), false.
 
-        * 'ColorThreshold' Not implemented.
+        • 'ColorThreshold' Not implemented.
 
-        * 'Labels' Use a char, string or cellstr array of size N to set the
+        • 'Labels' Use a char, string or cellstr array of size N to set the
           label for each leaf; the label is displayed only for nodes with just
           one leaf.
 
@@ -640,33 +640,33 @@ ecdfhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1369
+# length: 1401
  -- statistics: [N, C] = ecdfhist (F, X)
  -- statistics: [N, C] = ecdfhist (F, X, M)
  -- statistics: [N, C] = ecdfhist (F, X, CENTERS)
  -- statistics: ecdfhist (...)
  -- statistics: ecdfhist (AX, ...)
 
-     Create a histogram from the output of 'ecdf'.
+     Create a histogram from the output of ‘ecdf’.
 
-     '[N, C] = ecdfhist (F, X)' takes the empirical cumulative distribution
-     function F evaluated at the points X, as computed by 'ecdf', and returns
+     ‘[N, C] = ecdfhist (F, X)’ takes the empirical cumulative distribution
+     function F evaluated at the points X, as computed by ‘ecdf’, and returns
      the heights N of histogram bars for 10 equally spaced bins together with
      their centers C.  Unlike a count histogram, the bar heights are normalized
      so that the area of the histogram is equal to 1, giving an estimate of the
      probability density function.
 
-     '[N, C] = ecdfhist (F, X, M)' uses M equally spaced bins.
+     ‘[N, C] = ecdfhist (F, X, M)’ uses M equally spaced bins.
 
-     '[N, C] = ecdfhist (F, X, CENTERS)' uses bins with the specified centers,
+     ‘[N, C] = ecdfhist (F, X, CENTERS)’ uses bins with the specified centers,
      given as a vector of monotonically increasing values.
 
-     'ecdfhist (...)' without output arguments plots the histogram.
+     ‘ecdfhist (...)’ without output arguments plots the histogram.
 
-     'ecdfhist (AX, ...)' plots into the axes AX instead of the current axes.
+     ‘ecdfhist (AX, ...)’ plots into the axes AX instead of the current axes.
 
      The probability mass assigned to each bin is the sum of the increments of
-     the empirical cdf, 'diff (F)', over the points X that fall closest to the
+     the empirical cdf, ‘diff (F)’, over the points X that fall closest to the
      corresponding bin center; ties are assigned to the lower center.  Each bar
      height is that mass divided by the bin width.
 
@@ -676,8 +676,10 @@ ecdfhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 45
-Create a histogram from the output of 'ecdf'.
+# length: 53
+Create a histogram from the output of ‘ecdf’.
+
+  
 
 
 
@@ -691,7 +693,7 @@ einstein
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1414
+# length: 1436
  -- statistics: einstein ()
  -- statistics: TILES = einstein (A, B)
  -- statistics: [TILES, RHAT] = einstein (A, B)
@@ -705,20 +707,20 @@ einstein
      Scalars A and B define the shape of the einstein tile.  See Smith et al
      (2023) for details: <https://arxiv.org/abs/2303.10798>
 
-        * TILES is a structure containing the coordinates of the einstein tiles
+        • TILES is a structure containing the coordinates of the einstein tiles
           that are tiled on the plot.  Each field contains the tile coordinates
           of the corresponding clusters.
-             * TILES.rhat contains the reflected einstein tiles
-             * TILES.that contains the three-hat shells
-             * TILES.shat contains the single-hat clusters
-             * TILES.phat contains the paired-hat clusters
-             * TILES.fhat contains the fylfot clusters
+             • TILES.rhat contains the reflected einstein tiles
+             • TILES.that contains the three-hat shells
+             • TILES.shat contains the single-hat clusters
+             • TILES.phat contains the paired-hat clusters
+             • TILES.fhat contains the fylfot clusters
 
-        * RHAT contains the coordinates of the first reflected tile
-        * THAT contains the coordinates of the first three-hat shell
-        * SHAT contains the coordinates of the first single-hat cluster
-        * PHAT contains the coordinates of the first paired-hat cluster
-        * FHAT contains the coordinates of the first fylfot cluster
+        • RHAT contains the coordinates of the first reflected tile
+        • THAT contains the coordinates of the first three-hat shell
+        • SHAT contains the coordinates of the first single-hat cluster
+        • PHAT contains the coordinates of the first paired-hat cluster
+        • FHAT contains the coordinates of the first fylfot cluster
 
 
 # name: <cell-element>
@@ -739,14 +741,14 @@ glyphplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1799
+# length: 1823
  -- statistics: glyphplot (X)
  -- statistics: glyphplot (X, NAME, VALUE, ...)
  -- statistics: G = glyphplot (...)
 
      Create a star (glyph) plot of the multivariate data in X.
 
-     'glyphplot (X)' draws each observation (row) of the 'n'-by-'p' matrix X as
+     ‘glyphplot (X)’ draws each observation (row) of the ‘n’-by-‘p’ matrix X as
      a star glyph, arranged on a grid.  The P spokes of each star radiate from
      its center at equally spaced angles, with lengths proportional to the
      values of the P variables; the tips of the spokes are joined to form the
@@ -767,11 +769,11 @@ glyphplot
           visible.
 
      "Grid"
-          A two-element vector '[rows cols]' specifying the layout of the
+          A two-element vector ‘[rows cols]’ specifying the layout of the
           glyphs.  The default is chosen automatically.
 
      "Centers"
-          An 'n'-by-2 matrix giving the center coordinates of the glyphs
+          An ‘n’-by-2 matrix giving the center coordinates of the glyphs
           explicitly, overriding "Grid".
 
      "Radius"
@@ -781,7 +783,7 @@ glyphplot
           A character array or cell array of strings labeling the observations.
           The default is the observation numbers.
 
-     The optional output G is an 'n'-by-3 matrix of handles whose columns hold,
+     The optional output G is an ‘n’-by-3 matrix of handles whose columns hold,
      respectively, the star perimeters, the star spokes, and the text labels.
 
      See also: andrewsplot, parallelcoords.
@@ -805,7 +807,7 @@ gplotmatrix
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2899
+# length: 2927
  -- statistics: gplotmatrix (X, Y, GROUP)
  -- statistics: gplotmatrix (X, [], GROUP)
  -- statistics: gplotmatrix (X, Y, GROUP, CLR, SYM, SIZ)
@@ -816,16 +818,16 @@ gplotmatrix
 
      Create a matrix of scatter plots grouped by a categorical variable.
 
-     'gplotmatrix (X, Y, GROUP)' creates a matrix of scatter plots.  Each
+     ‘gplotmatrix (X, Y, GROUP)’ creates a matrix of scatter plots.  Each
      subplot in the resulting figure is a scatter plot of a column of X against
-     a column of Y.  If X is 'n'-by-P and Y is 'n'-by-Q, the resulting figure
+     a column of Y.  If X is ‘n’-by-P and Y is ‘n’-by-Q, the resulting figure
      holds a Q-by-P grid of subplots; the subplot in row I and column J plots
-     'X(:,j)' on the horizontal axis against 'Y(:,i)' on the vertical axis.
+     ‘X(:,j)’ on the horizontal axis against ‘Y(:,i)’ on the vertical axis.
      Points are grouped and colored according to GROUP, which is a grouping
      variable (numeric, logical, character, string, or cell array of strings)
      with one entry per row of X.
 
-     'gplotmatrix (X, [], GROUP)' is equivalent to 'gplotmatrix (X, X, GROUP)'
+     ‘gplotmatrix (X, [], GROUP)’ is equivalent to ‘gplotmatrix (X, X, GROUP)’
      except that the diagonal of the P-by-P grid is replaced by grouped
      histograms of the columns of X.
 
@@ -888,7 +890,7 @@ gscatter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1756
+# length: 1796
  -- statistics: gscatter (X, Y, G)
  -- statistics: gscatter (X, Y, G, CLR, SYM, SIZ)
  -- statistics: gscatter (..., DOLEG, XNAM, YNAM)
@@ -896,7 +898,7 @@ gscatter
 
      Draw a scatter plot with grouped data.
 
-     'gscatter' is a utility function to draw a scatter plot of X and Y,
+     ‘gscatter’ is a utility function to draw a scatter plot of X and Y,
      according to the groups defined by G.  Input X and Y are numeric vectors of
      the same size, while G is either a vector of the same size as X or a
      character matrix with the same number of rows as the size of X.  As a
@@ -904,26 +906,26 @@ gscatter
      implemented), a cell string or cell array.
 
      A number of optional inputs change the appearance of the plot:
-        * "CLR" defines the color for each group; if not enough colors are
-          defined by "CLR", 'gscatter' cycles through the specified colors.
+        • "CLR" defines the color for each group; if not enough colors are
+          defined by "CLR", ‘gscatter’ cycles through the specified colors.
           Colors can be defined as named colors, as rgb triplets or as indices
-          for the current 'colormap'.  The default value is a different color
-          for each group, according to the current 'colormap'.
+          for the current ‘colormap’.  The default value is a different color
+          for each group, according to the current ‘colormap’.
 
-        * "SYM" is a char array of symbols for each group; if not enough symbols
-          are defined by "SYM", 'gscatter' cycles through the specified symbols.
+        • "SYM" is a char array of symbols for each group; if not enough symbols
+          are defined by "SYM", ‘gscatter’ cycles through the specified symbols.
 
-        * "SIZ" is a numeric array of sizes for each group; if not enough sizes
-          are defined by "SIZ", 'gscatter' cycles through the specified sizes.
+        • "SIZ" is a numeric array of sizes for each group; if not enough sizes
+          are defined by "SIZ", ‘gscatter’ cycles through the specified sizes.
 
-        * "DOLEG" is a boolean value to show the legend; it can be either on
+        • "DOLEG" is a boolean value to show the legend; it can be either on
           (default) or off.
 
-        * "XNAM" is a character array, the name for the x axis.
+        • "XNAM" is a character array, the name for the x axis.
 
-        * "YNAM" is a character array, the name for the y axis.
+        • "YNAM" is a character array, the name for the y axis.
 
-     Output H is an array of graphics handles to the 'line' object of each
+     Output H is an array of graphics handles to the ‘line’ object of each
      group.
 
      See also: scatter.
@@ -947,7 +949,7 @@ hist3
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2090
+# length: 2098
  -- statistics: hist3 (X)
  -- statistics: hist3 (X, NBINS)
  -- statistics: hist3 (X, "Nbins", NBINS)
@@ -967,7 +969,7 @@ hist3
      Number of bins (default)
           Produces equally spaced bins between the minimum and maximum values of
           X.  Defined as a 2 element vector, NBINS, one for each dimension.
-          Defaults to '[10 10]'.
+          Defaults to ‘[10 10]’.
 
      Center of bins
           Defined as a cell array of 2 monotonically increasing vectors,
@@ -976,7 +978,7 @@ hist3
 
      Edge of bins
           Defined as a cell array of 2 monotonically increasing vectors, EDGES.
-          'N(i,j)' contains the number of elements in X for which:
+          ‘N(i,j)’ contains the number of elements in X for which:
 
                EDGES{1}(i) <= X(:,1) < EDGES{1}(i+1)
                EDGES{2}(j) <= X(:,2) < EDGES{2}(j+1)
@@ -1016,7 +1018,7 @@ histfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1408
+# length: 1432
  -- statistics: histfit (X)
  -- statistics: histfit (X, NBINS)
  -- statistics: histfit (X, NBINS, DISTNAME)
@@ -1025,26 +1027,26 @@ histfit
 
      Plot histogram with superimposed distribution fit.
 
-     'histfit (X)' plots a histogram of the values in the vector X using the
+     ‘histfit (X)’ plots a histogram of the values in the vector X using the
      number of bins equal to the square root of the number of non-missing
      elements in X and superimposes a fitted normal density function.
 
-     'histfit (X, NBINS)' plots a histogram of the values in the vector X using
+     ‘histfit (X, NBINS)’ plots a histogram of the values in the vector X using
      NBINS number of bins in the histogram and superimposes a fitted normal
      density function.
 
-     'histfit (X, NBINS, DISTNAME)' plots a histogram of the values in the
+     ‘histfit (X, NBINS, DISTNAME)’ plots a histogram of the values in the
      vector X using NBINS number of bins in the histogram and superimposes a
      fitted density function from the distribution specified by DISTNAME.
 
-     'histfit (AX, ...)' uses the axes handle AX to plot the histogram and the
+     ‘histfit (AX, ...)’ uses the axes handle AX to plot the histogram and the
      fitted density function onto followed by any of the input argument
      combinations specified in the previous syntaxes.
 
-     'H = histfit (...)' returns a vector of handles H, where H(1) is the handle
+     ‘H = histfit (...)’ returns a vector of handles H, where H(1) is the handle
      to the histogram and H(2) is the handle to the density curve.
 
-     Note: calling 'histfit' without any input arguments will return a cell
+     Note: calling ‘histfit’ without any input arguments will return a cell
      array of character vectors listing all supported distributions.
 
      See also: bar, hist, normplot, fitdist.
@@ -1068,7 +1070,7 @@ manovacluster
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 939
+# length: 959
  -- statistics: manovacluster (STATS)
  -- statistics: manovacluster (STATS, METHOD)
  -- statistics: H = manovacluster (STATS)
@@ -1076,12 +1078,12 @@ manovacluster
 
      Cluster group means using manova1 output.
 
-     'manovacluster (STATS)' draws a dendrogram showing the clustering of group
-     means, calculated using the output STATS structure from 'manova1' and
-     applying the single linkage algorithm.  See the 'dendrogram' function for
+     ‘manovacluster (STATS)’ draws a dendrogram showing the clustering of group
+     means, calculated using the output STATS structure from ‘manova1’ and
+     applying the single linkage algorithm.  See the ‘dendrogram’ function for
      more information about the figure.
 
-     'manovacluster (STATS, METHOD)' uses the METHOD algorithm in place of
+     ‘manovacluster (STATS, METHOD)’ uses the METHOD algorithm in place of
      single linkage.  The available methods are:
 
      "single"         -- nearest distance
@@ -1090,7 +1092,7 @@ manovacluster
      "centroid"       -- center of mass distance
      "ward"           -- inner squared distance
 
-     'H = manovacluster (...)' returns a vector of line handles.
+     ‘H = manovacluster (...)’ returns a vector of line handles.
 
      See also: manova1.
 
@@ -1113,17 +1115,17 @@ normplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 758
+# length: 770
  -- Function File: normplot (X)
  -- Function File: normplot (AX, X)
  -- Function File: H = normplot (...)
 
      Produce normal probability plot of the data in X.  If X is a matrix,
-     'normplot' plots the data for each column.  NaN values are ignored.
+     ‘normplot’ plots the data for each column.  NaN values are ignored.
 
-     'H = normplot (AX, X)' takes a handle AX in addition to the data in X and
+     ‘H = normplot (AX, X)’ takes a handle AX in addition to the data in X and
      it uses that axes for plotting.  You may get this handle of an existing
-     plot with 'gca'.
+     plot with ‘gca’.
 
      The line joining the 1st and 3rd quantile is drawn solid whereas its
      extensions to both ends are dotted.  If the underlying distribution is
@@ -1151,7 +1153,7 @@ parallelcoords
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1674
+# length: 1694
  -- statistics: parallelcoords (X)
  -- statistics: parallelcoords (X, NAME, VALUE, ...)
  -- statistics: parallelcoords (AX, ...)
@@ -1159,9 +1161,9 @@ parallelcoords
 
      Create a parallel coordinates plot of the multivariate data in X.
 
-     'parallelcoords (X)' plots each observation (row) of the 'n'-by-'p' matrix
+     ‘parallelcoords (X)’ plots each observation (row) of the ‘n’-by-‘p’ matrix
      X as a line connecting the values of its P coordinates, which are placed at
-     the equally spaced horizontal positions '1, 2, ..., p'.
+     the equally spaced horizontal positions ‘1, 2, ..., p’.
 
      The following name/value pairs are accepted:
 
@@ -1186,7 +1188,7 @@ parallelcoords
           A character array or cell array of strings giving the tick labels for
           the coordinate axis.
 
-     'parallelcoords (AX, ...)' plots into the axes AX.
+     ‘parallelcoords (AX, ...)’ plots into the axes AX.
 
      The optional output H is a vector of handles to the plotted lines: one per
      observation, or three per group when "Quantile" is used.
@@ -1259,7 +1261,7 @@ probplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2120
+# length: 2136
  -- statistics: probplot (Y)
  -- statistics: probplot (DIST, Y)
  -- statistics: probplot (DIST, Y, CENS)
@@ -1281,18 +1283,18 @@ probplot
      is logarithmic.
 
      Y is a numeric vector, or a matrix in which case each column is plotted as
-     a separate sample.  'NaN' values are ignored.
+     a separate sample.  ‘NaN’ values are ignored.
 
      CENS is a logical vector the same size as Y that is true for right-censored
      observations; censored points are not plotted and the plotting positions of
      the remaining points follow the Kaplan-Meier estimate.  FREQ is a vector of
-     nonnegative integer frequencies (counts) the same size as Y.  Pass '[]' to
+     nonnegative integer frequencies (counts) the same size as Y.  Pass ‘[]’ to
      omit either one.
 
-     'probplot (AX, ...)' plots into the axes AX instead of the current axes.
+     ‘probplot (AX, ...)’ plots into the axes AX instead of the current axes.
      The trailing option "noref" suppresses the reference line.
 
-     'H = probplot (...)' returns a column vector of handles to the plotted line
+     ‘H = probplot (...)’ returns a column vector of handles to the plotted line
      objects (the data markers, followed by the reference line unless "noref"
      was given).
 
@@ -1374,14 +1376,14 @@ scatterhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3090
+# length: 3781
  -- statistics: scatterhist (X, Y)
  -- statistics: scatterhist (X, Y, NAME, VALUE, ...)
  -- statistics: H = scatterhist (...)
 
      Create a scatter plot of X and Y with marginal histograms.
 
-     'scatterhist (X, Y)' draws a scatter plot of the vectors X and Y in a
+     ‘scatterhist (X, Y)’ draws a scatter plot of the vectors X and Y in a
      central set of axes, with a histogram of X above it and a histogram of Y to
      its right.  X and Y must be vectors of the same length; NaN values are
      removed pairwise from the scatter plot and individually from each marginal
@@ -1396,7 +1398,7 @@ scatterhist
 
      "NBins"
           The number of bins for the marginal histograms, either a scalar
-          applied to both or a two-element vector '[nx ny]'.  The default is
+          applied to both or a two-element vector ‘[nx ny]’.  The default is
           chosen by Scott's rule.
 
      "Kernel"
@@ -1404,8 +1406,8 @@ scatterhist
           draws kernel density estimates instead.
 
      "Location"
-          Position of the marginal plots: "SouthWest" (default), "SouthEast",
-          "NorthEast", or "NorthWest".
+          Corner occupied by the marginal plots, the scatter taking the opposite
+          one: "SouthWest" (default), "SouthEast", "NorthEast", or "NorthWest".
 
      "Legend"
           "on" or "off" to show or hide the group legend.  The default is "on"
@@ -1419,15 +1421,24 @@ scatterhist
      central scatter axes, the axes of the X (horizontal) histogram, and the
      axes of the Y (vertical) histogram.
 
+     The Y histogram's axes is built differently from MATLAB's and its
+     properties read accordingly.  We plot that marginal transposed, so its
+     "XLim" is the density and "XDir" carries the bar direction.  MATLAB plots
+     it like the X one - data along "XLim", density along "YLim" - and rotates
+     the whole axes by setting "View" to [270, 90], so there the direction is
+     carried by "YDir" and "XDir" is always "normal".  The picture is the same;
+     code reading those properties off ‘H(3)’ is not portable between the two.
+
      See also: gscatter, scatter, hist, ksdensity.
 
      'Parent' draws into a supplied figure or uipanel instead of the current
      figure.  The container is used as it stands and is never cleared, so a
      scatterhist can be placed alongside other axes.
 
-     'Location' names the corner the scatter occupies, 'SouthWest' by default,
-     or 'SouthEast', 'NorthEast' or 'NorthWest'; the marginals take the two
-     opposite sides.
+     'Location' names the corner the marginal histograms occupy, 'SouthWest' by
+     default, or 'SouthEast', 'NorthEast' or 'NorthWest'; the scatter takes the
+     opposite corner.  With the default the histograms are drawn below and to
+     the left of the scatter.
 
      'Direction' points the marginal bars toward the scatter plot, 'in' by
      default, or away from it with 'out', whichever side 'Location' has placed
@@ -1468,7 +1479,7 @@ silhouette
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1975
+# length: 2001
  -- statistics: silhouette (X, CLUST)
  -- statistics: [SI, H] = silhouette (X, CLUST)
  -- statistics: [SI, H] = silhouette (..., METRIC, METRICARG)
@@ -1493,17 +1504,17 @@ silhouette
      classification, to 1, maximum likelihood.
 
      Optional input value METRIC is the metric used to compute the distances
-     between data points.  Since 'silhouette' uses 'pdist' to compute these
-     distances, METRIC is similar to the DISTANCE input argument of 'pdist' and
+     between data points.  Since ‘silhouette’ uses ‘pdist’ to compute these
+     distances, METRIC is similar to the DISTANCE input argument of ‘pdist’ and
      it can be:
-        * A known distance metric defined as a string: euclidean,
+        • A known distance metric defined as a string: euclidean,
           squaredeuclidean (default), seuclidean, mahalanobis, cityblock,
           minkowski, chebychev, cosine, correlation, hamming, jaccard, or
           spearman.
 
-        * A vector as those created by 'pdist'.  In this case X does nothing.
+        • A vector as those created by ‘pdist’.  In this case X does nothing.
 
-        * A function handle that is passed to 'pdist' with METRICARG as optional
+        • A function handle that is passed to ‘pdist’ with METRICARG as optional
           inputs.
 
      Optional return value H is a handle to the silhouette plot.
@@ -1533,7 +1544,7 @@ violin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2664
+# length: 2676
  -- statistics: violin (X)
  -- statistics: H = violin (X)
  -- statistics: H = violin (..., PROPERTY, VALUE, ...)
@@ -1556,14 +1567,14 @@ violin
           ("y") Indicates the filling color of the violins.
 
      Nbins
-          (50) Internally, the function calls 'hist' to compute the histogram of
-          the data.  This property indicates how many bins to use.  See 'help
-          hist' for more details.
+          (50) Internally, the function calls ‘hist’ to compute the histogram of
+          the data.  This property indicates how many bins to use.  See ‘help
+          hist’ for more details.
 
      SmoothFactor
           (4) The function performs simple kernel density estimation and
           automatically finds the bandwidth of the kernel function that best
-          approximates the histogram using optimization ('sqp').  The result is
+          approximates the histogram using optimization (‘sqp’).  The result is
           in general very noisy.  To smooth the result the bandwidth is
           multiplied by the value of this property.  The higher the value the
           smoother the violins, but values too high might remove features from

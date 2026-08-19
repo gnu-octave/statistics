@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,14 +13,14 @@ ClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 760
+# length: 776
  -- statistics: ClassificationDiscriminant
 
      Discriminant analysis classification
 
-     The 'ClassificationDiscriminant' class implements a linear discriminant
+     The ‘ClassificationDiscriminant’ class implements a linear discriminant
      analysis classifier object, which can predict responses for new data using
-     the 'predict' method.
+     the ‘predict’ method.
 
      Discriminant analysis classification is a statistical method used to
      classify observations into predefined groups based on their
@@ -28,7 +28,7 @@ ClassificationDiscriminant
      for each class and predicts the class of new observations by finding the
      one with the smallest misclassification cost.
 
-     Create a 'ClassificationDiscriminant' object by using the 'fitcdiscr'
+     Create a ‘ClassificationDiscriminant’ object by using the ‘fitcdiscr’
      function or the class constructor.
 
      See also: fitcdiscr.
@@ -52,12 +52,12 @@ ClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 816
+# length: 828
  -- statistics: ClassificationGAM
 
      Generalized additive model classification
 
-     The 'ClassificationGAM' class implements a gradient boosting algorithm for
+     The ‘ClassificationGAM’ class implements a gradient boosting algorithm for
      classification, using spline fitting as the weak learner.  This approach
      allows the model to capture non-linear relationships between predictors and
      the binary response variable.
@@ -68,7 +68,7 @@ ClassificationGAM
      the interpretability of linear models with the flexibility of
      non-parametric methods.
 
-     Create a 'ClassificationGAM' object by using the 'fitcgam' function or the
+     Create a ‘ClassificationGAM’ object by using the ‘fitcgam’ function or the
      class constructor.
 
      See also: fitcgam.
@@ -92,13 +92,13 @@ ClassificationKNN
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 787
+# length: 803
  -- statistics: ClassificationKNN
 
      K-nearest neighbors classification
 
-     The 'ClassificationKNN' class implements a K-nearest neighbor classifier
-     object, which can predict responses for new data using the 'predict'
+     The ‘ClassificationKNN’ class implements a K-nearest neighbor classifier
+     object, which can predict responses for new data using the ‘predict’
      method.  The implemented algorithm allows you choose a range of different
      distance metrics, the number of nearest neighbors, as well as the searching
      algorithm.
@@ -108,7 +108,7 @@ ClassificationKNN
      data point based on the majority class of its k closest neighbors in the
      feature space.
 
-     Create a 'ClassificationKNN' object by using the 'fitcknn' function or the
+     Create a ‘ClassificationKNN’ object by using the ‘fitcknn’ function or the
      class constructor.
 
      See also: fitcknn.
@@ -132,21 +132,21 @@ ClassificationNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 659
+# length: 675
  -- statistics: ClassificationNeuralNetwork
 
      Neural network classification
 
-     The 'ClassificationNeuralNetwork' class implements a neural network
+     The ‘ClassificationNeuralNetwork’ class implements a neural network
      classifier object, which can predict responses for new data using the
-     'predict' method.
+     ‘predict’ method.
 
      Neural network classification is a machine learning method that uses
      interconnected nodes in multiple layers to learn complex patterns in data.
      It processes inputs through hidden layers with activation functions to
      produce classification outputs.
 
-     Create a 'ClassificationNeuralNetwork' object by using the 'fitcnet'
+     Create a ‘ClassificationNeuralNetwork’ object by using the ‘fitcnet’
      function or the class constructor.
 
      See also: fitcnet.
@@ -170,17 +170,17 @@ ClassificationPartitionedModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 461
+# length: 477
  -- statistics: ClassificationPartitionedModel
 
      Cross-validated classification model
 
-     The 'ClassificationPartitionedModel' class stores cross-validated
+     The ‘ClassificationPartitionedModel’ class stores cross-validated
      classification models trained on different partitions of the data.  It can
      predict responses for observations not used for training using the
-     'kfoldPredict' method.
+     ‘kfoldPredict’ method.
 
-     Create a 'ClassificationPartitionedModel' object by using the 'crossval'
+     Create a ‘ClassificationPartitionedModel’ object by using the ‘crossval’
      function.
 
      See also: crossval.
@@ -204,14 +204,14 @@ ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 784
+# length: 800
  -- statistics: ClassificationSVM
 
      Support Vector Machine classification
 
-     The 'ClassificationSVM' class implements a Support Vector Machine
+     The ‘ClassificationSVM’ class implements a Support Vector Machine
      classifier object for one-class or two-class problems, which can predict
-     responses for new data using the 'predict' method.
+     responses for new data using the ‘predict’ method.
 
      Support Vector Machine classification is a supervised learning method used
      for classification tasks.  It works by finding the optimal hyperplane that
@@ -219,7 +219,7 @@ ClassificationSVM
      non-linearly separable data, it uses kernel functions to map data to a
      higher-dimensional space where separation is possible.
 
-     Create a 'ClassificationSVM' object by using the 'fitcsvm' function or the
+     Create a ‘ClassificationSVM’ object by using the ‘fitcsvm’ function or the
      class constructor.
 
      See also: fitcsvm.
@@ -243,25 +243,25 @@ CompactClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 989
+# length: 1025
  -- statistics: CompactClassificationDiscriminant
 
      Compact discriminant analysis classification
 
-     The 'CompactClassificationDiscriminant' class implements a compact version
+     The ‘CompactClassificationDiscriminant’ class implements a compact version
      of a linear discriminant analysis classifier object, which can predict
-     responses for new data using the 'predict' method but does not store the
+     responses for new data using the ‘predict’ method but does not store the
      training data.
 
-     A 'CompactClassificationDiscriminant' object is a compact version of a
-     discriminant analysis model, 'ClassificationDiscriminant'.  It does not
+     A ‘CompactClassificationDiscriminant’ object is a compact version of a
+     discriminant analysis model, ‘ClassificationDiscriminant’.  It does not
      include the training data resulting in a smaller classifier size, which can
      be used for making predictions from new data, but not for tasks such as
      cross validation.  It can only be created from a
-     'ClassificationDiscriminant' model by using the 'compact' object method.
+     ‘ClassificationDiscriminant’ model by using the ‘compact’ object method.
 
-     Create a 'CompactClassificationDiscriminant' object by using the 'compact'
-     method of a 'ClassificationDiscriminant' object.
+     Create a ‘CompactClassificationDiscriminant’ object by using the ‘compact’
+     method of a ‘ClassificationDiscriminant’ object.
 
      See also: fitcdiscr, ClassificationDiscriminant.
 
@@ -284,19 +284,19 @@ CompactClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 598
+# length: 618
  -- statistics: CompactClassificationGAM
 
      Compact generalized additive model classification
 
-     The 'CompactClassificationGAM' class is a compact version of a Generalized
-     Additive Model classifier, 'ClassificationGAM'.  It does not include the
+     The ‘CompactClassificationGAM’ class is a compact version of a Generalized
+     Additive Model classifier, ‘ClassificationGAM’.  It does not include the
      training data, resulting in a smaller classifier size that can be used for
      making predictions from new data, but not for tasks such as cross
      validation.
 
-     A 'CompactClassificationGAM' object can only be created from a
-     'ClassificationGAM' model by using the 'compact' method.
+     A ‘CompactClassificationGAM’ object can only be created from a
+     ‘ClassificationGAM’ model by using the ‘compact’ method.
 
      See also: ClassificationGAM, fitcgam.
 
@@ -319,22 +319,22 @@ CompactClassificationNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 831
+# length: 855
  -- statistics: CompactClassificationNeuralNetwork
 
      Compact neural network classification
 
-     The 'CompactClassificationNeuralNetwork' class implements a compact version
+     The ‘CompactClassificationNeuralNetwork’ class implements a compact version
      of the neural network classifier object, which can predict responses for
-     new data using the 'predict' method, but does not store the training data.
+     new data using the ‘predict’ method, but does not store the training data.
 
      A compact neural network classification model is a smaller version of the
-     full 'ClassificationNeuralNetwork' model that does not include the training
+     full ‘ClassificationNeuralNetwork’ model that does not include the training
      data.  It consumes less memory than the full model, but cannot perform
      tasks that require the training data, such as cross-validation.
 
-     Create a 'CompactClassificationNeuralNetwork' object by using the 'compact'
-     method on a 'ClassificationNeuralNetwork' object.
+     Create a ‘CompactClassificationNeuralNetwork’ object by using the ‘compact’
+     method on a ‘ClassificationNeuralNetwork’ object.
 
      See also: ClassificationNeuralNetwork, fitcnet.
 
@@ -357,22 +357,22 @@ CompactClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 784
+# length: 808
  -- statistics: CompactClassificationSVM
 
      Compact Support Vector Machine classification
 
-     The 'CompactClassificationSVM' class implements a compact version of a
+     The ‘CompactClassificationSVM’ class implements a compact version of a
      Support Vector Machine classifier object for one-class or two-class
-     problems, which can predict responses for new data using the 'predict'
+     problems, which can predict responses for new data using the ‘predict’
      method.
 
-     A 'CompactClassificationSVM' object is a compact version of a support
-     vector machine model, 'ClassificationSVM'.  It does not include the
+     A ‘CompactClassificationSVM’ object is a compact version of a support
+     vector machine model, ‘ClassificationSVM’.  It does not include the
      training data resulting in a smaller classifier size, which can be used for
      making predictions from new data, but not for tasks such as cross
-     validation.  It can only be created from a 'ClassificationSVM' model by
-     using the 'compact' object method.
+     validation.  It can only be created from a ‘ClassificationSVM’ model by
+     using the ‘compact’ object method.
 
      See also: ClassificationSVM.
 
@@ -395,7 +395,7 @@ RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6269
+# length: 6285
  -- statistics: OBJ = RegressionGAM (X, Y)
  -- statistics: OBJ = RegressionGAM (..., NAME, VALUE)
 
@@ -404,20 +404,20 @@ RegressionGAM
 
      A RegressionGAM class object can store the predictors and response data
      along with various parameters for the GAM model.  It is recommended to use
-     the 'fitrgam' function to create a RegressionGAM object.
+     the ‘fitrgam’ function to create a RegressionGAM object.
 
-     'OBJ = RegressionGAM (X, Y)' returns an object of class RegressionGAM, with
+     ‘OBJ = RegressionGAM (X, Y)’ returns an object of class RegressionGAM, with
      matrix X containing the predictor data and vector Y containing the
      continuous response data.
 
-        * X must be a N*P numeric matrix of input data where rows correspond to
+        • X must be a N*P numeric matrix of input data where rows correspond to
           observations and columns correspond to features or variables.  X will
           be used to train the GAM model.
-        * Y must be N*1 numeric vector containing the response data
+        • Y must be N*1 numeric vector containing the response data
           corresponding to the predictor data in X.  Y must have same number of
           rows as X.
 
-     'OBJ = RegressionGAM (..., NAME, VALUE)' returns an object of class
+     ‘OBJ = RegressionGAM (..., NAME, VALUE)’ returns an object of class
      RegressionGAM with additional properties specified by Name-Value pair
      arguments listed below.
 
@@ -518,25 +518,25 @@ fitcdiscr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3660
+# length: 3684
  -- statistics: MDL = fitcdiscr (X, Y)
  -- statistics: MDL = fitcdiscr (..., NAME, VALUE)
 
      Fit a Linear Discriminant Analysis classification model.
 
-     'MDL = fitcdiscr (X, Y)' returns a Linear Discriminant Analysis (LDA)
+     ‘MDL = fitcdiscr (X, Y)’ returns a Linear Discriminant Analysis (LDA)
      classification model, MDL, with X being the predictor data, and Y the class
      labels of observations in X.
 
-        * 'X' must be a N*P numeric matrix of predictor data where rows
+        • ‘X’ must be a N*P numeric matrix of predictor data where rows
           correspond to observations and columns correspond to features or
           variables.
-        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+        • ‘Y’ is N*1 matrix or cell matrix containing the class labels of
           corresponding predictor data in X.  Y can be numerical, logical, char
           array or cell array of character vectors.  Y must have same number of
           rows as X.
 
-     'MDL = fitcdiscr (..., NAME, VALUE)' returns a Linear Discriminant Analysis
+     ‘MDL = fitcdiscr (..., NAME, VALUE)’ returns a Linear Discriminant Analysis
      model with additional options specified by Name-Value pair arguments listed
      below.
 
@@ -567,7 +567,7 @@ fitcdiscr
                     corresponding instances in X where R is the number of unique
                     categories in Y.  If an instance is correctly classified into
                     its category the cost is calculated to be 1, otherwise 0.
-                    cost matrix can be altered use 'MDL.COST = somecost'.  default
+                    cost matrix can be altered use ‘MDL.COST = somecost’.  default
                     value COST = ones(rows(X),numel(unique(Y))).
                     
      'DiscrimType'  A character vector or string scalar specifying the type of
@@ -608,23 +608,23 @@ fitcgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6174
+# length: 6198
  -- statistics: MDL = fitcgam (X, Y)
  -- statistics: MDL = fitcgam (..., NAME, VALUE)
 
      Fit a Generalized Additive Model (GAM) for binary classification.
 
-     'MDL = fitcgam (X, Y)' returns a GAM classification model, MDL, with X
+     ‘MDL = fitcgam (X, Y)’ returns a GAM classification model, MDL, with X
      being the predictor data, and Y the binary class labels of observations in
      X.
 
-        * 'X' must be a N*P numeric matrix of predictor data where rows
+        • ‘X’ must be a N*P numeric matrix of predictor data where rows
           correspond to observations and columns correspond to features or
           variables.
-        * 'Y' is N*1 numeric vector containing binary class labels, typically 0
+        • ‘Y’ is N*1 numeric vector containing binary class labels, typically 0
           or 1.
 
-     'MDL = fitcgam (..., NAME, VALUE)' returns a GAM classification model with
+     ‘MDL = fitcgam (..., NAME, VALUE)’ returns a GAM classification model with
      additional options specified by Name-Value pair arguments listed below.
 
      Model Parameters
@@ -648,7 +648,7 @@ fitcgam
                     corresponding instances in X where R is the number of unique
                     categories in Y.  If an instance is correctly classified into
                     its category the cost is calculated to be 1, otherwise 0.
-                    cost matrix can be altered use 'MDL.COST = somecost'.  default
+                    cost matrix can be altered use ‘MDL.COST = somecost’.  default
                     value COST = ones(rows(X),numel(unique(Y))).
                     
      'Formula'      A model specification given as a string in the form 'Y ~
@@ -731,25 +731,25 @@ fitcknn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 14596
+# length: 14692
  -- statistics: MDL = fitcknn (X, Y)
  -- statistics: MDL = fitcknn (..., NAME, VALUE)
 
      Fit a k-Nearest Neighbor classification model.
 
-     'MDL = fitcknn (X, Y)' returns a k-Nearest Neighbor classification model,
+     ‘MDL = fitcknn (X, Y)’ returns a k-Nearest Neighbor classification model,
      MDL, with X being the predictor data, and Y the class labels of
      observations in X.
 
-        * 'X' must be a N*P numeric matrix of predictor data where rows
+        • ‘X’ must be a N*P numeric matrix of predictor data where rows
           correspond to observations and columns correspond to features or
           variables.
-        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+        • ‘Y’ is N*1 matrix or cell matrix containing the class labels of
           corresponding predictor data in X.  Y can be numerical, logical, char
           array or cell array of character vectors.  Y must have same number of
           rows as X.
 
-     'MDL = fitcknn (..., NAME, VALUE)' returns a k-Nearest Neighbor
+     ‘MDL = fitcknn (..., NAME, VALUE)’ returns a k-Nearest Neighbor
      classification model with additional options specified by Name-Value pair
      arguments listed below.
 
@@ -781,13 +781,13 @@ fitcknn
                     corresponding instances in X where R is the number of unique
                     categories in Y.  If an instance is correctly classified into
                     its category the cost is calculated to be 1, otherwise 0.
-                    cost matrix can be altered use 'MDL.COST = somecost'.  default
+                    cost matrix can be altered use ‘MDL.COST = somecost’.  default
                     value COST = ones(rows(X),numel(unique(Y))).
                     
      'ScoreTransform'A character vector defining one of the following functions or
                     a user defined function handle, which is used for transforming
-                    the prediction scores returned by the 'predict' and
-                    'resubPredict' methods.  Default value is 'none'.
+                    the prediction scores returned by the ‘predict’ and
+                    ‘resubPredict’ methods.  Default value is 'none'.
 
      VALUE            DESCRIPTION
      ------------------------------------------------------------------------------
@@ -858,7 +858,7 @@ fitcknn
                     This argument is only valid when the selected distance metric
                     is 'mahalanobis'.
                     
-     'Distance'     is the distance metric used by 'knnsearch' as specified below:
+     'Distance'     is the distance metric used by ‘knnsearch’ as specified below:
 
      VALUE            DESCRIPTION
                       
@@ -887,7 +887,7 @@ fitcknn
      'jaccard'        One minus the Jaccard coefficient, which is the percentage
                       of nonzero coordinates that differ.
      @DISTFUN         Custom distance function handle.  A distance function of
-                      the form 'function D2 = distfun (XI, YI)', where XI is a
+                      the form ‘function D2 = distfun (XI, YI)’, where XI is a
                       1*P vector containing a single observation in
                       P-dimensional space, YI is an N*P matrix containing an
                       arbitrary number of observations in the same P-dimensional
@@ -907,14 +907,14 @@ fitcknn
                     
      'IncludeTies'  A boolean flag to indicate if the returned values should
                     contain the indices that have same distance as the K^th
-                    neighbor.  When false, 'knnsearch' chooses the observation
+                    neighbor.  When false, ‘knnsearch’ chooses the observation
                     with the smallest index among the observations that have the
-                    same distance from a query point.  When true, 'knnsearch'
+                    same distance from a query point.  When true, ‘knnsearch’
                     includes all nearest neighbors whose distances are equal to
                     the K^th smallest distance in the output arguments.  To
                     specify K, use the 'K' name-value pair argument.
                     
-     'NSMethod'     is the nearest neighbor search method used by 'knnsearch' as
+     'NSMethod'     is the nearest neighbor search method used by ‘knnsearch’ as
                     specified below.
 
      VALUE            DESCRIPTION
@@ -939,22 +939,22 @@ fitcknn
      --------------------------------------------------------------------------------
      'Crossval'     Cross-validation flag specified as 'on' or 'off'.  If 'on' is
                     specified, a 10-fold cross validation is performed and a
-                    'ClassificationPartitionedModel' is returned in MDL.  To
+                    ‘ClassificationPartitionedModel’ is returned in MDL.  To
                     override this cross-validation setting, use only one of the
                     following Name-Value pair arguments.
                     
-     'CVPartition'  A 'cvpartition' object that specifies the type of
+     'CVPartition'  A ‘cvpartition’ object that specifies the type of
                     cross-validation and the indexing for the training and
-                    validation sets.  A 'ClassificationPartitionedModel' is
+                    validation sets.  A ‘ClassificationPartitionedModel’ is
                     returned in MDL and the trained model is stored in the
-                    'Trained' property.
+                    ‘Trained’ property.
                     
      'Holdout'      Fraction of the data used for holdout validation, specified as
                     a scalar value in the range [0,1].  When specified, a randomly
                     selected percentage is reserved as validation data and the
                     remaining set is used for training.  The trained model is
-                    stored in the 'Trained' property of the
-                    'ClassificationPartitionedModel' returned in MDL.  'Holdout'
+                    stored in the ‘Trained’ property of the
+                    ‘ClassificationPartitionedModel’ returned in MDL.  'Holdout'
                     partitioning attempts to ensure that each partition represents
                     the classes proportionately.
                     
@@ -963,19 +963,19 @@ fitcknn
                     then the data is randomly partitioned in k sets and for each
                     set, the set is reserved as validation data while the
                     remaining k-1 sets are used for training.  The trained models
-                    are stored in the 'Trained' property of the
-                    'ClassificationPartitionedModel' returned in MDL.  'KFold'
+                    are stored in the ‘Trained’ property of the
+                    ‘ClassificationPartitionedModel’ returned in MDL.  'KFold'
                     partitioning attempts to ensure that each partition represents
                     the classes proportionately.
                     
      'Leaveout'     Leave-one-out cross-validation flag specified as 'on' or
                     'off'.  If 'on' is specified, then for each of the n
                     observations (where n is the number of observations, excluding
-                    missing observations, specified in the 'NumObservations'
+                    missing observations, specified in the ‘NumObservations’
                     property of the model), one observation is reserved as
                     validation data while the remaining observations are used for
-                    training.  The trained models are stored in the 'Trained'
-                    property of the 'ClassificationPartitionedModel' returned in
+                    training.  The trained models are stored in the ‘Trained’
+                    property of the ‘ClassificationPartitionedModel’ returned in
                     MDL.
 
      See also: ClassificationKNN, ClassificationPartitionedModel, knnsearch,
@@ -1000,24 +1000,24 @@ fitcnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5492
+# length: 5520
  -- statistics: MDL = fitcnet (X, Y)
  -- statistics: MDL = fitcnet (..., NAME, VALUE)
 
      Fit a Neural Network classification model.
 
-     'MDL = fitcnet (X, Y)' returns a Neural Network classification model, MDL,
+     ‘MDL = fitcnet (X, Y)’ returns a Neural Network classification model, MDL,
      with X being the predictor data, and Y the class labels of observations in
      X.
 
-        * 'X' must be a N*P numeric matrix of predictor data where rows
+        • ‘X’ must be a N*P numeric matrix of predictor data where rows
           correspond to observations and columns correspond to features or
           variables.
-        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+        • ‘Y’ is N*1 matrix or cell matrix containing the class labels of
           corresponding predictor data in X.  Y can contain any type of
           categorical data.  Y must have same numbers of rows as X.
 
-     'MDL = fitcnet (..., NAME, VALUE)' returns a Neural Network classification
+     ‘MDL = fitcnet (..., NAME, VALUE)’ returns a Neural Network classification
      model with additional options specified by Name-Value pair arguments listed
      below.
 
@@ -1073,8 +1073,8 @@ fitcnet
                                 
      'ScoreTransform'           A character vector defining one of the following functions or
                                 a user defined function handle, which is used for transforming
-                                the prediction scores returned by the 'predict' and
-                                'resubPredict' methods.  Default value is 'none'.
+                                the prediction scores returned by the ‘predict’ and
+                                ‘resubPredict’ methods.  Default value is 'none'.
 
      VALUE                    DESCRIPTION
      --------------------------------------------------------------------------------------
@@ -1112,25 +1112,25 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10550
+# length: 10618
  -- statistics: MDL = fitcsvm (X, Y)
  -- statistics: MDL = fitcsvm (..., NAME, VALUE)
 
      Fit a Support Vector Machine classification model.
 
-     'MDL = fitcsvm (X, Y)' returns a Support Vector Machine classification
+     ‘MDL = fitcsvm (X, Y)’ returns a Support Vector Machine classification
      model, MDL, with X being the predictor data, and Y the class labels of
      observations in X.
 
-        * 'X' must be a N*P numeric matrix of predictor data where rows
+        • ‘X’ must be a N*P numeric matrix of predictor data where rows
           correspond to observations and columns correspond to features or
           variables.
-        * 'Y' is N*1 matrix or cell matrix containing the class labels of
+        • ‘Y’ is N*1 matrix or cell matrix containing the class labels of
           corresponding predictor data in X.  Y can be numerical, logical, char
           array or cell array of character vectors.  Y must have same number of
           rows as X.
 
-     'MDL = fitcsvm (..., NAME, VALUE)' returns a Support Vector Machine model
+     ‘MDL = fitcsvm (..., NAME, VALUE)’ returns a Support Vector Machine model
      with additional options specified by Name-Value pair arguments listed
      below.
 
@@ -1155,7 +1155,7 @@ fitcsvm
                     labels in Y.
                     
      'SVMtype'      Specifies the type of SVM used for training the
-                    'ClassificationSVM' model.  By default, the type of SVM is
+                    ‘ClassificationSVM’ model.  By default, the type of SVM is
                     defined by setting other parameters and/or by the data itself.
                     Setting the 'SVMtype' parameter overrides the default behavior
                     and it accepts the following options:
@@ -1251,22 +1251,22 @@ fitcsvm
      --------------------------------------------------------------------------------
      'Crossval'     Cross-validation flag specified as 'on' or 'off'.  If 'on' is
                     specified, a 10-fold cross validation is performed and a
-                    'ClassificationPartitionedModel' is returned in MDL.  To
+                    ‘ClassificationPartitionedModel’ is returned in MDL.  To
                     override this cross-validation setting, use only one of the
                     following Name-Value pair arguments.
                     
-     'CVPartition'  A 'cvpartition' object that specifies the type of
+     'CVPartition'  A ‘cvpartition’ object that specifies the type of
                     cross-validation and the indexing for the training and
-                    validation sets.  A 'ClassificationPartitionedModel' is
+                    validation sets.  A ‘ClassificationPartitionedModel’ is
                     returned in MDL and the trained model is stored in the
-                    'Trained' property.
+                    ‘Trained’ property.
                     
      'Holdout'      Fraction of the data used for holdout validation, specified as
                     a scalar value in the range [0,1].  When specified, a randomly
                     selected percentage is reserved as validation data and the
                     remaining set is used for training.  The trained model is
-                    stored in the 'Trained' property of the
-                    'ClassificationPartitionedModel' returned in MDL.  'Holdout'
+                    stored in the ‘Trained’ property of the
+                    ‘ClassificationPartitionedModel’ returned in MDL.  'Holdout'
                     partitioning attempts to ensure that each partition represents
                     the classes proportionately.
                     
@@ -1275,19 +1275,19 @@ fitcsvm
                     then the data is randomly partitioned in k sets and for each
                     set, the set is reserved as validation data while the
                     remaining k-1 sets are used for training.  The trained models
-                    are stored in the 'Trained' property of the
-                    'ClassificationPartitionedModel' returned in MDL.  'KFold'
+                    are stored in the ‘Trained’ property of the
+                    ‘ClassificationPartitionedModel’ returned in MDL.  'KFold'
                     partitioning attempts to ensure that each partition represents
                     the classes proportionately.
                     
      'Leaveout'     Leave-one-out cross-validation flag specified as 'on' or
                     'off'.  If 'on' is specified, then for each of the n
                     observations (where n is the number of observations, excluding
-                    missing observations, specified in the 'NumObservations'
+                    missing observations, specified in the ‘NumObservations’
                     property of the model), one observation is reserved as
                     validation data while the remaining observations are used for
-                    training.  The trained models are stored in the 'Trained'
-                    property of the 'ClassificationPartitionedModel' returned in
+                    training.  The trained models are stored in the ‘Trained’
+                    property of the ‘ClassificationPartitionedModel’ returned in
                     MDL.
 
      See also: ClassificationSVM, ClassificationPartitionedModel, svmtrain,
@@ -1312,24 +1312,24 @@ fitrgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5984
+# length: 5996
  -- statistics: OBJ = fitrgam (X, Y)
  -- statistics: OBJ = fitrgam (X, Y, NAME, VALUE)
 
      Fit a Generalized Additive Model (GAM) for regression.
 
-     'OBJ = fitrgam (X, Y)' returns an object of class RegressionGAM, with
+     ‘OBJ = fitrgam (X, Y)’ returns an object of class RegressionGAM, with
      matrix X containing the predictor data and vector Y containing the
      continuous response data.
 
-        * X must be a N*P numeric matrix of input data where rows correspond to
+        • X must be a N*P numeric matrix of input data where rows correspond to
           observations and columns correspond to features or variables.  X will
           be used to train the GAM model.
-        * Y must be N*1 numeric vector containing the response data
+        • Y must be N*1 numeric vector containing the response data
           corresponding to the predictor data in X.  Y must have same number of
           rows as X.
 
-     'OBJ = fitrgam (..., NAME, VALUE)' returns an object of class RegressionGAM
+     ‘OBJ = fitrgam (..., NAME, VALUE)’ returns an object of class RegressionGAM
      with additional properties specified by Name-Value pair arguments listed
      below.
 

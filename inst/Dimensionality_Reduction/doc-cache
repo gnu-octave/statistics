@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,28 +13,39 @@ ReconstructionICA
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1042
+# length: 1800
  -- statistics: ReconstructionICA
 
      Reconstruction independent component analysis (RICA) feature-extraction
      model.
 
-     A ReconstructionICA object stores the transformation learned by 'rica' for
-     extracting features from data.  Create one with 'rica'; apply it to data
-     with the 'transform' method.
+     A ReconstructionICA object stores the transformation learned by ‘rica’ for
+     extracting features from data.  Create one with ‘rica’; apply it to data
+     with the ‘transform’ method.
 
      An object of this class has the following properties:
 
-        * TransformWeights — the P * Q matrix of learned transformation weights
+        • TransformWeights — the P * Q matrix of learned transformation weights
           (unit-length columns).
-        * Mu, Sigma — the per-predictor mean and standard deviation used when
-          'Standardize' is true (empty otherwise).
-        * FitInfo — a structure with the number of Iterations and the final
-          Objective value of the fit.
-        * ModelParameters — a structure of the options used for the fit.
-        * NumPredictors, NumLearnedFeatures — the input dimension P and the
+        • Mu, Sigma — the per-predictor mean and standard deviation used when
+          'Standardize' is true (empty otherwise), each a column vector with one
+          entry per predictor.
+        • FitInfo — a structure with the Iteration indices of the fit and the
+          Objective value at each of them, both column vectors of the same
+          length.  Iteration counts from zero and Objective(1) is the objective
+          at the starting weights, so the last entry of each is the solution the
+          fit returned.
+
+          The values along that trajectory are this implementation's own: the
+          minimisation runs through Octave's ‘fminunc’, where MATLAB uses a
+          limited-memory BFGS solver, and the two take different steps from the
+          same starting weights.  The length of the history and the iteration
+          counts differ accordingly.  The fitted TransformWeights are
+          unaffected, both solvers reaching the same optimum.
+        • ModelParameters — a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures — the input dimension P and the
           number of learned features Q.
-        * InitialTransformWeights — the starting weights used by the fit.
+        • InitialTransformWeights — the starting weights used by the fit.
 
      See also: rica, sparsefilt.
 
@@ -57,26 +68,37 @@ SparseFiltering
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 977
+# length: 1735
  -- statistics: SparseFiltering
 
      Sparse filtering feature-extraction model.
 
-     A SparseFiltering object stores the transformation learned by 'sparsefilt'
-     for extracting features from data.  Create one with 'sparsefilt'; apply it
-     to data with the 'transform' method.
+     A SparseFiltering object stores the transformation learned by ‘sparsefilt’
+     for extracting features from data.  Create one with ‘sparsefilt’; apply it
+     to data with the ‘transform’ method.
 
      An object of this class has the following properties:
 
-        * TransformWeights — the P * Q matrix of learned transformation weights.
-        * Mu, Sigma — the per-predictor mean and standard deviation used when
-          'Standardize' is true (empty otherwise).
-        * FitInfo — a structure with the number of Iterations and the final
-          Objective value of the fit.
-        * ModelParameters — a structure of the options used for the fit.
-        * NumPredictors, NumLearnedFeatures — the input dimension P and the
+        • TransformWeights — the P * Q matrix of learned transformation weights.
+        • Mu, Sigma — the per-predictor mean and standard deviation used when
+          'Standardize' is true (empty otherwise), each a column vector with one
+          entry per predictor.
+        • FitInfo — a structure with the Iteration indices of the fit and the
+          Objective value at each of them, both column vectors of the same
+          length.  Iteration counts from zero and Objective(1) is the objective
+          at the starting weights, so the last entry of each is the solution the
+          fit returned.
+
+          The values along that trajectory are this implementation's own: the
+          minimisation runs through Octave's ‘fminunc’, where MATLAB uses a
+          limited-memory BFGS solver, and the two take different steps from the
+          same starting weights.  The length of the history and the iteration
+          counts differ accordingly.  The fitted TransformWeights are
+          unaffected, both solvers reaching the same optimum.
+        • ModelParameters — a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures — the input dimension P and the
           number of learned features Q.
-        * InitialTransformWeights — the starting weights used by the fit.
+        • InitialTransformWeights — the starting weights used by the fit.
 
      See also: sparsefilt, rica.
 
@@ -132,7 +154,7 @@ cmdscale
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3102
+# length: 3142
  -- statistics: Y = cmdscale (D)
  -- statistics: [Y, E] = cmdscale (D)
  -- statistics: Y = cmdscale (D, P)
@@ -143,18 +165,18 @@ cmdscale
      Takes an N by N distance (or difference, similarity, or dissimilarity)
      matrix D.  Returns Y, a matrix of N points with coordinates in P
      dimensional space which approximate those distances (or differences,
-     similarities, or dissimilarities).  Also returns the eigenvalues E of 'B =
-     -1/2 * J * (D.^2) * J', where 'J = eye(N) - ones(N,N)/N'.  P, the number of
+     similarities, or dissimilarities).  Also returns the eigenvalues E of ‘B =
+     -1/2 * J * (D.^2) * J’, where ‘J = eye(N) - ones(N,N)/N’.  P, the number of
      columns of Y, is equal to the number of positive real eigenvalues of B.
 
      The optional argument P is a positive integer between 1 and N that
      specifies the maximum dimensionality of the desired embedding Y.  If
      specified, Y will have at most P columns, and the returned eigenvalues E
      will be a vector of exactly length P.  Specifying P can be useful for
-     reducing dimensions for visualization (e.g., 'P = 2').
+     reducing dimensions for visualization (e.g., ‘P = 2’).
 
-     D can be a full or sparse matrix or a vector of length 'N*(N-1)/2'
-     containing the upper triangular elements (like the output of the 'pdist'
+     D can be a full or sparse matrix or a vector of length ‘N*(N-1)/2’
+     containing the upper triangular elements (like the output of the ‘pdist’
      function).  It must be symmetric with non-negative entries whose values are
      further restricted by the type of matrix being represented:
 
@@ -164,26 +186,26 @@ cmdscale
 
      * If D is a similarity matrix, the elements must all be less than or equal
      to one, with ones along the main diagonal.  In this case the points Y equal
-     or approximate the distances given by 'D = sqrt(ones(N,N)-D)'.
+     or approximate the distances given by ‘D = sqrt(ones(N,N)-D)’.
 
      D is a Euclidean matrix if and only if B is positive semi-definite.  When
      this is the case, then Y is an exact representation of the distances given
      in D.  If D is non-Euclidean, Y only approximates the distance given in D.
-     The approximation used by 'cmdscale' minimizes the statistical loss
+     The approximation used by ‘cmdscale’ minimizes the statistical loss
      function known as STRAIN.
 
      The returned Y is an N by P matrix showing possible coordinates of the
-     points in P dimensional space ('P < N').  The columns correspond to the
+     points in P dimensional space (‘P < N’).  The columns correspond to the
      positive eigenvalues of B in descending order.  A translation, rotation, or
      reflection of the coordinates given by Y will satisfy the same distance
      matrix up to the limits of machine precision.
 
-     For any 'K <= P', if the largest K positive eigenvalues of B are
+     For any ‘K <= P’, if the largest K positive eigenvalues of B are
      significantly greater in absolute magnitude than its other eigenvalues, the
      first K columns of Y provide a K-dimensional reduction of Y which
      approximates the distances given by D.  The optional return E can be used
      to consider various values of K, or to evaluate the accuracy of specific
-     dimension reductions (e.g., 'K = 2').
+     dimension reductions (e.g., ‘K = 2’).
 
      Reference: Ingwer Borg and Patrick J.F. Groenen (2005), Modern
      Multidimensional Scaling, Second Edition, Springer, ISBN: 978-0-387-25150-9
@@ -210,7 +232,7 @@ factoran
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6053
+# length: 6129
  -- statistics: LAMBDA = factoran (X, M)
  -- statistics: [LAMBDA, PSI] = factoran (X, M)
  -- statistics: [LAMBDA, PSI, T] = factoran (X, M)
@@ -220,7 +242,7 @@ factoran
 
      Common factor analysis.
 
-     'LAMBDA = factoran (X, M)' fits the common factor model with M common
+     ‘LAMBDA = factoran (X, M)’ fits the common factor model with M common
      factors to the N-by-P data matrix X, whose rows are observations and
      columns are variables, and returns the P-by-M matrix LAMBDA of factor
      loadings.  The model is
@@ -230,23 +252,23 @@ factoran
      where F are the common factors and E the variable-specific errors,
      uncorrelated with each other and with F.  The analysis is carried out on
      the correlation matrix, so the loadings are in standardized units and a
-     variable's communality 'sum (LAMBDA(i,:) .^ 2)' and its specific variance
-     'PSI(i)' sum to one.
+     variable's communality ‘sum (LAMBDA(i,:) .^ 2)’ and its specific variance
+     ‘PSI(i)’ sum to one.
 
-     '[LAMBDA, PSI] = factoran (...)' also returns the P-by-1 vector PSI of
+     ‘[LAMBDA, PSI] = factoran (...)’ also returns the P-by-1 vector PSI of
      specific variances.
 
-     '[LAMBDA, PSI, T] = factoran (...)' also returns the M-by-M rotation matrix
+     ‘[LAMBDA, PSI, T] = factoran (...)’ also returns the M-by-M rotation matrix
      T that was applied to the loadings.  It is the identity when 'Rotate' is
      'none'.
 
-     '[LAMBDA, PSI, T, STATS] = factoran (...)' also returns a structure STATS
+     ‘[LAMBDA, PSI, T, STATS] = factoran (...)’ also returns a structure STATS
      with the fields
 
      Field        Description
      ------------------------------------------------------------------------------
      loglike      the maximized log-likelihood, up to a constant.
-     dfe          the error degrees of freedom, '((P - M)^2 - P - M) / 2'.
+     dfe          the error degrees of freedom, ‘((P - M)^2 - P - M) / 2’.
      chisq        the likelihood ratio statistic testing M common factors
                   against an unrestricted covariance.
      p            the significance of CHISQ.
@@ -255,9 +277,9 @@ factoran
      when the degrees of freedom are not positive, when a specific variance has
      reached its lower bound (a Heywood case, where the likelihood is on the
      boundary), and for the 'paf' extraction, which does not maximize a
-     likelihood.  Test for them with 'isfield' before using them.
+     likelihood.  Test for them with ‘isfield’ before using them.
 
-     '[LAMBDA, PSI, T, STATS, F] = factoran (...)' also returns the N-by-M
+     ‘[LAMBDA, PSI, T, STATS, F] = factoran (...)’ also returns the N-by-M
      matrix F of predicted factor scores.  Scores are not available from a
      covariance matrix, only from data.
 
@@ -277,13 +299,13 @@ factoran
      'Nobs'         The number of observations behind a covariance matrix.
                     Required for STATS when 'Xtype' is 'covariance'.
                     
-     'Delta'        The lower bound on the specific variances, a scalar in '[0,
-                    1)' (default '0.005').  Bounding them away from zero keeps
+     'Delta'        The lower bound on the specific variances, a scalar in ‘[0,
+                    1)’ (default ‘0.005’).  Bounding them away from zero keeps
                     the likelihood finite; a solution that reaches the bound is
                     a Heywood case and is reported by a warning.
                     
      'Rotate'       The rotation applied to the loadings, passed to
-                    'rotatefactors': 'varimax' (default), 'none', 'quartimax',
+                    ‘rotatefactors’: 'varimax' (default), 'none', 'quartimax',
                     'equamax', 'parsimax', 'orthomax', or 'promax'.
                     
      'Normalize'    Whether the rotation normalizes the rows of the loadings
@@ -295,10 +317,10 @@ factoran
      'Scores'       How F is predicted, either 'wls' (default, also named
                     'Bartlett') or 'regression' (also named 'Thomson').
                     
-     'Maxit'        The iteration limit of the extraction (default '500').
+     'Maxit'        The iteration limit of the extraction (default ‘500’).
                     
      'Tolerance'    The convergence tolerance of the extraction (default
-                    '1e-8').
+                    ‘1e-8’).
 
      Choosing the extraction
      -----------------------
@@ -307,7 +329,7 @@ factoran
      they answer to different circumstances.
 
      'ml' maximizes the likelihood of a multivariate normal, and is what
-     MATLAB's 'factoran' does.  Use it when you want the likelihood ratio test
+     MATLAB's ‘factoran’ does.  Use it when you want the likelihood ratio test
      in STATS to decide how many factors the data support, and when the data are
      plausibly normal.  It can fail to converge, or push a specific variance to
      zero, when the model asks for more factors than the data hold.
@@ -323,20 +345,20 @@ factoran
      Number of factors
      -----------------
 
-     M must leave the model identified, that is '(P - M)^2 >= P + M'.  With six
+     M must leave the model identified, that is ‘(P - M)^2 >= P + M’.  With six
      variables at most three factors can be fitted, and only the smaller counts
      leave degrees of freedom to test.
 
      References
      ----------
 
-       1. Lawley, D. N., and Maxwell, A. E., 'Factor Analysis as a Statistical
-          Method', 2nd Edition, Butterworths, 1971.
+       1. Lawley, D. N., and Maxwell, A. E., ‘Factor Analysis as a Statistical
+          Method’, 2nd Edition, Butterworths, 1971.
 
        2. Joreskog, K. G., "Some contributions to maximum likelihood factor
-          analysis", 'Psychometrika' 32(4), 443-482, 1967.
+          analysis", ‘Psychometrika’ 32(4), 443-482, 1967.
 
-       3. Harman, H. H., 'Modern Factor Analysis', 3rd Edition, University of
+       3. Harman, H. H., ‘Modern Factor Analysis’, 3rd Edition, University of
           Chicago Press, 1976.
 
      See also: rotatefactors, pca, pcacov, princomp, barttest.
@@ -360,7 +382,7 @@ mdscale
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3883
+# length: 3907
  -- statistics: Y = mdscale (D, P)
  -- statistics: [Y, STRESS] = mdscale (D, P)
  -- statistics: [Y, STRESS, DISPARITIES] = mdscale (D, P)
@@ -368,14 +390,14 @@ mdscale
 
      Nonclassical (metric and nonmetric) multidimensional scaling.
 
-     'Y = mdscale (D, P)' takes a matrix of dissimilarities D and returns a
+     ‘Y = mdscale (D, P)’ takes a matrix of dissimilarities D and returns a
      configuration Y of N points in P dimensions (an N * P matrix) whose
      interpoint distances approximate D, by minimizing a stress criterion.  D
      may be given either as a full N * N symmetric matrix with zero diagonal, or
      as the vector of the N (N - 1) / 2 upper-triangle dissimilarities returned
-     by 'pdist'.
+     by ‘pdist’.
 
-     '[Y, STRESS, DISPARITIES] = mdscale (...)' also returns the final value of
+     ‘[Y, STRESS, DISPARITIES] = mdscale (...)’ also returns the final value of
      the STRESS criterion and the DISPARITIES (the transformed dissimilarities
      the distances are fitted to).  For the nonmetric criteria the disparities
      are the monotone (isotonic) regression of the dissimilarities onto the
@@ -407,7 +429,7 @@ mdscale
                delta)^2 / delta).
 
           'strain'
-               The classical scaling criterion; equivalent to 'cmdscale'.
+               The classical scaling criterion; equivalent to ‘cmdscale’.
 
      'Weights'
           A matrix or vector of nonnegative weights, the same size as D,
@@ -422,7 +444,7 @@ mdscale
           points, keeping the best (lowest-stress) result.  The default is 1.
 
      'Options'
-          A structure of algorithm options (as returned by 'statset') whose
+          A structure of algorithm options (as returned by ‘statset’) whose
           MaxIter, TolFun, and TolX fields control the iterative minimization.
 
      Non-uniqueness of the solution
@@ -430,7 +452,7 @@ mdscale
 
      A stress-minimizing configuration is defined only up to a translation,
      rotation, and reflection, because these leave all interpoint distances (and
-     hence the stress) unchanged.  'mdscale' removes this ambiguity by returning
+     hence the stress) unchanged.  ‘mdscale’ removes this ambiguity by returning
      Y centred at the origin and rotated to its principal axes (with the
      largest-magnitude coordinate on each axis made positive), matching the
      convention used by MATLAB.
@@ -467,20 +489,20 @@ nnmf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1875
+# length: 1895
  -- statistics: [W, H] = nnmf (A, K)
  -- statistics: [W, H, D] = nnmf (A, K)
  -- statistics: [...] = nnmf (..., NAME, VALUE)
 
      Nonnegative matrix factorization.
 
-     '[W, H] = nnmf (A, K)' factors the nonnegative N * M matrix A into
+     ‘[W, H] = nnmf (A, K)’ factors the nonnegative N * M matrix A into
      nonnegative factors W (N * K) and H (K * M) whose product approximates A,
-     by minimizing the root-mean-square residual between A and 'W * H'.  K, the
+     by minimizing the root-mean-square residual between A and ‘W * H’.  K, the
      number of factors, is typically smaller than N and M.
 
-     '[W, H, D] = nnmf (...)' also returns the root-mean-square residual D, that
-     is 'norm (A - W * H, "fro") / sqrt (N * M)'.
+     ‘[W, H, D] = nnmf (...)’ also returns the root-mean-square residual D, that
+     is ‘norm (A - W * H, "fro") / sqrt (N * M)’.
 
      The factorization is not unique: the returned factors are normalized so
      that the rows of H have unit length, and the columns of W (and the
@@ -510,7 +532,7 @@ nnmf
           'H0'.
 
      'Options'
-          A structure of algorithm options (as returned by 'statset') whose
+          A structure of algorithm options (as returned by ‘statset’) whose
           MaxIter, TolFun, and TolX fields control the iteration.
 
      See also: pca, statset.
@@ -534,7 +556,7 @@ pca
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3327
+# length: 3389
  -- statistics: COEFF = pca (X)
  -- statistics: COEFF = pca (X, NAME, VALUE)
  -- statistics: [COEFF, SCORE, LATENT] = pca (...)
@@ -549,52 +571,52 @@ pca
      direction that maximizes the variance of the projected data.
 
      Input argument:
-        * X : a N*D data matrix
+        • X : a N*D data matrix
 
      The following NAME, VALUE pair arguments can be used:
-        * 'Algorithm' defines the algorithm to use:
-             * 'svd' (default), for singular value decomposition
-             * 'eig' for eigenvalue decomposition
+        • 'Algorithm' defines the algorithm to use:
+             • 'svd' (default), for singular value decomposition
+             • 'eig' for eigenvalue decomposition
 
-        * 'Centered' is a boolean indicator for centering the observation data.
-          It is 'true' by default.
-        * 
+        • 'Centered' is a boolean indicator for centering the observation data.
+          It is ‘true’ by default.
+        • 
           'Economy' is a boolean indicator for the economy size output.  It is
-          'true' by default.  Hence, 'pca' returns only the elements of LATENT
+          ‘true’ by default.  Hence, ‘pca’ returns only the elements of LATENT
           that are not necessarily zero, and the corresponding columns of COEFF
           and SCORE, that is, when N <= D, only the first N - 1.
 
-        * 'NumComponents' defines the number of components k to return.  If k <
+        • 'NumComponents' defines the number of components k to return.  If k <
           p, then only the first k columns of COEFF and SCORE are returned.
 
-        * 'Rows' defines how to handle missing values:
-             * 'complete' (default), missing values are removed before
+        • 'Rows' defines how to handle missing values:
+             • 'complete' (default), missing values are removed before
                computation.
-             * 'pairwise' (only valid when 'Algorithm' is 'eig'), the covariance
+             • 'pairwise' (only valid when 'Algorithm' is 'eig'), the covariance
                of rows with missing data is computed using the available data,
                but the covariance matrix could be not positive definite, which
-               triggers the termination of 'pca'.
-             * 'all', missing values are not allowed, 'pca' terminates with an
+               triggers the termination of ‘pca’.
+             • 'all', missing values are not allowed, ‘pca’ terminates with an
                error if there are any.
 
-        * 'Weights' defines observation weights as a vector of positive values
+        • 'Weights' defines observation weights as a vector of positive values
           of length N.
 
-        * 'VariableWeights' defines variable weights:
-             * a VECTOR of positive values of length D.
-             * the string 'variance' to use the sample variance as weights.
+        • 'VariableWeights' defines variable weights:
+             • a VECTOR of positive values of length D.
+             • the string 'variance' to use the sample variance as weights.
 
      Return values:
-        * COEFF : the principal component coefficients, a D*D transformation
+        • COEFF : the principal component coefficients, a D*D transformation
           matrix
-        * SCORE : the principal component scores, the representation of X in the
+        • SCORE : the principal component scores, the representation of X in the
           principal component space
-        * LATENT : the principal component variances, i.e., the eigenvalues of
+        • LATENT : the principal component variances, i.e., the eigenvalues of
           the covariance matrix of X
-        * TSQUARED : Hotelling's T-squared Statistic for each observation in X
-        * EXPLAINED : the percentage of the variance explained by each principal
+        • TSQUARED : Hotelling's T-squared Statistic for each observation in X
+        • EXPLAINED : the percentage of the variance explained by each principal
           component
-        * MU : the estimated mean of each variable of X, it is zero if the data
+        • MU : the estimated mean of each variable of X, it is zero if the data
           are not centered
 
      Matlab compatibility note: the alternating least square method 'als' and
@@ -628,33 +650,33 @@ pcacov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1462
+# length: 1482
  -- statistics: COEFF = pcacov (K)
  -- statistics: [COEFF, LATENT] = pcacov (K)
  -- statistics: [COEFF, LATENT, EXPLAINED] = pcacov (K)
 
      Perform principal component analysis on covariance matrix
 
-     'COEFF = pcacov (K)' performs principal component analysis on the square
+     ‘COEFF = pcacov (K)’ performs principal component analysis on the square
      covariance matrix K and returns the principal component coefficients, also
      known as loadings.  The columns are in order of decreasing component
      variance.
 
-     '[COEFF, LATENT] = pcacov (K)' also returns a vector with the principal
+     ‘[COEFF, LATENT] = pcacov (K)’ also returns a vector with the principal
      component variances, i.e.  the eigenvalues of K.  LATENT has a length of
      size (COEFF, 1).
 
-     '[COEFF, LATENT, EXPLAINED] = pcacov (K)' also returns a vector with the
+     ‘[COEFF, LATENT, EXPLAINED] = pcacov (K)’ also returns a vector with the
      percentage of the total variance explained by each principal component.
      EXPLAINED has the same size as LATENT.  The entries in EXPLAINED range from
      0 (none of the variance is explained) to 100 (all of the variance is
      explained).
 
-     'pcacov' does not standardize K to have unit variances.  In order to
+     ‘pcacov’ does not standardize K to have unit variances.  In order to
      perform principal component analysis on standardized variables, use the
      correlation matrix R = K ./ (SD * SD'), where SD = sqrt (diag (K)), in
      place of K.  To perform principal component analysis directly on the data
-     matrix, use 'pca'.
+     matrix, use ‘pca’.
 
      References
      ----------
@@ -683,25 +705,25 @@ pcares
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1283
+# length: 1299
  -- statistics: RESIDUALS = pcares (X, NDIM)
  -- statistics: [RESIDUALS, RECONSTRUCTED] = pcares (X, NDIM)
 
      Calculate residuals from principal component analysis.
 
-     'RESIDUALS = pcares (X, NDIM)' returns the residuals obtained by retaining
+     ‘RESIDUALS = pcares (X, NDIM)’ returns the residuals obtained by retaining
      NDIM principal components of the N*D matrix X.  Rows of X correspond to
      observations, columns of X correspond to variables.  NDIM is a scalar and
      must be less than or equal to D. RESIDUALS is a matrix of the same size as
      X.  Use the data matrix, not the covariance matrix, with this function.
 
-     '[RESIDUALS, RECONSTRUCTED] = pcares (X, NDIM)' returns the reconstructed
+     ‘[RESIDUALS, RECONSTRUCTED] = pcares (X, NDIM)’ returns the reconstructed
      observations, i.e.  the approximation to X obtained by retaining its first
      NDIM principal components.
 
-     'pcares' does not normalize the columns of X.  Use pcares (zscore (X),
+     ‘pcares’ does not normalize the columns of X.  Use pcares (zscore (X),
      NDIM) in order to perform the principal components analysis based on
-     standardized variables, i.e.  based on correlations.  Use 'pcacov' in order
+     standardized variables, i.e.  based on correlations.  Use ‘pcacov’ in order
      to perform principal components analysis directly on a covariance or
      correlation matrix without constructing residuals.
 
@@ -732,7 +754,7 @@ ppca
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2464
+# length: 2480
  -- statistics: COEFF = ppca (Y, K)
  -- statistics: [COEFF, SCORE] = ppca (Y, K)
  -- statistics: [COEFF, SCORE, PCVAR] = ppca (Y, K)
@@ -743,15 +765,15 @@ ppca
 
      Probabilistic principal component analysis.
 
-     'COEFF = ppca (Y, K)' fits a probabilistic principal component analysis
+     ‘COEFF = ppca (Y, K)’ fits a probabilistic principal component analysis
      (PPCA) model with K components to the N * P data matrix Y (rows are
      observations, columns are variables) and returns the P * K matrix COEFF of
      orthonormal principal component coefficients, ordered by decreasing
-     component variance.  Y may contain 'NaN' values marking missing
+     component variance.  Y may contain ‘NaN’ values marking missing
      observations; the model is fitted by an expectation-maximization algorithm
      that accounts for them.  K must be a positive integer smaller than P.
 
-     '[COEFF, SCORE, PCVAR, MU, V, S] = ppca (...)' returns further outputs:
+     ‘[COEFF, SCORE, PCVAR, MU, V, S] = ppca (...)’ returns further outputs:
 
      SCORE
           The N * K principal component scores (the data projected onto the
@@ -780,7 +802,7 @@ ppca
           expectation-maximization algorithm (missing-data case).
 
      'Options'
-          A structure of algorithm options, as returned by 'statset', whose
+          A structure of algorithm options, as returned by ‘statset’, whose
           MaxIter, TolFun, and TolX fields set the maximum number of iterations
           and the convergence tolerances of the expectation-maximization
           algorithm.
@@ -811,7 +833,7 @@ princomp
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1227
+# length: 1237
  -- statistics: COEFF = princomp (X)
  -- statistics: [COEFF, SCORE] = princomp (X)
  -- statistics: [COEFF, SCORE, LATENT] = princomp (X)
@@ -820,14 +842,14 @@ princomp
 
      Performs a principal component analysis on a NxP data matrix X.
 
-        * COEFF : returns the principal component coefficients
-        * SCORE : returns the principal component scores, the representation of
+        • COEFF : returns the principal component coefficients
+        • SCORE : returns the principal component scores, the representation of
           X in the principal component space
-        * LATENT : returns the principal component variances, i.e., the
+        • LATENT : returns the principal component variances, i.e., the
           eigenvalues of the covariance matrix X.
-        * TSQUARE : returns Hotelling's T-squared Statistic for each observation
+        • TSQUARE : returns Hotelling's T-squared Statistic for each observation
           in X
-        * [...]  = princomp(X,'econ') returns only the elements of latent that
+        • [...]  = princomp(X,'econ') returns only the elements of latent that
           are not necessarily zero, and the corresponding columns of COEFF and
           SCORE, that is, when n <= p, only the first n-1.  This can be
           significantly faster when p is much larger than n.  In this case the
@@ -858,7 +880,7 @@ procrustes
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2400
+# length: 2430
  -- statistics: D = procrustes (X, Y)
  -- statistics: D = procrustes (X, Y, PARAM1, VALUE1, ...)
  -- statistics: [D, Z] = procrustes (...)
@@ -866,12 +888,12 @@ procrustes
 
      Procrustes Analysis.
 
-     'D = procrustes (X, Y)' computes a linear transformation of the points in
+     ‘D = procrustes (X, Y)’ computes a linear transformation of the points in
      the matrix Y to best conform them to the points in the matrix X by
      minimizing the sum of squared errors, as the goodness of fit criterion,
      which is returned in D as a dissimilarity measure.  D is standardized by a
      measure of the scale of X, given by
-        * sum (sum ((X - repmat (mean (X, 1), size (X, 1), 1)) .^ 2, 1))
+        • sum (sum ((X - repmat (mean (X, 1), size (X, 1), 1)) .^ 2, 1))
      i.e., the sum of squared elements of a centered version of X.  However, if
      X comprises repetitions of the same point, the sum of squared errors is not
      standardized.
@@ -882,9 +904,9 @@ procrustes
      dimensions in Y are added with padding columns of zeros as necessary to
      match the the dimensions in X.
 
-     '[D, Z] = procrustes (X, Y)' also returns the transformed values in Y.
+     ‘[D, Z] = procrustes (X, Y)’ also returns the transformed values in Y.
 
-     '[D, Z, TRANSFORM] = procrustes (X, Y)' also returns the transformation
+     ‘[D, Z, TRANSFORM] = procrustes (X, Y)’ also returns the transformation
      that maps Y to Z.
 
      TRANSFORM is a structure with fields:
@@ -893,20 +915,20 @@ procrustes
      T        the orthogonal rotation and reflection component
      b        the scale component
 
-     So that 'Z = TRANSFORM.b * Y * TRANSFORM.T + TRANSFORM.c'
+     So that ‘Z = TRANSFORM.b * Y * TRANSFORM.T + TRANSFORM.c’
 
      procrustes can take two optional parameters as Name-Value pairs.
 
-     '[...] = procrustes (..., 'Scaling', false)' computes a transformation that
+     ‘[...] = procrustes (..., 'Scaling', false)’ computes a transformation that
      does not include scaling, that is TRANSFORM.b = 1.  Setting 'Scaling' to
      true includes a scaling component, which is the default.
 
-     '[...] = procrustes (..., 'Reflection', false)' computes a transformation
+     ‘[...] = procrustes (..., 'Reflection', false)’ computes a transformation
      that does not include a reflection component, that is TRANSFORM.T = 1.
      Setting 'Reflection' to true forces the solution to include a reflection
      component in the computed transformation, that is TRANSFORM.T = -1.
 
-     '[...] = procrustes (..., 'Reflection', 'best')' computes the best fit
+     ‘[...] = procrustes (..., 'Reflection', 'best')’ computes the best fit
      procrustes solution, which may or may not include a reflection component,
      which is the default.
 
@@ -931,17 +953,17 @@ rica
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2075
+# length: 2087
  -- statistics: MDL = rica (X, Q)
  -- statistics: MDL = rica (X, Q, NAME, VALUE)
 
      Reconstruction independent component analysis (RICA) for feature
      extraction.
 
-     'MDL = rica (X, Q)' learns Q features from the N * P data matrix X (rows
+     ‘MDL = rica (X, Q)’ learns Q features from the N * P data matrix X (rows
      are observations, columns are predictors) and returns a ReconstructionICA
-     object MDL.  Apply the learned transformation to data with 'transform (MDL,
-     X)', which returns 'X * MDL.TransformWeights'.
+     object MDL.  Apply the learned transformation to data with ‘transform (MDL,
+     X)’, which returns ‘X * MDL.TransformWeights’.
 
      The P * Q weight matrix (with unit-length columns) minimizes the objective
 
@@ -1006,19 +1028,19 @@ rotatefactors
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3206
+# length: 3327
  -- statistics: B = rotatefactors (A)
  -- statistics: B = rotatefactors (A, NAME, VALUE, ...)
  -- statistics: [B, T] = rotatefactors (...)
 
      Rotate a factor-loading matrix.
 
-     'B = rotatefactors (A)' rotates the D * M factor loadings matrix A (D
+     ‘B = rotatefactors (A)’ rotates the D * M factor loadings matrix A (D
      observed variables, M factors) to the 'varimax' criterion and returns the
      rotated loadings B, the same size as A.
 
-     '[B, T] = rotatefactors (...)' also returns the M * M rotation matrix T, so
-     that 'B = A * T'.  For the orthogonal methods T is orthonormal ('T' * T' is
+     ‘[B, T] = rotatefactors (...)’ also returns the M * M rotation matrix T, so
+     that ‘B = A * T’.  For the orthogonal methods T is orthonormal (‘T' * T’ is
      the identity); for the oblique methods ('promax' and oblique 'procrustes')
      it is a general invertible matrix.
 
@@ -1060,7 +1082,7 @@ rotatefactors
 
      'Reltol'
           Relative convergence tolerance for the iterative orthomax rotation.
-          The default is 'sqrt (eps)'.
+          The default is ‘sqrt (eps)’.
 
      'Maxit'
           Maximum number of iterations for the iterative orthomax rotation.  The
@@ -1079,8 +1101,9 @@ rotatefactors
           Required for that method.
 
      'Type'
-          'orthogonal' (default) or 'oblique', selecting the kind of
-          'procrustes' rotation.
+          'oblique' (default) or 'orthogonal', selecting the kind of
+          'procrustes' rotation.  The default follows MATLAB, whose 'procrustes'
+          rotation is oblique unless told otherwise.
 
      *Note on the orthomax family:* for coefficients up to 1 ('varimax',
      'quartimax', and small 'orthomax') the rotation follows the same
@@ -1111,22 +1134,22 @@ sparsefilt
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1895
+# length: 1915
  -- statistics: MDL = sparsefilt (X, Q)
  -- statistics: MDL = sparsefilt (X, Q, NAME, VALUE)
 
      Sparse filtering for feature extraction.
 
-     'MDL = sparsefilt (X, Q)' learns Q features from the N * P data matrix X
+     ‘MDL = sparsefilt (X, Q)’ learns Q features from the N * P data matrix X
      (rows are observations, columns are predictors) and returns a
      SparseFiltering object MDL.  Apply the learned transformation to data with
-     'transform (MDL, X)'.
+     ‘transform (MDL, X)’.
 
-     The N * Q features returned by 'transform' are the soft-absolute
-     activations 'sqrt ((X * W) .^ 2 + 1e-8)', normalized first across
+     The N * Q features returned by ‘transform’ are the soft-absolute
+     activations ‘sqrt ((X * W) .^ 2 + 1e-8)’, normalized first across
      observations (each feature) and then across features (each observation).
      The P * Q weight matrix W minimizes the sum of those features plus an L2
-     penalty 'LAMBDA * ||W ||_F^2', driving the features to be sparse.
+     penalty ‘LAMBDA * ||W ||_F^2’, driving the features to be sparse.
 
      Name/Value pairs:
 
@@ -1179,19 +1202,19 @@ tsne
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2073
+# length: 2101
  -- statistics: Y = tsne (X)
  -- statistics: [Y, LOSS] = tsne (X)
  -- statistics: [...] = tsne (..., NAME, VALUE)
 
      t-distributed stochastic neighbor embedding (t-SNE).
 
-     'Y = tsne (X)' embeds the N * P data matrix X (rows are observations) into
+     ‘Y = tsne (X)’ embeds the N * P data matrix X (rows are observations) into
      a low-dimensional space and returns the N * NUMDIMENSIONS matrix Y of
      embedded points, whose pairwise (Student-t) affinities approximate the
      Gaussian affinities of the rows of X.
 
-     '[Y, LOSS] = tsne (...)' also returns the Kullback-Leibler divergence LOSS
+     ‘[Y, LOSS] = tsne (...)’ also returns the Kullback-Leibler divergence LOSS
      between the two affinity distributions at the returned embedding.
 
      Name/Value pairs:
@@ -1202,10 +1225,10 @@ tsne
 
      'Distance'
           The distance metric used for the high-dimensional affinities, as
-          accepted by 'pdist' (default 'euclidean').
+          accepted by ‘pdist’ (default 'euclidean').
 
      'NumDimensions'
-          The dimension of the embedding Y (default 'min (P, 2)').
+          The dimension of the embedding Y (default ‘min (P, 2)’).
 
      'NumPCAComponents'
           If positive, reduce X to this many principal components before
@@ -1227,11 +1250,11 @@ tsne
           The learning rate of the optimization (default 500).
 
      'InitialY'
-          An N * NUMDIMENSIONS initial embedding (default '1e-4 * randn').
+          An N * NUMDIMENSIONS initial embedding (default ‘1e-4 * randn’).
 
      'Options'
-          A structure (as returned by 'statset') whose MaxIter (default 1000)
-          and TolFun (default '1e-10') fields control the optimization.
+          A structure (as returned by ‘statset’) whose MaxIter (default 1000)
+          and TolFun (default ‘1e-10’) fields control the optimization.
 
      The embedding is not unique: it depends on the initial configuration and
      the random state.  Set 'InitialY' (or the random seed) for a reproducible

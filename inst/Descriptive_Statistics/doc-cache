@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,21 +13,21 @@ cdfcalc
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 800
+# length: 812
  -- statistics: [YCDF, XCDF, N, EMSG, EID] = cdfcalc (X)
 
      Calculate an empirical cumulative distribution function.
 
-     '[YCDF, XCDF] = cdfcalc (X)' calculates an empirical cumulative
+     ‘[YCDF, XCDF] = cdfcalc (X)’ calculates an empirical cumulative
      distribution function (CDF) of the observations in the data sample vector
      X.  X may be a row or column vector, and represents a random sample of
      observations from some underlying distribution.  On return XCDF is the set
      of X values at which the CDF increases.  At XCDF(i), the function increases
      from YCDF(i) to YCDF(i+1).
 
-     '[YCDF, XCDF, N] = cdfcalc (X)' also returns N, the sample size.
+     ‘[YCDF, XCDF, N] = cdfcalc (X)’ also returns N, the sample size.
 
-     '[YCDF, XCDF, N, EMSG, EID] = cdfcalc (X)' also returns an error message
+     ‘[YCDF, XCDF, N, EMSG, EID] = cdfcalc (X)’ also returns an error message
      and error id if X is not a vector or if it contains no values other than
      NaN.
 
@@ -52,13 +52,13 @@ cl_multinom
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3264
+# length: 3268
  -- statistics: CL = cl_multinom (X, N, B)
  -- statistics: CL = cl_multinom (X, N, B, METHOD)
 
      Confidence level of multinomial portions.
 
-     'cl_multinom' returns confidence level of multinomial parameters estimated
+     ‘cl_multinom’ returns confidence level of multinomial parameters estimated
      as p = X / sum(X) with predefined confidence interval B.  Finite population
      is also considered.
 
@@ -187,7 +187,7 @@ ecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2333
+# length: 2357
  -- statistics: [F, X] = ecdf (Y)
  -- statistics: [F, X, FLO, FUP] = ecdf (Y)
  -- statistics: ecdf (...)
@@ -197,20 +197,20 @@ ecdf
 
      Empirical (Kaplan-Meier) cumulative distribution function.
 
-     '[F, X] = ecdf (Y)' calculates the Kaplan-Meier estimate of the cumulative
+     ‘[F, X] = ecdf (Y)’ calculates the Kaplan-Meier estimate of the cumulative
      distribution function (cdf), also known as the empirical cdf.  Y is a
      vector of data values.  F is a vector of values of the empirical cdf
      evaluated at X.
 
-     '[F, X, FLO, FUP] = ecdf (Y)' also returns lower and upper confidence
+     ‘[F, X, FLO, FUP] = ecdf (Y)’ also returns lower and upper confidence
      bounds for the cdf.  These bounds are calculated using Greenwood's formula,
      and are not simultaneous confidence bounds.
 
-     'ecdf (...)' without output arguments produces a plot of the empirical cdf.
+     ‘ecdf (...)’ without output arguments produces a plot of the empirical cdf.
 
-     'ecdf (AX, ...)' plots into existing axes AX.
+     ‘ecdf (AX, ...)’ plots into existing axes AX.
 
-     '[...] = ecdf (Y, NAME, VALUE, ...)' specifies additional parameter
+     ‘[...] = ecdf (Y, NAME, VALUE, ...)’ specifies additional parameter
      name/value pairs chosen from the following:
 
      NAME             VALUE
@@ -234,7 +234,7 @@ ecdf
      "bounds"         Either "on" to include bounds or "off" (the default) to omit
                       them.  Used only for plotting.
 
-     Type 'demo ecdf' to see examples of usage.
+     Type ‘demo ecdf’ to see examples of usage.
 
      See also: cdfplot, ecdfhist.
 
@@ -257,7 +257,7 @@ geomean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1931
+# length: 1979
  -- statistics: M = geomean (X)
  -- statistics: M = geomean (X, "all")
  -- statistics: M = geomean (X, DIM)
@@ -266,37 +266,37 @@ geomean
 
      Compute the geometric mean of X.
 
-        * If X is a vector, then 'geomean(X)' returns the geometric mean of the
+        • If X is a vector, then ‘geomean(X)’ returns the geometric mean of the
           elements in X defined as
 
                geomean (X) = PROD_i X(i) ^ (1/N)
 
           where N is the length of the X vector.
 
-        * If X is a matrix, then 'geomean(X)' returns a row vector with the
+        • If X is a matrix, then ‘geomean(X)’ returns a row vector with the
           geometric mean of each columns in X.
 
-        * If X is a multidimensional array, then 'geomean(X)' operates along the
+        • If X is a multidimensional array, then ‘geomean(X)’ operates along the
           first nonsingleton dimension of X.
 
-        * X must not contain any negative or complex values.
+        • X must not contain any negative or complex values.
 
-     'geomean(X, "all")' returns the geometric mean of all the elements in X.
+     ‘geomean(X, "all")’ returns the geometric mean of all the elements in X.
      If X contains any 0, then the returned value is 0.
 
-     'geomean(X, DIM)' returns the geometric mean along the operating dimension
+     ‘geomean(X, DIM)’ returns the geometric mean along the operating dimension
      DIM of X.  Calculating the harmonic mean of any subarray containing any 0
      will return 0.
 
-     'geomean(X, VECDIM)' returns the geometric mean over the dimensions
+     ‘geomean(X, VECDIM)’ returns the geometric mean over the dimensions
      specified in the vector VECDIM.  For example, if X is a 2-by-3-by-4 array,
-     then 'geomean(X, [1 2])' returns a 1-by-1-by-4 array.  Each element of the
+     then ‘geomean(X, [1 2])’ returns a 1-by-1-by-4 array.  Each element of the
      output array is the geometric mean of the elements on the corresponding
      page of X.  If VECDIM indexes all dimensions of X, then it is equivalent to
-     'geomean (X, "all")'.  Any dimension in VECDIM greater than 'ndims (X)' is
+     ‘geomean (X, "all")’.  Any dimension in VECDIM greater than ‘ndims (X)’ is
      ignored.
 
-     'geomean(..., NANFLAG)' specifies whether to exclude NaN values from the
+     ‘geomean(..., NANFLAG)’ specifies whether to exclude NaN values from the
      calculation, using any of the input argument combinations in previous
      syntaxes.  By default, geomean includes NaN values in the calculation
      (NANFLAG has the value "includenan").  To exclude NaN values, set the value
@@ -323,7 +323,7 @@ grpstats
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6772
+# length: 6836
  -- statistics: STATS = grpstats (X)
  -- statistics: STATS = grpstats (X, GROUP)
  -- statistics: [STATS1, ..., STATSN] = grpstats (X, GROUP, WHICHSTATS)
@@ -337,7 +337,7 @@ grpstats
 
      Summary statistics by group.
 
-     'grpstats' computes groupwise summary statistics for the data in X, which
+     ‘grpstats’ computes groupwise summary statistics for the data in X, which
      can be a numeric matrix or a table.  Numeric vectors are treated as a
      single column matrix.  NaNs are treated as missing values and removed from
      calculations.
@@ -345,21 +345,21 @@ grpstats
      Syntax for Numeric Input
      ------------------------
 
-     'STATS = grpstats (X)' calculates the mean statistic for each column in X
+     ‘STATS = grpstats (X)’ calculates the mean statistic for each column in X
      and returns it as row vector in STATS.
 
-     'STATS = grpstats (X, GROUP)' calculates the mean statistic for each column
+     ‘STATS = grpstats (X, GROUP)’ calculates the mean statistic for each column
      in X grouped by GROUP.  The returned argument, STATS, is also a matrix with
      equal columns as X and the number of rows is equal to the groups specified
      by GROUP.
 
      The grouping variable, GROUP can be a vector of any data type supported by
-     the 'grp2idx' function.  Alternatively, it can be a cell vector specifying
+     the ‘grp2idx’ function.  Alternatively, it can be a cell vector specifying
      multiple grouping variables with each cell element containing any of the
-     aforementioned supported grouping vectors.  If GROUP is empty ('[]'), then
+     aforementioned supported grouping vectors.  If GROUP is empty (‘[]’), then
      input X is treated as a single group.
 
-     '[STATS1, ..., STATSN] = grpstats (X, GROUP, WHICHSTATS)' calculates the
+     ‘[STATS1, ..., STATSN] = grpstats (X, GROUP, WHICHSTATS)’ calculates the
      summary statistics specified by the WHICHSTATS argument, which can include
      any of the available statistics shown below.  The number of output
      arguments must match the number of requested statistics specified in
@@ -372,7 +372,7 @@ grpstats
      GROUP is a grouping variable that defines the groups for the rows of X.  It
      can be a categorical variable, numeric vector, string array, or cell array
      of strings.  GROUP can also be a cell array containing multiple grouping
-     variables.  If GROUP is empty ('[]') or omitted, all of X is treated as a
+     variables.  If GROUP is empty (‘[]’) or omitted, all of X is treated as a
      single group.
 
      WHICHSTATS specifies the statistics to compute.  It can be either a string
@@ -394,22 +394,22 @@ grpstats
      'predci'         Prediction interval for a new observation.
      'gname'          Group names.
 
-     '[...] = grpstats (..., 'Alpha', ALPHA)' specifies the significance level
-     for the confidence intervals ('meanci' and 'predci') as '100 *
-     (1-ALPHA)@%'.  ALPHA must be a scalar between 0 and 1.  When not specified,
+     ‘[...] = grpstats (..., 'Alpha', ALPHA)’ specifies the significance level
+     for the confidence intervals ('meanci' and 'predci') as ‘100 *
+     (1-ALPHA)@%’.  ALPHA must be a scalar between 0 and 1.  When not specified,
      it defaults to 0.05.  Note that this paired input argument is also valid
      for table input.
 
      Syntax for Table Input
      ----------------------
 
-     'TBLSTATS = grpstats (TBL, GROUPVARS)' computes the summary statistics for
+     ‘TBLSTATS = grpstats (TBL, GROUPVARS)’ computes the summary statistics for
      the data in table TBL, grouped by the variables specified in GROUPVARS.  If
      GROUPVARS is empty or omitted, then all of TBL is treated as a single
      group.  GROUPVARS can be a cell array of character vectors or a string
      array specifying one or more variable names in TBL to be used as grouping
      variables.  Alternatively, all valid methods for indexing table variables
-     are supported (e.g.  'vartype' object, logical vector, function handle).
+     are supported (e.g.  ‘vartype’ object, logical vector, function handle).
 
      The output TBLSTATS is a table with one row for each group.  It contains
      the grouping variables, an additional 'GroupCount' variable, and the
@@ -420,7 +420,7 @@ grpstats
      groups, for which data are available in TBL.  When no groups are specified,
      the row name of the single row output table defaults to 'All'.
 
-     'TBLSTATS = grpstats (TBL, GROUPVARS, WHICHSTATS)' specifies which
+     ‘TBLSTATS = grpstats (TBL, GROUPVARS, WHICHSTATS)’ specifies which
      statistics to calculate for the variables in TBL.  Unless specified, the
      mean is calculated for each variable.  When specifying more than one
      statistic, TBLSTATS contains multiple variables for each variable in TBL
@@ -428,7 +428,7 @@ grpstats
      original variable.  When a function handle is applied, its string
      representation is used instead.
 
-     For table input specifically, 'grpstats' also accepts the following paired
+     For table input specifically, ‘grpstats’ also accepts the following paired
      arguments.
 
      Name             Value
@@ -445,11 +445,11 @@ grpstats
      Plotting Syntax
      ---------------
 
-     The syntax 'grpstats (X, GROUP, ALPHA)' generates an 'errorbar' plot with
+     The syntax ‘grpstats (X, GROUP, ALPHA)’ generates an ‘errorbar’ plot with
      the group means and their respective confidence intervals.  X must be a
      numeric vector or matrix.  ALPHA is a scalar between 0 and 1 that
      determines the confidence level.  This syntax is an alternative to calling
-     'errorbar' after computing 'mean' and 'meanci' statistics.  The optional
+     ‘errorbar’ after computing 'mean' and 'meanci' statistics.  The optional
      output H is a handle to the hggroup object representing the data plot and
      errorbars.
 
@@ -474,7 +474,7 @@ harmmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1937
+# length: 1985
  -- statistics: M = harmmean (X)
  -- statistics: M = harmmean (X, "all")
  -- statistics: M = harmmean (X, DIM)
@@ -483,37 +483,37 @@ harmmean
 
      Compute the harmonic mean of X.
 
-        * If X is a vector, then 'harmmean(X)' returns the harmonic mean of the
+        • If X is a vector, then ‘harmmean(X)’ returns the harmonic mean of the
           elements in X defined as
 
                harmmean (X) = N / SUM_i X(i)^-1
 
           where N is the length of the X vector.
 
-        * If X is a matrix, then 'harmmean(X)' returns a row vector with the
+        • If X is a matrix, then ‘harmmean(X)’ returns a row vector with the
           harmonic mean of each columns in X.
 
-        * If X is a multidimensional array, then 'harmmean(X)' operates along
+        • If X is a multidimensional array, then ‘harmmean(X)’ operates along
           the first nonsingleton dimension of X.
 
-        * X must not contain any negative or complex values.
+        • X must not contain any negative or complex values.
 
-     'harmmean(X, "all")' returns the harmonic mean of all the elements in X.
+     ‘harmmean(X, "all")’ returns the harmonic mean of all the elements in X.
      If X contains any 0, then the returned value is 0.
 
-     'harmmean(X, DIM)' returns the harmonic mean along the operating dimension
+     ‘harmmean(X, DIM)’ returns the harmonic mean along the operating dimension
      DIM of X.  Calculating the harmonic mean of any subarray containing any 0
      will return 0.
 
-     'harmmean(X, VECDIM)' returns the harmonic mean over the dimensions
+     ‘harmmean(X, VECDIM)’ returns the harmonic mean over the dimensions
      specified in the vector VECDIM.  For example, if X is a 2-by-3-by-4 array,
-     then 'harmmean(X, [1 2])' returns a 1-by-1-by-4 array.  Each element of the
+     then ‘harmmean(X, [1 2])’ returns a 1-by-1-by-4 array.  Each element of the
      output array is the harmonic mean of the elements on the corresponding page
      of X.  If VECDIM indexes all dimensions of X, then it is equivalent to
-     'harmmean (X, "all")'.  Any dimension in VECDIM greater than 'ndims (X)' is
+     ‘harmmean (X, "all")’.  Any dimension in VECDIM greater than ‘ndims (X)’ is
      ignored.
 
-     'harmmean(..., NANFLAG)' specifies whether to exclude NaN values from the
+     ‘harmmean(..., NANFLAG)’ specifies whether to exclude NaN values from the
      calculation, using any of the input argument combinations in previous
      syntaxes.  By default, harmmean includes NaN values in the calculation
      (NANFLAG has the value "includenan").  To exclude NaN values, set the value
@@ -540,7 +540,7 @@ jackknife
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2019
+# length: 2039
  -- statistics: JACKSTAT = jackknife (E, X)
  -- statistics: JACKSTAT = jackknife (E, X, ...)
 
@@ -557,11 +557,11 @@ jackknife
 
      Depending on the number of samples to be used, the estimator must have the
      appropriate form:
-        * If only one sample is used, then the estimator need not be concerned
+        • If only one sample is used, then the estimator need not be concerned
           with cell arrays, for example jackknifing the standard deviation of a
-          sample can be performed with 'JACKSTAT = jackknife (@std, rand (100,
-          1))'.
-        * If, however, more than one sample is to be used, the samples must all
+          sample can be performed with ‘JACKSTAT = jackknife (@std, rand (100,
+          1))’.
+        • If, however, more than one sample is to be used, the samples must all
           be of equal size, and the estimator must address them as elements of a
           cell-array, in which they are aggregated in their order of appearance:
 
@@ -571,15 +571,15 @@ jackknife
      If all goes well, a theoretical value P for the parameter is already known,
      N is the sample size,
 
-     'T = N * E(X) - (N - 1) * mean(JACKSTAT)'
+     ‘T = N * E(X) - (N - 1) * mean(JACKSTAT)’
 
      and
 
-     'V = sumsq(N * E(X) - (N - 1) * JACKSTAT - T) / (N * (N - 1))'
+     ‘V = sumsq(N * E(X) - (N - 1) * JACKSTAT - T) / (N * (N - 1))’
 
      then
 
-     '(T-P)/sqrt(V)' should follow a t-distribution with N-1 degrees of freedom.
+     ‘(T-P)/sqrt(V)’ should follow a t-distribution with N-1 degrees of freedom.
 
      Jackknifing is a well known method to reduce bias.  Further details can be
      found in:
@@ -611,7 +611,7 @@ ksdensity
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2124
+# length: 2201
  -- statistics: F = ksdensity (X)
  -- statistics: F = ksdensity (X, PTS)
  -- statistics: [F, XI] = ksdensity (...)
@@ -620,16 +620,17 @@ ksdensity
 
      Kernel smoothing density estimate.
 
-     'F = ksdensity (X)' computes a probability density estimate of the sample
+     ‘F = ksdensity (X)’ computes a probability density estimate of the sample
      in the vector X, evaluated at 100 equally spaced points XI that span the
-     range of the data.  '[F, XI] = ksdensity (X)' also returns those points.
-     When called without output arguments, the estimate is plotted instead.
+     range of the data.  ‘[F, XI] = ksdensity (X)’ also returns those points.
+     Both are row vectors, whichever way X itself lies.  When called without
+     output arguments, the estimate is plotted instead.
 
-     'F = ksdensity (X, PTS)' evaluates the estimate at the values in PTS
+     ‘F = ksdensity (X, PTS)’ evaluates the estimate at the values in PTS
      instead; F is then the same size as PTS.  For 'Function' equal to 'icdf'
      the entries of PTS are probabilities in [0, 1].
 
-     '[F, XI, BW] = ksdensity (...)' additionally returns the bandwidth BW of
+     ‘[F, XI, BW] = ksdensity (...)’ additionally returns the bandwidth BW of
      the smoothing kernel.
 
      The following Name-Value pairs are supported:
@@ -638,7 +639,7 @@ ksdensity
                     
      ----------------------------------------------------------------------------------
      'Kernel'       The smoothing kernel: 'normal' (default), 'box', 'triangle',
-                    'epanechnikov', or a function handle '@(z)' evaluating a kernel
+                    'epanechnikov', or a function handle ‘@(z)’ evaluating a kernel
                     density at the standardized distance Z.
                     
      'Bandwidth'    The kernel bandwidth, a positive scalar.  The default is the
@@ -676,12 +677,12 @@ mvksdensity
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1568
+# length: 1572
  -- statistics: F = mvksdensity (X, PTS, NAME, VALUE)
 
      Multivariate kernel smoothing density estimate.
 
-     'F = mvksdensity (X, PTS)' computes a probability density estimate of the
+     ‘F = mvksdensity (X, PTS)’ computes a probability density estimate of the
      sample in the N*D matrix X, evaluated at the points in the M*D matrix PTS.
      Each row of X is a single D-dimensional observation, and each row of PTS is
      a point at which to evaluate the estimate.  The result F is an M*1 vector,
@@ -730,7 +731,7 @@ nancov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1258
+# length: 1282
  -- statistics: C = nancov (X)
  -- statistics: C = nancov (X, Y)
  -- statistics: C = nancov (..., NORMALIZATION)
@@ -738,21 +739,21 @@ nancov
 
      Compute the covariance matrix while ignoring NaN values.
 
-     'C = nancov (X)' returns the covariance matrix of the columns of X,
+     ‘C = nancov (X)’ returns the covariance matrix of the columns of X,
      treating each row as an observation, after removing NaN values.  If X is a
      vector, the scalar variance of its non-NaN elements is returned.
 
-     'C = nancov (X, Y)', where X and Y are of equal length, is equivalent to
-     'nancov ([X(:), Y(:)])' and returns the 2-by-2 covariance matrix.
+     ‘C = nancov (X, Y)’, where X and Y are of equal length, is equivalent to
+     ‘nancov ([X(:), Y(:)])’ and returns the 2-by-2 covariance matrix.
 
-     'C = nancov (..., NORMALIZATION)' specifies the normalization.  When
+     ‘C = nancov (..., NORMALIZATION)’ specifies the normalization.  When
      NORMALIZATION is 0 (default), the covariance is normalized by N-1, where N
      is the number of observations used.  When it is 1, it is normalized by N.
 
-     'C = nancov (..., METHOD)' selects how NaN values are handled.  With
+     ‘C = nancov (..., METHOD)’ selects how NaN values are handled.  With
      "complete" (the default), any row of the data that contains a NaN value is
      removed before the covariance is computed.  With "pairwise", each element
-     'C(i,j)' is computed using all rows in which both column I and column J are
+     ‘C(i,j)’ is computed using all rows in which both column I and column J are
      non-NaN; the resulting matrix may fail to be positive semidefinite.
 
      See also: cov, nanvar, nanstd, nanmean.
@@ -776,7 +777,7 @@ nanmax
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1895
+# length: 1935
  -- statistics: V = nanmax (X)
  -- statistics: V = nanmax (X, [], DIM)
  -- statistics: [V, IDX] = nanmax (...)
@@ -786,32 +787,32 @@ nanmax
 
      Find the maximum while ignoring NaN values.
 
-     'V = nanmax (X)' returns the maximum of X, after removing NaN values.  If X
+     ‘V = nanmax (X)’ returns the maximum of X, after removing NaN values.  If X
      is a vector, a scalar maximum value is returned.  If X is a matrix, a row
      vector of column maxima is returned.  If X is a multidimensional array, the
-     'nanmax' operates along the first nonsingleton dimension.  If all values in
+     ‘nanmax’ operates along the first nonsingleton dimension.  If all values in
      a column are NaN, the maximum is returned as NaN rather than [].
 
-     'V = nanmax (X, [], DIM)' operates along the dimension DIM of X.
+     ‘V = nanmax (X, [], DIM)’ operates along the dimension DIM of X.
 
-     '[V, IDX] = nanmax (...)' also returns the row indices of the maximum
+     ‘[V, IDX] = nanmax (...)’ also returns the row indices of the maximum
      values for each column in the vector IDX.  When X is a vector, then IDX is
      a scalar value as V.
 
-     'V = nanmax (X, [], 'all')' returns the maximum of all elements of X, after
-     removing NaN values.  It is the equivalent of 'nanmax (X(:))'.  The
+     ‘V = nanmax (X, [], 'all')’ returns the maximum of all elements of X, after
+     removing NaN values.  It is the equivalent of ‘nanmax (X(:))’.  The
      optional flag 'all' cannot be used together with DIM or VECDIM input
      arguments.
 
-     'V = nanmax (X, [], VECDIM)' returns the maximum over the dimensions
+     ‘V = nanmax (X, [], VECDIM)’ returns the maximum over the dimensions
      specified in the vector VECDIM.  Each element of VECDIM represents a
      dimension of the input array X and the output V has length 1 in the
      specified operating dimensions.  The lengths of the other dimensions are
      the same for X and Y.  For example, if X is a 2-by-3-by-4 array, then
-     'nanmax (X, [1 2])' returns a 1-by-1-by-4 array.  Each element of the
+     ‘nanmax (X, [1 2])’ returns a 1-by-1-by-4 array.  Each element of the
      output array is the maximum of the elements on the corresponding page of X.
-     If VECDIM indexes all dimensions of X, then it is equivalent to 'nanmax (X,
-     'all')'.  Any dimension in VECDIM greater than 'ndims (X)' is ignored.
+     If VECDIM indexes all dimensions of X, then it is equivalent to ‘nanmax (X,
+     'all')’.  Any dimension in VECDIM greater than ‘ndims (X)’ is ignored.
 
      See also: max, nanmin, nansum.
 
@@ -834,7 +835,7 @@ nanmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1882
+# length: 1926
  -- statistics: S = nanmean (X)
  -- statistics: S = nanmean (X, 'all')
  -- statistics: S = nanmean (X, DIM)
@@ -842,31 +843,31 @@ nanmean
 
      Compute the mean while ignoring NaN values.
 
-     'S = nanmean (X)' returns the mean of X after removing NaN values.  If X is
+     ‘S = nanmean (X)’ returns the mean of X after removing NaN values.  If X is
      a vector, a scalar value is returned.  If X is a matrix, a row vector of
-     column means is returned.  If X is a multidimensional array, 'nanmean'
+     column means is returned.  If X is a multidimensional array, ‘nanmean’
      operates along the first nonsingleton dimension.  If all values along a
      dimension are NaN, the mean is returned returned as NaN.
 
-     'S = nanmean (X, 'all')' returns the mean of all elements of X, after
-     removing NaN values.  It is the equivalent of 'nanmean (X(:))'.
+     ‘S = nanmean (X, 'all')’ returns the mean of all elements of X, after
+     removing NaN values.  It is the equivalent of ‘nanmean (X(:))’.
 
-     'S = nanmean (X, DIM)' operates along the dimension DIM of X.
+     ‘S = nanmean (X, DIM)’ operates along the dimension DIM of X.
 
-     'S = nanmean (X, VECDIM)' returns the mean over the dimensions specified in
+     ‘S = nanmean (X, VECDIM)’ returns the mean over the dimensions specified in
      the vector VECDIM.  Each element of VECDIM represents a dimension of the
      input array X and the output S has length 1 in the specified operating
      dimensions.  The lengths of the other dimensions are the same for X and Y.
-     For example, if X is a 2-by-3-by-4 array, then 'nanmean (X, [1 2])' returns
+     For example, if X is a 2-by-3-by-4 array, then ‘nanmean (X, [1 2])’ returns
      a 1-by-1-by-4 array.  Each element of the output array is the mean of the
      elements on the corresponding page of X.  If VECDIM indexes all dimensions
-     of X, then it is equivalent to 'nanmean (X, 'all')'.  Any dimension in
-     VECDIM greater than 'ndims (X)' is ignored.
+     of X, then it is equivalent to ‘nanmean (X, 'all')’.  Any dimension in
+     VECDIM greater than ‘ndims (X)’ is ignored.
 
-     'nanmean' primarily operates on single and double numeric types, since they
+     ‘nanmean’ primarily operates on single and double numeric types, since they
      support NaN values, while preserving the data type.  Nevertheless, it can
      also operate on integer types by treating them as double types.  To avoid
-     overflow on very large int64 and uint64 values, use the 'mean' function,
+     overflow on very large int64 and uint64 values, use the ‘mean’ function,
      which applies special handling for such cases.
 
      See also: mean, nansum, nanmin, nanmax.
@@ -890,7 +891,7 @@ nanmedian
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1264
+# length: 1296
  -- statistics: M = nanmedian (X)
  -- statistics: M = nanmedian (X, 'all')
  -- statistics: M = nanmedian (X, DIM)
@@ -898,23 +899,23 @@ nanmedian
 
      Compute the median while ignoring NaN values.
 
-     'M = nanmedian (X)' returns the median of X, after removing NaN values.  If
+     ‘M = nanmedian (X)’ returns the median of X, after removing NaN values.  If
      X is a vector, a scalar value is returned.  If X is a matrix, a row vector
      of column medians is returned.  If X is a multidimensional array,
-     'nanmedian' operates along the first nonsingleton dimension.  If all values
+     ‘nanmedian’ operates along the first nonsingleton dimension.  If all values
      along a dimension are NaN, the median is returned as NaN.
 
-     'M = nanmedian (X, 'all')' returns the median of all elements of X, after
-     removing NaN values.  It is the equivalent of 'nanmedian (X(:))'.
+     ‘M = nanmedian (X, 'all')’ returns the median of all elements of X, after
+     removing NaN values.  It is the equivalent of ‘nanmedian (X(:))’.
 
-     'M = nanmedian (X, DIM)' operates along the dimension DIM of X.
+     ‘M = nanmedian (X, DIM)’ operates along the dimension DIM of X.
 
-     'M = nanmedian (X, VECDIM)' returns the median over the dimensions
+     ‘M = nanmedian (X, VECDIM)’ returns the median over the dimensions
      specified in the vector VECDIM.  Each element of VECDIM represents a
      dimension of the input array X and the output M has length 1 in the
      specified operating dimensions.  If VECDIM indexes all dimensions of X,
-     then it is equivalent to 'nanmedian (X, 'all')'.  Any dimension in VECDIM
-     greater than 'ndims (X)' is ignored.
+     then it is equivalent to ‘nanmedian (X, 'all')’.  Any dimension in VECDIM
+     greater than ‘ndims (X)’ is ignored.
 
      See also: median, nanmean, nansum.
 
@@ -937,7 +938,7 @@ nanmin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1895
+# length: 1935
  -- statistics: V = nanmin (X)
  -- statistics: V = nanmin (X, [], DIM)
  -- statistics: [V, IDX] = nanmin (...)
@@ -947,32 +948,32 @@ nanmin
 
      Find the minimum while ignoring NaN values.
 
-     'V = nanmin (X)' returns the minimum of X, after removing NaN values.  If X
+     ‘V = nanmin (X)’ returns the minimum of X, after removing NaN values.  If X
      is a vector, a scalar minimum value is returned.  If X is a matrix, a row
      vector of column minima is returned.  If X is a multidimensional array, the
-     'nanmin' operates along the first nonsingleton dimension.  If all values in
+     ‘nanmin’ operates along the first nonsingleton dimension.  If all values in
      a column are NaN, the minimum is returned as NaN rather than [].
 
-     'V = nanmin (X, [], DIM)' operates along the dimension DIM of X.
+     ‘V = nanmin (X, [], DIM)’ operates along the dimension DIM of X.
 
-     '[V, IDX] = nanmin (...)' also returns the row indices of the minimum
+     ‘[V, IDX] = nanmin (...)’ also returns the row indices of the minimum
      values for each column in the vector IDX.  When X is a vector, then IDX is
      a scalar value as V.
 
-     'V = nanmin (X, [], 'all')' returns the minimum of all elements of X, after
-     removing NaN values.  It is the equivalent of 'nanmin (X(:))'.  The
+     ‘V = nanmin (X, [], 'all')’ returns the minimum of all elements of X, after
+     removing NaN values.  It is the equivalent of ‘nanmin (X(:))’.  The
      optional flag 'all' cannot be used together with DIM or VECDIM input
      arguments.
 
-     'V = nanmin (X, [], VECDIM)' returns the minimum over the dimensions
+     ‘V = nanmin (X, [], VECDIM)’ returns the minimum over the dimensions
      specified in the vector VECDIM.  Each element of VECDIM represents a
      dimension of the input array X and the output V has length 1 in the
      specified operating dimensions.  The lengths of the other dimensions are
      the same for X and Y.  For example, if X is a 2-by-3-by-4 array, then
-     'nanmin (X, [1 2])' returns a 1-by-1-by-4 array.  Each element of the
+     ‘nanmin (X, [1 2])’ returns a 1-by-1-by-4 array.  Each element of the
      output array is the minimum of the elements on the corresponding page of X.
-     If VECDIM indexes all dimensions of X, then it is equivalent to 'nanmin (X,
-     'all')'.  Any dimension in VECDIM greater than 'ndims (X)' is ignored.
+     If VECDIM indexes all dimensions of X, then it is equivalent to ‘nanmin (X,
+     'all')’.  Any dimension in VECDIM greater than ‘ndims (X)’ is ignored.
 
      See also: min, nanmax, nansum.
 
@@ -995,7 +996,7 @@ nanstd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1718
+# length: 1750
  -- statistics: S = nanstd (X)
  -- statistics: S = nanstd (X, W)
  -- statistics: S = nanstd (X, W, 'all')
@@ -1004,31 +1005,31 @@ nanstd
 
      Compute the standard deviation while ignoring NaN values.
 
-     'S = nanstd (X)' returns the standard deviation of X, after removing NaN
+     ‘S = nanstd (X)’ returns the standard deviation of X, after removing NaN
      values.  If X is a vector, a scalar value is returned.  If X is a matrix, a
      row vector of column standard deviations is returned.  If X is a
-     multidimensional array, 'nanstd' operates along the first nonsingleton
+     multidimensional array, ‘nanstd’ operates along the first nonsingleton
      dimension.  If a dimension contains fewer than two non-NaN values, the
      standard deviation is returned as 0 for a single value and as NaN when all
      values are NaN.
 
-     'S = nanstd (X, W)' specifies the normalization.  When W is 0 (default),
+     ‘S = nanstd (X, W)’ specifies the normalization.  When W is 0 (default),
      the standard deviation is normalized by N-1, where N is the number of
      non-NaN observations.  When W is 1, it is normalized by N. W may also be a
      vector of nonnegative weights whose length matches the operating dimension,
      in which case the weighted standard deviation normalized by the sum of the
      weights is returned.
 
-     'S = nanstd (X, W, 'all')' returns the standard deviation of all elements
-     of X, after removing NaN values.  Use an empty value, 'W = []', to pass the
+     ‘S = nanstd (X, W, 'all')’ returns the standard deviation of all elements
+     of X, after removing NaN values.  Use an empty value, ‘W = []’, to pass the
      default normalization.
 
-     'S = nanstd (X, W, DIM)' operates along the dimension DIM of X.
+     ‘S = nanstd (X, W, DIM)’ operates along the dimension DIM of X.
 
-     'S = nanstd (X, W, VECDIM)' returns the standard deviation over the
+     ‘S = nanstd (X, W, VECDIM)’ returns the standard deviation over the
      dimensions specified in the vector VECDIM.  A weight vector is not
      supported together with 'all' or VECDIM.  Any dimension in VECDIM greater
-     than 'ndims (X)' is ignored.
+     than ‘ndims (X)’ is ignored.
 
      See also: std, nanvar, nanmean, nansum.
 
@@ -1051,7 +1052,7 @@ nansum
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1491
+# length: 1527
  -- statistics: S = nansum (X)
  -- statistics: S = nanmax (X, 'all')
  -- statistics: S = nanmax (X, DIM)
@@ -1059,26 +1060,26 @@ nansum
 
      Compute the sum while ignoring NaN values.
 
-     'S = nansum (X)' returns the sum of X, after removing NaN values.  If X is
+     ‘S = nansum (X)’ returns the sum of X, after removing NaN values.  If X is
      a vector, a scalar value is returned.  If X is a matrix, a row vector of
-     column sums is returned.  If X is a multidimensional array, the 'nansum'
+     column sums is returned.  If X is a multidimensional array, the ‘nansum’
      operates along the first nonsingleton dimension.  If all values along a
      dimension are NaN, the sum is returned returned as 0.
 
-     'S = nansum (X, 'all')' returns the sum of all elements of X, after
-     removing NaN values.  It is the equivalent of 'nansum (X(:))'.
+     ‘S = nansum (X, 'all')’ returns the sum of all elements of X, after
+     removing NaN values.  It is the equivalent of ‘nansum (X(:))’.
 
-     'S = nansum (X, DIM)' operates along the dimension DIM of X.
+     ‘S = nansum (X, DIM)’ operates along the dimension DIM of X.
 
-     'S = nansum (X, VECDIM)' returns the sum over the dimensions specified in
+     ‘S = nansum (X, VECDIM)’ returns the sum over the dimensions specified in
      the vector VECDIM.  Each element of VECDIM represents a dimension of the
      input array X and the output S has length 1 in the specified operating
      dimensions.  The lengths of the other dimensions are the same for X and Y.
-     For example, if X is a 2-by-3-by-4 array, then 'nanmax (X, [1 2])' returns
+     For example, if X is a 2-by-3-by-4 array, then ‘nanmax (X, [1 2])’ returns
      a 1-by-1-by-4 array.  Each element of the output array is the maximum of
      the elements on the corresponding page of X.  If VECDIM indexes all
-     dimensions of X, then it is equivalent to 'nanmax (X, 'all')'.  Any
-     dimension in VECDIM greater than 'ndims (X)' is ignored.
+     dimensions of X, then it is equivalent to ‘nanmax (X, 'all')’.  Any
+     dimension in VECDIM greater than ‘ndims (X)’ is ignored.
 
      See also: sum, nanmin, nanmax.
 
@@ -1101,7 +1102,7 @@ nanvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1633
+# length: 1665
  -- statistics: V = nanvar (X)
  -- statistics: V = nanvar (X, W)
  -- statistics: V = nanvar (X, W, 'all')
@@ -1110,29 +1111,29 @@ nanvar
 
      Compute the variance while ignoring NaN values.
 
-     'V = nanvar (X)' returns the variance of X, after removing NaN values.  If
+     ‘V = nanvar (X)’ returns the variance of X, after removing NaN values.  If
      X is a vector, a scalar value is returned.  If X is a matrix, a row vector
      of column variances is returned.  If X is a multidimensional array,
-     'nanvar' operates along the first nonsingleton dimension.  If a dimension
+     ‘nanvar’ operates along the first nonsingleton dimension.  If a dimension
      contains fewer than two non-NaN values, the variance is returned as 0 for a
      single value and as NaN when all values are NaN.
 
-     'V = nanvar (X, W)' specifies the normalization.  When W is 0 (default),
+     ‘V = nanvar (X, W)’ specifies the normalization.  When W is 0 (default),
      the variance is normalized by N-1, where N is the number of non-NaN
      observations.  When W is 1, it is normalized by N. W may also be a vector
      of nonnegative weights whose length matches the operating dimension, in
      which case the weighted variance normalized by the sum of the weights is
      returned.
 
-     'V = nanvar (X, W, 'all')' returns the variance of all elements of X, after
-     removing NaN values.  Use an empty value, 'W = []', to pass the default
+     ‘V = nanvar (X, W, 'all')’ returns the variance of all elements of X, after
+     removing NaN values.  Use an empty value, ‘W = []’, to pass the default
      normalization.
 
-     'V = nanvar (X, W, DIM)' operates along the dimension DIM of X.
+     ‘V = nanvar (X, W, DIM)’ operates along the dimension DIM of X.
 
-     'V = nanvar (X, W, VECDIM)' returns the variance over the dimensions
+     ‘V = nanvar (X, W, VECDIM)’ returns the variance over the dimensions
      specified in the vector VECDIM.  A weight vector is not supported together
-     with 'all' or VECDIM.  Any dimension in VECDIM greater than 'ndims (X)' is
+     with 'all' or VECDIM.  Any dimension in VECDIM greater than ‘ndims (X)’ is
      ignored.
 
      See also: var, nanstd, nanmean, nansum.
@@ -1156,7 +1157,7 @@ partialcorr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2517
+# length: 2565
  -- statistics: RHO = partialcorr (X)
  -- statistics: RHO = partialcorr (X, Z)
  -- statistics: RHO = partialcorr (X, Y, Z)
@@ -1165,21 +1166,21 @@ partialcorr
 
      Linear or rank partial correlation coefficients.
 
-     'RHO = partialcorr (X)' returns the sample linear partial correlation
+     ‘RHO = partialcorr (X)’ returns the sample linear partial correlation
      coefficients between pairs of variables in the n-by-p matrix X, controlling
-     for the remaining columns of X.  Each element 'RHO(i,j)' is the partial
-     correlation between 'X(:,i)' and 'X(:,j)', adjusted for the other p-2
+     for the remaining columns of X.  Each element ‘RHO(i,j)’ is the partial
+     correlation between ‘X(:,i)’ and ‘X(:,j)’, adjusted for the other p-2
      columns.  RHO is a symmetric p-by-p matrix with ones on the diagonal.
 
-     'RHO = partialcorr (X, Z)' controls instead for the variables in the n-by-q
+     ‘RHO = partialcorr (X, Z)’ controls instead for the variables in the n-by-q
      matrix Z, returning the p-by-p partial correlations among the columns of X.
 
-     'RHO = partialcorr (X, Y, Z)' returns the p1-by-p2 matrix of partial
+     ‘RHO = partialcorr (X, Y, Z)’ returns the p1-by-p2 matrix of partial
      correlations between the columns of the n-by-p1 matrix X and the n-by-p2
-     matrix Y, controlling for Z.  Element 'RHO(i,j)' is the partial correlation
-     between 'X(:,i)' and 'Y(:,j)'.
+     matrix Y, controlling for Z.  Element ‘RHO(i,j)’ is the partial correlation
+     between ‘X(:,i)’ and ‘Y(:,j)’.
 
-     '[RHO, PVAL] = partialcorr (...)' also returns PVAL, a matrix of p-values
+     ‘[RHO, PVAL] = partialcorr (...)’ also returns PVAL, a matrix of p-values
      for testing the hypothesis of no partial correlation against the
      alternative selected by 'Tail'.
 
@@ -1191,8 +1192,8 @@ partialcorr
           'Kendall' is _not_ supported and raises an error, as in MATLAB.
 
      'Rows'
-          'all' (default) uses all rows regardless of missing values (any 'NaN'
-          yields a 'NaN' result); 'complete' uses only the rows with no missing
+          'all' (default) uses all rows regardless of missing values (any ‘NaN’
+          yields a ‘NaN’ result); 'complete' uses only the rows with no missing
           values across all supplied variables; 'pairwise' uses, for each
           computed coefficient, the rows with no missing values among just the
           variables involved in that coefficient.
@@ -1228,7 +1229,7 @@ partialcorri
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1323
+# length: 1355
  -- statistics: RHO = partialcorri (Y, X)
  -- statistics: RHO = partialcorri (Y, X, Z)
  -- statistics: [RHO, PVAL] = partialcorri (...)
@@ -1237,23 +1238,23 @@ partialcorri
      Partial correlation of each response with each predictor, adjusting for the
      remaining predictors.
 
-     'RHO = partialcorri (Y, X)' returns the sample partial correlation
+     ‘RHO = partialcorri (Y, X)’ returns the sample partial correlation
      coefficients between the columns of the n-by-p response matrix Y and the
-     columns of the n-by-q predictor matrix X.  Element 'RHO(i,j)' is the
-     partial correlation between 'Y(:,i)' and 'X(:,j)', adjusted for the other
+     columns of the n-by-q predictor matrix X.  Element ‘RHO(i,j)’ is the
+     partial correlation between ‘Y(:,i)’ and ‘X(:,j)’, adjusted for the other
      columns of X (that is, all columns of X except the j-th).  RHO is a p-by-q
      matrix.
 
-     'RHO = partialcorri (Y, X, Z)' additionally controls for the variables in
-     the n-by-r matrix Z, so that 'RHO(i,j)' is adjusted for both the other
+     ‘RHO = partialcorri (Y, X, Z)’ additionally controls for the variables in
+     the n-by-r matrix Z, so that ‘RHO(i,j)’ is adjusted for both the other
      columns of X and all columns of Z.
 
-     '[RHO, PVAL] = partialcorri (...)' also returns PVAL, a matrix of p-values
+     ‘[RHO, PVAL] = partialcorri (...)’ also returns PVAL, a matrix of p-values
      for testing the hypothesis of no partial correlation against the
      alternative selected by 'Tail'.
 
      The 'Type', 'Rows', and 'Tail' NAME/VALUE options are accepted with the
-     same meaning as in 'partialcorr'.  'Kendall' is _not_ supported and raises
+     same meaning as in ‘partialcorr’.  'Kendall' is _not_ supported and raises
      an error, as in MATLAB.
 
      See also: partialcorr, corr, corrcoef, tiedrank.
@@ -1278,13 +1279,13 @@ tabulate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1210
+# length: 2022
  -- statistics: tabulate (X)
  -- statistics: TBL = tabulate (X)
 
      Create a frequency table of unique values in vector X.
 
-     'tabulate (x)' displays a frequency table of the data in the vector X.  The
+     ‘tabulate (x)’ displays a frequency table of the data in the vector X.  The
      input X can be a numeric vector, a logical vector, a character matrix, a
      cell vector of character vectors, a categorical vector, or a string vector.
 
@@ -1292,7 +1293,7 @@ tabulate
      percentage of that value in X.  If no output argument is requested, the
      table is displayed in the command window.
 
-     'TBL = tabulate (X)' returns the frequency table, TBL, as a numeric matrix
+     ‘TBL = tabulate (X)’ returns the frequency table, TBL, as a numeric matrix
      when X is numeric and as a cell array otherwise.
 
      If X is numeric, any missing values (NaNs) are ignored.  Similarly,
@@ -1305,6 +1306,18 @@ tabulate
 
      For categorical arrays, the frequency table includes 0 counts for any
      categories that are defined but do not appear in X.
+
+     Missing values are not tabulated.  The percentage column is count / total *
+     100 taken literally, so a category with no observations out of none at all
+     is NaN rather than zero: there is no total to take a proportion of.  A
+     categorical carries its categories independently of its data, so an
+     all-undefined one still tabulates every category with a zero count; a
+     string array has no levels beyond those its data carries, so an all-missing
+     one tabulates to an empty table.  MATLAB agrees on the categorical case but
+     returns a malformed 1-by-2 cell for the all-missing string, lacking the
+     label column its own documentation describes, while returning a well-formed
+     0-by-3 for an empty string array.  This implementation returns the empty
+     table in both.
 
      See also: bar, pareto.
 
@@ -1327,7 +1340,7 @@ trimmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2855
+# length: 2913
  -- statistics: M = trimmean (X, P)
  -- statistics: M = trimmean (X, P, FLAG)
  -- statistics: M = trimmean (..., 'all')
@@ -1340,21 +1353,21 @@ trimmean
      lowest k data values of X, calculated as K = n * (P / 100) / 2), where N is
      the sample size.
 
-     'M = trimmean (X, P)' returns the mean of X after removing the outliers in
+     ‘M = trimmean (X, P)’ returns the mean of X after removing the outliers in
      X defined by P percent.
-        * If X is a vector, then 'trimmean (X, P)' is the mean of all the values
+        • If X is a vector, then ‘trimmean (X, P)’ is the mean of all the values
           of X, computed after removing the outliers.
-        * If X is a matrix, then 'trimmean (X, P)' is a row vector of column
+        • If X is a matrix, then ‘trimmean (X, P)’ is a row vector of column
           means, computed after removing the outliers.
-        * If X is a multidimensional array, then 'trimmean' operates along the
+        • If X is a multidimensional array, then ‘trimmean’ operates along the
           first nonsingleton dimension of X.
 
      To specify the operating dimension(s) when X is a matrix or a
      multidimensional array, use the DIM or VECDIM input argument.
 
-     'trimmean' treats NaN values in X as missing values and removes them.
+     ‘trimmean’ treats NaN values in X as missing values and removes them.
 
-     'M = trimmean (X, P, FLAG)' specifies how to trim when k, i.e.  half the
+     ‘M = trimmean (X, P, FLAG)’ specifies how to trim when k, i.e.  half the
      number of outliers, is not an integer.  FLAG can be specified as one of the
      following values:
      Value            Description
@@ -1366,21 +1379,21 @@ trimmean
                       1)-th and (n - i)-th values, and full weight for the
                       values between them.
 
-     'M = trimmean (..., 'all')' returns the trimmed mean of all the values in X
+     ‘M = trimmean (..., 'all')’ returns the trimmed mean of all the values in X
      using any of the input argument combinations in the previous syntaxes.
 
-     'M = trimmean (..., DIM)' returns the trimmed mean along the operating
+     ‘M = trimmean (..., DIM)’ returns the trimmed mean along the operating
      dimension DIM specified as a positive integer scalar.  If not specified,
      then the default value is the first nonsingleton dimension of X, i.e.
      whose size does not equal 1.  If DIM is greater than ndims (X) or if size
-     (X, DIM) is 1, then 'trimmean' returns X.
+     (X, DIM) is 1, then ‘trimmean’ returns X.
 
-     'M = trimmean (..., VECDIM)' returns the trimmed mean over the dimensions
+     ‘M = trimmean (..., VECDIM)’ returns the trimmed mean over the dimensions
      specified in the vector VECDIM.  For example, if X is a 2-by-3-by-4 array,
-     then 'mean (X, [1 2])' returns a 1-by-1-by-4 array.  Each element of the
+     then ‘mean (X, [1 2])’ returns a 1-by-1-by-4 array.  Each element of the
      output array is the mean of the elements on the corresponding page of X.
-     If VECDIM indexes all dimensions of X, then it is equivalent to 'mean (X,
-     "all")'.  Any dimension in VECDIM greater than 'ndims (X)' is ignored.
+     If VECDIM indexes all dimensions of X, then it is equivalent to ‘mean (X,
+     "all")’.  Any dimension in VECDIM greater than ‘ndims (X)’ is ignored.
 
      See also: mean.
 

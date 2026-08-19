@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,12 +13,12 @@ ff2n
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 456
+# length: 460
  -- statistics: DFF2 = ff2n (N)
 
      Two-level full factorial design.
 
-     'DFF2 = ff2n (N)' gives factor settings dFF2 for a two-level full factorial
+     ‘DFF2 = ff2n (N)’ gives factor settings dFF2 for a two-level full factorial
      design with n factors.  DFF2 is m-by-n, where m is the number of treatments
      in the full-factorial design.  Each row of DFF2 corresponds to a single
      treatment.  Each column contains the settings for a single factor, with
@@ -45,18 +45,18 @@ fullfact
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 508
+# length: 516
  -- statistics: A = fullfact (LEVELS)
 
      Full factorial design.
 
-     'A = fullfact (LEVELS)' returns a numeric matrix A with the treatments of a
+     ‘A = fullfact (LEVELS)’ returns a numeric matrix A with the treatments of a
      full factorial design specified by LEVELS, which must be a numeric vector
      of real positive integer values with each value specifying the number of
      levels of each individual factor.
 
      Each row of A corresponds to a single treatment and each column to a single
-     factor.  For binary full factorial design, use 'ff2n'.
+     factor.  For binary full factorial design, use ‘ff2n’.
 
      See also: ff2n.
 
@@ -79,7 +79,7 @@ parseWilkinsonFormula
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7736
+# length: 8036
  -- statistics: TERMS = parseWilkinsonFormula (FORMULA)
  -- statistics: RESULT = parseWilkinsonFormula (FORMULA, MODE)
  -- statistics: [X, Y, NAMES] = parseWilkinsonFormula (FORMULA, "model_matrix",
@@ -95,7 +95,7 @@ parseWilkinsonFormula
      supports multi-variable response specification on the Left-Hand Side (LHS)
      using lists or ranges.
 
-     'parseWilkinsonFormula' accepts as its first input argument a Wilkinson
+     ‘parseWilkinsonFormula’ accepts as its first input argument a Wilkinson
      notation string specified by FORMULA either as a character vector or a
      string scalar with the following list of valid symbols:
 
@@ -103,99 +103,99 @@ parseWilkinsonFormula
      variables (predictors) and the structural relationships between them, such
      as interactions and nesting.  The parser expands these expressions into
      fundamental model terms following the standard statistical rules of
-     marginality.  Additionally, explicit nesting notation (e.g., 'B(A)') is
+     marginality.  Additionally, explicit nesting notation (e.g., ‘B(A)’) is
      supported to denote that factor B is nested within A.
 
      Operator     Description                  Expansion Example
      -----------------------------------------------------------------------------------
-     '+'          Addition (Union)             'A + B' expands to A, B
-     '*'          Crossing                     'A * B' expands to A, B, A:B
-     '-'          Deletion                     'A*B - A:B' expands to A, B
-     '/'          Nesting                      'A / B' expands to A, A:B
-     ':'          Interaction                  'A : B' expands to A:B
-     '^'          Power (Limit)                '(A+B)^2' expands to A, B, A:B
-     '1'          Intercept                    'y ~ A - 1' removes intercept
+     ‘+’          Addition (Union)             ‘A + B’ expands to A, B
+     ‘*’          Crossing                     ‘A * B’ expands to A, B, A:B
+     ‘-’          Deletion                     ‘A*B - A:B’ expands to A, B
+     ‘/’          Nesting                      ‘A / B’ expands to A, A:B
+     ‘:’          Interaction                  ‘A : B’ expands to A:B
+     ‘^’          Power (Limit)                ‘(A+B)^2’ expands to A, B, A:B
+     ‘1’          Intercept                    ‘y ~ A - 1’ removes intercept
 
-     *Left-Hand Side (Response) Operators* The LHS, separated by the '~'
+     *Left-Hand Side (Response) Operators* The LHS, separated by the ‘~’
      operator, defines the dependent variables.  It natively supports
      multi-response syntaxes.
 
      Operator     Description                  Usage Example
      -----------------------------------------------------------------------------------
-     '~'          Formula separator            'y ~ x'
-     ','          List separator               'y1, y2 ~ x'
-     '-'          Range operator               'T1 - T3 ~ x'
+     ‘~’          Formula separator            ‘y ~ x’
+     ‘,’          List separator               ‘y1, y2 ~ x’
+     ‘-’          Range operator               ‘T1 - T3 ~ x’
 
-     *Processing Modes* 'parseWilkinsonFormula (FORMULA, MODE)' evaluates the
+     *Processing Modes* ‘parseWilkinsonFormula (FORMULA, MODE)’ evaluates the
      formula string based on the selected MODE:
 
-        * ''expand'' (default) - Returns a structure containing 'response' and
-          'model' fields.  Each field contains cell arrays of the expanded,
+        • ‘'expand'’ (default) - Returns a structure containing ‘response’ and
+          ‘model’ fields.  Each field contains cell arrays of the expanded,
           fundamental terms.
 
-        * ''equation'' - Generates a string representing the mathematical
+        • ‘'equation'’ - Generates a string representing the mathematical
           equation of the fitted model.  Coefficients are represented
-          generically as 'c1, c2, ...'.  If multiple responses are specified, it
+          generically as ‘c1, c2, ...’.  If multiple responses are specified, it
           returns a string array of equations.
 
           Formula String                   Equation Output
           ----------------------------------------------------------------------------------
-          'y ~ x'                          '"y = c1 + c2*x"'
-          'y ~ A * B'                      '"y = c1 + c2*A + c3*B + c4*A*B"'
-          'y ~ School / Class'             '"y = c1 + c2*School + c3*Class*School"'
-          'y ~ x^2'                        '"y = c1 + c2*x + c3*x^2"'
-          'y1 - y2 ~ Trt'                  '["y1 = c1 + c2*Trt", "y2 = ..."]'
+          ‘y ~ x’                          ‘"y = c1 + c2*x"’
+          ‘y ~ A * B’                      ‘"y = c1 + c2*A + c3*B + c4*A*B"’
+          ‘y ~ School / Class’             ‘"y = c1 + c2*School + c3*Class*School"’
+          ‘y ~ x^2’                        ‘"y = c1 + c2*x + c3*x^2"’
+          ‘y1 - y2 ~ Trt’                  ‘["y1 = c1 + c2*Trt", "y2 = ..."]’
 
-        * ''matrix'' - Returns a schema structure containing a binary matrix
+        • ‘'matrix'’ - Returns a schema structure containing a binary matrix
           defining term membership, useful for internal algorithmic processing.
 
-        * ''model_matrix'' - Constructs the numeric Design Matrix (X) and
+        • ‘'model_matrix'’ - Constructs the numeric Design Matrix (X) and
           Response Matrix (Y) directly from a provided data table.
 
-        * ''parse'' - Returns the raw Abstract Syntax Tree (AST) structure.
+        • ‘'parse'’ - Returns the raw Abstract Syntax Tree (AST) structure.
 
-        * ''tokenize'' - Returns the array of tokens generated by the lexer.
+        • ‘'tokenize'’ - Returns the array of tokens generated by the lexer.
 
-        * ''mixed'' - Decomposes a mixed-effects formula containing
-          random-effects terms of the form '(EXPR | GROUP)' into its fixed and
+        • ‘'mixed'’ - Decomposes a mixed-effects formula containing
+          random-effects terms of the form ‘(EXPR | GROUP)’ into its fixed and
           random parts.  See *Mixed-Effects Formulae* below.
 
-     *Data Handling ('model_matrix' mode)* When using the ''model_matrix'' mode,
-     a DATA argument must be provided as an Octave 'table'.
-        * *Categorical Variables:* Cell arrays of strings in the table are
+     *Data Handling ('model_matrix' mode)* When using the ‘'model_matrix'’ mode,
+     a DATA argument must be provided as an Octave ‘table’.
+        • *Categorical Variables:* Cell arrays of strings in the table are
           automatically detected as categorical factors and undergo corner-point
           (reference) dummy coding.
-        * *Numeric Variables:* Standard numeric vectors are treated as
+        • *Numeric Variables:* Standard numeric vectors are treated as
           continuous predictors or responses.
-        * *Missing Data:* Rows containing 'NaN' values in any of the active
+        • *Missing Data:* Rows containing ‘NaN’ values in any of the active
           variables are automatically omitted from the final matrices.
 
      *Mixed-Effects Formulae ('mixed' mode)* A random-effects term is written
-     '(EXPR | GROUP)', where EXPR is a Wilkinson design expression for the
+     ‘(EXPR | GROUP)’, where EXPR is a Wilkinson design expression for the
      random intercept and slopes and GROUP is the grouping factor (or an
-     interaction of factors such as 'g1:g2').  As with fixed effects an
-     intercept is implicit; suppress it with '0' or '-1' (for example '(x - 1 |
-     g)' or '(-1 + x | g)' for a random slope with no random intercept).  The
-     ''mixed'' mode returns a structure with the following fields:
+     interaction of factors such as ‘g1:g2’).  As with fixed effects an
+     intercept is implicit; suppress it with ‘0’ or ‘-1’ (for example ‘(x - 1 |
+     g)’ or ‘(-1 + x | g)’ for a random slope with no random intercept).  The
+     ‘'mixed'’ mode returns a structure with the following fields:
 
-     'Response'
+     ‘Response’
           The response (LHS) as a character vector.
-     'FixedTerms'
+     ‘FixedTerms’
           A cell array of the expanded fixed-effects terms, excluding the
           intercept.
-     'FixedIntercept'
+     ‘FixedIntercept’
           A logical flag, true when the fixed model includes an intercept.
-     'Random'
+     ‘Random’
           A struct array with one element per random-effects term, each with
-          fields 'Expr' (the raw expression), 'Terms' (its expanded predictor
-          terms), 'Intercept' (logical), 'Group' (the raw grouping spec), and
-          'GroupVars' (its grouping variables as a cell array).
-     'HasRandom'
+          fields ‘Expr’ (the raw expression), ‘Terms’ (its expanded predictor
+          terms), ‘Intercept’ (logical), ‘Group’ (the raw grouping spec), and
+          ‘GroupVars’ (its grouping variables as a cell array).
+     ‘HasRandom’
           A logical flag, true when the formula contains any random-effects
           term.
 
-     A formula with no random-effects term is still valid in ''mixed'' mode: it
-     returns 'HasRandom' false and an empty 'Random' array.
+     A formula with no random-effects term is still valid in ‘'mixed'’ mode: it
+     returns ‘HasRandom’ false and an empty ‘Random’ array.
 
      *Outputs*
      TERMS / RESULT
@@ -203,7 +203,7 @@ parseWilkinsonFormula
           on the selected MODE.
      X
           The generated numeric design matrix (Observations x Parameters).
-          Includes a column of ones for the intercept unless '- 1' is in the
+          Includes a column of ones for the intercept unless ‘- 1’ is in the
           formula.
      Y
           The numeric response matrix (Observations x K responses).
@@ -221,7 +221,7 @@ parseWilkinsonFormula
      one per level bar the reference level, which the intercept carries.  The
      levels of a character or string column are taken in the order the data
      presents them, so the reference level is the one seen first; a
-     'categorical' column uses its own category order.  When the formula has no
+     ‘categorical’ column uses its own category order.  When the formula has no
      intercept, the first categorical variable is given an indicator for every
      one of its levels and any further categorical variable stays reference
      coded.  MATLAB omits the reference level whether or not an intercept is
@@ -289,7 +289,7 @@ x2fx
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2681
+# length: 2705
  -- statistics: [D, MODEL, TERMSTART, TERMEND] = x2fx (X)
  -- statistics: [D, MODEL, TERMSTART, TERMEND] = x2fx (X, MODEL)
  -- statistics: [D, MODEL, TERMSTART, TERMEND] = x2fx (X, MODEL, CATEG)
@@ -298,11 +298,11 @@ x2fx
 
      Convert predictors to design matrix.
 
-     'D = x2fx (X, MODEL)' converts a matrix of predictors X to a design matrix
+     ‘D = x2fx (X, MODEL)’ converts a matrix of predictors X to a design matrix
      D for regression analysis.  Distinct predictor variables should appear in
      different columns of X.
 
-     The optional input MODEL controls the regression model.  By default, 'x2fx'
+     The optional input MODEL controls the regression model.  By default, ‘x2fx’
      returns the design matrix for a linear additive model with a constant term.
      MODEL can be any one of the following strings:
 
@@ -314,11 +314,11 @@ x2fx
      If X has n columns, the order of the columns of D for a full quadratic
      model is:
 
-        * The constant term.
-        * The linear terms (the columns of X, in order 1,2,...,n).
-        * The interaction terms (pairwise products of columns of X, in order
+        • The constant term.
+        • The linear terms (the columns of X, in order 1,2,...,n).
+        • The interaction terms (pairwise products of columns of X, in order
           (1,2), (1,3), ..., (1,n), (2,3), ..., (n-1,n).
-        * The squared terms (in the order 1,2,...,n).
+        • The squared terms (in the order 1,2,...,n).
 
      Other models use a subset of these terms, in the same order.
 
@@ -330,14 +330,14 @@ x2fx
      (X1.^0).*(X2.^1).*(X3.^2).  A row of all zeros in MODEL specifies a
      constant term, which you can omit.
 
-     'D = x2fx (X, MODEL, CATEG)' treats columns with numbers listed in the
+     ‘D = x2fx (X, MODEL, CATEG)’ treats columns with numbers listed in the
      vector CATEG as categorical variables.  Terms involving categorical
      variables produce dummy variable columns in D.  Dummy variables are
      computed under the assumption that possible categorical levels are
      completely enumerated by the unique values that appear in the corresponding
      column of X.
 
-     'D = x2fx (X, MODEL, CATEG, CATLEVELS)' accepts a vector CATLEVELS the same
+     ‘D = x2fx (X, MODEL, CATEG, CATLEVELS)’ accepts a vector CATLEVELS the same
      length as CATEG, specifying the number of levels in each categorical
      variable.  In this case, values in the corresponding column of X must be
      integers in the range from 1 to the specified number of levels.  Not all of

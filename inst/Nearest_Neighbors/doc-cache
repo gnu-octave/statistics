@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,21 +13,21 @@ ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 786
+# length: 806
  -- statistics: ExhaustiveSearcher
 
      Exhaustive nearest neighbor searcher
 
-     The 'ExhaustiveSearcher' class implements an exhaustive search algorithm
+     The ‘ExhaustiveSearcher’ class implements an exhaustive search algorithm
      for nearest neighbor queries.  It stores training data and supports various
      distance metrics along with their parameter values for performing an
      exhaustive search.  The exhaustive search algorithm computes the distance
      from each query point to all the points in the training data and
-     facilitates a nearest neighbor search using 'knnsearch' or a radius search
-     using 'rangesearch'.
+     facilitates a nearest neighbor search using ‘knnsearch’ or a radius search
+     using ‘rangesearch’.
 
-     You can either use the 'ExhaustiveSearcher' class constructor or the
-     'createns' function to create an ExhaustiveSearcher object.
+     You can either use the ‘ExhaustiveSearcher’ class constructor or the
+     ‘createns’ function to create an ExhaustiveSearcher object.
 
      See also: createns, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch.
 
@@ -50,21 +50,21 @@ KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 844
+# length: 864
  -- statistics: KDTreeSearcher
 
      KD-tree nearest neighbor searcher
 
-     The 'KDTreeSearcher' class implements a KD-tree search algorithm for
+     The ‘KDTreeSearcher’ class implements a KD-tree search algorithm for
      nearest neighbor queries.  It stores training data and supports various
      distance metrics along with their parameter values for performing a KD-tree
      search.  The KD-tree algorithm partitions the training data into a
      hierarchical tree structure and performs search operations by traversing
      the tree to reduce the number of distance computations.  It facilitates
-     nearest neighbor queries using 'knnsearch' and radius queries using
-     'rangesearch'.
+     nearest neighbor queries using ‘knnsearch’ and radius queries using
+     ‘rangesearch’.
 
-     You can either use the 'KDTreeSearcher' class constructor or the 'createns'
+     You can either use the ‘KDTreeSearcher’ class constructor or the ‘createns’
      function to create an KDTreeSearcher object.
 
      See also: createns, ExhaustiveSearcher, hnswSearcher, knnsearch,
@@ -89,17 +89,17 @@ createns
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2657
+# length: 2721
  -- Function File: OBJ = createns (X)
  -- Function File: OBJ = createns (X, NAME, VALUE, ...)
 
      Create a nearest neighbor searcher object.
 
-     'OBJ = createns (X)' creates a nearest neighbor searcher object using the
-     training data X.  By default, it constructs an 'ExhaustiveSearcher' object
+     ‘OBJ = createns (X)’ creates a nearest neighbor searcher object using the
+     training data X.  By default, it constructs an ‘ExhaustiveSearcher’ object
      with the Euclidean distance metric.
 
-     'OBJ = createns (X, NAME, VALUE, ...)' allows customization of the searcher
+     ‘OBJ = createns (X, NAME, VALUE, ...)’ allows customization of the searcher
      type and its properties through name-value pairs.  The following name-value
      pair is supported to specify the searcher type:
 
@@ -108,31 +108,31 @@ createns
      --------------------------------------------------------------------------------
      'NSMethod'     Specifies the nearest neighbor search method.  Possible values
                     are:
-                       * 'exhaustive': Creates an 'ExhaustiveSearcher' object.
-                       * 'kdtree': Creates a 'KDTreeSearcher' object.
-                       * 'hnsw': Creates an 'hnswSearcher' object.
+                       • 'exhaustive': Creates an ‘ExhaustiveSearcher’ object.
+                       • 'kdtree': Creates a ‘KDTreeSearcher’ object.
+                       • 'hnsw': Creates an ‘hnswSearcher’ object.
                     Default is 'exhaustive'.
                     
 
      Additional name-value pairs depend on the selected 'NSMethod' and are
      passed directly to the constructor of the corresponding class:
 
-        * For 'exhaustive', see 'ExhaustiveSearcher' documentation for
+        • For 'exhaustive', see ‘ExhaustiveSearcher’ documentation for
           parameters like 'Distance', 'P', 'Scale', and 'Cov'.
-        * For 'kdtree', see 'KDTreeSearcher' documentation for parameters like
+        • For 'kdtree', see ‘KDTreeSearcher’ documentation for parameters like
           'Distance', 'P', and 'BucketSize'.
-        * For 'hnsw', see 'hnswSearcher' documentation for parameters like
+        • For 'hnsw', see ‘hnswSearcher’ documentation for parameters like
           'Distance', 'P', 'Scale', 'Cov', 'MaxNumLinksPerNode', and
           'TrainSetSize'.
 
      *Input Arguments:*
-        * X - Training data, specified as an N*P numeric matrix where rows
+        • X - Training data, specified as an N*P numeric matrix where rows
           represent observations and columns represent features.  Must be finite
           and numeric.
 
      *Output:*
-        * OBJ - A nearest neighbor searcher object of type 'ExhaustiveSearcher',
-          'KDTreeSearcher', or 'hnswSearcher', depending on the specified
+        • OBJ - A nearest neighbor searcher object of type ‘ExhaustiveSearcher’,
+          ‘KDTreeSearcher’, or ‘hnswSearcher’, depending on the specified
           'NSMethod'.
 
      *Examples:*
@@ -170,19 +170,19 @@ hnswSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 736
+# length: 752
  -- statistics: hnswSearcher
 
      Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.
 
-     The 'hnswSearcher' class implements the HNSW algorithm for efficient
+     The ‘hnswSearcher’ class implements the HNSW algorithm for efficient
      nearest neighbor queries.  It stores training data and supports various
      distance metrics for performing searches.  The HNSW algorithm builds a
      multilayer graph structure that enables fast approximate nearest neighbor
      searches by navigating through the graph.  It facilitates nearest neighbor
-     queries search using 'knnsearch'.
+     queries search using ‘knnsearch’.
 
-     You can either use the 'hnswSearcher' class constructor or the 'createns'
+     You can either use the ‘hnswSearcher’ class constructor or the ‘createns’
      function to create an hnswSearcher object.
 
      See also: createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch.
@@ -206,21 +206,21 @@ knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6758
+# length: 6790
  -- statistics: IDX = knnsearch (X, Y)
  -- statistics: [IDX, D] = knnsearch (X, Y)
  -- statistics: [...] = knnsearch (..., NAME, VALUE)
 
      Find k-nearest neighbors from input data.
 
-     'IDX = knnsearch (X, Y)' finds K nearest neighbors in X for Y.  It returns
+     ‘IDX = knnsearch (X, Y)’ finds K nearest neighbors in X for Y.  It returns
      IDX which contains indices of K nearest neighbors of each row of Y, If not
      specified, K = 1.  X must be an N*P numeric matrix of input data, where
      rows correspond to observations and columns correspond to features or
      variables.  Y is an M*P numeric matrix with query points, which must have
      the same numbers of column as X.
 
-     '[IDX, D] = knnsearch (X, Y)' also returns the the distances, D, which
+     ‘[IDX, D] = knnsearch (X, Y)’ also returns the the distances, D, which
      correspond to the K nearest neighbour in X for each Y
 
      Additional parameters can be specified by Name-Value pair arguments.
@@ -256,9 +256,9 @@ knnsearch
      'SortIndices'  is a boolean flag to sort the returned indices in ascending
                     order by distance and it is true by default.  When the
                     selected search method is 'exhaustive' or the 'IncludeTies'
-                    flag is true, 'knnsearch' always sorts the returned indices.
+                    flag is true, ‘knnsearch’ always sorts the returned indices.
                     
-     'Distance'     is the distance metric used by 'knnsearch' as specified below:
+     'Distance'     is the distance metric used by ‘knnsearch’ as specified below:
 
      'euclidean'      Euclidean distance.
      'seuclidean'     standardized Euclidean distance.  Each coordinate
@@ -284,14 +284,14 @@ knnsearch
      'jaccard'        One minus the Jaccard coefficient, which is the percentage
                       of nonzero coordinates that differ.
      @DISTFUN         Custom distance function handle.  A distance function of
-                      the form 'function D2 = distfun (XI, YI)', where XI is a
+                      the form ‘function D2 = distfun (XI, YI)’, where XI is a
                       1*P vector containing a single observation in
                       P-dimensional space, YI is an N*P matrix containing an
                       arbitrary number of observations in the same P-dimensional
                       space, and D2 is an N*P vector of distances, where (D2k)
                       is the distance between observations XI and (YIk,:).
 
-     'NSMethod'     is the nearest neighbor search method used by 'knnsearch' as
+     'NSMethod'     is the nearest neighbor search method used by ‘knnsearch’ as
                     specified below.
 
      'kdtree'         Creates and uses a Kd-tree to find nearest neighbors.
@@ -307,9 +307,9 @@ knnsearch
 
      'IncludeTies'  is a boolean flag to indicate if the returned values should
                     contain the indices that have same distance as the K^th
-                    neighbor.  When false, 'knnsearch' chooses the observation
+                    neighbor.  When false, ‘knnsearch’ chooses the observation
                     with the smallest index among the observations that have the
-                    same distance from a query point.  When true, 'knnsearch'
+                    same distance from a query point.  When true, ‘knnsearch’
                     includes all nearest neighbors whose distances are equal to
                     the K^th smallest distance in the output arguments.  To
                     specify K, use the 'K' name-value pair argument.  In that case
@@ -374,21 +374,21 @@ pdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3935
+# length: 3955
  -- statistics: D = pdist (X)
  -- statistics: D = pdist (X, DISTANCE)
  -- statistics: D = pdist (X, DISTANCE, DISTPARAMETER)
 
      Return the distance between any two rows in X.
 
-     'D = pdist (X' calculates the euclidean distance between pairs of
+     ‘D = pdist (X’ calculates the euclidean distance between pairs of
      observations in X.  X must be an M*P numeric matrix representing M points
      in P-dimensional space.  This function computes the pairwise distances
-     returned in D as an M*(M-1)/P row vector.  Use 'Z = squareform (D)' to
+     returned in D as an M*(M-1)/P row vector.  Use ‘Z = squareform (D)’ to
      convert the row vector D into a an M*M symmetric matrix Z, where Z(i,j)
      corresponds to the pairwise distance between points i and j.
 
-     'D = pdist (X, Y, DISTANCE)' returns the distance between pairs of
+     ‘D = pdist (X, Y, DISTANCE)’ returns the distance between pairs of
      observations in X using the metric specified by DISTANCE, which can be any
      of the following options.
 
@@ -429,15 +429,15 @@ pdist
                         between observations (treated as sequences of
                         values).
      @DISTFUN           Custom distance function handle.  A distance
-                        function of the form 'function D2 = distfun (XI,
-                        YI)', where XI is a 1*P vector containing a single
+                        function of the form ‘function D2 = distfun (XI,
+                        YI)’, where XI is a 1*P vector containing a single
                         observation in P-dimensional space, YI is an N*P
                         matrix containing an arbitrary number of
                         observations in the same P-dimensional space, and
                         D2 is an N*P vector of distances, where (D2k) is
                         the distance between observations XI and (YIk,:).
 
-     'D = pdist (X, Y, DISTANCE, DISTPARAMETER)' returns the distance using the
+     ‘D = pdist (X, Y, DISTANCE, DISTPARAMETER)’ returns the distance using the
      metric specified by DISTANCE and DISTPARAMETER.  The latter one can only be
      specified when the selected DISTANCE is 'seuclidean', 'minkowski', and
      'mahalanobis'.
@@ -463,7 +463,7 @@ pdist2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4919
+# length: 4955
  -- statistics: D = pdist2 (X, Y)
  -- statistics: D = pdist2 (X, Y, DISTANCE)
  -- statistics: D = pdist2 (X, Y, DISTANCE, DISTPARAMETER)
@@ -472,13 +472,13 @@ pdist2
 
      Compute pairwise distance between two sets of vectors.
 
-     'D = pdist2 (X, Y)' calculates the euclidean distance between each pair of
+     ‘D = pdist2 (X, Y)’ calculates the euclidean distance between each pair of
      observations in X and Y.  Let X be an M*P matrix representing M points in
      P-dimensional space and Y be an N*P matrix representing another set of
      points in the same space.  This function computes the M*N distance matrix
      D, where D(i,j) is the distance between X(i,:) and Y(j,:).
 
-     'D = pdist2 (X, Y, DISTANCE)' returns the distance between each pair of
+     ‘D = pdist2 (X, Y, DISTANCE)’ returns the distance between each pair of
      observations in X and Y using the metric specified by DISTANCE, which can
      be any of the following options.
 
@@ -519,30 +519,30 @@ pdist2
                         between observations (treated as sequences of
                         values).
      @DISTFUN           Custom distance function handle.  A distance
-                        function of the form 'function D2 = distfun (XI,
-                        YI)', where XI is a 1*P vector containing a single
+                        function of the form ‘function D2 = distfun (XI,
+                        YI)’, where XI is a 1*P vector containing a single
                         observation in P-dimensional space, YI is an N*P
                         matrix containing an arbitrary number of
                         observations in the same P-dimensional space, and
                         D2 is an N*P vector of distances, where (D2k) is
                         the distance between observations XI and (YIk,:).
 
-     'D = pdist2 (X, Y, DISTANCE, DISTPARAMETER)' returns the distance using the
+     ‘D = pdist2 (X, Y, DISTANCE, DISTPARAMETER)’ returns the distance using the
      metric specified by DISTANCE and DISTPARAMETER.  The latter one can only be
      specified when the selected DISTANCE is 'seuclidean', 'minkowski', and
      'mahalanobis'.
 
-     'D = pdist2 (..., NAME, VALUE)' for any previous arguments, modifies the
+     ‘D = pdist2 (..., NAME, VALUE)’ for any previous arguments, modifies the
      computation using NAME-VALUE parameters.
-        * 'D = pdist2 (X, Y, DISTANCE, 'Smallest', K)' computes the distance
+        • ‘D = pdist2 (X, Y, DISTANCE, 'Smallest', K)’ computes the distance
           using the metric specified by DISTANCE and returns the K smallest
           pairwise distances to observations in X for each observation in Y in
           ascending order.
-        * 'D = pdist2 (X, Y, DISTANCE, DISTPARAMETER, 'Largest', K)' computes
+        • ‘D = pdist2 (X, Y, DISTANCE, DISTPARAMETER, 'Largest', K)’ computes
           the distance using the metric specified by DISTANCE and DISTPARAMETER
           and returns the K largest pairwise distances in descending order.
 
-     '[D, I] = pdist2 (..., NAME, VALUE)' also returns the matrix I, which
+     ‘[D, I] = pdist2 (..., NAME, VALUE)’ also returns the matrix I, which
      contains the indices of the observations in X corresponding to the
      distances in D.  You must specify either 'Smallest' or 'Largest' as an
      optional NAME-VALUE pair argument to compute the second output argument.
@@ -568,14 +568,14 @@ rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6225
+# length: 6249
  -- statistics: IDX = rangesearch (X, Y, R)
  -- statistics: [IDX, D] = rangesearch (X, Y, R)
  -- statistics: [...] = rangesearch (..., NAME, VALUE)
 
      Find all neighbors within specified distance from input data.
 
-     'IDX = rangesearch (X, Y, R)' returns all the points in X that are within
+     ‘IDX = rangesearch (X, Y, R)’ returns all the points in X that are within
      distance R from the points in Y.  X must be an N*P numeric matrix of input
      data, where rows correspond to observations and columns correspond to
      features or variables.  Y is an M*P numeric matrix with query points, which
@@ -584,7 +584,7 @@ rangesearch
      Y.  The vector IDX{j} contains the indices of observations (rows) in X
      whose distances to Y(j,:) are not greater than R.
 
-     '[IDX, D] = rangesearch (X, Y, R)' also returns the distances, D, which
+     ‘[IDX, D] = rangesearch (X, Y, R)’ also returns the distances, D, which
      correspond to the points in X that are within distance R from the points in
      Y.  D is an M*1 cell array, where M is the number of observations in Y.
      The vector D{j} contains the distances of observations (rows) in X whose
@@ -619,9 +619,9 @@ rangesearch
      'SortIndices'  is a boolean flag to sort the returned indices in ascending
                     order by distance and it is true by default.  When the
                     selected search method is 'exhaustive' or the 'IncludeTies'
-                    flag is true, 'rangesearch' always sorts the returned indices.
+                    flag is true, ‘rangesearch’ always sorts the returned indices.
                     
-     'Distance'     is the distance metric used by 'rangesearch' as specified
+     'Distance'     is the distance metric used by ‘rangesearch’ as specified
                     below:
 
      'euclidean'      Euclidean distance.
@@ -648,14 +648,14 @@ rangesearch
      'jaccard'        One minus the Jaccard coefficient, which is the percentage
                       of nonzero coordinates that differ.
      @DISTFUN         Custom distance function handle.  A distance function of
-                      the form 'function D2 = distfun (XI, YI)', where XI is a
+                      the form ‘function D2 = distfun (XI, YI)’, where XI is a
                       1*P vector containing a single observation in
                       P-dimensional space, YI is an N*P matrix containing an
                       arbitrary number of observations in the same P-dimensional
                       space, and D2 is an N*P vector of distances, where (D2k)
                       is the distance between observations XI and (YIk,:).
 
-     'NSMethod'     is the nearest neighbor search method used by 'rangesearch' as
+     'NSMethod'     is the nearest neighbor search method used by ‘rangesearch’ as
                     specified below.
 
      'kdtree'         Creates and uses a Kd-tree to find nearest neighbors.
@@ -690,7 +690,7 @@ squareform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1282
+# length: 1290
  -- statistics: ZOUT = squareform (YIN)
  -- statistics: YOUT = squareform (ZIN)
  -- statistics: ZOUT = squareform (YIN, 'tovector')
@@ -701,13 +701,13 @@ squareform
      Converts between a hollow (diagonal filled with zeros), square, and
      symmetric matrix and a vector of the lower triangular part.
 
-     Its target application is the conversion of the vector returned by 'pdist'
+     Its target application is the conversion of the vector returned by ‘pdist’
      into a distance matrix.  It performs the opposite operation if input is a
      matrix.
 
      If X is a numeric or logical vector, its number of elements must fit into
      the triangular part of a matrix (main diagonal excluded).  In other words,
-     'numel (X) = N * (N - 1) / 2' for some integer N.  The resulting matrix
+     ‘numel (X) = N * (N - 1) / 2’ for some integer N.  The resulting matrix
      will be N by N.
 
      If X is a numeric or logical distance matrix, it must be square and the

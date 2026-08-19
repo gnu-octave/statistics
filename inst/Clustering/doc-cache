@@ -1,4 +1,4 @@
-# doc-cache created by Octave 11.3.0
+# doc-cache created by Octave 11.2.0
 # name: cache
 # type: cell
 # rows: 3
@@ -13,12 +13,12 @@ CalinskiHarabaszEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 826
+# length: 838
  -- statistics: CalinskiHarabaszEvaluation
 
      Calinski-Harabasz clustering evaluation.
 
-     A 'CalinskiHarabaszEvaluation' object contains the results of evaluating
+     A ‘CalinskiHarabaszEvaluation’ object contains the results of evaluating
      clustering solutions using the Calinski-Harabasz criterion.
 
      The Calinski-Harabasz index (also known as the Variance Ratio Criterion) is
@@ -27,7 +27,7 @@ CalinskiHarabaszEvaluation
      indicates a better clustering solution, implying that clusters are dense
      and well-separated.
 
-     Create a 'CalinskiHarabaszEvaluation' object by using the 'evalclusters'
+     Create a ‘CalinskiHarabaszEvaluation’ object by using the ‘evalclusters’
      function with the 'CalinskiHarabasz' criterion.
 
      See also: evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
@@ -52,13 +52,13 @@ ClusterCriterion
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 381
+# length: 389
  -- statistics: ClusterCriterion
 
      A clustering evaluation object.
 
-     The 'ClusterCriterion' is a superclass for clustering evaluation objects,
-     which are created by the 'evalclusters' function.  It is not meant to be
+     The ‘ClusterCriterion’ is a superclass for clustering evaluation objects,
+     which are created by the ‘evalclusters’ function.  It is not meant to be
      instantiated directly.
 
      See also: evalclusters, CalinskiHarabaszEvaluation,
@@ -83,12 +83,12 @@ DaviesBouldinEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 711
+# length: 719
  -- statistics: DaviesBouldinEvaluation
 
      Davies-Bouldin object to evaluate clustering solutions
 
-     A 'DaviesBouldinEvaluation' object is a 'ClusterCriterion' object used to
+     A ‘DaviesBouldinEvaluation’ object is a ‘ClusterCriterion’ object used to
      evaluate clustering solutions using the Davies-Bouldin criterion.
 
      The Davies-Bouldin criterion is based on the ratio between the distances
@@ -120,18 +120,18 @@ GapEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 709
+# length: 729
  -- statistics: GapEvaluation
 
      Gap evaluation for clustering solutions
 
-     The 'GapEvaluation' class implements the gap statistic criterion for
-     evaluating clustering solutions.  A 'GapEvaluation' object is a
-     specialization of 'ClusterCriterion' and contains fields and methods to
+     The ‘GapEvaluation’ class implements the gap statistic criterion for
+     evaluating clustering solutions.  A ‘GapEvaluation’ object is a
+     specialization of ‘ClusterCriterion’ and contains fields and methods to
      compute the gap statistic, its Monte-Carlo reference expectations, and to
      select the optimal number of clusters according to a chosen search method.
 
-     Create a 'GapEvaluation' object by using the 'evalclusters' function or by
+     Create a ‘GapEvaluation’ object by using the ‘evalclusters’ function or by
      calling the class constructor directly.
 
      See also: evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
@@ -156,32 +156,32 @@ SilhouetteEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1448
+# length: 1488
  -- statistics: SilhouetteEvaluation
 
      Silhouette evaluation for clustering
 
-     The 'SilhouetteEvaluation' class implements an object to evaluate
+     The ‘SilhouetteEvaluation’ class implements an object to evaluate
      clustering solutions using the silhouette criterion.  A
-     'SilhouetteEvaluation' object is a 'ClusterCriterion' object that computes
+     ‘SilhouetteEvaluation’ object is a ‘ClusterCriterion’ object that computes
      silhouette values for clustering solutions and selects the best number of
      clusters as the one with the highest average silhouette value.
 
-     Create a 'SilhouetteEvaluation' object by using the 'evalclusters' function
+     Create a ‘SilhouetteEvaluation’ object by using the ‘evalclusters’ function
      or the class constructor.
 
-     List of public properties specific to 'SilhouetteEvaluation':
-     'Distance'
+     List of public properties specific to ‘SilhouetteEvaluation’:
+     ‘Distance’
           A valid distance metric name (string), a function handle, or a numeric
-          vector as returned by 'pdist'.  This specifies how pairwise distances
+          vector as returned by ‘pdist’.  This specifies how pairwise distances
           are computed.
 
-     'ClusterPriors'
+     ‘ClusterPriors’
           A character vector specifying how to evaluate silhouette values across
           clusters: 'empirical' (default) uses empirical cluster priors, or
           'equal' treats clusters equally.
 
-     'ClusterSilhouettes'
+     ‘ClusterSilhouettes’
           A cell array containing silhouette values for each observation for
           each inspected cluster number.
 
@@ -210,7 +210,7 @@ cluster
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1194
+# length: 1214
  -- statistics: T = cluster (Z, "Cutoff", C)
  -- statistics: T = cluster (Z, "Cutoff", C, "Depth", D)
  -- statistics: T = cluster (Z, "Cutoff", C, "Criterion", CRITERION)
@@ -218,19 +218,19 @@ cluster
 
      Define clusters from an agglomerative hierarchical cluster tree.
 
-     Given a hierarchical cluster tree Z generated by the 'linkage' function,
-     'cluster' defines clusters, using a threshold value C to identify new
+     Given a hierarchical cluster tree Z generated by the ‘linkage’ function,
+     ‘cluster’ defines clusters, using a threshold value C to identify new
      clusters ('Cutoff') or according to a maximum number of desired clusters N
      ('MaxClust').
 
      CRITERION is used to choose the criterion for defining clusters, which can
      be either "inconsistent" (default) or "distance".  When using
-     "inconsistent", 'cluster' compares the threshold value C to the
-     inconsistency coefficient of each link; when using "distance", 'cluster'
+     "inconsistent", ‘cluster’ compares the threshold value C to the
+     inconsistency coefficient of each link; when using "distance", ‘cluster’
      compares the threshold value C to the height of each link.  D is the depth
      used to evaluate the inconsistency coefficient, its default value is 2.
 
-     'cluster' uses "distance" as a criterion for defining new clusters when it
+     ‘cluster’ uses "distance" as a criterion for defining new clusters when it
      is used with the 'MaxClust' method.
 
      See also: clusterdata, dendrogram, inconsistent, kmeans, linkage, pdist.
@@ -254,21 +254,21 @@ clusterdata
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 828
+# length: 868
  -- statistics: T = clusterdata (X, CUTOFF)
  -- statistics: T = clusterdata (X, NAME, VALUE)
 
-     Wrapper function for 'linkage' and 'cluster'.
+     Wrapper function for ‘linkage’ and ‘cluster’.
 
-     If CUTOFF is used, then 'clusterdata' calls 'linkage' and 'cluster' with
-     default value, using CUTOFF as a threshold value for 'cluster'.  If CUTOFF
+     If CUTOFF is used, then ‘clusterdata’ calls ‘linkage’ and ‘cluster’ with
+     default value, using CUTOFF as a threshold value for ‘cluster’.  If CUTOFF
      is an integer and greater or equal to 2, then CUTOFF is interpreted as the
      maximum number of cluster desired and the "MaxClust" option is used for
-     'cluster'.
+     ‘cluster’.
 
-     If CUTOFF is not used, then 'clusterdata' expects a list of pair arguments.
+     If CUTOFF is not used, then ‘clusterdata’ expects a list of pair arguments.
      Then you must specify either the "Cutoff" or "MaxClust" option for
-     'cluster'.  The method and metric used by 'linkage', are defined through
+     ‘cluster’.  The method and metric used by ‘linkage’, are defined through
      the "linkage" and "distance" arguments.
 
      See also: cluster, dendrogram, inconsistent, kmeans, linkage, pdist.
@@ -277,8 +277,10 @@ clusterdata
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 45
-Wrapper function for 'linkage' and 'cluster'.
+# length: 61
+Wrapper function for ‘linkage’ and ‘cluster’.
+
+   If 
 
 
 
@@ -292,7 +294,7 @@ cophenet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1091
+# length: 1099
  -- statistics: [C, D] = cophenet (Z, Y)
 
      Compute the cophenetic correlation coefficient.
@@ -307,8 +309,8 @@ cophenet
      coefficient is closer to 1, the tree renders an accurate representation of
      the distances between the original data points.
 
-     Z is a hierarchical cluster tree, as the output of 'linkage'.  Y is a
-     vector of euclidean distances, as the output of 'pdist'.
+     Z is a hierarchical cluster tree, as the output of ‘linkage’.  Y is a
+     vector of euclidean distances, as the output of ‘pdist’.
 
      The optional output D is a vector of cophenetic distances, in the same
      lower triangular format as Y.  The cophenetic distance between two data
@@ -335,7 +337,7 @@ dbscan
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3533
+# length: 3553
  -- statistics: IDX = dbscan (X, EPSILON, MINPTS)
  -- statistics: IDX = dbscan (D, EPSILON, MINPTS, 'Distance', 'precomputed')
  -- statistics: IDX = dbscan (..., NAME, VALUE)
@@ -343,7 +345,7 @@ dbscan
 
      Density-Based Spatial Clustering of Applications with Noise (DBSCAN).
 
-     'IDX = dbscan (X, EPSILON, MINPTS)' partitions the observations in the N*P
+     ‘IDX = dbscan (X, EPSILON, MINPTS)’ partitions the observations in the N*P
      numeric matrix X into clusters using the DBSCAN algorithm with neighborhood
      radius EPSILON and minimum number of neighbors MINPTS.  Rows of X
      correspond to observations and columns correspond to features or variables.
@@ -360,12 +362,12 @@ dbscan
      that is reachable from more than one cluster is assigned to the first
      cluster that reaches it, following the order of the observations in X.
 
-     'IDX = dbscan (D, EPSILON, MINPTS, 'Distance', 'precomputed')' treats the
+     ‘IDX = dbscan (D, EPSILON, MINPTS, 'Distance', 'precomputed')’ treats the
      N*N matrix D as a precomputed matrix of pairwise distances between
-     observations, such as the output of 'pdist2'; D(i,j) is the distance
+     observations, such as the output of ‘pdist2’; D(i,j) is the distance
      between observations i and j.
 
-     '[IDX, COREPTS] = dbscan (...)' also returns an N*1 logical vector COREPTS
+     ‘[IDX, COREPTS] = dbscan (...)’ also returns an N*1 logical vector COREPTS
      that is true for each observation that is a core point.
 
      Additional parameters can be specified by Name-Value pair arguments.
@@ -374,7 +376,7 @@ dbscan
                     
      --------------------------------------------------------------------------------
      'Distance'     is the distance metric used to find neighbors, specified as
-                    one of the metrics accepted by 'rangesearch' ('euclidean' by
+                    one of the metrics accepted by ‘rangesearch’ ('euclidean' by
                     default, and also 'seuclidean', 'cityblock', 'chebychev',
                     'minkowski', 'mahalanobis', 'cosine', 'correlation',
                     'spearman', 'hamming', 'jaccard', or a custom distance
@@ -416,94 +418,94 @@ evalclusters
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4472
+# length: 4768
  -- statistics: EVA = evalclusters (X, CLUST, CRITERION)
  -- statistics: EVA = evalclusters (..., Name, Value)
 
      Create a clustering evaluation object to find the optimal number of
      clusters.
 
-     'evalclusters' creates a clustering evaluation object to evaluate the
+     ‘evalclusters’ creates a clustering evaluation object to evaluate the
      optimal number of clusters for data X, using criterion CRITERION.  The
-     input data X is a matrix with 'n' observations of 'p' variables.  The
+     input data X is a matrix with ‘n’ observations of ‘p’ variables.  The
      evaluation criterion CRITERION is one of the following:
-     'CalinskiHarabasz'
-          to create a 'CalinskiHarabaszEvaluation' object.
+     ‘CalinskiHarabasz’
+          to create a ‘CalinskiHarabaszEvaluation’ object.
 
-     'DaviesBouldin'
-          to create a 'DaviesBouldinEvaluation' object.
+     ‘DaviesBouldin’
+          to create a ‘DaviesBouldinEvaluation’ object.
 
-     'gap'
-          to create a 'GapEvaluation' object.
+     ‘gap’
+          to create a ‘GapEvaluation’ object.
 
-     'silhouette'
-          to create a 'SilhouetteEvaluation' object.
+     ‘silhouette’
+          to create a ‘SilhouetteEvaluation’ object.
 
      The clustering algorithm CLUST is one of the following:
-     'kmeans'
-          to cluster the data using 'kmeans' with 'EmptyAction' set to
-          'singleton' and 'Replicates' set to 5.
+     ‘kmeans’
+          to cluster the data using ‘kmeans’ with ‘EmptyAction’ set to
+          ‘singleton’ and ‘Replicates’ set to 5.
 
-     'linkage'
-          to cluster the data using 'clusterdata' with 'linkage' set to 'Ward'.
+     ‘linkage’
+          to cluster the data using ‘clusterdata’ with ‘linkage’ set to ‘Ward’.
 
-     'gmdistribution'
-          to cluster the data using 'fitgmdist' with 'SharedCov' set to 'true'
-          and 'Replicates' set to 5.
+     ‘gmdistribution’
+          to cluster the data using ‘fitgmdist’ with ‘SharedCov’ set to ‘true’
+          and ‘Replicates’ set to 5.
 
-     If the CRITERION is 'CalinskiHarabasz', 'DaviesBouldin', or 'silhouette',
-     CLUST can also be a function handle to a function of the form 'c = clust(x,
-     k)', where X is the input data, K the number of clusters to evaluate and C
+     If the CRITERION is ‘CalinskiHarabasz’, ‘DaviesBouldin’, or ‘silhouette’,
+     CLUST can also be a function handle to a function of the form ‘c = clust(x,
+     k)’, where X is the input data, K the number of clusters to evaluate and C
      the clustering result.  The clustering result can be either an array of
-     size 'n' with 'k' different integer values, or a matrix of size 'n' by 'k'
-     with a likelihood value assigned to each one of the 'n' observations for
+     size ‘n’ with ‘k’ different integer values, or a matrix of size ‘n’ by ‘k’
+     with a likelihood value assigned to each one of the ‘n’ observations for
      each one of the K clusters.  In the latter case, each observation is
      assigned to the cluster with the higher value.  If the CRITERION is
-     'CalinskiHarabasz', 'DaviesBouldin', or 'silhouette', CLUST can also be a
-     matrix of size 'n' by 'k', where 'k' is the number of proposed clustering
+     ‘CalinskiHarabasz’, ‘DaviesBouldin’, or ‘silhouette’, CLUST can also be a
+     matrix of size ‘n’ by ‘k’, where ‘k’ is the number of proposed clustering
      solutions, so that each column of CLUST is a clustering solution.
 
      In addition to the obligatory X, CLUST and CRITERION inputs there is a
-     number of optional arguments, specified as pairs of 'Name' and 'Value'
-     options.  The known 'Name' arguments are:
-     'KList'
+     number of optional arguments, specified as pairs of ‘Name’ and ‘Value’
+     options.  The known ‘Name’ arguments are:
+     ‘KList’
           a vector of positive integer numbers, that is the cluster sizes to
           evaluate.  This option is necessary, unless CLUST is a matrix of
           proposed clustering solutions.
 
-     'Distance'
+     ‘Distance’
           a distance metric as accepted by the chosen CLUST.  It can be the name
           of the distance metric as a string or a function handle.  When
-          CRITERION is 'silhouette', it can be a vector as created by function
-          'pdist'.  Valid distance metric strings are: 'sqEuclidean' (default),
-          'Euclidean', 'cityblock', 'cosine', 'correlation', 'Hamming',
-          'Jaccard'.  Only used by 'silhouette' and 'gap' evaluation.
+          CRITERION is ‘silhouette’, it can be a vector as created by function
+          ‘pdist’.  Valid distance metric strings are: ‘sqEuclidean’ (default),
+          ‘Euclidean’, ‘cityblock’, ‘cosine’, ‘correlation’, ‘Hamming’,
+          ‘Jaccard’.  Only used by ‘silhouette’ and ‘gap’ evaluation.
 
-     'ClusterPriors'
+     ‘ClusterPriors’
           the prior probabilities of each cluster, which can be either
-          'empirical' (default), or 'equal'.  When 'empirical' the silhouette
+          ‘empirical’ (default), or ‘equal’.  When ‘empirical’ the silhouette
           value is the average of the silhouette values of all points; when
-          'equal' the silhouette value is the average of the average silhouette
-          value of each cluster.  Only used by 'silhouette' evaluation.
+          ‘equal’ the silhouette value is the average of the average silhouette
+          value of each cluster.  Only used by ‘silhouette’ evaluation.
 
-     'B'
+     ‘B’
           the number of reference datasets generated from the reference
-          distribution.  Only used by 'gap' evaluation.
+          distribution.  Only used by ‘gap’ evaluation.
 
-     'ReferenceDistribution'
+     ‘ReferenceDistribution’
           the reference distribution used to create the reference data.  It can
-          be 'PCA' (default) for a distribution based on the principal
-          components of X, or 'uniform' for a uniform distribution based on the
-          range of the observed data.  'PCA' is currently not implemented.  Only
-          used by 'gap' evaluation.
+          be ‘PCA’ (default) for a distribution based on the principal
+          components of X, or ‘uniform’ for a uniform distribution based on the
+          range of the observed data.  ‘PCA’ is currently not implemented.  Only
+          used by ‘gap’ evaluation.
 
-     'SearchMethod'
-          the method for selecting the optimal value with a 'gap' evaluation.
-          It can be either 'globalMaxSE' (default) for selecting the smallest
+     ‘SearchMethod’
+          the method for selecting the optimal value with a ‘gap’ evaluation.
+          It can be either ‘globalMaxSE’ (default) for selecting the smallest
           number of clusters which is inside the standard error of the maximum
-          gap value, or 'firstMaxSE' for selecting the first number of clusters
+          gap value, or ‘firstMaxSE’ for selecting the first number of clusters
           which is inside the standard error of the following cluster number.
-          Only used by 'gap' evaluation.
+          Only used by ‘gap’ evaluation.
 
      Output EVA is a clustering evaluation object.
 
@@ -529,50 +531,50 @@ fitgmdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2954
+# length: 2994
  -- statistics: GMDIST = fitgmdist (DATA, K, PARAM1, VALUE1, ...)
 
      Fit a Gaussian mixture model with K components to DATA.  Each row of DATA
      is a data sample.  Each column is a variable.
 
      Optional parameters are:
-        * 'start': Initialization conditions.  Possible values are:
-             * 'randSample' (default) Takes means uniformly from rows of data.
-             * 'plus' Use k-means++ to initialize means.
-             * 'cluster' Performs an initial clustering with 10% of the data.
-             * VECTOR A vector whose length is the number of rows in data, and
+        • 'start': Initialization conditions.  Possible values are:
+             • 'randSample' (default) Takes means uniformly from rows of data.
+             • 'plus' Use k-means++ to initialize means.
+             • 'cluster' Performs an initial clustering with 10% of the data.
+             • VECTOR A vector whose length is the number of rows in data, and
                whose values are 1 to k specify the components each row is
                initially allocated to.  The mean, variance, and weight of each
                component is calculated from that.
-             * STRUCTURE A structure with fields mu, Sigma and
+             • STRUCTURE A structure with fields mu, Sigma and
                ComponentProportion.
           For 'randSample', 'plus', and 'cluster', the initial variance of each
           component is the variance of the entire data sample.
 
-        * 'Replicates': Number of random restarts to perform.
+        • 'Replicates': Number of random restarts to perform.
 
-        * 'RegularizationValue' or 'Regularize': A small number added to the
+        • 'RegularizationValue' or 'Regularize': A small number added to the
           diagonal entries of the covariance to prevent singular covariances.
 
-        * 'SharedCovariance' or 'SharedCov' (logical).  True if all components
+        • 'SharedCovariance' or 'SharedCov' (logical).  True if all components
           must share the same variance, to reduce the number of free parameters
 
-        * 'CovarianceType' or 'CovType' (string).  Possible values are:
-             * 'full' (default) Allow arbitrary covariance matrices.
-             * 'diagonal' Force covariances to be diagonal, to reduce the number
+        • 'CovarianceType' or 'CovType' (string).  Possible values are:
+             • 'full' (default) Allow arbitrary covariance matrices.
+             • 'diagonal' Force covariances to be diagonal, to reduce the number
                of free parameters.
 
-        * 'Options': A structure with all of the following fields:
-             * MaxIter Maximum number of EM iterations (default 100).
-             * TolFun Threshold increase in likelihood to terminate EM (default
+        • 'Options': A structure with all of the following fields:
+             • MaxIter Maximum number of EM iterations (default 100).
+             • TolFun Threshold increase in likelihood to terminate EM (default
                1e-6).
-             * Display Possible values are:
-                  * 'off' (default): Display nothing.
-                  * 'final': Display the total number of iterations and
+             • Display Possible values are:
+                  • 'off' (default): Display nothing.
+                  • 'final': Display the total number of iterations and
                     likelihood once the execution completes.
-                  * 'iter': Display the number of iteration and likelihood after
+                  • 'iter': Display the number of iteration and likelihood after
                     each iteration.
-        * 'Weight': A column vector or N*2 matrix.  The first column consists of
+        • 'Weight': A column vector or N*2 matrix.  The first column consists of
           non-negative weights given to the samples.  If these are all integers,
           this is equivalent to specifying WEIGHT(i) copies of row i of DATA,
           but potentially faster.  If a row of DATA is used to represent samples
@@ -603,7 +605,7 @@ gmdistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1177
+# length: 1185
  -- statistics: GMDIST = gmdistribution (MU, SIGMA)
  -- statistics: GMDIST = gmdistribution (MU, SIGMA, P)
  -- statistics: GMDIST = gmdistribution (MU, SIGMA, P, EXTRA)
@@ -616,11 +618,11 @@ gmdistribution
 
      Input SIGMA is an array that specifies the variances of the distributions,
      in one of four forms depending on its dimension.
-        * n-by-n-by-k: Slice SIGMA(:,:,i) is the variance of the i'th component
-        * 1-by-n-by-k: Slice diag(SIGMA(1,:,i)) is the variance of the i'th
+        • n-by-n-by-k: Slice SIGMA(:,:,i) is the variance of the i'th component
+        • 1-by-n-by-k: Slice diag(SIGMA(1,:,i)) is the variance of the i'th
           component
-        * n-by-n: SIGMA is the variance of every component
-        * 1-by-n-by-k: Slice diag(SIGMA) is the variance of every component
+        • n-by-n: SIGMA is the variance of every component
+        • 1-by-n-by-k: Slice diag(SIGMA) is the variance of every component
 
      If P is specified, it is a vector of length k specifying the proportion of
      each component.  If it is omitted or empty, each component has an equal
@@ -650,15 +652,15 @@ inconsistent
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1036
+# length: 1044
  -- statistics: Y = inconsistent (Z)
  -- statistics: Y = inconsistent (Z, D)
 
      Compute the inconsistency coefficient for each link of a hierarchical
      cluster tree.
 
-     Given a hierarchical cluster tree Z generated by the 'linkage' function,
-     'inconsistent' computes the inconsistency coefficient for each link of the
+     Given a hierarchical cluster tree Z generated by the ‘linkage’ function,
+     ‘inconsistent’ computes the inconsistency coefficient for each link of the
      tree, using all the links down to the D-th level below that link.
 
      The default depth D is 2, which means that only two levels are considered:
@@ -838,7 +840,7 @@ kmedoids
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3761
+# length: 3785
  -- statistics: IDX = kmedoids (X, K)
  -- statistics: [IDX, C] = kmedoids (X, K)
  -- statistics: [IDX, C, SUMD] = kmedoids (X, K)
@@ -849,19 +851,19 @@ kmedoids
 
      Partition observations into K clusters using the k-medoids algorithm.
 
-     'IDX = kmedoids (X, K)' partitions the N*P numeric matrix X into K
+     ‘IDX = kmedoids (X, K)’ partitions the N*P numeric matrix X into K
      clusters, each represented by one of the observations (its _medoid_), and
      returns the N*1 vector IDX of cluster indices.  Rows of X correspond to
      observations and columns correspond to features or variables.  Unlike
-     'kmeans', whose centroids are the mean of each cluster, a medoid is an
+     ‘kmeans’, whose centroids are the mean of each cluster, a medoid is an
      actual data point, which makes k-medoids more robust to outliers and
      applicable to any distance metric.
 
-     '[IDX, C, SUMD, D, MIDX, INFO] = kmedoids (...)' returns additional
+     ‘[IDX, C, SUMD, D, MIDX, INFO] = kmedoids (...)’ returns additional
      results:
 
      C              a k*P matrix with the coordinates of the K medoids, one per
-                    row ('C = X(MIDX,:)').
+                    row (‘C = X(MIDX,:)’).
                     
      SUMD           a k*1 vector with the within-cluster sum of the distances from
                     each point to its cluster medoid, measured with the selected
@@ -885,7 +887,7 @@ kmedoids
                     'euclidean', 'seuclidean', 'cityblock', 'minkowski',
                     'chebychev', 'cosine', 'correlation', 'hamming', 'jaccard',
                     'spearman', 'mahalanobis', or a custom distance function
-                    handle accepted by 'pdist2'.
+                    handle accepted by ‘pdist2’.
                     
      'Algorithm'    the optimization algorithm, either 'pam' (default) for
                     Partitioning Around Medoids, which searches over all
@@ -905,7 +907,7 @@ kmedoids
                     lowest total sum of distances is returned.  The default is 1,
                     or the size of the third dimension of a numeric 'Start'.
                     
-     'Options'      a structure, as created by 'statset', whose 'MaxIter' field
+     'Options'      a structure, as created by ‘statset’, whose 'MaxIter' field
                     caps the number of iterations (default 100).
 
      See also: kmeans, linkage, pdist2, dbscan.
@@ -929,7 +931,7 @@ linkage
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3578
+# length: 3630
  -- statistics: Y = linkage (D)
  -- statistics: Y = linkage (D, METHOD)
  -- statistics: Y = linkage (X)
@@ -940,11 +942,11 @@ linkage
      Produce a hierarchical clustering dendrogram.
 
      D is the dissimilarity matrix relative to n observations, formatted as a
-     (n-1)*n/2x1 vector as produced by 'pdist'.  Alternatively, X contains data
-     formatted for input to 'pdist', METRIC is a metric for 'pdist' and ARGLIST
-     is a cell array containing arguments that are passed to 'pdist'.
+     (n-1)*n/2x1 vector as produced by ‘pdist’.  Alternatively, X contains data
+     formatted for input to ‘pdist’, METRIC is a metric for ‘pdist’ and ARGLIST
+     is a cell array containing arguments that are passed to ‘pdist’.
 
-     'linkage' starts by putting each observation into a singleton cluster and
+     ‘linkage’ starts by putting each observation into a singleton cluster and
      numbering those from 1 to n.  Then it merges two clusters, chosen according
      to METHOD, to create a new cluster numbered n+1, and so on until all
      observations are grouped into a single cluster numbered 2(n-1).  Row k of
@@ -959,40 +961,40 @@ linkage
      even that is so only for the methods whose recomputation rule does not
      depend on the merge order ("weighted", "centroid" and "median" do depend on
      it).  Code that must be portable should read column 3, or the cluster
-     assignment obtained from 'cluster', rather than the raw numbering.
+     assignment obtained from ‘cluster’, rather than the raw numbering.
 
      METHOD defines the way the distance between two clusters is computed and
      how they are recomputed when two clusters are merged:
 
-     '"single" (default)'
+     ‘"single" (default)’
           Distance between two clusters is the minimum distance between two
           elements belonging each to one cluster.  Produces a cluster tree known
           as minimum spanning tree.
 
-     '"complete"'
+     ‘"complete"’
           Furthest distance between two elements belonging each to one cluster.
 
-     '"average"'
+     ‘"average"’
           Unweighted pair group method with averaging (UPGMA). The mean distance
           between all pair of elements each belonging to one cluster.
 
-     '"weighted"'
+     ‘"weighted"’
           Weighted pair group method with averaging (WPGMA). When two clusters A
           and B are joined together, the new distance to a cluster C is the mean
           between distances A-C and B-C.
 
-     '"centroid"'
+     ‘"centroid"’
           Unweighted Pair-Group Method using Centroids (UPGMC). Assumes
           Euclidean metric.  The distance between cluster centroids, each
           centroid being the center of mass of a cluster.
 
-     '"median"'
+     ‘"median"’
           Weighted pair-group method using centroids (WPGMC). Assumes Euclidean
           metric.  Distance between cluster centroids.  When two clusters are
           joined together, the new centroid is the midpoint between the joined
           centroids.
 
-     '"ward"'
+     ‘"ward"’
           Ward's sum of squared deviations about the group mean (ESS). Also
           known as minimum variance or inner squared distance.  Assumes
           Euclidean metric.  How much the moment of inertia of the merged
@@ -1023,7 +1025,7 @@ optimalleaforder
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1296
+# length: 1312
  -- statistics: LEAFORDER = optimalleaforder (TREE, D)
  -- statistics: LEAFORDER = optimalleaforder (..., NAME, VALUE)
 
@@ -1035,16 +1037,16 @@ optimalleaforder
      of the tree.
 
      Required inputs:
-        * TREE: a hierarchical cluster tree TREE generated by the 'linkage'
+        • TREE: a hierarchical cluster tree TREE generated by the ‘linkage’
           function.
 
-        * D: a matrix of distances as computed by 'pdist'.
+        • D: a matrix of distances as computed by ‘pdist’.
 
      Optional inputs can be the following property/value pairs:
-        * property 'Criteria' at the moment can only have the value 'adjacent',
+        • property 'Criteria' at the moment can only have the value 'adjacent',
           for minimizing the distances between leaves.
 
-        * property 'Transformation' can have one of the values 'linear',
+        • property 'Transformation' can have one of the values 'linear',
           'inverse' or a handle to a custom function which computes S the
           similarity matrix.
 
@@ -1075,7 +1077,7 @@ spectralcluster
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3818
+# length: 3838
  -- statistics: IDX = spectralcluster (X, K)
  -- statistics: IDX = spectralcluster (S, K, 'Distance', 'precomputed')
  -- statistics: [IDX, V] = spectralcluster (...)
@@ -1084,7 +1086,7 @@ spectralcluster
 
      Partition observations into K clusters using spectral clustering.
 
-     'IDX = spectralcluster (X, K)' partitions the N*P numeric matrix X into K
+     ‘IDX = spectralcluster (X, K)’ partitions the N*P numeric matrix X into K
      clusters and returns the N*1 vector IDX of cluster indices.  Rows of X
      correspond to observations and columns to features.  Spectral clustering
      builds a similarity graph over the observations, embeds them with the
@@ -1092,7 +1094,7 @@ spectralcluster
      lets it recover clusters that are not linearly separable in the original
      space.
 
-     '[IDX, V, D] = spectralcluster (...)' also returns the N*k matrix V whose
+     ‘[IDX, V, D] = spectralcluster (...)’ also returns the N*k matrix V whose
      columns are the eigenvectors associated with the K smallest eigenvalues of
      the Laplacian, and the k*1 vector D of those eigenvalues.  The signs of the
      eigenvectors, and the basis within a repeated eigenvalue, are arbitrary.
@@ -1106,7 +1108,7 @@ spectralcluster
                         of 'euclidean' (default), 'seuclidean', 'mahalanobis',
                         'cityblock', 'minkowski', 'chebychev', 'cosine',
                         'correlation', 'hamming', 'jaccard', 'spearman', or a
-                        function handle accepted by 'pdist2', or the string
+                        function handle accepted by ‘pdist2’, or the string
                         'precomputed' to interpret the first input as an N*N
                         similarity matrix.
                         
@@ -1115,7 +1117,7 @@ spectralcluster
                         within a fixed radius.
                         
      'NumNeighbors'     the number of nearest neighbors for the 'knn' graph, a
-                        positive integer.  The default is 'ceil (log (N))'.
+                        positive integer.  The default is ‘ceil (log (N))’.
                         
      'KNNGraphType'     'complete' (default) to connect i and j when either is a
                         nearest neighbor of the other, or 'mutual' to connect them
@@ -1125,7 +1127,7 @@ spectralcluster
                         Required when 'SimilarityGraph' is 'epsilon'.
                         
      'KernelScale'      the positive scale factor SIGMA in the Gaussian similarity
-                        kernel 'exp (-(dist / sigma)^2)' applied to the graph
+                        kernel ‘exp (-(dist / sigma)^2)’ applied to the graph
                         edges.  The default is 1.
                         
      'LaplacianNormalization''randomwalk' (default), 'symmetric', or 'none', selecting
