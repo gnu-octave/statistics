@@ -138,7 +138,7 @@ endfunction
 %! ## The solver reaches a low objective value (MATLAB's is 194.5156).
 %! Mdl = rica (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
 %!             "Standardize", false, "IterationLimit", 1000);
-%! assert_equal (Mdl.FitInfo.Objective < 195, true);
+%! assert_equal (Mdl.FitInfo.Objective(end) < 195, true);
 
 %!test
 %! ## The objective value stored in FitInfo matches a direct evaluation.
@@ -147,7 +147,7 @@ endfunction
 %! W = Mdl.TransformWeights;
 %! Z = X * W;
 %! f = sum (sumsq (X * (W * W') - X)) + sum (sum (0.5 * log (cosh (2 * Z))));
-%! assert_equal (Mdl.FitInfo.Objective, f, 1e-6);
+%! assert_equal (Mdl.FitInfo.Objective(end), f, 1e-6);
 
 %!test
 %! ## Standardize centers and scales the data before transforming.
@@ -155,6 +155,32 @@ endfunction
 %!             "InitialTransformWeights", W0(:,1:2));
 %! assert_equal (size (Mdl.Mu), [5, 1]);
 %! assert_equal (size (Mdl.Sigma), [5, 1]);
+
+%!test
+%! ## FitInfo carries the whole trajectory, not just its final value: two
+%! ## columns of equal length, Iteration the 0-based index, Objective the
+%! ## objective at the starting weights first and the solution last
+%! Mdl = rica (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!             "Standardize", false, "IterationLimit", 1000);
+%! it = Mdl.FitInfo.Iteration;
+%! ob = Mdl.FitInfo.Objective;
+%! assert_equal (columns (it), 1);
+%! assert_equal (size (ob), size (it));
+%! assert_equal (it, (0:numel (ob) - 1)');
+%! assert_equal (all (diff (ob) <= 1e-10), true);
+%! ## the first entry is the objective at the starting weights, which is what
+%! ## a fit allowed no iterations at all reports
+%! M0 = rica (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!            "Standardize", false, "IterationLimit", 0);
+%! assert_equal (numel (M0.FitInfo.Objective), 1);
+%! assert_equal (ob(1), M0.FitInfo.Objective(1), 1e-12);
+
+%!test
+%! ## a capped run stops with one entry per iteration plus the starting point
+%! Mdl = rica (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!             "Standardize", false, "IterationLimit", 5);
+%! assert_equal (numel (Mdl.FitInfo.Objective) <= 6, true);
+%! assert_equal (Mdl.FitInfo.Iteration(1), 0);
 
 ## Test input validation
 %!error<Invalid call to rica> rica (ones (5, 3))

@@ -32,8 +32,18 @@
 ## @item @qcode{Mu}, @qcode{Sigma} — the per-predictor mean and standard
 ## deviation used when @qcode{'Standardize'} is @qcode{true} (empty otherwise),
 ## each a column vector with one entry per predictor.
-## @item @qcode{FitInfo} — a structure with the number of @qcode{Iteration}s and
-## the final @qcode{Objective} value of the fit.
+## @item @qcode{FitInfo} — a structure with the @qcode{Iteration} indices of
+## the fit and the @qcode{Objective} value at each of them, both column
+## vectors of the same length.  @qcode{Iteration} counts from zero and
+## @qcode{Objective(1)} is the objective at the starting weights, so the last
+## entry of each is the solution the fit returned.
+##
+## The values along that trajectory are this implementation's own: the
+## minimisation runs through Octave's @code{fminunc}, where MATLAB uses a
+## limited-memory BFGS solver, and the two take different steps from the same
+## starting weights.  The length of the history and the iteration counts
+## differ accordingly.  The fitted @qcode{TransformWeights} are unaffected,
+## both solvers reaching the same optimum.
 ## @item @qcode{ModelParameters} — a structure of the options used for the fit.
 ## @item @qcode{NumPredictors}, @qcode{NumLearnedFeatures} — the input dimension
 ## @math{P} and the number of learned features @math{Q}.
@@ -115,14 +125,25 @@ classdef SparseFiltering
 
       lambda = opts.Lambda;
       ofun = @(wv) __sparsefilt_objective__ (wv, X, p, Q, lambda);
+      objective_history ("reset");
       fmopts = optimset ("GradObj", "on", "MaxIter", opts.IterationLimit, ...
-                         "TolFun", 1e-10, "TolX", 1e-10, "Display", "off");
+                         "TolFun", 1e-10, "TolX", 1e-10, "Display", "off", ...
+                         "OutputFcn", @objective_history_fcn);
       [wv, fval, ~, output] = fminunc (ofun, W0(:), fmopts);
+      obj = objective_history ("get");
 
       this.TransformWeights = reshape (wv, p, Q);
       this.NumPredictors = p;
       this.NumLearnedFeatures = Q;
-      this.FitInfo = struct ("Iteration", output.iterations, "Objective", fval);
+      ## MATLAB reports the whole trajectory: a column with the objective at
+      ## the starting weights first, one entry per iteration after it, and
+      ## Iteration the matching 0-based index.  fminunc does not call its
+      ## OutputFcn for the step it returns on, so the final value is appended.
+      if (isempty (obj) || obj(end) != fval)
+        obj(end+1, 1) = fval;
+      endif
+      this.FitInfo = struct ("Iteration", (0:numel (obj) - 1)', ...
+                             "Objective", obj);
       this.ModelParameters = opts;
 
     endfunction

@@ -140,7 +140,7 @@ endfunction
 %! ## (73.17) -- reaching a good local minimum of the sparse filtering cost.
 %! Mdl = sparsefilt (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
 %!                   "Standardize", false, "IterationLimit", 1000);
-%! assert_equal (Mdl.FitInfo.Objective < 20, true);
+%! assert_equal (Mdl.FitInfo.Objective(end) < 20, true);
 
 %!test
 %! ## Lambda is an L2 penalty on the weights: FitInfo.Objective is
@@ -149,7 +149,24 @@ endfunction
 %!                   "Standardize", false, "IterationLimit", 1000);
 %! W = Mdl.TransformWeights;
 %! Z = transform (Mdl, X);
-%! assert_equal (Mdl.FitInfo.Objective, sum (Z(:)) + sum (W(:) .^ 2), 1e-6);
+%! assert_equal (Mdl.FitInfo.Objective(end), sum (Z(:)) + sum (W(:) .^ 2), 1e-6);
+
+%!test
+%! ## FitInfo carries the whole trajectory, not just its final value
+%! Mdl = sparsefilt (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!                   "Standardize", false, "IterationLimit", 1000);
+%! it = Mdl.FitInfo.Iteration;
+%! ob = Mdl.FitInfo.Objective;
+%! assert_equal (columns (it), 1);
+%! assert_equal (size (ob), size (it));
+%! assert_equal (it, (0:numel (ob) - 1)');
+%! assert_equal (all (diff (ob) <= 1e-10), true);
+
+%!test
+%! ## the comparison broadcasts over the history, as MATLAB's does
+%! Mdl = sparsefilt (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!                   "Standardize", false, "IterationLimit", 1000);
+%! assert_equal (size (Mdl.FitInfo.Objective < 20), size (Mdl.FitInfo.Objective));
 
 ## Test input validation
 %!error<Invalid call to sparsefilt> sparsefilt (ones (5, 3))
