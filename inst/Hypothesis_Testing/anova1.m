@@ -59,6 +59,14 @@
 ## (this is the default). When @qcode{vartype} is @qcode{'unequal'} the
 ## population variances are not assumed to be equal and Welch's ANOVA test is
 ## used instead.
+##
+## @var{vartype} is an Octave extension: MATLAB's @code{anova1} takes no
+## fourth argument.  It does not error on one either, it accepts it and
+## ignores it, returning the same @var{p} and @var{F} for @qcode{'unequal'}
+## as for @qcode{'equal'}.  Code written against this function and then run
+## in MATLAB therefore gets the classic ANOVA silently, with no diagnostic
+## of any kind.  Note that @code{anova2}'s analogous fourth argument does
+## make MATLAB error, so the silence here is particular to @code{anova1}.
 ## @end itemize
 ##
 ## anova1 can return up to three output arguments:
