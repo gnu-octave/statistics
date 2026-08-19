@@ -1331,8 +1331,8 @@ endfunction
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [3.79220676881e-23; 7.26932473407e-11; 4.42354835071e-14; 1.58256682968e-09], 1e-9);
 %! assert_equal (mdl.ResponseName, 'y');
-%! assert_equal (mdl.PredictorNames, {'x1','x2','x3'});
-%! assert_equal (mdl.VariableNames, {'x1','x2','x3','y'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
+%! assert_equal (mdl.VariableNames, {'x1';'x2';'x3';'y'});
 %! assert_equal (mdl.Formula.HasIntercept, true);
 %! assert_equal (mdl.Formula.LinearPredictor, '1 + x1 + x2 + x3');
 %! assert_equal (mdl.Formula.NTerms, 4);
@@ -1342,7 +1342,7 @@ endfunction
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)','x1','x2','x3'});
 %! assert_equal (mdl.SSE, 0.237882441508, 1e-9);
 %! assert_equal (mdl.ResponseName, 'y');
-%! assert_equal (mdl.PredictorNames, {'x1','x2','x3'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
 
 %!test
 %! tt = table (x1, x2, x3, 'VariableNames', {'x1','x2','x3'});
@@ -1350,7 +1350,7 @@ endfunction
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)','x1','x2','x3'});
 %! assert_equal (mdl.SSE, 0.237882441508, 1e-9);
 %! assert_equal (mdl.ResponseName, 'y');
-%! assert_equal (mdl.VariableNames, {'x1','x2','x3','y'});
+%! assert_equal (mdl.VariableNames, {'x1';'x2';'x3';'y'});
 
 %!test
 %! mdl = stepwiselm (X, y, 'Verbose', 0);
@@ -1358,7 +1358,7 @@ endfunction
 %! assert_equal (mdl.Coefficients.Estimate, ...
 %!   [4.11199897343; 1.79245385284; -1.06961941012; 0.51029628797], 1e-9);
 %! assert_equal (mdl.ResponseName, 'y');
-%! assert_equal (mdl.VariableNames, {'x1','x2','x3','y'});
+%! assert_equal (mdl.VariableNames, {'x1';'x2';'x3';'y'});
 
 %!test
 %! mdl = stepwiselm (tbl, 'y ~ x1', 'Verbose', 0);
@@ -1405,7 +1405,7 @@ endfunction
 %!   [52.9870445002; -5.6930223237; -16.4790265402; 10.8087027861], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [5.53960001242e-23; 1.4288675776e-05; 4.19790256549e-13; 8.42439951369e-10], 1e-9);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 %! assert_equal (mdl.Formula.LinearPredictor, '1 + x1 + x2 + x1^2');
 
 %!test
@@ -1413,7 +1413,7 @@ endfunction
 %! assert_equal (mdl.NumPredictors, 2);
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)','x1','x2','x1^2'});
 %! assert_equal (mdl.SSE, 0.22345826866, 1e-9);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! T0 = [0 0 0];
@@ -1446,8 +1446,8 @@ endfunction
 %!   [22.0404196772; 4.53371294703; -0.853012055108; -2.72222667524], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [1.67738549624e-15; 0.000202251230338; 0.403753045528; 0.0131231039551], 1e-9);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
-%! assert_equal (mdl.VariableNames, {'x1','x2','y'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
+%! assert_equal (mdl.VariableNames, {'x1';'x2';'y'});
 
 %!test
 %! mdl = stepwiselm (X, y, 'Criterion', 'aic', 'Upper', 'interactions', 'Verbose', 0);
@@ -1488,7 +1488,7 @@ endfunction
 %!   [10.3166971537; 2.21951480632; -4.6016065035; 0.418449310593; 1.07537443872], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [3.1776147586e-09; 0.0388206335538; 0.000194754077847; 0.680310511095; 0.295673895373], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2','x3'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
 
 %!test
 %! p1 = (1:24)'/24; p2 = sin ((1:24)'/3.5);
@@ -1576,7 +1576,7 @@ endfunction
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [1.00643907454e-55; 5.62403610622e-24; 1.37550401987e-43; 1.97956717929e-34], 1e-8);
 %! assert_equal (mdl.ResponseName, 'MPG');
-%! assert_equal (mdl.PredictorNames, {'Weight','Group'});
+%! assert_equal (mdl.PredictorNames, {'Weight';'Group'});
 %! assert_equal (mdl.Formula.LinearPredictor, '1 + Weight + Group');
 
 %!test
@@ -1590,7 +1590,7 @@ endfunction
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)','x1','x2_2','x2_3'});
 %! assert_equal (mdl.Coefficients.Estimate, ...
 %!   [56.007864413564; -0.00561620967245463; 5.01185752617851; -2.97710174860745], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! ex = false (24, 1);
@@ -1612,7 +1612,7 @@ endfunction
 %!   [49.320903992; 11.762312811; -17.1751206798; 9.39357598083], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [8.57561115348e-20; 1.36568780583e-09; 3.54709582656e-12; 3.84225548219e-08], 1e-9);
-%! assert_equal (mdl.PredictorNames, {'x1','x2','x3'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
 
 %!test
 %! mdl = stepwiselm (X, y, 'Upper', 'interactions', 'Exclude', [2 9 15], 'Verbose', 0);
@@ -1651,13 +1651,13 @@ endfunction
 %! assert_equal (mdl.NumPredictors, 2);
 %! assert_equal (mdl.SSE, 1.11546087527, 1e-8);
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)','x1','x2','x1:x2'});
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! mdl = stepwiselm (tbl, 'ResponseVar', 'y', 'PredictorVars', [1 2], 'Verbose', 0);
 %! assert_equal (mdl.NumPredictors, 2);
 %! assert_equal (mdl.SSE, 1.11546087527, 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! mdl = stepwiselm (tbl, 'ResponseVar', 'y', 'Upper', 'interactions', 'Verbose', 0);
@@ -1671,8 +1671,8 @@ endfunction
 %! assert_equal (mdl.Coefficients.Estimate, ...
 %!   [4.11199897343; 1.79245385284; -1.06961941012; 0.51029628797], 1e-9);
 %! assert_equal (mdl.ResponseName, 'Score');
-%! assert_equal (mdl.PredictorNames, {'Alpha','Beta','Gamma'});
-%! assert_equal (mdl.VariableNames, {'Alpha','Beta','Gamma','Score'});
+%! assert_equal (mdl.PredictorNames, {'Alpha';'Beta';'Gamma'});
+%! assert_equal (mdl.VariableNames, {'Alpha';'Beta';'Gamma';'Score'});
 %! assert_equal (mdl.Formula.LinearPredictor, '1 + Alpha + Beta + Gamma');
 
 %!test
@@ -1708,7 +1708,7 @@ endfunction
 %!   [46.7628066792; 12.9240077453; 0.0944219717272; 56.2943994677], 1e-5);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [1.96152617542e-40; 6.42479379426e-17; 0.92518406634; 4.45945899483e-44], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'X','G'});
+%! assert_equal (mdl.PredictorNames, {'X';'G'});
 
 %!test
 %! idx3 = mod ((1:48), 3); idx2 = mod ((1:48), 2);
@@ -1738,7 +1738,7 @@ endfunction
 %!   [256.716639395; -90.8384584155; -51.8944141736; 142.464714594; -54.8512380408; -54.9876747811], 1e-5);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [9.40196273084e-69; 7.64513283056e-50; 1.00685653504e-39; 5.03307771166e-58; 1.01525097736e-40; 9.15939827666e-41], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'G1','G2'});
+%! assert_equal (mdl.PredictorNames, {'G1';'G2'});
 
 %!test
 %! idxb = mod ((1:48), 2);
@@ -1783,7 +1783,7 @@ endfunction
 %! assert_equal (mdl.Coefficients.SE, [0.101176877319; 0.131763778382; 0.186693438852], 1e-8);
 %! assert_equal (mdl.Coefficients.tStat, [28.0551762332; -19.5584761158; 10.0206827218], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, [1.65333811724e-21; 1.79264031168e-17; 1.35825364979e-10], 1e-9);
-%! assert_equal (mdl.PredictorNames, {'x2','x3'});
+%! assert_equal (mdl.PredictorNames, {'x2';'x3'});
 
 %!test
 %! h1 = [7;1;11;11;7;11;3;1;2;21;1;11;10];
@@ -1806,8 +1806,8 @@ endfunction
 %! assert_equal (mdl.Coefficients.SE, [2.2861743345; 0.121300923606; 0.0458547214685], 1e-8);
 %! assert_equal (mdl.Coefficients.tStat, [22.9979613053; 12.1046542645; 14.4423620963], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, [5.45657090149e-10; 2.69221217969e-07; 5.02896031564e-08], 1e-9);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
-%! assert_equal (mdl.VariableNames, {'x1','x2','x3','x4','y'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
+%! assert_equal (mdl.VariableNames, {'x1';'x2';'x3';'x4';'y'});
 %! assert_equal (mdl.Formula.LinearPredictor, '1 + x1 + x2');
 
 %!test
@@ -1861,7 +1861,7 @@ endfunction
 %! assert_equal (mdl.Coefficients.Estimate, ...
 %!   [4.1119989734334; 1.79245385284216; -1.06961941011697; 0.510296287970133], 1e-9);
 %! assert_equal (mdl.ResponseName, 'y');
-%! assert_equal (mdl.PredictorNames, {'x1','x2','x3'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
 
 %!test
 %! T_initial = [0 0 0 0];
@@ -1882,7 +1882,7 @@ endfunction
 %!   [22.0404196772024; 4.53371294702715; -0.853012055107928; -2.72222667524045], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [1.67738549623508e-15; 0.000202251230338429; 0.403753045528205; 0.0131231039551409], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! mdl = stepwiselm (X, y, 'Upper', 'poly110', 'Verbose', 0);
@@ -1901,7 +1901,7 @@ endfunction
 %!   [22.577380216489; 4.00455156048637; -6.57471643125185], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [3.27879166781824e-16; 0.000642688076385025; 1.64115221424634e-06], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! p1   = (1:15)'/15;
@@ -1927,7 +1927,7 @@ endfunction
 %!   [104.577876691085; 26.990238868043; 80.8944510989422; -39.3703629836483], 1e-5);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [7.63821769167572e-18; 2.10244709730975e-11; 1.28303158624727e-16; 3.44025340004292e-13], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2'});
 
 %!test
 %! x1n     = x1; yn = y;
@@ -1950,7 +1950,7 @@ endfunction
 %!   [53.0970411226747; 12.2556885243692; -17.8208192735615; 9.91769018424668], 1e-6);
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [3.09620365929824e-21; 3.59135935529609e-10; 6.98703068441474e-13; 1.01407825601795e-08], 1e-8);
-%! assert_equal (mdl.PredictorNames, {'x1','x2','x3'});
+%! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
 
 %!error <stepwiselm: Not enough input arguments.> stepwiselm ()
 %!error <stepwiselm: Name-Value arguments must be in pairs.> stepwiselm (X, y, 'Verbose')

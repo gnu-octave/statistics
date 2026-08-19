@@ -2086,9 +2086,9 @@ endfunction
 %!test
 %! assert_equal (cmdl.Formula.LinearPredictor, '1 + x1 + x2');
 %! assert_equal (cmdl.Formula.HasIntercept, true);
-%! assert_equal (cmdl.PredictorNames, {'x1', 'x2'});
+%! assert_equal (cmdl.PredictorNames, {'x1'; 'x2'});
 %! assert_equal (cmdl.ResponseName, 'y');
-%! assert_equal (cmdl.VariableNames, {'x1', 'x2', 'y'});
+%! assert_equal (cmdl.VariableNames, {'x1'; 'x2'; 'y'});
 %! assert_equal (cmdl.VariableInfo.Range{1}, [0.05, 1],  1e-10);
 %! assert_equal (cmdl.VariableInfo.Range{2}, [0.05, 20], 1e-10);
 %! assert_equal (cmdl.VariableInfo.InModel, [true; true; false]);

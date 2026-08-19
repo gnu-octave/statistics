@@ -652,10 +652,10 @@ endfunction
 %!test
 %! mdl = fitlm (C, y);
 %! assert_equal (class (mdl), 'LinearModel');
-%! assert_equal (mdl.VariableNames, {'x1', 'y'});
+%! assert_equal (mdl.VariableNames, {'x1'; 'y'});
 %!test
 %! mdl = fitlm (C, y, 'VarNames', {'grp', 'score'});
-%! assert_equal (mdl.VariableNames, {'grp', 'score'});
+%! assert_equal (mdl.VariableNames, {'grp'; 'score'});
 %!test
 %! assert_equal (class (fitlm (C, y, 'Intercept', false)), 'LinearModel');
 

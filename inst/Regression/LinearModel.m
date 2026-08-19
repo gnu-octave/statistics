@@ -1450,10 +1450,11 @@ classdef LinearModel
       this.NumVariables             = n_vars;
       this.ObservationInfo          = ObsInfo;
       this.ObservationNames         = {};
-      this.PredictorNames           = pred_names_raw;
+      ## MATLAB returns these two as columns, and CoefficientNames as a row.
+      this.PredictorNames           = pred_names_raw(:);
       this.ResponseName             = resp_name;
       this.VariableInfo             = VarInfo;
-      this.VariableNames            = var_names_all;
+      this.VariableNames            = var_names_all(:);
       this.Variables                = VarsTable;
 
       this.DesignMatrix             = X_design_sub;
@@ -5753,8 +5754,8 @@ endfunction
 %! assert_equal (mdl.VariableInfo.InModel(strcmp (mdl.VariableNames, 'y')), false);
 %! assert_equal (all (mdl.VariableInfo.InModel(! strcmp (mdl.VariableNames, 'y'))), true);
 %! assert_equal (mdl.ResponseName, 'y');
-%! assert_equal (isequal (mdl.PredictorNames, {'x1','x2'}), true);
-%! assert_equal (isequal (mdl.VariableNames, {'x1','x2','y'}), true);
+%! assert_equal (isequal (mdl.PredictorNames, {'x1';'x2'}), true);
+%! assert_equal (isequal (mdl.VariableNames, {'x1';'x2';'y'}), true);
 %! assert_equal (mdl.Formula.HasIntercept, true);
 %! assert_equal (mdl.Formula.LinearPredictor, '1 + x1 + x2');
 %! assert_equal (mdl.Formula.NTerms, 3);
@@ -6094,7 +6095,7 @@ endfunction
 %! ## VarNames sets custom names and ResponseVar overrides the response name
 %! m  = fitlm (X, y, 'VarNames', {'alpha','beta','resp'});
 %! assert_equal (m.ResponseName, 'resp');
-%! assert_equal (isequal (m.PredictorNames, {'alpha','beta'}), true);
+%! assert_equal (isequal (m.PredictorNames, {'alpha';'beta'}), true);
 %! assert_equal (any (strcmp (m.CoefficientNames, 'alpha')), true);
 %! assert_equal (any (strcmp (m.CoefficientNames, 'beta')), true);
 %! m2 = fitlm (X, y, 'VarNames', {'a','b','r'}, 'ResponseVar', 'r');
@@ -6171,7 +6172,7 @@ endfunction
 %! ## VarNames sets custom names
 %! vn = fitlm (X, y, 'VarNames', {'alpha','beta','resp'});
 %! assert_equal (vn.ResponseName, 'resp');
-%! assert_equal (isequal (vn.PredictorNames, {'alpha','beta'}), true);
+%! assert_equal (isequal (vn.PredictorNames, {'alpha';'beta'}), true);
 %! assert_equal (any (strcmp (vn.CoefficientNames, 'alpha')), true);
 %! assert_equal (any (strcmp (vn.CoefficientNames, 'beta')), true);
 
