@@ -50,7 +50,10 @@ classdef LinearModel
   ##
   ## @item Fitting method information @tab @code{Robust}, which records
   ## the weighting function and tuning constant used when the model is fit by
-  ## robust regression, and is empty for an ordinary least squares fit.
+  ## robust regression, and is empty for an ordinary least squares fit, and
+  ## @code{Steps}, which records the stepwise fitting information whenever
+  ## the model was fit using stepwise regression.  This implementation
+  ## currently always returns @code{Steps} as an empty structure.
   ##
   ## @item Input data properties @tab @code{Formula},
   ## @code{NumObservations}, @code{NumPredictors}, @code{NumVariables},
@@ -147,6 +150,30 @@ classdef LinearModel
   ## @item @code{plotAdded} @tab Plot the incremental effect of one or
   ## more terms on the response, after removing the effects of all other
   ## terms, along with the fitted line and its 95% confidence bounds.
+  ##
+  ## @item @code{plot} @tab Plot a default view of the model.  Creates an
+  ## added variable plot for the whole model when more than one predictor
+  ## is included, a scatter plot of the data with a fitted curve and 95%
+  ## confidence bounds when exactly one predictor is included, or a
+  ## histogram of the residuals when no predictors are included.
+  ##
+  ## @item @code{plotInteraction} @tab Plot the main and conditional effects
+  ## of two predictors, or the adjusted response as a function of one
+  ## predictor for several fixed values of the other, to visualize whether
+  ## the two predictors interact.
+  ##
+  ## @item @code{compact} @tab Return a @code{CompactLinearModel} that
+  ## discards the training data and per-observation diagnostics while
+  ## retaining the coefficient estimates and fit statistics needed for
+  ## prediction and inference.
+  ##
+  ## @item @code{anova} @tab Analysis of variance for the fitted model,
+  ## reporting either the per-term breakdown of sums of squares or a
+  ## summary table of the model against the total and residual variation.
+  ##
+  ## @item @code{step} @tab Improve the fitted model by one or more
+  ## steps of stepwise term selection, returning a new, refitted
+  ## @code{LinearModel} without modifying the original.
   ## @end multitable
   ##
   ## Create a @code{LinearModel} object by using the @code{fitlm} function or
@@ -465,25 +492,22 @@ classdef LinearModel
     ##
     ## Stepwise fitting information
     ##
-    ## A structure with seven fields:
-    ## @itemize
-    ## @item @code{Start} - formula string of the starting model
-    ## @item @code{Lower} - formula string of the lower-bound model; terms
-    ##   listed here cannot be removed
-    ## @item @code{Upper} - formula string of the upper-bound model; the
-    ##   model cannot grow beyond this
-    ## @item @code{Criterion} - criterion used, e.g. @qcode{'sse'}
-    ## @item @code{PEnter} - threshold for adding a term
-    ## @item @code{PRemove} - threshold for removing a term
-    ## @item @code{History} - table with one row per step and columns
-    ##   @code{Action}, @code{TermName}, @code{Terms}, @code{DF},
-    ##   @code{delDF}, @code{FStat}, @code{PValue}
-    ## @end itemize
-    ## This structure is empty unless the model was fit using stepwise
-    ## regression.  This property is read-only.
+    ## In MATLAB, this is a structure with seven fields (@code{Start},
+    ## @code{Lower}, @code{Upper}, @code{Criterion}, @code{PEnter},
+    ## @code{PRemove}, and @code{History}, the last being a table with one
+    ## row per step and columns @code{Action}, @code{TermName}, @code{Terms},
+    ## @code{DF}, @code{delDF}, @code{FStat}, @code{PValue}), populated
+    ## whenever the model was fit using stepwise regression, and empty
+    ## otherwise.
+    ##
+    ## This implementation always returns an empty struct, regardless of
+    ## whether the model was fit with @code{stepwiselm} or @code{step}; the
+    ## per-step history is not yet tracked.  This is a known deviation from
+    ## MATLAB and not a deliberate design choice.  This property is
+    ## read-only.
     ##
     ## @end deftp
-    Steps = [];
+    Steps = struct ();
 
 
     ## Input data properties
@@ -676,6 +700,15 @@ classdef LinearModel
     ## Predictor names after categorical dummy expansion
     EncPredictorNames = {};
 
+    ## Cached per-predictor design contrasts used by plotEffects
+    EffectContrasts = [];
+
+    ## Cached per-predictor-pair design contrasts used by plotInteraction
+    InteractionContrasts = [];
+
+    ## Cached conceptual-term name and design-column grouping used by anova
+    TermGroups = {};
+
     ## Encoded predictor matrix (Path B only), cached for refit
     EncodedPredMatrix = [];
 
@@ -707,7 +740,7 @@ classdef LinearModel
       endif
 
       if (! isempty (this.Coefficients))
-        fprintf ("\n  Coefficients:\n\n");
+        fprintf ("\n  Estimated Coefficients:\n\n");
         disp (this.Coefficients);
       endif
 
@@ -955,15 +988,17 @@ classdef LinearModel
         n_vars        = width (tbl);
         var_names_all = col_names;
 
-        if (ischar (resp_input) && ! isempty (resp_input))
+        if (! isempty (opts.ResponseVar))
+          resp_name = opts.ResponseVar;
+          if (isnumeric (resp_input) && ! isempty (resp_input))
+            y_ext = double (resp_input(:));
+          endif
+        elseif (ischar (resp_input) && ! isempty (resp_input))
           resp_name = resp_input;
         elseif (isstring (resp_input) && ! isempty (resp_input))
           resp_name = char (resp_input);
         elseif (isnumeric (resp_input) && ! isempty (resp_input))
           resp_name = 'y';
-          if (! isempty (opts.ResponseVar))
-            resp_name = opts.ResponseVar;
-          endif
           y_ext = double (resp_input(:));
         elseif (is_formula)
           tparts    = strsplit (modelspec, '~');
@@ -972,8 +1007,13 @@ classdef LinearModel
           resp_name = col_names{end};
         endif
 
-        if (! isempty (opts.PredictorVars))
-          pred_names_raw = opts.PredictorVars;
+        if (opts.PredictorVarsGiven)
+          pv = opts.PredictorVars;
+          if (isnumeric (pv) || islogical (pv))
+            pred_names_raw = col_names(pv);
+          else
+            pred_names_raw = pv;
+          endif
         else
           pred_names_raw = col_names(! strcmp (col_names, resp_name));
         endif
@@ -1063,10 +1103,10 @@ classdef LinearModel
         y_sub         = y_full(subset_mask);
         n_coef        = size (X_design_sub, 2);
         has_intercept = any (strcmp (coef_names, '(Intercept)'));
-        enc_names     = coef_names(! strcmp (coef_names, '(Intercept)'));
 
         [terms, cat_info, term_cols] = terms_from_coefnames (coef_names, ...
                               pred_names_raw, cat_logical, data, tbl_sub);
+        enc_names     = term_cols(1:end-1);
 
       else
 
@@ -1078,6 +1118,7 @@ classdef LinearModel
           if (istable (data))
             col = tbl.(pred_names_raw{j});
             if (iscell (col))
+
               ## Appearance order, so that the omitted reference level is the
               ## one the data shows first; see parseWilkinsonFormula for the
               ## formula path.
@@ -1218,6 +1259,44 @@ classdef LinearModel
         'VariableNames', {'Leverage', 'CooksDistance', 'Dffits', 'S2_i', ...
                           'CovRatio', 'Dfbetas', 'HatMatrix'});
 
+      dummy_names = {};
+      dummy_bases = {};
+      for ci = 1:numel (cat_info.names)
+        base_nm  = cat_info.names{ci};
+        levels_c = cat_info.levels{ci};
+        for L = 1:numel (levels_c)
+          dummy_names{end+1} = [base_nm, '_', char(levels_c{L})];
+          dummy_bases{end+1} = base_nm;
+        endfor
+      endfor
+
+      if (has_intercept)
+        orig_idx = find (! strcmp (coef_names, '(Intercept)'));
+      else
+        orig_idx = 1:numel (coef_names);
+      endif
+      non_int = coef_names(orig_idx);
+
+      disp_terms = {};
+      grp_cols   = {};
+      for t = 1:numel (non_int)
+        factors_t = strsplit (non_int{t}, ':');
+        for f = 1:numel (factors_t)
+          idx = find (strcmp (dummy_names, factors_t{f}), 1);
+          if (! isempty (idx))
+            factors_t{f} = dummy_bases{idx};
+          endif
+        endfor
+        nm = strjoin (factors_t, ':');
+        k = find (strcmp (disp_terms, nm), 1);
+        if (isempty (k))
+          disp_terms{end+1} = nm;
+          grp_cols{end+1}    = orig_idx(t);
+        else
+          grp_cols{k}(end+1) = orig_idx(t);
+        endif
+      endfor
+
       ## Model formula.  TERMS is expressed over the encoded design columns; the
       ## formula is expressed over the model's variables, so a categorical's
       ## indicator columns have to be folded back onto the variable they came
@@ -1229,6 +1308,7 @@ classdef LinearModel
           var_idx(j) = k;
         endif
       endfor
+
       ## Indexed by the columns of TERMS, which are not the coefficient
       ## names: a factor appearing only inside an interaction or a power has a
       ## column without ever being a coefficient.
@@ -1278,11 +1358,14 @@ classdef LinearModel
             col_d = y_full;
           endif
           vi_class{j} = 'double';
-          fv = col_d(isfinite (col_d));
+          fv = col_d(subset_mask & isfinite (col_d));
           vi_range{j} = ifelse (isempty (fv), [NaN, NaN], [min(fv), max(fv)]);
         else
           col_d = tbl.(vname);
+          col_d = col_d(subset_mask);
+
           [vi_class{j}, vi_range{j}] = variable_class_and_range (col_d);
+
           if (! is_resp_var && ! isempty (j_pred))
             vi_iscat(j) = cat_logical(j_pred);
           endif
@@ -1308,9 +1391,14 @@ classdef LinearModel
       this.LogLikelihood            = LogLikelihood;
       this.ModelCriterion           = struct ('AIC',  AIC, 'AICc', AICc, ...
                                              'BIC',  BIC, 'CAIC', CAIC);
+      if (isnan (Fstat))
+        NullModelName = NaN;
+      else
+        NullModelName = 'constant';
+      endif
       this.ModelFitVsNullModel      = struct ('Fstat',     Fstat, ...
                                              'Pvalue',    Fpval, ...
-                                             'NullModel', 'constant');
+                                             'NullModel', NullModelName);
       this.MSE                      = MSE;
       this.Residuals                = ResidTable;
       this.RMSE                     = RMSE;
@@ -1319,7 +1407,7 @@ classdef LinearModel
       this.SSR                      = SSR;
       this.SST                      = SST;
       this.Robust                   = RobustS;
-      this.Steps                    = [];
+      this.Steps                    = struct ();
       this.Formula                  = FormulaObj;
       this.NumObservations          = n_obs;
       this.NumPredictors            = p_raw;
@@ -1341,6 +1429,9 @@ classdef LinearModel
       this.TermsMatrix              = terms;
       this.CatLevelInfo             = cat_info;
       this.EncPredictorNames        = enc_names;
+      this.EffectContrasts          = lm_effects_contrasts (this);
+      this.InteractionContrasts     = lm_interaction_contrasts (this);
+      this.TermGroups               = struct ('Name', disp_terms, 'Cols', grp_cols);
       this.OrigOpts                 = opts;
       if (! is_formula)
         this.EncodedPredMatrix      = X_enc_sub;
@@ -1498,7 +1589,7 @@ classdef LinearModel
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {LinearModel} {@var{ysim} =} random (@var{mdl}, @var{Xnew})
+    ## @deftypefn  {LinearModel} {@var{ysim} =} random (@var{mdl}, @var{Xnew})
     ##
     ## Simulate responses with random noise from a fitted linear regression
     ## model.
@@ -1600,6 +1691,29 @@ classdef LinearModel
         ypred = predict (mdl, Xnew);
 
       elseif (n_extra == p_raw)
+
+        for i = 1:n_extra
+          if (ischar (varargin{i}) || iscategorical (varargin{i}))
+            if (iscategorical (varargin{i}))
+              lvl_str = char (varargin{i});
+            else
+              lvl_str = varargin{i};
+            endif
+            ci = [];
+            if (! isempty (mdl.CatLevelInfo.names))
+              ci = find (strcmp (mdl.CatLevelInfo.names, mdl.PredictorNames{i}));
+            endif
+            if (isempty (ci))
+              error ("feval: predictor '%s' is not categorical.", mdl.PredictorNames{i});
+            endif
+            levels_i = mdl.CatLevelInfo.levels{ci};
+            code     = find (strcmp (levels_i, lvl_str), 1);
+            if (isempty (code))
+              code = NaN;
+            endif
+            varargin{i} = code;
+          endif
+        endfor
 
         ref_size = [];
         for i = 1:n_extra
@@ -1880,45 +1994,13 @@ classdef LinearModel
       subset = logical (mdl.ObservationInfo.Subset);
       r      = mdl.Residuals.Raw(subset);
       r      = r(:);
-      n      = numel (r);
-      DW     = sum (diff (r).^2) / sum (r.^2);
 
-      e      = ones (n-1, 1);
-      A      = spdiags ([-e, e], [0, 1], n-1, n);
-      M      = full (A' * A);
-      [Q, R] = qr (mdl.DesignMatrix);
-      dr     = abs (diag (R));
-      tol    = max (size (mdl.DesignMatrix)) * eps (max (dr));
-      rnk    = sum (dr > tol);
-      Q2     = Q(:, rnk+1:size (Q, 2));
-      lam    = real (eig (Q2' * M * Q2));
-      k      = n - rnk;
-
-      if (strcmp (method, 'exact'))
-        a_row = (lam(:) - DW)';
-        f     = @(u) sin (0.5 * sum (atan (u(:) * a_row), 2)) ./ ...
-                     (u(:) .* prod ((1 + (u(:) * a_row).^2).^0.25, 2));
-        p_r   = 0.5 - integral (f, 0, Inf, 'AbsTol', 1e-10, 'RelTol', 1e-8) / pi;
-        p_r   = min (max (p_r, 0), 1);
-      else
-        mu_dw  = sum (lam) / k;
-        var_dw = 2 * (sum (lam.^2) - sum (lam)^2 / k) / (k * (k + 2));
-        p_r    = normcdf ((DW - mu_dw) / sqrt (var_dw));
-        p_r    = min (max (p_r, 0), 1);
-      endif
-
-      if (strcmp (tail, 'right'))
-        p = p_r;
-      elseif (strcmp (tail, 'left'))
-        p = 1 - p_r;
-      else
-        p = 2 * min (p_r, 1 - p_r);
-      endif
+      [p, DW] = dwtest (r, mdl.DesignMatrix, 'Method', method, 'Tail', tail);
 
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {LinearModel} {@var{NewMdl} =} addTerms (@var{mdl}, @var{terms})
+    ## @deftypefn  {LinearModel} {@var{NewMdl} =} addTerms (@var{mdl}, @var{terms})
     ##
     ## Add terms to a fitted linear regression model.
     ##
@@ -2066,12 +2148,82 @@ classdef LinearModel
         error (strcat ("addTerms: Model update specification must be a model formula", " character vector or string scalar, or a terms matrix"));
       endif
 
-      existing = mdl.TermsMatrix;
-      is_new   = false (rows (T), 1);
-      for i = 1:rows (T)
-        is_new(i) = ! any (all (existing == T(i,:), 2));
+      cat_info = mdl.CatLevelInfo;
+      ename    = mdl.EncPredictorNames;
+      n_pred   = nv - 1;
+
+      ## Every candidate predictor's encoded column name(s), whether or not
+      ## it is part of the model yet: a plain predictor occupies one column,
+      ## a categorical one column per non-reference level, named exactly as
+      ## reencode_predictors expects to find them.
+      target_names = cell (n_pred, 1);
+      for j = 1:n_pred
+        ci = [];
+        if (! isempty (cat_info) && isfield (cat_info, 'names') ...
+            && ! isempty (cat_info.names))
+          ci = find (strcmp (cat_info.names, pred{j}));
+        endif
+        if (isempty (ci))
+          target_names{j} = pred(j);
+        else
+          levels_j  = cat_info.levels{ci};
+          lvl_names = cell (1, numel (levels_j) - 1);
+          for L = 2:numel (levels_j)
+            lvl_names{L-1} = sprintf ("%s_%s", pred{j}, char (levels_j{L}));
+          endfor
+          target_names{j} = lvl_names;
+        endif
       endfor
-      new_rows = T(is_new, :);
+      target_enc = [target_names{:}];
+      nc_full    = numel (target_enc) + 1;
+
+      ## Re-slot the model's current encoded terms into that full space, so
+      ## a predictor with no columns yet simply stays all zero.
+      existing = zeros (rows (mdl.TermsMatrix), nc_full);
+      existing(:, end) = mdl.TermsMatrix(:, end);
+      for c = 1:numel (ename)
+        col = find (strcmp (target_enc, ename{c}), 1);
+        existing(:, col) = mdl.TermsMatrix(:, c);
+      endfor
+
+      ## Expand each requested raw-predictor row into that same full space.
+      new_rows = zeros (0, nc_full);
+      for i = 1:rows (T)
+        orig_row = T(i, 1:n_pred);
+        any_cat  = false;
+        cat_rows = zeros (0, nc_full);
+        cont_row = zeros (1, nc_full);
+        col_off  = 0;
+        for j = 1:n_pred
+          n_cols = numel (target_names{j});
+          if (orig_row(j) != 0)
+            if (n_cols > 1)
+              any_cat = true;
+              for k = 1:n_cols
+                r              = zeros (1, nc_full);
+                r(col_off + k) = 1;
+                cat_rows       = [cat_rows; r];
+              endfor
+            else
+              cont_row(col_off + 1) = orig_row(j);
+            endif
+          endif
+          col_off = col_off + n_cols;
+        endfor
+        if (any_cat)
+          for k = 1:rows (cat_rows)
+            new_rows = [new_rows; cat_rows(k,:) + cont_row];
+          endfor
+        else
+          new_rows = [new_rows; cont_row];
+        endif
+      endfor
+
+      is_new = false (rows (new_rows), 1);
+      for i = 1:rows (new_rows)
+        is_new(i) = ! any (all (existing == new_rows(i,:), 2));
+      endfor
+      new_rows = new_rows(is_new, :);
 
       if (isempty (new_rows))
         warning ("addTerms: There are no new terms among the terms you specified.");
@@ -2099,7 +2251,7 @@ classdef LinearModel
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {LinearModel} {@var{NewMdl} =} removeTerms (@var{mdl}, @var{terms})
+    ## @deftypefn  {LinearModel} {@var{NewMdl} =} removeTerms (@var{mdl}, @var{terms})
     ##
     ## Remove terms from a fitted linear regression model.
     ##
@@ -2251,9 +2403,9 @@ classdef LinearModel
       nc = columns (mdl.TermsMatrix);
       if (nc != nv)
         cat_info    = mdl.CatLevelInfo;
+        ename       = mdl.EncPredictorNames;
         n_pred      = nv - 1;
         orig_to_enc = cell (n_pred, 1);
-        ecol        = 1;
         for j = 1:n_pred
           ci = [];
           if (! isempty (cat_info) && isfield (cat_info, 'names') ...
@@ -2261,12 +2413,18 @@ classdef LinearModel
             ci = find (strcmp (cat_info.names, pred{j}));
           endif
           if (isempty (ci))
-            orig_to_enc{j} = ecol;
-            ecol            = ecol + 1;
+            orig_to_enc{j} = find (strcmp (ename, pred{j}));
           else
-            n_lev           = numel (cat_info.levels{ci});
-            orig_to_enc{j}  = ecol:(ecol + n_lev - 2);
-            ecol            = ecol + n_lev - 1;
+            levels_j = cat_info.levels{ci};
+            ecols    = [];
+            for L = 2:numel (levels_j)
+              lvl_name = sprintf ("%s_%s", pred{j}, char (levels_j{L}));
+              k        = find (strcmp (ename, lvl_name));
+              if (! isempty (k))
+                ecols(end+1) = k;
+              endif
+            endfor
+            orig_to_enc{j} = ecols;
           endif
         endfor
 
@@ -2550,9 +2708,10 @@ classdef LinearModel
           bw_raw = 3.5 * s / (n_act ^ (1/3));
           mag    = 10 ^ floor (log10 (bw_raw));
           frac   = bw_raw / mag;
-          if (frac <= 1); nice = 1;
-          elseif (frac <= 2); nice = 2;
-          elseif (frac <= 5); nice = 5;
+          if (frac < 1.5); nice = 1;
+          elseif (frac < 2.5); nice = 2;
+          elseif (frac < 4); nice = 3;
+          elseif (frac < 7.5); nice = 5;
           else;                nice = 10;
           endif
           bw = nice * mag;
@@ -2982,73 +3141,20 @@ classdef LinearModel
 
       DEF_COLOR = [0.1490, 0.5490, 0.8660];
 
-      act    = mdl.ObservationInfo.Subset;
       pred   = mdl.PredictorNames;
       V      = mdl.CoefficientCovariance;
       beta   = mdl.Coefficients.Estimate;
       t_crit = tinv (0.975, mdl.DFE);
-      n_act  = sum (act);
       cinfo  = mdl.CatLevelInfo;
-      ename  = mdl.EncPredictorNames;
-
-      X_act    = zeros (n_act, p);
-      is_cat   = false (1, p);
-      cat_lvls = cell (1, p);
-
-      for j = 1:p
-        ci = [];
-        if (! isempty (cinfo) && isfield (cinfo, 'names') ...
-            && ! isempty (cinfo.names))
-          ci = find (strcmp (cinfo.names, pred{j}));
-        endif
-        col = mdl.Variables{act, pred{j}};
-        if (! isempty (ci))
-          is_cat(j)   = true;
-          levels_j    = cinfo.levels{ci};
-          cat_lvls{j} = levels_j;
-          if (iscell (col))
-            col_str = col;
-          elseif (isa (col, 'categorical'))
-            col_str = cellstr (col);
-          else
-            col_str = cellstr (num2str (col(:)));
-          endif
-          codes = zeros (n_act, 1);
-          for L = 1:numel (levels_j)
-            codes(strcmp (col_str, char (levels_j{L}))) = L;
-          endfor
-          X_act(:,j) = codes;
-        else
-          X_act(:,j) = double (col(:));
-        endif
-      endfor
+      C      = mdl.EffectContrasts;
 
       effects = zeros (1, p);
       ci_lo   = zeros (1, p);
       ci_hi   = zeros (1, p);
-      x_lo_v  = zeros (1, p);
-      x_hi_v  = zeros (1, p);
 
       for j = 1:p
-        if (is_cat(j))
-          x_lo_v(j) = 1;
-          x_hi_v(j) = numel (cat_lvls{j});
-        else
-          x_lo_v(j) = min (X_act(:,j));
-          x_hi_v(j) = max (X_act(:,j));
-        endif
-
-        X_hi_rows = X_act;  X_hi_rows(:,j) = x_hi_v(j);
-        X_lo_rows = X_act;  X_lo_rows(:,j) = x_lo_v(j);
-
-        X_hi_enc = reencode_predictors (X_hi_rows, pred, cinfo, ename);
-        X_lo_enc = reencode_predictors (X_lo_rows, pred, cinfo, ename);
-        D_hi     = build_design (mdl.TermsMatrix, X_hi_enc);
-        D_lo     = build_design (mdl.TermsMatrix, X_lo_enc);
-
-        c_bar      = mean (D_hi - D_lo, 1);
-        effects(j) = c_bar * beta;
-        SE         = sqrt (max (0, c_bar * V * c_bar'));
+        effects(j) = C(j,:) * beta;
+        SE         = sqrt (max (0, C(j,:) * V * C(j,:)'));
 
         ci_lo(j) = effects(j) - t_crit * SE;
         ci_hi(j) = effects(j) + t_crit * SE;
@@ -3069,14 +3175,24 @@ classdef LinearModel
       endfor
       hold (ax, 'off');
 
+      rn  = mdl.VariableInfo.Properties.RowNames;
       ytl = cell (p, 1);
       for j = 1:p
-        if (is_cat(j))
-          lo_str = char (cat_lvls{j}{x_lo_v(j)});
-          hi_str = char (cat_lvls{j}{x_hi_v(j)});
+        ci = [];
+        if (! isempty (cinfo) && isfield (cinfo, 'names') && ! isempty (cinfo.names))
+          ci = find (strcmp (cinfo.names, pred{j}));
+        endif
+
+        vidx = find (strcmp (rn, pred{j}));
+        rng  = mdl.VariableInfo.Range{vidx};
+
+        if (! isempty (ci))
+          levels_j = cinfo.levels{ci};
+          lo_str = char (levels_j{1});
+          hi_str = char (levels_j{end});
         else
-          lo_str = num2str (x_lo_v(j), '%g');
-          hi_str = num2str (x_hi_v(j), '%g');
+          lo_str = num2str (rng(1), '%g');
+          hi_str = num2str (rng(2), '%g');
         endif
         ytl{j} = [pred{j}, ': ', lo_str, ' to ', hi_str];
       endfor
@@ -3205,37 +3321,7 @@ classdef LinearModel
       n_act = sum (act);
       p     = numel (pred);
 
-      X_act    = zeros (n_act, p);
-      is_cat   = false (1, p);
-      cat_lvls = cell (1, p);
-
-      for k = 1:p
-        ci = [];
-        if (! isempty (cinfo) && isfield (cinfo, 'names') ...
-            && ! isempty (cinfo.names))
-          ci = find (strcmp (cinfo.names, pred{k}));
-        endif
-        col = mdl.Variables{act, pred{k}};
-        if (! isempty (ci))
-          is_cat(k)   = true;
-          levels_k    = cinfo.levels{ci};
-          cat_lvls{k} = levels_k;
-          if (iscell (col))
-            col_str = col;
-          elseif (isa (col, 'categorical'))
-            col_str = cellstr (col);
-          else
-            col_str = cellstr (num2str (col(:)));
-          endif
-          codes = zeros (n_act, 1);
-          for L = 1:numel (levels_k)
-            codes(strcmp (col_str, char (levels_k{L}))) = L;
-          endfor
-          X_act(:,k) = codes;
-        else
-          X_act(:,k) = double (col(:));
-        endif
-      endfor
+      [X_act, is_cat, cat_lvls] = lm_encode_active_predictors (mdl, act, pred, cinfo);
 
       props = lm_plot_props (args);
 
@@ -3396,7 +3482,11 @@ classdef LinearModel
       if (isempty (args) || ! (ischar (args{1}) || isstring (args{1}) ...
           || isnumeric (args{1})))
         J = 2:ncoef;
-        label = 'Whole Model';
+        if (numel (J) == 1)
+          label = cnames{J};
+        else
+          label = 'Whole Model';
+        endif
       else
         coefarg = args{1};
         args    = args(2:end);
@@ -3462,32 +3552,7 @@ classdef LinearModel
       n_act = sum (act);
       p     = numel (pred);
 
-      X_act = zeros (n_act, p);
-      for k = 1:p
-        ci = [];
-        if (! isempty (cinfo) && isfield (cinfo, 'names') ...
-            && ! isempty (cinfo.names))
-          ci = find (strcmp (cinfo.names, pred{k}));
-        endif
-        col = mdl.Variables{act, pred{k}};
-        if (! isempty (ci))
-          levels_k = cinfo.levels{ci};
-          if (iscell (col))
-            col_str = col;
-          elseif (isa (col, 'categorical'))
-            col_str = cellstr (col);
-          else
-            col_str = cellstr (num2str (col(:)));
-          endif
-          codes = zeros (n_act, 1);
-          for L = 1:numel (levels_k)
-            codes(strcmp (col_str, char (levels_k{L}))) = L;
-          endfor
-          X_act(:,k) = codes;
-        else
-          X_act(:,k) = double (col(:));
-        endif
-      endfor
+      [X_act, ~, ~] = lm_encode_active_predictors (mdl, act, pred, cinfo);
 
       D = reencode_predictors (X_act, pred, cinfo, mdl.EncPredictorNames);
       D = build_design (mdl.TermsMatrix, D);
@@ -3574,9 +3639,900 @@ classdef LinearModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {} plot (@var{mdl})
+    ## @deftypefnx {LinearModel} {} plot (@var{ax}, @var{mdl})
+    ## @deftypefnx {LinearModel} {@var{h} =} plot (@dots{})
+    ##
+    ## Create a default diagnostic plot for a fitted linear regression model.
+    ##
+    ## @code{plot (@var{mdl})} creates a plot whose type depends on the
+    ## number of predictors in @var{mdl}.  If @var{mdl} has two or more
+    ## predictors, @code{plot} creates an added variable plot for the whole
+    ## model except the constant (intercept) term, equivalent to
+    ## @code{plotAdded (@var{mdl})}.  If @var{mdl} has exactly one
+    ## predictor, @code{plot} creates a scatter plot of the data together
+    ## with the fitted curve and its 95% confidence bounds.  If @var{mdl}
+    ## has no predictors, @code{plot} creates a histogram of the residuals,
+    ## equivalent to @code{plotResiduals (@var{mdl})}.
+    ##
+    ## For the single-predictor case, the fitted curve and confidence
+    ## bounds are computed with @code{predict}, evaluated at 100 equally
+    ## spaced points spanning the observed range of the predictor when the
+    ## predictor is numeric, or at each level of the predictor when it is
+    ## categorical.  Excluded or missing observations appear as @code{NaN}
+    ## in the data and produce gaps in the plotted points.
+    ##
+    ## @code{plot (@var{ax}, @var{mdl})} plots into the axes object
+    ## @var{ax} instead of the current axes returned by @code{gca}.
+    ##
+    ## @code{@var{h} = plot (@dots{})} returns a vector of graphics object
+    ## handles.  For the two-or-more-predictor and no-predictor cases, see
+    ## @code{plotAdded} and @code{plotResiduals}, respectively, for the
+    ## meaning of @var{h}.  For the single-predictor case, @var{h}(1),
+    ## @var{h}(2), and @var{h}(3) correspond to the data points, the fitted
+    ## curve, and the 95% confidence bounds of the fitted curve,
+    ## respectively.
+    ##
+    ## @end deftypefn
+    function h = plot (this, varargin)
+      [ax, mdl, args] = lm_plot_axes (this, varargin);
+
+      if (! isempty (args))
+        error ("plot: Too many input arguments.");
+      endif
+
+      pred      = mdl.PredictorNames;
+      cinfo     = mdl.CatLevelInfo;
+      enc_names = mdl.EncPredictorNames;
+      enc_active = any (mdl.TermsMatrix(:, 1:end-1) != 0, 1);
+
+      active_pred = false (1, numel (pred));
+      for c = find (enc_active)
+        j = find (strcmp (pred, enc_names{c}), 1);
+        if (isempty (j) && ! isempty (cinfo) && isfield (cinfo, 'names'))
+          for k = 1:numel (cinfo.names)
+            prefix = [cinfo.names{k}, '_'];
+            if (strncmp (enc_names{c}, prefix, numel (prefix)))
+              j = find (strcmp (pred, cinfo.names{k}), 1);
+              break;
+            endif
+          endfor
+        endif
+        if (! isempty (j))
+          active_pred(j) = true;
+        endif
+      endfor
+      n_active = sum (active_pred);
+
+      if (n_active == 0)
+        if (isempty (ax))
+          h = plotResiduals (mdl);
+        else
+          h = plotResiduals (ax, mdl);
+        endif
+      elseif (n_active >= 2)
+        if (isempty (ax))
+          h = plotAdded (mdl);
+        else
+          h = plotAdded (ax, mdl);
+        endif
+      else
+        j1    = find (active_pred, 1);
+        act   = mdl.ObservationInfo.Subset;
+        n_act = sum (act);
+
+        ci = [];
+        if (! isempty (cinfo) && isfield (cinfo, 'names') ...
+            && ! isempty (cinfo.names))
+          ci = find (strcmp (cinfo.names, pred{j1}));
+        endif
+
+        col = mdl.Variables{act, pred{j1}};
+        if (! isempty (ci))
+          levels_1 = cinfo.levels{ci};
+          col_str = lm_col_to_str (col);
+          x_act = zeros (n_act, 1);
+          for L = 1:numel (levels_1)
+            x_act(strcmp (col_str, char (levels_1{L}))) = L;
+          endfor
+          x_grid = (1:numel (levels_1))';
+        else
+          x_act  = double (col(:));
+          x_grid = linspace (min (x_act), max (x_act), 100)';
+        endif
+
+        y_act = mdl.Variables{act, mdl.ResponseName};
+
+        [y_fit, yci] = mdl.predict (x_grid);
+
+        if (isempty (ax))
+          ax = gca ();
+        endif
+
+        FIT_COLOR = [0.9600, 0.4660, 0.1600];
+        n_total   = numel (act);
+
+        xdata = NaN (n_total, 1);
+        ydata = NaN (n_total, 1);
+        xdata(act) = x_act;
+        ydata(act) = y_act;
+
+        bound_x = [x_grid; NaN; x_grid];
+        bound_y = [yci(:,1); NaN; yci(:,2)];
+
+        props = lm_plot_props ({});
+
+        hold (ax, 'on');
+        h(1) = lm_plot_data (ax, xdata, ydata, props);
+        set (h(1), 'DisplayName', 'Data');
+        h(2) = line (x_grid, y_fit, 'Color', FIT_COLOR, 'LineStyle', '-', ...
+                     'Marker', 'none', 'Parent', ax, 'DisplayName', 'Fit');
+        h(3) = line (bound_x, bound_y, 'Color', FIT_COLOR, 'LineStyle', ':', ...
+                     'Marker', 'none', 'Parent', ax, ...
+                     'DisplayName', '95% conf. bounds');
+        hold (ax, 'off');
+
+        if (! isempty (ci))
+          set (ax, 'XTick', 1:numel (levels_1), 'XTickLabel', levels_1);
+        endif
+
+        xlabel (ax, pred{j1});
+        ylabel (ax, mdl.ResponseName);
+        title (ax, [mdl.ResponseName, ' vs. ', pred{j1}]);
+
+        hleg = legend (ax, 'show');
+        set (hleg, 'Location', lm_legend_corner (xdata, ydata));
+      endif
+
+      if (nargout == 0)
+        clear h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {} plotInteraction (@var{mdl}, @var{var1}, @var{var2})
+    ## @deftypefnx {LinearModel} {} plotInteraction (@var{mdl}, @var{var1}, @var{var2}, @var{ptype})
+    ## @deftypefnx {LinearModel} {} plotInteraction (@var{ax}, @dots{})
+    ## @deftypefnx {LinearModel} {@var{h} =} plotInteraction (@dots{})
+    ##
+    ## Plot the interaction effects of two predictors in a fitted linear
+    ## regression model.
+    ##
+    ## @code{plotInteraction (@var{mdl}, @var{var1}, @var{var2})} creates a
+    ## plot of the main effects of @var{var1} and @var{var2} together with
+    ## their conditional effects, with horizontal lines through each effect
+    ## value indicating its 95% confidence interval.  @var{var1} and
+    ## @var{var2} are each a character vector or string naming a variable in
+    ## @code{mdl.VariableNames}, or a positive integer indexing into
+    ## @code{mdl.VariableNames}; neither may name the response variable, and
+    ## they must be different variables.
+    ##
+    ## The main effect of a predictor is the change in the adjusted response
+    ## between the two predictor values that produce the minimum and maximum
+    ## adjusted response, with the other predictor averaged over its own
+    ## observed values row by row.  For a numeric predictor these two values
+    ## are its observed minimum and maximum; for a categorical predictor
+    ## every level is evaluated and the levels producing the minimum and
+    ## maximum adjusted response are used, so the effect is always
+    ## nonnegative.
+    ##
+    ## The conditional effect of @var{var1} is its effect recomputed with
+    ## @var{var2} additionally held fixed at each of a small set of
+    ## conditioning values, and likewise the conditional effect of
+    ## @var{var2} holds @var{var1} fixed.  The conditioning values are the
+    ## observed minimum, mean of the minimum and maximum, and maximum for a
+    ## numeric predictor, or every level for a categorical predictor.  When
+    ## the main effect and conditional effect points for a predictor do not
+    ## align vertically, the model exhibits an interaction between
+    ## @var{var1} and @var{var2}.
+    ##
+    ## @code{plotInteraction (@var{mdl}, @var{var1}, @var{var2}, @var{ptype})}
+    ## selects the plot type.  @var{ptype} is @qcode{'effects'} (default), as
+    ## described above, or @qcode{'predictions'}, which instead plots the
+    ## adjusted response as a function of @var{var2} for each conditioning
+    ## value of @var{var1} held fixed, evaluated over 101 equally spaced
+    ## points spanning the observed range of @var{var2} when @var{var2} is
+    ## numeric, or at each level of @var{var2} when it is categorical.
+    ##
+    ## @code{plotInteraction (@var{ax}, @dots{})} plots into the axes object
+    ## @var{ax} instead of the current axes returned by @code{gca}.
+    ##
+    ## @code{@var{h} = plotInteraction (@dots{})} returns a vector of line
+    ## handles.  When @var{ptype} is @qcode{'effects'}, @code{h(1)} is the
+    ## marker line through the two main effect points, @code{h(2)} and
+    ## @code{h(3)} are the confidence interval lines for the main effects of
+    ## @var{var1} and @var{var2}, and the remaining entries are the
+    ## conditional effect points and their confidence intervals, tagged
+    ## @qcode{'conditional1'} for @var{var1} and @qcode{'conditional2'} for
+    ## @var{var2}.  The main effect line objects are tagged @qcode{'main'}.
+    ## When @var{ptype} is @qcode{'predictions'}, each entry in @var{h}
+    ## corresponds to one adjusted response curve, one per conditioning
+    ## value of @var{var1}.
+    ##
+    ## @end deftypefn
+    function h = plotInteraction (this, varargin)
+      [ax, mdl, args] = lm_plot_axes (this, varargin);
+
+      if (numel (args) < 2)
+        error ("plotInteraction: Not enough input arguments.");
+      endif
+
+      var1 = args{1};
+      var2 = args{2};
+      args = args(3:end);
+
+      ptype = 'effects';
+      if (! isempty (args) && (ischar (args{1}) || isstring (args{1})))
+        ptype = lower (char (args{1}));
+        args  = args(2:end);
+        if (! any (strcmp (ptype, {'effects', 'predictions'})))
+          error ("plotInteraction: PTYPE must be 'effects' or 'predictions'.");
+        endif
+      endif
+      if (! isempty (args))
+        error ("plotInteraction: Too many input arguments.");
+      endif
+
+      vnames = mdl.VariableNames;
+
+      if (ischar (var1) || isstring (var1))
+        v1name = char (var1);
+        if (isempty (find (strcmp (vnames, v1name))))
+          error ("plotInteraction: '%s' is not a variable for this fit.", v1name);
+        endif
+      elseif (isnumeric (var1) && isscalar (var1))
+        if (var1 != fix (var1) || var1 < 1)
+          error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+        endif
+        if (var1 > numel (vnames))
+          error ("plotInteraction: This model only contains %d variables.", numel (vnames));
+        endif
+        v1name = vnames{var1};
+      else
+        error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+      endif
+      if (strcmp (v1name, mdl.ResponseName))
+        error ("plotInteraction: The variable '%s' is the response in this model.", v1name);
+      endif
+
+      if (ischar (var2) || isstring (var2))
+        v2name = char (var2);
+        if (isempty (find (strcmp (vnames, v2name))))
+          error ("plotInteraction: '%s' is not a variable for this fit.", v2name);
+        endif
+      elseif (isnumeric (var2) && isscalar (var2))
+        if (var2 != fix (var2) || var2 < 1)
+          error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+        endif
+        if (var2 > numel (vnames))
+          error ("plotInteraction: This model only contains %d variables.", numel (vnames));
+        endif
+        v2name = vnames{var2};
+      else
+        error (strcat ("plotInteraction: Variable must be specified as a", " name or a positive integer."));
+      endif
+      if (strcmp (v2name, mdl.ResponseName))
+        error ("plotInteraction: The variable '%s' is the response in this model.", v2name);
+      endif
+
+      if (strcmp (v1name, v2name))
+        error ("plotInteraction: VAR1 and VAR2 must be different variables.");
+      endif
+
+      pred   = mdl.PredictorNames;
+      cinfo  = mdl.CatLevelInfo;
+      ename  = mdl.EncPredictorNames;
+      terms  = mdl.TermsMatrix;
+      act    = mdl.ObservationInfo.Subset;
+      n_act  = sum (act);
+      p      = numel (pred);
+      beta   = mdl.Coefficients.Estimate;
+      V      = mdl.CoefficientCovariance;
+      t_crit = tinv (0.975, mdl.DFE);
+
+      [X_act, is_cat, cat_lvls] = lm_encode_active_predictors (mdl, act, pred, cinfo);
+
+      j1 = find (strcmp (pred, v1name));
+      j2 = find (strcmp (pred, v2name));
+
+      if (is_cat(j1))
+        levels_1 = cat_lvls{j1};
+        n_lv1    = numel (levels_1);
+        g_lv1    = zeros (n_lv1, 1);
+        for L = 1:n_lv1
+          c_row   = lm_interaction_row (X_act, j1, L, pred, cinfo, ename, terms);
+          g_lv1(L) = c_row * beta;
+        endfor
+        [~, i_lo1] = min (g_lv1);
+        [~, i_hi1] = max (g_lv1);
+        lo1 = i_lo1;  hi1 = i_hi1;
+        lbl1 = [v1name, ': ', char(levels_1{i_lo1}), ' to ', char(levels_1{i_hi1})];
+        grid1 = (1:n_lv1)';
+        grid1_lbls = cellfun (@(s) char (s), levels_1, 'UniformOutput', false);
+      else
+        lo1 = min (X_act(:,j1));
+        hi1 = max (X_act(:,j1));
+        lbl1 = [v1name, ': ', num2str(lo1), ' to ', num2str(hi1)];
+        grid1 = [lo1; (lo1+hi1)/2; hi1];
+        grid1_lbls = arrayfun (@(v) num2str(v,'%g'), grid1, 'UniformOutput', false);
+      endif
+
+      if (is_cat(j2))
+        levels_2 = cat_lvls{j2};
+        n_lv2    = numel (levels_2);
+        g_lv2    = zeros (n_lv2, 1);
+        for L = 1:n_lv2
+          c_row   = lm_interaction_row (X_act, j2, L, pred, cinfo, ename, terms);
+          g_lv2(L) = c_row * beta;
+        endfor
+        [~, i_lo2] = min (g_lv2);
+        [~, i_hi2] = max (g_lv2);
+        lo2 = i_lo2;  hi2 = i_hi2;
+        lbl2 = [v2name, ': ', char(levels_2{i_lo2}), ' to ', char(levels_2{i_hi2})];
+        grid2 = (1:n_lv2)';
+        grid2_lbls = cellfun (@(s) char (s), levels_2, 'UniformOutput', false);
+      else
+        lo2 = min (X_act(:,j2));
+        hi2 = max (X_act(:,j2));
+        lbl2 = [v2name, ': ', num2str(lo2), ' to ', num2str(hi2)];
+        grid2 = [lo2; (lo2+hi2)/2; hi2];
+        grid2_lbls = arrayfun (@(v) num2str(v,'%g'), grid2, 'UniformOutput', false);
+      endif
+
+      c_hi1 = lm_interaction_row (X_act, j1, hi1, pred, cinfo, ename, terms);
+      c_lo1 = lm_interaction_row (X_act, j1, lo1, pred, cinfo, ename, terms);
+      eff1  = (c_hi1 - c_lo1) * beta;
+      se1   = sqrt (max (0, (c_hi1 - c_lo1) * V * (c_hi1 - c_lo1)'));
+
+      c_hi2 = lm_interaction_row (X_act, j2, hi2, pred, cinfo, ename, terms);
+      c_lo2 = lm_interaction_row (X_act, j2, lo2, pred, cinfo, ename, terms);
+      eff2  = (c_hi2 - c_lo2) * beta;
+      se2   = sqrt (max (0, (c_hi2 - c_lo2) * V * (c_hi2 - c_lo2)'));
+
+      n2 = numel (grid2);
+      eff_c1 = zeros (n2, 1);
+      se_c1  = zeros (n2, 1);
+      for k = 1:n2
+        c_hi = lm_interaction_row (X_act, [j1, j2], [hi1, grid2(k)], pred, cinfo, ename, terms);
+        c_lo = lm_interaction_row (X_act, [j1, j2], [lo1, grid2(k)], pred, cinfo, ename, terms);
+        eff_c1(k) = (c_hi - c_lo) * beta;
+        se_c1(k)  = sqrt (max (0, (c_hi - c_lo) * V * (c_hi - c_lo)'));
+      endfor
+
+      n1 = numel (grid1);
+      eff_c2 = zeros (n1, 1);
+      se_c2  = zeros (n1, 1);
+      for k = 1:n1
+        c_hi = lm_interaction_row (X_act, [j2, j1], [hi2, grid1(k)], pred, cinfo, ename, terms);
+        c_lo = lm_interaction_row (X_act, [j2, j1], [lo2, grid1(k)], pred, cinfo, ename, terms);
+        eff_c2(k) = (c_hi - c_lo) * beta;
+        se_c2(k)  = sqrt (max (0, (c_hi - c_lo) * V * (c_hi - c_lo)'));
+      endfor
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+      cla (ax);
+
+      DEF_COLOR = [0.1490, 0.5490, 0.8660];
+      FIT_COLOR = [0.9600, 0.4660, 0.1600];
+
+      if (strcmp (ptype, 'effects'))
+
+        y_main1 = 1;
+        y_cond1 = (2:(1+n2))';
+        y_main2 = n2 + 4;
+        y_cond2 = ((n2+5):(n2+4+n1))';
+
+        hold (ax, 'on');
+        line ([0, 0], [0.5, n2 + n1 + 4.5], 'LineStyle', ':', 'Marker', 'none', ...
+              'Color', [0, 0, 0], 'Parent', ax);
+
+        h(1) = plot (ax, [eff1, eff2], [y_main1, y_main2], ...
+                     'LineStyle', 'none', 'Marker', 'o', 'Color', DEF_COLOR, ...
+                     'Tag', 'main');
+        h(2) = line ([eff1 - t_crit*se1, eff1 + t_crit*se1], [y_main1, y_main1], ...
+                     'LineStyle', '-', 'Marker', 'none', 'Color', DEF_COLOR, ...
+                     'Parent', ax, 'Tag', 'main');
+        h(3) = line ([eff2 - t_crit*se2, eff2 + t_crit*se2], [y_main2, y_main2], ...
+                     'LineStyle', '-', 'Marker', 'none', 'Color', DEF_COLOR, ...
+                     'Parent', ax, 'Tag', 'main');
+        h(4) = plot (ax, eff_c1, y_cond1, ...
+                     'LineStyle', 'none', 'Marker', 'o', 'Color', FIT_COLOR, ...
+                     'Tag', 'conditional1');
+        for k = 1:n2
+          h(4+k) = line ([eff_c1(k) - t_crit*se_c1(k), eff_c1(k) + t_crit*se_c1(k)], ...
+                         [y_cond1(k), y_cond1(k)], ...
+                         'LineStyle', '-', 'Marker', 'none', 'Color', FIT_COLOR, ...
+                         'Parent', ax, 'Tag', 'conditional1');
+        endfor
+        h(5+n2) = plot (ax, eff_c2, y_cond2, ...
+                        'LineStyle', 'none', 'Marker', 'o', 'Color', FIT_COLOR, ...
+                        'Tag', 'conditional2');
+        for k = 1:n1
+          h(5+n2+k) = line ([eff_c2(k) - t_crit*se_c2(k), eff_c2(k) + t_crit*se_c2(k)], ...
+                            [y_cond2(k), y_cond2(k)], ...
+                            'LineStyle', '-', 'Marker', 'none', 'Color', FIT_COLOR, ...
+                            'Parent', ax, 'Tag', 'conditional2');
+        endfor
+        hold (ax, 'off');
+
+        ytl = cell (2 + n1 + n2, 1);
+        ytl{1} = lbl1;
+        for k = 1:n2
+          ytl{1+k} = [v2name, '=', grid2_lbls{k}];
+        endfor
+        ytl{2+n2} = lbl2;
+        for k = 1:n1
+          ytl{2+n2+k} = [v1name, '=', grid1_lbls{k}];
+        endfor
+
+        set (ax, 'YTick', [y_main1; y_cond1; y_main2; y_cond2], ...
+                 'YTickLabel', ytl, 'YDir', 'reverse');
+        ylim  (ax, [0.5, n2 + n1 + 4.5]);
+        xlabel (ax, 'Effect');
+        ylabel (ax, '');
+        title  (ax, ['Interaction of ', v1name, ' and ', v2name]);
+
+      else ## 'predictions'
+
+        if (is_cat(j2))
+          x_grid2 = (1:n_lv2)';
+        else
+          x_grid2 = linspace (lo2, hi2, 101)';
+        endif
+
+        hold (ax, 'on');
+        line (NaN, NaN, 'Color', 'none', 'Parent', ax, 'DisplayName', v1name);
+
+        colors   = get (ax, 'ColorOrder');
+        n_colors = rows (colors);
+
+        for k = 1:n1
+          y_curve = zeros (numel (x_grid2), 1);
+          for m = 1:numel (x_grid2)
+            c_row = lm_interaction_row (X_act, [j1, j2], [grid1(k), x_grid2(m)], ...
+                                         pred, cinfo, ename, terms);
+            y_curve(m) = c_row * beta;
+          endfor
+          h(k) = line (x_grid2, y_curve, ...
+                       'Color', colors(mod(k-1, n_colors)+1, :), ...
+                       'LineStyle', '-', 'Marker', 'none', 'Parent', ax, ...
+                       'DisplayName', grid1_lbls{k});
+        endfor
+        hold (ax, 'off');
+
+        if (is_cat(j2))
+          set (ax, 'XTick', 1:n_lv2, 'XTickLabel', grid2_lbls);
+        endif
+
+        xlabel (ax, v2name);
+        ylabel (ax, ['Adjusted ', mdl.ResponseName]);
+        title  (ax, ['Interaction of ', v1name, ' and ', v2name]);
+        legend (ax, 'show');
+
+      endif
+
+      if (nargout == 0)
+        clear h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {@var{cmdl} =} compact (@var{mdl})
+    ##
+    ## Create a compact version of a fitted linear regression model.
+    ##
+    ## @code{@var{cmdl} = compact (@var{mdl})} returns a
+    ## @code{CompactLinearModel} object that retains the coefficient
+    ## estimates, coefficient covariance, fit statistics, model formula, and
+    ## fitting method information of @var{mdl}, but discards the training
+    ## data and everything derived from it.  Specifically, the following
+    ## properties of @var{mdl} are not carried over and are unavailable on
+    ## @var{cmdl}: @code{Fitted}, @code{Residuals}, @code{Diagnostics},
+    ## @code{ObservationInfo}, @code{ObservationNames}, @code{Variables},
+    ## @code{Steps}, and @code{ModelFitVsNullModel}.
+    ##
+    ## If @var{mdl} was fit using robust regression, the @code{Robust}
+    ## structure is retained on @var{cmdl} except for its @code{Weights}
+    ## field, which is always emptied; @code{RobustWgtFun} and @code{Tune}
+    ## are preserved unchanged.
+    ##
+    ## A @code{CompactLinearModel} object consumes less memory than a
+    ## @code{LinearModel} object and can still be used with @code{predict},
+    ## @code{feval}, @code{random}, @code{coefCI}, and @code{coefTest}, but
+    ## does not support methods that require the original training data or
+    ## refitting, such as @code{addTerms}, @code{removeTerms}, @code{step},
+    ## and @code{dwtest}.
+    ##
+    ## @seealso{LinearModel, CompactLinearModel}
+    ## @end deftypefn
+    function CVMdl = compact (this)
+      CVMdl = CompactLinearModel (this);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {@var{tbl} =} anova (@var{mdl})
+    ## @deftypefnx {LinearModel} {@var{tbl} =} anova (@var{mdl}, @var{anovatype})
+    ## @deftypefnx {LinearModel} {@var{tbl} =} anova (@var{mdl}, @qcode{"components"}, @var{sstype})
+    ##
+    ## Analysis of variance for a linear regression model.
+    ##
+    ## @code{anova (@var{mdl})} returns a table @var{tbl} with component
+    ## ANOVA statistics for every term in @var{mdl} except the constant
+    ## term, computed with hierarchical (@qcode{"h"}) sums of squares.  Each
+    ## row gives @code{SumSq}, @code{DF}, @code{MeanSq}, @code{F}, and
+    ## @code{pValue} for the corresponding term; the trailing @qcode{Error}
+    ## row gives @code{SumSq = @var{mdl}.SSE}, @code{DF = @var{mdl}.DFE},
+    ## @code{MeanSq = @var{mdl}.MSE}, and @code{NaN} for @code{F} and
+    ## @code{pValue}.
+    ##
+    ## @code{anova (@var{mdl}, @var{anovatype})} selects
+    ## @qcode{"components"} (default) or @qcode{"summary"}.  For
+    ## @qcode{"summary"}, @var{tbl} always contains rows @qcode{Total},
+    ## @qcode{Model}, and @qcode{Residual}, and additionally @qcode{. Linear}
+    ## and @qcode{. Nonlinear} whenever @var{mdl} contains an interaction
+    ## term or a continuous term of degree greater than 1.  @qcode{Total}
+    ## reports @code{@var{mdl}.SST} with @code{DF = NumObservations - 1};
+    ## @qcode{Model} reports @code{@var{mdl}.SSR} with @code{DF =
+    ## NumCoefficients - HasIntercept}; @qcode{Residual} reports
+    ## @code{@var{mdl}.SSE} with @code{DF = @var{mdl}.DFE}.  Whenever the
+    ## data contains two or more observations sharing identical predictor
+    ## values, @var{tbl} additionally contains @qcode{. Lack of fit} and
+    ## @qcode{. Pure error}, splitting @qcode{Residual} into the part
+    ## explained by replicated observations and the remainder.
+    ##
+    ## @code{anova (@var{mdl}, @qcode{"components"}, @var{sstype})} selects
+    ## the sum of squares used for the component table: @code{1} (sequential,
+    ## reduction from adding each term in formula order), @code{2} (reduction
+    ## from adding the term to a model containing every term that does not
+    ## contain it), @qcode{"h"} (default; as Type 2, but a higher-degree
+    ## term in the same continuous variable, such as a squared term, is also
+    ## treated as containing the lower-degree term), or @code{3} (reduction
+    ## from adding the term to a model containing every other term, with
+    ## categorical predictors recoded using sum-to-zero deviation contrasts
+    ## instead of @var{mdl}'s reference-level coding).  Because Type 3 uses a
+    ## different coding, its @qcode{Error} row can differ from @var{mdl}.SSE
+    ## and @var{mdl}.DFE when @var{mdl} is missing a lower-order relative of
+    ## one of its terms (e.g. an interaction without one of its main
+    ## effects, or a categorical predictor fit without an intercept).
+    ##
+    ## @end deftypefn
+    function tbl = anova (mdl, varargin)
+      if (numel (varargin) > 2)
+        error ("anova: too many input arguments.");
+      endif
+
+      anovatype = "components";
+      if (numel (varargin) >= 1)
+        anovatype = varargin{1};
+        if (! ischar (anovatype) ...
+            || ! any (strcmpi (anovatype, {"summary", "components"})))
+          error ("anova: ANOVATYPE must be 'summary' or 'components'.");
+        endif
+      endif
+
+      sstype = "h";
+      if (numel (varargin) == 2)
+        if (! strcmpi (anovatype, "components"))
+          error ("anova: SSTYPE can only be specified with ANOVATYPE 'components'.");
+        endif
+        sstype  = varargin{2};
+        valid_n = isnumeric (sstype) && isscalar (sstype) && any (sstype == [1, 2, 3]);
+        valid_h = ischar (sstype) && strcmpi (sstype, "h");
+        if (! valid_n && ! valid_h)
+          error ("anova: SSTYPE must be 1, 2, or 3.");
+        endif
+      endif
+
+      groups = mdl.TermGroups;
+      nterm  = numel (groups);
+      term_cols = {groups.Cols};
+      term_name = {groups.Name};
+
+      if (mdl.HasIntercept)
+        icol = find (strcmp (mdl.CoefficientNames, '(Intercept)'));
+      else
+        icol = [];
+      endif
+
+      X = mdl.DesignMatrix;
+      y = mdl.ResponseVector (mdl.SubsetMask);
+      w = mdl.WeightVector (mdl.SubsetMask);
+      all_cols = 1:columns (X);
+
+      if (strcmpi (anovatype, "summary"))
+
+        is_nonlinear = false (nterm, 1);
+        for k = 1:nterm
+          parts = strsplit (term_name{k}, ':');
+          is_nonlinear(k) = (numel (parts) > 1) || ! isempty (strfind (parts{1}, '^'));
+        endfor
+
+        SumSq = [mdl.SST; mdl.SSR];
+        DF    = [mdl.NumObservations - 1; mdl.NumCoefficients - mdl.HasIntercept];
+        RowNm = {"Total", "Model"};
+
+        if (any (is_nonlinear))
+          lin_cols = union (icol, cell2mat (term_cols(! is_nonlinear)));
+          SS_nl    = anova_delta_sse (X, y, w, lin_cols, all_cols);
+          DF_nl    = numel (all_cols) - numel (lin_cols);
+          SumSq    = [SumSq; SumSq(2) - SS_nl; SS_nl];
+          DF       = [DF; DF(2) - DF_nl; DF_nl];
+          RowNm    = [RowNm, {". Linear", ". Nonlinear"}];
+        endif
+
+        SumSq = [SumSq; mdl.SSE];
+        DF    = [DF; mdl.DFE];
+        RowNm = [RowNm, {"Residual"}];
+
+        MeanSq = SumSq ./ DF;
+        F      = NaN (numel (SumSq), 1);
+        pValue = NaN (numel (SumSq), 1);
+        for r = 2:(numel (SumSq) - 1)
+          F(r)      = MeanSq(r) / mdl.MSE;
+          pValue(r) = f_pvalue (mdl.DFE, DF(r), F(r));
+        endfor
+
+        pred_names = mdl.PredictorNames;
+        cat_info   = mdl.CatLevelInfo;
+        p_raw      = mdl.NumPredictors;
+        tbl_sub    = mdl.Variables (mdl.SubsetMask, :);
+        X_raw      = anova_decode_raw (tbl_sub, pred_names, cat_info);
+
+        [~, ~, gidx] = unique (X_raw, 'rows');
+        pe_ss = 0;
+        pe_df = 0;
+        for g = 1:max (gidx)
+          rows_g = (gidx == g);
+          w_g    = w(rows_g);
+          y_g    = y(rows_g);
+          wmean  = sum (w_g .* y_g) / sum (w_g);
+          pe_ss  = pe_ss + sum (w_g .* (y_g - wmean).^2);
+          pe_df  = pe_df + sum (rows_g) - 1;
+        endfor
+
+        if (pe_df > 0)
+          lof_ss = mdl.SSE - pe_ss;
+          lof_df = mdl.DFE - pe_df;
+          lof_ms = lof_ss / lof_df;
+          pe_ms  = pe_ss / pe_df;
+          lof_F  = lof_ms / pe_ms;
+          lof_p  = f_pvalue (pe_df, lof_df, lof_F);
+
+          SumSq  = [SumSq; lof_ss; pe_ss];
+          DF     = [DF; lof_df; pe_df];
+          MeanSq = [MeanSq; lof_ms; pe_ms];
+          F      = [F; lof_F; NaN];
+          pValue = [pValue; lof_p; NaN];
+          RowNm  = [RowNm, {". Lack of fit", ". Pure error"}];
+        endif
+
+      else
+
+        use_seq   = isnumeric (sstype) && sstype == 1;
+        use_type3 = isnumeric (sstype) && sstype == 3;
+        extended  = ischar (sstype) && strcmpi (sstype, "h");
+
+        if (use_type3)
+
+          pred_names = mdl.PredictorNames;
+          cat_info   = mdl.CatLevelInfo;
+          enc_names  = mdl.EncPredictorNames;
+          p_raw      = mdl.NumPredictors;
+
+          if (! isempty (mdl.EncodedPredMatrix))
+            X_enc = mdl.EncodedPredMatrix;
+          else
+            tbl_sub = mdl.Variables (mdl.SubsetMask, :);
+            X_raw   = anova_decode_raw (tbl_sub, pred_names, cat_info);
+            X_enc   = reencode_predictors (X_raw, pred_names, cat_info, enc_names);
+          endif
+
+          ## deviation (effects) coding: reference level becomes -1
+          enc_pos = 0;
+          for j = 1:p_raw
+            ci = find (strcmp (cat_info.names, pred_names{j}));
+            if (isempty (ci))
+              enc_pos = enc_pos + 1;
+            else
+              n_lev  = numel (cat_info.levels{ci});
+              block  = enc_pos + (1:(n_lev - 1));
+              is_ref = 1 - sum (X_enc(:, block), 2);
+              X_enc(:, block) = X_enc(:, block) - is_ref;
+              enc_pos = enc_pos + n_lev - 1;
+            endif
+          endfor
+
+          D_eff   = build_design (mdl.TermsMatrix, X_enc);
+          Mm      = X \ D_eff;
+          is_hier = (max (max (abs (D_eff - X * Mm))) < 1e-8 * max (max (abs (D_eff)))) ...
+                    && (rcond (Mm) > eps);
+
+          if (is_hier)
+
+            Hinv = inv (Mm);
+            b    = mdl.Coefficients.Estimate;
+            V    = mdl.CoefficientCovariance;
+
+            SumSq  = zeros (nterm, 1);
+            DF     = zeros (nterm, 1);
+            F      = zeros (nterm, 1);
+            pValue = zeros (nterm, 1);
+            for k = 1:nterm
+              Hk        = Hinv(term_cols{k}, :);
+              Hb        = Hk * b;
+              HVH       = Hk * V * Hk';
+              DF(k)     = numel (term_cols{k});
+              F(k)      = (Hb' * (HVH \ Hb)) / DF(k);
+              SumSq(k)  = F(k) * DF(k) * mdl.MSE;
+              pValue(k) = f_pvalue (mdl.DFE, DF(k), F(k));
+            endfor
+            MeanSq = SumSq ./ DF;
+
+            errSumSq  = mdl.SSE;
+            errDF     = mdl.DFE;
+            errMeanSq = mdl.MSE;
+
+          else
+
+            fit_eff  = LinearModel.lm_fit (D_eff, y, w, false);
+            all_cols = 1:columns (D_eff);
+
+            SumSq = zeros (nterm, 1);
+            DF    = zeros (nterm, 1);
+            for k = 1:nterm
+              cmp_cols = setdiff (all_cols, term_cols{k});
+              [SumSq(k), ~, fit_r] = anova_delta_sse ( ...
+                D_eff, y, w, cmp_cols, all_cols, fit_eff);
+              DF(k) = fit_eff.rank_X - fit_r.rank_X;
+            endfor
+
+            errSumSq  = fit_eff.SSE;
+            errDF     = fit_eff.DFE;
+            errMeanSq = fit_eff.MSE;
+            MeanSq    = SumSq ./ DF;
+            F         = MeanSq / errMeanSq;
+            pValue    = NaN (nterm, 1);
+            ok        = DF > 0;
+            pValue(ok) = f_pvalue (errDF, DF(ok), F(ok));
+
+          endif
+
+          SumSq  = [SumSq; errSumSq];
+          DF     = [DF; errDF];
+          MeanSq = [MeanSq; errMeanSq];
+
+        else
+
+          if (! use_seq)
+            contain_mx = anova_containment (groups, extended);
+          endif
+
+          SumSq = zeros (nterm, 1);
+          DF    = zeros (nterm, 1);
+          for k = 1:nterm
+            if (use_seq)
+              cmp_cols = union (icol, cell2mat (term_cols(1:k-1)));
+            else
+              keep = true (1, nterm);
+              keep(k) = false;
+              for j = 1:nterm
+                if (j != k && contain_mx(k, j))
+                  keep(j) = false;
+                endif
+              endfor
+              cmp_cols = union (icol, cell2mat (term_cols(keep)));
+            endif
+            full_cols = union (cmp_cols, term_cols{k});
+            SumSq(k)  = anova_delta_sse (X, y, w, cmp_cols, full_cols);
+            DF(k)     = numel (term_cols{k});
+          endfor
+
+          MeanSq = SumSq ./ DF;
+          F      = MeanSq / mdl.MSE;
+          pValue = f_pvalue (mdl.DFE, DF, F);
+
+          SumSq  = [SumSq; mdl.SSE];
+          DF     = [DF; mdl.DFE];
+          MeanSq = [MeanSq; mdl.MSE];
+
+        endif
+
+        F      = [F; NaN];
+        pValue = [pValue; NaN];
+        RowNm  = [term_name, {"Error"}];
+
+      endif
+
+      tbl = table (SumSq, DF, MeanSq, F, pValue, ...
+        'VariableNames', {'SumSq', 'DF', 'MeanSq', 'F', 'pValue'}, ...
+        'RowNames', RowNm(:));
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {@var{NewMdl} =} step (@var{mdl})
+    ## @deftypefnx {LinearModel} {@var{NewMdl} =} step (@var{mdl}, @var{Name}, @var{Value})
+    ##
+    ## Improve a fitted linear regression model by one or more steps of
+    ## stepwise term selection.
+    ##
+    ## @code{step} examines whether adding or removing a single term from
+    ## @var{mdl} improves the fit, and returns the resulting model as
+    ## @var{NewMdl}.  The original model @var{mdl} is never modified.  Unlike
+    ## @code{stepwiselm}, @code{step} performs only one such improvement step
+    ## by default; pass @code{'NSteps'} to allow more.
+    ##
+    ## @code{step} accepts the same @code{'Criterion'}, @code{'PEnter'},
+    ## @code{'PRemove'}, @code{'NSteps'}, @code{'Verbose'}, @code{'Lower'},
+    ## and @code{'Upper'} Name-Value options as @code{stepwiselm}, with the
+    ## same defaults, except @code{'NSteps'} defaults to @code{1} rather than
+    ## unlimited.  @var{mdl}'s own predictors, weights, excluded observations,
+    ## and categorical variable settings are carried over automatically as
+    ## the starting point for the search.
+    ##
+    ## @code{step} is not available for a model fitted with robust
+    ## regression.
+    ##
+    ## @seealso{stepwiselm, addTerms, removeTerms}
+    ## @end deftypefn
+    function NewMdl = step (mdl, varargin)
+      if (nargin < 1)
+        error ("step: Not enough input arguments.");
+      endif
+      if (! isempty (mdl.Robust))
+        error ("step: The STEP method is not available with a robust fit.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error ("step: Name-Value arguments must be in pairs.");
+      endif
+
+      has_nsteps = false;
+      for i = 1:2:numel (varargin) - 1
+        if ((ischar (varargin{i}) || isstring (varargin{i})) ...
+            && strcmpi (char (varargin{i}), 'NSteps'))
+          has_nsteps = true;
+        endif
+      endfor
+      extra = varargin;
+      if (! has_nsteps)
+        extra = [extra, {'NSteps', 1}];
+      endif
+
+      cat_vars = {};
+      if (! isempty (mdl.CatLevelInfo) && isfield (mdl.CatLevelInfo, 'names'))
+        cat_vars = mdl.CatLevelInfo.names;
+      endif
+
+      nv_list = {'PredictorVars', mdl.PredictorNames};
+      if (! isempty (mdl.OrigOpts.Weights))
+        nv_list = [nv_list, {'Weights', mdl.OrigOpts.Weights}];
+      endif
+      if (! isempty (mdl.OrigOpts.Exclude))
+        nv_list = [nv_list, {'Exclude', mdl.OrigOpts.Exclude}];
+      endif
+      if (! isempty (cat_vars))
+        nv_list = [nv_list, {'CategoricalVars', cat_vars}];
+      endif
+
+      if (mdl.HasIntercept)
+        formula_str = [mdl.ResponseName, ' ~ ', mdl.Formula.LinearPredictor];
+      elseif (isempty (mdl.Formula.LinearPredictor))
+        formula_str = [mdl.ResponseName, ' ~ -1'];
+      else
+        formula_str = [mdl.ResponseName, ' ~ ', mdl.Formula.LinearPredictor, ' - 1'];
+      endif
+
+      NewMdl = stepwiselm (mdl.Variables, formula_str, nv_list{:}, extra{:});
+    endfunction
+
   endmethods
 
-  methods(Access = private, Static)
+  methods (Access = public, Static, Hidden)
 
     ## weighted least-squares via pivoted QR; returns fit struct
     function fit = lm_fit (X, y, w, compute_H)
@@ -3620,11 +4576,12 @@ classdef LinearModel
       Fitted = X * beta;
       Raw    = y - Fitted;
 
-      n_eff = sum (w > 0);
-      SSE   = sum (w .* Raw.^2);
-      wmean = sum (w .* y) / max (sum (w), eps);
-      SST   = sum (w .* (y - wmean).^2);
-      SSR   = SST - SSE;
+      n_eff   = sum (w > 0);
+      SumLogW = sum (log (w(w > 0)));
+      SSE     = sum (w .* Raw.^2);
+      wmean   = sum (w .* y) / max (sum (w), eps);
+      SST     = sum (w .* (y - wmean).^2);
+      SSR     = SST - SSE;
 
       DFE = n_eff - rank_X;
       if (DFE > 0)
@@ -3673,6 +4630,7 @@ classdef LinearModel
       fit.active_cols = active_cols;
       fit.Fitted      = Fitted;
       fit.Raw         = Raw;
+      fit.SumLogW     = SumLogW;
     endfunction
 
     function crit = lm_criteria (fit, n_obs, has_intercept)
@@ -3683,7 +4641,7 @@ classdef LinearModel
       DFE = fit.DFE;
       MSE = fit.MSE;
 
-      LogLikelihood = -(n_obs / 2) * (1 + log (2 * pi * SSE / n_obs));
+      LogLikelihood = -(n_obs / 2) * (1 + log (2 * pi * SSE / n_obs)) + 0.5 * fit.SumLogW;
 
       AIC  = -2 * LogLikelihood + 2 * p;
       dAIC = n_obs - p - 1;
@@ -3730,6 +4688,56 @@ classdef LinearModel
       crit.Fpval         = Fpval;
     endfunction
 
+    function info = sw_extract (mdl0)
+      pred_names = mdl0.PredictorNames;
+      p_raw      = mdl0.NumPredictors;
+      cat_info   = mdl0.CatLevelInfo;
+      enc_names  = mdl0.EncPredictorNames;
+
+      y_sub = mdl0.ResponseVector (mdl0.SubsetMask);
+      w_sub = mdl0.WeightVector (mdl0.SubsetMask);
+
+      if (! isempty (mdl0.EncodedPredMatrix))
+        X_enc_sub = mdl0.EncodedPredMatrix;
+      else
+        tbl_sub = mdl0.Variables (mdl0.SubsetMask, :);
+        X_raw   = zeros (rows (tbl_sub), p_raw);
+        for j = 1:p_raw
+          col = tbl_sub.(pred_names{j});
+          if (iscell (col))
+            ci       = find (strcmp (cat_info.names, pred_names{j}));
+            levels_j = cat_info.levels{ci};
+            codes    = zeros (rows (tbl_sub), 1);
+            for k = 1:numel (levels_j)
+              codes(strcmp (col, levels_j{k})) = k;
+            endfor
+            X_raw(:, j) = codes;
+          elseif (isa (col, 'categorical'))
+            ci       = find (strcmp (cat_info.names, pred_names{j}));
+            levels_j = cat_info.levels{ci};
+            [~, X_raw(:, j)] = ismember (cellstr (col), levels_j);
+          else
+            X_raw(:, j) = double (col);
+          endif
+        endfor
+        X_enc_sub = reencode_predictors (X_raw, pred_names, cat_info, enc_names);
+      endif
+
+      info.terms_enc     = mdl0.TermsMatrix;
+      info.cat_info      = cat_info;
+      info.enc_names     = enc_names;
+      info.pred_names    = pred_names;
+      info.p_raw         = p_raw;
+      info.X_enc         = X_enc_sub;
+      info.y             = y_sub;
+      info.w             = w_sub;
+      info.has_intercept = mdl0.HasIntercept;
+      info.n_obs         = mdl0.NumObservations;
+      info.orig_opts     = mdl0.OrigOpts;
+      info.variables     = mdl0.Variables;
+      info.response_name = mdl0.ResponseName;
+    endfunction
+
   endmethods
 
 endclassdef
@@ -3741,6 +4749,14 @@ function opts = lm_parse_nv (nv_args)
   def_vals  = {true, [], [], [], {}, [], '', {}};
   [intercept, weights, exclude, robustopts, varnames, catvars, ...
    respvar, predvars, rem_args] = parsePairedArguments (opt_names, def_vals, nv_args);
+
+  opts.PredictorVarsGiven = false;
+  for i = 1:2:numel (nv_args)
+    if ((ischar (nv_args{i}) || isstring (nv_args{i})) ...
+        && strcmpi (char (nv_args{i}), 'PredictorVars'))
+      opts.PredictorVarsGiven = true;
+    endif
+  endfor
 
   if (! isempty (rem_args))
     error ("LinearModel: Unknown option '%s'.", rem_args{1});
@@ -3831,8 +4847,10 @@ function opts = lm_parse_nv (nv_args)
 
   if (isempty (predvars))
     opts.PredictorVars = {};
-  else
+  elseif (ischar (predvars) || iscellstr (predvars) || isstring (predvars))
     opts.PredictorVars = cellstr (predvars);
+  else
+    opts.PredictorVars = predvars;
   endif
 
 endfunction
@@ -3962,12 +4980,206 @@ function loc = lm_legend_corner (xdata, ydata)
   loc = locs{best_idx};
 endfunction
 
+function c_row = lm_interaction_row (X_act, fix_cols, fix_vals, pred, cinfo, ename, terms)
+  X_rows = X_act;
+  for f = 1:numel (fix_cols)
+    X_rows(:, fix_cols(f)) = fix_vals(f);
+  endfor
+  X_enc = reencode_predictors (X_rows, pred, cinfo, ename);
+  D     = build_design (terms, X_enc);
+  c_row = mean (D, 1);
+endfunction
+
+function col_str = lm_col_to_str (col)
+  if (iscell (col))
+    col_str = col;
+  elseif (isa (col, 'categorical'))
+    col_str = cellstr (col);
+  elseif (isa (col, 'string'))
+    col_str = cellstr (col);
+  else
+    col_str = cellstr (num2str (col(:)));
+  endif
+endfunction
+
+function [X_act, is_cat, cat_lvls] = lm_encode_active_predictors (mdl, act, pred, cinfo)
+  n_act    = sum (act);
+  p        = numel (pred);
+  X_act    = zeros (n_act, p);
+  is_cat   = false (1, p);
+  cat_lvls = cell (1, p);
+
+  for k = 1:p
+    ci = [];
+    if (! isempty (cinfo) && isfield (cinfo, 'names') ...
+        && ! isempty (cinfo.names))
+      ci = find (strcmp (cinfo.names, pred{k}));
+    endif
+    col = mdl.Variables{act, pred{k}};
+    if (! isempty (ci))
+      is_cat(k)   = true;
+      levels_k    = cinfo.levels{ci};
+      cat_lvls{k} = levels_k;
+      col_str = lm_col_to_str (col);
+      codes = zeros (n_act, 1);
+      for L = 1:numel (levels_k)
+        codes(strcmp (col_str, char (levels_k{L}))) = L;
+      endfor
+      X_act(:,k) = codes;
+    else
+      X_act(:,k) = double (col(:));
+    endif
+  endfor
+endfunction
+
+function used = lm_predictors_in_model (pred_all, cinfo, ename)
+  n    = numel (pred_all);
+  used = false (1, n);
+  for k = 1:n
+    ci = [];
+    if (! isempty (cinfo) && ! isempty (cinfo.names))
+      ci = find (strcmp (cinfo.names, pred_all{k}));
+    endif
+    if (isempty (ci))
+      used(k) = any (strcmp (ename, pred_all{k}));
+    else
+      levels_k = cinfo.levels{ci};
+      for L = 2:numel (levels_k)
+        nm = sprintf ("%s_%s", pred_all{k}, char (levels_k{L}));
+        if (any (strcmp (ename, nm)))
+          used(k) = true;
+        endif
+      endfor
+    endif
+  endfor
+endfunction
+
+function C = lm_effects_contrasts (mdl)
+  if (! any (any (mdl.TermsMatrix(:, 1:end-1) != 0)))
+    C = [];
+    return;
+  endif
+
+  pred_all = mdl.PredictorNames;
+  cinfo    = mdl.CatLevelInfo;
+  ename    = mdl.EncPredictorNames;
+  pred     = pred_all (lm_predictors_in_model (pred_all, cinfo, ename));
+  p        = numel (pred);
+  act      = mdl.ObservationInfo.Subset;
+
+  [X_act, is_cat, cat_lvls] = lm_encode_active_predictors (mdl, act, pred, cinfo);
+
+  C = zeros (p, mdl.NumCoefficients);
+
+  for j = 1:p
+    if (is_cat(j))
+      x_lo = 1;
+      x_hi = numel (cat_lvls{j});
+    else
+      x_lo = min (X_act(:,j));
+      x_hi = max (X_act(:,j));
+    endif
+
+    X_hi_rows = X_act;  X_hi_rows(:,j) = x_hi;
+    X_lo_rows = X_act;  X_lo_rows(:,j) = x_lo;
+
+    X_hi_enc = reencode_predictors (X_hi_rows, pred, cinfo, ename);
+    X_lo_enc = reencode_predictors (X_lo_rows, pred, cinfo, ename);
+    D_hi     = build_design (mdl.TermsMatrix, X_hi_enc);
+    D_lo     = build_design (mdl.TermsMatrix, X_lo_enc);
+
+    C(j,:) = mean (D_hi - D_lo, 1);
+  endfor
+endfunction
+
+function IC = lm_interaction_contrasts (mdl)
+  pred_all = mdl.PredictorNames;
+  cinfo    = mdl.CatLevelInfo;
+  ename    = mdl.EncPredictorNames;
+  pred     = pred_all (lm_predictors_in_model (pred_all, cinfo, ename));
+  p        = numel (pred);
+
+  IC = struct ('OwnGridRows', {cell(1, p)}, 'Pairs', {cell(p, p)});
+  if (p < 2)
+    return;
+  endif
+
+  act   = mdl.ObservationInfo.Subset;
+  terms = mdl.TermsMatrix;
+  tpred = terms(:, 1:p);
+
+  [X_act, is_cat, cat_lvls] = lm_encode_active_predictors (mdl, act, pred, cinfo);
+
+  grids = cell (1, p);
+  for j = 1:p
+    if (is_cat(j))
+      n_lv = numel (cat_lvls{j});
+      grids{j} = (1:n_lv)';
+      rows_j = zeros (n_lv, mdl.NumCoefficients);
+      for L = 1:n_lv
+        rows_j(L,:) = lm_interaction_row (X_act, j, L, pred, cinfo, ename, terms);
+      endfor
+      IC.OwnGridRows{j} = rows_j;
+    else
+      lo = min (X_act(:,j));
+      hi = max (X_act(:,j));
+      grids{j} = [lo; (lo + hi) / 2; hi];
+    endif
+  endfor
+
+  for j1 = 1:p
+    for j2 = 1:p
+      if (j1 == j2)
+        continue;
+      endif
+
+      shared = tpred(:,j1) > 0 & tpred(:,j2) > 0;
+      if (! any (shared))
+        continue;
+      endif
+
+      grid1 = grids{j1};
+
+      if (is_cat(j2))
+        grid2 = grids{j2};
+      else
+        lo2  = min (X_act(:,j2));
+        hi2  = max (X_act(:,j2));
+        mid2 = (lo2 + hi2) / 2;
+        deg2 = max (tpred(shared, j2));
+        extra_n = max (0, deg2 + 1 - 3);
+        if (extra_n > 0)
+          q = linspace (lo2, hi2, extra_n + 2);
+          grid2 = sort ([lo2; mid2; hi2; q(2:end-1)']);
+        else
+          grid2 = [lo2; mid2; hi2];
+        endif
+      endif
+
+      n1   = numel (grid1);
+      n2   = numel (grid2);
+      rows = zeros (n1 * n2, mdl.NumCoefficients);
+      idx  = 0;
+      for a = 1:n1
+        for b = 1:n2
+          idx = idx + 1;
+          rows(idx,:) = lm_interaction_row (X_act, [j1, j2], [grid1(a), grid2(b)], ...
+                                             pred, cinfo, ename, terms);
+        endfor
+      endfor
+
+      IC.Pairs{j1,j2} = struct ('grid1', grid1, 'grid2', grid2, 'rows', rows);
+    endfor
+  endfor
+endfunction
+
 function fit = lm_robust_fit (X, y, w, wgtfun, tune)
 
-  n  = rows (X);
-  p  = columns (X);
-  w  = w(:);
-  sw = sqrt (w);
+  n       = rows (X);
+  p       = columns (X);
+  w       = w(:);
+  sw      = sqrt (w);
+  SumLogW = sum (log (w(w > 0)));
 
   Xw   = X .* sw;
   yw   = y .* sw;
@@ -3995,6 +5207,7 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
     fit.Fitted        = X * beta;
     fit.Raw           = y - fit.Fitted;
     fit.RobustWeights = ones (n, 1);
+    fit.SumLogW       = SumLogW;
     return;
   endif
   ols_s = norm (y - X * beta) / sqrt (DFE);
@@ -4083,7 +5296,93 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
   fit.Fitted        = Fitted;
   fit.Raw           = Raw;
   fit.RobustWeights = wts;
+  fit.SumLogW       = SumLogW;
 
+endfunction
+
+function [delta, fit_f, fit_r] = anova_delta_sse (X, y, w, cols_reduced, cols_full, fit_f)
+  if (nargin < 6 || isempty (fit_f))
+    fit_f = LinearModel.lm_fit (X(:, cols_full), y, w, false);
+  endif
+  fit_r = LinearModel.lm_fit (X(:, cols_reduced), y, w, false);
+  delta = fit_r.SSE - fit_f.SSE;
+endfunction
+
+function contain_mx = anova_containment (groups, extended)
+  nterm = numel (groups);
+  factor_list = cell (nterm, 1);
+  for k = 1:nterm
+    parts = strsplit (groups(k).Name, ':');
+    fl = struct ('var', {}, 'exp', {});
+    for f = 1:numel (parts)
+      p = strsplit (parts{f}, '^');
+      if (numel (p) == 2)
+        fl(end+1) = struct ('var', p{1}, 'exp', str2double (p{2}));
+      else
+        fl(end+1) = struct ('var', p{1}, 'exp', 1);
+      endif
+    endfor
+    factor_list{k} = fl;
+  endfor
+
+  contain_mx = false (nterm, nterm);
+  for i = 1:nterm
+    for j = 1:nterm
+      if (i == j)
+        continue;
+      endif
+      fi = factor_list{i};
+      fj = factor_list{j};
+      ok = true;
+      for f = 1:numel (fi)
+        match = false;
+        for g = 1:numel (fj)
+          if (strcmp (fi(f).var, fj(g).var))
+            if (extended)
+              match = (fj(g).exp >= fi(f).exp);
+            else
+              match = (fj(g).exp == fi(f).exp);
+            endif
+            if (match)
+              break;
+            endif
+          endif
+        endfor
+        if (! match)
+          ok = false;
+          break;
+        endif
+      endfor
+      contain_mx(i, j) = ok;
+    endfor
+  endfor
+endfunction
+
+function X_raw = anova_decode_raw (tbl_sub, pred_names, cat_info)
+  p_raw = numel (pred_names);
+  X_raw = zeros (rows (tbl_sub), p_raw);
+  for j = 1:p_raw
+    col = tbl_sub.(pred_names{j});
+    if (iscell (col))
+      ci       = find (strcmp (cat_info.names, pred_names{j}));
+      levels_j = cat_info.levels{ci};
+      codes    = zeros (rows (tbl_sub), 1);
+      for k = 1:numel (levels_j)
+        codes(strcmp (col, levels_j{k})) = k;
+      endfor
+      X_raw(:, j) = codes;
+    elseif (isa (col, 'categorical'))
+      ci       = find (strcmp (cat_info.names, pred_names{j}));
+      levels_j = cat_info.levels{ci};
+      [~, X_raw(:, j)] = ismember (cellstr (col), levels_j);
+    else
+      X_raw(:, j) = double (col);
+    endif
+  endfor
+endfunction
+
+function p = f_pvalue (dfe, df, Fstat)
+  p = betainc (dfe ./ (dfe + df .* Fstat), dfe / 2, df / 2);
 endfunction
 
 %!demo
@@ -4550,6 +5849,23 @@ endfunction
 %! assert_equal (m.Coefficients.Estimate, mdl.Coefficients.Estimate, 1e-8);
 
 %!test
+%! ## a pure interaction formula keeps EncPredictorNames aligned with TermsMatrix
+%! mi = fitlm (X, y, 'y ~ x1:x2');
+%! assert_equal (numel (mi.EncPredictorNames), columns (mi.TermsMatrix) - 1);
+%! assert_equal (mi.NumCoefficients, 2);
+%! assert_equal (mi.CoefficientNames, {'(Intercept)', 'x1:x2'});
+%! assert_equal (mi.Coefficients.Estimate, ...
+%!   [-0.755813941484483; -0.876953077491396], 1e-9);
+%! assert_equal (predict (mi), mi.Fitted, 1e-10);
+%! fig = figure ('visible', 'off');
+%! h = plot (mi);
+%! assert_equal (numel (h), 3);
+%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added Variable Plot for x1:x2');
+%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted x1:x2');
+%! assert_equal (get (h(2), 'DisplayName'), 'Fit: y = -0.876953*x');
+%! close (fig);
+
+%!test
 %! ## a table input with the default formula fits the same model as the matrix
 %! T3 = table (X(:,1), X(:,2), y, 'VariableNames', {'x1','x2','y'});
 %! m = fitlm (T3);
@@ -4856,6 +6172,22 @@ endfunction
 %! assert_equal (yf(2), 1.125705590619342, 1e-10);
 %! assert_equal (yf(3), 2.129086186847688, 1e-10);
 %! assert_equal (yf, predict (mdl, [0.1 0.25; 0.5 0.25; 0.9 0.25]), 1e-10);
+
+%!test
+%! Weight = [2000;2100;2200;2300;2400;2500;2600;2700;2800;2900;3000; ...
+%!           3100;3200;3300;3400;3500;3600;3700;3800;3900];
+%! Year   = categorical ([70;70;70;70;70;76;76;76;76;76;76;76;82;82; ...
+%!                        82;82;82;82;82;82]);
+%! MPG    = [30;29;28;27;26;25;24;23;22;21;20;19;18;17;16;15;14;13;12;11];
+%! m  = fitlm (table (MPG, Weight, Year), 'MPG ~ Weight + Year');
+%! yf = feval (m, [2500;3000], '76');
+%! assert_equal (yf(1), 25.000000000000000, 1e-9);
+%! assert_equal (yf(2), 20.000000000000004, 1e-9);
+%! yf2 = feval (m, [2500;3000], categorical (70));
+%! assert_equal (yf2(1), 24.999999999999996, 1e-9);
+%! assert_equal (yf2(2), 20.000000000000000, 1e-9);
+%! assert_equal (feval (m, 2800, '82'), 21.999999999999996, 1e-9);
+%! assert_equal (isnan (feval (m, 2500, '99')), true);
 
 %!test
 %! m = fitlm ((1:n)' / n, 2 * (1:n)' / n + 0.1 * sin ((1:n)'));
@@ -6814,6 +8146,722 @@ endfunction
 %! close (fig);
 
 %!test
+%! ## multiple predictors delegate to plotAdded
+%! fig = figure ('visible', 'off');
+%! ax  = axes (fig);
+%! h1  = plot (ax, mdl);
+%! h2  = plotAdded (ax, mdl);
+%! assert_equal (get (h1(1), 'XData'), get (h2(1), 'XData'));
+%! assert_equal (get (h1(1), 'YData'), get (h2(1), 'YData'));
+%! assert_equal (get (h1(2), 'YData'), get (h2(2), 'YData'));
+%! assert_equal (get (h1(3), 'YData'), get (h2(3), 'YData'));
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Added Variable Plot for Whole Model');
+%! close (fig);
+
+%!test
+%! ## no axes argument uses the current axes
+%! fig = figure ('visible', 'off');
+%! h = plot (mdl);
+%! assert_equal (isequal (get (h(1), 'Parent'), gca ()), true);
+%! close (fig);
+
+%!test
+%! ## no predictors delegate to plotResiduals
+%! mc  = fitlm (X, y, 'constant');
+%! fig = figure ('visible', 'off');
+%! ax  = axes (fig);
+%! h1  = plot (ax, mc);
+%! h2  = plotResiduals (ax, mc);
+%! assert_equal (get (h1(1), 'type'), 'patch');
+%! assert_equal (get (h1(1), 'YData'), get (h2(1), 'YData'));
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Histogram of residuals');
+%! close (fig);
+
+%!test
+%! ## single predictor: data, fit line, and confidence bounds
+%! m1  = fitlm (X(:,1), y);
+%! fig = figure ('visible', 'off');
+%! ax  = axes (fig);
+%! h   = plot (ax, m1);
+%! assert_equal (numel (h), 3);
+%! assert_equal (get (h(1), 'XData'), X(:,1)', 1e-15);
+%! assert_equal (get (h(1), 'YData'), y', 1e-15);
+%! xf = get (h(2), 'XData');
+%! yf = get (h(2), 'YData');
+%! assert_equal (numel (xf), 100);
+%! assert_equal (xf(1:3),       [0.05, 0.0595959595959596, 0.0691919191919192], 1e-12);
+%! assert_equal (xf(end-2:end), [0.980808080808081, 0.99040404040404, 1],         1e-12);
+%! assert_equal (yf(1:3),       [2.98235017582927, 2.80917102518311, 2.63599187453694],   1e-7);
+%! assert_equal (yf(end-2:end), [-13.8160274368485, -13.9892065874947, -14.1623857381409], 1e-7);
+%! yb = get (h(3), 'YData');
+%! assert_equal (numel (yb), 201);
+%! assert_equal (isnan (yb(101)), true);
+%! assert_equal (yb(1:3),       [1.59215527128182, 1.43944293975561, 1.28661387851973], 1e-7);
+%! assert_equal (yb(102:104),   [4.37254508037672, 4.1788991106106,  3.98536987055415], 1e-7);
+%! assert_equal (yb(end-2:end), [-12.4666494408313, -12.6194785020672, -12.7721908335934], 1e-7);
+%! assert_equal (yb(1:100) + yb(102:201), 2 * yf, 1e-10);
+%! [yp, ~] = predict (m1, xf');
+%! assert_equal (yf', yp, 1e-10);
+%! assert_equal (get (get (ax, 'Title'),  'String'), 'y vs. x1');
+%! assert_equal (get (get (ax, 'XLabel'), 'String'), 'x1');
+%! assert_equal (get (get (ax, 'YLabel'), 'String'), 'y');
+%! close (fig);
+
+%!test
+%! ## real dataset with missing rows leaves gaps in the data
+%! load carsmall
+%! tbl2 = table (MPG, Weight);
+%! mdl2 = fitlm (tbl2, 'MPG ~ Weight');
+%! fig  = figure ('visible', 'off');
+%! ax   = axes (fig);
+%! h    = plot (ax, mdl2);
+%! xd = get (h(1), 'XData');
+%! yd = get (h(1), 'YData');
+%! assert_equal (numel (xd), 100);
+%! assert_equal (any (isnan (xd)), true);
+%! assert_equal (any (isnan (yd)), true);
+%! assert_equal (xd(1:3),       [3504, 3693, 3436], 1e-10);
+%! assert_equal (xd(end-2:end), [2295, 2625, 2720], 1e-10);
+%! assert_equal (yd(1:3),       [18, 15, 18], 1e-10);
+%! assert_equal (yd(end-2:end), [32, 28, 31], 1e-10);
+%! xf = get (h(2), 'XData');
+%! yf = get (h(2), 'YData');
+%! assert_equal (numel (xf), 100);
+%! assert_equal (xf(1:3),       [1795, 1824.666667, 1854.333333], 1e-4);
+%! assert_equal (xf(end-2:end), [4672.666667, 4702.333333, 4732], 1e-4);
+%! assert_equal (yf(1:3),       [33.77920696, 33.52371956, 33.26823216],   1e-6);
+%! assert_equal (yf(end-2:end), [8.996929296, 8.741441898, 8.485954499],   1e-6);
+%! yb = get (h(3), 'YData');
+%! assert_equal (numel (yb), 201);
+%! assert_equal (yb(1:3),       [32.2768265, 32.0472587, 31.81746955],    1e-6);
+%! assert_equal (yb(end-2:end), [11.0004001, 10.77351303, 10.54671087],   1e-6);
+%! assert_equal (get (get (ax, 'Title'),  'String'), 'MPG vs. Weight');
+%! assert_equal (get (get (ax, 'XLabel'), 'String'), 'Weight');
+%! assert_equal (get (get (ax, 'YLabel'), 'String'), 'MPG');
+%! close (fig);
+
+%!test
+%! ## categorical predictor: group codes with per-level fit and bounds
+%! yv = [4.73087805313537; 7.43361607881479; 4.48799323173627; 5.16869512618961; ...
+%!       6.50195295169252; 3.73839298415678; 4.3512762614163;  7.45869429457297; ...
+%!       4.08830081430877; 5.37758996783874; 6.70425002011403; 4.92219481850025; ...
+%!       5.90846112458998; 6.93808332486038; 3.44469932246968; 4.65954705986638; ...
+%!       7.00708466319882; 3.97022469477047; 4.66949449276983; 7.15297545753449; ...
+%!       3.79547107710474; 4.35907258855759; 6.85754858526846; 3.96760657205439; ...
+%!       5.50019159441948; 6.59933535084439; 4.04590000762589; 5.13690239596885; ...
+%!       5.93326622029102; 4.20198864027471];
+%! grp  = categorical (repmat ({'A';'B';'C'}, 10, 1));
+%! tbl4 = table (yv, grp, 'VariableNames', {'Response','Group'});
+%! mdl4 = fitlm (tbl4, 'Response ~ Group');
+%! fig  = figure ('visible', 'off');
+%! ax   = axes (fig);
+%! h    = plot (ax, mdl4);
+%! assert_equal (numel (h), 3);
+%! assert_equal (get (h(1), 'XData'), repmat ([1 2 3], 1, 10));
+%! assert_equal (get (h(1), 'YData'), yv', 1e-14);
+%! assert_equal (get (h(2), 'XData'), [1 2 3]);
+%! assert_equal (get (h(2), 'YData'), [4.98621086647521, 6.85868069471919, 4.0662772163002], 1e-10);
+%! assert_equal (get (h(3), 'XData'), [1 2 3 NaN 1 2 3]);
+%! assert_equal (get (h(3), 'YData'), ...
+%!   [4.68577486025387, 6.55824468849784, 3.76584121007885, NaN, ...
+%!    5.28664687269656, 7.15911670094053, 4.36671322252154], 1e-10);
+%! assert_equal (get (ax, 'XTick'), [1 2 3]);
+%! assert_equal (get (ax, 'XTickLabel'), {'A'; 'B'; 'C'});
+%! assert_equal (get (get (ax, 'Title'),  'String'), 'Response vs. Group');
+%! assert_equal (get (get (ax, 'XLabel'), 'String'), 'Group');
+%! assert_equal (get (get (ax, 'YLabel'), 'String'), 'Response');
+%! close (fig);
+
+%!test
+%! ## continuous by continuous, effects mode
+%! mi  = fitlm (X, y, 'y ~ x1*x2');
+%! fig = figure ('visible', 'off');
+%! h   = plotInteraction (mi, 'x1', 'x2');
+%! assert_equal (numel (h), 11);
+%! assert_equal (get (h(1), 'XData'), [1.76843380852813, -18.8740348676059], 1e-9);
+%! assert_equal (get (h(1), 'YData'), [1, 7]);
+%! assert_equal (get (h(2), 'XData'), [-2.25617028020123, 5.79303789725749], 1e-9);
+%! assert_equal (get (h(3), 'XData'), [-23.1321080641968, -14.615961671015], 1e-9);
+%! assert_equal (get (h(4), 'XData'), ...
+%!   [1.97967308209488, 1.68393809910143, 1.38820311610799], 1e-9);
+%! assert_equal (get (h(4), 'YData'), [2, 3, 4]);
+%! assert_equal (get (h(5), 'XData'), [-0.771057026434185, 4.73040319062394], 1e-9);
+%! assert_equal (get (h(6), 'XData'), [-2.86059582662229, 6.22847202482516], 1e-9);
+%! assert_equal (get (h(7), 'XData'), [-4.99614754441031, 7.77255377662629], 1e-9);
+%! assert_equal (get (h(8), 'XData'), ...
+%!   [-18.5782998846125, -18.8740348676059, -19.1697698505994], 1e-9);
+%! assert_equal (get (h(8), 'YData'), [8, 9, 10]);
+%! assert_equal (get (h(9), 'XData'), [-24.674318784563, -12.4822809846619], 1e-9);
+%! assert_equal (get (h(10), 'XData'), [-23.1321080641968, -14.615961671015], 1e-9);
+%! assert_equal (get (h(11), 'XData'), [-21.6439971135684, -16.6955425876303], 1e-9);
+%! assert_equal (get (h(1), 'Tag'), 'main');
+%! assert_equal (get (h(4), 'Tag'), 'conditional1');
+%! assert_equal (get (h(8), 'Tag'), 'conditional2');
+%! ax = gca ();
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Interaction of x1 and x2');
+%! assert_equal (get (get (ax, 'XLabel'), 'String'), 'Effect');
+%! assert_equal (get (ax, 'YTick'), [1, 2, 3, 4, 7, 8, 9, 10]);
+%! assert_equal (get (ax, 'YTickLabel'), ...
+%!   {'x1: 0.05 to 1'; 'x2=0.05'; 'x2=10.025'; 'x2=20'; ...
+%!    'x2: 0.05 to 20'; 'x1=0.05'; 'x1=0.525'; 'x1=1'});
+%! assert_equal (get (ax, 'YLim'), [0.5, 10.5]);
+%! close (fig);
+
+%!test
+%! ## continuous by continuous, predictions mode
+%! mi  = fitlm (X, y, 'y ~ x1*x2');
+%! fig = figure ('visible', 'off');
+%! h   = plotInteraction (mi, 'x1', 'x2', 'predictions');
+%! assert_equal (numel (h), 3);
+%! xd = get (h(1), 'XData');
+%! assert_equal (numel (xd), 101);
+%! assert_equal (xd(1:3), [0.05, 0.2495, 0.449], 1e-9);
+%! assert_equal (xd(end-2:end), [19.601, 19.8005, 20], 1e-9);
+%! yd1 = get (h(1), 'YData');
+%! assert_equal (yd1(1:3), ...
+%!   [0.215349913094656, 0.0295669142485309, -0.156216084597594], 1e-9);
+%! assert_equal (yd1(end-2:end), ...
+%!   [-17.9913839738256, -18.1771669726717, -18.3629499715178], 1e-9);
+%! yd2 = get (h(2), 'YData');
+%! assert_equal (yd2(1:3), [1.20518645414209, 1.01644610546604, 0.827705756789976], 1e-9);
+%! assert_equal (yd2(end-2:end), ...
+%!   [-17.2913677161117, -17.4801080647878, -17.6688484134638], 1e-9);
+%! yd3 = get (h(3), 'YData');
+%! assert_equal (yd3(1:3), [2.19502299518953, 2.00332529668354, 1.81162759817755], 1e-9);
+%! assert_equal (yd3(end-2:end), ...
+%!   [-16.5913514583978, -16.7830491569038, -16.9747468554098], 1e-9);
+%! assert_equal (get (h(1), 'DisplayName'), '0.05');
+%! assert_equal (get (h(2), 'DisplayName'), '0.525');
+%! assert_equal (get (h(3), 'DisplayName'), '1');
+%! ax = gca ();
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Interaction of x1 and x2');
+%! assert_equal (get (get (ax, 'XLabel'), 'String'), 'x2');
+%! assert_equal (get (get (ax, 'YLabel'), 'String'), 'Adjusted y');
+%! close (fig);
+
+%!test
+%! ## swapping var1/var2 order swaps roles and title
+%! mi  = fitlm (X, y, 'y ~ x1*x2');
+%! fig = figure ('visible', 'off');
+%! h   = plotInteraction (mi, 'x2', 'x1');
+%! assert_equal (numel (h), 11);
+%! assert_equal (get (h(1), 'XData'), [-18.8740348676059, 1.76843380852813], 1e-9);
+%! assert_equal (get (h(4), 'XData'), ...
+%!   [-18.5782998846125, -18.8740348676059, -19.1697698505994], 1e-9);
+%! assert_equal (get (h(8), 'XData'), ...
+%!   [1.97967308209488, 1.68393809910143, 1.38820311610799], 1e-9);
+%! ax = gca ();
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Interaction of x2 and x1');
+%! assert_equal (get (ax, 'YTickLabel'), ...
+%!   {'x2: 0.05 to 20'; 'x1=0.05'; 'x1=0.525'; 'x1=1'; ...
+%!    'x1: 0.05 to 1'; 'x2=0.05'; 'x2=10.025'; 'x2=20'});
+%! close (fig);
+
+%!test
+%! ## interaction effects: variables given as indices into VariableNames
+%! mi  = fitlm (X, y, 'y ~ x1*x2');
+%! fig = figure ('visible', 'off');
+%! h   = plotInteraction (mi, 1, 2);
+%! assert_equal (numel (h), 11);
+%! assert_equal (get (h(1), 'XData'), [1.76843380852813, -18.8740348676059], 1e-9);
+%! assert_equal (get (h(1), 'YData'), [1, 7]);
+%! ax = gca ();
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Interaction of x1 and x2');
+%! close (fig);
+
+%!test
+%! ## interaction effects: explicit axes argument is honored
+%! mi  = fitlm (X, y, 'y ~ x1*x2');
+%! fig = figure ('visible', 'off');
+%! axtarget = axes (fig);
+%! h   = plotInteraction (axtarget, mi, 'x1', 'x2');
+%! assert_equal (numel (h), 11);
+%! assert_equal (isequal (get (h(1), 'Parent'), axtarget), true);
+%! assert_equal (isequal (gca (), axtarget), true);
+%! close (fig);
+
+%!test
+%! ## no interaction term: conditional effects collapse to the main effect
+%! mn  = fitlm (X, y, 'y ~ x1 + x2');
+%! fig = figure ('visible', 'off');
+%! h   = plotInteraction (mn, 'x1', 'x2');
+%! xd1  = get (h(1), 'XData');
+%! eff1 = xd1(1);
+%! eff2 = xd1(2);
+%! assert_equal (eff1, 2.38302891604232, 1e-9);
+%! assert_equal (eff2, -19.5277648300125, 1e-9);
+%! assert_equal (get (h(4), 'XData'), [eff1, eff1, eff1], 1e-9);
+%! assert_equal (get (h(8), 'XData'), [eff2, eff2, eff2], 1e-9);
+%! close (fig);
+
+%!test
+%! ## categorical by continuous, effects mode
+%! xc   = (1:30)' / 30;
+%! grp  = categorical (repmat ({'A';'B';'C'}, 10, 1));
+%! yv   = 2*xc + 3*double (grp == 'B') - 1*double (grp == 'C') + ...
+%!        1.5*xc.*double (grp == 'B') + 0.3*sin ((1:30)');
+%! tblc = table (yv, xc, grp, 'VariableNames', {'Response','Xc','Group'});
+%! mdlc = fitlm (tblc, 'Response ~ Xc*Group');
+%! fig  = figure ('visible', 'off');
+%! h    = plotInteraction (mdlc, 'Group', 'Xc');
+%! assert_equal (numel (h), 11);
+%! assert_equal (get (h(1), 'XData'), [4.7896970899464, 2.32528157787528], 1e-9);
+%! assert_equal (get (h(2), 'XData'), [4.56862113373247, 5.01077304616034], 1e-9);
+%! assert_equal (get (h(3), 'XData'), [2.02254960835685, 2.62801354739371], 1e-9);
+%! assert_equal (get (h(4), 'XData'), ...
+%!   [4.08328517685389, 4.7896970899464, 5.49610900303892], 1e-9);
+%! assert_equal (get (h(5), 'XData'), [3.64076372661607, 4.52580662709171], 1e-9);
+%! assert_equal (get (h(6), 'XData'), [4.56862113373247, 5.01077304616034], 1e-9);
+%! assert_equal (get (h(7), 'XData'), [5.07555715247022, 5.91666085360761], 1e-9);
+%! assert_equal (get (h(8), 'XData'), ...
+%!   [1.88553612240401, 3.25156621870343, 1.8387423925184], 1e-9);
+%! assert_equal (get (h(9), 'XData'), [1.36118897012269, 2.40988327468532], 1e-9);
+%! assert_equal (get (h(10), 'XData'), [2.72721906642211, 3.77591337098474], 1e-9);
+%! assert_equal (get (h(11), 'XData'), [1.31439524023708, 2.36308954479972], 1e-9);
+%! ax = gca ();
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Interaction of Group and Xc');
+%! assert_equal (get (ax, 'YTick'), [1, 2, 3, 4, 7, 8, 9, 10]);
+%! assert_equal (get (ax, 'YTickLabel'), ...
+%!   {'Group: C to B'; 'Xc=0.0333333'; 'Xc=0.516667'; 'Xc=1'; ...
+%!    'Xc: 0.033333 to 1'; 'Group=A'; 'Group=B'; 'Group=C'});
+%! close (fig);
+
+%!test
+%! ## categorical by continuous, predictions mode
+%! xc   = (1:30)' / 30;
+%! grp  = categorical (repmat ({'A';'B';'C'}, 10, 1));
+%! yv   = 2*xc + 3*double (grp == 'B') - 1*double (grp == 'C') + ...
+%!        1.5*xc.*double (grp == 'B') + 0.3*sin ((1:30)');
+%! tblc = table (yv, xc, grp, 'VariableNames', {'Response','Xc','Group'});
+%! mdlc = fitlm (tblc, 'Response ~ Xc*Group');
+%! fig  = figure ('visible', 'off');
+%! h    = plotInteraction (mdlc, 'Group', 'Xc', 'predictions');
+%! assert_equal (numel (h), 3);
+%! xd = get (h(1), 'XData');
+%! assert_equal (numel (xd), 101);
+%! assert_equal (xd(1:3), [0.0333333333333333, 0.043, 0.0526666666666667], 1e-9);
+%! assert_equal (xd(end-2:end), [0.980666666666667, 0.990333333333333, 1], 1e-9);
+%! yd1 = get (h(1), 'YData');
+%! assert_equal (yd1(1:3), [0.107201421526318, 0.126056782750359, 0.144912143974399], 1e-9);
+%! assert_equal (yd1(end-2:end), [1.95502682148225, 1.97388218270629, 1.99273754393033], 1e-9);
+%! yd2 = get (h(2), 'YData');
+%! assert_equal (yd2(1:3), [3.18658823804771, 3.21910390023474, 3.25161956242178], 1e-9);
+%! assert_equal (yd2(end-2:end), [6.37312313237707, 6.4056387945641, 6.43815445675114], 1e-9);
+%! yd3 = get (h(3), 'YData');
+%! assert_equal (yd3(1:3), [-0.896696938806178, -0.878309514880994, -0.85992209095581], 1e-9);
+%! assert_equal (yd3(end-2:end), [0.905270605861853, 0.923658029787037, 0.942045453712221], 1e-9);
+%! assert_equal (get (h(1), 'DisplayName'), 'A');
+%! assert_equal (get (h(2), 'DisplayName'), 'B');
+%! assert_equal (get (h(3), 'DisplayName'), 'C');
+%! ax = gca ();
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Interaction of Group and Xc');
+%! assert_equal (get (get (ax, 'XLabel'), 'String'), 'Xc');
+%! assert_equal (get (get (ax, 'YLabel'), 'String'), 'Adjusted Response');
+%! close (fig);
+
+%!test
+%! ## default h on shared fixture, no polynomial hierarchy present
+%! t = anova (mdl);
+%! assert_equal (t.Properties.RowNames, {'x1'; 'x2'; 'Error'});
+%! assert_equal (t.SumSq(1), 0.590865029026992, -1e-9);
+%! assert_equal (t.DF(1), 1);
+%! assert_equal (t.MeanSq(1), 0.590865029026992, -1e-9);
+%! assert_equal (t.F(1), 25.9858409295, -1e-8);
+%! assert_equal (t.pValue(1), 8.93779416897245e-05, -1e-8);
+%! assert_equal (t.SumSq(2), 42.0518254818947, -1e-9);
+%! assert_equal (t.DF(2), 1);
+%! assert_equal (t.MeanSq(2), 42.0518254818947, -1e-9);
+%! assert_equal (t.F(2), 1849.41059985747, -1e-7);
+%! assert_equal (t.pValue(2), 8.65693830575066e-19, -1e-8);
+%! assert_equal (t.SumSq(3), 0.386545331386823, -1e-9);
+%! assert_equal (t.DF(3), 17);
+%! assert_equal (t.MeanSq(3), 0.0227379606698131, -1e-9);
+%! assert (isnan (t.F(3)));
+%! assert (isnan (t.pValue(3)));
+
+%!test
+%! ## explicit Type 2 on shared fixture reaches the identical result as h
+%! t = anova (mdl, 'components', 2);
+%! assert_equal (t.SumSq(1), 0.590865029026992, -1e-9);
+%! assert_equal (t.MeanSq(1), 0.590865029026992, -1e-9);
+%! assert_equal (t.F(1), 25.9858409295, -1e-8);
+%! assert_equal (t.pValue(1), 8.93779416897245e-05, -1e-8);
+%! assert_equal (t.SumSq(2), 42.0518254818947, -1e-9);
+%! assert_equal (t.MeanSq(2), 42.0518254818947, -1e-9);
+%! assert_equal (t.F(2), 1849.41059985747, -1e-7);
+%! assert_equal (t.pValue(2), 8.65693830575066e-19, -1e-8);
+%! assert_equal (t.SumSq(3), 0.386545331386823, -1e-9);
+%! assert_equal (t.MeanSq(3), 0.0227379606698131, -1e-9);
+
+%!test
+%! ## explicit Type 1 on shared fixture, order-dependent x1 row differs from h
+%! t = anova (mdl, 'components', 1);
+%! assert_equal (t.SumSq(1), 541.472049189064, -1e-9);
+%! assert_equal (t.MeanSq(1), 541.472049189064, -1e-9);
+%! assert_equal (t.F(1), 23813.5713686901, -1e-7);
+%! assert_equal (t.pValue(1), 3.41699381539186e-28, -1e-8);
+%! assert_equal (t.SumSq(2), 42.0518254818947, -1e-9);
+%! assert_equal (t.F(2), 1849.41059985747, -1e-7);
+%! assert_equal (t.SumSq(3), 0.386545331386823, -1e-9);
+%! assert_equal (t.DF(3), 17);
+
+%!test
+%! ## summary table on shared fixture, no Linear/Nonlinear split
+%! t = anova (mdl, 'summary');
+%! assert_equal (t.Properties.RowNames, {'Total'; 'Model'; 'Residual'});
+%! assert_equal (t.SumSq(1), 583.910420002346, -1e-9);
+%! assert_equal (t.DF(1), 19);
+%! assert_equal (t.MeanSq(1), 30.7321273685445, -1e-9);
+%! assert (isnan (t.F(1)));
+%! assert_equal (t.SumSq(2), 583.523874670959, -1e-9);
+%! assert_equal (t.DF(2), 2);
+%! assert_equal (t.MeanSq(2), 291.761937335479, -1e-9);
+%! assert_equal (t.F(2), 12831.4909842738, -1e-7);
+%! assert_equal (t.pValue(2), 9.48988083209278e-28, -1e-8);
+%! assert_equal (t.SumSq(3), 0.386545331386823, -1e-9);
+%! assert_equal (t.DF(3), 17);
+%! assert_equal (t.MeanSq(3), 0.0227379606698131, -1e-9);
+
+%!test
+%! ## polynomial hierarchy, h and Type 2 diverge only on the Age row
+%! Age = [25;31;42;29;55;38;46;33;27;50;41;36;48;30;44];
+%! Sex = categorical ({'M';'F';'F';'M';'M';'F';'M';'F';'F';'M';'F';'M';'F';'M';'F'});
+%! BP  = [118;122;135;120;150;128;140;124;119;145;130;126;138;121;136];
+%! T = table (Age, Sex, BP);
+%! m = fitlm (T, 'BP ~ Sex + Age^2');
+%! t  = anova (m);
+%! t2 = anova (m, 'components', 2);
+%! assert_equal (t.Properties.RowNames, {'Age'; 'Sex'; 'Age^2'; 'Error'});
+%! assert_equal (t.SumSq(1), 1363.92365918468, -1e-9);
+%! assert_equal (t.DF(1), 1);
+%! assert_equal (t.MeanSq(1), 1363.92365918468, -1e-9);
+%! assert_equal (t.F(1), 707.420098987802, -1e-7);
+%! assert_equal (t.pValue(1), 2.46488912775244e-11, -1e-8);
+%! assert_equal (t.SumSq(2), 1.90509548061236, -1e-9);
+%! assert_equal (t.F(2), 0.988107233422164, -1e-9);
+%! assert_equal (t.pValue(2), 0.341568882808456, -1e-9);
+%! assert_equal (t.SumSq(3), 8.58235117456131, -1e-9);
+%! assert_equal (t.F(3), 4.45136916320193, -1e-8);
+%! assert_equal (t.pValue(3), 0.0585944334523874, -1e-9);
+%! assert_equal (t.SumSq(4), 21.2082753550521, -1e-9);
+%! assert_equal (t.DF(4), 11);
+%! assert_equal (t.MeanSq(4), 1.92802503227746, -1e-9);
+%! assert_equal (t2.SumSq(1), 0.209727728295816, -1e-8);
+%! assert_equal (t2.F(1), 0.108778529731057, -1e-9);
+%! assert_equal (t2.pValue(1), 0.747734511582268, -1e-9);
+%! assert_equal (t2.SumSq(2), 1.90509548061236, -1e-9);
+%! assert_equal (t2.SumSq(3), 8.58235117456131, -1e-9);
+%! assert_equal (t2.SumSq(4), 21.2082753550521, -1e-9);
+
+%!test
+%! ## summary table with Linear/Nonlinear split, same polynomial model
+%! Age = [25;31;42;29;55;38;46;33;27;50;41;36;48;30;44];
+%! Sex = categorical ({'M';'F';'F';'M';'M';'F';'M';'F';'F';'M';'F';'M';'F';'M';'F'});
+%! BP  = [118;122;135;120;150;128;140;124;119;145;130;126;138;121;136];
+%! T = table (Age, Sex, BP);
+%! m = fitlm (T, 'BP ~ Sex + Age^2');
+%! t = anova (m, 'summary');
+%! assert_equal (t.Properties.RowNames, ...
+%!   {'Total'; 'Model'; '. Linear'; '. Nonlinear'; 'Residual'});
+%! assert_equal (t.SumSq(1), 1415.73333333333, -1e-9);
+%! assert_equal (t.DF(1), 14);
+%! assert_equal (t.MeanSq(1), 101.12380952381, -1e-9);
+%! assert_equal (t.SumSq(2), 1394.52505797828, -1e-9);
+%! assert_equal (t.DF(2), 3);
+%! assert_equal (t.F(2), 241.097329241452, -1e-7);
+%! assert_equal (t.pValue(2), 2.58928117898032e-10, -1e-8);
+%! assert_equal (t.SumSq(3), 1385.94270680372, -1e-9);
+%! assert_equal (t.DF(3), 2);
+%! assert_equal (t.F(3), 359.420309280577, -1e-7);
+%! assert_equal (t.pValue(3), 9.54785035758658e-11, -1e-8);
+%! assert_equal (t.SumSq(4), 8.58235117456131, -1e-9);
+%! assert_equal (t.DF(4), 1);
+%! assert_equal (t.F(4), 4.45136916320193, -1e-8);
+%! assert_equal (t.pValue(4), 0.0585944334523874, -1e-9);
+%! assert_equal (t.SumSq(5), 21.2082753550521, -1e-9);
+%! assert_equal (t.DF(5), 11);
+%! assert_equal (t.MeanSq(5), 1.92802503227746, -1e-9);
+
+%!test
+%! ## unbalanced categorical interaction, hierarchical model, default h
+%! grpA = categorical ([1;1;2;1;2;1;1;2;1;1;2;1;2;2;1;1;2;1;1;2]);
+%! grpB = categorical ([1;2;1;1;2;2;1;1;2;1;1;2;2;1;2;1;1;2;2;1]);
+%! xv   = (1:20)' / 10;
+%! yv   = 2*(grpA=='2') + 1.5*(grpB=='2') + 0.7*xv + ...
+%!        0.9*(grpA=='2').*(grpB=='2') + ...
+%!        [0.1;-0.2;0.05;0.15;-0.1;0.2;-0.05;0.1;0.0;-0.15; ...
+%!         0.1;0.05;-0.2;0.15;0.0;-0.1;0.05;0.2;-0.05;0.1];
+%! T = table (grpA, grpB, xv, yv);
+%! m  = fitlm (T, 'yv ~ grpA*grpB');
+%! t  = anova (m);
+%! t2 = anova (m, 'components', 1);
+%! assert_equal (t.Properties.RowNames, {'grpA'; 'grpB'; 'grpA:grpB'; 'Error'});
+%! assert_equal (t.SumSq(1), 26.0224323327616, -1e-9);
+%! assert_equal (t.F(1), 138.504723473419, -1e-8);
+%! assert_equal (t.pValue(1), 2.72592668860896e-09, -1e-8);
+%! assert_equal (t.SumSq(2), 15.2365308176101, -1e-9);
+%! assert_equal (t.F(2), 81.0966269640544, -1e-8);
+%! assert_equal (t.pValue(2), 1.15578182042777e-07, -1e-8);
+%! assert_equal (t.SumSq(3), 0.0142868014375564, -1e-8);
+%! assert_equal (t.F(3), 0.0760416803903897, -1e-8);
+%! assert_equal (t.pValue(3), 0.786264832724038, -1e-9);
+%! assert_equal (t.SumSq(4), 3.00609904761905, -1e-9);
+%! assert_equal (t.DF(4), 16);
+%! assert_equal (t.MeanSq(4), 0.18788119047619, -1e-9);
+%! assert_equal (t2.SumSq(1), 16.3540833333333, -1e-9);
+%! assert_equal (t2.F(1), 87.0448142886652, -1e-8);
+%! assert_equal (t2.pValue(1), 7.14746180184104e-08, -1e-8);
+%! assert_equal (t2.SumSq(2), 15.2365308176101, -1e-9);
+%! assert_equal (t2.SumSq(3), 0.0142868014375564, -1e-8);
+
+%!test
+%! ## non-hierarchical model, missing grpB main effect, h still succeeds
+%! grpA = categorical ([1;1;2;1;2;1;1;2;1;1;2;1;2;2;1;1;2;1;1;2]);
+%! grpB = categorical ([1;2;1;1;2;2;1;1;2;1;1;2;2;1;2;1;1;2;2;1]);
+%! xv   = (1:20)' / 10;
+%! yv   = 2*(grpA=='2') + 1.5*(grpB=='2') + 0.7*xv + ...
+%!        0.9*(grpA=='2').*(grpB=='2') + ...
+%!        [0.1;-0.2;0.05;0.15;-0.1;0.2;-0.05;0.1;0.0;-0.15; ...
+%!         0.1;0.05;-0.2;0.15;0.0;-0.1;0.05;0.2;-0.05;0.1];
+%! T = table (grpA, grpB, xv, yv);
+%! m = fitlm (T, 'yv ~ grpA + grpA:grpB');
+%! t = anova (m);
+%! assert_equal (t.Properties.RowNames, {'grpA'; 'grpA:grpB'; 'Error'});
+%! assert_equal (t.SumSq(1), 16.3540833333333, -1e-9);
+%! assert_equal (t.F(1), 22.0110535802411, -1e-8);
+%! assert_equal (t.pValue(1), 0.000209917579961884, -1e-8);
+%! assert_equal (t.SumSq(2), 5.62601666666667, -1e-9);
+%! assert_equal (t.F(2), 7.57208776360619, -1e-8);
+%! assert_equal (t.pValue(2), 0.0136181560209473, -1e-9);
+%! assert_equal (t.SumSq(3), 12.6309, -1e-9);
+%! assert_equal (t.DF(3), 17);
+%! assert_equal (t.MeanSq(3), 0.742994117647059, -1e-9);
+
+%!test
+%! ## no-intercept model
+%! grpA = categorical ([1;1;2;1;2;1;1;2;1;1;2;1;2;2;1;1;2;1;1;2]);
+%! grpB = categorical ([1;2;1;1;2;2;1;1;2;1;1;2;2;1;2;1;1;2;2;1]);
+%! xv   = (1:20)' / 10;
+%! yv   = 2*(grpA=='2') + 1.5*(grpB=='2') + 0.7*xv + ...
+%!        0.9*(grpA=='2').*(grpB=='2') + ...
+%!        [0.1;-0.2;0.05;0.15;-0.1;0.2;-0.05;0.1;0.0;-0.15; ...
+%!         0.1;0.05;-0.2;0.15;0.0;-0.1;0.05;0.2;-0.05;0.1];
+%! T = table (grpA, grpB, xv, yv);
+%! m = fitlm (T, 'yv ~ grpA + grpB - 1');
+%! t = anova (m);
+%! assert_equal (t.SumSq(1), 63.3745141509434, -1e-8);
+%! assert_equal (t.F(1), 178.349190204051, -1e-7);
+%! assert_equal (t.pValue(1), 3.91187977275845e-12, -1e-8);
+%! assert_equal (t.SumSq(2), 15.2365308176101, -1e-8);
+%! assert_equal (t.F(2), 85.7575941763448, -1e-7);
+%! assert_equal (t.pValue(2), 4.71596005128041e-08, -1e-8);
+%! assert_equal (t.SumSq(3), 3.02038584905660, -1e-8);
+%! assert_equal (t.DF(3), 17);
+%! assert_equal (t.MeanSq(3), 0.177669755826859, -1e-9);
+
+%!test
+%! ## weighted fit
+%! grpA = categorical ([1;1;2;1;2;1;1;2;1;1;2;1;2;2;1;1;2;1;1;2]);
+%! grpB = categorical ([1;2;1;1;2;2;1;1;2;1;1;2;2;1;2;1;1;2;2;1]);
+%! xv   = (1:20)' / 10;
+%! yv   = 2*(grpA=='2') + 1.5*(grpB=='2') + 0.7*xv + ...
+%!        0.9*(grpA=='2').*(grpB=='2') + ...
+%!        [0.1;-0.2;0.05;0.15;-0.1;0.2;-0.05;0.1;0.0;-0.15; ...
+%!         0.1;0.05;-0.2;0.15;0.0;-0.1;0.05;0.2;-0.05;0.1];
+%! T = table (grpA, grpB, xv, yv);
+%! w = [1.2;0.8;1.5;1.0;0.9;1.1;1.3;0.7;1.0;1.4; ...
+%!      0.8;1.2;1.0;1.1;0.9;1.3;0.7;1.5;1.0;1.2];
+%! m = fitlm (T, 'yv ~ grpA + grpB', 'Weights', w);
+%! t = anova (m);
+%! assert_equal (t.SumSq(1), 26.6364861423312, -1e-9);
+%! assert_equal (t.F(1), 134.770391630163, -1e-8);
+%! assert_equal (t.pValue(1), 1.66729622333192e-09, -1e-8);
+%! assert_equal (t.SumSq(2), 17.4880599694593, -1e-9);
+%! assert_equal (t.F(2), 88.4828681359069, -1e-8);
+%! assert_equal (t.pValue(2), 3.76674631526712e-08, -1e-8);
+%! assert_equal (t.SumSq(3), 3.35993877395756, -1e-9);
+%! assert_equal (t.DF(3), 17);
+%! assert_equal (t.MeanSq(3), 0.197643457291621, -1e-9);
+
+%!test
+%! grp3 = categorical ([1;1;1;1;1;2;2;2;2;2;2;2;2;2;3;3;3;3;3;3]);
+%! yy   = [2.1;1.9;2.3;2.0;1.8;4.1;4.3;3.9;4.0;4.2; ...
+%!         4.4;3.8;4.1;4.0;6.1;5.9;6.3;6.0;5.8;6.2];
+%! T = table (grp3, yy);
+%! m = fitlm (T, 'yy ~ grp3');
+%! t = anova (m);
+%! assert_equal (t.Properties.RowNames, {'grp3'; 'Error'});
+%! assert_equal (t.DF(1), 2);
+%! assert_equal (t.SumSq(1), 44.3761111111111, -1e-9);
+%! assert_equal (t.MeanSq(1), 22.1880555555556, -1e-9);
+%! assert_equal (t.F(1), 616.446794988197, -1e-7);
+%! assert_equal (t.pValue(1), 1.36582477075565e-16, -1e-8);
+%! assert_equal (t.SumSq(2), 0.611888888888889, -1e-9);
+%! assert_equal (t.DF(2), 17);
+%! assert_equal (t.MeanSq(2), 0.0359934640522876, -1e-9);
+
+%!test
+%! ## type 3 gives different numbers than type 2 here
+%! G3 = categorical ([1;1;1;1;2;2;2;3;3;3;3;1;2;3]);
+%! G2 = categorical ([1;1;2;2;1;2;2;1;1;2;2;2;1;1]);
+%! y1  = [10;12;15;14;9;11;13;16;18;20;22;17;10;19];
+%! T1 = table (G3, G2, y1);
+%! mdl1 = fitlm (T1, 'y1 ~ G3*G2');
+%! t1 = anova (mdl1, 'components', 3);
+%! assert_equal (t1.Properties.RowNames, {'G3'; 'G2'; 'G3:G2'; 'Error'});
+%! assert_equal (t1.SumSq(1), 176.678431372549, -1e-9);
+%! assert_equal (t1.F(1), 44.6345510835913, -1e-8);
+%! assert_equal (t1.pValue(1), 4.57572925304662e-05, -1e-8);
+%! assert_equal (t1.SumSq(2), 38.7604166666666, -1e-9);
+%! assert_equal (t1.F(2), 19.5842105263158, -1e-8);
+%! assert_equal (t1.pValue(2), 0.00221050293676794, -1e-9);
+%! assert_equal (t1.SumSq(3), 1.85490196078431, -1e-9);
+%! assert_equal (t1.SumSq(4), 15.8333333333333, -1e-9);
+%! assert_equal (t1.DF(4), 8);
+%! assert_equal (t1.MeanSq(4), 1.97916666666667, -1e-9);
+
+%!test
+%! ## no intercept; every level is coded, so the error row equals mdl.SSE
+%! G = categorical ([1;1;1;2;2;2;3;3;3;3]);
+%! y1 = [10;12;11;20;22;19;15;17;16;14];
+%! T = table (G, y1);
+%! mdl1 = fitlm (T, 'y1 ~ G - 1');
+%! t = anova (mdl1, 'components', 3);
+%! assert_equal (mdl1.SSE, 11.6666666666667, -1e-9);
+%! assert_equal (t.SumSq(1), 2564.33333333333, -1e-8);
+%! assert_equal (t.DF(1), 3);
+%! assert_equal (t.F(1), 512.866666666667, -1e-7);
+%! assert_equal (t.pValue(1), 1.45297790506045e-08, -1e-8);
+%! assert_equal (t.SumSq(2), 11.6666666666667, -1e-9);
+%! assert_equal (t.DF(2), 7);
+%! assert_equal (t.MeanSq(2), 1.66666666666667, -1e-9);
+
+%!test
+%! ## duplicate group column, so type 3 should show zero DF
+%! G1 = categorical ([1;1;1;2;2;2;3;3;3;3]);
+%! G2 = G1;
+%! y1  = [10;12;11;20;22;19;15;17;16;14];
+%! T = table (G1, G2, y1);
+%! mdl1 = fitlm (T, 'y1 ~ G1 + G2');
+%! t = anova (mdl1, 'components', 3);
+%! assert_equal (t.Properties.RowNames, {'G1'; 'G2'; 'Error'});
+%! assert_equal (t.SumSq(1), 0, -1e-9);
+%! assert_equal (t.DF(1), 0);
+%! assert (isnan (t.F(1)));
+%! assert (isnan (t.pValue(1)));
+%! assert_equal (t.SumSq(2), 0, -1e-9);
+%! assert_equal (t.DF(2), 0);
+%! assert_equal (t.SumSq(3), 11.6666666666667, -1e-9);
+%! assert_equal (t.DF(3), 7);
+%! assert_equal (t.MeanSq(3), 1.66666666666667, -1e-9);
+
+%!test
+%! ## just an intercept, so only the error row shows up
+%! y1 = [5.1;4.9;5.2;4.8;5.1;4.9;5.2;4.8;5.1;4.9];
+%! T = table (y1);
+%! mdl1 = fitlm (T, 'y1 ~ 1');
+%! t = anova (mdl1, 'components', 3);
+%! assert_equal (t.Properties.RowNames, {'Error'});
+%! assert_equal (t.SumSq(1), 0.22, -1e-9);
+%! assert_equal (t.DF(1), 9);
+%! assert_equal (t.MeanSq(1), 0.0244444444444444, -1e-9);
+
+%!test
+%! ## type 3 with a robust fit
+%! G = categorical ([1;1;1;1;2;2;2;2;3;3;3;3]);
+%! x = (1:12)' / 2;
+%! y1 = 5 + 2*(G=='2') + 4*(G=='3') + 0.3*x;
+%! y1(10) = y1(10) + 20;
+%! T = table (G, x, y1);
+%! mdl1 = fitlm (T, 'y1 ~ G + x', 'RobustOpts', 'on');
+%! t = anova (mdl1, 'components', 3);
+%! assert_equal (t.SumSq(1), 3.35664335664336, -1e-8);
+%! assert_equal (t.F(1), 0.0801017164653529, -1e-8);
+%! assert_equal (t.pValue(1), 0.923753304031669, -1e-9);
+%! assert_equal (t.SumSq(2), 0.337499999999999, -1e-8);
+%! assert_equal (t.F(2), 0.0161079545454545, -1e-8);
+%! assert_equal (t.pValue(2), 0.902138027698746, -1e-9);
+%! assert_equal (t.SumSq(3), 167.619047619048, -1e-7);
+%! assert_equal (t.DF(3), 8);
+%! assert_equal (t.MeanSq(3), 20.9523809523809, -1e-8);
+
+%!test
+%! ## repeated x values, so lack of fit rows should show up
+%! x = [1;1;1;2;3;3;4;5;5;5;6;7];
+%! y1 = [10.1;9.9;10.3;12.0;15.2;14.8;17.5;20.1;19.9;20.3;22.0;25.5];
+%! mdl1 = fitlm (x, y1);
+%! t = anova (mdl1, 'summary');
+%! assert_equal (t.Properties.RowNames, ...
+%!   {'Total'; 'Model'; 'Residual'; '. Lack of fit'; '. Pure error'});
+%! assert_equal (t.SumSq(3), 1.03026642984015, -1e-9);
+%! assert_equal (t.DF(3), 10);
+%! assert_equal (t.SumSq(4), 0.790266429840146, -1e-9);
+%! assert_equal (t.DF(4), 5);
+%! assert_equal (t.F(4), 3.2927767910006, -1e-9);
+%! assert_equal (t.pValue(4), 0.108434644423991, -1e-9);
+%! assert_equal (t.SumSq(5), 0.24, -1e-9);
+%! assert_equal (t.DF(5), 5);
+%! assert_equal (t.MeanSq(5), 0.0480000000000001, -1e-9);
+
+%!test
+%! ## same as above but weighted
+%! x = repmat ((1:4)', 6, 1);
+%! G = categorical (repmat ([1;1;2;2], 6, 1));
+%! y1 = 3 + 0.7*x + 2*(G=='2') + ...
+%!     [0.1;-0.1;0.2;-0.2;0.15;-0.15;0.1;-0.1;-0.05;0.05;0.2;-0.2; ...
+%!      0.1;-0.1;-0.15;0.15;0.2;-0.2;0.05;-0.05;-0.1;0.1;0.15;-0.15];
+%! w = 1 + mod ((0:23)', 3);
+%! T = table (x, G, y1);
+%! mdl1 = fitlm (T, 'y1 ~ x + G', 'Weights', w);
+%! t = anova (mdl1, 'summary');
+%! assert_equal (t.Properties.RowNames, ...
+%!   {'Total'; 'Model'; 'Residual'; '. Lack of fit'; '. Pure error'});
+%! assert_equal (t.SumSq(3), 0.626927083333335, -1e-9);
+%! assert_equal (t.DF(3), 21);
+%! assert_equal (t.SumSq(4), 0.00880208333333332, -1e-9);
+%! assert_equal (t.DF(4), 1);
+%! assert_equal (t.F(4), 0.284799460734748, -1e-9);
+%! assert_equal (t.pValue(4), 0.599454252702211, -1e-9);
+%! assert_equal (t.SumSq(5), 0.618125000000001, -1e-9);
+%! assert_equal (t.DF(5), 20);
+%! assert_equal (t.MeanSq(5), 0.0309062500000001, -1e-9);
+
+%!test
+%! w = (1:n)';
+%! mdl0 = fitlm (X, y, 'Weights', w);
+%! m = step (mdl0, 'Upper', 'quadratic', 'Verbose', 0);
+%! assert_equal (m.NumObservations, 20);
+%! assert_equal (m.NumCoefficients, 3);
+%! assert_equal (m.DFE, 17);
+%! assert_equal (m.SSE, 4.16523310465, 1e-8);
+%! assert_equal (m.CoefficientNames, {'(Intercept)','x1','x2'});
+%! assert_equal (m.Coefficients.Estimate, [0.080321; 2.6483; -0.98452], 1e-4);
+%! assert_equal (m.Formula.LinearPredictor, '1 + x1 + x2');
+
+%!test
+%! mdl0 = fitlm (X, y, 'Exclude', [3 7 15]);
+%! m = step (mdl0, 'Upper', 'quadratic', 'Verbose', 0);
+%! assert_equal (m.NumObservations, 17);
+%! assert_equal (m.NumCoefficients, 3);
+%! assert_equal (m.DFE, 14);
+%! assert_equal (m.SSE, 0.340968585251, 1e-8);
+%! assert_equal (m.CoefficientNames, {'(Intercept)','x1','x2'});
+%! assert_equal (m.Coefficients.Estimate, [0.13263; 2.3566; -0.97211], 1e-4);
+%! assert_equal (m.Formula.LinearPredictor, '1 + x1 + x2');
+
+%!test
+%! mdl0 = fitlm (X, y, 'Intercept', false);
+%! m = step (mdl0, 'Upper', 'quadratic', 'Verbose', 0);
+%! assert_equal (m.NumObservations, 20);
+%! assert_equal (m.NumCoefficients, 2);
+%! assert_equal (m.DFE, 18);
+%! assert_equal (m.SSE, 0.410934843408, 1e-8);
+%! assert_equal (m.Formula.HasIntercept, false);
+%! assert_equal (m.CoefficientNames, {'x1','x2'});
+%! assert_equal (m.Coefficients.Estimate, [2.9614; -0.99725], 1e-4);
+%! assert_equal (m.Formula.LinearPredictor, 'x1 + x2');
+
+%!test
 %! load hald
 %! Xh = ingredients;
 %! yh = heat;
@@ -7034,6 +9082,7 @@ endfunction
 %!error <All input arguments must be the same size> feval (mdl, [0.5; 1.0; 0.2], [0.25; 1.0])
 %!error <X does not contain one or more predictor> feval (mdl, table ([1; 2], 'VariableNames', {'z'}))
 %!error <Predictor data matrix must have 2 columns> feval (mdl, [])
+%!error <is not categorical> feval (mdl, '0.5', 0.25)
 %!error <too many inputs> coefCI (mdl, 0.05, 'extra')
 %!error <Value must be less than or equal to 1> coefCI (mdl, 1.5)
 %!error <Value must be greater than or equal to 0> coefCI (mdl, -0.1)
@@ -7085,6 +9134,26 @@ endfunction
 %!error <Bad coefficient name> plotAdded (mdl, 'NotACoef')
 %!error <unrecognized property> plotAdded (mdl, 2, 'BadOpt', 5)
 %!error <Bad coefficient number> mdl0 = fitlm (ones (n, 1), y, 'Intercept', false); plotAdded (mdl0)
+%!error <Too many input arguments> plot (mdl, 'extra')
+%!error <Not enough input arguments> plotInteraction (mdl)
+%!error <Not enough input arguments> plotInteraction (mdl, 'x1')
+%!error <PTYPE must be> plotInteraction (mdl, 'x1', 'x2', 'badtype')
+%!error <Too many input arguments> plotInteraction (mdl, 'x1', 'x2', 'effects', 'extra')
+%!error <is not a variable for this fit> plotInteraction (mdl, 'z', 'x2')
+%!error <is not a variable for this fit> plotInteraction (mdl, 'x1', 'z')
+%!error <This model only contains> plotInteraction (mdl, 99, 'x2')
+%!error <Variable must be specified as a name or a positive integer> plotInteraction (mdl, 1.5, 'x2')
+%!error <is the response in this model> plotInteraction (mdl, 'y', 'x2')
+%!error <is the response in this model> plotInteraction (mdl, 'x1', 'y')
+%!error <VAR1 and VAR2 must be different variables> plotInteraction (mdl, 'x1', 'x1')
+%!error <too many inputs> compact (mdl, 'extra')
+%!error <anova: too many input arguments.> anova (mdl, 'components', 'h', 'extra')
+%!error <anova: ANOVATYPE must be 'summary' or 'components'.> anova (mdl, 'bogus')
+%!error <anova: SSTYPE can only be specified with ANOVATYPE 'components'.> anova (mdl, 'summary', 2)
+%!error <anova: SSTYPE must be 1, 2, or 3.> anova (mdl, 'components', 4)
+%!error <The STEP method is not available with a robust fit> ...
+%! mdl0 = fitlm (X, y, 'RobustOpts', 'on'); step (mdl0)
+%!error <Name-Value arguments must be in pairs> step (mdl, 'Verbose')
 
 ## A factor reaching the model only through an interaction or a power has a
 ## column of the terms matrix without ever being a coefficient, so anything
