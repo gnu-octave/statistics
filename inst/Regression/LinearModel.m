@@ -3439,7 +3439,7 @@ classdef LinearModel
 
       xlabel (ax, pname);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
-      title (ax, 'Adjusted Response Plot');
+      title (ax, 'Adjusted response plot');
 
       hleg = legend (ax, 'show');
       set (hleg, 'Location', lm_legend_corner (xdata, ydata));
@@ -3530,13 +3530,18 @@ classdef LinearModel
       pred   = mdl.PredictorNames;
       ncoef  = numel (cnames);
 
-      if (isempty (args) || ! (ischar (args{1}) || isstring (args{1}) ...
+      if (! isempty (args) && ! (ischar (args{1}) || isstring (args{1}) ...
           || isnumeric (args{1})))
+        error (strcat ("plotAdded: COEF must be a coefficient name or a", ...
+                       " vector of coefficient numbers."));
+      endif
+
+      if (isempty (args))
         J = 2:ncoef;
         if (numel (J) == 1)
           label = cnames{J};
         else
-          label = 'Whole Model';
+          label = 'whole model';
         endif
       else
         coefarg = args{1};
@@ -3573,8 +3578,12 @@ classdef LinearModel
 
         if (numel (J) == 1)
           label = cnames{J};
+        elseif (isequal (sort (J(:)'), 2:ncoef))
+          ## Every non-intercept coefficient: MATLAB names this the whole
+          ## model, and reserves 'specified terms' for any other selection.
+          label = 'whole model';
         else
-          label  = 'Specified Terms';
+          label  = 'specified terms';
           cinfo  = mdl.CatLevelInfo;
           if (! isempty (cinfo) && isfield (cinfo, 'names') ...
               && ! isempty (cinfo.names))
@@ -3679,7 +3688,7 @@ classdef LinearModel
 
       xlabel (ax, ['Adjusted ', label]);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
-      title (ax, ['Added Variable Plot for ', label]);
+      title (ax, ['Added variable plot for ', label]);
 
       hleg = legend (ax, 'show');
       set (hleg, 'Location', lm_legend_corner (xdata, ydata));
@@ -5016,7 +5025,14 @@ function props = lm_plot_props (nv_args)
   [color, marker, markersize, mec, mfc, lw, rem_args] = ...
     parsePairedArguments (opt_names, def_vals, nv_args);
   if (! isempty (rem_args))
-    error ("lm_plot_props: unrecognized property '%s'.", rem_args{1});
+    if (ischar (rem_args{1}) || isstring (rem_args{1}))
+      error ("lm_plot_props: unrecognized property '%s'.", ...
+             char (rem_args{1}));
+    else
+      error (strcat ("lm_plot_props: property name must be a character", ...
+                     " vector or string scalar, not a %s."), ...
+             class (rem_args{1}));
+    endif
   endif
   props.Color           = color;
   props.Marker          = marker;
@@ -6024,7 +6040,7 @@ endfunction
 %! fig = figure ('visible', 'off');
 %! h = plot (mi);
 %! assert_equal (numel (h), 3);
-%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added Variable Plot for x1:x2');
+%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added variable plot for x1:x2');
 %! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted x1:x2');
 %! assert_equal (get (h(2), 'DisplayName'), 'Fit: y = -0.876953*x');
 %! close (fig);
@@ -8028,7 +8044,7 @@ endfunction
 %! ## title and axis labels follow the standard convention
 %! fig = figure ('visible', 'off');
 %! plotAdjustedResponse (mdl, 'x1');
-%! assert_equal (get (get (gca, 'Title'),  'String'), 'Adjusted Response Plot');
+%! assert_equal (get (get (gca, 'Title'),  'String'), 'Adjusted response plot');
 %! assert_equal (get (get (gca, 'XLabel'), 'String'), 'x1');
 %! assert_equal (get (get (gca, 'YLabel'), 'String'), 'Adjusted y');
 %! close (fig);
@@ -8142,8 +8158,8 @@ endfunction
 %! ## added variable plot for the whole model
 %! fig = figure ('visible', 'off');
 %! h = plotAdded (mdl);
-%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for Whole Model');
-%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted Whole Model');
+%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added variable plot for whole model');
+%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted whole model');
 %! assert_equal (get (h(1), 'XData'), ...
 %!   [0.0284033824838481, 0.0204548552857604, -0.0238455815942649, -0.104497928156226, ...
 %!    -0.221502184400124, -0.374858350325959, -0.564566425933731, -0.79062641122344, ...
@@ -8163,7 +8179,7 @@ endfunction
 %! ## added variable plot for just the intercept term
 %! fig = figure ('visible', 'off');
 %! h = plotAdded (mdl, 1);
-%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for (Intercept)');
+%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added variable plot for (Intercept)');
 %! assert_equal (get (h(1), 'YData'), ...
 %!   [-5.41993222738086, -5.40485070721962, -5.55724508427077, -5.73586360329798, ...
 %!    -5.77559710257835, -5.63927961575051, -5.45185858988763, -5.38551877888305, ...
@@ -8177,7 +8193,7 @@ endfunction
 %! ## added variable plot for one predictor picked by index
 %! fig = figure ('visible', 'off');
 %! h = plotAdded (mdl, 2);
-%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for x1');
+%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added variable plot for x1');
 %! assert_equal (get (h(1), 'YData'), ...
 %!   [-5.90289714234183, -5.75941203626873, -5.79651449057265, -5.87295275001727, ...
 %!    -5.82361765287968, -5.6113432327985,  -5.36107693684693, -5.24500351891828, ...
@@ -8195,7 +8211,7 @@ endfunction
 %! ## added variable plot for the other predictor, a negative slope this time
 %! fig = figure ('visible', 'off');
 %! h = plotAdded (mdl, 3);
-%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for x2');
+%! assert_equal (get (get (gca, 'Title'), 'String'), 'Added variable plot for x2');
 %! assert_equal (get (h(1), 'YData'), ...
 %!   [-8.3040737600235,  -7.38815394983204, -6.7394349117973,  -6.21666489068295, ...
 %!    -5.65473472476609, -5.01647844768535, -4.4268435065139,  -4.05801465514508, ...
@@ -8273,8 +8289,8 @@ endfunction
 %! mdl1  = fitlm (tbl, 'MPG ~ Year + Weight^2');
 %! fig  = figure ('visible', 'off');
 %! h    = plotAdded (mdl1);
-%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added Variable Plot for Whole Model');
-%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted Whole Model');
+%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added variable plot for whole model');
+%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted whole model');
 %! xd = get (h(1), 'XData');
 %! yd = get (h(1), 'YData');
 %! assert_equal (xd(1:5), ...
@@ -8289,6 +8305,22 @@ endfunction
 %! close (fig);
 
 %!test
+%! ## selecting every non-intercept coefficient is the whole model; any
+%! ## other multi-coefficient selection is a list of specified terms
+%! X3 = [X, cos((1:n)')];
+%! m3 = fitlm (X3, y);
+%! fig = figure ('visible', 'off');
+%! plotAdded (m3, [2 3 4]);
+%! assert_equal (get (get (gca, 'Title'),  'String'), ...
+%!   'Added variable plot for whole model');
+%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted whole model');
+%! clf;
+%! plotAdded (m3, [2 3]);
+%! assert_equal (get (get (gca, 'Title'),  'String'), ...
+%!   'Added variable plot for specified terms');
+%! close (fig);
+
+%!test
 %! ## added variable plot for the weight terms picked as a pair
 %! load carsmall
 %! Year = categorical (Model_Year);
@@ -8296,8 +8328,8 @@ endfunction
 %! mdl1  = fitlm (tbl, 'MPG ~ Year + Weight^2');
 %! fig  = figure ('visible', 'off');
 %! h    = plotAdded (mdl1, [2 5]);
-%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added Variable Plot for Specified Terms');
-%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted Specified Terms');
+%! assert_equal (get (get (gca, 'Title'),  'String'), 'Added variable plot for specified terms');
+%! assert_equal (get (get (gca, 'XLabel'), 'String'), 'Adjusted specified terms');
 %! xd = get (h(1), 'XData');
 %! yd = get (h(1), 'YData');
 %! assert_equal (xd(1:5), ...
@@ -8319,7 +8351,7 @@ endfunction
 %! assert_equal (get (h1(1), 'YData'), get (h2(1), 'YData'));
 %! assert_equal (get (h1(2), 'YData'), get (h2(2), 'YData'));
 %! assert_equal (get (h1(3), 'YData'), get (h2(3), 'YData'));
-%! assert_equal (get (get (ax, 'Title'), 'String'), 'Added Variable Plot for Whole Model');
+%! assert_equal (get (get (ax, 'Title'), 'String'), 'Added variable plot for whole model');
 %! close (fig);
 
 %!test
@@ -9294,6 +9326,8 @@ endfunction
 %!error <plotAdjustedResponse: This model only contains 3 variables.> plotAdjustedResponse (mdl, 99)
 %!error <plotAdjustedResponse: Variable must be specified as a name or a positive integer.> plotAdjustedResponse (mdl, 1.5)
 %!error <lm_plot_props: unrecognized property 'BadOption'.> plotAdjustedResponse (mdl, 'x1', 'BadOption', 5)
+%!error <plotAdded: COEF must be a coefficient name or a vector of coefficient numbers.> plotAdded (mdl, {'x1', 'x2'})
+%!error <lm_plot_props: property name must be a character vector or string scalar, not a cell.> plotResiduals (mdl, 'fitted', {1}, 5)
 %!error <plotAdded: Bad coefficient number.> plotAdded (mdl, 99)
 %!error <plotAdded: Bad coefficient name.> plotAdded (mdl, 'NotACoef')
 %!error <lm_plot_props: unrecognized property 'BadOpt'.> plotAdded (mdl, 2, 'BadOpt', 5)
