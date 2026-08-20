@@ -461,7 +461,7 @@ endfunction
 %!test
 %! g = kron ((1:120)', ones (2, 1));
 %! [p, tbl, stats] = anova1 ((1:240)', g, 'off');
-%! assert (isfinite (p));
+%! assert_equal (isfinite (p), true);
 %! assert_equal (tbl{2, 3}, 119);
 %! assert_equal (tbl{3, 3}, 120);
 %! assert_equal (stats.n, 2 * ones (1, 120));

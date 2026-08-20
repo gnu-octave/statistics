@@ -516,7 +516,7 @@ endfunction
 %! ## Unbalanced NaN removal follows MATLAB guidance and uses anovan.
 %! x = [1 NaN; 2 5; 3 6; 4 7; 8 8; 10 9];
 %! str = evalc ("[p, atab, stats] = anova2 (x, 3, 'off');");
-%! assert (! isempty (strfind (str, "using anovan instead")));
+%! assert_equal (! isempty (strfind (str, "using anovan instead")), true);
 %! assert_equal (stats.source, "anovan");
 %! assert_equal (atab{2, 1}, "Columns");
 %! assert_equal (atab{3, 1}, "Rows");
