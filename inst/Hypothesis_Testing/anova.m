@@ -34,7 +34,7 @@ classdef anova
   ## @code{fit} internally when necessary, so users may construct an object and
   ## immediately call inspection or post-hoc methods.
   ##
-  ## @seealso{anova1, anova2, anovan, multcompare, fitlm, LinearModel}
+  ## @seealso{anova1, anova2, anovan, multcompare}
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
@@ -227,7 +227,6 @@ classdef anova
     nFactors_   = 0;
     backend_    = '';                       ## 'anova1' | 'anova2' | 'anovan'
     reps_       = [];                       ## replicate count for anova2 backend
-    sourceModel_ = [];                       ## LinearModel object, when supplied
     continuousSpecified_ = false;
     coefficientStats_ = [];
     rawResiduals_ = [];
@@ -246,7 +245,6 @@ classdef anova
     ## @var{responseVarName})
     ## @deftypefnx {anova} {@var{obj} =} anova (@var{tbl}, @var{formula})
     ## @deftypefnx {anova} {@var{obj} =} anova (@dots{}, @var{name}, @var{value})
-    ## @deftypefnx {anova} {@var{obj} =} anova (@var{mdl})
     ##
     ## Create an object-oriented analysis of variance model.
     ##
@@ -269,9 +267,6 @@ classdef anova
     ## Passing @qcode{'Reps'} selects the balanced two-way @code{anova2}
     ## backend when @var{Y} is a non-vector matrix.
     ##
-    ## @var{mdl} may be a @code{LinearModel} object, in which case the ANOVA
-    ## object is populated from the fitted linear model's public properties.
-    ##
     ## @end deftypefn
     function obj = anova (factors, Y, varargin)
 
@@ -285,15 +280,6 @@ classdef anova
       table_factors = [];
       formula_input = "";
       response_locked = false;
-
-      if (isa (factors, 'LinearModel'))
-        lm_args = varargin;
-        if (! isempty (Y))
-          lm_args = [{Y}, lm_args];
-        endif
-        obj = obj.initLinearModel_ (factors, lm_args{:});
-        return;
-      endif
 
       if (isa (factors, "table"))
         if (nargin < 2)
@@ -748,9 +734,6 @@ classdef anova
     ## @end deftypefn
     function m = multcompare (obj, varargin)
       obj.ensureFit_ ();
-      if (strcmp (obj.backend_, 'linearmodel'))
-        error ("anova.multcompare: LinearModel-backed ANOVA is not supported.");
-      endif
       if (isempty (fieldnames (obj.Stats)))
         error ("anova.multcompare: model has no stats to compare.");
       endif
@@ -789,10 +772,9 @@ classdef anova
     ##
     ## The method creates a four-panel figure containing a Normal Q-Q plot, a
     ## Spread-Location plot, a Residual-Leverage plot, and a Cook's distance
-    ## plot.  Diagnostic plots require an @code{anovan}-backed fit or a
-    ## @code{LinearModel}-backed object because the fast @code{anova1} and
-    ## @code{anova2} backends do not expose residuals and design-matrix
-    ## diagnostics.
+    ## plot.  Diagnostic plots require an @code{anovan}-backed fit because the
+    ## fast @code{anova1} and @code{anova2} backends do not expose residuals
+    ## and design-matrix diagnostics.
     ##
     ## Supported name-value arguments are @qcode{'FigureName'} and
     ## @qcode{'Visible'}.
@@ -800,14 +782,6 @@ classdef anova
     ## @end deftypefn
     function h = plotDiagnostics (obj, varargin)
       obj.ensureFit_ ();
-      if (! isempty (obj.sourceModel_))
-        mdl = obj.sourceModel_;
-        h = obj.plotDiagnostics_ (mdl.Residuals.Raw, mdl.Fitted, ...
-                                  mdl.Diagnostics.Leverage, ...
-                                  mdl.Diagnostics.CooksDistance, ...
-                                  mdl.DFE, varargin{:});
-        return;
-      endif
       if (isempty (obj.rawResiduals_) || isempty (obj.FittedValues) ...
           || isempty (obj.DesignMatrix))
         error (strcat ("anova.plotDiagnostics: diagnostic plots require", ...
@@ -832,22 +806,11 @@ classdef anova
     ##
     ## With no @var{Xnew}, return fitted values for the training data.  For an
     ## @code{anovan}-backed object, @var{Xnew} must be a numeric design matrix
-    ## with one column per coefficient.  For a @code{LinearModel}-backed
-    ## object, prediction is delegated to @code{predict} on the stored
-    ## @code{LinearModel}, so that table input and categorical encoding remain
-    ## owned by @code{LinearModel}.
+    ## with one column per coefficient.
     ##
     ## @end deftypefn
     function ypred = predict (obj, Xnew, varargin)
       obj.ensureFit_ ();
-      if (! isempty (obj.sourceModel_))
-        if (nargin < 2)
-          ypred = predict (obj.sourceModel_);
-        else
-          ypred = predict (obj.sourceModel_, Xnew, varargin{:});
-        endif
-        return;
-      endif
       if (nargin < 2 || isempty (Xnew))
         ypred = obj.FittedValues;
         return;
@@ -874,18 +837,12 @@ classdef anova
     ##
     ## The returned structure contains fields @code{Source},
     ## @code{EtaSquared}, @code{PartialEtaSquared}, and @code{OmegaSquared}.
-    ## For @code{anovan}-backed fits, values are derived from the fitted ANOVA
-    ## table.  For @code{LinearModel}-backed fits, model-level values are
-    ## computed from @code{SSR}, @code{SSE}, @code{SST}, and @code{MSE}.
+    ## Values are derived from the fitted ANOVA table.
     ##
     ## @end deftypefn
     function es = getEffectSizes (obj)
       obj.ensureFit_ ();
-      if (strcmp (obj.backend_, 'linearmodel'))
-        es = obj.linearModelEffectSizes_ ();
-      else
-        es = obj.effectSizesFromAtab_ ();
-      endif
+      es = obj.effectSizesFromAtab_ ();
     endfunction
 
   endmethods
@@ -1855,8 +1812,7 @@ classdef anova
     endfunction
 
     ## Build the public Residuals table (Raw and Pearson) from a raw residual
-    ## vector.  Pearson residuals scale the raw residuals by the RMSE, matching
-    ## the LinearModel definition.
+    ## vector.  Pearson residuals scale the raw residuals by the RMSE.
     function tbl = residualsTable_ (obj, raw)
       raw = raw(:);
       pearson = raw ./ sqrt (max (obj.MSE, eps));
@@ -1930,11 +1886,6 @@ classdef anova
 
     function ems = expectedMeanSquares_ (obj, sstype)
       obj.ensureFit_ ();
-      if (strcmp (obj.backend_, "linearmodel"))
-        error (strcat ("anova.stats: expected mean squares are unavailable", ...
-                       " for LinearModel input."));
-      endif
-
       [atab, stats_] = obj.componentFit_ (sstype);
       sources = obj.publicSourceNames_ (atab(2:end-1, 1));
       nterms = numel (sources) - 1;
@@ -2260,65 +2211,6 @@ classdef anova
       endif
     endfunction
 
-    function obj = initLinearModel_ (obj, mdl, varargin)
-      if (mod (numel (varargin), 2) != 0)
-        error ("anova: name-value pairs must come in pairs.");
-      endif
-      for idx = 1:2:numel (varargin)
-        name = varargin{idx};
-        value = varargin{idx + 1};
-        if (! ischar (name))
-          error ("anova: parameter name must be a character vector.");
-        endif
-        switch (lower (name))
-          case 'alpha'
-            obj.Alpha = value;
-          case {'display', 'displayopt'}
-            obj.Display = value;
-          otherwise
-            error ("anova: parameter '%s' is not supported.", name);
-        endswitch
-      endfor
-      obj.validateSpec_ ();
-
-      obj.sourceModel_ = mdl;
-      obj.backend_ = 'linearmodel';
-      obj.nFactors_ = mdl.NumPredictors;
-      obj.NumFactors = obj.nFactors_;
-      obj.ModelSpecification = mdl.Formula.Terms;
-      obj.ModelType = mdl.Formula.Terms;
-      obj.VarNames = cellstr (mdl.PredictorNames);
-      obj.FactorNames = string (obj.VarNames);
-      obj.SumOfSquaresType = string (obj.SumOfSquaresType);
-      obj.ResponseName = mdl.ResponseName;
-      obj.formulaTerms_ = mdl.Formula.Terms;
-      linear_predictor = char (mdl.Formula.LinearPredictor);
-      if (isempty (strfind (linear_predictor, "~")))
-        obj.formulaText_ = sprintf ("%s ~ %s", obj.ResponseName, ...
-                                    linear_predictor);
-      else
-        obj.formulaText_ = linear_predictor;
-      endif
-      obj.updateFormula_ ();
-      obj.Y = mdl.Variables{:, mdl.ResponseName};
-      obj.GROUP = mdl.Variables(:, mdl.PredictorNames);
-      obj.Factors = obj.GROUP;
-      obj.ExpandedFactorNames = mdl.CoefficientNames;
-      obj.NumObservations = numel (obj.Y);
-      obj.coefficientStats_ = obj.linearModelCoefficients_ (mdl);
-      obj.Coefficients = obj.coefficientStats_(:, 1);
-      obj.AnovaTable = obj.linearModelAtab_ (mdl);
-      obj.rawResiduals_ = mdl.Residuals.Raw;
-      obj.FittedValues = mdl.Fitted;
-      obj.DFE = mdl.DFE;
-      obj.MSE = mdl.MSE;
-      obj.Residuals = obj.residualTable_ (obj.rawResiduals_, obj.MSE);
-      obj.DesignMatrix = [];
-      obj.Stats = obj.linearModelStats_ (mdl);
-      obj.updatePublicResults_ ();
-      obj.fitted_ = true;
-      obj.dirty_ = false;
-    endfunction
 
     function validateSpec_ (obj)
       if (! ((isnumeric (obj.SSType) && isscalar (obj.SSType) ...
@@ -2504,8 +2396,6 @@ classdef anova
           obj = obj.fitAnova2_ ();
         case 'anovan'
           obj = obj.fitAnovan_ ();
-        case 'linearmodel'
-          ## Already populated from the supplied LinearModel object.
       endswitch
       obj = obj.updatePublicResults_ ();
       obj.fitted_ = true;
@@ -2593,9 +2483,6 @@ classdef anova
     endfunction
 
     function [atab, stats_] = componentFit_ (obj, sstype)
-      if (strcmp (obj.backend_, "linearmodel"))
-        error ("anova.stats: component type is unavailable for LinearModel input.");
-      endif
       if (strcmp (obj.backend_, "anova2"))
         obj.ensureFit_ ();
         atab = obj.AnovaTable;
@@ -3074,69 +2961,6 @@ classdef anova
       set (findall (gcf, '-property', 'FontSize'), 'FontSize', 7);
     endfunction
 
-    function coeffs = linearModelCoefficients_ (obj, mdl)
-      est = mdl.Coefficients.Estimate;
-      se = mdl.Coefficients.SE;
-      tstat = mdl.Coefficients.tStat;
-      pval = mdl.Coefficients.pValue;
-      crit = tinv (1 - obj.Alpha / 2, mdl.DFE);
-      coeffs = [est, se, est - crit * se, est + crit * se, tstat, pval];
-    endfunction
-
-    function atab = linearModelAtab_ (obj, mdl)
-      has_intercept = isa (mdl.Formula, 'LinearFormula') ...
-                      && mdl.Formula.HasIntercept;
-      intercept_df = 0;
-      if (has_intercept)
-        intercept_df = 1;
-      endif
-      df_model = mdl.NumEstimatedCoefficients - intercept_df;
-      df_model = max (df_model, 0);
-      if (df_model > 0)
-        ms_model = mdl.SSR / df_model;
-      else
-        ms_model = NaN;
-      endif
-      atab = {'Source', 'SS', 'df', 'MS', 'F', 'Prob>F'; ...
-              'Model', mdl.SSR, df_model, ms_model, ...
-              mdl.ModelFitVsNullModel.Fstat, mdl.ModelFitVsNullModel.Pvalue; ...
-              'Error', mdl.SSE, mdl.DFE, mdl.MSE, '', ''; ...
-              'Total', mdl.SST, mdl.NumObservations - intercept_df, ...
-              '', '', ''};
-    endfunction
-
-    function stats = linearModelStats_ (obj, mdl)
-      stats = struct ('source', 'linearmodel', ...
-                      'resid', mdl.Residuals.Raw, ...
-                      'coeffs', obj.Coefficients, ...
-                      'dfe', mdl.DFE, ...
-                      'mse', mdl.MSE, ...
-                      'vcov', mdl.CoefficientCovariance, ...
-                      'CooksD', mdl.Diagnostics.CooksDistance, ...
-                      'alpha', obj.Alpha, ...
-                      'varnames', {mdl.VariableNames}, ...
-                      'coeffnames', {mdl.CoefficientNames});
-    endfunction
-
-    function es = linearModelEffectSizes_ (obj)
-      mdl = obj.sourceModel_;
-      eta = mdl.SSR / max (mdl.SST, eps);
-      partial_eta = mdl.SSR / max (mdl.SSR + mdl.SSE, eps);
-      has_intercept = isa (mdl.Formula, 'LinearFormula') ...
-                      && mdl.Formula.HasIntercept;
-      intercept_df = 0;
-      if (has_intercept)
-        intercept_df = 1;
-      endif
-      df_model = max (mdl.NumEstimatedCoefficients - intercept_df, 0);
-      omega = (mdl.SSR - df_model * mdl.MSE) / max (mdl.SST + mdl.MSE, eps);
-      es = struct ();
-      es.Source = {'Model'};
-      es.EtaSquared = eta;
-      es.PartialEtaSquared = partial_eta;
-      es.OmegaSquared = omega;
-    endfunction
-
     function es = effectSizesFromAtab_ (obj)
       atab = obj.AnovaTable;
       if (isempty (atab))
@@ -3365,11 +3189,15 @@ endclassdef
 %! g2 = [1; 1; 2; 2; 1; 1; 2; 2];
 %! a = anova ({g1, g2}, y);
 %! assert_equal (a.NumFactors, 2);
+%! assert_equal (a.NumObservations, 7);
+%! assert_equal (a.Stats.source, 'anovan');
 
 ## Backend selection: weights force anovan
 %!test
 %! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6], 'Weights', ones (6, 1));
-%! assert_equal (isempty (stats (a)), false);
+%! assert_equal (a.Stats.source, 'anovan');
+%! assert_equal (stats (a).Properties.RowNames, ...
+%!               {'Factor1'; 'Error'; 'Total'});
 
 ## --- Week 2: fit delegation smoke tests --------------------------------
 
@@ -3379,10 +3207,10 @@ endclassdef
 %! g = [1; 1; 2; 2; 3; 3];
 %! a = anova (g, y);
 %! a.fit ();
-%! assert_equal (isempty (a.AnovaTable), false);
-%! assert_equal (class (a.Stats), 'struct');
-%! assert_equal (isempty (a.DFE), false);
-%! assert_equal (isempty (a.MSE), false);
+%! assert_equal (size (a.AnovaTable), [4, 6]);
+%! assert_equal (a.Stats.source, 'anova1');
+%! assert_equal (a.DFE, 3);
+%! assert_equal (a.MSE, 0.5, 1e-12);
 
 ## fit_(): two-way balanced fixture (anova2 backend, popcorn data)
 %!test
@@ -3391,9 +3219,9 @@ endclassdef
 %! a = anova (popcorn, [], 'reps', 3);
 %! assert_equal (! isempty (strfind (evalc ('disp (a)'), '2-way anova')), true);
 %! a.fit ();
-%! assert_equal (! isempty (a.AnovaTable), true);
-%! assert_equal (isfield (a.Stats, 'sigmasq'), true);
-%! assert_equal (a.MSE, a.Stats.sigmasq);
+%! assert_equal (size (a.AnovaTable), [5, 6]);
+%! assert_equal (a.MSE, 0.125, 1e-12);
+%! assert_equal (a.Stats.sigmasq, 0.125, 1e-12);
 
 ## fit_(): N-way fixture (anovan backend, three factors)
 %!test
@@ -3404,11 +3232,11 @@ endclassdef
 %! a = anova ({g1, g2, g3}, y);
 %! assert_equal (a.NumFactors, 3);
 %! a.fit ();
-%! assert_equal (! isempty (a.AnovaTable), true);
-%! assert_equal (! isempty (a.Coefficients), true);
-%! assert_equal (! isempty (a.Residuals), true);
-%! assert_equal (! isempty (a.DesignMatrix), true);
-%! assert_equal (rows (a.Residuals), numel (y));
+%! assert_equal (a.Stats.source, 'anovan');
+%! assert_equal (size (a.AnovaTable), [6, 7]);
+%! assert_equal (size (a.Coefficients), [7, 1]);
+%! assert_equal (size (a.Residuals), [24, 2]);
+%! assert_equal (size (a.DesignMatrix), [24, 4]);
 
 ## fit_(): FittedValues = DesignMatrix * Coefficients(:,1) for anovan
 %!test
@@ -3544,8 +3372,7 @@ endclassdef
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! C = multcompare (a);
-%! assert_equal (! isempty (C), true);
-%! assert_equal (size (C, 1), 3);        ## 3 pairwise comparisons for 3 groups
+%! assert_equal (size (C), [3, 6]);
 %! assert_equal (C.Properties.VariableNames, ...
 %!               {'Group1', 'Group2', 'MeanDifference', ...
 %!                'MeanDifferenceLower', 'MeanDifferenceUpper', 'pValue'});
@@ -3556,14 +3383,13 @@ endclassdef
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (popcorn, [], 'reps', 3);
 %! C = multcompare (a, 'Factor1');
-%! assert_equal (! isempty (C), true);
-%! assert_equal (width (C), 6);
+%! assert_equal (size (C), [3, 6]);
 
 ## multcompare(): runs after a fresh construction (triggers ensureFit_)
 %!test
 %! a = anova ([1;1;2;2;3;3], (1:6)', 'SumOfSquaresType', 'two');
 %! C = multcompare (a);
-%! assert_equal (! isempty (C), true);
+%! assert_equal (size (C), [3, 6]);
 
 ## MATLAB-compatible public methods and properties
 %!test
@@ -3657,7 +3483,7 @@ endclassdef
 %!   y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %!   g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %!   h = boxchart (anova (g, y));
-%!   assert_equal (! isempty (h), true);
+%!   assert_equal (all (ishghandle (h)), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -3735,7 +3561,7 @@ endclassdef
 %!   close (hf);
 %! end_unwind_protect
 
-## --- Week 6: predict / effect sizes / LinearModel bridge ----------------
+## --- Week 6: predict / effect sizes -------------------------------------
 
 ## predict(): no Xnew returns fitted values
 %!test
@@ -3761,33 +3587,6 @@ endclassdef
 %! assert_equal (iscell (es.Source), true);
 %! assert_equal (numel (es.EtaSquared), numel (es.Source));
 %! assert_equal (all (isfinite (es.PartialEtaSquared), 'all'), true);
-
-## anova(LinearModel): builds from Avanish's LinearModel surface
-%!test
-%! X = [1; 2; 3; 4; 5];
-%! y = [2; 4; 5; 4; 5];
-%! mdl = fitlm (X, y);
-%! a = anova (mdl);
-%! assert_equal (! isempty (strfind (evalc ('disp (a)'), 'anova')), true);
-%! assert_equal (! isempty (a.AnovaTable), true);
-%! assert_equal (predict (a), mdl.Fitted, 1e-9);
-%! es = getEffectSizes (a);
-%! assert_equal (es.Source, {'Model'});
-%! assert_equal (es.EtaSquared, mdl.SSR / mdl.SST, 1e-9);
-
-## anova(LinearModel): plotDiagnostics uses LinearModel diagnostics
-%!test
-%! X = [1; 2; 3; 4; 5];
-%! y = [2; 4; 5; 4; 5];
-%! mdl = fitlm (X, y);
-%! a = anova (mdl);
-%! h = plotDiagnostics (a, 'Visible', 'off');
-%! unwind_protect
-%!   assert_equal (all (ishghandle (h), 'all'), true);
-%!   assert_equal (numel (findall (h, 'type', 'axes')), 4);
-%! unwind_protect_cleanup
-%!   close (h);
-%! end_unwind_protect
 
 ## --- Input validation ---------------------------------------------------
 
