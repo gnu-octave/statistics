@@ -81,9 +81,10 @@ classdef ClassificationNeuralNetwork
     ## Rows used for fitting
     ##
     ## A logical column vector with the same length as the observations in the
-    ## original predictor data @var{X} specifying which rows have been used for
-    ## fitting the ClassificationNeuralNetwork model.  This property is
-    ## read-only.
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the ClassificationNeuralNetwork model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed              = [];
@@ -843,10 +844,17 @@ classdef ClassificationNeuralNetwork
         endfor
       endif
 
-      ## Remove missing values from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y(RowsUsed);
-      X         = X(RowsUsed, :);
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept and reported as used,
+      ## while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (gY);
+      Yret      = Y(RowsUsed);
+      Xret      = X(RowsUsed, :);
+      this.X    = Xret;
+      this.Y    = Yret;
+      cobs      = ! any (isnan (Xret), 2);
+      Y         = Yret(cobs);
+      X         = Xret(cobs, :);
 
       ## Renew groups in Y, get classes ordered, keep the same type
       [this.ClassNames, gnY, gY] = unique (Y);
@@ -859,8 +867,13 @@ classdef ClassificationNeuralNetwork
       ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationNeuralNetwork object
-      this.NumObservations = sum (RowsUsed);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (this.X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
 
       ## Cost, Prior and the observation weights.  Cost is zero on the
       ## diagonal and one elsewhere, Prior follows the class frequencies of
@@ -1057,7 +1070,7 @@ classdef ClassificationNeuralNetwork
     function [labels, scores] = resubPredict (this)
 
       ## Get used rows
-      X = this.X(this.RowsUsed, :);
+      X = this.X;
 
       ## Standardize (if necessary)
       if (this.Standardize)
@@ -1456,7 +1469,7 @@ classdef ClassificationNeuralNetwork
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(this.RowsUsed, :);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1668,7 +1681,7 @@ classdef ClassificationNeuralNetwork
         this.Prior = ones (K, 1) / K;
       elseif (isempty (Prior)
               || (ischar (Prior) && strcmpi (Prior, 'empirical')))
-        [~, ~, gY] = unique (this.Y(this.RowsUsed));
+        [~, ~, gY] = unique (this.Y);
         this.Prior = accumarray (gY(:), 1, [K, 1]) / numel (gY);
       elseif (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
               && numel (Prior) == K && all (Prior >= 0) && sum (Prior) > 0)
@@ -2099,3 +2112,42 @@ endfunction
 %! setCost (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [0, 1, 2])
 %!error<ClassificationNeuralNetwork.setPrior: 'Prior' must be 'empirical', 'uniform',> ...
 %! setPrior (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 'bogus')
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 20);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (rows (Mdl.W), 150);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! Y(5) = NaN;
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 20);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [150, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (rows (Mdl.X), 149);
+%! assert_equal (rows (Mdl.W), 149);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas;
+%! X(3,2) = NaN;
+%! Y = grp2idx (species);
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 20);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);

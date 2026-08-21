@@ -82,8 +82,10 @@ classdef ClassificationSVM
     ## Rows used for fitting
     ##
     ## A logical column vector with the same length as the observations in the
-    ## original predictor data @var{X} specifying which rows have been used for
-    ## fitting the ClassificationSVM model.  This property is read-only.
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the ClassificationSVM model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed            = [];
@@ -839,10 +841,17 @@ classdef ClassificationSVM
         endfor
       endif
 
-      ## Remove missing values from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y(RowsUsed);
-      X         = X(RowsUsed, :);
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept and reported as used,
+      ## while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (gY);
+      Yret      = Y(RowsUsed);
+      Xret      = X(RowsUsed, :);
+      this.X    = Xret;
+      this.Y    = Yret;
+      cobs      = ! any (isnan (Xret), 2);
+      Y         = Yret(cobs);
+      X         = Xret(cobs, :);
 
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
@@ -914,8 +923,13 @@ classdef ClassificationSVM
       ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationSVM object
-      this.NumObservations = rows (X);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (this.X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
 
       ## Handle Standardize flag.  The model must be fitted on the scale it
       ## predicts on: predict and resubPredict standardize their input from
@@ -1163,17 +1177,9 @@ classdef ClassificationSVM
     ## @end deftypefn
     function [labels, scores] = resubPredict (this)
 
-      ## Get used rows (if necessary).  X is indexed by row: a bare mask on a
-      ## matrix is a linear index, which took the first column and left the
-      ## model answering about data it was never given.
-      if (sum (this.RowsUsed) != rows (this.X))
-        RowsUsed = this.RowsUsed;
-        X = this.X(RowsUsed, :);
-        Y = this.Y(RowsUsed);
-      else
-        X = this.X;
-        Y = this.Y;
-      endif
+      ## X and Y hold exactly the observations the model retained
+      X = this.X;
+      Y = this.Y;
 
       ## Standardize (if necessary)
       if (this.Standardize)
@@ -1570,7 +1576,7 @@ classdef ClassificationSVM
       ## response scored 0.49 where the answer was 0.01, and a logical one
       ## did not reach LIBSVM at all.  The rows dropped for missing values
       ## were included as well.
-      used = this.RowsUsed;
+      used = true (rows (this.X), 1);
       Xu = this.X(used, :);
       gY = grp2idx (this.Y(used, :));
       Ypm = ones (rows (Xu), 1);
@@ -1689,7 +1695,7 @@ classdef ClassificationSVM
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(this.RowsUsed, :);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1807,8 +1813,11 @@ classdef ClassificationSVM
       endfor
 
       ## A model written before RowsUsed became a mask stored it as a
-      ## double, which is a valid subscript for nothing.
-      mdl.RowsUsed = logical (mdl.RowsUsed);
+      ## double, which is a valid subscript for nothing.  An empty RowsUsed
+      ## means every observation was used and stays an empty double.
+      if (! isempty (mdl.RowsUsed))
+        mdl.RowsUsed = logical (mdl.RowsUsed);
+      endif
     endfunction
 
   endmethods
@@ -1893,8 +1902,9 @@ endclassdef
 %! y = [1; 2; 3; 4; 2; 3; 4; 2; 3; 4; 2; 3; 4];
 %! a = ClassificationSVM (x, y, 'ClassNames', [1, 2]);
 %! assert_equal (class (a), "ClassificationSVM");
-%! assert_equal (a.RowsUsed, logical ([1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]'));
-%! assert_equal ({a.X, a.Y}, {x, y})
+%! m = logical ([1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]');
+%! assert_equal (a.RowsUsed, m);
+%! assert_equal ({a.X, a.Y}, {x(m,:), y(m)})
 %! assert_equal (a.NumObservations, 5)
 %! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
 %! assert_equal ({a.ClassNames, a.ModelParameters.SVMtype}, {[1; 2], 'c_svc'})
@@ -1933,8 +1943,8 @@ endclassdef
 %! X = [randn(40, 3); NaN, 1, 1];
 %! Y = [lab; 1];
 %! Mdl = fitcsvm (X, Y);
-%! assert_equal (class (Mdl.RowsUsed), 'logical');
-%! assert_equal (rows (Mdl.X(Mdl.RowsUsed, :)), Mdl.NumObservations);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (rows (Mdl.X), Mdl.NumObservations);
 
 ## resubPredict answers about the rows it was trained on, all their columns.
 ## Selecting them with a bare mask took the first column only, and the model
@@ -1945,13 +1955,16 @@ endclassdef
 %! X = [randn(40, 3); NaN, 1, 1];
 %! Y = [lab; 1];
 %! Mdl = fitcsvm (X, Y);
-%! assert_equal (Mdl.NumObservations, 40);
-%! assert_equal (resubPredict (Mdl), predict (Mdl, Mdl.X(Mdl.RowsUsed, :)));
+%! assert_equal (Mdl.NumObservations, 41);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (resubPredict (Mdl), predict (Mdl, Mdl.X));
 
 ## A model saved before RowsUsed became a mask still reads back as one.
 %!test
 %! randn ('seed', 42);
-%! Mdl = fitcsvm (randn (30, 2), double (randn (30, 1) > 0) + 1);
+%! X = randn (31, 2);
+%! Y = [double(randn (30, 1) > 0) + 1; NaN];
+%! Mdl = fitcsvm (X, Y);
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
 %! d = load (fname);
@@ -2450,3 +2463,42 @@ endclassdef
 %! savemodel (ClassificationSVM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
 %!error <ClassificationSVM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (ClassificationSVM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! Y = grp2idx (species(1:100));
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (rows (Mdl.X), 100);
+%! assert_equal (rows (Mdl.W), 100);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! Y = grp2idx (species(1:100));
+%! Y(5) = NaN;
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [100, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 99);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 99);
+%! assert_equal (rows (Mdl.X), 99);
+%! assert_equal (rows (Mdl.W), 99);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! X(3,2) = NaN;
+%! Y = grp2idx (species(1:100));
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (rows (Mdl.X), 100);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);

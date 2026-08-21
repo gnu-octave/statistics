@@ -159,11 +159,13 @@ classdef RegressionGAM
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} RowsUsed
     ##
-    ## Rows used in fitting
+    ## Rows used for fitting
     ##
-    ## A numeric vector with one entry per row of the training data, one
-    ## where the row was used for fitting and zero where it was dropped for
-    ## holding a missing value.  This property is read-only.
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the RegressionGAM model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed              = [];
@@ -626,10 +628,17 @@ classdef RegressionGAM
       this.X = X;
       this.Y = Y;
 
-      ## Remove nans from X and Y
-      RowsUsed  = ! logical (sum (isnan ([Y, X]), 2));
-      Y         = Y(RowsUsed);
-      X         = X(RowsUsed, :);
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept and reported as used,
+      ## while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (Y(:));
+      Yret      = Y(RowsUsed);
+      Xret      = X(RowsUsed, :);
+      this.X    = Xret;
+      this.Y    = Yret;
+      cobs      = ! any (isnan (Xret), 2);
+      Y         = Yret(cobs);
+      X         = Xret(cobs, :);
 
       ## Check X and Y contain valid data
       if (! isnumeric (X) || ! all (isfinite (X(:))))
@@ -642,8 +651,13 @@ classdef RegressionGAM
       ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the RegressionGAM object
-      this.NumObservations = rows (X);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (this.X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
 
       ## Assign the number of original predictors to the RegressionGAM object
       this.NumPredictors = ndims_X;
@@ -915,8 +929,9 @@ classdef RegressionGAM
       ## Predict Standard Deviation and Intervals of estimated data if requested
       if (nargout > 1)
         ## Ensure that RowsUsed in the model are selected
-        Y = this.Y(this.RowsUsed);
-        X = this.X(this.RowsUsed, :);
+        used = true (rows (this.X), 1);
+        Y = this.Y(used);
+        X = this.X(used, :);
         ## Predict response from training predictor data with the trained model
         yrs = predict_val (params, X , Interc);
         yrs_fit = predict_val (params, Xfit, Interc);
@@ -1031,7 +1046,8 @@ classdef RegressionGAM
     ## @seealso{RegressionGAM, fitrgam, predict}
     ## @end deftypefn
     function yFit = resubPredict (this)
-      yFit = predict (this, this.X(this.RowsUsed, :));
+      used = true (rows (this.X), 1);
+      yFit = predict (this, this.X(used, :));
     endfunction
 
     ## -*- texinfo -*-
@@ -1047,7 +1063,7 @@ classdef RegressionGAM
     ## @seealso{RegressionGAM, fitrgam, loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = this.RowsUsed;
+      used = true (rows (this.X), 1);
       L = loss (this, this.X(used, :), this.Y(used), varargin{:});
     endfunction
 
@@ -1339,8 +1355,11 @@ classdef RegressionGAM
       endfor
 
       ## A model written before RowsUsed became a mask stored it as a
-      ## double, which is a valid subscript for nothing.
-      mdl.RowsUsed = logical (mdl.RowsUsed);
+      ## double, which is a valid subscript for nothing.  An empty RowsUsed
+      ## means every observation was used and stays an empty double.
+      if (! isempty (mdl.RowsUsed))
+        mdl.RowsUsed = logical (mdl.RowsUsed);
+      endif
     endfunction
 
   endmethods
@@ -1665,3 +1684,42 @@ endfunction
 %! Mr.Knots = 3;
 %!error<RegressionGAM: unrecognized 'ResponseTransform' function.> ...
 %! Mr.ResponseTransform = 'nonsense';
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Mdl = fitrgam (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (rows (Mdl.W), 150);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Y(5) = NaN;
+%! Mdl = fitrgam (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [150, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (rows (Mdl.X), 149);
+%! assert_equal (rows (Mdl.W), 149);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! X(3,2) = NaN;
+%! Y = meas(:,1);
+%! Mdl = fitrgam (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);

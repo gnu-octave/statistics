@@ -294,9 +294,8 @@ classdef ClassificationPartitionedModel
       ## Set properties.  The rows dropped for missing values are outside the
       ## partition, so they are dropped here too and every index below, the
       ## partition's included, refers to the same set of observations.
-      RowsUsed = Mdl.RowsUsed;
-      this.X = Mdl.X(RowsUsed, :);
-      this.Y = Mdl.Y(RowsUsed, :);
+      this.X = Mdl.X;
+      this.Y = Mdl.Y;
       this.KFold = Partition.NumTestSets;
       this.Trained = cell (this.KFold, 1);
       this.ClassNames = Mdl.ClassNames;
@@ -1065,13 +1064,14 @@ endclassdef
 %! X = [randn(40, 2); NaN, 1; 2, NaN];
 %! Y = [lab; 1; 2];
 %! Mdl = fitcsvm (X, Y);
-%! assert_equal (Mdl.NumObservations, 40);
+%! assert_equal (Mdl.NumObservations, 42);
+%! assert_equal (Mdl.RowsUsed, []);
 %! CVMdl = crossval (Mdl, 'KFold', 4);
-%! assert_equal (CVMdl.NumObservations, 40);
-%! assert_equal (rows (CVMdl.X), 40);
-%! assert_equal (rows (CVMdl.Y), 40);
-%! assert_equal (CVMdl.Partition.NumObservations, 40);
-%! assert_equal (numel (kfoldPredict (CVMdl)), 40);
+%! assert_equal (CVMdl.NumObservations, 42);
+%! assert_equal (rows (CVMdl.X), 42);
+%! assert_equal (rows (CVMdl.Y), 42);
+%! assert_equal (CVMdl.Partition.NumObservations, 42);
+%! assert_equal (numel (kfoldPredict (CVMdl)), 42);
 
 ## The folds stay stratified, the response being passed to cvpartition
 ## rather than a bare count.

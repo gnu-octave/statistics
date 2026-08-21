@@ -261,8 +261,8 @@ classdef RegressionPartitionedModel
       ## The partition indexes the observations actually used for training,
       ## so the rows dropped for missing values are removed here as well and
       ## every index below refers to the same set.
-      X = Mdl.X(Mdl.RowsUsed, :);
-      Y = Mdl.Y(Mdl.RowsUsed);
+      X = Mdl.X;
+      Y = Mdl.Y;
       Y = Y(:);
 
       if (Partition.NumObservations != rows (X))
@@ -651,9 +651,9 @@ endclassdef
 %! Y = [randn(20, 1); 3];
 %! Mdl = fitrsvm (X, Y);
 %! CVMdl = crossval (Mdl, 'KFold', 4);
-%! assert_equal (CVMdl.NumObservations, 20);
-%! assert_equal (rows (CVMdl.X), 20);
-%! assert_equal (numel (kfoldPredict (CVMdl)), 20);
+%! assert_equal (CVMdl.NumObservations, 21);
+%! assert_equal (rows (CVMdl.X), 21);
+%! assert_equal (numel (kfoldPredict (CVMdl)), 21);
 
 ## Test input validation for the constructor
 %!error<RegressionPartitionedModel: too few input arguments.> ...

@@ -156,10 +156,13 @@ classdef RegressionSVM
     ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} RowsUsed
     ##
-    ## Rows of the original data used for training
+    ## Rows used for fitting
     ##
-    ## A logical column vector with one entry per row of @code{X}, true where
-    ## the row was used.  This property is read-only.
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the RegressionSVM model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed              = [];
@@ -666,10 +669,17 @@ classdef RegressionSVM
       this.ResponseName   = ResponseName;
       this.CategoricalPredictors = [];
 
-      ## Remove missing values from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, Y(:)]), 2));
-      Y         = Y(RowsUsed);
-      X         = X(RowsUsed, :);
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept and reported as used,
+      ## while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (Y(:));
+      Yret      = Y(RowsUsed);
+      Xret      = X(RowsUsed, :);
+      this.X    = Xret;
+      this.Y    = Yret;
+      cobs      = ! any (isnan (Xret), 2);
+      Y         = Yret(cobs);
+      X         = Xret(cobs, :);
 
       ## Check X and Y contain valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -682,8 +692,13 @@ classdef RegressionSVM
         error ("RegressionSVM: invalid values in Y.");
       endif
 
-      this.NumObservations = sum (RowsUsed);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (this.X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
       this.W = ones (this.NumObservations, 1) / this.NumObservations;
 
       ## Handle Standardize flag.  The model must be fitted on the scale it
@@ -851,7 +866,8 @@ classdef RegressionSVM
     ## @seealso{RegressionSVM, fitrsvm}
     ## @end deftypefn
     function yFit = resubPredict (this)
-      yFit = predict (this, this.X(this.RowsUsed, :));
+      used = true (rows (this.X), 1);
+      yFit = predict (this, this.X(used, :));
     endfunction
 
     ## -*- texinfo -*-
@@ -971,8 +987,9 @@ classdef RegressionSVM
     ## @seealso{RegressionSVM, fitrsvm}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      X = this.X(this.RowsUsed, :);
-      Y = this.Y(this.RowsUsed);
+      used = true (rows (this.X), 1);
+      X = this.X(used, :);
+      Y = this.Y(used);
       L = loss (this, X, Y, varargin{:});
     endfunction
 
@@ -1344,10 +1361,10 @@ endclassdef
 %! X = [linspace(0, 1, 12)', linspace(1, 2, 12)'; NaN, 1; 0.5, 1];
 %! Y = [2 * linspace(0, 1, 12)'; 1; NaN];
 %! Mdl = RegressionSVM (X, Y);
-%! assert_equal (Mdl.NumObservations, 12);
-%! assert_equal (sum (Mdl.RowsUsed), 12);
-%! assert_equal (Mdl.RowsUsed(13:14), [false; false]);
-%! assert_equal (numel (resubPredict (Mdl)), 12);
+%! assert_equal (Mdl.NumObservations, 13);
+%! assert_equal (sum (Mdl.RowsUsed), 13);
+%! assert_equal (Mdl.RowsUsed(13:14), [true; false]);
+%! assert_equal (numel (resubPredict (Mdl)), 13);
 
 ## predict on the training rows is resubPredict.
 %!test
@@ -1398,8 +1415,8 @@ endclassdef
 ## resubLoss is loss on the training data.
 %!test
 %! randn ('seed', 42);
-%! X = [randn(20, 2); NaN, 1];
-%! Y = [randn(20, 1); 2];
+%! X = randn (21, 2);
+%! Y = [randn(20, 1); NaN];
 %! Mdl = RegressionSVM (X, Y);
 %! Xu = X(Mdl.RowsUsed, :);
 %! Yu = Y(Mdl.RowsUsed);
@@ -1615,3 +1632,42 @@ endclassdef
 %! RSVM.ResponseTransform.foo = 1;
 %!error<RegressionSVM: unrecognized 'ResponseTransform' function.> ...
 %! RSVM.ResponseTransform = 'nope';
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Mdl = fitrsvm (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (rows (Mdl.W), 150);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Y(5) = NaN;
+%! Mdl = fitrsvm (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [150, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (rows (Mdl.X), 149);
+%! assert_equal (rows (Mdl.W), 149);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! X(3,2) = NaN;
+%! Y = meas(:,1);
+%! Mdl = fitrsvm (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);

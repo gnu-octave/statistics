@@ -82,9 +82,10 @@ classdef ClassificationDiscriminant
     ## Rows used for fitting
     ##
     ## A logical column vector with the same length as the observations in the
-    ## original predictor data @var{X} specifying which rows have been used for
-    ## fitting the ClassificationDiscriminant model.  This property is
-    ## read-only.
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the ClassificationDiscriminant model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed        = [];
@@ -702,24 +703,35 @@ classdef ClassificationDiscriminant
         endfor
       endif
 
-      ## Remove missing values from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept, and each estimate below
+      ## uses whatever part of it is present.
+      RowsUsed  = ! isnan (gY);
       Y         = Y(RowsUsed, :);
       X         = X(RowsUsed, :);
+
+      ## Store the retained observations
+      this.X = X;
+      this.Y = Y;
 
       ## Renew groups in Y, get classes ordered, keep the same type
       [this.ClassNames, gnY, gY] = unique (Y);
 
       ## Check X contains valid data
-      if (! (isnumeric (X) && isfinite (X)))
+      if (! (isnumeric (X) && ! any (isinf (X(:)))))
         error ("ClassificationDiscriminant: invalid values in X.");
       endif
 
       ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationDiscriminant object
-      this.NumObservations = sum (RowsUsed);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
 
       ## Handle Cost and Prior
       this = setCost (this, Cost, gnY);
@@ -732,26 +744,39 @@ classdef ClassificationDiscriminant
 
       num_classes = rows (this.ClassNames);
       num_features = columns (X);
+      ## Each class mean uses every observation where that predictor is
+      ## present, so a row missing one predictor still counts towards the rest
       this.Mu = zeros (num_classes, num_features);
       for i = 1:num_classes
-        this.Mu(i, :) = mean (X(gY == i, :), 1);
+        Xi = X(gY == i, :);
+        for j = 1:num_features
+          xj = Xi(:, j);
+          this.Mu(i, j) = mean (xj(! isnan (xj)));
+        endfor
       endfor
 
-      ## Center the predictors (XCentered)
-      this.XCentered = zeros (size (X));
-      for i = 1:rows (X)
-        class_idx = gY(i);
-        this.XCentered(i, :) = X(i, :) - this.Mu(class_idx, :);
-      endfor
+      ## Center the predictors (XCentered), keeping the missing entries
+      this.XCentered = X - this.Mu(gY, :);
 
       ## Calculate Within-class covariance (Sigma)
       if (strcmp (this.DiscrimType, 'linear'))
-        this.Sigma = zeros (num_features);
+        ## Only complete observations enter the covariance, reweighted so that
+        ## each class keeps the total weight it carried before any was dropped
+        cobs = ! any (isnan (X), 2);
+        cw   = zeros (rows (X), 1);
+        Wk   = zeros (num_classes, 1);
         for i = 1:num_classes
-          Xi = X(gY == i, :) - this.Mu(i, :);
-          this.Sigma = this.Sigma + (Xi' * Xi);
+          Wk(i) = sum (gY == i) / rows (X);
+          ci = (gY == i) & cobs;
+          cw(ci) = Wk(i) / sum (ci);
         endfor
-        this.Sigma = this.Sigma / (this.NumObservations - num_classes);
+        den = 1;
+        for i = 1:num_classes
+          ci = (gY == i) & cobs;
+          den -= sum (cw(ci) .^ 2) / Wk(i);
+        endfor
+        Zc = this.XCentered(cobs, :);
+        this.Sigma = (Zc .* cw(cobs))' * Zc / den;
 
         ## Check for predictors with zero within-class variance
         zwcv = find (diag (this.Sigma) == 0);
@@ -884,8 +909,8 @@ classdef ClassificationDiscriminant
       endif
 
       ## Get training data and labels
-      X = this.X(this.RowsUsed,:);
-      Y = this.Y(this.RowsUsed,:);
+      X = this.X;
+      Y = this.Y;
 
       numObservations = rows (XC);
       numClasses = rows (this.ClassNames);
@@ -1418,7 +1443,7 @@ classdef ClassificationDiscriminant
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(this.RowsUsed, :);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1535,7 +1560,7 @@ classdef ClassificationDiscriminant
 
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+        [~, gnY, gY] = unique (this.Y);
       endif
       if (isempty (Cost))
         this.Cost = cast (! eye (numel (gnY)), 'double');
@@ -1551,7 +1576,7 @@ classdef ClassificationDiscriminant
 
     function this = setPrior (this, Prior, gnY = [], gY = [])
       if (isempty (gnY) || isempty (gY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+        [~, gnY, gY] = unique (this.Y);
       endif
       ## Set prior
       if (strcmpi ('uniform', Prior))
@@ -1983,3 +2008,40 @@ endclassdef
 %! Mdl.ScoreTransform = 'symmetric';
 %! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
 %! assert_equal (Mdl.ScoreTransform (0.25), -0.5);
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! Mdl = fitcdiscr (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! Y(5) = NaN;
+%! Mdl = fitcdiscr (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [150, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (rows (Mdl.X), 149);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas;
+%! X(3,2) = NaN;
+%! Y = grp2idx (species);
+%! Mdl = fitcdiscr (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);

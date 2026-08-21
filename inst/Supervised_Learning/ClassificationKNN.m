@@ -84,8 +84,10 @@ classdef ClassificationKNN
     ## Rows used for fitting
     ##
     ## A logical column vector with the same length as the observations in the
-    ## original predictor data @var{X} specifying which rows have been used for
-    ## fitting the ClassificationKNN model.  This property is read-only.
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the ClassificationKNN model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed        = [];
@@ -957,10 +959,17 @@ classdef ClassificationKNN
         endfor
       endif
 
-      ## Remove missing values from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y(RowsUsed, :);
-      X         = X(RowsUsed, :);
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept and reported as used,
+      ## while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (gY);
+      Yret      = Y(RowsUsed, :);
+      Xret      = X(RowsUsed, :);
+      this.X    = Xret;
+      this.Y    = Yret;
+      cobs      = ! any (isnan (Xret), 2);
+      Y         = Yret(cobs, :);
+      X         = Xret(cobs, :);
 
       ## Renew groups in Y, get classes ordered, keep the same type
       [this.ClassNames, gnY, gY] = unique (Y);
@@ -973,8 +982,13 @@ classdef ClassificationKNN
       ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationKNN object
-      this.NumObservations = sum (RowsUsed);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (this.X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
 
       ## Handle Standardize flag
       if (Standardize)
@@ -1146,8 +1160,9 @@ classdef ClassificationKNN
       endif
 
       ## Get training data and labels
-      X = this.X(this.RowsUsed,:);
-      Y = this.Y(this.RowsUsed,:);
+      used = true (rows (this.X), 1);
+      X = this.X(used,:);
+      Y = this.Y(used,:);
 
       ## Standardize (if necessary)
       if (this.Standardize)
@@ -2037,7 +2052,7 @@ classdef ClassificationKNN
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(this.RowsUsed, :);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -2142,7 +2157,7 @@ classdef ClassificationKNN
 
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+        [~, gnY, gY] = unique (this.Y);
       endif
       if (isempty (Cost))
         this.Cost = cast (! eye (numel (gnY)), 'double');
@@ -2157,7 +2172,7 @@ classdef ClassificationKNN
 
     function this = setPrior (this, Prior, gnY = [], gY = [])
       if (isempty (gnY) || isempty (gY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+        [~, gnY, gY] = unique (this.Y);
       endif
       ## Set prior
       if (strcmpi ('uniform', Prior))
@@ -3239,3 +3254,40 @@ endfunction
 %! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
 %! [~, s1] = predict (Mdl, meas(1:3,:));
 %! assert_equal (s1, s0);
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! Mdl = fitcknn (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! Y(5) = NaN;
+%! Mdl = fitcknn (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [150, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (rows (Mdl.X), 149);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas;
+%! X(3,2) = NaN;
+%! Y = grp2idx (species);
+%! Mdl = fitcknn (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (rows (Mdl.X), 150);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);

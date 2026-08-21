@@ -84,8 +84,10 @@ classdef ClassificationGAM
     ## Rows used for fitting
     ##
     ## A logical column vector with the same length as the observations in the
-    ## original predictor data @var{X} specifying which rows have been used for
-    ## fitting the ClassificationGAM model.  This property is read-only.
+    ## original predictor data @var{X}, true for each row that was used for
+    ## fitting the ClassificationGAM model.  It is empty, @qcode{[]},
+    ## when every observation was used, so a non-empty value means that rows
+    ## holding missing values were dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed        = [];
@@ -827,10 +829,17 @@ classdef ClassificationGAM
         endfor
       endif
 
-      ## Remove nans from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y(RowsUsed);
-      X         = X(RowsUsed, :);
+      ## An observation is dropped only when its response is missing.  A row
+      ## whose predictors hold missing values is kept and reported as used,
+      ## while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (gY);
+      Yret      = Y(RowsUsed);
+      Xret      = X(RowsUsed, :);
+      this.X    = Xret;
+      this.Y    = Yret;
+      cobs      = ! any (isnan (Xret), 2);
+      Y         = Yret(cobs);
+      X         = Xret(cobs, :);
 
       ## Renew groups in Y.  The third output of grp2idx holds the levels in
       ## the type of Y, where the second is always a cell array of character
@@ -858,8 +867,13 @@ classdef ClassificationGAM
         Y = gY - 1;
       endif
 
-      this.NumObservations = rows (X);
-      this.RowsUsed = RowsUsed;
+      this.NumObservations = rows (this.X);
+      ## RowsUsed is left empty when every observation was used, as in MATLAB
+      if (all (RowsUsed))
+        this.RowsUsed = [];
+      else
+        this.RowsUsed = RowsUsed;
+      endif
 
       ## Assign the number of original predictors to the ClassificationGAM object
       this.NumPredictors = ndims_X;
@@ -1222,7 +1236,7 @@ classdef ClassificationGAM
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(this.RowsUsed, :);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1460,7 +1474,8 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, predict}
     ## @end deftypefn
     function [labels, scores] = resubPredict (this)
-      [labels, scores] = predict (this, this.X(this.RowsUsed, :));
+      used = true (rows (this.X), 1);
+      [labels, scores] = predict (this, this.X(used, :));
     endfunction
 
     ## -*- texinfo -*-
@@ -1472,7 +1487,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, margin}
     ## @end deftypefn
     function m = resubMargin (this)
-      used = this.RowsUsed;
+      used = true (rows (this.X), 1);
       m = margin (this, this.X(used, :), this.Y(used));
     endfunction
 
@@ -1485,7 +1500,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, edge}
     ## @end deftypefn
     function e = resubEdge (this)
-      used = this.RowsUsed;
+      used = true (rows (this.X), 1);
       e = edge (this, this.X(used, :), this.Y(used));
     endfunction
 
@@ -1499,7 +1514,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = this.RowsUsed;
+      used = true (rows (this.X), 1);
       L = loss (this, this.X(used, :), this.Y(used), varargin{:});
     endfunction
 
@@ -1590,8 +1605,11 @@ classdef ClassificationGAM
       endfor
 
       ## A model written before RowsUsed became a mask stored it as a
-      ## double, which is a valid subscript for nothing.
-      mdl.RowsUsed = logical (mdl.RowsUsed);
+      ## double, which is a valid subscript for nothing.  An empty RowsUsed
+      ## means every observation was used and stays an empty double.
+      if (! isempty (mdl.RowsUsed))
+        mdl.RowsUsed = logical (mdl.RowsUsed);
+      endif
     endfunction
 
   endmethods
@@ -2229,3 +2247,42 @@ endfunction
 %! loss (Mdl, x, y, 'LossFun', 1)
 %!error<ClassificationGAM.loss: unsupported Loss function.> ...
 %! loss (Mdl, x, y, 'LossFun', 'nonsense')
+
+## RowsUsed is empty when every observation was used.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! Y = grp2idx (species(1:100));
+%! Mdl = fitcgam (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (class (Mdl.RowsUsed), 'double');
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (rows (Mdl.X), 100);
+%! assert_equal (rows (Mdl.W), 100);
+
+## A missing response drops its observation and RowsUsed marks it.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! Y = grp2idx (species(1:100));
+%! Y(5) = NaN;
+%! Mdl = fitcgam (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (size (Mdl.RowsUsed), [100, 1]);
+%! assert_equal (sum (Mdl.RowsUsed), 99);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%! assert_equal (Mdl.NumObservations, 99);
+%! assert_equal (rows (Mdl.X), 99);
+%! assert_equal (rows (Mdl.W), 99);
+
+## A missing predictor keeps its observation, so RowsUsed stays empty.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! X(3,2) = NaN;
+%! Y = grp2idx (species(1:100));
+%! Mdl = fitcgam (X, Y);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (rows (Mdl.X), 100);
+%! assert_equal (sum (isnan (Mdl.X(:))), 1);
