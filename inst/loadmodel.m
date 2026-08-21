@@ -85,8 +85,14 @@ function obj = loadmodel (filename)
     case 'RegressionGAM'
       obj = RegressionGAM.load_model (filename, data);
 
+    case 'CompactRegressionGAM'
+      obj = CompactRegressionGAM.load_model (filename, data);
+
     case 'RegressionNeuralNetwork'
       obj = RegressionNeuralNetwork.load_model (filename, data);
+
+    case 'RegressionSVM'
+      obj = RegressionSVM.load_model (filename, data);
 
     case 'CompactRegressionNeuralNetwork'
       obj = CompactRegressionNeuralNetwork.load_model (filename, data);
