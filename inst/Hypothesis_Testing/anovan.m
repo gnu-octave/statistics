@@ -245,7 +245,24 @@
 ## term.
 ##
 ## @code{[@var{p}, @var{atab}] = anovan (@dots{})} returns a cell array
-## containing the ANOVA table.
+## containing the ANOVA table.  Its first row holds the column names, and the
+## columns are, in order, the term name, its sum-of-squares, its degrees of
+## freedom, a singularity flag, its mean square, the @math{F} statistic, the
+## p-value, and then two effect sizes: eta squared and partial eta squared.
+## The first seven follow MATLAB's layout, so a caller reading them by
+## position gets the same quantity in either language; the two effect sizes
+## are an Octave extension and are appended after them.
+##
+## The singularity flag is @math{1} when a term is aliased with the rest of
+## the model, which happens when the design is not of full rank, most often
+## because a combination of factor levels holds no observations.  The degrees
+## of freedom reported for such a term are the ones that can be estimated,
+## which may be fewer than the term's design block has columns and may be
+## zero.  Whether a term is aliased depends on the model it is adjusted for,
+## and therefore on @qcode{"sstype"}: a term that is estimable in a sequential
+## fit may not be estimable in a marginal one.  A flagged term's
+## sum-of-squares is not uniquely attributable to it, so the corresponding
+## @math{F} and p-value should not be read as a test of that term.
 ##
 ## @code{[@var{p}, @var{atab}, @var{stats}] = anovan (@dots{})} returns a
 ## structure containing additional statistics, including degrees of freedom and
@@ -650,17 +667,22 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
+        df_est = zeros (Nt,1);
+        [jnk, jnk, jnk, jnk, jnk, rk_prev] = lmfit (cell2mat (X(1)), Y, W);
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
-          [b, sse] = lmfit (XS, Y, W);
+          [b, sse, jnk, jnk, jnk, rk_now] = lmfit (XS, Y, W);
           ss(j) = R - sse;
+          df_est(j) = rk_now - rk_prev;
           R = sse;
+          rk_prev = rk_now;
         endfor
         [b, sse, resid, ucov, hat] = lmfit (XS, Y, W);
         sstype_char = 'I';
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
+        df_est = zeros (Nt,1);
         for j = 1:Nt
           i = find (TERMS(j,:) > 0);
           if (isequal (sstype_id, 'h'))
@@ -670,28 +692,38 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endif
           k = cat (1, 1, 1 + find (excludes_term));
           XS = cell2mat (X(k));
-          [jnk, R1] = lmfit (XS, Y, W);
+          [jnk, R1, jnk, jnk, jnk, rk1] = lmfit (XS, Y, W);
           k = cat (1, j+1, k);
           XS = cell2mat (X(k));
-          [jnk, R2] = lmfit (XS, Y, W);
+          [jnk, R2, jnk, jnk, jnk, rk2] = lmfit (XS, Y, W);
           ss(j) = R1 - R2;
+          df_est(j) = rk2 - rk1;
         endfor
         [b, sse, resid, ucov, hat] = lmfit (cell2mat (X), Y, W);
         sstype_char = 'II';
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
-        [b, sse, resid, ucov, hat] = lmfit (cell2mat (X), Y, W);
+        df_est = zeros (Nt, 1);
+        [b, sse, resid, ucov, hat, rk_full] = lmfit (cell2mat (X), Y, W);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
-          [jnk, R] = lmfit (XS, Y, W);
+          [jnk, R, jnk, jnk, jnk, rk_red] = lmfit (XS, Y, W);
           ss(j) = R - sse;
+          df_est(j) = rk_full - rk_red;
         endfor
         sstype_char = 'III';
       otherwise
         error ("anovan: sstype value not supported.");
     endswitch
     ss = max (0, ss); # Truncate negative SS at 0
+    ## A term that is aliased with the rest of the model contributes fewer
+    ## degrees of freedom than its design block has columns.  Report what is
+    ## estimable and flag the shortfall, so a sum-of-squares of zero can be
+    ## told apart from a factor that genuinely has no effect.
+    singular = (df_est < df);
+    df_coef = df;   ## nominal width of each term's block, for the coefficients
+    df = df_est;    ## estimable degrees of freedom, as reported in the table
     dfe = n - rank (cell2mat (X));
     ms = ss ./ df;
     mse = sse / dfe;
@@ -701,11 +733,16 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     P = 1 - fcdf (F, df, dfe);
 
     ## Prepare model formula and cell array containing the ANOVA table
-    T = cell (Nt + 3, 7);
-    T(1,:) = {'Source', 'Sum Sq.', 'd.f.', 'Mean Sq.', 'Eta Sq.', 'F', 'Prob>F'};
-    T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
-    T(end-1,1:4) = {'Error', sse, dfe, mse};
-    T(end,1:3) = {'Total', sst, dft};
+    ## Columns 1 to 7 follow MATLAB's layout.  The two effect sizes are an
+    ## Octave extension and are appended, so a caller indexing the shared
+    ## columns by position reads the same quantity in either language.
+    T = cell (Nt + 3, 9);
+    T(1,:) = {'Source', 'Sum Sq.', 'd.f.', 'Singular?', 'Mean Sq.', 'F', ...
+              'Prob>F', 'Eta Sq.', 'Part. Eta Sq.'};
+    T(2:Nt+1,2:9) = num2cell ([ss, df, singular, ms, F, P, eta_sq, ...
+                               partial_eta_sq]);
+    T(end-1,1:5) = {'Error', sse, dfe, 0, mse};
+    T(end,1:4) = {'Total', sst, dft, 0};
     formula = sprintf ("Y ~ 1");  # Initialize model formula
     for i = 1:Nt
       str = mTermName (TERMS(i,:), VARNAMES, NESTED);
@@ -731,7 +768,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     se = sqrt (diag (ucov) * mse);
     t =  b ./ se;
     p = 2 * (1 - (tcdf (abs (t), dfe)));
-    coeff_stats = zeros (1 + sum (df), 6);
+    coeff_stats = zeros (1 + sum (df_coef), 6);
     coeff_stats(:,1) = b;                                # coefficients
     coeff_stats(:,2) = se;                               # standard errors
     coeff_stats(:,3) = b - se * t_crit;                  # Lower CI bound
@@ -740,15 +777,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     coeff_stats(:,6) = p;                                # p-values
     ## Assign NaN to p-value to avoid printing statistics relating to
     ## coefficients for 'random' effects
-    hi = 1 + cumsum (df);
+    hi = 1 + cumsum (df_coef);
     random_terms = find (any (TERMS(:,RANDOM) > 0, 2));
     for ignore = random_terms'
-      coeff_stats(hi(ignore)-df(ignore)+1:hi(ignore), 6) = NaN;
+      coeff_stats(hi(ignore)-df_coef(ignore)+1:hi(ignore), 6) = NaN;
     endfor
 
     ## Compute leverage values and Cook's distance
     h = diag (hat);          % Leverage values
-    D = resid.^2 / ((1 + sum (df)) * mse) ...
+    D = resid.^2 / ((1 + sum (df_coef)) * mse) ...
         .* h ./ (1 - h).^2;  % Cook's distance
 
     ## Create STATS structure for MULTCOMPARE
@@ -831,28 +868,35 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Print ANOVA table
         [nrows, ncols] = size (T);
         fprintf ("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
-        fprintf ("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
+        fprintf ("Source                   Sum Sq.    d.f.    Mean Sq.  Part.Eta         F  Prob>F\n");
         fprintf ("--------------------------------------------------------------------------------\n");
         for i = 1:Nt
           str = T{i+1,1};
           l = numel (str);  # Needed to truncate source term name at 18 characters
           ## Format and print the statistics for each model term
           ## Format F statistics and p-values in APA style
+          row = {T{i+1,2}, T{i+1,3}, T{i+1,5}, T{i+1,9}, T{i+1,6}};
           if (P(i) < 0.001)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", ...
-                      str(1:min (18,l)), T{i+1,2:end-1});
+                      str(1:min (18,l)), row{:});
           elseif (P(i) < 0.9995)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", ...
-                      str(1:min (18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
+                      str(1:min (18,l)), row{:}, round (P(i) * 1e+03));
           elseif (isnan (P(i)))
             fprintf ("%-20s  %10.5g  %6d \n", str(1:min (18,l)), T{i+1,2:3});
           else
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    1.000 \n", ...
-                      str(1:min (18,l)), T{i+1,2:end-1});
+                      str(1:min (18,l)), row{:});
           endif
         endfor
-        fprintf ("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
+        fprintf ("Error                 %10.5g  %6d  %10.5g\n", ...
+                 T{end-1,2}, T{end-1,3}, T{end-1,5});
         fprintf ("Total                 %10.5g  %6d \n", T{end,2:3});
+        if (any (singular))
+          fprintf (strcat ("Singular terms are aliased with the rest of the", ...
+                           " model and are not\nuniquely estimable: %s\n"), ...
+                   strjoin (T(1 + find (singular), 1)', ", "));
+        endif
         fprintf ("\n");
 
         ## Make figure of diagnostic plots
@@ -1203,7 +1247,7 @@ endfunction
 
 ## FUNCTION TO FIT THE LINEAR MODEL
 
-function [b, sse, resid, ucov, hat] = lmfit (X, Y, W)
+function [b, sse, resid, ucov, hat, rk] = lmfit (X, Y, W)
 
   ## Get model coefficients by solving the linear equation by QR decomposition
   ## The number of free parameters (i.e. intercept + coefficients) is equal
@@ -1218,10 +1262,30 @@ function [b, sse, resid, ucov, hat] = lmfit (X, Y, W)
   XW = C*X;
   YW = C*Y;
   [Q, R] = qr (XW, 0);
-  b = R \ Q' * YW;
+
+  ## A design that is not of full column rank has no unique solution, and the
+  ## triangular solve gives an arbitrarily large one: the residuals follow it,
+  ## so the error sum-of-squares can exceed the total.  Detect the deficiency
+  ## and take the minimum-norm least-squares solution instead, which leaves
+  ## the fitted values, the residuals and SSE correct whatever the rank.
+  npar = columns (XW);
+  if (npar == 0)
+    deficient = false;
+  elseif (rows (R) != columns (R))
+    deficient = true;
+  else
+    deficient = (rcond (R) < eps);
+  endif
+  if (deficient)
+    b = pinv (XW) * YW;
+    rk = rank (XW);
+  else
+    b = R \ (Q' * YW);
+    rk = npar;
+  endif
 
   ## Get fitted values
-  fit = Q'\R * b;  # This is equivalent to fit = XW * b;
+  fit = XW * b;
 
   ## Get residuals from the fit
   resid = YW - fit;
@@ -1231,16 +1295,25 @@ function [b, sse, resid, ucov, hat] = lmfit (X, Y, W)
 
   ## Calculate the unscaled covariance matrix (i.e. inv (X'*X ))
   if (nargout > 3)
-    ucov = R \ Q' / XW';
+    if (deficient)
+      ucov = pinv (XW' * XW);
+    else
+      ucov = R \ Q' / XW';
+    endif
   endif
 
   ## Calculate the Hat matrix
   if (nargout > 4)
     w = diag (W);
     rw = sqrt (w);
-    Q1 = diag (1 ./ rw) * Q;
-    Q2 = diag (rw) * Q;
-    hat = Q1 * Q2';
+    if (deficient)
+      P = XW * pinv (XW);
+      hat = diag (1 ./ rw) * P * diag (rw);
+    else
+      Q1 = diag (1 ./ rw) * Q;
+      Q2 = diag (rw) * Q;
+      hat = Q1 * Q2';
+    endif
   endif
 
 endfunction
@@ -2001,3 +2074,70 @@ endfunction
 %! anovan ((1:8)', [kron([1; 2], ones(4, 1)), ...
 %!         repmat([1; 1; 2; 2], 2, 1)], 'nested', [0, 0; 1, 0], ...
 %!         'contrasts', {[]; [-0.5; 0.5]}, 'display', 'off')
+
+## A design that is not of full rank keeps a finite error sum-of-squares.
+%!test
+%! A = [1; 1; 1; 1; 2; 2];
+%! B = [1; 1; 2; 2; 1; 1];
+%! y = [3; 4; 7; 8; 5; 6];
+%! [~, tbl] = anovan (y, {A, B}, 'model', 'full', 'sstype', 3, ...
+%!                    'display', 'off');
+%! assert_equal (tbl{end-1, 2}, 1.5, 1e-12);
+%! assert_equal (tbl{end-1, 3}, 3);
+%! assert_equal (tbl{end-1, 5}, 0.5, 1e-12);
+%! assert_equal (tbl{end, 2}, 17.5, 1e-12);
+
+## Which terms are aliased depends on the model each is adjusted for.
+%!test
+%! A = [1; 1; 1; 1; 2; 2];
+%! B = [1; 1; 2; 2; 1; 1];
+%! y = [3; 4; 7; 8; 5; 6];
+%! [~, t3] = anovan (y, {A, B}, 'model', 'full', 'sstype', 3, 'display', 'off');
+%! assert_equal (cell2mat (t3(2:4, 3)), [0; 0; 0]);
+%! assert_equal (cell2mat (t3(2:4, 4)), [1; 1; 1]);
+%! [~, t2] = anovan (y, {A, B}, 'model', 'full', 'sstype', 2, 'display', 'off');
+%! assert_equal (cell2mat (t2(2:4, 3)), [1; 1; 0]);
+%! assert_equal (cell2mat (t2(2:4, 4)), [0; 0; 1]);
+%! assert_equal (cell2mat (t2(2:4, 2)), [4; 16; 0], 1e-12);
+
+## A partially aliased term reports the degrees of freedom it can estimate.
+%!test
+%! A = [1; 1; 2; 2; 3; 3];
+%! B = [1; 1; 1; 1; 2; 2];
+%! y = [3; 4; 7; 8; 5; 6];
+%! [~, tbl] = anovan (y, {A, B}, 'model', 'linear', 'sstype', 3, ...
+%!                    'display', 'off');
+%! assert_equal (cell2mat (tbl(2:3, 3)), [1; 0]);
+%! assert_equal (cell2mat (tbl(2:3, 4)), [1; 1]);
+%! assert_equal (tbl{2, 2}, 16, 1e-12);
+
+## A full rank design flags nothing.
+%!test
+%! A = [1; 1; 2; 2; 1; 1; 2; 2];
+%! B = [1; 2; 1; 2; 1; 2; 1; 2];
+%! y = [3; 4; 7; 8; 5; 6; 9; 11];
+%! [~, tbl] = anovan (y, {A, B}, 'model', 'full', 'display', 'off');
+%! assert_equal (cell2mat (tbl(2:4, 4)), [0; 0; 0]);
+%! assert_equal (cell2mat (tbl(2:4, 2)), [36.125; 3.125; 0.125], 1e-12);
+
+## A factor with a single level has no degrees of freedom but is not aliased.
+%!test
+%! [~, tbl] = anovan ((1:3)', ones (3, 1), 'sstype', 2, 'display', 'off');
+%! assert_equal (tbl{2, 3}, 0);
+%! assert_equal (tbl{2, 4}, 0);
+%! assert_equal (tbl{end-1, 2}, 2, 1e-12);
+
+## Both effect sizes are reported, each under its own name.
+%!test
+%! A = [1; 1; 2; 2; 1; 1; 2; 2];
+%! B = [1; 2; 1; 2; 1; 2; 1; 2];
+%! y = [3; 4; 7; 8; 5; 6; 9; 11];
+%! [~, tbl] = anovan (y, {A, B}, 'model', 'full', 'display', 'off');
+%! assert_equal (tbl(1, :), {'Source', 'Sum Sq.', 'd.f.', 'Singular?', ...
+%!                           'Mean Sq.', 'F', 'Prob>F', 'Eta Sq.', ...
+%!                           'Part. Eta Sq.'});
+%! ss = cell2mat (tbl(2:4, 2));
+%! sse = tbl{end-1, 2};
+%! sst = tbl{end, 2};
+%! assert_equal (cell2mat (tbl(2:4, 8)), ss ./ sst, 1e-12);
+%! assert_equal (cell2mat (tbl(2:4, 9)), ss ./ (ss + sse), 1e-12);

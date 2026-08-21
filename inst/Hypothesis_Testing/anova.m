@@ -3239,7 +3239,7 @@ endclassdef
 %! assert_equal (a.NumFactors, 3);
 %! a.fit ();
 %! assert_equal (a.Stats.source, 'anovan');
-%! assert_equal (size (a.AnovaTable), [6, 7]);
+%! assert_equal (size (a.AnovaTable), [6, 9]);
 %! assert_equal (size (a.Coefficients), [7, 1]);
 %! assert_equal (size (a.Residuals), [24, 2]);
 %! assert_equal (size (a.DesignMatrix), [24, 4]);
@@ -3284,8 +3284,8 @@ endclassdef
 %! assert_equal (T{4, 2}, 132, 1e-12);
 %! assert_equal (T{2, 3}, 2);
 %! assert_equal (T{3, 3}, 6);
-%! assert_equal (T{2, 4}, 63, 1e-12);
-%! assert_equal (T{3, 4}, 1, 1e-12);
+%! assert_equal (T{2, 5}, 63, 1e-12);
+%! assert_equal (T{3, 5}, 1, 1e-12);
 %! assert_equal (T{2, 6}, 63, 1e-12);
 %! assert_equal (T{2, 7}, 9.3914e-05, 1e-9);
 %! assert_equal (a.MSE, 1, 1e-12);
@@ -3739,9 +3739,9 @@ endclassdef
 %!    return;
 %!  endif
 %!  if (columns (tbl) == 6)
-%!    columns_ = [2, 3, 4, 5, 6];
+%!    columns_ = [2, 3, 4, 5, 6];     ## anova1 and anova2 layout
 %!  else
-%!    columns_ = [2, 3, 4, 6, 7];
+%!    columns_ = [2, 3, 5, 6, 7];     ## anovan layout, Mean Sq. after Singular?
 %!  endif
 %!  values = NaN (rows (tbl) - 1, numel (columns_));
 %!  for i = 2:rows (tbl)
