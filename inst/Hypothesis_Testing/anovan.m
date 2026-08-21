@@ -96,7 +96,9 @@
 ## a scalar integer : representing the maximum interaction order
 ##
 ## @item
-## a matrix of term definitions : each row is a term and each column is a factor
+## a matrix of term definitions : each row is a term and each column is a
+## factor. Entries are nonnegative integer exponents. Exponents greater than
+## one are valid only for factors selected by @qcode{"continuous"}.
 ## @end itemize
 ##
 ## @example
@@ -104,6 +106,16 @@
 ## A two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
 ## @end example
 ##
+## @end itemize
+##
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "nested", @var{nested})}
+##
+## @itemize
+## @item
+## @var{nested} is an N-by-N logical matrix, where N is the number of factors.
+## A true entry @code{@var{nested}(i,j)} specifies that factor i is nested in
+## factor j. A factor may be nested in more than one parent. Nested factors
+## must be categorical and use the default contrasts.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "sstype", @var{sstype})}
@@ -262,6 +274,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     VARNAMES = [];
     CONTINUOUS = [];
     RANDOM = [];
+    NESTED = [];
     CONTRASTS = {};
     ALPHA = 0.05;
     WEIGHTS = [];
@@ -276,8 +289,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         case 'random'
           RANDOM = value;
         case 'nested'
-          error (strcat ("anovan: nested ANOVA is not supported. Please use", ...
-                         " anova2 for fully balanced nested ANOVA designs."));
+          NESTED = value;
         case 'sstype'
           SSTYPE = value;
         case 'varnames'
@@ -311,6 +323,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## of strings or numeric identifiers
     N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);       # total number of observations
+    categorical_levels = cell (1, N);
+    categorical_missing = false (n, 1);
     if (prod (size (Y)) != n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector.");
     endif
@@ -324,11 +338,49 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     cont_vec = false (1, N);
     cont_vec(CONTINUOUS) = true;
-    if (iscell (GROUP))
+    if (isempty (NESTED))
+      NESTED = false (N);
+    elseif (! (isnumeric (NESTED) || islogical (NESTED)) ...
+            || ! isequal (size (NESTED), [N, N]) ...
+            || any (! ismember (NESTED(:), [0, 1])) ...
+            || any (diag (NESTED)))
+      error (strcat ("anovan: NESTED must be an N-by-N logical matrix", ...
+                     " with a zero diagonal."));
+    else
+      NESTED = logical (NESTED);
+    endif
+    closure = NESTED;
+    for factor = 1:N
+      closure |= closure(:, factor) * closure(factor, :);
+    endfor
+    if (any (diag (closure)))
+      error ("anovan: NESTED factor relationships must be acyclic.");
+    endif
+    nested_factors = any (NESTED, 2)' | any (NESTED, 1);
+    if (any (cont_vec & nested_factors))
+      error ("anovan: nested factors must be categorical.");
+    endif
+    if (isa (GROUP, "categorical"))
+      for j = 1:N
+        if (ismember (j, CONTINUOUS))
+          error ("anovan: continuous factors must be a numeric datatype.");
+        endif
+        categorical_levels{j} = categories (GROUP(:,j));
+        categorical_missing |= isundefined (GROUP(:,j));
+      endfor
+      GROUP = double (GROUP);
+    elseif (iscell (GROUP))
       if (size (GROUP, 1) == 1)
         tmp = cell (n, N);
         for j = 1:N
-          if (isnumeric (GROUP{j}))
+          if (isa (GROUP{j}, "categorical"))
+            if (ismember (j, CONTINUOUS))
+              error ("anovan: continuous factors must be a numeric datatype.");
+            endif
+            categorical_levels{j} = categories (GROUP{j});
+            categorical_missing |= isundefined (GROUP{j}(:));
+            tmp(:,j) = num2cell (double (GROUP{j}(:)));
+          elseif (isnumeric (GROUP{j}))
             if (ismember (j, CONTINUOUS))
               tmp(:,j) = num2cell (GROUP{j});
             else
@@ -468,7 +520,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if iscell (XC)
         XC = cell2mat (XC);
       endif
-      excl = any ([isnan(Y), isinf(Y), any(isnan(XC),2), any(isinf(XC),2)], 2);
+      excl = any ([isnan(Y), isinf(Y), any(isnan(XC),2), any(isinf(XC),2)], 2) ...
+             | categorical_missing;
       GROUP(excl,:) = [];
     endif
     Y(excl) = [];
@@ -551,36 +604,29 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endfor
           TERMS = cell2mat (TERMS);
       endswitch
-      TERMS = logical (TERMS);
+      TERMS = double (TERMS);
     else
       ## Assume that the user provided a suitable matrix of term definitions
-      if (size (MODELTYPE, 2) > N)
+      if (size (MODELTYPE, 2) != N)
         error (msg);
       endif
-      if (! all (ismember (MODELTYPE(:), [0,1])))
+      if (! isnumeric (MODELTYPE) || any (! isfinite (MODELTYPE(:))) ...
+          || any (MODELTYPE(:) < 0) ...
+          || any (MODELTYPE(:) != fix (MODELTYPE(:))))
         error (strcat ("anovan: elements of the model terms", ...
-                       " matrix must be either 0 or 1."));
+                       " matrix must be nonnegative integers."));
       endif
-      TERMS = logical (MODELTYPE);
+      TERMS = double (MODELTYPE);
     endif
     ## Evaluate terms matrix
-    Ng = sum (TERMS, 2);
-    if (any (diff (Ng) < 0))
-      error (strcat ("anovan: the model terms matrix must list", ...
-                     " main effects above/before interactions."));
-    endif
+    TERMS(! any (TERMS > 0, 2), :) = [];
+    Ng = sum (TERMS > 0, 2);
     ## Drop terms that include interactions with factors specified as random effects.
-    drop = any (bsxfun (@and, TERMS(:,RANDOM), (Ng > 1)), 2);
+    drop = any (bsxfun (@and, TERMS(:,RANDOM) > 0, (Ng > 1)), 2);
     TERMS(drop, :) = [];
     Ng(drop) = [];
     ## Evaluate terms
-    Nm = sum (Ng == 1);
-    Nx = sum (Ng > 1);
-    Nt = Nm + Nx;
-    if (any (any (TERMS(1:Nm,:), 1) != any (TERMS, 1)))
-      error (strcat ("anovan: all factors involved in", ...
-                     " interactions must have a main effect"));
-    endif
+    Nt = rows (TERMS);
 
     ## Calculate total sum-of-squares
     ct  = sum (Y)^2 / n;   % correction term
@@ -608,8 +654,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
         for j = 1:Nt
-          i = find (TERMS(j,:));
-          k = cat (1, 1, 1 + find (any (! TERMS(:,i),2)));
+          i = find (TERMS(j,:) > 0);
+          if (isequal (SSTYPE, 'h'))
+            excludes_term = any (TERMS(:,i) < TERMS(j,i), 2);
+          else
+            excludes_term = any (TERMS(:,i) != TERMS(j,i), 2);
+          endif
+          k = cat (1, 1, 1 + find (excludes_term));
           XS = cell2mat (X(k));
           [jnk, R1] = lmfit (XS, Y, W);
           k = cat (1, j+1, k);
@@ -633,7 +684,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         error ("anovan: sstype value not supported.");
     endswitch
     ss = max (0, ss); # Truncate negative SS at 0
-    dfe = dft - sum (df);
+    dfe = n - rank (cell2mat (X));
     ms = ss ./ df;
     mse = sse / dfe;
     eta_sq = ss ./ sst;
@@ -649,19 +700,20 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     T(end,1:3) = {'Total', sst, dft};
     formula = sprintf ("Y ~ 1");  # Initialize model formula
     for i = 1:Nt
-      str = sprintf ("%s*", VARNAMES{find (TERMS(i,:))});
-      T(i+1,1) = str(1:end-1);
+      str = mTermName (TERMS(i,:), VARNAMES, NESTED);
+      T(i+1,1) = str;
       ## Append model term to formula
       str = regexprep (str, "\\*", ':');
-      if (strcmp (str(end-1), ''''))
+      if (any (ismember (find (TERMS(i,:) > 0), RANDOM)))
         ## Random intercept term
-        formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
+        formula = sprintf ("%s + (1|%s)", formula, ...
+                           strrep (str, "'", ""));
         ## Remove statistics for random factors from the ANOVA table
         #T(RANDOM+1,4:7) = cell(1,4);
         #P(RANDOM) = NaN;
       else
         ## Fixed effect term
-        formula = sprintf ("%s + %s", formula, str(1:end-1));
+        formula = sprintf ("%s + %s", formula, str);
       endif
     endfor
 
@@ -671,7 +723,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     se = sqrt (diag (ucov) * mse);
     t =  b ./ se;
     p = 2 * (1 - (tcdf (abs (t), dfe)));
-    coeff_stats = zeros (1 + sum (df), 4);
+    coeff_stats = zeros (1 + sum (df), 6);
     coeff_stats(:,1) = b;                                # coefficients
     coeff_stats(:,2) = se;                               # standard errors
     coeff_stats(:,3) = b - se * t_crit;                  # Lower CI bound
@@ -681,8 +733,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Assign NaN to p-value to avoid printing statistics relating to
     ## coefficients for 'random' effects
     hi = 1 + cumsum (df);
-    for ignore = RANDOM
-      p(hi(ignore)-df(ignore)+1:hi(ignore)) = NaN;
+    random_terms = find (any (TERMS(:,RANDOM) > 0, 2));
+    for ignore = random_terms'
+      coeff_stats(hi(ignore)-df(ignore)+1:hi(ignore), 6) = NaN;
     endfor
 
     ## Compute leverage values and Cook's distance
@@ -708,8 +761,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     'vars', [], ...          # Not used by Octave
                     'varnames', {VARNAMES}, ...
                     'grpnames', {levels}, ...
-                    'vnested', [], ...       # Not used since "nested" argument name is not supported
-                    'ems', [], ...           # Not used since "nested" argument name is not supported
+                    'vnested', NESTED, ...
+                    'ems', [], ...           # Expected mean squares are computed by anova
                     'denom', [], ...         # Not used since interactions with random factors is not supported
                     'dfdenom', [], ...       # Not used since interactions with random factors is not supported
                     'msdenom', [], ...       # Not used since interactions with random factors is not supported
@@ -891,160 +944,180 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       ## Nested function that returns a cell array of the design matrix for
       ## each term in the model
       ## Input variables it uses:
-      ##  GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, n, Nm, Nx, Ng
+      ##  GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, n
       ## Variables it creates or modifies:
       ##  X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS
 
       ## EVALUATE FACTOR LEVELS
-      levels = cell (Nm, 1);
-      gid = zeros (n, Nm);
-      nlevels = zeros (Nm, 1);
-      df = zeros (Nm + Nx, 1);
-      termcols = ones (1 + Nm + Nx, 1);
-      for j = 1:Nm
-        if (any (j == CONTINUOUS))
-
-          ## CONTINUOUS PREDICTOR
+      levels = cell (N, 1);
+      gid = zeros (n, N);
+      nlevels = zeros (N, 1);
+      for j = 1:N
+        if (cont_vec(j))
           nlevels(j) = 1;
-          termcols(j+1) = 1;
-          df(j) = 1;
-          if iscell (GROUP(:,j))
+          if (iscell (GROUP(:,j)))
             gid(:,j) = cell2mat ([GROUP(:,j)]);
           else
             gid(:,j) = GROUP(:,j);
           endif
-
-        else
-
-          ## CATEGORICAL PREDICTOR
+        elseif (isempty (categorical_levels{j}))
           levels{j} = unique (GROUP(:,j), 'stable');
-          if isnumeric (levels{j})
+          if (isnumeric (levels{j}))
             levels{j} = num2cell (levels{j});
           endif
           nlevels(j) = numel (levels{j});
           for k = 1:nlevels(j)
-            gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
+            gid(ismember (GROUP(:,j), levels{j}{k}),j) = k;
           endfor
-          termcols(j+1) = nlevels(j);
-          df(j) = nlevels(j) - 1;
-
+        else
+          if (iscell (GROUP))
+            codes = cell2mat (GROUP(:,j));
+          else
+            codes = GROUP(:,j);
+          endif
+          level_values = find (accumarray (codes, 1) > 0);
+          levels{j} = categorical_levels{j}(level_values);
+          nlevels(j) = numel (level_values);
+          for k = 1:nlevels(j)
+            gid(codes == level_values(k),j) = k;
+          endfor
         endif
       endfor
 
-      ## MAKE DESIGN MATRIX
-
-      ## MAIN EFFECTS
-      X = cell (1, 1 + Nm + Nx);
-      X(1) = ones (n, 1);
-      coeffnames = cell (1, 1 + Nm + Nx);
-      coeffnames(1) = '(Intercept)';
-      vmeans = zeros (Nm, 1);
+      ## ENCODE EACH FACTOR ONCE
+      base = cell (N, 1);
+      vmeans = zeros (N, 1);
       center_continuous = cont_vec;
-      for j = 1:Nm
-        if (any (j == CONTINUOUS))
-
-          ## CONTINUOUS PREDICTOR
-          if iscell (GROUP(:,j))
-            X(1+j) = cell2mat (GROUP(:,j));
-          else
-            X(1+j) = GROUP(:,j);
-          endif
-          if (strcmpi (CONTRASTS{j}, 'treatment'))
-            ## Don't center continuous variables if contrasts are 'treatment'
+      for j = 1:N
+        if (cont_vec(j))
+          base{j} = gid(:,j);
+          if (ischar (CONTRASTS{j}) ...
+              && strcmpi (CONTRASTS{j}, 'treatment'))
             center_continuous(j) = false;
             CONTRASTS{j} = [];
           else
-            center_continuous(j) = true;
-            vmeans(j) = mean ([X{1+j}]);
-            X(1+j) = [X{1+j}] - vmeans(j);
+            vmeans(j) = mean (base{j});
+            base{j} -= vmeans(j);
           endif
-          ## Create names of the coefficients relating to continuous main effects
-          coeffnames{1+j} = VARNAMES{j};
-
-        else
-
-          ## CATEGORICAL PREDICTOR
-          if (isempty (CONTRASTS{j}))
-            CONTRASTS{j} = contr_simple (nlevels(j));
-          else
-            switch (lower (CONTRASTS{j}))
-              case {'simple','anova'}
-                ## SIMPLE EFFECT CODING (DEFAULT)
-                ## The first level is the reference level
-                CONTRASTS{j} = contr_simple (nlevels(j));
-              case 'poly'
-                ## POLYNOMIAL CONTRAST CODING
-                CONTRASTS{j} = contr_poly (nlevels(j));
-              case 'helmert'
-                ## HELMERT CONTRAST CODING
-                CONTRASTS{j} = contr_helmert (nlevels(j));
-              case 'effect'
-                ## DEVIATION EFFECT CONTRAST CODING
-                CONTRASTS{j} = contr_sum (nlevels(j));
-              case {'sdif','sdiff'}
-                ## SUCCESSIVE DEVIATIONS CONTRAST CODING
-                CONTRASTS{j} = contr_sdif (nlevels(j));
-              case 'treatment'
-                ## The first level is the reference level
-                CONTRASTS{j} = contr_treatment (nlevels(j));
-              otherwise
-                ## EVALUATE CUSTOM CONTRAST MATRIX
-                ## Check that the contrast matrix provided is the correct size
-                if (! all (size (CONTRASTS{j},1) == nlevels(j)))
-                  error (strcat ("anovan: the number of rows in the", ...
-                                 " contrast matrices should equal the", ...
-                                 " number of factor levels."));
-                endif
-                if (! all (size (CONTRASTS{j},2) == df(j)))
-                  error (strcat ("anovan: the number of columns in each", ...
-                                 " contrast matrix should equal the degrees", ...
-                                 " of freedom (i.e. number of levels minus", ...
-                                 " 1) for that factor."));
-                endif
-                if (! all (any (CONTRASTS{j})))
-                  error (strcat ("anovan: a contrast must be coded in each", ...
-                                 " column of the contrast matrices."));
-                endif
-            endswitch
+        elseif (any (NESTED(j,:)))
+          if (! isempty (CONTRASTS{j}))
+            error (strcat ("anovan: custom contrasts are not supported", ...
+                           " for nested factors."));
           endif
-          C = CONTRASTS{j};
-          func = @(x) x(gid(:,j));
-          X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), ...
-                                      'UniformOutput', false));
-          ## Create names of the coefficients relating to continuous main effects
-          coeffnames{1+j} = cell (df(j),1);
-          for v = 1:df(j)
-            coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
+          parents = find (NESTED(j,:));
+          [~, ~, parent_id] = unique (gid(:,parents), 'rows');
+          blocks = cell (max (parent_id), 1);
+          for parent = 1:max (parent_id)
+            rows_ = find (parent_id == parent);
+            child_levels = unique (gid(rows_,j), 'stable');
+            [~, local_id] = ismember (gid(rows_,j), child_levels);
+            C = contr_simple (numel (child_levels));
+            block = zeros (n, columns (C));
+            block(rows_,:) = C(local_id,:);
+            blocks{parent} = block;
           endfor
-
+          base{j} = cell2mat (blocks');
+          CONTRASTS{j} = [];
+        else
+          CONTRASTS{j} = mContrasts (CONTRASTS{j}, nlevels(j));
+          base{j} = CONTRASTS{j}(gid(:,j), :);
         endif
       endfor
 
-      ## INTERACTION TERMS
-      if (Nx > 0)
-        row = TERMS((Ng > 1),:);
-        for i = 1:Nx
-          I = 1 + find (row(i,:));
-          df(Nm+i) = prod (df(I-1));
-          termcols(1+Nm+i) = prod (df(I-1) + 1);
-          tmp = ones (n,1);
-          for j = 1:numel (I);
-            tmp = num2cell (tmp, 1);
-            for k = 1:numel (tmp)
-              tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
-            endfor
-            tmp = cell2mat (tmp);
-          endfor
-          X{1+Nm+i} = tmp;
-          coeffnames{1+Nm+i} = cell (df(Nm+i),1);
-          for v = 1:df(Nm+i)
-            str = sprintf ("%s:", VARNAMES{I-1});
-            coeffnames{1+Nm+i}{v} = strcat (str(1:end-1), "_", num2str (v));
-          endfor
+      ## BUILD ONE DESIGN BLOCK FOR EACH REQUESTED TERM
+      X = cell (1, Nt + 1);
+      X{1} = ones (n, 1);
+      coeffnames = cell (1, Nt + 1);
+      coeffnames{1} = '(Intercept)';
+      df = zeros (Nt, 1);
+      termcols = ones (Nt + 1, 1);
+      for i = 1:Nt
+        factors = find (TERMS(i, :) > 0);
+        tmp = ones (n, 1);
+        for j = factors
+          exponent = TERMS(i, j);
+          if (! cont_vec(j) && exponent != 1)
+            error (strcat ("anovan: categorical factors cannot have", ...
+                           " exponent values greater than 1."));
+          endif
+          block = base{j};
+          if (cont_vec(j) && exponent != 1)
+            block = block .^ exponent;
+          endif
+          tmp = reshape (bsxfun (@times, ...
+                         reshape (tmp, n, 1, columns (tmp)), ...
+                         reshape (block, n, columns (block), 1)), n, []);
         endfor
-      endif
+        X{i + 1} = tmp;
+        df(i) = columns (tmp);
+        termcols(i + 1) = columns (tmp);
+        term_name = mTermName (TERMS(i, :), VARNAMES, NESTED);
+        if (df(i) == 1)
+          coeffnames{i + 1} = term_name;
+        else
+          coeffnames{i + 1} = arrayfun (...
+            @(v) sprintf ("%s_%u", term_name, v), (1:df(i))', ...
+            'UniformOutput', false);
+        endif
+      endfor
 
     endfunction
+
+endfunction
+
+function C = mContrasts (specification, nlevels)
+
+  if (nlevels == 1)
+    C = zeros (1, 0);
+  elseif (isempty (specification))
+    C = contr_simple (nlevels);
+  elseif (ischar (specification))
+    switch (lower (specification))
+      case {'simple', 'anova'}
+        C = contr_simple (nlevels);
+      case 'poly'
+        C = contr_poly (nlevels);
+      case 'helmert'
+        C = contr_helmert (nlevels);
+      case 'effect'
+        C = contr_sum (nlevels);
+      case {'sdif', 'sdiff'}
+        C = contr_sdif (nlevels);
+      case 'treatment'
+        C = contr_treatment (nlevels);
+      otherwise
+        error ("anovan: unknown contrast specification.");
+    endswitch
+  else
+    C = specification;
+    if (! isequal (size (C), [nlevels, nlevels - 1]))
+      error (strcat ("anovan: each contrast matrix must have one row per", ...
+                     " factor level and one fewer column."));
+    elseif (! all (any (C)))
+      error ("anovan: a contrast must be coded in every column.");
+    endif
+  endif
+
+endfunction
+
+function name = mTermName (term, varnames, nested)
+
+  pieces = cell (1, nnz (term));
+  count = 0;
+  for j = find (term > 0)
+    count += 1;
+    factor = varnames{j};
+    if (nargin > 2 && any (nested(j,:)))
+      parents = strrep (varnames(nested(j,:)), "'", "");
+      factor = sprintf ("%s(%s)", factor, strjoin (parents, ","));
+    endif
+    if (term(j) == 1)
+      pieces{count} = factor;
+    else
+      pieces{count} = sprintf ("%s^%d", factor, term(j));
+    endif
+  endfor
+  name = strjoin (pieces, "*");
 
 endfunction
 
@@ -1780,3 +1853,110 @@ endfunction
 %! assert_equal (STATS.coeffs(3,6), 0.000572, 1e-06);
 %! assert_equal (STATS.coeffs(4,6), 2.86e-05, 1e-07);
 %! assert_equal (STATS.coeffs(5,6), 4.44e-06, 1e-08);
+
+## Interaction columns preserve factor-column ordering.
+%!test
+%! y = (1:12)';
+%! g1 = repmat ([1; 2; 3], 4, 1);
+%! g2 = kron ([1; 2], ones (6, 1));
+%! [~, ~, stats] = anovan (y, {g1, g2}, 'model', 'full', ...
+%!                         'display', 'off');
+%! assert_equal (stats.X(:,5), stats.X(:,2) .* stats.X(:,4));
+%! assert_equal (stats.X(:,6), stats.X(:,3) .* stats.X(:,4));
+
+## Full six-factor interactions preserve every model term.
+%!test
+%! n = 128;
+%! group = cell (1, 6);
+%! for k = 1:6
+%!   group{k} = mod (floor ((0:n-1)' / 2^(k-1)), 2) + 1;
+%! endfor
+%! [p, ~, stats, terms] = anovan ((1:n)', group, 'model', 'full', ...
+%!                                'display', 'off');
+%! assert_equal (rows (terms), 63);
+%! assert_equal (columns (stats.X), 64);
+%! assert_equal (numel (p), 63);
+
+## A one-level factor has no estimable main effect.
+%!test
+%! group = ones (3, 1);
+%! [p, tbl, stats] = anovan ((1:3)', group, ...
+%!                          'sstype', 2, 'display', 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (tbl{2, 2}, 0);
+%! assert_equal (tbl{2, 3}, 0);
+%! assert_equal (tbl{2, 6}, NaN);
+%! assert_equal (size (stats.X), [3, 1]);
+
+## Categorical factors retain their declared order and omit missing observations.
+%!test
+%! group = categorical ([3; 3; NaN; 1; 1], [3, 2, 1]);
+%! [p, tbl, stats] = anovan ((1:5)', group, 'sstype', 2, 'display', 'off');
+%! [p_ref, tbl_ref] = anovan ([1; 2; 4; 5], [1; 1; 2; 2], ...
+%!                           'sstype', 2, 'display', 'off');
+%! assert_equal (p, p_ref, 1e-12);
+%! assert_equal (tbl, tbl_ref);
+%! assert_equal (stats.grpnames{1}, {'3'; '1'});
+%! assert_equal (stats.Y, [1; 2; 4; 5]);
+
+## Terms matrices select factors by column rather than row position.
+%!test
+%! A = [1; 1; 2; 2];
+%! B = [1; 2; 1; 2];
+%! y = 100 * A + B;
+%! [~, tbl, stats, terms] = anovan (y, {A, B}, 'model', [0, 1], ...
+%!                                  'display', 'off');
+%! assert_equal (terms, [0, 1]);
+%! assert_equal (tbl{2, 1}, 'X2');
+%! assert_equal (tbl{2, 2}, 1, 1e-12);
+%! assert_equal (full (stats.X(:, 2)), [-0.5; 0.5; -0.5; 0.5]);
+
+## Reordering terms changes Type I order without relabeling their columns.
+%!test
+%! A = [1; 1; 2; 2];
+%! B = [1; 2; 1; 2];
+%! y = 100 * A + B;
+%! [~, tbl] = anovan (y, {A, B}, 'model', [0, 1; 1, 0], ...
+%!                    'sstype', 1, 'display', 'off');
+%! assert_equal (tbl(2:3, 1), {'X2'; 'X1'});
+%! assert_equal (cell2mat (tbl(2:3, 2)), [1; 10000], 1e-10);
+
+## Continuous exponent terms are evaluated element-wise.
+%!test
+%! x = (-2:2)';
+%! y = 2 + 3 * x + 4 * x .^ 2;
+%! [~, ~, stats, terms] = anovan (y, x, 'model', [1; 2], ...
+%!                                  'continuous', 1, 'display', 'off');
+%! assert_equal (terms, [1; 2]);
+%! assert_equal (full (stats.X(:, 2)), x);
+%! assert_equal (full (stats.X(:, 3)), x .^ 2);
+%! assert_equal (stats.resid, zeros (5, 1), 1e-12);
+
+%!error <categorical factors cannot have exponent> ...
+%! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
+%!         'model', [2, 0], 'display', 'off')
+
+%!error <NESTED must be an N-by-N logical matrix> ...
+%! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
+%!         'nested', [0, 1], 'display', 'off')
+
+%!error <NESTED must be an N-by-N logical matrix> ...
+%! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
+%!         'nested', [0, 2; 0, 0], 'display', 'off')
+
+%!error <NESTED must be an N-by-N logical matrix> ...
+%! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
+%!         'nested', eye (2), 'display', 'off')
+
+%!error <NESTED factor relationships must be acyclic> ...
+%! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
+%!         'nested', [0, 1; 1, 0], 'display', 'off')
+
+%!error <nested factors must be categorical> ...
+%! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
+%!         'nested', [0, 0; 1, 0], 'continuous', 1, 'display', 'off')
+
+%!error <custom contrasts are not supported for nested factors> ...
+%! anovan ((1:8)', [kron([1; 2], ones(4, 1)), ...
+%!         repmat([1; 1; 2; 2], 2, 1)], 'nested', [0, 0; 1, 0], ...
+%!         'contrasts', {[]; [-0.5; 0.5]}, 'display', 'off')

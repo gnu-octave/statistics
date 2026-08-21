@@ -34,6 +34,9 @@
 ## @item
 ## @var{x} contains the data and it must be a matrix of at least two columns and
 ## two rows.
+## @code{NaN} observations are omitted.  If the remaining observations do not
+## form a balanced two-way design, @code{anova2} warns and delegates the fit to
+## @code{anovan}.
 ##
 ## @item
 ## @var{reps} is the number of replicates for each combination of factor groups.
@@ -104,10 +107,6 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   if (nargin < 1 || nargin >4)
     error ("anova2: invalid number of input arguments.");
   endif
-  ## Check for NaN values in X
-  if (any (isnan ( x(:))))
-    error ("anova2: NaN values in input are not allowed.  Use anovan instead.");
-  endif
   ## Add defaults
   if (nargin == 1)
     reps = 1;
@@ -128,15 +127,26 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   ## Check for valid repetitions
   if (! (int16 (FFGn) == FFGn))
     error ("anova2: the number of rows in X must be a multiple of REPS.");
-  else
-    idx_s = 1;
-    idx_e = reps;
-    for i = 1:FFGn
-      RIdx(i,:) = [idx_s:idx_e];
-      idx_s += reps;
-      idx_e += reps;
-    endfor
   endif
+
+  ## Remove NaNs when the remaining two-way design is still balanced.
+  if (any (isnan (x(:))))
+    [x, reps, balanced] = remove_nan_cells (x, reps, FFGn, SFGn);
+    if (! balanced)
+      [p, anovatab, stats] = anova2_anovan_fallback (x, reps, model, displayopt);
+      return;
+    endif
+    FFGn = size (x, 1) / reps;
+    SFGn = size (x, 2);
+  endif
+
+  idx_s = 1;
+  idx_e = reps;
+  for i = 1:FFGn
+    RIdx(i,:) = [idx_s:idx_e];
+    idx_s += reps;
+    idx_e += reps;
+  endfor
 
   ## Calculate group sample sizes
   GTsz = length (x(:));                 ## Number of total samples
@@ -161,12 +171,10 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Calculate Sum of Squares Error (Within)
   if (reps > 1)
-    SSE = 0;
-    for i = 1:FFGn
-      for j = 1:SFGn
-        SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
-      endfor
-    endfor
+    xcells = reshape (x, reps, FFGn, SFGn);
+    xdev = bsxfun (@minus, xcells, mean (xcells, 1));
+    cell_sse = squeeze (sumsq (xdev, 1));
+    SSE = sum (cell_sse.'(:));
   else
     SSE = SST - SSC - SSR;
   endif
@@ -335,6 +343,70 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   endif
 endfunction
 
+function [x, reps, balanced] = remove_nan_cells (x, reps, FFGn, SFGn)
+
+  xcells = reshape (x, reps, FFGn, SFGn);
+  valid = ! isnan (xcells);
+  cell_counts = squeeze (sum (valid, 1));
+  balanced = all (cell_counts(:) == cell_counts(1));
+
+  if (! balanced)
+    return;
+  endif
+
+  reps = cell_counts(1);
+  if (reps == 0)
+    balanced = false;
+    return;
+  endif
+
+  x_clean = zeros (reps * FFGn, SFGn);
+  for i = 1:FFGn
+    rows = (i - 1) * reps + (1:reps);
+    for j = 1:SFGn
+      vals = xcells(:, i, j);
+      x_clean(rows, j) = vals(! isnan (vals));
+    endfor
+  endfor
+  x = x_clean;
+
+endfunction
+
+function [p, anovatab, stats] = anova2_anovan_fallback (x, reps, model, displayopt)
+
+  [y, col_group, row_group] = anova2_unroll_groups (x, reps);
+  switch (lower (model))
+    case {'interaction', 'full'}
+      model = 'full';
+    case 'linear'
+      model = 'linear';
+    otherwise
+      error (strcat ("anova2: NaN removal created an unbalanced design;", ...
+                     " nested fallback is not supported."));
+  endswitch
+
+  warning (strcat ("anova2: NaN removal created an unbalanced design;", ...
+                   " using anovan instead."));
+  [p, anovatab, stats] = anovan (y, {col_group, row_group}, ...
+                                 'model', model, ...
+                                 'display', displayopt, ...
+                                 'varnames', {'Columns', 'Rows'});
+
+endfunction
+
+function [y, col_group, row_group] = anova2_unroll_groups (x, reps)
+
+  FFGn = size (x, 1) / reps;
+  SFGn = size (x, 2);
+  xcells = reshape (x, reps, FFGn, SFGn);
+  [~, row_idx, col_idx] = ndgrid (1:reps, 1:FFGn, 1:SFGn);
+  valid = ! isnan (xcells);
+  y = xcells(valid);
+  col_group = col_idx(valid);
+  row_group = row_idx(valid);
+
+endfunction
+
 
 %!demo
 %!
@@ -428,3 +500,23 @@ endfunction
 %! assert_equal (atab{3,5}, 9.25800729165627, 1e-10);
 %! assert_equal (atab{2,6}, 0.141597630656771, 1e-10);
 %! assert_equal (atab{3,6}, 0.000636643812875719, 1e-10);
+
+%!test
+%! ## Balanced NaN removal keeps anova2 calculations on the balanced design.
+%! x = [NaN NaN; 2 5; 3 6; NaN NaN; 8 8; 10 9];
+%! xclean = [2 5; 3 6; 8 8; 10 9];
+%! [p, atab, stats] = anova2 (x, 3, 'off');
+%! [p2, atab2, stats2] = anova2 (xclean, 2, 'off');
+%! assert_equal (p, p2, 1e-12);
+%! assert_equal (atab, atab2);
+%! assert_equal (stats.source, "anova2");
+%! assert_equal (stats.df, stats2.df);
+
+%!test
+%! ## Unbalanced NaN removal follows MATLAB guidance and uses anovan.
+%! x = [1 NaN; 2 5; 3 6; 4 7; 8 8; 10 9];
+%! str = evalc ("[p, atab, stats] = anova2 (x, 3, 'off');");
+%! assert_equal (! isempty (strfind (str, "using anovan instead")), true);
+%! assert_equal (stats.source, "anovan");
+%! assert_equal (atab{2, 1}, "Columns");
+%! assert_equal (atab{3, 1}, "Rows");
