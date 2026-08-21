@@ -188,7 +188,7 @@ endfunction
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, [0; 1])
 %! assert_equal (a.PredictorNames, PredictorNames)
 %! assert_equal (a.BaseModel.Intercept, 0)
 %!test
@@ -198,7 +198,7 @@ endfunction
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 5})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, [0; 1])
 %! assert_equal (a.PredictorNames, {'x1', 'x2'})
 %! assert_equal (a.ModelwInt.Intercept, 0.4055, 1e-1)
 %!test
@@ -211,7 +211,7 @@ endfunction
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, logical ([0; 1]))
 %! assert_equal (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
 %! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
 %! assert_equal (a.ModelwInt.Intercept, 0)

@@ -300,6 +300,52 @@ classdef ClassificationGAM
     NumIterations   = [];
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Intercept
+    ##
+    ## Intercept of the fitted model
+    ##
+    ## A numeric scalar, the log-odds of the response mean, which every
+    ## additive term is measured against.  This property is read-only.
+    ##
+    ## @end deftp
+    Intercept       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation used for
+    ## training, normalised to sum to one.  This property is read-only.
+    ##
+    ## @end deftp
+    W               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector holding the column of each predictor treated as
+    ## categorical, and empty when none is.  This property is read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ExpandedPredictorNames
+    ##
+    ## Names of the expanded predictor variables
+    ##
+    ## A cell array of character vectors naming the predictors as the model
+    ## sees them.  It matches @code{PredictorNames} unless a categorical
+    ## predictor was expanded into dummy variables.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} BaseModel
     ##
     ## Base model parameters
@@ -786,9 +832,21 @@ classdef ClassificationGAM
       Y         = Y(RowsUsed);
       X         = X(RowsUsed, :);
 
-      ## Renew groups in Y
+      ## Renew groups in Y.  The third output of grp2idx holds the levels in
+      ## the type of Y, where the second is always a cell array of character
+      ## vectors, so a numeric or logical response keeps its own type.  grp2idx
+      ## orders a character or cell response by first appearance where MATLAB
+      ## sorts the classes, so the levels are sorted and the indices remapped.
       [gY, gnY, glY] = grp2idx (Y);
-      this.ClassNames = gnY;
+      if (ischar (glY))
+        [glY, sidx] = sortrows (glY);
+      else
+        [glY, sidx] = sort (glY);
+      endif
+      remap(sidx) = 1:numel (sidx);
+      gY = remap(gY)(:);
+      gnY = gnY(sidx);
+      this.ClassNames = glY;
 
       ## Check that we are dealing only with binary classification
       if (numel (gnY) > 2)
@@ -850,6 +908,13 @@ classdef ClassificationGAM
       this.BaseModel.Iterations = iter;
       this.BaseModel.Residuals  = res;
       this.BaseModel.RSS        = RSS;
+
+      ## Bookkeeping MATLAB reports alongside the fit
+      this.Intercept             = intercept;
+      this.W                     = ones (this.NumObservations, 1) ...
+                                   / this.NumObservations;
+      this.CategoricalPredictors = [];
+      this.ExpandedPredictorNames = this.PredictorNames;
 
       ## Handle interaction terms (if given)
       if (F_I > 0)
@@ -1042,6 +1107,9 @@ classdef ClassificationGAM
       [~, minIdx] = min (CE, [], 2);
       labels = this.ClassNames (minIdx);
 
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
+
     endfunction
 
     ## -*- texinfo -*-
@@ -1180,6 +1248,256 @@ classdef ClassificationGAM
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## Classification margin of a generalized additive model.
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns a column
+    ## vector holding, for each row of @var{X}, the score the model gives its
+    ## true class in @var{Y} less the score it gives the other class.  A
+    ## positive margin means the observation is classified correctly, and the
+    ## larger it is the more confidently so.
+    ##
+    ## @seealso{ClassificationGAM, edge, loss, predict}
+    ## @end deftypefn
+    function m = margin (this, X, Y)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationGAM.margin: too few input arguments.");
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "margin");
+
+      [~, scores] = predict (this, X);
+      classes = this.ClassNames;
+      m = zeros (rows (X), 1);
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          m(i) = NaN;
+          continue;
+        endif
+        true_score = scores(i, idx);
+        scores(i, idx) = -Inf;
+        m(i) = true_score - max (scores(i,:));
+        scores(i, idx) = true_score;
+      endfor
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationGAM} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge of a generalized additive model.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} returns the mean of
+    ## the classification margins over the rows of @var{X}.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @seealso{ClassificationGAM, margin, loss, predict}
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationGAM.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationGAM.edge: Name-Value arguments", ...
+                       " must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "edge");
+      W = getWeights_ (this, varargin, rows (X), "edge");
+
+      m = margin (this, X, Y);
+      e = sum (W(:) .* m) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationGAM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of a generalized additive model.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the loss of
+    ## the model on the rows of @var{X} against the true labels @var{Y}.
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
+    ## following name-value pairs:
+    ##
+    ## @itemize
+    ## @item
+    ## @qcode{"LossFun"} selects the loss.  Supported values are
+    ## @qcode{"mincost"}, the default, @qcode{"binodeviance"},
+    ## @qcode{"classifcost"}, @qcode{"classiferror"}, @qcode{"exponential"},
+    ## @qcode{"hinge"}, @qcode{"logit"} and @qcode{"quadratic"}.
+    ## @qcode{"mincost"} assigns each observation to the class of least
+    ## expected cost and charges what that assignment costs, so it reads the
+    ## scores as a posterior, which is what this model returns;
+    ## @qcode{"classifcost"} charges what the model's own prediction costs.
+    ##
+    ## @item
+    ## @qcode{"Weights"} holds one weight per row of @var{X}, normalised to
+    ## sum to one before it is applied.
+    ## @end itemize
+    ##
+    ## @seealso{ClassificationGAM, margin, edge, predict}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationGAM.loss: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationGAM.loss: Name-Value arguments", ...
+                       " must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "loss");
+
+      ## Parse optional arguments
+      LossFun = 'mincost';
+      lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
+                   'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      args = varargin;
+      keep = true (1, numel (args));
+      for i = 1:2:numel (args)
+        if (strcmpi (args{i}, 'lossfun'))
+          LossFun = args{i+1};
+          if (! (ischar (LossFun) && isrow (LossFun)))
+            error (strcat ("ClassificationGAM.loss: 'LossFun' must be", ...
+                           " a character vector."));
+          endif
+          LossFun = tolower (LossFun);
+          if (! any (strcmpi (LossFun, lossnames)))
+            error ("ClassificationGAM.loss: unsupported Loss function.");
+          endif
+          keep(i:i+1) = false;
+        endif
+      endfor
+      W = getWeights_ (this, args(keep), rows (X), "loss");
+      W = W(:) / sum (W);
+
+      [label, scores] = predict (this, X);
+      classes = this.ClassNames;
+
+      ## Membership of the true class, as an indicator per class
+      Yind = zeros (rows (X), numel (classes));
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          L = NaN;
+          return;
+        endif
+        Yind(i, idx) = 1;
+      endfor
+
+      ## The scalar score of the true class of each observation
+      mj = sum (scores .* Yind, 2);
+
+      switch (LossFun)
+        case 'classiferror'
+          wrong = zeros (rows (X), 1);
+          for i = 1:rows (X)
+            wrong(i) = ! isequal (label(i), Y(i));
+          endfor
+          L = sum (W .* wrong);
+        case 'binodeviance'
+          L = sum (W .* log (1 + exp (-2 * mj)));
+        case 'hinge'
+          L = sum (W .* max (0, 1 - mj));
+        case 'exponential'
+          L = sum (W .* exp (-mj));
+        case 'logit'
+          L = sum (W .* log (1 + exp (-mj)));
+        case 'quadratic'
+          L = sum (W .* (1 - mj) .^ 2);
+        case 'mincost'
+          ## Each observation is assigned to the class of least expected
+          ## cost, and charged what that assignment actually costs given its
+          ## true class.
+          L = 0;
+          for i = 1:rows (X)
+            [~, k] = min (scores(i,:) * this.Cost);
+            true_idx = find (ismember (classes, Y(i)));
+            L = L + W(i) * this.Cost(true_idx, k);
+          endfor
+        case 'classifcost'
+          ## What the model's own prediction costs, given the true class
+          L = 0;
+          for i = 1:rows (X)
+            true_idx = find (ismember (classes, Y(i)));
+            pred_idx = find (ismember (classes, label(i)));
+            L = L + W(i) * this.Cost(true_idx, pred_idx);
+          endfor
+      endswitch
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{label} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationGAM} {[@var{label}, @var{score}] =} resubPredict (@var{obj})
+    ##
+    ## Classify the training data with the generalized additive model it was
+    ## fitted on.
+    ##
+    ## @code{@var{label} = resubPredict (@var{obj})} is @code{predict} applied
+    ## to the observations the model was fitted on.
+    ##
+    ## @seealso{ClassificationGAM, predict}
+    ## @end deftypefn
+    function [labels, scores] = resubPredict (this)
+      [labels, scores] = predict (this, this.X(logical (this.RowsUsed), :));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{m} =} resubMargin (@var{obj})
+    ##
+    ## Classification margin of a generalized additive model on its training
+    ## data.
+    ##
+    ## @seealso{ClassificationGAM, margin}
+    ## @end deftypefn
+    function m = resubMargin (this)
+      used = logical (this.RowsUsed);
+      m = margin (this, this.X(used, :), this.Y(used));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{e} =} resubEdge (@var{obj})
+    ##
+    ## Classification edge of a generalized additive model on its training
+    ## data.
+    ##
+    ## @seealso{ClassificationGAM, edge}
+    ## @end deftypefn
+    function e = resubEdge (this)
+      used = logical (this.RowsUsed);
+      e = edge (this, this.X(used, :), this.Y(used));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{L} =} resubLoss (@var{obj})
+    ## @deftypefnx {ClassificationGAM} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of a generalized additive model on its training
+    ## data.
+    ##
+    ## @seealso{ClassificationGAM, loss}
+    ## @end deftypefn
+    function L = resubLoss (this, varargin)
+      used = logical (this.RowsUsed);
+      L = loss (this, this.X(used, :), this.Y(used), varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationGAM} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationGAM object.
@@ -1223,6 +1541,10 @@ classdef ClassificationGAM
       BaseModel       = this.BaseModel;
       ModelwInt       = this.ModelwInt;
       IntMatrix       = this.IntMatrix;
+      Intercept       = this.Intercept;
+      W               = this.W;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
       STname          = this.STname;
 
       ## Save classdef name and all model properties as individual variables
@@ -1234,7 +1556,8 @@ classdef ClassificationGAM
             'ClassNames', 'Prior', 'Cost', 'ScoreTransform', 'Formula', ...
             'Interactions', 'Knots', 'Order', 'DoF', 'BaseModel', ...
             'ModelwInt', 'IntMatrix', 'LearningRate', 'NumIterations', ...
-            'STname');
+            'Intercept', 'W', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames', 'STname');
     endfunction
 
   endmethods
@@ -1265,6 +1588,49 @@ classdef ClassificationGAM
 
   ## Helper functions
   methods(Access = private)
+
+    ## Shared validation for the assessment methods, so each reports under
+    ## its own name.
+    function [X, Y] = checkXY_ (this, X, Y, caller)
+      if (isempty (X))
+        error ("ClassificationGAM.%s: X is empty.", caller);
+      elseif (this.NumPredictors != columns (X))
+        error (strcat ("ClassificationGAM.%s: X must have the same number", ...
+                       " of predictors as the trained model."), caller);
+      endif
+      if (isempty (Y))
+        error ("ClassificationGAM.%s: Y is empty.", caller);
+      elseif (rows (X) != rows (Y))
+        error (strcat ("ClassificationGAM.%s: Y must have the same number", ...
+                       " of rows as X."), caller);
+      endif
+    endfunction
+
+    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
+    ## uniform weight, and reject any other name.
+    function W = getWeights_ (this, args, n, caller)
+      W = ones (n, 1);
+      for i = 1:2:numel (args)
+        if (! (ischar (args{i}) && isrow (args{i})))
+          error (strcat ("ClassificationGAM.%s: parameter name must be", ...
+                         " a character vector."), caller);
+        endif
+        if (strcmpi (args{i}, 'weights'))
+          W = args{i+1};
+          if (! (isnumeric (W) && isvector (W)))
+            error (strcat ("ClassificationGAM.%s: 'Weights' must be a", ...
+                           " numeric vector."), caller);
+          endif
+          if (numel (W) != n)
+            error (strcat ("ClassificationGAM.%s: size of 'Weights' must", ...
+                           " equal the number of rows in X."), caller);
+          endif
+        else
+          error (strcat ("ClassificationGAM.%s: invalid parameter name in", ...
+                         " optional paired arguments."), caller);
+        endif
+      endfor
+    endfunction
 
     ## Determine interactions from Interactions optional parameter
     function intMat = parseInteractions (this)
@@ -1429,7 +1795,9 @@ classdef ClassificationGAM
     ## Set cost
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+        ## The classes are already known, and reading them back out of Y
+        ## needed RowsUsed, which is a double here and a mask nowhere
+        gnY = this.ClassNames;
       endif
       if (isempty (Cost))
         this.Cost = cast (! eye (numel (gnY)), 'double');
@@ -1493,7 +1861,7 @@ endfunction
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, [0; 1])
 %! assert_equal (a.PredictorNames, PredictorNames)
 %! assert_equal (a.BaseModel.Intercept, 0)
 %!test
@@ -1506,7 +1874,7 @@ endfunction
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, logical ([0; 1]))
 %! assert_equal (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
 %! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
 %! assert_equal (a.ModelwInt.Intercept, 0)
@@ -1517,7 +1885,7 @@ endfunction
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 5})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, [0; 1])
 %! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3'})
 %! assert_equal (a.Knots, [4, 4, 4])
 %! assert_equal (a.Order, [3, 3, 3])
@@ -1606,14 +1974,14 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
 %! a = ClassificationGAM (x, y, 'interactions', 'all');
-%! l = {'1'; '0'; '1'; '0'; '1'};
+%! l = [1; 0; 1; 0; 1];
 %! s = [0.0334, 0.9666; 0.9648, 0.0352; 0.0334, 0.9666; ...
 %!      0.9648, 0.0352; 0.0334, 0.9666];
 %! [labels, scores] = predict (a, x);
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 5})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, [0; 1])
 %! assert_equal (a.PredictorNames, {'x1', 'x2'})
 %! assert_equal (a.ModelwInt.Intercept, 0.4055, 1e-1)
 %! assert_equal (labels, l)
@@ -1624,12 +1992,12 @@ endfunction
 %! interactions = [false, true, false; true, false, true; false, true, false];
 %! a = fitcgam (x, y, 'learningrate', 0.2, 'interactions', interactions);
 %! [label, score] = predict (a, x, 'includeinteractions', true);
-%! l = {'0'; '0'; '1'; '1'};
+%! l = [0; 0; 1; 1];
 %! s = [0.9725, 0.0275; 0.9895, 0.0105; 0.0070, 0.9930; 0.0238, 0.9762];
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.ClassNames, [0; 1])
 %! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3'})
 %! assert_equal (a.ModelwInt.Intercept, 0)
 %! assert_equal (label, l)
@@ -1718,3 +2086,142 @@ endfunction
 %! Mdl.ScoreTransform = 'symmetric';
 %! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
 %! assert_equal (Mdl.ScoreTransform (0.25), -0.5);
+
+## The new properties MATLAB reports are carried and saved.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! assert_equal (Mdl.Intercept, Mdl.BaseModel.Intercept);
+%! assert_equal (size (Mdl.W), [Mdl.NumObservations, 1]);
+%! assert_equal (sum (Mdl.W), 1, 1e-12);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.ExpandedPredictorNames, Mdl.PredictorNames);
+
+## ClassNames keeps the type of the response, as MATLAB has it.
+%!test
+%! assert_equal (fitcgam ([1;2;3;4], [7;3;7;3]).ClassNames, [3; 7]);
+%! assert_equal (fitcgam ([1;2;3;4], logical ([1;0;1;0])).ClassNames, ...
+%!               logical ([0; 1]));
+%! assert_equal (fitcgam ([1;2;3;4], {'b';'a';'b';'a'}).ClassNames, ...
+%!               {'a'; 'b'});
+%! assert_equal (fitcgam ([1;2;3;4], ['b';'a';'b';'a']).ClassNames, ['a';'b']);
+
+## An assigned ScoreTransform reaches the scores predict returns.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! [~, s0] = predict (Mdl, meas(inds,:));
+%! Mdl.ScoreTransform = 'symmetric';
+%! [~, s1] = predict (Mdl, meas(inds,:));
+%! assert_equal (s1, 2 * s0 - 1, 1e-12);
+
+## The edge is the mean of the margins, and weights reweight that mean.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcgam (X, Y);
+%! m = margin (Mdl, X, Y);
+%! assert_equal (edge (Mdl, X, Y), mean (m), 1e-12);
+%! w = [ones(50, 1); 3 * ones(50, 1)];
+%! assert_equal (edge (Mdl, X, Y, 'Weights', w), sum (w .* m) / sum (w), 1e-12);
+
+## The resubstitution methods are the assessment methods on the training data.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcgam (X, Y);
+%! assert_equal (resubPredict (Mdl), predict (Mdl, X));
+%! assert_equal (resubMargin (Mdl), margin (Mdl, X, Y));
+%! assert_equal (resubEdge (Mdl), edge (Mdl, X, Y));
+%! assert_equal (resubLoss (Mdl), loss (Mdl, X, Y));
+
+## Every loss function returns a finite scalar.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcgam (X, Y);
+%! names = {'binodeviance', 'classifcost', 'classiferror', 'exponential', ...
+%!          'hinge', 'logit', 'mincost', 'quadratic'};
+%! for k = 1:numel (names)
+%!   L = loss (Mdl, X, Y, 'LossFun', names{k});
+%!   assert_equal (isscalar (L) && isfinite (L), true);
+%! endfor
+
+## A 'Cost' matching the number of classes is accepted.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! Mdl.Cost = [0, 2; 5, 0];
+%! assert_equal (Mdl.Cost, [0, 2; 5, 0]);
+
+## A saved and reloaded model carries every property, and predicts alike.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Mdl = fitcgam (X, species(inds), 'Interactions', 'all', 'NumIterations', 20);
+%! Mdl.ScoreTransform = 'symmetric';
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (Mdl2.Intercept, Mdl.Intercept);
+%! assert_equal (Mdl2.W, Mdl.W);
+%! assert_equal (Mdl2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+%! assert_equal (Mdl2.ModelwInt.Parameters(1).coefs, ...
+%!               Mdl.ModelwInt.Parameters(1).coefs);
+%! assert_equal (Mdl2.ScoreTransform (0.25), -0.5);
+%! [label, score] = predict (Mdl, X);
+%! [label2, score2] = predict (Mdl2, X);
+%! assert_equal (label2, label);
+%! assert_equal (score2, score);
+
+%!shared x, y, Mdl
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! x = meas(inds,:);
+%! y = species(inds);
+%! Mdl = fitcgam (x, y);
+
+## Test input validation for margin method
+%!error<ClassificationGAM.margin: too few input arguments.> ...
+%! margin (Mdl, x)
+%!error<ClassificationGAM.margin: X is empty.> ...
+%! margin (Mdl, [], y)
+%!error<ClassificationGAM.margin: X must have the same number of predictors as the trained model.> ...
+%! margin (Mdl, 1, y)
+%!error<ClassificationGAM.margin: Y is empty.> ...
+%! margin (Mdl, x, [])
+%!error<ClassificationGAM.margin: Y must have the same number of rows as X.> ...
+%! margin (Mdl, x, y(1:10))
+
+## Test input validation for edge method
+%!error<ClassificationGAM.edge: too few input arguments.> ...
+%! edge (Mdl, x)
+%!error<ClassificationGAM.edge: Name-Value arguments must be in pairs.> ...
+%! edge (Mdl, x, y, 'Weights')
+%!error<ClassificationGAM.edge: invalid parameter name in optional paired arguments.> ...
+%! edge (Mdl, x, y, 'LossFun', 'hinge')
+%!error<ClassificationGAM.edge: 'Weights' must be a numeric vector.> ...
+%! edge (Mdl, x, y, 'Weights', 'a')
+%!error<ClassificationGAM.edge: size of 'Weights' must equal the number of rows in X.> ...
+%! edge (Mdl, x, y, 'Weights', [1, 2, 3])
+
+## Test input validation for loss method
+%!error<ClassificationGAM.loss: too few input arguments.> ...
+%! loss (Mdl, x)
+%!error<ClassificationGAM.loss: Name-Value arguments must be in pairs.> ...
+%! loss (Mdl, x, y, 'LossFun')
+%!error<ClassificationGAM.loss: 'LossFun' must be a character vector.> ...
+%! loss (Mdl, x, y, 'LossFun', 1)
+%!error<ClassificationGAM.loss: unsupported Loss function.> ...
+%! loss (Mdl, x, y, 'LossFun', 'nonsense')

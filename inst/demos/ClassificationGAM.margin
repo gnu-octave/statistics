@@ -1,0 +1,25 @@
+%!demo
+%! ## 1. The margin says how confidently each observation is classified
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y);
+%!
+%! ## Positive wherever the model is right, and larger the more sure it is
+%! m = margin (mdl, X, Y);
+%! [min(m), median(m), max(m)]
+
+%!demo
+%! ## 2. A margin turns negative where the model is wrong
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y, 'NumIterations', 20);
+%!
+%! ## Count the observations the model places on the wrong side
+%! m = margin (mdl, X, Y);
+%! sum (m < 0)

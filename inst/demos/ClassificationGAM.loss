@@ -1,0 +1,40 @@
+%!demo
+%! ## 1. The proportion of observations the model gets wrong
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y);
+%!
+%! ## classiferror counts mistakes; mincost, the default, charges what the
+%! ## least costly assignment costs given the true class
+%! [loss(mdl, X, Y, 'LossFun', 'classiferror'), loss(mdl, X, Y)]
+
+%!demo
+%! ## 2. The losses differ in how hard they punish an uncertain answer
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y, 'NumIterations', 20);
+%!
+%! ## Each is a function of the same margins, so they rank models alike but
+%! ## not on the same scale
+%! names = {'classiferror', 'mincost', 'hinge', 'quadratic', 'logit'};
+%! for i = 1:numel (names)
+%!   printf ("%-13s %.4f\n", names{i}, loss (mdl, X, Y, 'LossFun', names{i}));
+%! endfor
+
+%!demo
+%! ## 3. resubLoss is the loss on the data the model was fitted on
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y);
+%!
+%! ## The same number, without handing the training data back in
+%! [resubLoss(mdl), loss(mdl, X, Y)]

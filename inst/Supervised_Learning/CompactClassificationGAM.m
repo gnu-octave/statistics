@@ -279,6 +279,41 @@ classdef CompactClassificationGAM
     ##
     ## @end deftp
     IntMatrix       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Intercept
+    ##
+    ## Intercept of the fitted model
+    ##
+    ## A numeric scalar, the log-odds of the response mean, which every
+    ## additive term is measured against.  This property is read-only.
+    ##
+    ## @end deftp
+    Intercept       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector holding the column of each predictor treated as
+    ## categorical, and empty when none is.  This property is read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ExpandedPredictorNames
+    ##
+    ## Names of the expanded predictor variables
+    ##
+    ## A cell array of character vectors naming the predictors as the model
+    ## sees them.  It matches @code{PredictorNames} unless a categorical
+    ## predictor was expanded into dummy variables.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
   endproperties
 
   properties(Access = private, Hidden)
@@ -318,6 +353,9 @@ classdef CompactClassificationGAM
       this.BaseModel       = Mdl.BaseModel;
       this.ModelwInt       = Mdl.ModelwInt;
       this.IntMatrix       = Mdl.IntMatrix;
+      this.Intercept       = Mdl.Intercept;
+      this.CategoricalPredictors  = Mdl.CategoricalPredictors;
+      this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
 
@@ -568,6 +606,206 @@ classdef CompactClassificationGAM
       [~, minIdx] = min (CE, [], 2);
       labels = this.ClassNames (minIdx);
 
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationGAM} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## Classification margin of a compact generalized additive model.
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns a column
+    ## vector holding, for each row of @var{X}, the score the model gives its
+    ## true class in @var{Y} less the score it gives the other class.  A
+    ## positive margin means the observation is classified correctly, and the
+    ## larger it is the more confidently so.
+    ##
+    ## @seealso{CompactClassificationGAM, ClassificationGAM, edge, loss,
+    ## predict}
+    ## @end deftypefn
+    function m = margin (this, X, Y)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("CompactClassificationGAM.margin: too few input arguments.");
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "margin");
+
+      [~, scores] = predict (this, X);
+      classes = this.ClassNames;
+      m = zeros (rows (X), 1);
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          m(i) = NaN;
+          continue;
+        endif
+        true_score = scores(i, idx);
+        scores(i, idx) = -Inf;
+        m(i) = true_score - max (scores(i,:));
+        scores(i, idx) = true_score;
+      endfor
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationGAM} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationGAM} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge of a compact generalized additive model.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} returns the mean of
+    ## the classification margins over the rows of @var{X}.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @seealso{CompactClassificationGAM, ClassificationGAM, margin, loss,
+    ## predict}
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("CompactClassificationGAM.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationGAM.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "edge");
+      W = getWeights_ (this, varargin, rows (X), "edge");
+
+      m = margin (this, X, Y);
+      e = sum (W(:) .* m) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationGAM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationGAM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of a compact generalized additive model.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the loss of
+    ## the model on the rows of @var{X} against the true labels @var{Y}.
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
+    ## following name-value pairs:
+    ##
+    ## @itemize
+    ## @item
+    ## @qcode{"LossFun"} selects the loss.  Supported values are
+    ## @qcode{"mincost"}, the default, @qcode{"binodeviance"},
+    ## @qcode{"classifcost"}, @qcode{"classiferror"}, @qcode{"exponential"},
+    ## @qcode{"hinge"}, @qcode{"logit"} and @qcode{"quadratic"}.
+    ## @qcode{"mincost"} assigns each observation to the class of least
+    ## expected cost and charges what that assignment costs, so it reads the
+    ## scores as a posterior, which is what this model returns;
+    ## @qcode{"classifcost"} charges what the model's own prediction costs.
+    ##
+    ## @item
+    ## @qcode{"Weights"} holds one weight per row of @var{X}, normalised to
+    ## sum to one before it is applied.
+    ## @end itemize
+    ##
+    ## @seealso{CompactClassificationGAM, ClassificationGAM, margin, edge,
+    ## predict}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("CompactClassificationGAM.loss: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationGAM.loss: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "loss");
+
+      ## Parse optional arguments
+      LossFun = 'mincost';
+      lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
+                   'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      args = varargin;
+      keep = true (1, numel (args));
+      for i = 1:2:numel (args)
+        if (strcmpi (args{i}, 'lossfun'))
+          LossFun = args{i+1};
+          if (! (ischar (LossFun) && isrow (LossFun)))
+            error (strcat ("CompactClassificationGAM.loss: 'LossFun'", ...
+                           " must be a character vector."));
+          endif
+          LossFun = tolower (LossFun);
+          if (! any (strcmpi (LossFun, lossnames)))
+            error ("CompactClassificationGAM.loss: unsupported Loss function.");
+          endif
+          keep(i:i+1) = false;
+        endif
+      endfor
+      W = getWeights_ (this, args(keep), rows (X), "loss");
+      W = W(:) / sum (W);
+
+      [label, scores] = predict (this, X);
+      classes = this.ClassNames;
+
+      ## Membership of the true class, as an indicator per class
+      Yind = zeros (rows (X), numel (classes));
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          L = NaN;
+          return;
+        endif
+        Yind(i, idx) = 1;
+      endfor
+
+      ## The scalar score of the true class of each observation
+      mj = sum (scores .* Yind, 2);
+
+      switch (LossFun)
+        case 'classiferror'
+          wrong = zeros (rows (X), 1);
+          for i = 1:rows (X)
+            wrong(i) = ! isequal (label(i), Y(i));
+          endfor
+          L = sum (W .* wrong);
+        case 'binodeviance'
+          L = sum (W .* log (1 + exp (-2 * mj)));
+        case 'hinge'
+          L = sum (W .* max (0, 1 - mj));
+        case 'exponential'
+          L = sum (W .* exp (-mj));
+        case 'logit'
+          L = sum (W .* log (1 + exp (-mj)));
+        case 'quadratic'
+          L = sum (W .* (1 - mj) .^ 2);
+        case 'mincost'
+          ## Each observation is assigned to the class of least expected
+          ## cost, and charged what that assignment actually costs given its
+          ## true class.
+          L = 0;
+          for i = 1:rows (X)
+            [~, k] = min (scores(i,:) * this.Cost);
+            true_idx = find (ismember (classes, Y(i)));
+            L = L + W(i) * this.Cost(true_idx, k);
+          endfor
+        case 'classifcost'
+          ## What the model's own prediction costs, given the true class
+          L = 0;
+          for i = 1:rows (X)
+            true_idx = find (ismember (classes, Y(i)));
+            pred_idx = find (ismember (classes, label(i)));
+            L = L + W(i) * this.Cost(true_idx, pred_idx);
+          endfor
+      endswitch
+
     endfunction
 
     ## -*- texinfo -*-
@@ -602,6 +840,9 @@ classdef CompactClassificationGAM
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
+      Intercept       = this.Intercept;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
       STname          = this.STname;
       Formula         = this.Formula;
       Interactions    = this.Interactions;
@@ -617,9 +858,60 @@ classdef CompactClassificationGAM
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
-            'ScoreTransform', 'STname', 'Formula', 'Interactions', 'Knots', ...
+            'ScoreTransform', 'STname', 'Intercept', ...
+            'CategoricalPredictors', 'ExpandedPredictorNames', ...
+            'Formula', 'Interactions', 'Knots', ...
             'Order', 'DoF', 'BaseModel', 'ModelwInt', 'IntMatrix', ...
             'LearningRate', 'NumIterations');
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    ## Shared validation for the assessment methods, so each reports under
+    ## its own name.
+    function [X, Y] = checkXY_ (this, X, Y, caller)
+      if (isempty (X))
+        error ("CompactClassificationGAM.%s: X is empty.", caller);
+      elseif (this.NumPredictors != columns (X))
+        error (strcat ("CompactClassificationGAM.%s: X must have the", ...
+                       " same number of predictors as the trained", ...
+                       " model."), caller);
+      endif
+      if (isempty (Y))
+        error ("CompactClassificationGAM.%s: Y is empty.", caller);
+      elseif (rows (X) != rows (Y))
+        error (strcat ("CompactClassificationGAM.%s: Y must have the", ...
+                       " same number of rows as X."), caller);
+      endif
+    endfunction
+
+    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
+    ## uniform weight, and reject any other name.
+    function W = getWeights_ (this, args, n, caller)
+      W = ones (n, 1);
+      for i = 1:2:numel (args)
+        if (! (ischar (args{i}) && isrow (args{i})))
+          error (strcat ("CompactClassificationGAM.%s: parameter name", ...
+                         " must be a character vector."), caller);
+        endif
+        if (strcmpi (args{i}, 'weights'))
+          W = args{i+1};
+          if (! (isnumeric (W) && isvector (W)))
+            error (strcat ("CompactClassificationGAM.%s: 'Weights'", ...
+                           " must be a numeric vector."), caller);
+          endif
+          if (numel (W) != n)
+            error (strcat ("CompactClassificationGAM.%s: size of", ...
+                           " 'Weights' must equal the number of rows", ...
+                           " in X."), caller);
+          endif
+        else
+          error (strcat ("CompactClassificationGAM.%s: invalid parameter", ...
+                         " name in optional paired arguments."), caller);
+        endif
+      endfor
     endfunction
 
   endmethods
@@ -654,7 +946,9 @@ classdef CompactClassificationGAM
     ## Set cost
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+        ## The classes are already known, and reading them back out of Y
+        ## needed RowsUsed, which is a double here and a mask nowhere
+        gnY = this.ClassNames;
       endif
       if (isempty (Cost))
         this.Cost = cast (! eye (numel (gnY)), 'double');
@@ -712,7 +1006,7 @@ endfunction
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
-%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.ClassNames, [0; 1])
 %! assert_equal (CMdl.PredictorNames, PredictorNames)
 %! assert_equal (CMdl.BaseModel.Intercept, 0)
 %!test
@@ -725,7 +1019,7 @@ endfunction
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {4, 'Y'})
-%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.ClassNames, logical ([0; 1]))
 %! assert_equal (CMdl.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
 %! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
 %! assert_equal (CMdl.ModelwInt.Intercept, 0)
@@ -736,7 +1030,7 @@ endfunction
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
-%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.ClassNames, [0; 1])
 %! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
 %! assert_equal (CMdl.Knots, [4, 4, 4])
 %! assert_equal (CMdl.Order, [3, 3, 3])
@@ -753,13 +1047,13 @@ endfunction
 %! y = [1; 0; 1; 0; 1];
 %! Mdl = fitcgam (x, y, 'interactions', 'all');
 %! CMdl = compact (Mdl);
-%! l = {'1'; '0'; '1'; '0'; '1'};
+%! l = [1; 0; 1; 0; 1];
 %! s = [0.0334, 0.9666; 0.9648, 0.0352; 0.0334, 0.9666; ...
 %!      0.9648, 0.0352; 0.0334, 0.9666];
 %! [labels, scores] = predict (CMdl, x);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {2, 'Y'})
-%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.ClassNames, [0; 1])
 %! assert_equal (CMdl.PredictorNames, {'x1', 'x2'})
 %! assert_equal (CMdl.ModelwInt.Intercept, 0.4055, 1e-1)
 %! assert_equal (labels, l)
@@ -771,11 +1065,11 @@ endfunction
 %! Mdl = fitcgam (x, y, 'learningrate', 0.2, 'interactions', interactions);
 %! CMdl = compact (Mdl);
 %! [label, score] = predict (CMdl, x, 'includeinteractions', true);
-%! l = {'0'; '0'; '1'; '1'};
+%! l = [0; 0; 1; 1];
 %! s = [0.9725, 0.0275; 0.9895, 0.0105; 0.0070, 0.9930; 0.0238, 0.9762];
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
-%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.ClassNames, [0; 1])
 %! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
 %! assert_equal (CMdl.ModelwInt.Intercept, 0)
 %! assert_equal (label, l)
@@ -804,3 +1098,57 @@ endfunction
 %! CMdl.ScoreTransform = 'symmetric';
 %! assert_equal (class (CMdl.ScoreTransform), 'function_handle');
 %! assert_equal (CMdl.ScoreTransform (0.25), -0.5);
+
+## The compact model carries what MATLAB's compact model reports.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.Intercept, Mdl.Intercept);
+%! assert_equal (CMdl.CategoricalPredictors, Mdl.CategoricalPredictors);
+%! assert_equal (CMdl.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+
+## margin, edge and loss agree with the model it was compacted from.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcgam (X, Y);
+%! CMdl = compact (Mdl);
+%! assert_equal (margin (CMdl, X, Y), margin (Mdl, X, Y));
+%! assert_equal (edge (CMdl, X, Y), edge (Mdl, X, Y));
+%! assert_equal (loss (CMdl, X, Y), loss (Mdl, X, Y));
+
+## A saved and reloaded compact model carries every property it holds.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! CMdl = compact (fitcgam (meas(inds,:), species(inds)));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! CMdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (CMdl2.Intercept, CMdl.Intercept);
+%! assert_equal (CMdl2.ClassNames, CMdl.ClassNames);
+%! assert_equal (CMdl2.BaseModel.Parameters(1).coefs, ...
+%!               CMdl.BaseModel.Parameters(1).coefs);
+%! assert_equal (predict (CMdl2, meas(inds,:)), predict (CMdl, meas(inds,:)));
+
+%!shared x2, y2, CM
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! x2 = meas(inds,:);
+%! y2 = species(inds);
+%! CM = compact (fitcgam (x2, y2));
+
+## Test input validation for the assessment methods
+%!error<CompactClassificationGAM.margin: too few input arguments.> ...
+%! margin (CM, x2)
+%!error<CompactClassificationGAM.margin: X is empty.> ...
+%! margin (CM, [], y2)
+%!error<CompactClassificationGAM.edge: Name-Value arguments must be in pairs.> ...
+%! edge (CM, x2, y2, 'Weights')
+%!error<CompactClassificationGAM.loss: unsupported Loss function.> ...
+%! loss (CM, x2, y2, 'LossFun', 'nonsense')

@@ -1,0 +1,24 @@
+%!demo
+%! ## 1. The edge is the mean margin over the data
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y);
+%!
+%! [edge(mdl, X, Y), mean(margin (mdl, X, Y))]
+
+%!demo
+%! ## 2. Weights let some observations count for more
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds, :);
+%! Y = species(inds);
+%! mdl = fitcgam (X, Y, 'NumIterations', 20);
+%!
+%! ## Weighting the second class three times as heavily moves the mean
+%! w = ones (rows (X), 1);
+%! w(strcmp (Y, 'virginica')) = 3;
+%! [edge(mdl, X, Y), edge(mdl, X, Y, 'Weights', w)]
