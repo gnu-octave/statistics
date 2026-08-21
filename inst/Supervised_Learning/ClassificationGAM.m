@@ -859,7 +859,7 @@ classdef ClassificationGAM
       endif
 
       this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, 'double');
+      this.RowsUsed = RowsUsed;
 
       ## Assign the number of original predictors to the ClassificationGAM object
       this.NumPredictors = ndims_X;
@@ -1222,7 +1222,7 @@ classdef ClassificationGAM
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(logical (this.RowsUsed), :);
+      Yused = this.Y(this.RowsUsed, :);
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1288,6 +1288,7 @@ classdef ClassificationGAM
         m(i) = true_score - max (scores(i,:));
         scores(i, idx) = true_score;
       endfor
+
 
     endfunction
 
@@ -1459,7 +1460,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, predict}
     ## @end deftypefn
     function [labels, scores] = resubPredict (this)
-      [labels, scores] = predict (this, this.X(logical (this.RowsUsed), :));
+      [labels, scores] = predict (this, this.X(this.RowsUsed, :));
     endfunction
 
     ## -*- texinfo -*-
@@ -1471,7 +1472,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, margin}
     ## @end deftypefn
     function m = resubMargin (this)
-      used = logical (this.RowsUsed);
+      used = this.RowsUsed;
       m = margin (this, this.X(used, :), this.Y(used));
     endfunction
 
@@ -1484,7 +1485,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, edge}
     ## @end deftypefn
     function e = resubEdge (this)
-      used = logical (this.RowsUsed);
+      used = this.RowsUsed;
       e = edge (this, this.X(used, :), this.Y(used));
     endfunction
 
@@ -1498,7 +1499,7 @@ classdef ClassificationGAM
     ## @seealso{ClassificationGAM, loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = logical (this.RowsUsed);
+      used = this.RowsUsed;
       L = loss (this, this.X(used, :), this.Y(used), varargin{:});
     endfunction
 
@@ -1587,6 +1588,10 @@ classdef ClassificationGAM
           error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
         end_try_catch
       endfor
+
+      ## A model written before RowsUsed became a mask stored it as a
+      ## double, which is a valid subscript for nothing.
+      mdl.RowsUsed = logical (mdl.RowsUsed);
     endfunction
 
   endmethods
@@ -1794,8 +1799,8 @@ classdef ClassificationGAM
     ## Set cost
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
-        ## The classes are already known, and reading them back out of Y
-        ## needed RowsUsed, which is a double here and a mask nowhere
+        ## The classes are already known, so they are taken from the model
+        ## rather than read back out of Y
         gnY = this.ClassNames;
       endif
       if (isempty (Cost))

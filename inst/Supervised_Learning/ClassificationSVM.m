@@ -846,7 +846,7 @@ classdef ClassificationSVM
       ## on the original data, which will be used for training the model,
       ## to the ClassificationSVM object
       this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, 'double');
+      this.RowsUsed = RowsUsed;
 
       ## Handle Standardize flag.  The model must be fitted on the scale it
       ## predicts on: predict and resubPredict standardize their input from
@@ -1077,10 +1077,12 @@ classdef ClassificationSVM
     ## @end deftypefn
     function [labels, scores] = resubPredict (this)
 
-      ## Get used rows (if necessary)
+      ## Get used rows (if necessary).  X is indexed by row: a bare mask on a
+      ## matrix is a linear index, which took the first column and left the
+      ## model answering about data it was never given.
       if (sum (this.RowsUsed) != rows (this.X))
-        RowsUsed = logical (this.RowsUsed);
-        X = this.X(RowsUsed);
+        RowsUsed = this.RowsUsed;
+        X = this.X(RowsUsed, :);
         Y = this.Y(RowsUsed);
       else
         X = this.X;
@@ -1589,7 +1591,7 @@ classdef ClassificationSVM
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(logical (this.RowsUsed), :);
+      Yused = this.Y(this.RowsUsed, :);
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1702,6 +1704,10 @@ classdef ClassificationSVM
           error ("ClassificationSVM.load_model: invalid model in '%s'.", filename)
         end_try_catch
       endfor
+
+      ## A model written before RowsUsed became a mask stored it as a
+      ## double, which is a valid subscript for nothing.
+      mdl.RowsUsed = logical (mdl.RowsUsed);
     endfunction
 
   endmethods
@@ -1786,7 +1792,7 @@ endclassdef
 %! y = [1; 2; 3; 4; 2; 3; 4; 2; 3; 4; 2; 3; 4];
 %! a = ClassificationSVM (x, y, 'ClassNames', [1, 2]);
 %! assert_equal (class (a), "ClassificationSVM");
-%! assert_equal (a.RowsUsed, [1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]');
+%! assert_equal (a.RowsUsed, logical ([1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]'));
 %! assert_equal ({a.X, a.Y}, {x, y})
 %! assert_equal (a.NumObservations, 5)
 %! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
@@ -1817,6 +1823,43 @@ endclassdef
 %! assert_equal (class (a), "ClassificationSVM");
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
 %! assert_equal (a.ModelParameters.PolynomialOrder, 3)
+
+## RowsUsed is the logical mask its documentation describes, so the documented
+## use of it works.  It was a double, for which a 0 is not a subscript at all.
+%!test
+%! randn ('seed', 42);
+%! lab = double (randn (40, 1) > 0) + 1;
+%! X = [randn(40, 3); NaN, 1, 1];
+%! Y = [lab; 1];
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (class (Mdl.RowsUsed), 'logical');
+%! assert_equal (rows (Mdl.X(Mdl.RowsUsed, :)), Mdl.NumObservations);
+
+## resubPredict answers about the rows it was trained on, all their columns.
+## Selecting them with a bare mask took the first column only, and the model
+## answered about data it was never given, without complaint.
+%!test
+%! randn ('seed', 42);
+%! lab = double (randn (40, 1) > 0) + 1;
+%! X = [randn(40, 3); NaN, 1, 1];
+%! Y = [lab; 1];
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (Mdl.NumObservations, 40);
+%! assert_equal (resubPredict (Mdl), predict (Mdl, Mdl.X(Mdl.RowsUsed, :)));
+
+## A model saved before RowsUsed became a mask still reads back as one.
+%!test
+%! randn ('seed', 42);
+%! Mdl = fitcsvm (randn (30, 2), double (randn (30, 1) > 0) + 1);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! d = load (fname);
+%! d.RowsUsed = double (d.RowsUsed);
+%! save ('-binary', fname, '-struct', 'd');
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (M2.RowsUsed), 'logical');
+%! assert_equal (rows (M2.X(M2.RowsUsed, :)), M2.NumObservations);
 
 ## The model reports the observation weights and the expanded predictor
 ## names MATLAB reports, W normalized to sum to one.

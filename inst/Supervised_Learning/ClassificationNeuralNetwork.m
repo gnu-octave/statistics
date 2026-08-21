@@ -1456,7 +1456,7 @@ classdef ClassificationNeuralNetwork
       ## value is not one the folds can use, and including it would leave the
       ## partition, the stored data and NumObservations disagreeing.  The
       ## response is passed rather than a count so the folds stay stratified.
-      Yused = this.Y(logical (this.RowsUsed), :);
+      Yused = this.Y(this.RowsUsed, :);
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))

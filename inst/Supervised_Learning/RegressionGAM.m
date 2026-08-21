@@ -643,7 +643,7 @@ classdef RegressionGAM
       ## on the original data, which will be used for training the model,
       ## to the RegressionGAM object
       this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, 'double');
+      this.RowsUsed = RowsUsed;
 
       ## Assign the number of original predictors to the RegressionGAM object
       this.NumPredictors = ndims_X;
@@ -915,8 +915,8 @@ classdef RegressionGAM
       ## Predict Standard Deviation and Intervals of estimated data if requested
       if (nargout > 1)
         ## Ensure that RowsUsed in the model are selected
-        Y = this.Y(logical (this.RowsUsed));
-        X = this.X(logical (this.RowsUsed), :);
+        Y = this.Y(this.RowsUsed);
+        X = this.X(this.RowsUsed, :);
         ## Predict response from training predictor data with the trained model
         yrs = predict_val (params, X , Interc);
         yrs_fit = predict_val (params, Xfit, Interc);
@@ -1031,7 +1031,7 @@ classdef RegressionGAM
     ## @seealso{RegressionGAM, fitrgam, predict}
     ## @end deftypefn
     function yFit = resubPredict (this)
-      yFit = predict (this, this.X(logical (this.RowsUsed), :));
+      yFit = predict (this, this.X(this.RowsUsed, :));
     endfunction
 
     ## -*- texinfo -*-
@@ -1047,7 +1047,7 @@ classdef RegressionGAM
     ## @seealso{RegressionGAM, fitrgam, loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = logical (this.RowsUsed);
+      used = this.RowsUsed;
       L = loss (this, this.X(used, :), this.Y(used), varargin{:});
     endfunction
 
@@ -1169,6 +1169,7 @@ classdef RegressionGAM
                          " optional paired arguments."), caller);
         endif
       endfor
+
     endfunction
 
     ## Determine interactions from Interactions optional parameter
@@ -1336,6 +1337,10 @@ classdef RegressionGAM
                  filename)
         end_try_catch
       endfor
+
+      ## A model written before RowsUsed became a mask stored it as a
+      ## double, which is a valid subscript for nothing.
+      mdl.RowsUsed = logical (mdl.RowsUsed);
     endfunction
 
   endmethods

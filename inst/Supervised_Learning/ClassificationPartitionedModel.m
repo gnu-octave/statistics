@@ -294,7 +294,7 @@ classdef ClassificationPartitionedModel
       ## Set properties.  The rows dropped for missing values are outside the
       ## partition, so they are dropped here too and every index below, the
       ## partition's included, refers to the same set of observations.
-      RowsUsed = logical (Mdl.RowsUsed);
+      RowsUsed = Mdl.RowsUsed;
       this.X = Mdl.X(RowsUsed, :);
       this.Y = Mdl.Y(RowsUsed, :);
       this.KFold = Partition.NumTestSets;
