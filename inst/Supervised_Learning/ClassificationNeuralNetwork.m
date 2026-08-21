@@ -637,7 +637,9 @@ classdef ClassificationNeuralNetwork
     ## trains it against the mean squared error.
     ##
     ## @item @qcode{'LearningRate'} @tab A positive scalar specifying the
-    ## learning rate for gradient descent.  The default is 0.01.
+    ## learning rate for gradient descent.  The default is 0.003.  A larger
+    ## rate can drive every unit of a hidden layer negative, after which a
+    ## rectifier passes no gradient and the network stops training.
     ##
     ## @item @qcode{'IterationLimit'} @tab A positive integer specifying
     ## the maximum number of training iterations.  The default is 1000.
@@ -675,7 +677,7 @@ classdef ClassificationNeuralNetwork
       LayerSizes              = 10;
       Activations             = 'relu';
       OutputLayerActivation   = 'softmax';
-      LearningRate            = 0.01;
+      LearningRate            = 0.003;
       IterationLimit          = 1000;
       DisplayInfo             = false;
       this.Solver = 'Gradient Descent';
@@ -878,6 +880,10 @@ classdef ClassificationNeuralNetwork
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
+        ## Train on the scale the model predicts on: predict, resubPredict
+        ## and loss all standardize their input from Mu and Sigma, so the
+        ## training data must be standardized here as well.
+        X = (X - this.Mu) ./ this.Sigma;
       else
         this.Standardize = false;
         this.Sigma = [];

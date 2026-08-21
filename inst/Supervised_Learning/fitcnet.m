@@ -70,7 +70,9 @@
 ## The default value is 10.
 ##
 ## @item @qcode{'LearningRate'} @tab A positive scalar value that defines
-## the learning rate during the gradient descent.  Default value is 0.01.
+## the learning rate during the gradient descent.  Default value is 0.003.
+## A larger rate can drive every unit of a hidden layer negative, after which
+## a rectifier passes no gradient and the network stops training.
 ##
 ## @item @qcode{'Activations'} @tab A character vector or a cellstr vector
 ## specifying the activation functions for the hidden layers of the neural
