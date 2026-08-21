@@ -129,7 +129,7 @@ classdef CompactClassificationSVM
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform      = [];
+    ScoreTransform      = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} Standardize
@@ -260,6 +260,10 @@ classdef CompactClassificationSVM
     SupportVectors      = [];
   endproperties
 
+  properties(Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
   methods(Hidden)
 
     ## constructor
@@ -280,6 +284,7 @@ classdef CompactClassificationSVM
       this.ClassNames            = Mdl.ClassNames;
 
       this.ScoreTransform        = Mdl.ScoreTransform;
+      this.STname                = Mdl.STname;
 
       this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
@@ -294,6 +299,115 @@ classdef CompactClassificationSVM
       this.SupportVectorLabels   = Mdl.SupportVectorLabels;
       this.SupportVectors        = Mdl.SupportVectors;
 
+    endfunction
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  CompactClassificationSVM\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      elseif (ischar (this.ClassNames))
+        str = repmat ({'''%s'''}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
+        str = repmat ({'%d'}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
+      if (! isempty (this.Beta))
+        fprintf ("%+25s: [%dx1 double]\n", 'Beta', numel (this.Beta));
+      endif
+      fprintf ("%+25s: %f\n", 'Bias', this.Bias);
+      fprintf ("%+25s: '%s'\n", 'KernelFunction', ...
+               this.ModelParameters.KernelFunction);
+      fprintf ("%+25s: [%dx%d double]\n", 'SupportVectors', ...
+               rows (this.SupportVectors), columns (this.SupportVectors));
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a CompactClassificationSVM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a CompactClassificationSVM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("CompactClassificationSVM.subsref: '.' indexing", ...
+                           " argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("CompactClassificationSVM.subsref: unrecognized", ...
+                           " property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("CompactClassificationSVM.subsasgn: chained", ...
+                       " subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a CompactClassificationSVM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a CompactClassificationSVM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("CompactClassificationSVM.subsasgn: '.'", ...
+                           " indexing argument must be a character", ...
+                           " vector."));
+          endif
+          switch (s.subs)
+            case 'ScoreTransform'
+              name = 'CompactClassificationSVM';
+              try
+                [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                     (val, name);
+              catch
+                error (strcat ("CompactClassificationSVM.subsasgn:", ...
+                               " 'ScoreTransform' must be a", ...
+                               " 'function_handle' object."));
+              end_try_catch
+            otherwise
+              error (strcat ("CompactClassificationSVM.subsasgn:", ...
+                             " unrecognized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
     endfunction
 
   endmethods
@@ -377,15 +491,8 @@ classdef CompactClassificationSVM
       endif
 
       if (nargout > 1)
-        ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, 'none'))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), 'function_handle'))
-            error (strcat ("CompactClassificationSVM.predict: 'Score", ...
-                           "Transform' must be a 'function_handle' object."));
-          endif
-          scores = f(scores);
-        endif
+        ## Apply ScoreTransform
+        scores = this.ScoreTransform (scores);
       endif
 
     endfunction
@@ -656,13 +763,14 @@ classdef CompactClassificationSVM
       Bias                = this.Bias;
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
+      STname              = this.STname;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', ...
             'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
-            'SupportVectorLabels', 'SupportVectors');
+            'SupportVectorLabels', 'SupportVectors', 'STname');
     endfunction
 
   endmethods
@@ -747,10 +855,51 @@ endclassdef
 %! predict (CMdl, [])
 %!error<CompactClassificationSVM.predict: XC must have the same number of predictors as the trained SVM model.> ...
 %! predict (CMdl, 1)
-%!test
+%!error<CompactClassificationSVM.subsasgn: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! CMdl.ScoreTransform = 'a';
-%!error<CompactClassificationSVM.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
-%! [labels, scores] = predict (CMdl, x);
+
+## Every property the documentation calls read-only is read-only.  Without a
+## subsasgn of its own the class took any assignment: Bias could be replaced
+## outright, and a character vector could be stored where predict expects a
+## function handle.
+%!error<CompactClassificationSVM.subsasgn: unrecognized or read-only property: 'Bias'> ...
+%! CMdl.Bias = 999;
+%!error<CompactClassificationSVM.subsasgn: unrecognized or read-only property: 'Alpha'> ...
+%! CMdl.Alpha = 1;
+%!error<CompactClassificationSVM.subsasgn: unrecognized or read-only property: 'Nope'> ...
+%! CMdl.Nope = 1;
+%!error<CompactClassificationSVM.subsasgn: chained subscripts not allowed.> ...
+%! CMdl.ModelParameters.KernelFunction = 'rbf';
+%!error<Invalid \(\) indexing for assigning values to a CompactClassificationSVM object.> ...
+%! CMdl(1) = 1;
+%!error<Invalid \{\} indexing for assigning values to a CompactClassificationSVM object.> ...
+%! CMdl{1} = 1;
+%!error<Invalid \(\) indexing for referencing values in a CompactClassificationSVM object.> ...
+%! CMdl(1)
+%!error<Invalid \{\} indexing for referencing values in a CompactClassificationSVM object.> ...
+%! CMdl{1}
+%!error<CompactClassificationSVM.subsref: unrecognized property: 'Nope'> ...
+%! CMdl.Nope
+
+## A ScoreTransform set by name and the same one set by handle agree, the
+## name survives a save, and chained reference still reaches through.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! CMdl2 = compact (fitcsvm (meas, Yb));
+%! assert_equal (CMdl2.ModelParameters.KernelFunction, 'linear');
+%! CMdl2.ScoreTransform = 'logit';
+%! [~, s1] = predict (CMdl2, meas(1:3,:));
+%! CMdl2.ScoreTransform = @(x) 1 ./ (1 + exp (-x));
+%! [~, s2] = predict (CMdl2, meas(1:3,:));
+%! assert_equal (s1, s2);
+%! CMdl2.ScoreTransform = 'logit';
+%! fname = tempname ();
+%! savemodel (CMdl2, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! [~, s3] = predict (M2, meas(1:3,:));
+%! assert_equal (s3, s1);
 
 ## Test output for margin method
 %!test
