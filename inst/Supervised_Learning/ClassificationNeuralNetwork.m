@@ -163,10 +163,10 @@ classdef ClassificationNeuralNetwork
     ## @multitable @columnfractions 0.2 0.75
     ## @headitem @var{Value} @tab @var{Description}
     ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{'ismax'} @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
     ## @item @qcode{'none'} @tab @math{x} (no transformation)
     ## @item @qcode{'identity'} @tab @math{x} (no transformation)
     ## @item @qcode{'sign'} @tab
