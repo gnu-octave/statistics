@@ -38,7 +38,7 @@ classdef ClassificationSVM
   ## @seealso{fitcsvm}
   ## @end deftp
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} X
     ##
@@ -144,44 +144,6 @@ classdef ClassificationSVM
     ## @end deftp
     ClassNames          = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property} ScoreTransform
-    ##
-    ## Transformation function for classification scores
-    ##
-    ## Specified as a function handle for transforming the classification
-    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
-    ## notation as in:
-    ##
-    ## @itemize
-    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
-    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
-    ## @end itemize
-    ##
-    ## When specified as a character vector, it can be any of the following
-    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
-    ## always stores their function handle equivalent.
-    ##
-    ## @multitable @columnfractions 0.2 0.75
-    ## @headitem @var{Value} @tab @var{Description}
-    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
-    ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{'none'} @tab @math{x} (no transformation)
-    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
-    ## @item @qcode{'sign'} @tab
-    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
-    ## 0}
-    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
-    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
-    ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
-    ## @end multitable
-    ##
-    ## @end deftp
-    ScoreTransform      = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} Standardize
@@ -401,9 +363,70 @@ classdef ClassificationSVM
     ExpandedPredictorNames = {};
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
+    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform      = @(x) x;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     STname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ScoreTransform (this, val)
+        name = 'ClassificationSVM';
+        try
+          [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                               (val, name);
+        catch
+          error (strcat ("ClassificationSVM.subsasgn: 'ScoreTransform'", ...
+                         " must be a 'function_handle' object."));
+        end_try_catch
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -459,70 +482,7 @@ classdef ClassificationSVM
       endif
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a ClassificationSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a ClassificationSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("ClassificationSVM.subsref: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("ClassificationSVM.subsref:", ...
-                           " unrecognized property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("ClassificationSVM.subsasgn:", ...
-                       " chained subscripts not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a ClassificationSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a ClassificationSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("ClassificationSVM.subsasgn: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'ScoreTransform'
-              name = 'ClassificationSVM';
-              try
-                [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                     (val, name);
-              catch
-                error (strcat ("ClassificationSVM.subsasgn: 'ScoreTransform'", ...
-                               " must be a 'function_handle' object."));
-              end_try_catch
-            otherwise
-              error (strcat ("ClassificationSVM.subsasgn: unrecognized", ...
-                             " or read-only property: '%s'"), s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 

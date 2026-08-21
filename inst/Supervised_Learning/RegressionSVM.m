@@ -118,7 +118,7 @@
 
 classdef RegressionSVM
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} X
@@ -197,18 +197,6 @@ classdef RegressionSVM
     ## @end deftp
     ResponseName          = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {RegressionSVM} {property} ResponseTransform
-    ##
-    ## Transformation applied to the predicted response
-    ##
-    ## A function handle, applied by @code{predict} and @code{resubPredict} to
-    ## the model's output.  It defaults to the identity and may be set after
-    ## construction, either to a handle or to the name of a supported
-    ## transformation.
-    ##
-    ## @end deftp
-    ResponseTransform     = @(y) y;
 
     ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} Epsilon
@@ -376,9 +364,39 @@ classdef RegressionSVM
     W                     = [];
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {RegressionSVM} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle, applied by @code{predict} and @code{resubPredict} to
+    ## the model's output.  It defaults to the identity and may be set after
+    ## construction, either to a handle or to the name of a supported
+    ## transformation.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(y) y;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     RTname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ResponseTransform (this, val)
+        name = 'RegressionSVM';
+        [this.ResponseTransform, this.RTname] = ...
+              parseResponseTransform (val, name);
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -413,64 +431,7 @@ classdef RegressionSVM
       endif
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a RegressionSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a RegressionSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("RegressionSVM.subsref: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("RegressionSVM.subsref: unrecognized", ...
-                           " property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error ("RegressionSVM.subsasgn: chained subscripts not allowed.");
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a RegressionSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a RegressionSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("RegressionSVM.subsasgn: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'ResponseTransform'
-              name = 'RegressionSVM';
-              [this.ResponseTransform, this.RTname] = ...
-                    parseResponseTransform (val, name);
-            otherwise
-              error (strcat ("RegressionSVM.subsasgn: unrecognized or", ...
-                             " read-only property: '%s'"), s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -1617,19 +1578,6 @@ endclassdef
 %!error<RegressionSVM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (RSVM, 5)
 
-## Test subscripted reference and assignment
-%!error<Invalid \(\) indexing for referencing values in a RegressionSVM object.> ...
-%! RSVM(1)
-%!error<Invalid \{\} indexing for referencing values in a RegressionSVM object.> ...
-%! RSVM{1}
-%!error<RegressionSVM.subsref: unrecognized property: 'Nope'> ...
-%! RSVM.Nope
-%!error<Invalid \(\) indexing for assigning values to a RegressionSVM object.> ...
-%! RSVM(1) = 1;
-%!error<RegressionSVM.subsasgn: unrecognized or read-only property: 'Epsilon'> ...
-%! RSVM.Epsilon = 5;
-%!error<RegressionSVM.subsasgn: chained subscripts not allowed.> ...
-%! RSVM.ResponseTransform.foo = 1;
 %!error<RegressionSVM: unrecognized 'ResponseTransform' function.> ...
 %! RSVM.ResponseTransform = 'nope';
 

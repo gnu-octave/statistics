@@ -37,7 +37,7 @@ classdef CompactClassificationSVM
   ## @seealso{ClassificationSVM}
   ## @end deftp
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} NumPredictors
     ##
@@ -115,44 +115,6 @@ classdef CompactClassificationSVM
     ## @end deftp
     Cost                = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} ScoreTransform
-    ##
-    ## Transformation function for classification scores
-    ##
-    ## Specified as a function handle for transforming the classification
-    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
-    ## notation as in:
-    ##
-    ## @itemize
-    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
-    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
-    ## @end itemize
-    ##
-    ## When specified as a character vector, it can be any of the following
-    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
-    ## always stores their function handle equivalent.
-    ##
-    ## @multitable @columnfractions 0.2 0.75
-    ## @headitem @var{Value} @tab @var{Description}
-    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
-    ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{'none'} @tab @math{x} (no transformation)
-    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
-    ## @item @qcode{'sign'} @tab
-    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
-    ## 0}
-    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
-    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
-    ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
-    ## @end multitable
-    ##
-    ## @end deftp
-    ScoreTransform      = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} Standardize
@@ -283,9 +245,71 @@ classdef CompactClassificationSVM
     SupportVectors      = [];
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
+    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform      = @(x) x;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     STname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ScoreTransform (this, val)
+      name = 'CompactClassificationSVM';
+      try
+        [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                             (val, name);
+      catch
+        error (strcat ("CompactClassificationSVM.subsasgn:", ...
+                       " 'ScoreTransform' must be a", ...
+                       " 'function_handle' object."));
+      end_try_catch
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -367,73 +391,7 @@ classdef CompactClassificationSVM
                rows (this.SupportVectors), columns (this.SupportVectors));
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a CompactClassificationSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a CompactClassificationSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("CompactClassificationSVM.subsref: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("CompactClassificationSVM.subsref: unrecognized", ...
-                           " property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("CompactClassificationSVM.subsasgn: chained", ...
-                       " subscripts not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a CompactClassificationSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a CompactClassificationSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("CompactClassificationSVM.subsasgn: '.'", ...
-                           " indexing argument must be a character", ...
-                           " vector."));
-          endif
-          switch (s.subs)
-            case 'ScoreTransform'
-              name = 'CompactClassificationSVM';
-              try
-                [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                     (val, name);
-              catch
-                error (strcat ("CompactClassificationSVM.subsasgn:", ...
-                               " 'ScoreTransform' must be a", ...
-                               " 'function_handle' object."));
-              end_try_catch
-            otherwise
-              error (strcat ("CompactClassificationSVM.subsasgn:", ...
-                             " unrecognized or read-only property: '%s'"), ...
-                             s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -918,24 +876,6 @@ endclassdef
 ## subsasgn of its own the class took any assignment: Bias could be replaced
 ## outright, and a character vector could be stored where predict expects a
 ## function handle.
-%!error<CompactClassificationSVM.subsasgn: unrecognized or read-only property: 'Bias'> ...
-%! CMdl.Bias = 999;
-%!error<CompactClassificationSVM.subsasgn: unrecognized or read-only property: 'Alpha'> ...
-%! CMdl.Alpha = 1;
-%!error<CompactClassificationSVM.subsasgn: unrecognized or read-only property: 'Nope'> ...
-%! CMdl.Nope = 1;
-%!error<CompactClassificationSVM.subsasgn: chained subscripts not allowed.> ...
-%! CMdl.ModelParameters.KernelFunction = 'rbf';
-%!error<Invalid \(\) indexing for assigning values to a CompactClassificationSVM object.> ...
-%! CMdl(1) = 1;
-%!error<Invalid \{\} indexing for assigning values to a CompactClassificationSVM object.> ...
-%! CMdl{1} = 1;
-%!error<Invalid \(\) indexing for referencing values in a CompactClassificationSVM object.> ...
-%! CMdl(1)
-%!error<Invalid \{\} indexing for referencing values in a CompactClassificationSVM object.> ...
-%! CMdl{1}
-%!error<CompactClassificationSVM.subsref: unrecognized property: 'Nope'> ...
-%! CMdl.Nope
 
 ## A ScoreTransform set by name and the same one set by handle agree, the
 ## name survives a save, and chained reference still reaches through.

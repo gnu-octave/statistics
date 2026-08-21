@@ -108,7 +108,7 @@
 
 classdef RegressionNeuralNetwork
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {RegressionNeuralNetwork} {property} X
@@ -190,18 +190,6 @@ classdef RegressionNeuralNetwork
     ## @end deftp
     ResponseName          = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {RegressionNeuralNetwork} {property} ResponseTransform
-    ##
-    ## Transformation applied to the predicted response
-    ##
-    ## A function handle, applied by @code{predict} and @code{resubPredict} to
-    ## the network's output.  It defaults to the identity and may be set after
-    ## construction, either to a handle or to the name of a supported
-    ## transformation.
-    ##
-    ## @end deftp
-    ResponseTransform     = @(y) y;
 
     ## -*- texinfo -*-
     ## @deftp {RegressionNeuralNetwork} {property} Standardize
@@ -413,9 +401,39 @@ classdef RegressionNeuralNetwork
     ExpandedPredictorNames = {};
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {RegressionNeuralNetwork} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle, applied by @code{predict} and @code{resubPredict} to
+    ## the network's output.  It defaults to the identity and may be set after
+    ## construction, either to a handle or to the name of a supported
+    ## transformation.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(y) y;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     RTname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ResponseTransform (this, val)
+        name = 'RegressionNeuralNetwork';
+        [this.ResponseTransform, this.RTname] = ...
+              parseResponseTransform (val, name);
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -453,66 +471,7 @@ classdef RegressionNeuralNetwork
       fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a RegressionNeuralNetwork object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a RegressionNeuralNetwork object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("RegressionNeuralNetwork.subsref: '.'", ...
-                           " indexing argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("RegressionNeuralNetwork.subsref:", ...
-                           " unrecognized property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("RegressionNeuralNetwork.subsasgn:", ...
-                       " chained subscripts not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a RegressionNeuralNetwork object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a RegressionNeuralNetwork object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("RegressionNeuralNetwork.subsasgn: '.'", ...
-                           " indexing argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'ResponseTransform'
-              name = 'RegressionNeuralNetwork';
-              [this.ResponseTransform, this.RTname] = ...
-                    parseResponseTransform (val, name);
-            otherwise
-              error (strcat ("RegressionNeuralNetwork.subsasgn:", ...
-                             " unrecognized or read-only property: '%s'"), ...
-                             s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -1723,21 +1682,6 @@ endfunction
 %!error<RegressionNeuralNetwork.savemodel: FNAME must be a character vector.> ...
 %! savemodel (RNNMdl, 5)
 
-## Test subscripted reference and assignment
-%!error<Invalid \(\) indexing for referencing values in a RegressionNeuralNetwork object.> ...
-%! RNNMdl(1)
-%!error<Invalid \{\} indexing for referencing values in a RegressionNeuralNetwork object.> ...
-%! RNNMdl{1}
-%!error<RegressionNeuralNetwork.subsref: unrecognized property: 'Nope'> ...
-%! RNNMdl.Nope
-%!error<Invalid \(\) indexing for assigning values to a RegressionNeuralNetwork object.> ...
-%! RNNMdl(1) = 1;
-%!error<Invalid \{\} indexing for assigning values to a RegressionNeuralNetwork object.> ...
-%! RNNMdl{1} = 1;
-%!error<RegressionNeuralNetwork.subsasgn: unrecognized or read-only property: 'LayerSizes'> ...
-%! RNNMdl.LayerSizes = 5;
-%!error<RegressionNeuralNetwork.subsasgn: chained subscripts not allowed.> ...
-%! RNNMdl.ResponseTransform.foo = 1;
 %!error<RegressionNeuralNetwork: unrecognized 'ResponseTransform' function.> ...
 %! RNNMdl.ResponseTransform = 'nope';
 

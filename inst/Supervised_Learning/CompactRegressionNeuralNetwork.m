@@ -40,7 +40,7 @@
 
 classdef CompactRegressionNeuralNetwork
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionNeuralNetwork} {property} NumPredictors
@@ -72,17 +72,6 @@ classdef CompactRegressionNeuralNetwork
     ## @end deftp
     ResponseName          = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} ResponseTransform
-    ##
-    ## Transformation applied to the predicted response
-    ##
-    ## A function handle, applied by @code{predict} to the network's output.
-    ## It may be set after construction, either to a handle or to the name of
-    ## a supported transformation.
-    ##
-    ## @end deftp
-    ResponseTransform     = @(y) y;
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionNeuralNetwork} {property} Standardize
@@ -260,9 +249,38 @@ classdef CompactRegressionNeuralNetwork
     ExpandedPredictorNames = {};
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionNeuralNetwork} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle, applied by @code{predict} to the network's output.
+    ## It may be set after construction, either to a handle or to the name of
+    ## a supported transformation.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(y) y;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     RTname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ResponseTransform (this, val)
+      name = 'CompactRegressionNeuralNetwork';
+      [this.ResponseTransform, this.RTname] = ...
+            parseResponseTransform (val, name);
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -343,66 +361,7 @@ classdef CompactRegressionNeuralNetwork
       fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a CompactRegressionNeuralNetwork object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a CompactRegressionNeuralNetwork object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("CompactRegressionNeuralNetwork.subsref: '.'", ...
-                           " indexing argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("CompactRegressionNeuralNetwork.subsref:", ...
-                           " unrecognized property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("CompactRegressionNeuralNetwork.subsasgn:", ...
-                       " chained subscripts not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a CompactRegressionNeuralNetwork object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a CompactRegressionNeuralNetwork object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("CompactRegressionNeuralNetwork.subsasgn: '.'", ...
-                           " indexing argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'ResponseTransform'
-              name = 'CompactRegressionNeuralNetwork';
-              [this.ResponseTransform, this.RTname] = ...
-                    parseResponseTransform (val, name);
-            otherwise
-              error (strcat ("CompactRegressionNeuralNetwork.subsasgn:", ...
-                             " unrecognized or read-only property: '%s'"), ...
-                             s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -828,19 +787,6 @@ endclassdef
 %!error<CompactRegressionNeuralNetwork.savemodel: FNAME must be a character vector.> ...
 %! savemodel (CRNN, 5)
 
-## Test subscripted reference and assignment
-%!error<Invalid \(\) indexing for referencing values in a CompactRegressionNeuralNetwork object.> ...
-%! CRNN(1)
-%!error<Invalid \{\} indexing for referencing values in a CompactRegressionNeuralNetwork object.> ...
-%! CRNN{1}
-%!error<CompactRegressionNeuralNetwork.subsref: unrecognized property: 'Nope'> ...
-%! CRNN.Nope
-%!error<Invalid \(\) indexing for assigning values to a CompactRegressionNeuralNetwork object.> ...
-%! CRNN(1) = 1;
-%!error<CompactRegressionNeuralNetwork.subsasgn: unrecognized or read-only property: 'LayerSizes'> ...
-%! CRNN.LayerSizes = 5;
-%!error<CompactRegressionNeuralNetwork.subsasgn: chained subscripts not allowed.> ...
-%! CRNN.ResponseTransform.foo = 1;
 %!error<CompactRegressionNeuralNetwork: unrecognized 'ResponseTransform' function.> ...
 %! CRNN.ResponseTransform = 'nope';
 %!error<CompactRegressionNeuralNetwork: function handle for 'ResponseTransform' must return the same size as its input.> ...

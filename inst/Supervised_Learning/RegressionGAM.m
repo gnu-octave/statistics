@@ -120,7 +120,7 @@ classdef RegressionGAM
 ## @seealso{fitrgam, regress, regress_gp}
 ## @end deftypefn
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} X
@@ -238,19 +238,6 @@ classdef RegressionGAM
     ## @end deftp
     W                     = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {RegressionGAM} {property} ResponseTransform
-    ##
-    ## Transformation applied to the predicted response
-    ##
-    ## A function handle applied to the response the model predicts.  Add or
-    ## change it using dot notation, as in
-    ## @qcode{@var{obj}.ResponseTransform = 'log'} or
-    ## @qcode{@var{obj}.ResponseTransform = @@function_handle}.  It defaults
-    ## to @qcode{'none'}, the identity.
-    ##
-    ## @end deftp
-    ResponseTransform     = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} Intercept
@@ -384,9 +371,39 @@ classdef RegressionGAM
 
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle applied to the response the model predicts.  Add or
+    ## change it using dot notation, as in
+    ## @qcode{@var{obj}.ResponseTransform = 'log'} or
+    ## @qcode{@var{obj}.ResponseTransform = @@function_handle}.  It defaults
+    ## to @qcode{'none'}, the identity.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(x) x;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     RTname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ResponseTransform (this, val)
+        [this.ResponseTransform, this.RTname] = ...
+                  parseResponseTransform (val, 'RegressionGAM');
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -417,64 +434,7 @@ classdef RegressionGAM
       fprintf ("%+25s: %g\n", 'Tol', this.Tol);
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a RegressionGAM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a RegressionGAM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("RegressionGAM.subsref: '.' indexing argument", ...
-                           " must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("RegressionGAM.subsref: unrecognized", ...
-                           " property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("RegressionGAM.subsasgn: chained subscripts", ...
-                       " not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a RegressionGAM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a RegressionGAM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("RegressionGAM.subsasgn: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'ResponseTransform'
-              [this.ResponseTransform, this.RTname] = ...
-                        parseResponseTransform (val, 'RegressionGAM');
-            otherwise
-              error (strcat ("RegressionGAM.subsasgn: unrecognized or", ...
-                             " read-only property: '%s'"), s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -1680,8 +1640,6 @@ endfunction
 %! loss (Mr, xr, yr(1:10))
 %!error<RegressionGAM.loss: unsupported 'LossFun' value.> ...
 %! loss (Mr, xr, yr, 'LossFun', 'mad')
-%!error<RegressionGAM.subsasgn: unrecognized or read-only property: 'Knots'> ...
-%! Mr.Knots = 3;
 %!error<RegressionGAM: unrecognized 'ResponseTransform' function.> ...
 %! Mr.ResponseTransform = 'nonsense';
 

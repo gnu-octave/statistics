@@ -39,7 +39,7 @@
 
 classdef CompactRegressionSVM
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} NumPredictors
@@ -71,17 +71,6 @@ classdef CompactRegressionSVM
     ## @end deftp
     ResponseName          = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionSVM} {property} ResponseTransform
-    ##
-    ## Transformation applied to the predicted response
-    ##
-    ## A function handle, applied by @code{predict} to the model's output.  It
-    ## may be set after construction, either to a handle or to the name of a
-    ## supported transformation.
-    ##
-    ## @end deftp
-    ResponseTransform     = @(y) y;
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} Epsilon
@@ -221,9 +210,38 @@ classdef CompactRegressionSVM
     ExpandedPredictorNames = {};
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionSVM} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle, applied by @code{predict} to the model's output.  It
+    ## may be set after construction, either to a handle or to the name of a
+    ## supported transformation.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(y) y;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     RTname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ResponseTransform (this, val)
+      name = 'CompactRegressionSVM';
+      [this.ResponseTransform, this.RTname] = ...
+            parseResponseTransform (val, name);
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -293,65 +311,7 @@ classdef CompactRegressionSVM
                rows (this.SupportVectors), columns (this.SupportVectors));
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a CompactRegressionSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a CompactRegressionSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("CompactRegressionSVM.subsref: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("CompactRegressionSVM.subsref: unrecognized", ...
-                           " property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("CompactRegressionSVM.subsasgn: chained", ...
-                       " subscripts not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a CompactRegressionSVM object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a CompactRegressionSVM object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("CompactRegressionSVM.subsasgn: '.' indexing", ...
-                           " argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'ResponseTransform'
-              name = 'CompactRegressionSVM';
-              [this.ResponseTransform, this.RTname] = ...
-                    parseResponseTransform (val, name);
-            otherwise
-              error (strcat ("CompactRegressionSVM.subsasgn: unrecognized", ...
-                             " or read-only property: '%s'"), s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -784,18 +744,5 @@ endclassdef
 %!error<CompactRegressionSVM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (CRSVM, 5)
 
-## Test subscripted reference and assignment
-%!error<Invalid \(\) indexing for referencing values in a CompactRegressionSVM object.> ...
-%! CRSVM(1)
-%!error<Invalid \{\} indexing for referencing values in a CompactRegressionSVM object.> ...
-%! CRSVM{1}
-%!error<CompactRegressionSVM.subsref: unrecognized property: 'Nope'> ...
-%! CRSVM.Nope
-%!error<Invalid \(\) indexing for assigning values to a CompactRegressionSVM object.> ...
-%! CRSVM(1) = 1;
-%!error<CompactRegressionSVM.subsasgn: unrecognized or read-only property: 'Epsilon'> ...
-%! CRSVM.Epsilon = 5;
-%!error<CompactRegressionSVM.subsasgn: chained subscripts not allowed.> ...
-%! CRSVM.ResponseTransform.foo = 1;
 %!error<CompactRegressionSVM: unrecognized 'ResponseTransform' function.> ...
 %! CRSVM.ResponseTransform = 'nope';

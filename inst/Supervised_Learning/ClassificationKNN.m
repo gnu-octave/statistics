@@ -40,7 +40,7 @@ classdef ClassificationKNN
   ## @seealso{fitcknn}
   ## @end deftp
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} X
     ##
@@ -146,85 +146,8 @@ classdef ClassificationKNN
     ## @end deftp
     ClassNames      = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Cost
-    ##
-    ## Cost of Misclassification
-    ##
-    ## A square matrix specifying the cost of misclassification of a point.
-    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
-    ## if its true class is @qcode{i} (that is, the rows correspond to the true
-    ## class and the columns correspond to the predicted class).  The order of
-    ## the rows and columns in @qcode{Cost} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.  The number of rows and columns in
-    ## @qcode{Cost} is the number of unique classes in the response.  By
-    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
-    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
-    ## for correct classification and 1 for incorrect classification.
-    ##
-    ## Add or change the @qcode{Cost} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    Cost            = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Prior
-    ##
-    ## Prior probability for each class
-    ##
-    ## A numeric vector specifying the prior probabilities for each class.  The
-    ## order of the elements in @qcode{Prior} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.
-    ##
-    ## Add or change the @qcode{Prior} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    Prior           = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} ScoreTransform
-    ##
-    ## Transformation function for classification scores
-    ##
-    ## Specified as a function handle for transforming the classification
-    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
-    ## notation as in:
-    ##
-    ## @itemize
-    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
-    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
-    ## @end itemize
-    ##
-    ## When specified as a character vector, it can be any of the following
-    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
-    ## always stores their function handle equivalent.
-    ##
-    ## @multitable @columnfractions 0.2 0.75
-    ## @headitem @var{Value} @tab @var{Description}
-    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
-    ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{'none'} @tab @math{x} (no transformation)
-    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
-    ## @item @qcode{'sign'} @tab
-    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
-    ## 0}
-    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
-    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
-    ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
-    ## @end multitable
-    ##
-    ## @end deftp
-    ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Standardize
@@ -440,9 +363,137 @@ classdef ClassificationKNN
     BucketSize      = [];
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## Add or change the @qcode{Cost} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Cost            = [];
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## Add or change the @qcode{Prior} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Prior           = [];
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
+    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform  = @(x) x;
+  endproperties
+
+  ## Readable by the counterpart class, which copies it, and kept out of
+  ## the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     STname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.Cost (this, val)
+      gnY = unique (this.Y);
+      if (isempty (val))
+        this.Cost = cast (! eye (numel (gnY)), 'double');
+      else
+        if (numel (gnY) != sqrt (numel (val)))
+          error (strcat ("ClassificationKNN: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
+        endif
+        this.Cost = val;
+      endif
+    endfunction
+
+    function this = set.Prior (this, val)
+      [~, gnY, gY] = unique (this.Y);
+      if (strcmpi ('uniform', val))
+        this.Prior = ones (size (gnY)) ./ numel (gnY);
+      elseif (isempty (val) || strcmpi ('empirical', val))
+        pr = [];
+        for i = 1:numel (gnY)
+          pr = [pr; sum(gY==i)];
+        endfor
+        this.Prior = pr ./ sum (pr);
+      elseif (isnumeric (val))
+        if (numel (gnY) != numel (val))
+          error (strcat ("ClassificationKNN: the elements in 'Prior' do", ...
+                         " not correspond to the selected classes in Y."));
+        endif
+        this.Prior = val ./ sum (val);
+      endif
+    endfunction
+
+    function this = set.ScoreTransform (this, val)
+      [f, nm] = parseScoreTransform (val, 'ClassificationKNN');
+      this.ScoreTransform = f;
+      this.STname = nm;
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
@@ -482,70 +533,7 @@ classdef ClassificationKNN
       fprintf ("%+25s: %d\n", 'NumNeighbors', this.NumNeighbors);
     endfunction
 
-    ## Class specific subscripted reference
-    function varargout = subsref (this, s)
-      chain_s = s(2:end);
-      s = s(1);
-      switch (s.type)
-        case '()'
-          error (strcat ("Invalid () indexing for referencing values", ...
-                         " in a ClassificationKNN object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for referencing values", ...
-                         " in a ClassificationKNN object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("ClassificationKNN.subsref: '.'", ...
-                           " indexing argument must be a character vector."));
-          endif
-          try
-            out = this.(s.subs);
-          catch
-            error (strcat ("ClassificationKNN.subsref:", ...
-                           " unrecognized property: '%s'"), s.subs);
-          end_try_catch
-      endswitch
-      ## Chained references
-      if (! isempty (chain_s))
-        out = subsref (out, chain_s);
-      endif
-      varargout{1} = out;
-    endfunction
 
-    ## Class specific subscripted assignment
-    function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error (strcat ("ClassificationKNN.subsasgn:", ...
-                       " chained subscripts not allowed."));
-      endif
-      switch s.type
-        case '()'
-          error (strcat ("Invalid () indexing for assigning values", ...
-                         " to a ClassificationKNN object."));
-        case '{}'
-          error (strcat ("Invalid {} indexing for assigning values", ...
-                         " to a ClassificationKNN object."));
-        case '.'
-          if (! ischar (s.subs))
-            error (strcat ("ClassificationKNN.subsasgn: '.'", ...
-                           " indexing argument must be a character vector."));
-          endif
-          switch (s.subs)
-            case 'Cost'
-              this.Cost = setCost (this, val);
-            case 'Prior'
-              this.Prior = setPrior (this, val);
-            case 'ScoreTransform'
-              name = 'ClassificationKNN';
-              [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (val, name);
-            otherwise
-              error (strcat ("ClassificationKNN.subsasgn:", ...
-                             " unrecognized or read-only property: '%s'"), ...
-                             s.subs);
-          endswitch
-      endswitch
-    endfunction
 
   endmethods
 
@@ -792,8 +780,7 @@ classdef ClassificationKNN
 
           case 'scoretransform'
             name = 'ClassificationKNN';
-            [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                 (varargin{2}, name);
+            this.ScoreTransform = varargin{2};
 
           case 'breakties'
             BreakTies = varargin{2};
@@ -1029,8 +1016,8 @@ classdef ClassificationKNN
       endif
 
       ## Handle Cost and Prior
-      this = setCost (this, Cost, gnY);
-      this = setPrior (this, Prior, gnY, gY);
+      this.Cost  = Cost;
+      this.Prior = Prior;
 
       ## Get number of neighbors
       if (isempty (NumNeighbors))
@@ -2174,42 +2161,7 @@ classdef ClassificationKNN
 
   methods(Access = private)
 
-    function this = setCost (this, Cost, gnY = [])
-      if (isempty (gnY))
-        [~, gnY, gY] = unique (this.Y);
-      endif
-      if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), 'double');
-      else
-        if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat ("ClassificationKNN: the number of rows and columns", ...
-                         " in 'Cost' must correspond to selected classes in Y."));
-        endif
-        this.Cost = Cost;
-      endif
-    endfunction
 
-    function this = setPrior (this, Prior, gnY = [], gY = [])
-      if (isempty (gnY) || isempty (gY))
-        [~, gnY, gY] = unique (this.Y);
-      endif
-      ## Set prior
-      if (strcmpi ('uniform', Prior))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
-      elseif (isempty (Prior) || strcmpi ('empirical', Prior))
-        pr = [];
-        for i = 1:numel (gnY)
-          pr = [pr; sum(gY==i)];
-        endfor
-        this.Prior = pr ./ sum (pr);
-      elseif (isnumeric (Prior))
-        if (numel (gnY) != numel (Prior))
-          error (strcat ("ClassificationKNN: the elements in 'Prior' do", ...
-                         " not correspond to the selected classes in Y."));
-        endif
-        this.Prior = Prior ./ sum (Prior);
-      endif
-    endfunction
 
   endmethods
 
