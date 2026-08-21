@@ -1003,6 +1003,121 @@ classdef RegressionNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionNeuralNetwork} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross validate a neural network regression model.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a
+    ## @qcode{RegressionPartitionedModel} holding one refit of @var{obj} per
+    ## fold of a ten-fold partition, or of an @math{n}-fold one where the
+    ## model has fewer than ten observations.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{RegressionNeuralNetwork} class object.
+    ## @end itemize
+    ##
+    ## @code{@var{CVMdl} = crossval (@dots{}, @var{name}, @var{value})}
+    ## accepts one, and only one, of the following @qcode{Name-Value} pairs.
+    ##
+    ## @multitable @columnfractions 0.28 0.72
+    ## @headitem @var{Name} @tab @var{Value}
+    ## @item @qcode{'KFold'} @tab An integer greater than 1, the number of
+    ## folds.
+    ## @item @qcode{'Holdout'} @tab A scalar in @math{(0, 1)}, the fraction
+    ## of observations held out for testing.
+    ## @item @qcode{'Leaveout'} @tab @qcode{'on'} or @qcode{'off'}, whether
+    ## to hold out one observation at a time.
+    ## @item @qcode{'CVPartition'} @tab A @code{cvpartition} object over as
+    ## many observations as the model was trained on.
+    ## @end multitable
+    ##
+    ## @seealso{RegressionNeuralNetwork, RegressionPartitionedModel,
+    ## cvpartition}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      if (numel (varargin) == 1)
+        error (strcat ("RegressionNeuralNetwork.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
+      elseif (numel (varargin) > 2)
+        error (strcat ("RegressionNeuralNetwork.crossval: specify only", ...
+                       " one of the optional Name-Value paired arguments."));
+      endif
+
+      if (this.NumObservations < 10)
+        numFolds  = this.NumObservations;
+      else
+        numFolds  = 10;
+      endif
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && (numFolds == fix (numFolds)) && numFolds > 1))
+              error (strcat ("RegressionNeuralNetwork.crossval: 'KFold'", ...
+                             " must be an integer value greater than 1."));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat ("RegressionNeuralNetwork.crossval: 'Holdout'", ...
+                             " must be a numeric value between 0 and 1."));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
+              error (strcat ("RegressionNeuralNetwork.crossval: 'Leaveout'", ...
+                             " must be either 'on' or 'off'."));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (! (isa (CVPartition, 'cvpartition')))
+              error (strcat ("RegressionNeuralNetwork.crossval:", ...
+                             " 'CVPartition' must be a 'cvpartition'", ...
+                             " object."));
+            endif
+
+          otherwise
+            error (strcat ("RegressionNeuralNetwork.crossval: invalid", ...
+                           " parameter name in optional paired arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## Determine the cross-validation method to use.  The partition is
+      ## built over the observations actually trained on, so its indices and
+      ## the partitioned model's rows are the same set.
+      n = this.NumObservations;
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (n, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (n, 'LeaveOut');
+      else
+        partition = cvpartition (n, 'KFold', numFolds);
+      endif
+
+      ## Create a cross-validated model object
+      CVMdl = RegressionPartitionedModel (this, partition);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionNeuralNetwork} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Create a @qcode{CompactRegressionNeuralNetwork} object.
@@ -1465,6 +1580,43 @@ endfunction
 %! assert_equal (class (CMdl), 'CompactRegressionNeuralNetwork');
 %! assert_equal (predict (CMdl, X), predict (Mdl, X));
 %! assert_equal (loss (CMdl, X, Y), loss (Mdl, X, Y));
+
+## crossval returns a partitioned model holding one fit per fold.
+%!test
+%! rand ('seed', 42); randn ('seed', 42);
+%! X = randn (30, 2);
+%! Y = X(:,1) - X(:,2);
+%! Mdl = fitrnet (X, Y, 'IterationLimit', 20);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
+%! assert_equal (CVMdl.KFold, 3);
+%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionNeuralNetwork');
+%! assert_equal (numel (kfoldPredict (CVMdl)), 30);
+%! assert_equal (isfinite (kfoldLoss (CVMdl)), true);
+
+## Test input validation for crossval
+%!error<RegressionNeuralNetwork.crossval: Name-Value arguments must be in pairs.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), 'KFold')
+%!error<RegressionNeuralNetwork.crossval: specify only one of the optional Name-Value paired arguments.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), ...
+%!           'KFold', 3, 'Leaveout', 'on')
+%!error<RegressionNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), 'KFold', 1)
+%!error<RegressionNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), 'Holdout', 1)
+%!error<RegressionNeuralNetwork.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), 'Leaveout', 1)
+%!error<RegressionNeuralNetwork.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), 'CVPartition', 1)
+%!error<RegressionNeuralNetwork.crossval: invalid parameter name in optional paired arguments.> ...
+%! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
+%!                    'IterationLimit', 20), 'Nope', 1)
 
 ## Test input validation for the constructor
 %!error<RegressionNeuralNetwork: too few input arguments.> ...

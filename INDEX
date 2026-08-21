@@ -148,6 +148,7 @@ Supervised Learning
  fitrsvm
  RegressionGAM
  RegressionNeuralNetwork
+ RegressionPartitionedModel
  RegressionSVM
  svmpredict
  svmtrain
