@@ -204,6 +204,10 @@ classdef ClassificationSVM
     ## variables have not been standardized, then @qcode{Sigma} is empty.
     ## This property is read-only.
     ##
+    ## Only observations with no missing predictor enter the estimate, and
+    ## they are weighted so that each class keeps the share of the
+    ## observation weight it carried before any row was set aside.
+    ##
     ## @end deftp
     Sigma               = [];
 
@@ -215,6 +219,10 @@ classdef ClassificationSVM
     ## A numeric vector of the same length as the columns in @var{X} containing
     ## the means of predictor variables.  If the predictor variables have not
     ## been standardized, then @qcode{Mu} is empty.  This property is read-only.
+    ##
+    ## Only observations with no missing predictor enter the estimate, and
+    ## they are weighted so that each class keeps the share of the
+    ## observation weight it carried before any row was set aside.
     ##
     ## @end deftp
     Mu                  = [];
@@ -853,8 +861,10 @@ classdef ClassificationSVM
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
 
-      ## Renew groups in Y
-      [gY, gnY, glY] = grp2idx (Y);
+      ## Renew groups in Y over the retained observations, so a class held
+      ## only by a row with missing predictors is still a class of the model
+      [gret, gnY, glY] = grp2idx (Yret);
+      gY = gret(cobs);
       nclasses = numel (gnY);
       this.ClassNames = glY;  # Keep the same type as Y
 
@@ -938,9 +948,21 @@ classdef ClassificationSVM
       ## the scale svmpredict receives.
       if (Standardize)
         this.Standardize = true;
-        this.Sigma = std (X, [], 1);
+        ## Mu and Sigma weight the complete observations so that each class
+        ## keeps the share of the observation weight it carried before any row
+        ## was set aside, which is what MATLAB reports.
+        sw = zeros (rows (X), 1);
+        for k = 1:numel (gnY)
+          ck = (gY == k);
+          if (any (ck))
+            sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);
+          endif
+        endfor
+        sw = sw / sum (sw);
+        this.Mu = sum (sw .* X, 1);
+        Zs = X - this.Mu;
+        this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
-        this.Mu = mean (X, 1);
         X = (X - this.Mu) ./ this.Sigma;
       else
         this.Standardize = false;
@@ -2502,3 +2524,22 @@ endclassdef
 %! assert_equal (Mdl.NumObservations, 100);
 %! assert_equal (rows (Mdl.X), 100);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## Mu and Sigma are empty unless the predictors are standardized.
+%!test
+%! load fisheriris
+%! Mdl = fitcsvm (meas(1:100,:), species(1:100));
+%! assert_equal (Mdl.Mu, []);
+%! assert_equal (Mdl.Sigma, []);
+
+## Standardizing weights the complete observations by each class's original
+## share of the observation weight.  Values from MATLAB R2024a.
+%!test
+%! load fisheriris
+%! X = meas(1:100,:);
+%! X(3,2) = NaN; X(17,4) = NaN;
+%! Mdl = fitcsvm (X, species(1:100), 'Standardize', true);
+%! assert_equal (Mdl.Mu, [5.4700833333333314, 3.0964583333333331, ...
+%!                        2.864374999999999, 0.78487499999999988], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.64239212471819018, 0.47709034264660688, ...
+%!                           1.4464268842305728, 0.56625850081877471], 1e-13);

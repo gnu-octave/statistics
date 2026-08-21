@@ -204,6 +204,10 @@ classdef ClassificationNeuralNetwork
     ## used for standardization.  Empty if @qcode{Standardize} is @qcode{false}.
     ## This property is read-only.
     ##
+    ## Only observations with no missing predictor enter the estimate, and
+    ## they are weighted so that each class keeps the share of the
+    ## observation weight it carried before any row was set aside.
+    ##
     ## @end deftp
     Sigma                 = [];
 
@@ -215,6 +219,10 @@ classdef ClassificationNeuralNetwork
     ## A numeric vector containing the means of the predictors used for
     ## standardization.  Empty if @qcode{Standardize} is @qcode{false}.
     ## This property is read-only.
+    ##
+    ## Only observations with no missing predictor enter the estimate, and
+    ## they are weighted so that each class keeps the share of the
+    ## observation weight it carried before any row was set aside.
     ##
     ## @end deftp
     Mu                    = [];
@@ -856,8 +864,10 @@ classdef ClassificationNeuralNetwork
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
 
-      ## Renew groups in Y, get classes ordered, keep the same type
-      [this.ClassNames, gnY, gY] = unique (Y);
+      ## Renew groups in Y over the retained observations, so a class held
+      ## only by a row with missing predictors is still a class of the model
+      [this.ClassNames, gnY, gret] = unique (Yret);
+      gY = gret(cobs);
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -890,9 +900,21 @@ classdef ClassificationNeuralNetwork
       ## Handle Standardize flag
       if (Standardize)
         this.Standardize = true;
-        this.Sigma = std (X, [], 1);
+        ## Mu and Sigma weight the complete observations so that each class
+        ## keeps the share of the observation weight it carried before any row
+        ## was set aside, which is what MATLAB reports.
+        sw = zeros (rows (X), 1);
+        for k = 1:numel (gnY)
+          ck = (gY == k);
+          if (any (ck))
+            sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);
+          endif
+        endfor
+        sw = sw / sum (sw);
+        this.Mu = sum (sw .* X, 1);
+        Zs = X - this.Mu;
+        this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
-        this.Mu = mean (X, 1);
         ## Train on the scale the model predicts on: predict, resubPredict
         ## and loss all standardize their input from Mu and Sigma, so the
         ## training data must be standardized here as well.
@@ -2151,3 +2173,22 @@ endfunction
 %! assert_equal (Mdl.NumObservations, 150);
 %! assert_equal (rows (Mdl.X), 150);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## Mu and Sigma are empty unless the predictors are standardized.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20);
+%! assert_equal (Mdl.Mu, []);
+%! assert_equal (Mdl.Sigma, []);
+
+## Standardizing weights the complete observations by each class's original
+## share of the observation weight.  Values from MATLAB R2024a.
+%!test
+%! load fisheriris
+%! X = meas;
+%! X(3,2) = NaN; X(17,4) = NaN; X(140,1) = NaN;
+%! Mdl = fitcnet (X, species, 'Standardize', true, 'IterationLimit', 20);
+%! assert_equal (Mdl.Mu, [5.8405997732426291, 3.0547817460317455, ...
+%!                        3.7612840136054406, 1.1980799319727886], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.82803317153591371, 0.43533400398915184, ...
+%!                           1.7640762592568813, 0.76297286301694878], 1e-13);

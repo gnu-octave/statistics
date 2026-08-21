@@ -1671,3 +1671,15 @@ endclassdef
 %! assert_equal (Mdl.NumObservations, 150);
 %! assert_equal (rows (Mdl.X), 150);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## Standardizing summarizes the complete observations.  With no classes the
+## weights are uniform over them.  Values from MATLAB R2024a.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! X(7,2) = NaN; X(120,3) = NaN;
+%! Mdl = fitrsvm (X, meas(:,1), 'Standardize', true);
+%! assert_equal (Mdl.Mu, [3.0608108108108096, 3.7655405405405395, ...
+%!                        1.203378378378378], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.43214937187299296, 1.7636045663278643, ...
+%!                           0.76339873235638711], 1e-13);

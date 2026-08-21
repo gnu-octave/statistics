@@ -247,6 +247,10 @@ classdef ClassificationKNN
     ## variables have not been standardized, then @qcode{'obj.Sigma'} is empty.
     ## This property is read-only.
     ##
+    ## Each predictor is summarized from every observation where that
+    ## predictor is present, so a row holding a missing value in another
+    ## predictor still contributes to this one.
+    ##
     ## @end deftp
     Sigma           = [];
 
@@ -259,6 +263,10 @@ classdef ClassificationKNN
     ## mean values corresponding to each predictor.  If the predictor variables
     ## have not been standardized, then @qcode{'obj.Mu'} is empty.  This
     ## property is read-only.
+    ##
+    ## Each predictor is summarized from every observation where that
+    ## predictor is present, so a row holding a missing value in another
+    ## predictor still contributes to this one.
     ##
     ## @end deftp
     Mu              = [];
@@ -971,8 +979,10 @@ classdef ClassificationKNN
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
 
-      ## Renew groups in Y, get classes ordered, keep the same type
-      [this.ClassNames, gnY, gY] = unique (Y);
+      ## Renew groups in Y over the retained observations, so a class held
+      ## only by a row with missing predictors is still a class of the model
+      [this.ClassNames, gnY, gret] = unique (Yret);
+      gY = gret(cobs);
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -993,9 +1003,18 @@ classdef ClassificationKNN
       ## Handle Standardize flag
       if (Standardize)
         this.Standardize = true;
-        this.Sigma = std (X, [], 1);
+        ## A lazy learner standardizes at predict time, so each predictor is
+        ## summarized from every observation where it is present, whatever is
+        ## missing elsewhere in the row.  This is what MATLAB reports.
+        this.Mu    = zeros (1, columns (this.X));
+        this.Sigma = zeros (1, columns (this.X));
+        for j = 1:columns (this.X)
+          xj = this.X(:,j);
+          xj = xj(! isnan (xj));
+          this.Mu(j)    = mean (xj);
+          this.Sigma(j) = std (xj);
+        endfor
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
-        this.Mu = mean (X, 1);
       else
         this.Standardize = false;
         this.Sigma = [];
@@ -3291,3 +3310,23 @@ endfunction
 %! assert_equal (Mdl.NumObservations, 150);
 %! assert_equal (rows (Mdl.X), 150);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## Mu and Sigma are empty unless the predictors are standardized.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (Mdl.Mu, []);
+%! assert_equal (Mdl.Sigma, []);
+
+## Each predictor is summarized from every observation that has it.  Column 3
+## is complete, so its mean spans all 150 rows.  Values from MATLAB R2024a.
+%!test
+%! load fisheriris
+%! X = meas;
+%! X(3,2) = NaN; X(17,4) = NaN; X(140,1) = NaN;
+%! Mdl = fitcknn (X, species, 'Standardize', true);
+%! assert_equal (Mdl.Mu, [5.8362416107382593, 3.0563758389261766, ...
+%!                        3.7580000000000031, 1.2046979865771823], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.82627581654893234, 0.43717801242449683, ...
+%!                           1.7652982332594667, 0.76196186774754338], 1e-13);
+%! assert_equal (Mdl.Mu(3), mean (meas(:,3)), 1e-13);
