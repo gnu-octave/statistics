@@ -41,7 +41,7 @@ function [f, st] = parseScoreTransform (ScoreTransform, classname)
                      " return the same size as its input."), classname);
     endif
     f = ScoreTransform;
-    st = 'custom function handle';
+    st = func2str (ScoreTransform);
   else
     if (! ismember (ScoreTransform, stList))
       error ("%s: unrecognized 'ScoreTransform' function.", classname);

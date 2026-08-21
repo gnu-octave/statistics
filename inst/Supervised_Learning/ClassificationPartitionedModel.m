@@ -35,6 +35,7 @@ classdef ClassificationPartitionedModel
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} BinEdges
     ##
@@ -100,7 +101,6 @@ classdef ClassificationPartitionedModel
     ##
     ## @end deftp
     ClassNames                   = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} CrossValidatedModel
@@ -197,7 +197,6 @@ classdef ClassificationPartitionedModel
     ## @end deftp
     ResponseName                 = [];
 
-
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} Standardize
     ##
@@ -225,6 +224,7 @@ classdef ClassificationPartitionedModel
 
   ## Properties a user may set.  Each one is validated by its set method.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} Cost
     ##
@@ -243,6 +243,7 @@ classdef ClassificationPartitionedModel
     ##
     ## @end deftp
     Cost                         = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} ScoreTransform
     ##
@@ -253,15 +254,16 @@ classdef ClassificationPartitionedModel
     ##
     ## @end deftp
     ScoreTransform               = [];
+
   endproperties
 
   ## Copied from the parent model and kept out of the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
@@ -279,13 +281,13 @@ classdef ClassificationPartitionedModel
 
     function this = set.ScoreTransform (this, val)
       [f, nm] = parseScoreTransform (val, 'ClassificationPartitionedModel');
-      this.ScoreTransform = f;
-      this.STname = nm;
+      this.ScoreTransform = nm;
+      this.STfun = f;
     endfunction
 
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationPartitionedModel} {@var{this} =} ClassificationPartitionedModel (@var{Mdl}, @var{Partition})
     ##
@@ -335,7 +337,7 @@ classdef ClassificationPartitionedModel
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
       this.ScoreTransform = Mdl.ScoreTransform;
-      this.STname = Mdl.STname;
+      this.STfun = Mdl.STfun;
       ## Every classifier reports a prior and a cost now, so they are carried
       ## whatever was cross validated; this used to name three of the five.
       this.Prior = Mdl.Prior;

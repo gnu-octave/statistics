@@ -38,6 +38,7 @@ classdef CompactClassificationSVM
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} NumPredictors
     ##
@@ -114,7 +115,6 @@ classdef CompactClassificationSVM
     ##
     ## @end deftp
     Cost                = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} Standardize
@@ -248,6 +248,7 @@ classdef CompactClassificationSVM
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} ScoreTransform
     ##
@@ -285,33 +286,29 @@ classdef CompactClassificationSVM
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform      = @(x) x;
+    ScoreTransform      = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ScoreTransform (this, val)
       name = 'CompactClassificationSVM';
       try
-        [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                             (val, name);
+        [this.STfun, this.ScoreTransform] = parseScoreTransform (val, name);
       catch
         error (strcat ("CompactClassificationSVM.subsasgn:", ...
                        " 'ScoreTransform' must be a", ...
                        " 'function_handle' object."));
       end_try_catch
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## constructor
     function this = CompactClassificationSVM (Mdl = [])
@@ -333,7 +330,7 @@ classdef CompactClassificationSVM
       this.Cost                  = Mdl.Cost;
 
       this.ScoreTransform        = Mdl.ScoreTransform;
-      this.STname                = Mdl.STname;
+      this.STfun                = Mdl.STfun;
 
       this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
@@ -378,7 +375,7 @@ classdef CompactClassificationSVM
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
       if (! isempty (this.Beta))
@@ -391,11 +388,9 @@ classdef CompactClassificationSVM
                rows (this.SupportVectors), columns (this.SupportVectors));
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -475,7 +470,7 @@ classdef CompactClassificationSVM
 
       if (nargout > 1)
         ## Apply ScoreTransform
-        scores = this.ScoreTransform (scores);
+        scores = this.STfun (scores);
       endif
 
     endfunction
@@ -776,7 +771,7 @@ classdef CompactClassificationSVM
       Bias                = this.Bias;
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
-      STname              = this.STname;
+      STfun              = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -784,7 +779,7 @@ classdef CompactClassificationSVM
             'Prior', 'Cost', ...
             'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
-            'SupportVectorLabels', 'SupportVectors', 'STname');
+            'SupportVectorLabels', 'SupportVectors', 'STfun');
     endfunction
 
   endmethods
@@ -797,7 +792,7 @@ classdef CompactClassificationSVM
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.

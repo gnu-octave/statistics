@@ -41,6 +41,7 @@ classdef ClassificationKNN
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} W
     ##
@@ -161,9 +162,6 @@ classdef ClassificationKNN
     ##
     ## @end deftp
     ClassNames      = [];
-
-
-
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Standardize
@@ -382,6 +380,7 @@ classdef ClassificationKNN
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Cost
     ##
@@ -405,6 +404,7 @@ classdef ClassificationKNN
     ##
     ## @end deftp
     Cost            = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Prior
     ##
@@ -427,6 +427,7 @@ classdef ClassificationKNN
     ##
     ## @end deftp
     Prior           = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} ScoreTransform
     ##
@@ -464,17 +465,18 @@ classdef ClassificationKNN
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform  = @(x) x;
+    ScoreTransform  = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.Cost (this, val)
       gnY = unique (this.Y);
@@ -516,13 +518,9 @@ classdef ClassificationKNN
 
     function this = set.ScoreTransform (this, val)
       [f, nm] = parseScoreTransform (val, 'ClassificationKNN');
-      this.ScoreTransform = f;
-      this.STname = nm;
+      this.ScoreTransform = nm;
+      this.STfun = f;
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -552,7 +550,7 @@ classdef ClassificationKNN
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
@@ -560,11 +558,9 @@ classdef ClassificationKNN
       fprintf ("%+25s: %d\n", 'NumNeighbors', this.NumNeighbors);
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
@@ -1293,7 +1289,7 @@ classdef ClassificationKNN
         cost = [cost; 1-freq];
 
         ## Apply ScoreTransform
-        scores = this.ScoreTransform (scores);
+        scores = this.STfun (scores);
 
       endfor
 
@@ -2152,7 +2148,7 @@ classdef ClassificationKNN
       NSMethod        = this.NSMethod;
       IncludeTies     = this.IncludeTies;
       BucketSize      = this.BucketSize;
-      STname          = this.STname;
+      STfun          = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
@@ -2160,7 +2156,7 @@ classdef ClassificationKNN
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
             'DistanceWeight', 'DistParameter', 'NSMethod', 'IncludeTies', ...
-            'BucketSize', 'STname');
+            'BucketSize', 'STfun');
     endfunction
 
   endmethods
@@ -2173,7 +2169,7 @@ classdef ClassificationKNN
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
@@ -3258,7 +3254,7 @@ endfunction
 %! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
 %! [~, s0] = predict (Mdl, meas(1:3,:));
 %! Mdl.ScoreTransform = 'none';
-%! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
+%! assert_equal (class (Mdl.ScoreTransform), 'char');
 %! [~, s1] = predict (Mdl, meas(1:3,:));
 %! assert_equal (s1, s0);
 

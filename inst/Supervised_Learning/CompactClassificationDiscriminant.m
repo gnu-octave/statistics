@@ -42,6 +42,7 @@ classdef CompactClassificationDiscriminant
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} NumPredictors
     ##
@@ -95,9 +96,6 @@ classdef CompactClassificationDiscriminant
     ##
     ## @end deftp
     ClassNames      = [];
-
-
-
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} Sigma
@@ -211,6 +209,7 @@ classdef CompactClassificationDiscriminant
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} Cost
     ##
@@ -231,6 +230,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## @end deftp
     Cost            = [];
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} Prior
     ##
@@ -250,6 +250,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## @end deftp
     Prior           = [];
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} ScoreTransform
     ##
@@ -281,22 +282,22 @@ classdef CompactClassificationDiscriminant
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform  = @(x) x;
+    ScoreTransform  = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ScoreTransform (this, val)
       name = 'CompactClassificationDiscriminant';
-      [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                           (val, name);
+      [this.STfun, this.ScoreTransform] = parseScoreTransform (val, name);
     endfunction
 
     function this = set.Cost (this, val)
@@ -305,9 +306,9 @@ classdef CompactClassificationDiscriminant
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
         if (numel (gnY) != sqrt (numel (val)))
-          error (strcat ("CompactClassificationDiscriminant: the number of rows and", ...
-                         " columns in 'Cost' must correspond to the", ...
-                         " selected classes in Y."));
+          error (strcat ("CompactClassificationDiscriminant: the number", ...
+                         " of rows and columns in 'Cost' must correspond", ...
+                         " to the selected classes in Y."));
         endif
         this.Cost = val;
       endif
@@ -331,10 +332,6 @@ classdef CompactClassificationDiscriminant
       endif
     endfunction
 
-  endmethods
-
-  methods(Hidden)
-
     ## Constructor
     function this = CompactClassificationDiscriminant (Mdl = [])
 
@@ -355,7 +352,7 @@ classdef CompactClassificationDiscriminant
       this.Cost            = Mdl.Cost;
       this.Prior           = Mdl.Prior;
       this.ScoreTransform  = Mdl.ScoreTransform;
-      this.STname          = Mdl.STname;
+      this.STfun          = Mdl.STfun;
 
       this.Sigma           = Mdl.Sigma;
       this.Mu              = Mdl.Mu;
@@ -392,18 +389,16 @@ classdef CompactClassificationDiscriminant
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
       fprintf ("%+25s: [%dx%d double]\n", 'Mu', size (this.Mu));
       fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', size (this.Sigma));
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationDiscriminant} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -910,7 +905,7 @@ classdef CompactClassificationDiscriminant
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
-      STname          = this.STname;
+      STfun          = this.STfun;
       Sigma           = this.Sigma;
       Mu              = this.Mu;
       Coeffs          = this.Coeffs;
@@ -923,7 +918,7 @@ classdef CompactClassificationDiscriminant
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
-            'Cost', 'ScoreTransform', 'STname', 'Sigma', 'Mu', 'Coeffs', ...
+            'Cost', 'ScoreTransform', 'STfun', 'Sigma', 'Mu', 'Coeffs', ...
             'Delta', 'DiscrimType', 'Gamma', 'MinGamma', 'LogDetSigma');
     endfunction
 
@@ -937,7 +932,7 @@ classdef CompactClassificationDiscriminant
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
@@ -1197,8 +1192,9 @@ endclassdef
 %! load fisheriris
 %! CMdl = compact (fitcdiscr (meas, species));
 %! CMdl.ScoreTransform = 'symmetric';
-%! assert_equal (class (CMdl.ScoreTransform), 'function_handle');
-%! assert_equal (CMdl.ScoreTransform (0.25), -0.5);
+%! assert_equal (class (CMdl.ScoreTransform), 'char');
+%! assert_equal (CMdl.ScoreTransform, 'symmetric');
+%! assert_equal (CMdl.STfun (0.25), -0.5);
 
 ## Prior and Cost are settable on the compact model, as they are on the full
 ## one, and an unnormalized prior is rescaled.

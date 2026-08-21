@@ -415,27 +415,23 @@ classdef RegressionNeuralNetwork
     ## transformation.
     ##
     ## @end deftp
-    ResponseTransform     = @(y) y;
+    ResponseTransform     = 'none';
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
         name = 'RegressionNeuralNetwork';
-        [this.ResponseTransform, this.RTname] = ...
+        [this.RTfun, this.ResponseTransform] = ...
               parseResponseTransform (val, name);
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -467,11 +463,9 @@ classdef RegressionNeuralNetwork
       endif
       fprintf ("%+25s: '%s'\n", 'OutputLayerActivation', ...
                this.OutputLayerActivation);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
-
-
 
   endmethods
 
@@ -562,7 +556,7 @@ classdef RegressionNeuralNetwork
 
           case 'responsetransform'
             name = 'RegressionNeuralNetwork';
-            [this.ResponseTransform, this.RTname] = ...
+            [this.RTfun, this.ResponseTransform] = ...
                   parseResponseTransform (varargin{2}, name);
 
           case 'layersizes'
@@ -820,7 +814,7 @@ classdef RegressionNeuralNetwork
       [~, yFit] = fcnnpredict (this.ModelParameters, XC, NumThreads);
 
       ## Apply ResponseTransform
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -856,7 +850,7 @@ classdef RegressionNeuralNetwork
       [~, yFit] = fcnnpredict (this.ModelParameters, XC, NumThreads);
 
       ## Apply ResponseTransform
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -1161,7 +1155,7 @@ classdef RegressionNeuralNetwork
       W                       = this.W;
       CategoricalPredictors   = this.CategoricalPredictors;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
-      RTname                  = this.RTname;
+      RTfun                  = this.RTfun;
 
       ## TrainingHistory is a table, and Octave cannot save a classdef object
       ## to a binary file, so it is left out here and rebuilt on loading from
@@ -1174,7 +1168,7 @@ classdef RegressionNeuralNetwork
             'LayerSizes', 'Activations', 'OutputLayerActivation', ...
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
             'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...
-            'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'RTname');
+            'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
     endfunction
 
   endmethods
@@ -1494,8 +1488,8 @@ endfunction
 %! X = linspace (0, 1, 20)';
 %! Mdl = RegressionNeuralNetwork (X, 2 * X, 'ResponseTransform', 'identity', ...
 %!                                'IterationLimit', 20);
-%! assert_equal (is_function_handle (Mdl.ResponseTransform), true);
-%! assert_equal (Mdl.ResponseTransform (5), 5);
+%! assert_equal (class (Mdl.ResponseTransform), 'char');
+%! assert_equal (Mdl.RTfun (5), 5);
 
 ## A saved model comes back carrying its own numbers.
 %!test

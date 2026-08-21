@@ -39,6 +39,7 @@ classdef ClassificationSVM
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} X
     ##
@@ -143,7 +144,6 @@ classdef ClassificationSVM
     ##
     ## @end deftp
     ClassNames          = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} Standardize
@@ -376,6 +376,7 @@ classdef ClassificationSVM
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} ScoreTransform
     ##
@@ -413,32 +414,29 @@ classdef ClassificationSVM
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform      = @(x) x;
+    ScoreTransform      = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ScoreTransform (this, val)
         name = 'ClassificationSVM';
         try
-          [this.ScoreTransform, this.STname] = parseScoreTransform ...
+          [this.STfun, this.ScoreTransform] = parseScoreTransform ...
                                                (val, name);
         catch
           error (strcat ("ClassificationSVM.subsasgn: 'ScoreTransform'", ...
                          " must be a 'function_handle' object."));
         end_try_catch
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -468,7 +466,7 @@ classdef ClassificationSVM
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
@@ -492,11 +490,9 @@ classdef ClassificationSVM
       endif
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
@@ -700,7 +696,7 @@ classdef ClassificationSVM
 
           case 'scoretransform'
             name = 'ClassificationSVM';
-            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+            [this.STfun, this.ScoreTransform] = parseScoreTransform ...
                                                  (varargin{2}, name);
 
           case 'svmtype'
@@ -1142,7 +1138,7 @@ classdef ClassificationSVM
       endif
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -1209,7 +1205,7 @@ classdef ClassificationSVM
       endif
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -1775,7 +1771,7 @@ classdef ClassificationSVM
       ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
-      STname          = this.STname;
+      STfun          = this.STfun;
 
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
@@ -1783,7 +1779,7 @@ classdef ClassificationSVM
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
             'W', 'Prior', 'Cost', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STname');
+            'ExpandedPredictorNames', 'STfun');
     endfunction
 
   endmethods
@@ -1796,7 +1792,7 @@ classdef ClassificationSVM
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.

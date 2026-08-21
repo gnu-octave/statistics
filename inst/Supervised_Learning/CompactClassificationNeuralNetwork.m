@@ -39,6 +39,7 @@ classdef CompactClassificationNeuralNetwork
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} NumPredictors
     ##
@@ -92,7 +93,6 @@ classdef CompactClassificationNeuralNetwork
     ##
     ## @end deftp
     ClassNames            = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} Standardize
@@ -277,7 +277,6 @@ classdef CompactClassificationNeuralNetwork
     ## @end deftp
     LayerBiases           = {};
 
-
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} Prior
     ##
@@ -318,6 +317,7 @@ classdef CompactClassificationNeuralNetwork
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} Cost
     ##
@@ -330,6 +330,7 @@ classdef CompactClassificationNeuralNetwork
     ##
     ## @end deftp
     Cost                  = [];
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} ScoreTransform
     ##
@@ -367,22 +368,22 @@ classdef CompactClassificationNeuralNetwork
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform        = @(x) x;
+    ScoreTransform        = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ScoreTransform (this, val)
       name = 'CompactClassificationNeuralNetwork';
-      [this.ScoreTransform, this.STname] = parseScoreTransform (val, ...
-                                                                name);
+      [this.STfun, this.ScoreTransform] = parseScoreTransform (val, name);
     endfunction
 
     function this = set.Cost (this, val)
@@ -391,17 +392,13 @@ classdef CompactClassificationNeuralNetwork
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
         if (numel (gnY) != sqrt (numel (val)))
-          error (strcat ("CompactClassificationNeuralNetwork: the number of rows and", ...
-                         " columns in 'Cost' must correspond to the", ...
-                         " selected classes in Y."));
+          error (strcat ("CompactClassificationNeuralNetwork: the number", ...
+                         " of rows and columns in 'Cost' must correspond", ...
+                         " to the selected classes in Y."));
         endif
         this.Cost = val;
       endif
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## constructor
     function this = CompactClassificationNeuralNetwork (Mdl = [])
@@ -421,7 +418,7 @@ classdef CompactClassificationNeuralNetwork
       this.ClassNames            = Mdl.ClassNames;
 
       this.ScoreTransform        = Mdl.ScoreTransform;
-      this.STname                = Mdl.STname;
+      this.STfun                = Mdl.STfun;
 
       this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
@@ -475,7 +472,7 @@ classdef CompactClassificationNeuralNetwork
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       str = repmat ({'%d'}, 1, numel (this.LayerSizes));
       str = strcat ('[', strjoin (str, ' '), ']');
@@ -494,11 +491,9 @@ classdef CompactClassificationNeuralNetwork
       fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -567,7 +562,7 @@ classdef CompactClassificationNeuralNetwork
       labels = this.ClassNames(labels);
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -832,7 +827,7 @@ classdef CompactClassificationNeuralNetwork
       Prior                   = this.Prior;
       CategoricalPredictors   = this.CategoricalPredictors;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
-      STname                  = this.STname;
+      STfun                  = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -842,7 +837,7 @@ classdef CompactClassificationNeuralNetwork
             'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
             'DisplayInfo', 'Solver', 'LayerWeights', 'LayerBiases', ...
             'Cost', 'Prior', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STname');
+            'ExpandedPredictorNames', 'STfun');
     endfunction
 
   endmethods
@@ -1083,7 +1078,8 @@ endclassdef
 %! savemodel (compact (Mdl), fname);
 %! CMdl2 = loadmodel (fname);
 %! delete (fname);
-%! assert_equal (CMdl2.ScoreTransform (0.25), -0.5);
+%! assert_equal (CMdl2.ScoreTransform, 'symmetric');
+%! assert_equal (CMdl2.STfun (0.25), -0.5);
 
 %!error <CompactClassificationNeuralNetwork.savemodel: too few input arguments.> ...
 %! savemodel (CompactClassificationNeuralNetwork ())

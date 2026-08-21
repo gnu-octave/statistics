@@ -35,6 +35,7 @@ classdef CompactClassificationGAM
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} NumPredictors
     ##
@@ -100,8 +101,6 @@ classdef CompactClassificationGAM
     ##
     ## @end deftp
     Prior           = [];
-
-
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} Formula
@@ -258,6 +257,7 @@ classdef CompactClassificationGAM
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} Cost
     ##
@@ -281,6 +281,7 @@ classdef CompactClassificationGAM
     ##
     ## @end deftp
     Cost            = [];
+
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} ScoreTransform
     ##
@@ -317,18 +318,29 @@ classdef CompactClassificationGAM
     ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
+    ## The default is @qcode{'none'} because this model's @code{predict}
+    ## already returns posterior probabilities, which sum to one across the
+    ## classes.  MATLAB's generalized additive model is built from boosted
+    ## trees whose raw scores are log-odds, so it defaults to
+    ## @qcode{'logit'} and reports probabilities only after applying it.
+    ## Both return the same kind of quantity while naming a different
+    ## transform, so do not set @qcode{'logit'} here expecting to match
+    ## MATLAB: applying it to numbers that are already probabilities
+    ## leaves them summing to about 1.23 rather than one.
+    ##
     ## @end deftp
-    ScoreTransform  = @(x) x;
+    ScoreTransform  = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
@@ -346,13 +358,9 @@ classdef CompactClassificationGAM
 
     function this = set.ScoreTransform (this, val)
       [f, nm] = parseScoreTransform (val, 'CompactClassificationGAM');
-      this.ScoreTransform = f;
-      this.STname = nm;
+      this.ScoreTransform = nm;
+      this.STfun = f;
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Class object constructor
     function this = CompactClassificationGAM (Mdl = [])
@@ -373,7 +381,7 @@ classdef CompactClassificationGAM
       this.Cost            = Mdl.Cost;
       this.Prior           = Mdl.Prior;
       this.ScoreTransform  = Mdl.ScoreTransform;
-      this.STname          = Mdl.STname;
+      this.STfun          = Mdl.STfun;
 
       this.Formula         = Mdl.Formula;
       this.Interactions    = Mdl.Interactions;
@@ -419,7 +427,7 @@ classdef CompactClassificationGAM
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       if (! isempty (this.Formula))
@@ -436,11 +444,9 @@ classdef CompactClassificationGAM
       endif
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationGAM} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -578,7 +584,7 @@ classdef CompactClassificationGAM
       labels = this.ClassNames (minIdx);
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -814,7 +820,7 @@ classdef CompactClassificationGAM
       Intercept       = this.Intercept;
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
-      STname          = this.STname;
+      STfun          = this.STfun;
       Formula         = this.Formula;
       Interactions    = this.Interactions;
       Knots           = this.Knots;
@@ -829,7 +835,7 @@ classdef CompactClassificationGAM
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
-            'ScoreTransform', 'STname', 'Intercept', ...
+            'ScoreTransform', 'STfun', 'Intercept', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', ...
             'Formula', 'Interactions', 'Knots', ...
             'Order', 'DoF', 'BaseModel', 'ModelwInt', 'IntMatrix', ...
@@ -895,7 +901,7 @@ classdef CompactClassificationGAM
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
@@ -1056,8 +1062,9 @@ endfunction
 %!test
 %! CMdl = compact (fitcgam ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]));
 %! CMdl.ScoreTransform = 'symmetric';
-%! assert_equal (class (CMdl.ScoreTransform), 'function_handle');
-%! assert_equal (CMdl.ScoreTransform (0.25), -0.5);
+%! assert_equal (class (CMdl.ScoreTransform), 'char');
+%! assert_equal (CMdl.ScoreTransform, 'symmetric');
+%! assert_equal (CMdl.STfun (0.25), -0.5);
 
 ## The compact model carries what MATLAB's compact model reports.
 %!test

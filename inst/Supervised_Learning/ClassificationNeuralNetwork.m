@@ -38,6 +38,7 @@ classdef ClassificationNeuralNetwork
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} X
     ##
@@ -142,7 +143,6 @@ classdef ClassificationNeuralNetwork
     ##
     ## @end deftp
     ClassNames            = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} Standardize
@@ -351,7 +351,6 @@ classdef ClassificationNeuralNetwork
     ## @end deftp
     TrainingHistory       = [];
 
-
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} Prior
     ##
@@ -415,6 +414,7 @@ classdef ClassificationNeuralNetwork
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} Cost
     ##
@@ -427,6 +427,7 @@ classdef ClassificationNeuralNetwork
     ##
     ## @end deftp
     Cost                  = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} ScoreTransform
     ##
@@ -464,21 +465,22 @@ classdef ClassificationNeuralNetwork
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform        = @(x) x;
+    ScoreTransform        = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ScoreTransform (this, val)
         name = 'ClassificationNeuralNetwork';
-        [this.ScoreTransform, this.STname] = parseScoreTransform (val, ...
+        [this.STfun, this.ScoreTransform] = parseScoreTransform (val, ...
                                                                   name);
     endfunction
 
@@ -488,17 +490,13 @@ classdef ClassificationNeuralNetwork
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
         if (numel (gnY) != sqrt (numel (val)))
-          error (strcat ("ClassificationNeuralNetwork: the number of rows and", ...
-                         " columns in 'Cost' must correspond to the", ...
+          error (strcat ("ClassificationNeuralNetwork: the number of rows", ...
+                         " and columns in 'Cost' must correspond to the", ...
                          " selected classes in Y."));
         endif
         this.Cost = val;
       endif
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -528,7 +526,7 @@ classdef ClassificationNeuralNetwork
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       str = repmat ({'%d'}, 1, numel (this.LayerSizes));
@@ -548,11 +546,9 @@ classdef ClassificationNeuralNetwork
       fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
@@ -734,7 +730,7 @@ classdef ClassificationNeuralNetwork
 
           case 'scoretransform'
             name = 'ClassificationNeuralNetwork';
-            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+            [this.STfun, this.ScoreTransform] = parseScoreTransform ...
                                                  (varargin{2}, name);
 
           case 'prior'
@@ -1079,7 +1075,7 @@ classdef ClassificationNeuralNetwork
       labels = this.ClassNames(labels);
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -1126,7 +1122,7 @@ classdef ClassificationNeuralNetwork
       labels = this.ClassNames(labels);
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -1596,7 +1592,7 @@ classdef ClassificationNeuralNetwork
       W                       = this.W;
       CategoricalPredictors   = this.CategoricalPredictors;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
-      STname                  = this.STname;
+      STfun                  = this.STfun;
 
       ## TrainingHistory is a table, and Octave cannot save a classdef object
       ## to a binary file, so it is left out here and rebuilt on loading from
@@ -1610,7 +1606,7 @@ classdef ClassificationNeuralNetwork
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
             'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...
             'Cost', 'Prior', 'W', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STname');
+            'ExpandedPredictorNames', 'STfun');
     endfunction
 
   endmethods
@@ -2012,7 +2008,8 @@ endfunction
 %! savemodel (Mdl, fname);
 %! Mdl2 = loadmodel (fname);
 %! delete (fname);
-%! assert_equal (Mdl2.ScoreTransform (0.25), -0.5);
+%! assert_equal (Mdl2.ScoreTransform, 'symmetric');
+%! assert_equal (Mdl2.STfun (0.25), -0.5);
 
 %!error <ClassificationNeuralNetwork.savemodel: too few input arguments.> ...
 %! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))

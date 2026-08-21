@@ -15,6 +15,7 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+classdef CompactRegressionSVM
 ## -*- texinfo -*-
 ## @deftypefn {statistics} {@var{obj} =} CompactRegressionSVM (@var{Mdl})
 ##
@@ -37,10 +38,7 @@
 ## @seealso{RegressionSVM, fitrsvm}
 ## @end deftypefn
 
-classdef CompactRegressionSVM
-
   properties (GetAccess = public, SetAccess = protected)
-
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} NumPredictors
     ##
@@ -70,7 +68,6 @@ classdef CompactRegressionSVM
     ##
     ## @end deftp
     ResponseName          = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} Epsilon
@@ -223,27 +220,22 @@ classdef CompactRegressionSVM
     ## supported transformation.
     ##
     ## @end deftp
-    ResponseTransform     = @(y) y;
+    ResponseTransform     = 'none';
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
       name = 'CompactRegressionSVM';
-      [this.ResponseTransform, this.RTname] = ...
-            parseResponseTransform (val, name);
+      [this.RTfun, this.ResponseTransform] = parseResponseTransform (val, name);
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## constructor
     function this = CompactRegressionSVM (Mdl = [])
@@ -264,7 +256,7 @@ classdef CompactRegressionSVM
       this.ResponseName          = Mdl.ResponseName;
 
       this.ResponseTransform     = Mdl.ResponseTransform;
-      this.RTname                = Mdl.RTname;
+      this.RTfun                = Mdl.RTfun;
 
       this.Epsilon               = Mdl.Epsilon;
       this.Standardize           = Mdl.Standardize;
@@ -298,7 +290,7 @@ classdef CompactRegressionSVM
       ## Print selected properties
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: %g\n", 'Epsilon', this.Epsilon);
       fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
       if (! isempty (this.Beta))
@@ -311,11 +303,9 @@ classdef CompactRegressionSVM
                rows (this.SupportVectors), columns (this.SupportVectors));
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn {CompactRegressionSVM} {@var{yFit} =} predict (@var{obj}, @var{XC})
@@ -362,7 +352,7 @@ classdef CompactRegressionSVM
       yFit = svmpredict (zeros (rows (XC), 1), XC, this.Model, '-q');
 
       ## Apply ResponseTransform
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -501,14 +491,14 @@ classdef CompactRegressionSVM
       SupportVectors          = this.SupportVectors;
       CategoricalPredictors   = this.CategoricalPredictors;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
-      RTname                  = this.RTname;
+      RTfun                  = this.RTfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
             'Epsilon', 'Standardize', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'SupportVectors', ...
-            'CategoricalPredictors', 'ExpandedPredictorNames', 'RTname');
+            'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
     endfunction
 
   endmethods

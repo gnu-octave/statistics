@@ -95,7 +95,6 @@ classdef CompactRegressionGAM
     ## @end deftp
     ExpandedPredictorNames = {};
 
-
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} Intercept
     ##
@@ -219,6 +218,7 @@ classdef CompactRegressionGAM
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} ResponseTransform
     ##
@@ -232,25 +232,22 @@ classdef CompactRegressionGAM
     ##
     ## @end deftp
     ResponseTransform     = @(x) x;
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
-      [this.ResponseTransform, this.RTname] = ...
-            parseResponseTransform (val, 'CompactRegressionGAM');
+      [this.RTfun, this.ResponseTransform] = parseResponseTransform ...
+                                             (val, 'CompactRegressionGAM');
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## constructor
     function this = CompactRegressionGAM (Mdl = [])
@@ -279,7 +276,7 @@ classdef CompactRegressionGAM
       this.BaseModel              = Mdl.BaseModel;
       this.ModelwInt              = Mdl.ModelwInt;
       this.IntMatrix              = Mdl.IntMatrix;
-      this.RTname                 = Mdl.RTname;
+      this.RTfun                 = Mdl.RTfun;
 
     endfunction
 
@@ -298,7 +295,7 @@ classdef CompactRegressionGAM
       ## Print selected properties
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: %g\n", 'Intercept', this.Intercept);
       str = repmat ({'%d'}, 1, numel (this.Knots));
       str = strcat ('[', strjoin (str, ' '), ']');
@@ -308,11 +305,9 @@ classdef CompactRegressionGAM
       fprintf ("%+25s: %s\n", 'Order', sprintf (str, this.Order));
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
     ## -*- texinfo -*-
     ## @deftypefn  {CompactRegressionGAM} {@var{yFit} =} predict (@var{obj}, @var{Xfit})
     ## @deftypefnx {CompactRegressionGAM} {@var{yFit} =} predict (@dots{}, @var{Name}, @var{Value})
@@ -472,7 +467,7 @@ classdef CompactRegressionGAM
 
       ## Predict values from testing data
       yFit = predict_val (params, Xfit, Interc);
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -598,7 +593,7 @@ classdef CompactRegressionGAM
       BaseModel              = this.BaseModel;
       ModelwInt              = this.ModelwInt;
       IntMatrix              = this.IntMatrix;
-      RTname                 = this.RTname;
+      RTfun                 = this.RTfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -606,7 +601,7 @@ classdef CompactRegressionGAM
             'ExpandedPredictorNames', 'ResponseTransform', 'Intercept', ...
             'Formula', 'Interactions', 'Knots', 'Order', 'DoF', ...
             'IsStandardDeviationFit', 'BaseModel', 'ModelwInt', ...
-            'IntMatrix', 'RTname');
+            'IntMatrix', 'RTfun');
     endfunction
 
   endmethods

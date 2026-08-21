@@ -31,7 +31,7 @@ function [f, rt] = parseResponseTransform (ResponseTransform, classname)
                      " return the same size as its input."), classname);
     endif
     f = ResponseTransform;
-    rt = 'custom function handle';
+    rt = func2str (ResponseTransform);
   elseif (ischar (ResponseTransform) && isrow (ResponseTransform))
     rt = tolower (ResponseTransform);
     switch (rt)

@@ -41,6 +41,7 @@ classdef ClassificationGAM
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} X
     ##
@@ -146,7 +147,6 @@ classdef ClassificationGAM
     ## @end deftp
     ClassNames      = [];
 
-
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Prior
     ##
@@ -164,7 +164,6 @@ classdef ClassificationGAM
     ##
     ## @end deftp
     Prior           = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Formula
@@ -331,11 +330,13 @@ classdef ClassificationGAM
     ##
     ## @end deftp
     IntMatrix = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Cost
     ##
@@ -359,6 +360,7 @@ classdef ClassificationGAM
     ##
     ## @end deftp
     Cost            = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} ScoreTransform
     ##
@@ -395,18 +397,29 @@ classdef ClassificationGAM
     ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
+    ## The default is @qcode{'none'} because this model's @code{predict}
+    ## already returns posterior probabilities, which sum to one across the
+    ## classes.  MATLAB's generalized additive model is built from boosted
+    ## trees whose raw scores are log-odds, so it defaults to
+    ## @qcode{'logit'} and reports probabilities only after applying it.
+    ## Both return the same kind of quantity while naming a different
+    ## transform, so do not set @qcode{'logit'} here expecting to match
+    ## MATLAB: applying it to numbers that are already probabilities
+    ## leaves them summing to about 1.23 rather than one.
+    ##
     ## @end deftp
-    ScoreTransform  = @(x) x;
+    ScoreTransform  = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
@@ -424,13 +437,9 @@ classdef ClassificationGAM
 
     function this = set.ScoreTransform (this, val)
       [f, nm] = parseScoreTransform (val, 'ClassificationGAM');
-      this.ScoreTransform = f;
-      this.STname = nm;
+      this.ScoreTransform = nm;
+      this.STfun = f;
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -460,7 +469,7 @@ classdef ClassificationGAM
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       if (! isempty (this.Formula))
@@ -477,11 +486,9 @@ classdef ClassificationGAM
       endif
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
@@ -1106,7 +1113,7 @@ classdef ClassificationGAM
       labels = this.ClassNames (minIdx);
 
       ## Apply ScoreTransform
-      scores = this.ScoreTransform (scores);
+      scores = this.STfun (scores);
 
     endfunction
 
@@ -1550,7 +1557,7 @@ classdef ClassificationGAM
       W               = this.W;
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
-      STname          = this.STname;
+      STfun          = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
       LearningRate    = this.LearningRate;
@@ -1562,7 +1569,7 @@ classdef ClassificationGAM
             'Interactions', 'Knots', 'Order', 'DoF', 'BaseModel', ...
             'ModelwInt', 'IntMatrix', 'LearningRate', 'NumIterations', ...
             'Intercept', 'W', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STname');
+            'ExpandedPredictorNames', 'STfun');
     endfunction
 
   endmethods
@@ -1575,7 +1582,7 @@ classdef ClassificationGAM
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
@@ -2079,8 +2086,9 @@ endfunction
 %!test
 %! Mdl = fitcgam ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]);
 %! Mdl.ScoreTransform = 'symmetric';
-%! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
-%! assert_equal (Mdl.ScoreTransform (0.25), -0.5);
+%! assert_equal (class (Mdl.ScoreTransform), 'char');
+%! assert_equal (Mdl.ScoreTransform, 'symmetric');
+%! assert_equal (Mdl.STfun (0.25), -0.5);
 
 ## The new properties MATLAB reports are carried and saved.
 %!test
@@ -2174,7 +2182,8 @@ endfunction
 %! assert_equal (Mdl2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
 %! assert_equal (Mdl2.ModelwInt.Parameters(1).coefs, ...
 %!               Mdl.ModelwInt.Parameters(1).coefs);
-%! assert_equal (Mdl2.ScoreTransform (0.25), -0.5);
+%! assert_equal (Mdl2.ScoreTransform, 'symmetric');
+%! assert_equal (Mdl2.STfun (0.25), -0.5);
 %! [label, score] = predict (Mdl, X);
 %! [label2, score2] = predict (Mdl2, X);
 %! assert_equal (label2, label);
@@ -2286,3 +2295,15 @@ endfunction
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## predict returns posterior probabilities directly, so the default transform
+## is 'none' and the scores already sum to one.  MATLAB's GAM is boosted trees
+## whose raw scores are log-odds, which is why it names 'logit' instead.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! assert_equal (Mdl.ScoreTransform, 'none');
+%! [~, scores] = predict (Mdl, meas(1:6,:));
+%! assert_equal (sum (scores, 2), ones (6, 1), 1e-12);
+%! assert_equal (all (scores(:) >= 0 & scores(:) <= 1), true);

@@ -39,6 +39,7 @@ classdef ClassificationDiscriminant
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} W
     ##
@@ -50,6 +51,7 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftp
     W               = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} X
     ##
@@ -154,9 +156,6 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftp
     ClassNames      = [];
-
-
-
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} Sigma
@@ -277,11 +276,13 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftp
     XCentered       = [];
+
   endproperties
 
   ## Properties a user may set after the model is fitted.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} Cost
     ##
@@ -305,6 +306,7 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftp
     Cost            = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} Prior
     ##
@@ -327,6 +329,7 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftp
     Prior           = [];
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} ScoreTransform
     ##
@@ -364,17 +367,18 @@ classdef ClassificationDiscriminant
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform  = @(x) x;
+    ScoreTransform  = 'none';
+
   endproperties
 
   ## Readable by the compact counterpart, which copies it, and kept out of
   ## the documented surface.  MATLAB hides its own equivalent the same way.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STname = 'none';
+    STfun = @(x) x;
   endproperties
 
   ## Set methods for the properties a user may assign after fitting.
-  methods
+  methods (Hidden)
 
     function this = set.Cost (this, Cost)
       [~, gnY] = unique (this.Y);
@@ -436,13 +440,9 @@ classdef ClassificationDiscriminant
 
     function this = set.ScoreTransform (this, val)
       [f, nm] = parseScoreTransform (val, 'ClassificationDiscriminant');
-      this.ScoreTransform = f;
-      this.STname = nm;
+      this.ScoreTransform = nm;
+      this.STfun = f;
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -472,7 +472,7 @@ classdef ClassificationDiscriminant
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
@@ -480,11 +480,9 @@ classdef ClassificationDiscriminant
       fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', size (this.Sigma));
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
@@ -1551,14 +1549,14 @@ classdef ClassificationDiscriminant
       MinGamma        = this.MinGamma;
       LogDetSigma     = this.LogDetSigma;
       XCentered       = this.XCentered;
-      STname          = this.STname;
+      STfun          = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
             'ClassNames', 'ScoreTransform', 'Prior', 'Cost', 'Sigma', 'Mu', ...
             'Coeffs', 'Delta', 'DiscrimType', 'Gamma', 'MinGamma', ...
-            'LogDetSigma', 'XCentered', 'STname');
+            'LogDetSigma', 'XCentered', 'STfun');
     endfunction
 
   endmethods
@@ -1571,7 +1569,7 @@ classdef ClassificationDiscriminant
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
-      ## as STname is written out by savemodel but is not reported by
+      ## as STfun is written out by savemodel but is not reported by
       ## fieldnames, so comparing the two sets could never match and every
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
@@ -1988,8 +1986,9 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! Mdl.ScoreTransform = 'symmetric';
-%! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
-%! assert_equal (Mdl.ScoreTransform (0.25), -0.5);
+%! assert_equal (class (Mdl.ScoreTransform), 'char');
+%! assert_equal (Mdl.ScoreTransform, 'symmetric');
+%! assert_equal (Mdl.STfun (0.25), -0.5);
 
 ## RowsUsed is empty when every observation was used.
 %!test

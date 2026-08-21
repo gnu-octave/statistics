@@ -121,7 +121,6 @@ classdef RegressionGAM
 ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = protected)
-
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} X
     ##
@@ -237,7 +236,6 @@ classdef RegressionGAM
     ##
     ## @end deftp
     W                     = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} Intercept
@@ -368,7 +366,6 @@ classdef RegressionGAM
     ##
     ## @end deftp
     IntMatrix             = [];
-
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -392,20 +389,16 @@ classdef RegressionGAM
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
-        [this.ResponseTransform, this.RTname] = ...
-                  parseResponseTransform (val, 'RegressionGAM');
+      [this.RTfun, this.ResponseTransform] = parseResponseTransform ...
+                                             (val, 'RegressionGAM');
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -423,7 +416,7 @@ classdef RegressionGAM
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: %g\n", 'Intercept', this.Intercept);
       str = repmat ({'%d'}, 1, numel (this.Knots));
       str = strcat ('[', strjoin (str, ' '), ']');
@@ -434,11 +427,9 @@ classdef RegressionGAM
       fprintf ("%+25s: %g\n", 'Tol', this.Tol);
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## Class object constructor
     function this = RegressionGAM (X, Y, varargin)
@@ -465,8 +456,8 @@ classdef RegressionGAM
       Order          = ones (1, ndims_X) * 3; # Order of spline
       Knots          = ones (1, ndims_X) * 5; # Knots
       Tol            = 1e-3;                  # Tolerance for convergence
-      ResponseTransform = @(y) y;             # Transform of the prediction
-      RTname            = 'none';             # and its name
+      ResponseTransform = 'none';             # Name of the transform
+      RTfun             = @(y) y;             # and the callable it names
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
@@ -490,7 +481,7 @@ classdef RegressionGAM
             endif
 
           case 'responsetransform'
-            [ResponseTransform, RTname] = ...
+            [RTfun, ResponseTransform] = ...
                       parseResponseTransform (varargin{2}, 'RegressionGAM');
 
           case 'responsename'
@@ -655,7 +646,7 @@ classdef RegressionGAM
       this.DoF          = DoF;
       this.Tol          = Tol;
       this.ResponseTransform = ResponseTransform;
-      this.RTname            = RTname;
+      this.RTfun            = RTfun;
 
       ## Bookkeeping MATLAB reports alongside the fit
       this.CategoricalPredictors  = [];
@@ -884,7 +875,7 @@ classdef RegressionGAM
 
       ## Predict values from testing data
       yFit = predict_val (params, Xfit, Interc);
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
       ## Predict Standard Deviation and Intervals of estimated data if requested
       if (nargout > 1)
@@ -906,8 +897,8 @@ classdef RegressionGAM
 
         if (nargout > 2)
           moe    = t_mul(1) * ySD;
-          lower  = this.ResponseTransform (yrs_fit - moe);
-          upper  = this.ResponseTransform (yrs_fit + moe);
+          lower  = this.RTfun (yrs_fit - moe);
+          upper  = this.RTfun (yrs_fit + moe);
           yInt   = [lower, upper];
         endif
       endif
@@ -1088,7 +1079,7 @@ classdef RegressionGAM
       ResponseTransform      = obj.ResponseTransform;
       Intercept              = obj.Intercept;
       IsStandardDeviationFit = obj.IsStandardDeviationFit;
-      RTname                 = obj.RTname;
+      RTfun                 = obj.RTfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
@@ -1096,7 +1087,7 @@ classdef RegressionGAM
             'Formula', 'Interactions', 'Knots', 'Order', 'DoF', 'Tol', ...
             'BaseModel', 'ModelwInt', 'IntMatrix', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'W', 'ResponseTransform', ...
-            'Intercept', 'IsStandardDeviationFit', 'RTname');
+            'Intercept', 'IsStandardDeviationFit', 'RTfun');
     endfunction
 
   endmethods
@@ -1625,7 +1616,7 @@ endfunction
 %! assert_equal (Mdl2.Intercept, Mdl.Intercept);
 %! assert_equal (Mdl2.W, Mdl.W);
 %! assert_equal (Mdl2.IntMatrix, Mdl.IntMatrix);
-%! assert_equal (Mdl2.ResponseTransform (2), exp (2), 1e-12);
+%! assert_equal (Mdl2.RTfun (2), exp (2), 1e-12);
 %! assert_equal (predict (Mdl2, X), predict (Mdl, X));
 
 ## Test input validation for loss method

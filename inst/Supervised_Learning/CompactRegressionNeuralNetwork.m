@@ -72,7 +72,6 @@ classdef CompactRegressionNeuralNetwork
     ## @end deftp
     ResponseName          = [];
 
-
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionNeuralNetwork} {property} Standardize
     ##
@@ -252,6 +251,7 @@ classdef CompactRegressionNeuralNetwork
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionNeuralNetwork} {property} ResponseTransform
     ##
@@ -262,27 +262,23 @@ classdef CompactRegressionNeuralNetwork
     ## a supported transformation.
     ##
     ## @end deftp
-    ResponseTransform     = @(y) y;
+    ResponseTransform     = 'none';
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
       name = 'CompactRegressionNeuralNetwork';
-      [this.ResponseTransform, this.RTname] = ...
-            parseResponseTransform (val, name);
+      [this.RTfun, this.ResponseTransform] = parseResponseTransform (val, name);
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## constructor
     function this = CompactRegressionNeuralNetwork (Mdl = [])
@@ -304,7 +300,7 @@ classdef CompactRegressionNeuralNetwork
       this.ResponseName          = Mdl.ResponseName;
 
       this.ResponseTransform     = Mdl.ResponseTransform;
-      this.RTname                = Mdl.RTname;
+      this.RTfun                = Mdl.RTfun;
 
       this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
@@ -357,15 +353,13 @@ classdef CompactRegressionNeuralNetwork
       endif
       fprintf ("%+25s: '%s'\n", 'OutputLayerActivation', ...
                this.OutputLayerActivation);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn {CompactRegressionNeuralNetwork} {@var{yFit} =} predict (@var{obj}, @var{XC})
@@ -415,7 +409,7 @@ classdef CompactRegressionNeuralNetwork
       [~, yFit] = fcnnpredict (this.ModelParameters, XC, NumThreads);
 
       ## Apply ResponseTransform
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -559,7 +553,7 @@ classdef CompactRegressionNeuralNetwork
       LayerBiases             = this.LayerBiases;
       CategoricalPredictors   = this.CategoricalPredictors;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
-      RTname                  = this.RTname;
+      RTfun                  = this.RTfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -568,7 +562,7 @@ classdef CompactRegressionNeuralNetwork
             'Activations', 'OutputLayerActivation', 'LearningRate', ...
             'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
             'DisplayInfo', 'Solver', 'LayerWeights', 'LayerBiases', ...
-            'CategoricalPredictors', 'ExpandedPredictorNames', 'RTname');
+            'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
     endfunction
 
   endmethods

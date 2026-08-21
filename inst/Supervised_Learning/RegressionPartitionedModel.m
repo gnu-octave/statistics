@@ -47,7 +47,6 @@
 classdef RegressionPartitionedModel
 
   properties (GetAccess = public, SetAccess = protected)
-
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} X
     ##
@@ -122,7 +121,6 @@ classdef RegressionPartitionedModel
     ##
     ## @end deftp
     ResponseName          = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} NumObservations
@@ -201,26 +199,22 @@ classdef RegressionPartitionedModel
     ## validated.  This property is read-only.
     ##
     ## @end deftp
-    ResponseTransform     = @(y) y;
+    ResponseTransform     = 'none';
   endproperties
 
   ## Copied from the parent model and kept out of the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
       [f, nm] = parseResponseTransform (val, 'RegressionPartitionedModel');
-      this.ResponseTransform = f;
-      this.RTname = nm;
+      this.ResponseTransform = nm;
+      this.RTfun = f;
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -239,12 +233,12 @@ classdef RegressionPartitionedModel
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'KFold', this.KFold);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
     endfunction
 
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn {RegressionPartitionedModel} {@var{obj} =} RegressionPartitionedModel (@var{Mdl}, @var{Partition})
@@ -300,7 +294,7 @@ classdef RegressionPartitionedModel
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
       this.ResponseTransform = Mdl.ResponseTransform;
-      this.RTname = Mdl.RTname;
+      this.RTfun = Mdl.RTfun;
       this.Standardize = Mdl.Standardize;
       this.ModelParameters = Mdl.ModelParameters;
 

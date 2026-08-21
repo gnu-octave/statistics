@@ -119,7 +119,6 @@
 classdef RegressionSVM
 
   properties (GetAccess = public, SetAccess = protected)
-
     ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} X
     ##
@@ -196,7 +195,6 @@ classdef RegressionSVM
     ##
     ## @end deftp
     ResponseName          = [];
-
 
     ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} Epsilon
@@ -378,27 +376,22 @@ classdef RegressionSVM
     ## transformation.
     ##
     ## @end deftp
-    ResponseTransform     = @(y) y;
+    ResponseTransform     = 'none';
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    RTname = 'none';
+    RTfun = @(y) y;
   endproperties
 
   ## Set methods for the properties a user may assign.
-  methods
+  methods (Hidden)
 
     function this = set.ResponseTransform (this, val)
-        name = 'RegressionSVM';
-        [this.ResponseTransform, this.RTname] = ...
-              parseResponseTransform (val, name);
+       name = 'RegressionSVM';
+       [this.RTfun, this.ResponseTransform] = parseResponseTransform (val, name);
     endfunction
-
-  endmethods
-
-  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -416,7 +409,7 @@ classdef RegressionSVM
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: %g\n", 'Epsilon', this.Epsilon);
       fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
       if (! isempty (this.Beta))
@@ -431,11 +424,9 @@ classdef RegressionSVM
       endif
     endfunction
 
-
-
   endmethods
 
-  methods(Access = public)
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionSVM} {@var{obj} =} RegressionSVM (@var{X}, @var{Y})
@@ -517,7 +508,7 @@ classdef RegressionSVM
 
           case 'responsetransform'
             name = 'RegressionSVM';
-            [this.ResponseTransform, this.RTname] = ...
+            [this.RTfun, this.ResponseTransform] = ...
                   parseResponseTransform (varargin{2}, name);
 
           case 'svmtype'
@@ -805,7 +796,7 @@ classdef RegressionSVM
       yFit = svmpredict (zeros (rows (XC), 1), XC, this.Model, '-q');
 
       ## Apply ResponseTransform
-      yFit = this.ResponseTransform (yFit);
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -1130,7 +1121,7 @@ classdef RegressionSVM
       CategoricalPredictors   = this.CategoricalPredictors;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       W                       = this.W;
-      RTname                  = this.RTname;
+      RTfun                  = this.RTfun;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', ...
@@ -1139,7 +1130,7 @@ classdef RegressionSVM
             'Epsilon', 'Standardize', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'IsSupportVector', ...
             'SupportVectors', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'W', 'RTname');
+            'ExpandedPredictorNames', 'W', 'RTfun');
     endfunction
 
   endmethods
