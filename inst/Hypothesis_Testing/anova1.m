@@ -83,6 +83,18 @@
 ## a multiple comparison of means with the MULTCOMPARE function.
 ## @end itemize
 ##
+## A categorical @var{group} may declare levels that no observation uses.
+## Such a level takes no part in the analysis and is dropped from every field
+## of @var{stats}, so @code{n}, @code{means} and @code{gnames} always describe
+## the same groups, in the same order, and can be indexed together.
+##
+## This is a deliberate deviation from MATLAB, which drops an unused level
+## from @code{gnames} but keeps it in @code{n} and @code{means} as a count of
+## zero and a mean of @code{NaN}.  Those fields then disagree in length and
+## the group indices run past @code{gnames}, so MATLAB's own @code{multcompare}
+## reports comparisons against a group holding no observations and labels them
+## with indices that its @code{gnames} cannot resolve.
+##
 ## If anova1 is called without any output arguments, then it prints the results
 ## in a one-way ANOVA table to the standard output. It is also printed when
 ## @var{displayopt} is 'on'.
@@ -168,6 +180,10 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   valid_data = ! isnan (x) & ! isnan (group_id);
   x = x(valid_data);
   group_id = group_id(valid_data);
+  ## A declared but unused categorical level, or one emptied by NaN removal,
+  ## is dropped from the design and from every field of STATS, so the group
+  ## counts, means and names stay the same length.  MATLAB drops it from the
+  ## names alone; see the deviation noted in the help text above.
   groups = size (group_names, 1);
   xs = accumarray (group_id, 1, [groups, 1], @sum, 0);
   observed_groups = (xs > 0);
@@ -454,7 +470,8 @@ endfunction
 %! assert_equal (tbl{3, 2}, 0);
 %! assert_equal (tbl{3, 3}, 4);
 
-## Unused categorical levels do not enter the fitted design.
+## An unused categorical level leaves every field of stats, not just
+## gnames as in MATLAB, so the three stay indexable together.
 %!test
 %! y = (1:6)';
 %! g = categorical ([1; 1; 3; 3; 3; 1], [1, 2, 3]);
