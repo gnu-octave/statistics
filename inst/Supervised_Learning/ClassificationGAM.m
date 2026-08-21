@@ -1651,18 +1651,12 @@ classdef ClassificationGAM
                          " requested is larger than all possible", ...
                          " combinations of predictors in X."));
         endif
-        ## Get all combinations except all zeros
-        allMat = flip (fullfact (p)([2:end],:), 2);
-        ## Only keep interaction terms
-        iterms = find (sum (allMat, 2) != 1);
-        intMat = allMat(iterms);
+        ## The pairs are not ranked by how much each contributes, so the
+        ## first ones asked for are taken in the order nchoosek lists them.
+        intMat = pairTerms (p)(1:this.Interactions, :);
       elseif (strcmpi (this.Interactions, 'all'))
-        p = this.NumPredictors;
         ## Calculate all p*(p-1)/2 interaction terms
-        allMat = flip (fullfact (p)([2:end],:), 2);
-        ## Only keep interaction terms
-        iterms = find (sum (allMat, 2) != 1);
-        intMat = allMat(iterms);
+        intMat = pairTerms (this.NumPredictors);
       endif
     endfunction
 

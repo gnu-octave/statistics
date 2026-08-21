@@ -1,0 +1,23 @@
+%!demo
+%! ## 1. A compact model drops the training data and predicts identically
+%!
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! mdl = fitrgam (X, Y);
+%! cmdl = compact (mdl);
+%!
+%! ## No X on the compact model, and the same fitted values out of it
+%! [isprop(mdl, 'X'), isprop(cmdl, 'X'), ...
+%!  max(abs (predict (mdl, X) - predict (cmdl, X)))]
+
+%!demo
+%! ## 2. The compact model scores new data just as the full one does
+%!
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! cmdl = compact (fitrgam (X, Y));
+%!
+%! ## loss is available without the training data
+%! loss (cmdl, X, Y)

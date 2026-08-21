@@ -1,0 +1,32 @@
+%!demo
+%! ## 1. The mean squared error of the model on its own training data
+%!
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! mdl = fitrgam (X, Y);
+%!
+%! ## resubLoss asks the same question without handing the data back in
+%! [loss(mdl, X, Y), resubLoss(mdl)]
+
+%!demo
+%! ## 2. Interaction terms lower the loss on this data
+%!
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%!
+%! ## 'all' fits every pairwise term on top of the additive ones
+%! [resubLoss(fitrgam (X, Y)), resubLoss(fitrgam (X, Y, 'Interactions', 'all'))]
+
+%!demo
+%! ## 3. A loss function of your own, taking the truth, the fit and the weights
+%!
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! mdl = fitrgam (X, Y);
+%!
+%! ## Mean absolute error instead of mean squared error
+%! mae = @(y, yfit, w) sum (w .* abs (y - yfit));
+%! [loss(mdl, X, Y), loss(mdl, X, Y, 'LossFun', mae)]

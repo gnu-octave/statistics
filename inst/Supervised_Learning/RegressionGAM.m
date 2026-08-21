@@ -122,28 +122,359 @@ classdef RegressionGAM
 
   properties(Access = public)
 
-    X         = [];         # Predictor data
-    Y         = [];         # Response data
-    BaseModel = [];         # Base model parameters (no interactions)
-    ModelwInt = [];         # Model parameters with interactions
-    IntMatrix = [];         # Interactions matrix applied to predictor data
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix with one row per observation and one column per
+    ## predictor of the training data.  This property is read-only.
+    ##
+    ## @end deftp
+    X                     = [];
 
-    NumObservations = [];       # Number of observations in training dataset
-    RowsUsed        = [];       # Rows used in fitting
-    NumPredictors   = [];       # Number of predictors
-    PredictorNames  = [];       # Predictor variable names
-    ResponseName    = [];       # Response variable name
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Y
+    ##
+    ## Response data
+    ##
+    ## A numeric column vector with one entry per observation of the
+    ## training data.  This property is read-only.
+    ##
+    ## @end deftp
+    Y                     = [];
 
-    Formula         = [];       # Formula for GAM model
-    Interactions    = [];       # Number or matrix of interaction terms
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer, the number of observations of the training data
+    ## the model was fitted on, rows with missing values excluded.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    NumObservations       = [];
 
-    Knots           = [];       # Knots of spline fitting
-    Order           = [];       # Order of spline fitting
-    DoF             = [];       # Degrees of freedom for fitting spline
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} RowsUsed
+    ##
+    ## Rows used in fitting
+    ##
+    ## A numeric vector with one entry per row of the training data, one
+    ## where the row was used for fitting and zero where it was dropped for
+    ## holding a missing value.  This property is read-only.
+    ##
+    ## @end deftp
+    RowsUsed              = [];
 
-    Tol             = [];       # Tolerance for convergence
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer, the number of predictors of the training data.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors         = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} PredictorNames
+    ##
+    ## Names of the predictor variables
+    ##
+    ## A cell array of character vectors naming the predictors, in the order
+    ## they appear in the training data.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames        = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector naming the response variable @var{Y}.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    ResponseName          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector holding the column of each predictor treated as
+    ## categorical, and empty when none is.  This property is read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ExpandedPredictorNames
+    ##
+    ## Names of the expanded predictor variables
+    ##
+    ## A cell array of character vectors naming the predictors as the model
+    ## sees them.  It matches @code{PredictorNames} unless a categorical
+    ## predictor was expanded into dummy variables.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation used for
+    ## training, normalised to sum to one.  This property is read-only.
+    ##
+    ## @end deftp
+    W                     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle applied to the response the model predicts.  Add or
+    ## change it using dot notation, as in
+    ## @qcode{@var{obj}.ResponseTransform = 'log'} or
+    ## @qcode{@var{obj}.ResponseTransform = @@function_handle}.  It defaults
+    ## to @qcode{'none'}, the identity.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(x) x;
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Intercept
+    ##
+    ## Intercept of the fitted model
+    ##
+    ## A numeric scalar, the mean of the response, which every additive term
+    ## is measured against.  This property is read-only.
+    ##
+    ## @end deftp
+    Intercept             = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Formula
+    ##
+    ## Formula of the model
+    ##
+    ## A character vector naming the response and the terms of the model, as
+    ## in @qcode{'Y ~ x1 + x2 + x1:x2'}, or empty when the model was not
+    ## given one.  This property is read-only.
+    ##
+    ## @end deftp
+    Formula               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Interactions
+    ##
+    ## Interaction terms of the model
+    ##
+    ## A logical matrix, a matrix of column indices, a count of terms, or the
+    ## character vector @qcode{'all'}, describing the interaction terms asked
+    ## for.  This property is read-only.
+    ##
+    ## @end deftp
+    Interactions          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Knots
+    ##
+    ## Knots of the spline fitting
+    ##
+    ## A numeric vector with one entry per predictor, the number of breaks
+    ## the spline of that predictor is fitted over.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Knots                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Order
+    ##
+    ## Order of the spline fitting
+    ##
+    ## A numeric vector with one entry per predictor, the polynomial order of
+    ## the spline of that predictor.  This property is read-only.
+    ##
+    ## @end deftp
+    Order                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} DoF
+    ##
+    ## Degrees of freedom of the spline fitting
+    ##
+    ## A numeric vector with one entry per predictor, the sum of its number
+    ## of knots and its order.  This property is read-only.
+    ##
+    ## @end deftp
+    DoF                   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} Tol
+    ##
+    ## Tolerance for convergence
+    ##
+    ## A positive scalar, the largest change in the residual sum of squares
+    ## of a backfitting cycle that counts as converged.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Tol                   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} IsStandardDeviationFit
+    ##
+    ## Flag for a fitted standard deviation model
+    ##
+    ## A boolean flag, always @qcode{false}, as this class estimates the
+    ## standard deviation of a prediction from the residuals of the fit
+    ## rather than fitting a model for it.  This property is read-only.
+    ##
+    ## @end deftp
+    IsStandardDeviationFit = false;
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} BaseModel
+    ##
+    ## Model without interaction terms
+    ##
+    ## A structure holding the intercept, the piecewise polynomial of each
+    ## predictor, the number of backfitting cycles, the residuals and the
+    ## residual sum of squares of the model fitted without interaction
+    ## terms.  This property is read-only.
+    ##
+    ## @end deftp
+    BaseModel             = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ModelwInt
+    ##
+    ## Model with interaction terms
+    ##
+    ## A structure of the same fields as @code{BaseModel}, for the model
+    ## fitted with the interaction terms, and empty when none was asked for.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ModelwInt             = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} IntMatrix
+    ##
+    ## Interaction terms applied to the predictor data
+    ##
+    ## A logical matrix or a matrix of column indices, one row per
+    ## interaction term, describing the terms appended to the predictor data.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    IntMatrix             = [];
+
   endproperties
 
+  properties(Access = private, Hidden)
+    RTname = 'none';
+  endproperties
+
+  methods(Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  RegressionGAM\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.RTname);
+      fprintf ("%+25s: %g\n", 'Intercept', this.Intercept);
+      str = repmat ({'%d'}, 1, numel (this.Knots));
+      str = strcat ('[', strjoin (str, ' '), ']');
+      fprintf ("%+25s: %s\n", 'Knots', sprintf (str, this.Knots));
+      str = repmat ({'%d'}, 1, numel (this.Order));
+      str = strcat ('[', strjoin (str, ' '), ']');
+      fprintf ("%+25s: %s\n", 'Order', sprintf (str, this.Order));
+      fprintf ("%+25s: %g\n", 'Tol', this.Tol);
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a RegressionGAM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a RegressionGAM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("RegressionGAM.subsref: '.' indexing argument", ...
+                           " must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("RegressionGAM.subsref: unrecognized", ...
+                           " property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("RegressionGAM.subsasgn: chained subscripts", ...
+                       " not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a RegressionGAM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a RegressionGAM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("RegressionGAM.subsasgn: '.' indexing", ...
+                           " argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'ResponseTransform'
+              [this.ResponseTransform, this.RTname] = ...
+                        parseResponseTransform (val, 'RegressionGAM');
+            otherwise
+              error (strcat ("RegressionGAM.subsasgn: unrecognized or", ...
+                             " read-only property: '%s'"), s.subs);
+          endswitch
+      endswitch
+    endfunction
+
+  endmethods
 
   methods(Access = public)
 
@@ -172,6 +503,8 @@ classdef RegressionGAM
       Order          = ones (1, ndims_X) * 3; # Order of spline
       Knots          = ones (1, ndims_X) * 5; # Knots
       Tol            = 1e-3;                  # Tolerance for convergence
+      ResponseTransform = @(y) y;             # Transform of the prediction
+      RTname            = 'none';             # and its name
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
@@ -182,7 +515,7 @@ classdef RegressionGAM
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case 'predictors'
+          case {'predictors', 'predictornames'}
             PredictorNames = varargin{2};
             if (! isempty (PredictorNames))
               if (! iscellstr (PredictorNames))
@@ -193,6 +526,10 @@ classdef RegressionGAM
                                " have same number of columns as X."));
               endif
             endif
+
+          case 'responsetransform'
+            [ResponseTransform, RTname] = ...
+                      parseResponseTransform (varargin{2}, 'RegressionGAM');
 
           case 'responsename'
             ResponseName = varargin{2};
@@ -295,10 +632,10 @@ classdef RegressionGAM
       X         = X(RowsUsed, :);
 
       ## Check X and Y contain valid data
-      if (! isnumeric (X) || ! isfinite (X))
+      if (! isnumeric (X) || ! all (isfinite (X(:))))
         error ("RegressionGAM: invalid values in X.");
       endif
-      if (! isnumeric (Y) || ! isfinite (Y))
+      if (! isnumeric (Y) || ! all (isfinite (Y(:))))
         error ("RegressionGAM: invalid values in Y.");
       endif
 
@@ -325,6 +662,17 @@ classdef RegressionGAM
       this.PredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
+      ## A scalar 'Knots', 'Order' or 'DoF' applies to every predictor, which
+      ## the validation above accepts but nothing expanded, so the fit indexed
+      ## past the end of a scalar for the second predictor onwards.
+      if (isscalar (Knots))
+        Knots = repmat (Knots, 1, ndims_X);
+      endif
+      if (isscalar (Order))
+        Order = repmat (Order, 1, ndims_X);
+      endif
+      DoF = Knots + Order;
+
       ## Assign remaining optional parameters
       this.Formula      = Formula;
       this.Interactions = Interactions;
@@ -332,6 +680,14 @@ classdef RegressionGAM
       this.Order        = Order;
       this.DoF          = DoF;
       this.Tol          = Tol;
+      this.ResponseTransform = ResponseTransform;
+      this.RTname            = RTname;
+
+      ## Bookkeeping MATLAB reports alongside the fit
+      this.CategoricalPredictors  = [];
+      this.ExpandedPredictorNames = PredictorNames;
+      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      this.IsStandardDeviationFit = false;
 
       ## Fit the basic model
       Inter = mean (Y);
@@ -341,6 +697,7 @@ classdef RegressionGAM
       this.BaseModel.Iterations = iter;
       this.BaseModel.Residuals  = res;
       this.BaseModel.RSS        = RSS;
+      this.Intercept            = Inter;
 
       ## Handle interaction terms (if given)
       if (F_I > 0)
@@ -553,6 +910,7 @@ classdef RegressionGAM
 
       ## Predict values from testing data
       yFit = predict_val (params, Xfit, Interc);
+      yFit = this.ResponseTransform (yFit);
 
       ## Predict Standard Deviation and Intervals of estimated data if requested
       if (nargout > 1)
@@ -561,6 +919,7 @@ classdef RegressionGAM
         X = this.X(logical (this.RowsUsed), :);
         ## Predict response from training predictor data with the trained model
         yrs = predict_val (params, X , Interc);
+        yrs_fit = predict_val (params, Xfit, Interc);
 
         ## Get the residuals between predicted and actual response data
         rs     = Y - yrs;
@@ -572,12 +931,138 @@ classdef RegressionGAM
 
         if (nargout > 2)
           moe    = t_mul(1) * ySD;
-          lower  = (yFit - moe);
-          upper  = (yFit + moe);
+          lower  = this.ResponseTransform (yrs_fit - moe);
+          upper  = this.ResponseTransform (yrs_fit + moe);
           yInt   = [lower, upper];
         endif
       endif
 
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionGAM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Regression loss of a generalized additive model.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the weighted
+    ## mean squared error of the model on the rows of @var{X} against the true
+    ## response @var{Y}.
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
+    ## following name-value pairs:
+    ##
+    ## @itemize
+    ## @item
+    ## @qcode{"LossFun"} selects the loss, either @qcode{"mse"}, the default,
+    ## or a function handle taking the true response, the predicted response
+    ## and the weights, and returning a numeric scalar.
+    ##
+    ## @item
+    ## @qcode{"Weights"} holds one weight per row of @var{X}, normalised to
+    ## sum to one before it is applied.
+    ## @end itemize
+    ##
+    ## @seealso{RegressionGAM, fitrgam, predict}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("RegressionGAM.loss: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionGAM.loss: Name-Value arguments must", ...
+                       " be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, 'loss');
+
+      ## Defaults, then the optional pairs
+      LossFun = 'mse';
+      args = varargin;
+      keep = true (1, numel (args));
+      for i = 1:2:numel (args)
+        if (! (ischar (args{i}) && isrow (args{i})))
+          error (strcat ("RegressionGAM.loss: parameter name must be a", ...
+                         " character vector."));
+        endif
+        if (strcmpi (args{i}, 'lossfun'))
+          LossFun = args{i+1};
+          if (! (is_function_handle (LossFun) ||
+                 (ischar (LossFun) && isrow (LossFun))))
+            error (strcat ("RegressionGAM.loss: 'LossFun' must be a", ...
+                           " character vector or a function handle."));
+          endif
+          if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+            error ("RegressionGAM.loss: unsupported 'LossFun' value.");
+          endif
+          keep(i:i+1) = false;
+        endif
+      endfor
+      W = getWeights_ (this, args(keep), rows (X), 'loss');
+
+      ## Weights are normalized to sum to one, as MATLAB does, so a loss is
+      ## a weighted average rather than a weighted sum.
+      W = W(:) / sum (W);
+      yFit = predict (this, X);
+      Y = Y(:);
+
+      if (is_function_handle (LossFun))
+        L = LossFun (Y, yFit, W);
+        if (! (isnumeric (L) && isscalar (L)))
+          error (strcat ("RegressionGAM.loss: 'LossFun' must return a", ...
+                         " numeric scalar."));
+        endif
+      else
+        L = sum (W .* (Y - yFit) .^ 2);
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {@var{yFit} =} resubPredict (@var{obj})
+    ##
+    ## Predict the training response with the model it was fitted on.
+    ##
+    ## @code{@var{yFit} = resubPredict (@var{obj})} is @code{predict} applied
+    ## to the observations the model was fitted on.
+    ##
+    ## @seealso{RegressionGAM, fitrgam, predict}
+    ## @end deftypefn
+    function yFit = resubPredict (this)
+      yFit = predict (this, this.X(logical (this.RowsUsed), :));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {@var{L} =} resubLoss (@var{obj})
+    ## @deftypefnx {RegressionGAM} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Regression loss of a generalized additive model on its training data.
+    ##
+    ## @code{@var{L} = resubLoss (@var{obj})} returns the weighted mean
+    ## squared error of the model on the data it was fitted on.  It accepts
+    ## the same @qcode{Name-Value} pairs as @code{loss}.
+    ##
+    ## @seealso{RegressionGAM, fitrgam, loss}
+    ## @end deftypefn
+    function L = resubLoss (this, varargin)
+      used = logical (this.RowsUsed);
+      L = loss (this, this.X(used, :), this.Y(used), varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {@var{CMdl} =} compact (@var{obj})
+    ##
+    ## Create a @qcode{CompactRegressionGAM} object.
+    ##
+    ## @code{@var{CMdl} = compact (@var{obj})} returns a compact version of
+    ## the model, which predicts as it does but keeps no training data.
+    ##
+    ## @seealso{RegressionGAM, CompactRegressionGAM, fitrgam}
+    ## @end deftypefn
+    function CMdl = compact (this)
+      CMdl = CompactRegressionGAM (this);
     endfunction
 
     ## -*- texinfo -*-
@@ -621,11 +1106,21 @@ classdef RegressionGAM
       ModelwInt           = obj.ModelwInt;
       IntMatrix           = obj.IntMatrix;
 
+      CategoricalPredictors  = obj.CategoricalPredictors;
+      ExpandedPredictorNames = obj.ExpandedPredictorNames;
+      W                      = obj.W;
+      ResponseTransform      = obj.ResponseTransform;
+      Intercept              = obj.Intercept;
+      IsStandardDeviationFit = obj.IsStandardDeviationFit;
+      RTname                 = obj.RTname;
+
       ## Save classdef name and all model properties as individual variables
-      save (fname, 'classdef_name', 'X', 'Y', 'NumObservations', 'RowsUsed', ...
-            'NumPredictors', 'PredictorNames', 'ResponseName', 'Formula', ...
-            'Interactions', 'Knots', 'Order', 'DoF', 'Tol', 'BaseModel', ...
-            'ModelwInt', 'IntMatrix');
+      save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
+            'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
+            'Formula', 'Interactions', 'Knots', 'Order', 'DoF', 'Tol', ...
+            'BaseModel', 'ModelwInt', 'IntMatrix', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames', 'W', 'ResponseTransform', ...
+            'Intercept', 'IsStandardDeviationFit', 'RTname');
     endfunction
 
   endmethods
@@ -633,15 +1128,58 @@ classdef RegressionGAM
   ## Helper functions
   methods(Access = private)
 
+    ## Shared validation for the assessment methods, so each reports under
+    ## its own name.
+    function [X, Y] = checkXY_ (this, X, Y, caller)
+      if (isempty (X))
+        error ("RegressionGAM.%s: X is empty.", caller);
+      elseif (this.NumPredictors != columns (X))
+        error (strcat ("RegressionGAM.%s: X must have the same number of", ...
+                       " predictors as the trained model."), caller);
+      endif
+      if (isempty (Y))
+        error ("RegressionGAM.%s: Y is empty.", caller);
+      elseif (rows (X) != rows (Y))
+        error (strcat ("RegressionGAM.%s: Y must have the same number of", ...
+                       " rows as X."), caller);
+      endif
+    endfunction
+
+    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
+    ## uniform weight, and reject any other name.
+    function W = getWeights_ (this, args, n, caller)
+      W = ones (n, 1);
+      for i = 1:2:numel (args)
+        if (! (ischar (args{i}) && isrow (args{i})))
+          error (strcat ("RegressionGAM.%s: parameter name must be a", ...
+                         " character vector."), caller);
+        endif
+        if (strcmpi (args{i}, 'weights'))
+          W = args{i+1};
+          if (! (isnumeric (W) && isvector (W)))
+            error (strcat ("RegressionGAM.%s: 'Weights' must be a numeric", ...
+                           " vector."), caller);
+          endif
+          if (numel (W) != n)
+            error (strcat ("RegressionGAM.%s: size of 'Weights' must equal", ...
+                           " the number of rows in X."), caller);
+          endif
+        else
+          error (strcat ("RegressionGAM.%s: invalid parameter name in", ...
+                         " optional paired arguments."), caller);
+        endif
+      endfor
+    endfunction
+
     ## Determine interactions from Interactions optional parameter
     function intMat = parseInteractions (this)
       if (islogical (this.Interactions))
         ## Check that interaction matrix corresponds to predictors
         if (numel (this.PredictorNames) != columns (this.Interactions))
-          error (strcat ("RegressionGAM: columns in Interactions logical", ...
+          error (strcat ("RegressionGAM: columns in 'Interactions'", ...
                          " matrix must equal to the number of predictors."));
         endif
-        intMat = this.Interactions
+        intMat = this.Interactions;
       elseif (isnumeric (this.Interactions))
         ## Need to measure the effect of all interactions to keep the best
         ## performing. Just check that the given number is not higher than
@@ -652,17 +1190,12 @@ classdef RegressionGAM
                          " requested is larger than all possible", ...
                          " combinations of predictors in X."));
         endif
-        ## Get all combinations except all zeros
-        allMat = flip (fullfact (p)([2:end],:), 2);
-        ## Only keep interaction terms
-        iterms = find (sum (allMat, 2) != 1);
-        intMat = allMat(iterms);
+        ## The pairs are not ranked by how much each contributes, so the
+        ## first ones asked for are taken in the order nchoosek lists them.
+        intMat = pairTerms (p)(1:this.Interactions, :);
       elseif (strcmpi (this.Interactions, 'all'))
         ## Calculate all p*(p-1)/2 interaction terms
-        allMat = flip (fullfact (p)([2:end],:), 2);
-        ## Only keep interaction terms
-        iterms = find (sum (allMat, 2) != 1);
-        intMat = allMat(iterms);
+        intMat = pairTerms (this.NumPredictors);
       endif
     endfunction
 
@@ -1023,3 +1556,107 @@ endfunction
 %! savemodel (RegressionGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 2; 3; 4]), 1)
 %!error <RegressionGAM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (RegressionGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 2; 3; 4]), ['ab'; 'cd'])
+
+## The bookkeeping MATLAB reports alongside the fit is present.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4));
+%! assert_equal (Mdl.Intercept, Mdl.BaseModel.Intercept);
+%! assert_equal (size (Mdl.W), [Mdl.NumObservations, 1]);
+%! assert_equal (sum (Mdl.W), 1, 1e-12);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.ExpandedPredictorNames, Mdl.PredictorNames);
+%! assert_equal (Mdl.IsStandardDeviationFit, false);
+
+## A scalar Knots, Order or DoF applies to every predictor.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'Knots', 4);
+%! assert_equal (Mdl.Knots, [4, 4, 4]);
+%! assert_equal (Mdl.Order, [3, 3, 3]);
+%! assert_equal (Mdl.DoF, [7, 7, 7]);
+
+## A single non-finite value in X or Y is refused.
+%!error<RegressionGAM: invalid values in X.> ...
+%! RegressionGAM ([1, 2; Inf, 4; 5, 6; 7, 8], [1; 2; 3; 4])
+%!error<RegressionGAM: invalid values in Y.> ...
+%! RegressionGAM ([1, 2; 3, 4; 5, 6; 7, 8], [1; 2; Inf; 4])
+
+## 'Interactions' names every pairwise term, one row per term.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'Interactions', 'all');
+%! assert_equal (Mdl.IntMatrix, logical ([1, 1, 0; 1, 0, 1; 0, 1, 1]));
+%! assert_equal (sum (Mdl.IntMatrix(:)), 6);
+
+## An assigned ResponseTransform reaches the predicted response.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Mdl = fitrgam (X, meas(:,4));
+%! y0 = predict (Mdl, X);
+%! Mdl.ResponseTransform = 'exp';
+%! assert_equal (predict (Mdl, X), exp (y0), 1e-12);
+
+## resubPredict and resubLoss are predict and loss on the training data.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! Mdl = fitrgam (X, Y);
+%! assert_equal (resubPredict (Mdl), predict (Mdl, X));
+%! assert_equal (resubLoss (Mdl), loss (Mdl, X, Y));
+
+## loss is the weighted mean squared error, and takes a function of its own.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! Mdl = fitrgam (X, Y);
+%! r = Y - predict (Mdl, X);
+%! assert_equal (loss (Mdl, X, Y), mean (r .^ 2), 1e-12);
+%! w = [ones(75, 1); 3 * ones(75, 1)];
+%! assert_equal (loss (Mdl, X, Y, 'Weights', w), ...
+%!               sum (w .* r .^ 2) / sum (w), 1e-12);
+%! mae = @(y, yfit, wt) sum (wt .* abs (y - yfit));
+%! assert_equal (loss (Mdl, X, Y, 'LossFun', mae), mean (abs (r)), 1e-12);
+
+## A saved and reloaded model carries every property and predicts alike.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Mdl = fitrgam (X, meas(:,4), 'Interactions', 'all');
+%! Mdl.ResponseTransform = 'exp';
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (Mdl2), 'RegressionGAM');
+%! assert_equal (Mdl2.Intercept, Mdl.Intercept);
+%! assert_equal (Mdl2.W, Mdl.W);
+%! assert_equal (Mdl2.IntMatrix, Mdl.IntMatrix);
+%! assert_equal (Mdl2.ResponseTransform (2), exp (2), 1e-12);
+%! assert_equal (predict (Mdl2, X), predict (Mdl, X));
+
+## Test input validation for loss method
+%!shared xr, yr, Mr
+%! load fisheriris
+%! xr = meas(:,1:3);
+%! yr = meas(:,4);
+%! Mr = fitrgam (xr, yr);
+%!error<RegressionGAM.loss: too few input arguments.> ...
+%! loss (Mr, xr)
+%!error<RegressionGAM.loss: Name-Value arguments must be in pairs.> ...
+%! loss (Mr, xr, yr, 'Weights')
+%!error<RegressionGAM.loss: X is empty.> ...
+%! loss (Mr, [], yr)
+%!error<RegressionGAM.loss: X must have the same number of predictors as the trained model.> ...
+%! loss (Mr, 1, yr)
+%!error<RegressionGAM.loss: Y must have the same number of rows as X.> ...
+%! loss (Mr, xr, yr(1:10))
+%!error<RegressionGAM.loss: unsupported 'LossFun' value.> ...
+%! loss (Mr, xr, yr, 'LossFun', 'mad')
+%!error<RegressionGAM.subsasgn: unrecognized or read-only property: 'Knots'> ...
+%! Mr.Knots = 3;
+%!error<RegressionGAM: unrecognized 'ResponseTransform' function.> ...
+%! Mr.ResponseTransform = 'nonsense';
