@@ -328,6 +328,42 @@ classdef ClassificationSVM
     ##
     ## @end deftp
     SupportVectors      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per training observation,
+    ## normalized to sum to one, as MATLAB reports it.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    W                   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector of column indices into @code{X} naming the predictors
+    ## treated as categorical, and empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} ExpandedPredictorNames
+    ##
+    ## Names of the predictors as the model expanded them
+    ##
+    ## A cell array of character vectors.  It matches @code{PredictorNames}
+    ## unless a categorical predictor was expanded into indicator variables.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
   endproperties
 
   properties(Access = private, Hidden)
@@ -812,12 +848,17 @@ classdef ClassificationSVM
       this.NumObservations = rows (X);
       this.RowsUsed = cast (RowsUsed, 'double');
 
-      ## Handle Standardize flag
+      ## Handle Standardize flag.  The model must be fitted on the scale it
+      ## predicts on: predict and resubPredict standardize their input from
+      ## Mu and Sigma, so the training data is standardized here as well.
+      ## The support vectors are therefore stored standardized too, which is
+      ## the scale svmpredict receives.
       if (Standardize)
         this.Standardize = true;
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
+        X = (X - this.Mu) ./ this.Sigma;
       else
         this.Standardize = false;
         this.Sigma = [];
@@ -837,6 +878,13 @@ classdef ClassificationSVM
       ## Assign predictors and response variable names
       this.PredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
+
+      ## No predictor is treated as categorical, so the expanded names are the
+      ## predictor names themselves, and every observation carries the same
+      ## weight, normalized to sum to one as MATLAB reports it.
+      this.CategoricalPredictors = [];
+      this.ExpandedPredictorNames = PredictorNames;
+      this.W = ones (this.NumObservations, 1) / this.NumObservations;
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
@@ -1536,15 +1584,20 @@ classdef ClassificationSVM
         varargin(1:2) = [];
       endwhile
 
-      ## Determine the cross-validation method to use
+      ## Determine the cross-validation method to use.  The partition covers
+      ## the observations actually trained on: a row dropped for a missing
+      ## value is not one the folds can use, and including it would leave the
+      ## partition, the stored data and NumObservations disagreeing.  The
+      ## response is passed rather than a count so the folds stay stratified.
+      Yused = this.Y(logical (this.RowsUsed), :);
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
-        partition = cvpartition (this.Y, 'Holdout', Holdout);
+        partition = cvpartition (Yused, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
         partition = cvpartition (this.NumObservations, 'LeaveOut');
       else
-        partition = cvpartition (this.Y, 'KFold', numFolds);
+        partition = cvpartition (Yused, 'KFold', numFolds);
       endif
 
       ## Create a cross-validated model object
@@ -1612,6 +1665,9 @@ classdef ClassificationSVM
       IsSupportVector     = this.IsSupportVector;
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
+      W                   = this.W;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
       STname          = this.STname;
@@ -1620,7 +1676,8 @@ classdef ClassificationSVM
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
             'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
-            'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', 'STname');
+            'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
+            'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'STname');
     endfunction
 
   endmethods
@@ -1760,6 +1817,46 @@ endclassdef
 %! assert_equal (class (a), "ClassificationSVM");
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
 %! assert_equal (a.ModelParameters.PolynomialOrder, 3)
+
+## The model reports the observation weights and the expanded predictor
+## names MATLAB reports, W normalized to sum to one.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! Mdl = fitcsvm (meas, Yb);
+%! assert_equal (size (Mdl.W), [150, 1]);
+%! assert_equal (sum (Mdl.W), 1, 1e-12);
+%! assert_equal (Mdl.W, ones (150, 1) / 150, 1e-12);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.ExpandedPredictorNames, Mdl.PredictorNames);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.W, Mdl.W);
+%! assert_equal (M2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+
+## Standardize fits on the scale it predicts on.  A model fitted on raw data
+## and asked about standardized data is not merely worse, it is wrong: on a
+## problem whose second predictor is a thousand times the first it answered at
+## chance, where the same data standardized by hand reaches 0.9.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! n = 80;
+%! A = [randn(n,1) + 1, (randn(n,1) + 1) * 1000];
+%! B = [randn(n,1) - 1, (randn(n,1) - 1) * 1000];
+%! X = [A; B];
+%! Y = [ones(n,1); 2 * ones(n,1)];
+%! Mdl = fitcsvm (X, Y, 'Standardize', true, 'KernelFunction', 'rbf');
+%! assert_equal (mean (resubPredict (Mdl) == Y) > 0.85, true);
+%! assert_equal (predict (Mdl, X), resubPredict (Mdl));
+%! Mu = mean (X, 1);
+%! Sg = std (X, [], 1);
+%! byhand = fitcsvm ((X - Mu) ./ Sg, Y, 'Standardize', false, ...
+%!                   'KernelFunction', 'rbf');
+%! assert_equal (mean (resubPredict (Mdl) == Y), ...
+%!               mean (resubPredict (byhand) == Y));
 
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()

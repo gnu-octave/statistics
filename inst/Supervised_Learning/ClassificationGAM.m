@@ -1217,15 +1217,20 @@ classdef ClassificationGAM
         varargin(1:2) = [];
       endwhile
 
-      ## Determine the cross-validation method to use
+      ## Determine the cross-validation method to use.  The partition covers
+      ## the observations actually trained on: a row dropped for a missing
+      ## value is not one the folds can use, and including it would leave the
+      ## partition, the stored data and NumObservations disagreeing.  The
+      ## response is passed rather than a count so the folds stay stratified.
+      Yused = this.Y(logical (this.RowsUsed), :);
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
-        partition = cvpartition (this.Y, 'Holdout', Holdout);
+        partition = cvpartition (Yused, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
         partition = cvpartition (this.NumObservations, 'LeaveOut');
       else
-        partition = cvpartition (this.Y, 'KFold', numFolds);
+        partition = cvpartition (Yused, 'KFold', numFolds);
       endif
 
       ## Create a cross-validated model object

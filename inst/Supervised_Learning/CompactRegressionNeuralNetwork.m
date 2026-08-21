@@ -393,8 +393,9 @@ classdef CompactRegressionNeuralNetwork
           endif
           switch (s.subs)
             case 'ResponseTransform'
+              name = 'CompactRegressionNeuralNetwork';
               [this.ResponseTransform, this.RTname] = ...
-                                        parseResponseTransform__ (val);
+                    parseResponseTransform (val, name);
             otherwise
               error (strcat ("CompactRegressionNeuralNetwork.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -691,36 +692,6 @@ classdef CompactRegressionNeuralNetwork
 
 endclassdef
 
-## Resolve a ResponseTransform, given either as a name or as a handle, into
-## the handle that is applied and the name that is displayed and saved.
-function [rt, name] = parseResponseTransform__ (val)
-  if (is_function_handle (val))
-    v = (1:5)';
-    if (! isequal (size (v), size (val (v))))
-      error (strcat ("CompactRegressionNeuralNetwork: function handle for", ...
-                     " 'ResponseTransform' must return the same size", ...
-                     " as its input."));
-    endif
-    rt = val;
-    name = 'custom function handle';
-  elseif (ischar (val) && isrow (val))
-    name = tolower (val);
-    switch (name)
-      case {'none', 'identity'}
-        rt = @(y) y;
-      case 'exp'
-        rt = @(y) exp (y);
-      case 'log'
-        rt = @(y) log (y);
-      otherwise
-        error (strcat ("CompactRegressionNeuralNetwork: unrecognized", ...
-                       " 'ResponseTransform' function."));
-    endswitch
-  else
-    error (strcat ("CompactRegressionNeuralNetwork: 'ResponseTransform'", ...
-                   " must be a character vector or a function handle."));
-  endif
-endfunction
 
 ## The compact model keeps what answers about new data and drops the fit.
 %!test

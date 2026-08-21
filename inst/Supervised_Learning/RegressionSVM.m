@@ -365,8 +365,9 @@ classdef RegressionSVM
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per training observation.  This
-    ## property is read-only.
+    ## A numeric column vector with one entry per training observation,
+    ## normalized to sum to one, as MATLAB reports it.  This property is
+    ## read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -458,8 +459,9 @@ classdef RegressionSVM
           endif
           switch (s.subs)
             case 'ResponseTransform'
+              name = 'RegressionSVM';
               [this.ResponseTransform, this.RTname] = ...
-                                        parseResponseTransform___ (val);
+                    parseResponseTransform (val, name);
             otherwise
               error (strcat ("RegressionSVM.subsasgn: unrecognized or", ...
                              " read-only property: '%s'"), s.subs);
@@ -550,8 +552,9 @@ classdef RegressionSVM
             endif
 
           case 'responsetransform'
+            name = 'RegressionSVM';
             [this.ResponseTransform, this.RTname] = ...
-                                      parseResponseTransform___ (varargin{2});
+                  parseResponseTransform (varargin{2}, name);
 
           case 'svmtype'
             SVMtype = varargin{2};
@@ -681,7 +684,7 @@ classdef RegressionSVM
 
       this.NumObservations = sum (RowsUsed);
       this.RowsUsed = RowsUsed;
-      this.W = ones (this.NumObservations, 1);
+      this.W = ones (this.NumObservations, 1) / this.NumObservations;
 
       ## Handle Standardize flag.  The model must be fitted on the scale it
       ## predicts on: predict and resubPredict standardize their input from
@@ -1237,36 +1240,6 @@ classdef RegressionSVM
 
 endclassdef
 
-## Resolve a ResponseTransform, given either as a name or as a handle, into
-## the handle that is applied and the name that is displayed and saved.
-function [rt, name] = parseResponseTransform___ (val)
-  if (is_function_handle (val))
-    v = (1:5)';
-    if (! isequal (size (v), size (val (v))))
-      error (strcat ("RegressionSVM: function handle for", ...
-                     " 'ResponseTransform' must return the same size", ...
-                     " as its input."));
-    endif
-    rt = val;
-    name = 'custom function handle';
-  elseif (ischar (val) && isrow (val))
-    name = tolower (val);
-    switch (name)
-      case {'none', 'identity'}
-        rt = @(y) y;
-      case 'exp'
-        rt = @(y) exp (y);
-      case 'log'
-        rt = @(y) log (y);
-      otherwise
-        error (strcat ("RegressionSVM: unrecognized", ...
-                       " 'ResponseTransform' function."));
-    endswitch
-  else
-    error (strcat ("RegressionSVM: 'ResponseTransform' must be a", ...
-                   " character vector or a function handle."));
-  endif
-endfunction
 
 ## A fitted model carries the defaults MATLAB documents for fitrsvm.
 %!test

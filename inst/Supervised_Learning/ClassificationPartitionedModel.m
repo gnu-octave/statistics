@@ -291,14 +291,17 @@ classdef ClassificationPartitionedModel
         error ("ClassificationPartitionedModel: invalid 'cvpartition' object.");
       endif
 
-      ## Set properties
-      this.X = Mdl.X;
-      this.Y = Mdl.Y;
+      ## Set properties.  The rows dropped for missing values are outside the
+      ## partition, so they are dropped here too and every index below, the
+      ## partition's included, refers to the same set of observations.
+      RowsUsed = logical (Mdl.RowsUsed);
+      this.X = Mdl.X(RowsUsed, :);
+      this.Y = Mdl.Y(RowsUsed, :);
       this.KFold = Partition.NumTestSets;
       this.Trained = cell (this.KFold, 1);
       this.ClassNames = Mdl.ClassNames;
       this.ResponseName = Mdl.ResponseName;
-      this.NumObservations = Mdl.NumObservations;
+      this.NumObservations = rows (this.X);
       this.PredictorNames = Mdl.PredictorNames;
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
@@ -857,3 +860,34 @@ endclassdef
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationNeuralNetwork cross validated models.> ...
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationNeuralNetwork (ones (40,2), randi ([1, 2], 40, 1))))
+
+## The partition, the stored data and NumObservations all describe the same
+## set of observations.  A row dropped for a missing value is outside all
+## three: before this the partition covered it, NumObservations did not, and
+## the folds trained on rows their own fit then discarded.
+%!test
+%! randn ('seed', 42);
+%! lab = double (randn (40, 1) > 0) + 1;
+%! X = [randn(40, 2); NaN, 1; 2, NaN];
+%! Y = [lab; 1; 2];
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (Mdl.NumObservations, 40);
+%! CVMdl = crossval (Mdl, 'KFold', 4);
+%! assert_equal (CVMdl.NumObservations, 40);
+%! assert_equal (rows (CVMdl.X), 40);
+%! assert_equal (rows (CVMdl.Y), 40);
+%! assert_equal (CVMdl.Partition.NumObservations, 40);
+%! assert_equal (numel (kfoldPredict (CVMdl)), 40);
+
+## The folds stay stratified, the response being passed to cvpartition
+## rather than a bare count.
+%!test
+%! randn ('seed', 7);
+%! X = randn (60, 2);
+%! Y = [ones(20, 1); 2 * ones(40, 1)];
+%! CVMdl = crossval (fitcsvm (X, Y), 'KFold', 4);
+%! for k = 1:4
+%!   idx = test (CVMdl.Partition, k);
+%!   assert_equal (sum (CVMdl.Y(idx) == 1) >= 4, true);
+%!   assert_equal (sum (CVMdl.Y(idx) == 2) >= 8, true);
+%! endfor

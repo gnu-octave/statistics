@@ -500,8 +500,9 @@ classdef RegressionNeuralNetwork
           endif
           switch (s.subs)
             case 'ResponseTransform'
+              name = 'RegressionNeuralNetwork';
               [this.ResponseTransform, this.RTname] = ...
-                                        parseResponseTransform_ (val);
+                    parseResponseTransform (val, name);
             otherwise
               error (strcat ("RegressionNeuralNetwork.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -598,8 +599,9 @@ classdef RegressionNeuralNetwork
             endif
 
           case 'responsetransform'
+            name = 'RegressionNeuralNetwork';
             [this.ResponseTransform, this.RTname] = ...
-                                      parseResponseTransform_ (varargin{2});
+                  parseResponseTransform (varargin{2}, name);
 
           case 'layersizes'
             LayerSizes = varargin{2};
@@ -1311,39 +1313,6 @@ function numCode = activationCode_ (strCode)
   endswitch
 endfunction
 
-## Resolve a ResponseTransform, given either as a name or as a handle, into
-## the handle that is applied and the name that is displayed and saved.
-function [rt, name] = parseResponseTransform_ (val)
-  if (is_function_handle (val))
-    ## nargin () raises on a handle to a built-in, so the handle is checked by
-    ## what it does rather than by its declared arity, as parseScoreTransform
-    ## does for the classifiers.
-    v = (1:5)';
-    if (! isequal (size (v), size (val (v))))
-      error (strcat ("RegressionNeuralNetwork: function handle for", ...
-                     " 'ResponseTransform' must return the same size", ...
-                     " as its input."));
-    endif
-    rt = val;
-    name = 'custom function handle';
-  elseif (ischar (val) && isrow (val))
-    name = tolower (val);
-    switch (name)
-      case {'none', 'identity'}
-        rt = @(y) y;
-      case 'exp'
-        rt = @(y) exp (y);
-      case 'log'
-        rt = @(y) log (y);
-      otherwise
-        error (strcat ("RegressionNeuralNetwork: unrecognized", ...
-                       " 'ResponseTransform' function."));
-    endswitch
-  else
-    error (strcat ("RegressionNeuralNetwork: 'ResponseTransform' must be", ...
-                   " a character vector or a function handle."));
-  endif
-endfunction
 
 ## A fitted model carries the defaults MATLAB documents for fitrnet.
 %!test

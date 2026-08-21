@@ -683,7 +683,7 @@ classdef ClassificationNeuralNetwork
       this.Solver = 'Gradient Descent';
 
       ## Supported activation functions
-      acList = {'linear', 'sigmoid', 'relu', 'tanh', 'softmax', ...
+      acList = {'linear', 'none', 'sigmoid', 'relu', 'tanh', 'softmax', ...
                           'lrelu', 'prelu', 'elu', 'gelu'};
       ## Parse extra parameters
       while (numel (varargin) > 0)
@@ -1451,15 +1451,20 @@ classdef ClassificationNeuralNetwork
         varargin(1:2) = [];
       endwhile
 
-      ## Determine the cross-validation method to use
+      ## Determine the cross-validation method to use.  The partition covers
+      ## the observations actually trained on: a row dropped for a missing
+      ## value is not one the folds can use, and including it would leave the
+      ## partition, the stored data and NumObservations disagreeing.  The
+      ## response is passed rather than a count so the folds stay stratified.
+      Yused = this.Y(logical (this.RowsUsed), :);
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
-        partition = cvpartition (this.Y, 'Holdout', Holdout);
+        partition = cvpartition (Yused, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
         partition = cvpartition (this.NumObservations, 'LeaveOut');
       else
-        partition = cvpartition (this.Y, 'KFold', numFolds);
+        partition = cvpartition (Yused, 'KFold', numFolds);
       endif
 
       ## Create a cross-validated model object
@@ -1713,7 +1718,10 @@ endclassdef
 
 function numCode = activationCode (strCode)
   switch (strCode)
-    case 'linear'
+    ## 'none' is MATLAB's name for the identity, which fitcnet has always
+    ## documented as available; 'linear' is this package's older spelling of
+    ## the same map.
+    case {'linear', 'none'}
       numCode = 0;
     case 'sigmoid'
       numCode = 1;
