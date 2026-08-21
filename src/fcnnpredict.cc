@@ -257,6 +257,22 @@ package:\n\n\
 %! assert_equal (isequal (size (Y_pred), size (Y)), true);
 %! assert_equal (columns (Y_scores), numel (unique (Y)));
 %! assert_equal (rows (Y_scores), numel (Y));
+
+## A trained network drives its outputs to the targets, not to a fraction of
+## them.  A gradient of 2*y-t rather than 2*(y-t) settles at y = t/2, which
+## leaves every label right and every score halved, so the scores are what
+## has to be checked.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! Xs = [randn(40,2)*0.3 + 3; randn(40,2)*0.3 - 3];
+%! Ys = [ones(40,1); 2*ones(40,1)];
+%! M = fcnntrain (Xs, Ys, [8, 8], [1, 1, 1], 1, 0.01, 0.05, 400, false);
+%! [pred, scores] = fcnnpredict (M, [3, 3; -3, -3]);
+%! assert_equal (pred, [1; 2]);
+%! assert_equal (max (scores(1,:)) > 0.8, true);
+%! assert_equal (max (scores(2,:)) > 0.8, true);
+%! assert_equal (all (abs (sum (scores, 2) - 1) < 0.1), true);
 %!error <fcnnpredict: too few input arguments.> ...
 %! fcnnpredict (MODEL);
 %!error <fcnnpredict: too many output arguments.> ...

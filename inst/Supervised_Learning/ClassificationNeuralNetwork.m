@@ -1328,3 +1328,33 @@ endfunction
 %! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
 %!error <ClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...
 %! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
+
+## A trained network returns a posterior, not a fraction of one.  A backward
+## pass that settles at half the target leaves every label right and every
+## score halved, so the scores and their row sums are what catch it.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! X = [randn(40, 2) * 0.3 + 3; randn(40, 2) * 0.3 - 3];
+%! Y = [ones(40, 1); 2 * ones(40, 1)];
+%! Mdl = fitcnet (X, Y, 'LayerSizes', [8, 8], 'IterationLimit', 400);
+%! [label, score] = predict (Mdl, [3, 3; -3, -3]);
+%! assert_equal (label, [1; 2]);
+%! assert_equal (all (abs (sum (score, 2) - 1) < 0.1), true);
+%! assert_equal (max (score(1,:)) > 0.8, true);
+%! assert_equal (max (score(2,:)) > 0.8, true);
+
+## Every activation trains to a usable posterior on separable data.
+%!test
+%! rand ('seed', 7);
+%! randn ('seed', 7);
+%! X = [randn(30, 2) * 0.3 + 3; randn(30, 2) * 0.3 - 3];
+%! Y = [ones(30, 1); 2 * ones(30, 1)];
+%! names = {'linear', 'sigmoid', 'relu', 'tanh', 'lrelu', 'elu', 'gelu'};
+%! for k = 1:numel (names)
+%!   Mdl = fitcnet (X, Y, 'LayerSizes', 8, 'Activations', names{k}, ...
+%!                  'IterationLimit', 300);
+%!   [label, score] = predict (Mdl, [3, 3; -3, -3]);
+%!   assert_equal (label, [1; 2]);
+%!   assert_equal (all (isfinite (score(:))), true);
+%! endfor

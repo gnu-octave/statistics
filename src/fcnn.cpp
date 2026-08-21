@@ -23,6 +23,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include <cmath>
+#include <algorithm>
 #if defined (_OPENMP)
   #include <omp.h>
   #define MY_OMP_SET_THREADS (omp_set_num_threads (this->n_threads))
@@ -359,9 +360,9 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
       #pragma omp parallel for
       for (int i = 0; i < layer_size; i++)
       {
-        double x_3 = pow (inputs[i], 3) * 0.044715;
-        outputs[i] = 0.5 * inputs[i] * (tanh (sqrt (2 / M_PI)
-                                     * (inputs[i] + x_3)));
+        // x * Phi(x), the standard normal CDF taken from erfc so that the
+        // tails are accurate; the tanh form is an approximation of this.
+        outputs[i] = inputs[i] * 0.5 * erfc (-inputs[i] * M_SQRT1_2);
       }
     }
   }
@@ -420,8 +421,19 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 4) // Softmax activation
   {
-    // WARNING: this code may be incorrect
-    this->grad = chain_grad;
+    // The Jacobian is diag (y) - y * y', so the product with the incoming
+    // gradient is y .* (g - y' * g).  Passing g through unchanged is only
+    // right when softmax is paired with a cross-entropy loss, which this
+    // implementation does not provide.
+    double dot = 0.0;
+    for (int i = 0; i < layer_size; i++)
+    {
+      dot += this->last_output[i] * chain_grad[i];
+    }
+    for (int i = 0; i < layer_size; i++)
+    {
+      this->grad[i] = this->last_output[i] * (chain_grad[i] - dot);
+    }
   }
   else if (this->activation == 5) // Parametric or Leaky ReLU
   {
@@ -445,13 +457,13 @@ void ActivationLayer::backward (vector<double> chain_grad)
       for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] : chain_grad[i]
-                                     * exp (this->last_output[i]) * this->alpha;
+                                      * exp (this->last_input[i]) * this->alpha;
       }
     }
   }
   else if (this->activation == 7) // Gaussian Error Linear Unit (GELU)
   {
-    // WARNING: this code may be incorrect
+    // d/dx [x * Phi(x)] = Phi(x) + x * phi(x), both taken at the input
     static const double inv_sqrt_2pi = 0.3989422804014327;
     MY_OMP_SET_THREADS;
     #pragma omp parallel
@@ -459,9 +471,10 @@ void ActivationLayer::backward (vector<double> chain_grad)
       #pragma omp parallel for
       for (int i = 0; i < layer_size; i++)
       {
-        double pdf_val = inv_sqrt_2pi * exp (-0.5 * this->last_output[i]
-                                                  * this->last_output[i]);
-        this->grad[i] = this->last_output[i] * pdf_val * chain_grad[i];
+        double x = this->last_input[i];
+        double cdf = 0.5 * erfc (-x * M_SQRT1_2);
+        double pdf = inv_sqrt_2pi * exp (-0.5 * x * x);
+        this->grad[i] = (cdf + x * pdf) * chain_grad[i];
       }
     }
   }
@@ -469,133 +482,24 @@ void ActivationLayer::backward (vector<double> chain_grad)
 
 void ActivationLayer::backward (DenseLayer &prev_layer)
 {
-  this->grad = vector<double> (this->last_input.size ());
-  if (this->activation == 0) // 'Linear'
+  // The gradient arriving here is W' * delta, where delta is the gradient at
+  // each neuron of the layer that follows.  Every neuron has accumulated its
+  // own delta into the bias gradient, so it is read from there rather than
+  // recovered by dividing the weight gradient by the input, which is
+  // undefined wherever an activation output is zero.  The local derivative is
+  // then applied by the overload above, so both paths share one definition of
+  // every activation.
+  int layer_size = this->last_input.size ();
+  vector<double> chain_grad = vector<double> (layer_size, 0.0);
+  for (int n = 0; n < prev_layer.neurons.size (); n++)
   {
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
+    double delta = prev_layer.neurons[n].bgrad;
+    for (int i = 0; i < layer_size; i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
-      {
-        double curr_grad = this->last_output[n];
-        double chain_grad = prev_layer.neurons[n].weights[i] *
-                            prev_layer.neurons[n].wgrad[i] /
-                            prev_layer.last_input[i];
-        this->grad[i] += curr_grad * chain_grad;
-      }
+      chain_grad[i] += prev_layer.neurons[n].weights[i] * delta;
     }
   }
-  else if (this->activation == 1) // Sigmoid function
-  {
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
-      {
-        double curr_grad = this->last_output[n] * (1 - this->last_output[n]);
-        double chain_grad = prev_layer.neurons[n].weights[i] *
-                            prev_layer.neurons[n].wgrad[i] /
-                            prev_layer.last_input[i];
-        this->grad[i] += curr_grad * chain_grad;
-      }
-    }
-  }
-  else if (this->activation == 2) // Rectified Linear Unit (ReLU)
-  {
-    for (int i = 0; i < prev_layer.last_input.size(); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size(); n++)
-      {
-        double grad = prev_layer.neurons[n].wgrad[i] / prev_layer.last_input[i];
-        if (this->last_input[i] < 0)
-        {
-          this->grad[i] = 0;
-        }
-        else
-        {
-          this->grad[i] += prev_layer.neurons[n].weights[i] * grad;
-        }
-      }
-    }
-  }
-  else if (this->activation == 3) // Hyperbolic tangent (tanh)
-  {
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
-      {
-        double curr_grad = this->last_output[n] *
-                           (1 - pow (this->last_output[i], 2));
-        double chain_grad = prev_layer.neurons[n].weights[i] *
-                            prev_layer.neurons[n].wgrad[i] /
-                            prev_layer.last_input[i];
-        this->grad[i] += curr_grad * chain_grad;
-      }
-    }
-  }
-  else if (this->activation == 4) // Softmax activation
-  {
-    // WARNING: this code may be incorrect
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
-      {
-        double curr_grad = this->last_output[n];
-        double chain_grad = prev_layer.neurons[n].weights[i] *
-                            prev_layer.neurons[n].wgrad[i] /
-                            prev_layer.last_input[i];
-        this->grad[i] += curr_grad * chain_grad;
-      }
-    }
-  }
-  else if (this->activation == 5) // Parametric or Leaky ReLU
-  {
-    for (int i = 0; i < prev_layer.last_input.size(); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size(); n++)
-      {
-        double grad = prev_layer.neurons[n].wgrad[i] / prev_layer.last_input[i];
-        this->grad[i] += prev_layer.neurons[n].weights[i] * grad;
-      }
-    }
-    for (int i = 0; i < this->last_input.size(); i++)
-    {
-      this->grad[i] = this->last_input[i] >= 0 ? this->grad[i] :
-                                                 this->grad[i] * this->alpha;
-    }
-  }
-  else if (this->activation == 6) // Exponential Linear Unit (ELU)
-  {
-    for (int i = 0; i < prev_layer.last_input.size(); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size(); n++)
-      {
-        double grad = prev_layer.neurons[n].wgrad[i] / prev_layer.last_input[i];
-        this->grad[i] += prev_layer.neurons[n].weights[i] * grad;
-      }
-    }
-    for (int i = 0; i < this->last_input.size(); i++)
-    {
-      this->grad[i] = this->last_input[i] >= 0 ? this->grad[i] : this->grad[i]
-                                   * exp (this->last_output[i]) * this->alpha;
-    }
-  }
-  else if (this->activation == 7) // Gaussian Error Linear Unit (GELU)
-  {
-    // WARNING: this code may be incorrect
-    static const double inv_sqrt_2pi = 0.3989422804014327;
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
-    {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
-      {
-        double pdf_val = inv_sqrt_2pi * exp (-0.5 * this->last_output[i]
-                                                  * this->last_output[i]);
-        double curr_grad = this->last_output[n] * pdf_val * this->last_output[i];
-        double chain_grad = prev_layer.neurons[n].weights[i] *
-                            prev_layer.neurons[n].wgrad[i] /
-                            prev_layer.last_input[i];
-        this->grad[i] += curr_grad * chain_grad;
-      }
-    }
-  }
+  this->backward (chain_grad);
 }
 
 class MeanSquaredErrorLoss
@@ -639,7 +543,9 @@ void MeanSquaredErrorLoss::backward (double grad)
   this->grad = vector<double> (this->last_input.size ());
   for (int i = 0; i < this->last_input.size (); i++)
   {
-    this->grad.at(i) = 2 * this->last_input[i] - this->last_target[i];
+    // d/dy of sum (y - t)^2 is 2 * (y - t); the bracket matters, since
+    // 2 * y - t is a different function wherever the target is not zero.
+    this->grad.at(i) = 2 * (this->last_input[i] - this->last_target[i]);
     this->grad.at(i) *= grad;
   }
 }

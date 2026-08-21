@@ -23,10 +23,12 @@ svmpredict.oct: svmpredict.cc svm.cpp svm_model_octave.cc
 svmtrain.oct: svmtrain.cc svm.cpp svm_model_octave.cc
 	$(MKOCTFILE) svmtrain.cc svm.cpp svm_model_octave.cc
 
-fcnntrain.oct: fcnntrain.cc
+# fcnn.cpp is #included by both, so it is a prerequisite of both: without it
+# an edit to the network code leaves the oct-files stale and the build silent.
+fcnntrain.oct: fcnntrain.cc fcnn.cpp
 	$(MKOCTFILE) fcnntrain.cc
 
-fcnnpredict.oct: fcnnpredict.cc
+fcnnpredict.oct: fcnnpredict.cc fcnn.cpp
 	$(MKOCTFILE) fcnnpredict.cc
 
 # Clean target
