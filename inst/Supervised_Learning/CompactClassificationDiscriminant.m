@@ -395,7 +395,7 @@ classdef CompactClassificationDiscriminant
             case 'ScoreTransform'
               name = 'CompactClassificationDiscriminant';
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (varargin{2}, name);
+                                                   (val, name);
             otherwise
               error (strcat ("CompactClassificationDiscriminant.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -1188,3 +1188,11 @@ endclassdef
 %! savemodel (CompactClassificationDiscriminant (), 1)
 %!error <CompactClassificationDiscriminant.savemodel: FNAME must be a character vector.> ...
 %! savemodel (CompactClassificationDiscriminant (), ['ab'; 'cd'])
+
+## A ScoreTransform can be assigned, and is stored as a function handle.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! CMdl.ScoreTransform = 'symmetric';
+%! assert_equal (class (CMdl.ScoreTransform), 'function_handle');
+%! assert_equal (CMdl.ScoreTransform (0.25), -0.5);

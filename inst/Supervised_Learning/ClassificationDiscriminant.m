@@ -442,7 +442,7 @@ classdef ClassificationDiscriminant
             case 'ScoreTransform'
               name = 'ClassificationDiscriminant';
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (varargin{2}, name);
+                                                   (val, name);
             otherwise
               error (strcat ("ClassificationDiscriminant.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -1970,3 +1970,11 @@ endclassdef
 %! savemodel (ClassificationDiscriminant ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
 %!error <ClassificationDiscriminant.savemodel: FNAME must be a character vector.> ...
 %! savemodel (ClassificationDiscriminant ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
+
+## A ScoreTransform can be assigned, and is stored as a function handle.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.ScoreTransform = 'symmetric';
+%! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
+%! assert_equal (Mdl.ScoreTransform (0.25), -0.5);

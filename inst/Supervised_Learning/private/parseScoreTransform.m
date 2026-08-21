@@ -56,7 +56,10 @@ function [f, st] = parseScoreTransform (ScoreTransform, classname)
     elseif (strcmpi ('logit', ScoreTransform))
       f = @(x) 1 ./ (1 + exp (-x));
     elseif (any (strcmpi ({'identity', 'none'}, ScoreTransform)))
-      f = 'none';
+      ## A handle, like every other transform, so a caller can apply it
+      ## without testing for this one by name
+      f = @(x) x;
+      st = 'none';
     elseif (strcmpi ('sign', ScoreTransform))
       f = @(x) sign (x);
     elseif (strcmpi ('symmetric', ScoreTransform))

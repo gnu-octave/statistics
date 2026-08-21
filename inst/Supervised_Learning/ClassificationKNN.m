@@ -206,10 +206,10 @@ classdef ClassificationKNN
     ## @multitable @columnfractions 0.2 0.75
     ## @headitem @var{Value} @tab @var{Description}
     ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{'ismax'} @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
     ## @item @qcode{'none'} @tab @math{x} (no transformation)
     ## @item @qcode{'identity'} @tab @math{x} (no transformation)
     ## @item @qcode{'sign'} @tab
@@ -528,7 +528,7 @@ classdef ClassificationKNN
             case 'ScoreTransform'
               name = 'ClassificationKNN';
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (varargin{2}, name);
+                                                   (val, name);
             otherwise
               error (strcat ("ClassificationKNN.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -3204,3 +3204,33 @@ endfunction
 %!   assert_equal (a.NumNeighbors, 5);
 %!   assert_equal (predict (a, [2, 2; 6, 6]), [1; 1]);
 %! endfor
+
+## An assigned ScoreTransform reaches the scores predict returns.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [~, s0] = predict (Mdl, meas(60,:));
+%! Mdl.ScoreTransform = 'logit';
+%! [~, s1] = predict (Mdl, meas(60,:));
+%! assert_equal (s1, 1 ./ (1 + exp (-s0)), 1e-12);
+
+## 'logit' is the logistic function and 'invlogit' its inverse, as MATLAB has
+## them, and not the other way about.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 4);
+%! [~, s0] = predict (Mdl, meas(60,:));
+%! Mdl.ScoreTransform = 'invlogit';
+%! [~, s] = predict (Mdl, meas(60,:));
+%! assert_equal (s, log (s0 ./ (1 - s0)), 1e-12);
+
+## Setting ScoreTransform to 'none' leaves predict working, the transform being
+## a function handle like every other.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [~, s0] = predict (Mdl, meas(1:3,:));
+%! Mdl.ScoreTransform = 'none';
+%! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
+%! [~, s1] = predict (Mdl, meas(1:3,:));
+%! assert_equal (s1, s0);

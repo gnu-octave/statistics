@@ -201,10 +201,10 @@ classdef ClassificationGAM
     ## @multitable @columnfractions 0.2 0.75
     ## @headitem @var{Value} @tab @var{Description}
     ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{'ismax'} @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
     ## @item @qcode{'none'} @tab @math{x} (no transformation)
     ## @item @qcode{'identity'} @tab @math{x} (no transformation)
     ## @item @qcode{'sign'} @tab
@@ -441,7 +441,7 @@ classdef ClassificationGAM
             case 'ScoreTransform'
               name = 'ClassificationGAM';
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (varargin{2}, name);
+                                                   (val, name);
             otherwise
               error (strcat ("ClassificationGAM.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -1711,3 +1711,10 @@ endfunction
 %! savemodel (ClassificationGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
 %!error <ClassificationGAM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (ClassificationGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
+
+## A ScoreTransform can be assigned, and is stored as a function handle.
+%!test
+%! Mdl = fitcgam ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]);
+%! Mdl.ScoreTransform = 'symmetric';
+%! assert_equal (class (Mdl.ScoreTransform), 'function_handle');
+%! assert_equal (Mdl.ScoreTransform (0.25), -0.5);
