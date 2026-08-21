@@ -142,7 +142,9 @@ Supervised Learning
  fitcnet
  fitcsvm
  fitrgam
+ fitrnet
  RegressionGAM
+ RegressionNeuralNetwork
  svmpredict
  svmtrain
 Clustering

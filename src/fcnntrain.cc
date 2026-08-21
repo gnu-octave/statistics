@@ -52,7 +52,10 @@ correspond to features (dimensions).  Type of @var{X} must be double. \
 @item @var{Y} : An @math{Nx1} column vector containing the labels of the \
 training dataset.  The labels must be natural numbers (positive integers) \
 starting from 1 up to the number of classes, similarly as returned by the \
-`grp2idx` function. Type of @var{Y} must be double. \
+`grp2idx` function. Type of @var{Y} must be double.  Under regression, \
+selected by @var{LossFunction} 2, @var{Y} is instead an @math{NxR} matrix of \
+response values, which may take any finite value, and the output layer is \
+sized to its @math{R} columns rather than to a number of classes. \
 \n\
 \n\
 @item @var{LayerSizes} : A numeric row vector of integer values defining the \
@@ -98,12 +101,16 @@ information during training. \n\
 \n\
 @code{@var{Mdl} = fcnntrain (@dots{}, @var{LossFunction})} also selects the \
 loss the network is trained against.  @var{LossFunction} is a scalar: 0 for \
-mean squared error, which is the default, and 1 for cross entropy.  Cross \
+mean squared error over a one-hot target, which is the default, 1 for cross \
+entropy, and 2 for mean squared error over a continuous response.  Cross \
 entropy expects the output layer to report a probability over the classes, \
 so it belongs with a softmax output; paired that way the two gradients \
 compose to @math{y - t}.  Its loss is undefined where the predicted \
 probability of the true class is zero, so both the logarithm and its \
-derivative are floored. \n\
+derivative are floored.  Code 2 is regression: @var{Y} holds response values \
+rather than labels, the output layer belongs with the identity activation, \
+and the returned model carries no @code{Accuracy} field, there being no \
+labels to count. \n\
 \n\
 \n\
 @code{fcnntrain} returns the trained model, @var{Mdl}, as a structure \
@@ -120,7 +127,7 @@ activation functions to be used at each layer including the output layer. \
 \n\
 \n\
 @item @code{Accuracy} : The prediction accuracy at each iteration during the \
-neural network model's training process. \
+neural network model's training process.  Absent under regression. \
 \n\
 \n\
 @item @code{Loss} : The loss value recorded at each iteration during the \
@@ -157,6 +164,28 @@ package:\n\n\
   {
     error ("fcnntrain: too many output arguments.");
   }
+
+  // Optional tenth argument selecting the loss: 0 for mean squared error over
+  // a one-hot target, which is the default and what earlier releases always
+  // used, 1 for cross entropy, which expects the output layer to report a
+  // probability, and 2 for mean squared error over a continuous response,
+  // which is regression.  It is read first because it decides whether Y holds
+  // class labels or response values.
+  int lossfcn = 0;
+  if (args.length () == 10)
+  {
+    if (! args(9).isnumeric () || ! args(9).is_scalar_type ()
+        || args(9).iscomplex ())
+    {
+      error ("fcnntrain: 'LossFunction' must be a numeric scalar value.");
+    }
+    lossfcn = args(9).int_value ();
+    if (lossfcn < 0 || lossfcn > 2)
+    {
+      error ("fcnntrain: invalid 'LossFunction' code.");
+    }
+  }
+  bool regression = (lossfcn == 2);
   // Do some input validation while loading training data and labels
   if (! args(0).isnumeric () || args(0).iscomplex ())
   {
@@ -192,15 +221,40 @@ package:\n\n\
     }
   }
 
-  // Construct 1D vector from labels in Y
-  vector<int> labels(n, 0);
-  ColumnVector Y = args(1).column_vector_value ();
-  for (int i = 0; i < n; i++)
+  // Construct the training targets from Y.  Under regression Y holds the
+  // response itself, one column per response, and is taken as it stands;
+  // otherwise it holds class labels, which index a one-hot target built below.
+  vector<int> labels;
+  vector<vector<double>> targets;
+  int n_response = 0;
+  if (regression)
   {
-    labels[i] = Y(i);
-    if (labels[i] < 1)
+    n_response = args(1).columns ();
+    Matrix R = args(1).matrix_value ();
+    targets = vector<vector<double>> (n, vector<double> (n_response, 0.0));
+    for (int i = 0; i < n; i++)
     {
-      error ("fcnntrain: labels in Y must be positive integers.");
+      for (int j = 0; j < n_response; j++)
+      {
+        if (! octave::math::isfinite (R(i,j)))
+        {
+          error ("fcnntrain: Y must be finite.");
+        }
+        targets[i][j] = R(i,j);
+      }
+    }
+  }
+  else
+  {
+    labels = vector<int> (n, 0);
+    ColumnVector Y = args(1).column_vector_value ();
+    for (int i = 0; i < n; i++)
+    {
+      labels[i] = Y(i);
+      if (labels[i] < 1)
+      {
+        error ("fcnntrain: labels in Y must be positive integers.");
+      }
     }
   }
 
@@ -262,7 +316,8 @@ package:\n\n\
     input_size = output_size;
   }
   // Push back last dense layer
-  int output_size = set<int> (labels.begin (), labels.end ()).size ();
+  int output_size = regression ? n_response
+                    : (int) set<int> (labels.begin (), labels.end ()).size ();
   int last_AC = args(2).numel ();
   DenseLayer DL = DenseLayer (input_size, output_size,
                               (int) ActiveCode(last_AC));
@@ -291,24 +346,6 @@ package:\n\n\
   if (! args(8).is_bool_scalar ())
   {
     error ("fcnntrain: 'DisplayInfo' must be a boolean scalar.");
-  }
-
-  // Optional tenth argument selecting the loss: 0 for mean squared error,
-  // which is the default and what earlier releases always used, 1 for cross
-  // entropy, which expects the output layer to report a probability.
-  int lossfcn = 0;
-  if (args.length () == 10)
-  {
-    if (! args(9).isnumeric () || ! args(9).is_scalar_type ()
-        || args(9).iscomplex ())
-    {
-      error ("fcnntrain: 'LossFunction' must be a numeric scalar value.");
-    }
-    lossfcn = args(9).int_value ();
-    if (lossfcn != 0 && lossfcn != 1)
-    {
-      error ("fcnntrain: invalid 'LossFunction' code.");
-    }
   }
 
   // Initialize return variables
@@ -358,7 +395,6 @@ package:\n\n\
     {
       int sample_idx = order[visit];
       vector<double> sample = data[sample_idx];
-      int label = labels[sample_idx];
 
       // Forward pass
       for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
@@ -367,8 +403,16 @@ package:\n\n\
         sample = Activation[layer_idx].forward (sample);
       }
 
-      vector<double> label_vector = vector<double> (output_size);
-      label_vector[label-1] = 1.0;  // Labels in Y start from 1
+      vector<double> label_vector;
+      if (regression)
+      {
+        label_vector = targets[sample_idx];
+      }
+      else
+      {
+        label_vector = vector<double> (output_size);
+        label_vector[labels[sample_idx]-1] = 1.0;  // Labels in Y start from 1
+      }
 
       // Compute loss and the gradient it hands back
       double loss_output;
@@ -443,18 +487,26 @@ package:\n\n\
         sample = Activation[layer_idx].forward (sample);
       }
 
-      int prediction = 0;           // Search for highest value
-      for (int j = 0; j < output_size; j++)
+      vector<double> label_vector;
+      if (regression)
       {
-        if (sample[j] > sample[prediction])
-        {
-          prediction = j;
-        }
+        label_vector = targets[sample_idx];
       }
-      predictions.push_back (prediction);
+      else
+      {
+        int prediction = 0;         // Search for highest value
+        for (int j = 0; j < output_size; j++)
+        {
+          if (sample[j] > sample[prediction])
+          {
+            prediction = j;
+          }
+        }
+        predictions.push_back (prediction);
+        label_vector = vector<double> (output_size);
+        label_vector[labels[sample_idx]-1] = 1.0;
+      }
 
-      vector<double> label_vector = vector<double> (output_size);
-      label_vector[labels[sample_idx]-1] = 1.0;
       if (lossfcn == 1)
       {
         CrossEntropyLoss loss = CrossEntropyLoss ();
@@ -467,7 +519,8 @@ package:\n\n\
       }
     }
 
-    double A = accuracy (predictions, labels);
+    // Accuracy counts correct labels, which regression has none of.
+    double A = regression ? 0.0 : accuracy (predictions, labels);
     double L = sum_loss / n;
     Accuracy.push_back (A);
     Loss.push_back (L);
@@ -476,8 +529,12 @@ package:\n\n\
     if (args(8).scalar_value () != 0)
     {
       cout << "                                              \r"
-           << "Epoch: " << epoch + 1 << " | Loss: "
-           << L << " | Train Accuracy: " << A << endl;
+           << "Epoch: " << epoch + 1 << " | Loss: " << L;
+      if (! regression)
+      {
+        cout << " | Train Accuracy: " << A;
+      }
+      cout << endl;
     }
   }
 
@@ -514,7 +571,10 @@ package:\n\n\
   octave_scalar_map fcnn_model;
   fcnn_model.assign ("LayerWeights", LayerWeights);
   fcnn_model.assign ("Activations", ActiveCode);
-  fcnn_model.assign ("Accuracy", A);
+  if (! regression)
+  {
+    fcnn_model.assign ("Accuracy", A);
+  }
   fcnn_model.assign ("Loss", L);
   fcnn_model.assign ("Alpha", Alpha);
   octave_value_list retval (1);
@@ -615,7 +675,52 @@ package:\n\n\
 %!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
 %! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, [0, 1]);
 %!error <fcnntrain: invalid 'LossFunction' code.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 2);
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 3);
 %!error <fcnntrain: invalid 'LossFunction' code.> ...
 %! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, -1);
+
+## Loss function 2 is regression: Y holds the response, the output layer is
+## sized to its columns, and no Accuracy is reported because there are no
+## labels to count.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! Xr = linspace (-2, 2, 60)';
+%! Yr = 3 * Xr - 1;
+%! M = fcnntrain (Xr, Yr, [8, 8], [2, 2, 0], 1, 0.01, 0.005, 300, false, 2);
+%! assert_equal (fieldnames (M), {'LayerWeights'; 'Activations'; 'Loss'; 'Alpha'});
+%! assert_equal (rows (M.LayerWeights{end}), 1);
+%! assert_equal (M.Loss(end) < M.Loss(1), true);
+
+## The recorded loss is the mean squared error of the network it belongs to.
+%!test
+%! rand ('seed', 42);
+%! Xr = linspace (0, 1, 40)';
+%! Yr = 5 * Xr + 2;
+%! M = fcnntrain (Xr, Yr, 10, [2, 0], 1, 0.01, 0.005, 200, false, 2);
+%! [~, yFit] = fcnnpredict (M, Xr);
+%! assert_equal (M.Loss(end), mean ((Yr - yFit) .^ 2), 1e-12);
+
+## A response of several columns gets one output unit per column.
+%!test
+%! rand ('seed', 42);
+%! Xr = linspace (0, 1, 30)';
+%! M = fcnntrain (Xr, [Xr, 2 * Xr, 3 * Xr], 6, [2, 0], 1, 0.01, 0.005, 50, ...
+%!                false, 2);
+%! assert_equal (rows (M.LayerWeights{end}), 3);
+%! [~, yFit] = fcnnpredict (M, Xr);
+%! assert_equal (columns (yFit), 3);
+
+## Regression takes a response the classification path would refuse.
+%!test
+%! rand ('seed', 42);
+%! Xr = linspace (0, 1, 20)';
+%! Yr = linspace (-3.5, 2.25, 20)';
+%! M = fcnntrain (Xr, Yr, 6, [2, 0], 1, 0.01, 0.005, 50, false, 2);
+%! assert_equal (all (isfinite (M.Loss)), true);
+
+%!error <fcnntrain: Y must be finite.> ...
+%! fcnntrain ([1; 2; 3], [1; Inf; 3], 4, [2, 0], 1, 0.01, 0.01, 10, false, 2);
+%!error <fcnntrain: Y must be finite.> ...
+%! fcnntrain ([1; 2; 3], [1; NaN; 3], 4, [2, 0], 1, 0.01, 0.01, 10, false, 2);
 */
