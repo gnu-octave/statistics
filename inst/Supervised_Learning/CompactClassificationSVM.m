@@ -198,8 +198,8 @@ classdef CompactClassificationSVM
     ## Trained classifier coefficients
     ##
     ## The coefficients of the trained SVM classifier specified as an @math{s*1}
-    ## numeric vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
+    ## numeric vector, where @math{s} is the number of support vectors,
+    ## @qcode{rows (obj.SupportVectors)}.  If the SVM classifier was trained
     ## with a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
     ## empty.  This property is read-only.
     ##
@@ -212,8 +212,8 @@ classdef CompactClassificationSVM
     ## Linear predictor coefficients
     ##
     ## The linear predictor coefficients specified as an @math{s*1} numeric
-    ## vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
+    ## vector, where @math{s} is the number of support vectors,
+    ## @qcode{rows (obj.SupportVectors)}.  If the SVM classifier was trained
     ## with a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
     ## This property is read-only.
     ##
@@ -231,26 +231,13 @@ classdef CompactClassificationSVM
     Bias                = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} IsSupportVector
-    ##
-    ## Support vector indicator
-    ##
-    ## An @math{N*1} logical vector that flags whether a corresponding
-    ## observation in the predictor data matrix is a Support Vector.  @math{N}
-    ## is the number of observations in the training data.  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    IsSupportVector     = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} SupportVectorLabels
     ##
     ## Support vector class labels
     ##
     ## The support vector class labels specified as an @math{s*1} numeric
-    ## vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  A value of +1 in
+    ## vector, where @math{s} is the number of support vectors,
+    ## @qcode{rows (obj.SupportVectors)}.  A value of +1 in
     ## @code{SupportVectorLabels} indicates that the corresponding support
     ## vector belongs to the positive class @qcode{(ClassNames@{2@})}.  A value
     ## of -1 indicates that the corresponding support vector belongs to the
@@ -265,8 +252,8 @@ classdef CompactClassificationSVM
     ## Support vectors
     ##
     ## The support vectors of the trained SVM classifier specified an @math{s*p}
-    ## numeric matrix, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}, and @math{p} is the number of
+    ## numeric matrix, where @math{s} is the number of support vectors,
+    ## @qcode{rows (obj.SupportVectors)}, and @math{p} is the number of
     ## predictor variables in the predictor data.  This property is read-only.
     ##
     ## @end deftp
@@ -304,7 +291,6 @@ classdef CompactClassificationSVM
       this.Alpha                 = Mdl.Alpha;
       this.Beta                  = Mdl.Beta;
       this.Bias                  = Mdl.Bias;
-      this.IsSupportVector       = Mdl.IsSupportVector;
       this.SupportVectorLabels   = Mdl.SupportVectorLabels;
       this.SupportVectors        = Mdl.SupportVectors;
 
@@ -668,7 +654,6 @@ classdef CompactClassificationSVM
       Alpha               = this.Alpha;
       Beta                = this.Beta;
       Bias                = this.Bias;
-      IsSupportVector     = this.IsSupportVector;
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
 
@@ -677,7 +662,7 @@ classdef CompactClassificationSVM
             'PredictorNames', 'ResponseName', 'ClassNames', ...
             'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
-            'IsSupportVector', 'SupportVectorLabels', 'SupportVectors');
+            'SupportVectorLabels', 'SupportVectors');
     endfunction
 
   endmethods
@@ -739,7 +724,7 @@ endclassdef
 %! Mdl = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
 %! CMdl = compact (Mdl);
 %! assert_equal (isempty (CMdl.Beta), true)
-%! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Alpha))
+%! assert_equal (rows (CMdl.SupportVectors), numel (CMdl.Alpha))
 %! [label, score] = predict (CMdl, xc);
 %! assert_equal (label, [1; 2; 2]);
 %! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
@@ -748,7 +733,7 @@ endclassdef
 %! Mdl = fitcsvm (x, y);
 %! CMdl = compact (Mdl);
 %! assert_equal (CMdl.Beta, [2.182926829268275; 2.253658536585344], 1e-5)
-%! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Alpha))
+%! assert_equal (rows (CMdl.SupportVectors), numel (CMdl.Alpha))
 %! assert_equal (numel (CMdl.Alpha), 24)
 %! assert_equal (CMdl.Bias, -14.415, 1e-3)
 %! xc = [min(x); mean(x); max(x)];
