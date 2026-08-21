@@ -290,6 +290,79 @@ classdef CompactClassificationNeuralNetwork
     ##
     ## @end deftp
     Solver                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} LayerWeights
+    ##
+    ## Learned weights of each fully connected layer
+    ##
+    ## A cell array holding one matrix per layer, the output layer included,
+    ## with one row per neuron of that layer and one column per input it
+    ## takes.  This property is read-only.
+    ##
+    ## @end deftp
+    LayerWeights          = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} LayerBiases
+    ##
+    ## Learned bias of each fully connected layer
+    ##
+    ## A cell array holding one column vector per layer, the output layer
+    ## included, with one entry per neuron of that layer.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    LayerBiases           = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Cost
+    ##
+    ## Cost of misclassification
+    ##
+    ## A numeric matrix with one row and one column per class, where
+    ## @code{Cost(i,j)} is the cost of classifying an observation of class
+    ## @math{i} as class @math{j}.  It is taken from the model this object was
+    ## compacted from.  This property is read-only.
+    ##
+    ## @end deftp
+    Cost                  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Prior
+    ##
+    ## Prior probability of each class
+    ##
+    ## A numeric vector with one entry per class, in the order of
+    ## @code{ClassNames}, summing to one.  It is taken from the model this
+    ## object was compacted from.  This property is read-only.
+    ##
+    ## @end deftp
+    Prior                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector holding the column of each predictor treated as
+    ## categorical, and empty when none is.  This property is read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} ExpandedPredictorNames
+    ##
+    ## Names of the expanded predictor variables
+    ##
+    ## A cell array of character vectors naming the predictors as the model
+    ## sees them.  It matches @code{PredictorNames} unless a categorical
+    ## predictor was expanded into dummy variables.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
   endproperties
 
   properties(Access = private, Hidden)
@@ -332,6 +405,13 @@ classdef CompactClassificationNeuralNetwork
       this.ConvergenceInfo       = Mdl.ConvergenceInfo;
       this.DisplayInfo           = Mdl.DisplayInfo;
       this.Solver                = Mdl.Solver;
+
+      this.LayerWeights          = Mdl.LayerWeights;
+      this.LayerBiases           = Mdl.LayerBiases;
+      this.Cost                  = Mdl.Cost;
+      this.Prior                 = Mdl.Prior;
+      this.CategoricalPredictors = Mdl.CategoricalPredictors;
+      this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
 
@@ -528,6 +608,218 @@ classdef CompactClassificationNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## Classification margin of a compact neural network classifier.
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns a column
+    ## vector holding, for each row of @var{X}, the score the model gives its
+    ## true class in @var{Y} less the largest score it gives any other class.
+    ## A positive margin means the observation is classified correctly, and
+    ## the larger it is the more confidently so.
+    ##
+    ## @seealso{CompactClassificationNeuralNetwork,
+    ## ClassificationNeuralNetwork, edge, loss, predict}
+    ## @end deftypefn
+    function m = margin (this, X, Y)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error (strcat ("CompactClassificationNeuralNetwork.margin:", ...
+                       " too few input arguments."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "margin");
+
+      [~, scores] = predict (this, X);
+      classes = this.ClassNames;
+      m = zeros (rows (X), 1);
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          m(i) = NaN;
+          continue;
+        endif
+        true_score = scores(i, idx);
+        scores(i, idx) = -Inf;
+        m(i) = true_score - max (scores(i,:));
+        scores(i, idx) = true_score;
+      endfor
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationNeuralNetwork} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge of a compact neural network classifier.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} returns the mean of
+    ## the classification margins over the rows of @var{X}.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @seealso{CompactClassificationNeuralNetwork,
+    ## ClassificationNeuralNetwork, margin, loss, predict}
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error (strcat ("CompactClassificationNeuralNetwork.edge:", ...
+                       " too few input arguments."));
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationNeuralNetwork.edge:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "edge");
+      W = getWeights_ (this, varargin, rows (X), "edge");
+
+      m = margin (this, X, Y);
+      e = sum (W(:) .* m) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationNeuralNetwork} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of a compact neural network classifier.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the loss of
+    ## the model on the rows of @var{X} against the true labels @var{Y}.
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
+    ## following name-value pairs:
+    ##
+    ## @itemize
+    ## @item
+    ## @qcode{"LossFun"} selects the loss.  Supported values are
+    ## @qcode{"mincost"}, the default, @qcode{"binodeviance"},
+    ## @qcode{"classifcost"}, @qcode{"classiferror"}, @qcode{"crossentropy"},
+    ## @qcode{"exponential"}, @qcode{"hinge"}, @qcode{"logit"} and
+    ## @qcode{"quadratic"}.  @qcode{"mincost"} assigns each observation to
+    ## the class of least expected cost and charges what that assignment
+    ## costs, so it reads the scores as a posterior; @qcode{"classifcost"}
+    ## charges what the model's own prediction costs.  @qcode{"crossentropy"}
+    ## is defined for a network only.  Note that the default differs from the
+    ## other classifiers in this package, which default to
+    ## @qcode{"classiferror"}, and follows MATLAB's for this class.
+    ##
+    ## @item
+    ## @qcode{"Weights"} holds one weight per row of @var{X}, normalised to
+    ## sum to one before it is applied.
+    ## @end itemize
+    ##
+    ## @seealso{CompactClassificationNeuralNetwork,
+    ## ClassificationNeuralNetwork, margin, edge, predict}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
+                       " too few input arguments."));
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "loss");
+
+      ## Parse optional arguments
+      LossFun = 'mincost';
+      lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
+                   'crossentropy', 'exponential', 'hinge', 'logit', ...
+                   'mincost', 'quadratic'};
+      args = varargin;
+      keep = true (1, numel (args));
+      for i = 1:2:numel (args)
+        if (strcmpi (args{i}, 'lossfun'))
+          LossFun = args{i+1};
+          if (! (ischar (LossFun) && isrow (LossFun)))
+            error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
+                           " 'LossFun' must be a character vector."));
+          endif
+          LossFun = tolower (LossFun);
+          if (! any (strcmpi (LossFun, lossnames)))
+            error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
+                           " unsupported Loss function."));
+          endif
+          keep(i:i+1) = false;
+        endif
+      endfor
+      W = getWeights_ (this, args(keep), rows (X), "loss");
+      W = W(:) / sum (W);
+
+      [label, scores] = predict (this, X);
+      classes = this.ClassNames;
+      K = numel (classes);
+
+      ## Membership of the true class, as a +1/-1 indicator per class
+      Yind = zeros (rows (X), K);
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          L = NaN;
+          return;
+        endif
+        Yind(i, idx) = 1;
+      endfor
+
+      ## The scalar score of the true class of each observation
+      mj = sum (scores .* Yind, 2);
+
+      switch (LossFun)
+        case 'classiferror'
+          wrong = zeros (rows (X), 1);
+          for i = 1:rows (X)
+            wrong(i) = ! isequal (label(i), Y(i));
+          endfor
+          L = sum (W .* wrong);
+        case 'binodeviance'
+          L = sum (W .* log (1 + exp (-2 * mj)));
+        case 'hinge'
+          L = sum (W .* max (0, 1 - mj));
+        case 'exponential'
+          L = sum (W .* exp (-mj));
+        case 'logit'
+          L = sum (W .* log (1 + exp (-mj)));
+        case 'quadratic'
+          L = sum (W .* (1 - mj) .^ 2);
+        case 'mincost'
+          ## Each observation is assigned to the class of least expected
+          ## cost, and charged what that assignment actually costs given its
+          ## true class.
+          L = 0;
+          for i = 1:rows (X)
+            [~, k] = min (scores(i,:) * this.Cost);
+            true_idx = find (ismember (classes, Y(i)));
+            L = L + W(i) * this.Cost(true_idx, k);
+          endfor
+        case 'classifcost'
+          ## What the model's own prediction costs, given the true class
+          L = 0;
+          for i = 1:rows (X)
+            true_idx = find (ismember (classes, Y(i)));
+            pred_idx = find (ismember (classes, label(i)));
+            L = L + W(i) * this.Cost(true_idx, pred_idx);
+          endfor
+        case 'crossentropy'
+          ## Defined for a network only, whose scores are a posterior.  The
+          ## weights are rescaled to sum to the number of observations, as
+          ## MATLAB documents, and the sum is taken over classes as well.
+          Wn = W * rows (X);
+          L = -sum (Wn .* log (max (mj, realmin))) / (K * rows (X));
+      endswitch
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationNeuralNetwork} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a CompactClassificationNeuralNetwork object.
@@ -570,6 +862,12 @@ classdef CompactClassificationNeuralNetwork
       ConvergenceInfo         = this.ConvergenceInfo;
       DisplayInfo             = this.DisplayInfo;
       Solver                  = this.Solver;
+      LayerWeights            = this.LayerWeights;
+      LayerBiases             = this.LayerBiases;
+      Cost                    = this.Cost;
+      Prior                   = this.Prior;
+      CategoricalPredictors   = this.CategoricalPredictors;
+      ExpandedPredictorNames  = this.ExpandedPredictorNames;
       STname                  = this.STname;
 
       ## Save classdef name and all model properties as individual variables
@@ -578,7 +876,59 @@ classdef CompactClassificationNeuralNetwork
             'ScoreTransform', 'Standardize', 'Sigma', 'Mu', 'LayerSizes', ...
             'Activations', 'OutputLayerActivation', 'LearningRate', ...
             'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
-            'DisplayInfo', 'Solver', 'STname');
+            'DisplayInfo', 'Solver', 'LayerWeights', 'LayerBiases', ...
+            'Cost', 'Prior', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames', 'STname');
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    ## Shared validation for the assessment methods, so each reports under
+    ## its own name.
+    function [X, Y] = checkXY_ (this, X, Y, caller)
+      if (isempty (X))
+        error ("CompactClassificationNeuralNetwork.%s: X is empty.", caller);
+      elseif (this.NumPredictors != columns (X))
+        error (strcat ("CompactClassificationNeuralNetwork.%s: X must have", ...
+                       " the same number of predictors as the trained", ...
+                       " neural network model."), caller);
+      endif
+      if (isempty (Y))
+        error ("CompactClassificationNeuralNetwork.%s: Y is empty.", caller);
+      elseif (rows (X) != rows (Y))
+        error (strcat ("CompactClassificationNeuralNetwork.%s: Y must have", ...
+                       " the same number of rows as X."), caller);
+      endif
+    endfunction
+
+    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
+    ## uniform weight, and reject any other name.
+    function W = getWeights_ (this, args, n, caller)
+      W = ones (n, 1);
+      for i = 1:2:numel (args)
+        if (! (ischar (args{i}) && isrow (args{i})))
+          error (strcat ("CompactClassificationNeuralNetwork.%s: parameter", ...
+                         " name must be a character vector."), caller);
+        endif
+        if (strcmpi (args{i}, 'weights'))
+          W = args{i+1};
+          if (! (isnumeric (W) && isvector (W)))
+            error (strcat ("CompactClassificationNeuralNetwork.%s:", ...
+                           " 'Weights' must be a numeric vector."), caller);
+          endif
+          if (numel (W) != n)
+            error (strcat ("CompactClassificationNeuralNetwork.%s: size of", ...
+                           " 'Weights' must equal the number of", ...
+                           " rows in X."), caller);
+          endif
+        else
+          error (strcat ("CompactClassificationNeuralNetwork.%s: invalid", ...
+                         " parameter name in optional paired", ...
+                         " arguments."), caller);
+        endif
+      endfor
     endfunction
 
   endmethods
@@ -650,6 +1000,84 @@ endclassdef
 ## Test input validation for assigning a new ScoreTransform
 %!error<CompactClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
 %! CMdl.ScoreTransform = 'a';
+## The compact model carries the trained parameters and the class bookkeeping.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
+%!                'LayerSizes', [3, 2], 'IterationLimit', 20);
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.LayerWeights, Mdl.LayerWeights);
+%! assert_equal (CMdl.LayerBiases, Mdl.LayerBiases);
+%! assert_equal (CMdl.Cost, Mdl.Cost);
+%! assert_equal (CMdl.Prior, Mdl.Prior);
+%! assert_equal (CMdl.CategoricalPredictors, Mdl.CategoricalPredictors);
+%! assert_equal (CMdl.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+
+## margin, edge and loss agree with the model the object was compacted from.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20);
+%! CMdl = compact (Mdl);
+%! assert_equal (margin (CMdl, meas, species), margin (Mdl, meas, species));
+%! assert_equal (edge (CMdl, meas, species), edge (Mdl, meas, species));
+%! assert_equal (loss (CMdl, meas, species), loss (Mdl, meas, species));
+
+## Every loss function agrees with the full model's.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20);
+%! CMdl = compact (Mdl);
+%! names = {'binodeviance', 'classifcost', 'classiferror', 'crossentropy', ...
+%!          'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+%! for k = 1:numel (names)
+%!   assert_equal (loss (CMdl, meas, species, 'LossFun', names{k}), ...
+%!                 loss (Mdl, meas, species, 'LossFun', names{k}));
+%! endfor
+
+## A weighted edge weights the margins it averages.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcnet (meas, species, 'IterationLimit', 20));
+%! w = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
+%! m = margin (CMdl, meas, species);
+%! assert_equal (edge (CMdl, meas, species, 'Weights', w), ...
+%!               sum (w .* m) / sum (w), 1e-12);
+
+## Test input validation for margin method
+%!error<CompactClassificationNeuralNetwork.margin: too few input arguments.> ...
+%! margin (CMdl)
+%!error<CompactClassificationNeuralNetwork.margin: too few input arguments.> ...
+%! margin (CMdl, x)
+%!error<CompactClassificationNeuralNetwork.margin: X is empty.> ...
+%! margin (CMdl, [], y)
+%!error<CompactClassificationNeuralNetwork.margin: X must have the same number of predictors as the trained neural network model.> ...
+%! margin (CMdl, 1, y)
+%!error<CompactClassificationNeuralNetwork.margin: Y is empty.> ...
+%! margin (CMdl, x, [])
+%!error<CompactClassificationNeuralNetwork.margin: Y must have the same number of rows as X.> ...
+%! margin (CMdl, x, y(1:10))
+
+## Test input validation for edge method
+%!error<CompactClassificationNeuralNetwork.edge: too few input arguments.> ...
+%! edge (CMdl, x)
+%!error<CompactClassificationNeuralNetwork.edge: Name-Value arguments must be in pairs.> ...
+%! edge (CMdl, x, y, 'Weights')
+%!error<CompactClassificationNeuralNetwork.edge: invalid parameter name in optional paired arguments.> ...
+%! edge (CMdl, x, y, 'LossFun', 'hinge')
+%!error<CompactClassificationNeuralNetwork.edge: 'Weights' must be a numeric vector.> ...
+%! edge (CMdl, x, y, 'Weights', 'a')
+%!error<CompactClassificationNeuralNetwork.edge: size of 'Weights' must equal the number of rows in X.> ...
+%! edge (CMdl, x, y, 'Weights', [1, 2, 3])
+
+## Test input validation for loss method
+%!error<CompactClassificationNeuralNetwork.loss: too few input arguments.> ...
+%! loss (CMdl, x)
+%!error<CompactClassificationNeuralNetwork.loss: Name-Value arguments must be in pairs.> ...
+%! loss (CMdl, x, y, 'LossFun')
+%!error<CompactClassificationNeuralNetwork.loss: 'LossFun' must be a character vector.> ...
+%! loss (CMdl, x, y, 'LossFun', 1)
+%!error<CompactClassificationNeuralNetwork.loss: unsupported Loss function.> ...
+%! loss (CMdl, x, y, 'LossFun', 'nonsense')
+
 ## A saved and reloaded compact model carries every property it holds.
 %!test
 %! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
