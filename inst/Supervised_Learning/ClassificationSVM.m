@@ -330,6 +330,31 @@ classdef ClassificationSVM
     SupportVectors      = [];
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Prior
+    ##
+    ## Prior probabilities of the classes
+    ##
+    ## A numeric row vector with one entry per class, in the order of
+    ## @code{ClassNames}, summing to one.  It defaults to the class
+    ## frequencies of the training data.  This property is read-only.
+    ##
+    ## @end deftp
+    Prior               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Cost
+    ##
+    ## Cost of misclassification
+    ##
+    ## A numeric square matrix, where @code{Cost(i,j)} is the cost of
+    ## classifying an observation of class @math{i} as class @math{j}.  It
+    ## defaults to zero on the diagonal and one elsewhere.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Cost                = [];
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} W
     ##
     ## Observation weights
@@ -618,6 +643,8 @@ classdef ClassificationSVM
       ResponseName            = [];
       PredictorNames          = [];
       ClassNames              = [];
+      Prior                   = [];
+      Cost                    = [];
 
       ## Parse extra parameters
       SVMtype_override = true;
@@ -670,6 +697,24 @@ classdef ClassificationSVM
                 error (strcat ("ClassificationSVM: not all 'ClassNames'", ...
                                " are present in Y."));
               endif
+            endif
+
+          case 'prior'
+            Prior = varargin{2};
+            if (! ((isnumeric (Prior) && isvector (Prior) && all (Prior >= 0)
+                    && any (Prior > 0))
+                   || (ischar (Prior)
+                       && any (strcmpi (Prior, {'empirical', 'uniform'})))))
+              error (strcat ("ClassificationSVM: 'Prior' must be a", ...
+                             " non-negative numeric vector, 'empirical'", ...
+                             " or 'uniform'."));
+            endif
+
+          case 'cost'
+            Cost = varargin{2};
+            if (! (isnumeric (Cost) && issquare (Cost) && all (Cost(:) >= 0)))
+              error (strcat ("ClassificationSVM: 'Cost' must be a", ...
+                             " non-negative square matrix."));
             endif
 
           case 'scoretransform'
@@ -804,6 +849,30 @@ classdef ClassificationSVM
       nclasses = numel (gnY);
       this.ClassNames = glY;  # Keep the same type as Y
 
+      ## Resolve Prior and Cost against the classes that survived.  Prior
+      ## defaults to the frequencies of the training data and Cost to zero on
+      ## the diagonal and one elsewhere, which is what MATLAB reports.
+      freq = accumarray (gY(:), 1, [nclasses, 1])' / numel (gY);
+      if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
+        Prior = freq;
+      elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
+        Prior = ones (1, nclasses) / nclasses;
+      else
+        if (numel (Prior) != nclasses)
+          error (strcat ("ClassificationSVM: 'Prior' must have one entry", ...
+                         " per class."));
+        endif
+        Prior = Prior(:)' / sum (Prior);
+      endif
+      if (isempty (Cost))
+        Cost = ones (nclasses) - eye (nclasses);
+      elseif (rows (Cost) != nclasses)
+        error (strcat ("ClassificationSVM: the number of rows and columns", ...
+                       " in 'Cost' must correspond to the classes in Y."));
+      endif
+      this.Prior = Prior;
+      this.Cost = Cost;
+
       ## If only one class available, force 'SVMtype' to 'one_class_svm'
       if (nclasses == 1)
         if (! SVMtype_override && ! strcmp (SVMtype, 'one_class_svm'))
@@ -927,6 +996,23 @@ classdef ClassificationSVM
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
                              KernelOffset, BoxConstraint, Nu, ...
                              CacheSize, Tolerance, Shrinking);
+
+      ## Prior and Cost enter the fit through LIBSVM's per-class weights,
+      ## which scale the box constraint of each class: the weight of class i
+      ## is the cost it carries, Prior(i) times the cost of getting it wrong,
+      ## divided by how often it actually occurs.  The default prior is the
+      ## observed frequency and the default cost is one, so the default weight
+      ## is one for every class and the fit is the same as with no weights.
+      if (nclasses == 2 && ! strcmp (SVMtype, 'one_class_svm'))
+        cw = (Prior .* sum (Cost, 2)') ./ max (freq, eps);
+        cw = cw / mean (cw);
+        if (any (abs (cw - 1) > 1e-12))
+          ## LIBSVM names the classes by the labels it was given, which are
+          ## +1 and -1 here, in the order of ClassNames.
+          svm_options = sprintf ("%s -w1 %.16g -w-1 %.16g", svm_options, ...
+                                 cw(1), cw(2));
+        endif
+      endif
 
       ## Train the SVM model using svmtrain from libsvm
       Model = svmtrain (Y, X, svm_options);
@@ -1286,7 +1372,8 @@ classdef ClassificationSVM
             endif
             LossFun = tolower (LossFun);
             if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'exponential', 'hinge', 'logit', ...
+                                          'classifcost', 'exponential', ...
+                                          'hinge', 'logit', 'mincost', ...
                                           'quadratic'})))
               error ("ClassificationSVM.loss: unsupported Loss function.");
             endif
@@ -1337,6 +1424,33 @@ classdef ClassificationSVM
 
           case 'binodeviance'
             L = mean (log (1 + exp (-2 * margin)) .* Weights);
+
+          case 'mincost'
+            ## Each observation is assigned to the class of least expected
+            ## cost, and charged what that assignment actually costs given
+            ## its true class.  Y is the +1/-1 coding the margin above uses,
+            ## in which +1 is the first of ClassNames and -1 the second.
+            [~, scores] = predict (this, X);
+            true_idx = ones (rows (X), 1);
+            true_idx(Y == -1) = 2;
+            L = 0;
+            for i = 1:rows (X)
+              [~, k] = min (scores(i,:) * this.Cost);
+              L = L + Weights(i) * this.Cost(true_idx(i), k);
+            endfor
+            L = L / rows (X);
+
+          case 'classifcost'
+            ## What the model's own prediction costs, given the true class
+            pred_idx = ones (rows (X), 1);
+            pred_idx(dec_values_L <= 0) = 2;
+            true_idx = ones (rows (X), 1);
+            true_idx(Y == -1) = 2;
+            L = 0;
+            for i = 1:rows (X)
+              L = L + Weights(i) * this.Cost(true_idx(i), pred_idx(i));
+            endfor
+            L = L / rows (X);
 
           otherwise
             error ("ClassificationSVM.loss: unsupported Loss function.");
@@ -1421,7 +1535,8 @@ classdef ClassificationSVM
             endif
             LossFun = tolower (LossFun);
             if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'exponential', 'hinge', 'logit', ...
+                                          'classifcost', 'exponential', ...
+                                          'hinge', 'logit', 'mincost', ...
                                           'quadratic'})))
               error (strcat ("ClassificationSVM.resubLoss: unsupported", ...
                              " Loss function."));
@@ -1449,35 +1564,18 @@ classdef ClassificationSVM
         varargin(1:2) = [];
       endwhile
 
-      ## Compute the classification score
-      [~, ~, dec_values_L] = svmpredict (this.Y, this.X, this.Model, '-q');
-
-      ## Compute the margin
-      margin = this.Y .* dec_values_L;
-
-        ## Compute the loss based on the specified loss function
-        switch tolower (LossFun)
-          case 'classiferror'
-            L = mean ((margin <= 0) .* Weights);
-
-          case 'hinge'
-            L = mean (max (0, 1 - margin) .* Weights);
-
-          case 'logit'
-            L = mean (log (1 + exp (-margin)) .* Weights);
-
-          case 'exponential'
-            L = mean (exp (-margin) .* Weights);
-
-          case 'quadratic'
-            L = mean ((1 - margin).^2 .* Weights);
-
-          case 'binodeviance'
-            L = mean (log (1 + exp (-2 * margin)) .* Weights);
-
-          otherwise
-            error ("ClassificationSVM.resubloss: unsupported Loss function.");
-        endswitch
+      ## The loss of the model on its own training data.  This used to
+      ## recompute every loss here from this.Y, which holds the labels as
+      ## they were given: the margin wants the +1/-1 coding, so a 1/2 coded
+      ## response scored 0.49 where the answer was 0.01, and a logical one
+      ## did not reach LIBSVM at all.  The rows dropped for missing values
+      ## were included as well.
+      used = this.RowsUsed;
+      Xu = this.X(used, :);
+      gY = grp2idx (this.Y(used, :));
+      Ypm = ones (rows (Xu), 1);
+      Ypm(gY == 2) = -1;
+      L = loss (this, Xu, Ypm, 'LossFun', LossFun, 'Weights', Weights);
 
     endfunction
 
@@ -1668,6 +1766,8 @@ classdef ClassificationSVM
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
       W                   = this.W;
+      Prior               = this.Prior;
+      Cost                = this.Cost;
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
 
@@ -1679,7 +1779,8 @@ classdef ClassificationSVM
             'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
-            'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'STname');
+            'W', 'Prior', 'Cost', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames', 'STname');
     endfunction
 
   endmethods
@@ -1860,6 +1961,91 @@ endclassdef
 %! delete (fname);
 %! assert_equal (class (M2.RowsUsed), 'logical');
 %! assert_equal (rows (M2.X(M2.RowsUsed, :)), M2.NumObservations);
+
+## Prior defaults to the class frequencies and Cost to zero on the diagonal
+## and one elsewhere, both measured against R2024a.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! Mdl = fitcsvm (meas, Yb);
+%! assert_equal (Mdl.Prior, [2/3, 1/3], 1e-12);
+%! assert_equal (Mdl.Cost, [0, 1; 1, 0]);
+%! Yu = [repmat({'a'}, 120, 1); repmat({'b'}, 30, 1)];
+%! M2 = fitcsvm (meas, Yu);
+%! assert_equal (M2.Prior, [0.8, 0.2], 1e-12);
+%! assert_equal (fitcsvm (meas, Yu, 'Prior', 'uniform').Prior, [0.5, 0.5]);
+%! assert_equal (fitcsvm (meas, Yu, 'Prior', [3, 1]).Prior, [0.75, 0.25]);
+
+## Prior and Cost reach the fit, as they do in MATLAB, through the per-class
+## box constraint.  Asking for the defaults explicitly changes nothing.
+%!test
+%! load fisheriris
+%! Yu = [repmat({'a'}, 120, 1); repmat({'b'}, 30, 1)];
+%! base = fitcsvm (meas, Yu);
+%! assert_equal (isequal (fitcsvm (meas, Yu, 'Prior', [0.5, 0.5]).Alpha, ...
+%!                        base.Alpha), false);
+%! assert_equal (isequal (fitcsvm (meas, Yu, 'Cost', [0, 5; 1, 0]).Alpha, ...
+%!                        base.Alpha), false);
+%! same = fitcsvm (meas, Yu, 'Prior', 'empirical', 'Cost', [0, 1; 1, 0]);
+%! assert_equal (same.Alpha, base.Alpha);
+%! assert_equal (same.Bias, base.Bias);
+
+## The cost-aware losses agree with R2024a, which returns 0.01 for all three
+## on this fixture and 0.04 once an error is charged four times over.
+%!test
+%! load fisheriris
+%! X = meas(51:150,:);
+%! Yb = strcmp (species(51:150), 'versicolor');
+%! Ypm = ones (100, 1);
+%! Ypm(Yb) = -1;
+%! Mdl = fitcsvm (X, Yb, 'KernelFunction', 'linear');
+%! assert_equal (loss (Mdl, X, Ypm, 'LossFun', 'classiferror'), 0.01, 1e-12);
+%! assert_equal (loss (Mdl, X, Ypm, 'LossFun', 'classifcost'), 0.01, 1e-12);
+%! assert_equal (loss (Mdl, X, Ypm, 'LossFun', 'mincost'), 0.01, 1e-12);
+%! Mc = fitcsvm (X, Yb, 'KernelFunction', 'linear', 'Cost', [0, 4; 1, 0]);
+%! assert_equal (loss (Mc, X, Ypm, 'LossFun', 'classifcost'), 0.04, 1e-12);
+%! assert_equal (loss (Mc, X, Ypm, 'LossFun', 'mincost'), 0.04, 1e-12);
+
+## resubLoss is the loss of the model on its own training rows, whatever type
+## the labels are.  It formed the margin from the labels as given, so a 1/2
+## coded response scored 0.49 where the answer is 0.01, and a logical one did
+## not reach LIBSVM at all.
+%!test
+%! load fisheriris
+%! X = meas(51:150,:);
+%! Yb = strcmp (species(51:150), 'versicolor');
+%! assert_equal (resubLoss (fitcsvm (X, Yb, 'KernelFunction', 'linear')), ...
+%!               0.01, 1e-12);
+%! assert_equal (resubLoss (fitcsvm (X, double (Yb) + 1, ...
+%!                                   'KernelFunction', 'linear')), 0.01, 1e-12);
+%! assert_equal (resubLoss (fitcsvm (X, species(51:150), ...
+%!                                   'KernelFunction', 'linear')), 0.01, 1e-12);
+
+## The compact model carries both, and its cost-aware losses agree with the
+## model it was compacted from.
+%!test
+%! load fisheriris
+%! X = meas(51:150,:);
+%! Yb = strcmp (species(51:150), 'versicolor');
+%! Ypm = ones (100, 1);
+%! Ypm(Yb) = -1;
+%! Mdl = fitcsvm (X, Yb, 'KernelFunction', 'linear', 'Cost', [0, 4; 1, 0]);
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.Prior, Mdl.Prior);
+%! assert_equal (CMdl.Cost, Mdl.Cost);
+%! for f = {'classiferror', 'classifcost', 'mincost'}
+%!   assert_equal (loss (CMdl, X, Ypm, 'LossFun', f{1}), ...
+%!                 loss (Mdl, X, Ypm, 'LossFun', f{1}), 1e-12);
+%! endfor
+
+%!error<ClassificationSVM: 'Prior' must be a non-negative numeric vector, 'empirical' or 'uniform'.> ...
+%! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Prior', 'nope')
+%!error<ClassificationSVM: 'Cost' must be a non-negative square matrix.> ...
+%! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Cost', [0, 1])
+%!error<ClassificationSVM: 'Prior' must have one entry per class.> ...
+%! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Prior', [1, 1, 1])
+%!error<ClassificationSVM: the number of rows and columns in 'Cost' must correspond to the classes in Y.> ...
+%! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Cost', eye (3))
 
 ## The model reports the observation weights and the expanded predictor
 ## names MATLAB reports, W normalized to sum to one.

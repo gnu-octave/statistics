@@ -93,6 +93,29 @@ classdef CompactClassificationSVM
     ClassNames          = [];
 
     ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Prior
+    ##
+    ## Prior probabilities of the classes
+    ##
+    ## A numeric row vector with one entry per class, in the order of
+    ## @code{ClassNames}, summing to one.  This property is read-only.
+    ##
+    ## @end deftp
+    Prior               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Cost
+    ##
+    ## Cost of misclassification
+    ##
+    ## A numeric square matrix, where @code{Cost(i,j)} is the cost of
+    ## classifying an observation of class @math{i} as class @math{j}.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    Cost                = [];
+
+    ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
@@ -282,6 +305,8 @@ classdef CompactClassificationSVM
       this.PredictorNames        = Mdl.PredictorNames;
       this.ResponseName          = Mdl.ResponseName;
       this.ClassNames            = Mdl.ClassNames;
+      this.Prior                 = Mdl.Prior;
+      this.Cost                  = Mdl.Cost;
 
       this.ScoreTransform        = Mdl.ScoreTransform;
       this.STname                = Mdl.STname;
@@ -662,7 +687,8 @@ classdef CompactClassificationSVM
             endif
             LossFun = tolower (LossFun);
             if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'exponential', 'hinge', 'logit', ...
+                                          'classifcost', 'exponential', ...
+                                          'hinge', 'logit', 'mincost', ...
                                           'quadratic'})))
               error (strcat ("CompactClassificationSVM.loss:", ...
                              " unsupported Loss function."));
@@ -716,6 +742,33 @@ classdef CompactClassificationSVM
           case 'binodeviance'
             L = mean (log (1 + exp (-2 * margin)) .* Weights);
 
+          case 'mincost'
+            ## Each observation is assigned to the class of least expected
+            ## cost, and charged what that assignment actually costs given
+            ## its true class.  Y is the +1/-1 coding the margin above uses,
+            ## in which +1 is the first of ClassNames and -1 the second.
+            [~, scores] = predict (this, X);
+            true_idx = ones (rows (X), 1);
+            true_idx(Y == -1) = 2;
+            L = 0;
+            for i = 1:rows (X)
+              [~, k] = min (scores(i,:) * this.Cost);
+              L = L + Weights(i) * this.Cost(true_idx(i), k);
+            endfor
+            L = L / rows (X);
+
+          case 'classifcost'
+            ## What the model's own prediction costs, given the true class
+            pred_idx = ones (rows (X), 1);
+            pred_idx(dec_values_L <= 0) = 2;
+            true_idx = ones (rows (X), 1);
+            true_idx(Y == -1) = 2;
+            L = 0;
+            for i = 1:rows (X)
+              L = L + Weights(i) * this.Cost(true_idx(i), pred_idx(i));
+            endfor
+            L = L / rows (X);
+
           otherwise
             error ("CompactClassificationSVM.loss: unsupported Loss function.");
         endswitch
@@ -752,6 +805,8 @@ classdef CompactClassificationSVM
       PredictorNames      = this.PredictorNames;
       ResponseName        = this.ResponseName;
       ClassNames          = this.ClassNames;
+      Prior               = this.Prior;
+      Cost                = this.Cost;
       ScoreTransform      = this.ScoreTransform;
       Standardize         = this.Standardize;
       Sigma               = this.Sigma;
@@ -768,6 +823,7 @@ classdef CompactClassificationSVM
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', ...
+            'Prior', 'Cost', ...
             'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'SupportVectorLabels', 'SupportVectors', 'STname');

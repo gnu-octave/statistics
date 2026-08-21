@@ -307,10 +307,10 @@ classdef ClassificationPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.ScoreTransform = Mdl.ScoreTransform;
       this.STname = Mdl.STname;
-      if (ismember (class (Mdl), validTypes(1:3)))
-        this.Prior = Mdl.Prior;
-        this.Cost = Mdl.Cost;
-      endif
+      ## Every classifier reports a prior and a cost now, so they are carried
+      ## whatever was cross validated; this used to name three of the five.
+      this.Prior = Mdl.Prior;
+      this.Cost = Mdl.Cost;
       if (ismember (class (Mdl), validTypes(3:5)))
         this.Standardize = Mdl.Standardize;
       endif
