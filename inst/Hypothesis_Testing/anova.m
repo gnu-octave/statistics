@@ -714,6 +714,12 @@ classdef anova
                    + min (inverse, 0) .* upper_ms', 2);
       upper = sum (max (inverse, 0) .* upper_ms' ...
                    + min (inverse, 0) .* lower_ms', 2);
+      ## A variance cannot be negative, so the propagated lower bound is
+      ## truncated at zero.  A negative estimate has no interval at all.
+      lower = max (lower, 0);
+      undefined = (estimates < 0);
+      lower(undefined) = NaN;
+      upper(undefined) = NaN;
       v = table (estimates, lower, upper, "VariableNames", ...
                  {"VarianceComponent", "VarianceComponentLower", ...
                   "VarianceComponentUpper"}, "RowNames", names);
@@ -4076,7 +4082,37 @@ endclassdef
 %!               {"MS(A:B)"; "MS(A:B)"; "MS(Error)"; ""});
 %! v = varianceComponent (a);
 %! assert_equal (v.Properties.RowNames, {"B"; "A:B"; "Error"});
-%! assert_equal (v.VarianceComponent(1) < 0, true);
+
+## A negative variance-component estimate is reported without an interval.
+%!test
+%! A = kron ([1; 2], ones (12, 1));
+%! B = repmat (kron ([1; 2; 3; 4], ones (3, 1)), 2, 1);
+%! y = [5;6;4; 12;13;11; 20;19;21; 8;7;9; ...
+%!      7;8;6; 15;14;16; 23;22;24; 10;11;9];
+%! a = anova ({A, B}, y, 'FactorNames', {'A', 'B'}, ...
+%!            'ModelSpecification', 'full', 'RandomFactors', 2);
+%! v = varianceComponent (a);
+%! assert_equal (v.Properties.RowNames, {'B'; 'A:B'; 'Error'});
+%! assert_equal (v.VarianceComponent, ...
+%!               [45.4166666666666; -0.166666666666666; 1], 1e-9);
+%! assert_equal (v.VarianceComponentLower, ...
+%!               [13.4429180926305; NaN; 0.554682109897800], 1e-9);
+%! assert_equal (v.VarianceComponentUpper, ...
+%!               [632.517205323886; NaN; 2.31626772541430], 1e-8);
+
+## A non-negative estimate has its lower bound truncated at zero.
+%!test
+%! A = kron ([1; 2], ones (12, 1));
+%! B = repmat (kron ([1; 2; 3; 4], ones (3, 1)), 2, 1);
+%! y = [5;6;4; 12;13;11; 20;19;21; 8;7;9; ...
+%!      7;8;6; 15;14;16; 23;22;24; 10;11;9];
+%! y(1:12) += [0;0;0; 1;1;1; -1;-1;-1; 0.4;0.4;0.4];
+%! a = anova ({A, B}, y, 'FactorNames', {'A', 'B'}, ...
+%!            'ModelSpecification', 'full', 'RandomFactors', 2);
+%! v = varianceComponent (a);
+%! assert_equal (v.VarianceComponent(2), 0.253333333333400, 1e-9);
+%! assert_equal (v.VarianceComponentLower(2), 0);
+%! assert_equal (v.VarianceComponentUpper(2), 7.97098397237600, 1e-9);
 
 ## Named polynomial models preserve MATLAB's term definitions.
 %!test
