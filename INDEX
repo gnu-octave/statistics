@@ -134,6 +134,7 @@ Supervised Learning
  CompactClassificationGAM
  CompactClassificationNeuralNetwork
  CompactClassificationSVM
+ CompactRegressionGAM
  CompactRegressionNeuralNetwork
  CompactRegressionSVM
  fcnnpredict
@@ -203,8 +204,8 @@ Dimensionality Reduction
  ppca
  princomp
  procrustes
- rica
  ReconstructionICA
+ rica
  rotatefactors
  sparsefilt
  SparseFiltering
@@ -271,8 +272,8 @@ Distribution Fitting
  expfit explike
  gamfit gamlike
  geofit
- gevfit_lmom
  gevfit gevlike
+ gevfit_lmom
  gpfit gplike
  gumbelfit gumbellike
  hnfit hnlike
