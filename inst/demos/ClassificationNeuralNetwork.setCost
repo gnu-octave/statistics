@@ -1,0 +1,25 @@
+%!demo
+%! ## 1. The default cost charges one for any mistake
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## Zero down the diagonal, one everywhere else
+%! mdl.Cost
+
+%!demo
+%! ## 2. Making one mistake dearer than the others
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## Charge ten for calling a virginica anything else.  The fit does not
+%! ## change, only what the losses that read Cost report
+%! C = ones (3) - eye (3);
+%! C(3,:) = 10 * C(3,:);
+%! costly = setCost (mdl, C);
+%! bar ([loss(mdl, meas, species, 'LossFun', 'classifcost'), ...
+%!       loss(costly, meas, species, 'LossFun', 'classifcost')]);
+%! set (gca, 'xticklabel', {'equal cost', 'virginica dear'});
+%! ylabel ('Observed misclassification cost');
+%! title ('The same fit, charged two different ways');

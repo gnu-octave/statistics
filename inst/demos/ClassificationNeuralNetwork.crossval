@@ -1,0 +1,41 @@
+%!demo
+%! ## 1. A five-fold cross-validated model
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## Each fold holds out a fifth of the data and refits on the rest
+%! cv = crossval (mdl, 'KFold', 5)
+
+%!demo
+%! ## 2. What the held-out data costs, fold by fold
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%! cv = crossval (mdl, 'KFold', 5);
+%!
+%! ## Spread across the folds says how much the estimate itself can be
+%! ## trusted; a wide spread means five folds were not enough
+%! L = zeros (1, 5);
+%! for k = 1:5
+%!   L(k) = kfoldLoss (cv, 'Folds', k, 'LossFun', 'classiferror');
+%! endfor
+%! bar (L, 'facecolor', [0.6 0.4 0.6], 'edgecolor', 'none');
+%! hold on;
+%! plot ([0.5, 5.5], [1, 1] * mean (L), 'r-', 'linewidth', 1.5);
+%! hold off;
+%! xlabel ('Fold');
+%! ylabel ('Misclassification rate');
+%! title ('Held-out error of each fold, and their mean');
+
+%!demo
+%! ## 3. Holding out a single observation at a time
+%!
+%! load fisheriris
+%! keep = [1:15, 51:65, 101:115];
+%! mdl = fitcnet (meas(keep,:), species(keep), 'IterationLimit', 100);
+%!
+%! ## Leaveout fits as many models as there are observations, so it is the
+%! ## most expensive choice and the least biased
+%! cv = crossval (mdl, 'Leaveout', 'on');
+%! kfoldLoss (cv, 'LossFun', 'classiferror')

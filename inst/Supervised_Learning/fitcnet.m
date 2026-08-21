@@ -139,14 +139,64 @@ function obj = fitcnet (X, Y, varargin)
 endfunction
 
 %!demo
-%! ## Train a Neural Network on the Fisher's Iris data set and display
-%! ## a confusion chart with the classification results.
+%! ## 1. Train a network on Fisher's iris data and see what it got right
 %!
 %! load fisheriris
 %! Mdl = fitcnet (meas, species);
 %! pred_species = resubPredict (Mdl);
 %! confusionchart (species, pred_species, 'Title', ...
-%! 'Fully Connected Neural Network classification on Fisher''s Iris dataset');
+%!                 'Neural network classification of Fisher''s iris data');
+
+%!demo
+%! ## 2. Watching the fit converge
+%!
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 400);
+%!
+%! ## TrainingHistory records the loss and the accuracy at every iteration
+%! h = Mdl.TrainingHistory;
+%! plotyy (h.Iteration, h.TrainingLoss, h.Iteration, h.TrainingAccuracy);
+%! xlabel ('Iteration');
+%! title ('Training loss, left, and accuracy, right');
+
+%!demo
+%! ## 3. Rectified hidden layers train faster than sigmoid ones
+%!
+%! load fisheriris
+%! iters = [5, 10, 25, 50, 100, 200, 400];
+%! L = zeros (2, numel (iters));
+%! for k = 1:numel (iters)
+%!   for a = 1:2
+%!     act = {'relu', 'sigmoid'}{a};
+%!     m = fitcnet (meas, species, 'Activations', act, ...
+%!                  'IterationLimit', iters(k));
+%!     L(a,k) = loss (m, meas, species, 'LossFun', 'classiferror');
+%!   endfor
+%! endfor
+%! semilogx (iters, L(1,:), 'o-', iters, L(2,:), 's-', 'linewidth', 1.5);
+%! xlabel ('Iteration limit');
+%! ylabel ('Misclassification rate');
+%! legend ({'relu', 'sigmoid'});
+%! title ('A sigmoid shrinks the gradient at every layer');
+
+%!demo
+%! ## 4. What the network learned, over two predictors
+%!
+%! load fisheriris
+%! X = meas(:,3:4);
+%! Mdl = fitcnet (X, species, 'LayerSizes', [12, 12], 'IterationLimit', 400);
+%!
+%! ## Ask about a grid and paint each point by the answer
+%! [gx, gy] = meshgrid (linspace (0.5, 7.5, 120), linspace (0, 3, 120));
+%! [~, ~, region] = unique (predict (Mdl, [gx(:), gy(:)]));
+%! contourf (gx, gy, reshape (region, size (gx)), [1 2 3]);
+%! colormap (summer);
+%! hold on;
+%! gscatter (X(:,1), X(:,2), species, 'krb', 'ox+');
+%! hold off;
+%! xlabel ('Petal length');
+%! ylabel ('Petal width');
+%! title ('Decision regions of a two-layer network');
 
 ## Test constructor
 %!test

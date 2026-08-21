@@ -1,0 +1,22 @@
+%!demo
+%! ## 1. Margins on the training data
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## Same as margin called with the training predictors and labels
+%! m = resubMargin (mdl);
+%! table (sum (m > 0), sum (m <= 0), 'VariableNames', {'Correct', 'Wrong'})
+
+%!demo
+%! ## 2. Where the classes are easy and where they overlap
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%! m = resubMargin (mdl);
+%!
+%! ## One species separates cleanly; the other two share a boundary, and
+%! ## that is where the small margins are
+%! boxplot (m, species);
+%! ylabel ('Margin');
+%! title ('Resubstitution margin by species');

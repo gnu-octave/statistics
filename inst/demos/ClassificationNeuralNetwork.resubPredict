@@ -1,0 +1,22 @@
+%!demo
+%! ## 1. Predicting the data the model was fitted on
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## Same as calling predict with the training predictors
+%! label = resubPredict (mdl);
+%! confusionchart (species, label, 'Title', 'Resubstitution confusion');
+
+%!demo
+%! ## 2. Scores as well as labels
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%! [label, score] = resubPredict (mdl);
+%!
+%! ## How sure the model is about the class it picked, for each row
+%! hist (max (score, [], 2), 20);
+%! xlabel ('Score of the chosen class');
+%! ylabel ('Observations');
+%! title ('Confidence of the resubstitution predictions');

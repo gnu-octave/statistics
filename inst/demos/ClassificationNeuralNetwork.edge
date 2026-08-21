@@ -1,0 +1,26 @@
+%!demo
+%! ## 1. The mean margin over a data set
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%!
+%! ## edge is the average of what margin returns
+%! [edge(mdl, meas, species), mean(margin (mdl, meas, species))]
+
+%!demo
+%! ## 2. Weighting the observations
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%!
+%! ## Weighting one species only gives the edge over that species alone.
+%! ## The weights are normalised before they are applied
+%! classes = unique (species);
+%! e = zeros (1, 3);
+%! for k = 1:3
+%!   e(k) = edge (mdl, meas, species, 'Weights', strcmp (species, classes{k}));
+%! endfor
+%! bar ([edge(mdl, meas, species), e]);
+%! set (gca, 'xticklabel', {'all', classes{:}});
+%! ylabel ('Edge');
+%! title ('Edge overall and within each species');

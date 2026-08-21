@@ -1,0 +1,44 @@
+%!demo
+%! ## 1. Labels and scores for new observations
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%!
+%! ## One row per observation asked about
+%! xc = [min(meas); mean(meas); max(meas)];
+%! [label, score] = predict (mdl, xc);
+%! table (label, score(:,1), score(:,2), score(:,3), 'VariableNames', ...
+%!        {'Label', 'setosa', 'versicolor', 'virginica'})
+
+%!demo
+%! ## 2. The scores are a posterior, so each row sums to one
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%! [~, score] = predict (mdl, meas(1:8,:));
+%!
+%! ## The output layer is softmax by default, which is what makes this hold
+%! bar (score, 'stacked');
+%! xlabel ('Observation');
+%! ylabel ('Posterior probability');
+%! title ('Softmax scores stack to one');
+%! legend ({'setosa', 'versicolor', 'virginica'}, 'location', 'eastoutside');
+
+%!demo
+%! ## 3. What the classifier has learned, over two predictors
+%!
+%! load fisheriris
+%! X = meas(:,3:4);
+%! mdl = fitcnet (X, species, 'IterationLimit', 300);
+%!
+%! ## Ask the model about a grid, and paint each point by its answer
+%! [gx, gy] = meshgrid (linspace (0.5, 7.5, 120), linspace (0, 3, 120));
+%! [~, ~, region] = unique (predict (mdl, [gx(:), gy(:)]));
+%! contourf (gx, gy, reshape (region, size (gx)), [1 2 3]);
+%! colormap (summer);
+%! hold on;
+%! gscatter (X(:,1), X(:,2), species, 'krb', 'ox+');
+%! hold off;
+%! xlabel ('Petal length');
+%! ylabel ('Petal width');
+%! title ('Regions the network assigns to each species');

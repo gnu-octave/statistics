@@ -1,0 +1,27 @@
+%!demo
+%! ## 1. How far each observation sits from being misclassified
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%!
+%! ## The score of the true class less the best score among the others
+%! m = margin (mdl, meas, species);
+%! table (min (m), median (m), max (m), 'VariableNames', ...
+%!        {'Smallest', 'Median', 'Largest'})
+
+%!demo
+%! ## 2. A negative margin marks a misclassified observation
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%! m = sort (margin (mdl, meas, species));
+%!
+%! ## Sorting shows how much of the data the model is confident about, and
+%! ## how far below zero the mistakes fall
+%! bar (m, 'facecolor', [0.3 0.5 0.8], 'edgecolor', 'none');
+%! hold on;
+%! plot ([1, numel(m)], [0, 0], 'r-', 'linewidth', 1.5);
+%! hold off;
+%! xlabel ('Observation, sorted by margin');
+%! ylabel ('Margin');
+%! title ('Margins below zero are the misclassified rows');

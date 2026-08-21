@@ -1,0 +1,23 @@
+%!demo
+%! ## 1. Loss on the training data
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## resubLoss is loss over the rows the model was fitted on, weighted by
+%! ## the observation weights the model carries
+%! [resubLoss(mdl), loss(mdl, meas, species, 'Weights', mdl.W)]
+
+%!demo
+%! ## 2. Resubstitution flatters a model, cross-validation does not
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 300);
+%! cv = crossval (mdl, 'KFold', 5);
+%!
+%! ## The gap between the two is what the model gained by seeing the answers
+%! bar ([resubLoss(mdl, 'LossFun', 'classiferror'), ...
+%!       kfoldLoss(cv, 'LossFun', 'classiferror')]);
+%! set (gca, 'xticklabel', {'resubstitution', '5-fold'});
+%! ylabel ('Misclassification rate');
+%! title ('Training error against cross-validated error');

@@ -1,0 +1,41 @@
+%!demo
+%! ## 1. The proportion of observations the model gets wrong
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%!
+%! ## classiferror counts mistakes; mincost, the default, charges what the
+%! ## least costly assignment costs given the true class
+%! [loss(mdl, meas, species, 'LossFun', 'classiferror'), ...
+%!  loss(mdl, meas, species)]
+
+%!demo
+%! ## 2. The losses differ in how hard they punish an uncertain answer
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 150);
+%!
+%! ## Every one is a function of the same margins, so they rank models alike
+%! ## but not on the same scale
+%! names = {'classiferror', 'mincost', 'hinge', 'quadratic', ...
+%!          'binodeviance', 'logit', 'exponential'};
+%! L = cellfun (@(f) loss (mdl, meas, species, 'LossFun', f), names);
+%! barh (L, 'facecolor', [0.4 0.6 0.4], 'edgecolor', 'none');
+%! set (gca, 'yticklabel', names);
+%! xlabel ('Loss');
+%! title ('The same fit under each loss function');
+
+%!demo
+%! ## 3. Watching the loss fall as training proceeds
+%!
+%! load fisheriris
+%! iters = [5, 10, 25, 50, 100, 200, 400];
+%! L = zeros (size (iters));
+%! for k = 1:numel (iters)
+%!   mdl = fitcnet (meas, species, 'IterationLimit', iters(k));
+%!   L(k) = loss (mdl, meas, species, 'LossFun', 'classiferror');
+%! endfor
+%! semilogx (iters, L, 'o-', 'linewidth', 1.5);
+%! xlabel ('Iteration limit');
+%! ylabel ('Misclassification rate');
+%! title ('Training longer buys accuracy, up to a point');

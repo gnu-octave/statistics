@@ -1,0 +1,19 @@
+%!demo
+%! ## 1. Dropping the training data from a fitted model
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%!
+%! ## The compact model keeps what it needs to predict and nothing else
+%! cmdl = compact (mdl)
+
+%!demo
+%! ## 2. It predicts exactly as the full model does
+%!
+%! load fisheriris
+%! mdl = fitcnet (meas, species, 'IterationLimit', 200);
+%! cmdl = compact (mdl);
+%!
+%! ## Same weights, so the same answers
+%! xc = [min(meas); mean(meas); max(meas)];
+%! isequal (predict (mdl, xc), predict (cmdl, xc))
