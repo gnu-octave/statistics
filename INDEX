@@ -134,6 +134,7 @@ Supervised Learning
  CompactClassificationGAM
  CompactClassificationNeuralNetwork
  CompactClassificationSVM
+ CompactRegressionNeuralNetwork
  fcnnpredict
  fcnntrain
  fitcdiscr

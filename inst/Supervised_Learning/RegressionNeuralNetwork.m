@@ -1003,6 +1003,24 @@ classdef RegressionNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn {RegressionNeuralNetwork} {@var{CMdl} =} compact (@var{obj})
+    ##
+    ## Create a @qcode{CompactRegressionNeuralNetwork} object.
+    ##
+    ## @code{@var{CMdl} = compact (@var{obj})} returns a compact version of
+    ## the @qcode{RegressionNeuralNetwork} object @var{obj}, which keeps the
+    ## trained network but drops the training data, so it predicts identically
+    ## while carrying no observations.
+    ##
+    ## @seealso{fitrnet, RegressionNeuralNetwork,
+    ## CompactRegressionNeuralNetwork}
+    ## @end deftypefn
+    function CMdl = compact (this)
+      ## Create a compact model
+      CMdl = CompactRegressionNeuralNetwork (this);
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionNeuralNetwork} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a neural network regression model to a file.
@@ -1436,6 +1454,17 @@ endfunction
 %! assert_equal (rows (M2.TrainingHistory), 60);
 %! assert_equal (M2.TrainingHistory.TrainingLoss, ...
 %!               Mdl.TrainingHistory.TrainingLoss);
+
+## compact drops the training data but predicts identically.
+%!test
+%! rand ('seed', 42); randn ('seed', 42);
+%! X = [randn(40, 2); randn(40, 2) + 2];
+%! Y = X(:,1) - X(:,2);
+%! Mdl = RegressionNeuralNetwork (X, Y, 'IterationLimit', 100);
+%! CMdl = compact (Mdl);
+%! assert_equal (class (CMdl), 'CompactRegressionNeuralNetwork');
+%! assert_equal (predict (CMdl, X), predict (Mdl, X));
+%! assert_equal (loss (CMdl, X, Y), loss (Mdl, X, Y));
 
 ## Test input validation for the constructor
 %!error<RegressionNeuralNetwork: too few input arguments.> ...

@@ -88,6 +88,9 @@ function obj = loadmodel (filename)
     case 'RegressionNeuralNetwork'
       obj = RegressionNeuralNetwork.load_model (filename, data);
 
+    case 'CompactRegressionNeuralNetwork'
+      obj = CompactRegressionNeuralNetwork.load_model (filename, data);
+
     otherwise
       error ("loadmodel: '%s' is not supported.", classdef_name);
 
