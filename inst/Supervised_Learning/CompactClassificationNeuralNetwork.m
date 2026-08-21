@@ -587,23 +587,14 @@ classdef CompactClassificationNeuralNetwork
       endif
 
       ## Predict labels from new data
-      [labels, scores] = fcnnpredict (this.ModelParameters, XC);
+      NumThreads = nproc ();
+      [labels, scores] = fcnnpredict (this.ModelParameters, XC, NumThreads);
 
       # Get class labels
       labels = this.ClassNames(labels);
 
-      if (nargout > 1)
-        ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, 'none'))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), 'function_handle'))
-            error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
-                           " 'ScoreTransform' must be a", ...
-                           " 'function_handle' object."));
-          endif
-          scores = f(scores);
-        endif
-      endif
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
 
     endfunction
 
