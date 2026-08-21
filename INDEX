@@ -99,6 +99,7 @@ Regression
  GeneralizedLinearModel
  glmfit
  glmval
+ invpred
  lasso
  lassoglm
  LinearFormula
