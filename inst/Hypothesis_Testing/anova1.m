@@ -216,7 +216,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
       MSE = NaN;
   endif
   ## Calculate F statistic
-  if (dfm <= 0 || dfe <= 0)         ## Insufficient degrees of freedom.
+  if (dfm <= 0)                     ## No between-group degrees of freedom.
     F = NaN;
     p = NaN;
   elseif (SSE != 0)                 ## Regular Matrix case.
@@ -245,8 +245,11 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     endswitch
     p = 1 - fcdf (F, dfm, dfe);     ## Probability of F given equal means.
   elseif (SSM == 0)                 ## Constant Matrix case.
-    F = 0;
-    p = 1;
+    ## Both sums-of-squares vanish, so F is 0/0.  There is no within-group
+    ## scale to test against, and the limit depends on the direction of
+    ## approach, so the statistic is undefined rather than zero.
+    F = NaN;
+    p = NaN;
   else                              ## Perfect fit case.
     F = Inf;
     p = 0;
@@ -422,24 +425,34 @@ endfunction
 %! [~, ~, stats] = anova1 (y, g, 'off', 'unequal');
 %! assert_equal (stats.vars, [55 / 6, 55 / 6], 1e-10);
 
-## Degenerate designs return an undefined test statistic.
+## A single group leaves no between-group degrees of freedom.
 %!test
 %! [p, tbl] = anova1 ((1:5)', ones (5, 1), 'off');
 %! assert_equal (p, NaN);
 %! assert_equal (tbl{2, 3}, 0);
+%! assert_equal (tbl{3, 2}, 10);
 %! [p, tbl] = anova1 (7, 1, 'off');
 %! assert_equal (p, NaN);
 %! assert_equal (tbl{3, 3}, 0);
+
+## One observation per group leaves no residual, so the fit is exact.
+%!test
 %! [p, tbl] = anova1 ([1; 2], [1; 2], 'off');
-%! assert_equal (p, NaN);
+%! assert_equal (p, 0);
+%! assert_equal (tbl{2, 2}, 0.5);
+%! assert_equal (tbl{2, 3}, 1);
+%! assert_equal (tbl{3, 2}, 0);
 %! assert_equal (tbl{3, 3}, 0);
 
-## Identical observations have no between-group variation.
+## Identical observations leave no scale to test against, so F is 0/0.
 %!test
 %! [p, tbl] = anova1 (ones (6, 1), [1; 1; 1; 2; 2; 2], 'off');
-%! assert_equal (p, 1);
+%! assert_equal (p, NaN);
+%! assert_equal (tbl{2, 5}, NaN);
 %! assert_equal (tbl{2, 2}, 0);
+%! assert_equal (tbl{2, 3}, 1);
 %! assert_equal (tbl{3, 2}, 0);
+%! assert_equal (tbl{3, 3}, 4);
 
 ## Unused categorical levels do not enter the fitted design.
 %!test

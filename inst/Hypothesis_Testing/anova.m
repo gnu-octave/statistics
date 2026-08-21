@@ -3655,7 +3655,9 @@ endclassdef
 %! a = anova ([1; 1; 2; 2], ones (4, 1));
 %! T = stats (a);
 %! assert_equal (T.SumOfSquares(1), 0);
-%! assert_equal (T.pValue(1), 1);
+%! assert_equal (T.DF, [1; 2; 3]);
+%! assert_equal (T.F(1), NaN);
+%! assert_equal (T.pValue(1), NaN);
 
 %!test
 %! g = categorical ([3; 3; 1; 1], [3, 2, 1]);
