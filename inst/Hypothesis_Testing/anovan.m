@@ -65,14 +65,31 @@
 ## @item
 ## @var{random} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as random effects rather than
-## fixed effects. Octave @code{anovan} provides only basic support for random
-## effects. Specifically, since all F-statistics in @code{anovan} are
-## calculated using the mean-squared error (MSE), any interaction terms
-## containing a random effect are dropped from the model term definitions and
-## their associated variance is pooled with the residual, unexplained variance
-## making up the MSE. In effect, the model then fitted equates to a linear mixed
-## model with random intercept(s). Variable names for random factors are
-## appended with a ' symbol.
+## fixed effects.
+##
+## In the table @code{anovan} prints, the name of a random factor is followed
+## by a @qcode{'} so that it can be told apart at a glance.  That mark is a
+## convention of the printed output only: the names returned in @var{atab},
+## in @var{stats}.varnames, and inside the expected-mean-square and
+## denominator expressions carry no mark, so that they read as MATLAB's do.
+## Which terms are random is reported in the @qcode{"Type"} column of
+## @var{atab} instead.
+##
+## Every interaction involving a random factor stays in the model, and each
+## F ratio is taken against the denominator its expected mean square calls
+## for rather than against the mean squared error.  The expected mean square
+## of a term names the variance each component contributes to it, written
+## @code{Q(@dots{})} for a fixed term and @code{V(@dots{})} for a random one;
+## the denominator is the combination of mean squares whose expectation
+## matches the term's with the term itself removed.  Often that is a single
+## mean square, in which case the F ratio carries its degrees of freedom.
+## When no single mean square will do, one is synthesised from several and
+## carries Satterthwaite degrees of freedom, which are generally not whole
+## numbers.
+##
+## The variance component of every random term is estimated from the same
+## system, and reported with confidence bounds.  A component estimated as
+## negative has no interval, as it lies outside the parameter space.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
@@ -252,6 +269,15 @@
 ## The first seven follow MATLAB's layout, so a caller reading them by
 ## position gets the same quantity in either language; the two effect sizes
 ## are an Octave extension and are appended after them.
+##
+## A model naming any factor as random reports eight further columns after
+## the p-value, as MATLAB does, with the two effect sizes still last: the
+## term's type, its expected mean square, the mean square and degrees of
+## freedom of the denominator its F ratio was taken against, the definition of
+## that denominator, and the variance component of a random term with its
+## confidence bounds.  A denominator that no single mean square provides is
+## synthesised from several and carries Satterthwaite degrees of freedom,
+## which are generally not whole numbers.
 ##
 ## The singularity flag is @math{1} when a term is aliased with the rest of
 ## the model, which happens when the design is not of full rank, most often
@@ -473,11 +499,6 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         error (strcat ("anovan: the indices listed in RANDOM cannot", ...
                        " exceed the number of columns in GROUP."));
       endif
-      for v = 1:N
-        if (ismember (v, RANDOM))
-          VARNAMES{v} = strcat (VARNAMES{v},"'");
-        endif
-      endfor
     endif
 
     ## Evaluate contrasts (if applicable)
@@ -645,10 +666,6 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate terms matrix
     TERMS(! any (TERMS > 0, 2), :) = [];
     Ng = sum (TERMS > 0, 2);
-    ## Drop terms that include interactions with factors specified as random effects.
-    drop = any (bsxfun (@and, TERMS(:,RANDOM) > 0, (Ng > 1)), 2);
-    TERMS(drop, :) = [];
-    Ng(drop) = [];
     ## Evaluate terms
     Nt = rows (TERMS);
 
@@ -738,18 +755,81 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     eta_sq = ss ./ sst;
     partial_eta_sq = ss ./ (ss + sse);
-    F = ms / mse;
-    P = 1 - fcdf (F, df, dfe);
+
+    ## With every factor fixed, each mean square is tested against the error.
+    ## A random factor changes that: the expected mean squares decide which
+    ## mean square, or which combination of them, estimates the same variance
+    ## as the term under test, and that becomes the denominator.
+    is_random = false (Nt, 1);
+    ems_coef = [];
+    txtems = {};
+    denom = [];
+    msdenom = [];
+    dfdenom = [];
+    txtdenom = {};
+    varest = [];
+    varci = [];
+    if (isempty (RANDOM))
+      msdenom = repmat (mse, Nt, 1);
+      dfdenom = repmat (dfe, Nt, 1);
+    else
+      [is_random, ems_coef, txtems, denom, msdenom, dfdenom, ...
+       txtdenom, varest, varci] = mRandomEffects (TERMS, RANDOM, ...
+                                    NESTED, X, gid, CONTINUOUS, ...
+                                    sstype_id, df, ms, mse, dfe, ...
+                                    ALPHA, VARNAMES, Nt);
+    endif
+    F = ms ./ msdenom;
+    P = 1 - fcdf (F, df, dfdenom);
+    ## The denominator columns describe a random-effects fit, so they stay
+    ## empty when every factor is fixed and the error term is the denominator.
+    if (isempty (RANDOM))
+      msdenom_out = [];
+      dfdenom_out = [];
+      rtnames = {};
+    else
+      msdenom_out = msdenom;
+      dfdenom_out = dfdenom;
+      rtnames = [cellfun(@(t) mTermName (t, VARNAMES, NESTED), ...
+                         num2cell (TERMS(is_random,:), 2), ...
+                         'UniformOutput', false); {'Error'}];
+    endif
 
     ## Prepare model formula and cell array containing the ANOVA table
     ## Columns 1 to 7 follow MATLAB's layout.  The two effect sizes are an
     ## Octave extension and are appended, so a caller indexing the shared
     ## columns by position reads the same quantity in either language.
-    T = cell (Nt + 3, 9);
-    T(1,:) = {'Source', 'Sum Sq.', 'd.f.', 'Singular?', 'Mean Sq.', 'F', ...
-              'Prob>F', 'Eta Sq.', 'Part. Eta Sq.'};
-    T(2:Nt+1,2:9) = num2cell ([ss, df, singular, ms, F, P, eta_sq, ...
-                               partial_eta_sq]);
+    if (isempty (RANDOM))
+      T = cell (Nt + 3, 9);
+      T(1,:) = {'Source', 'Sum Sq.', 'd.f.', 'Singular?', 'Mean Sq.', 'F', ...
+                'Prob>F', 'Eta Sq.', 'Part. Eta Sq.'};
+      T(2:Nt+1,2:9) = num2cell ([ss, df, singular, ms, F, P, eta_sq, ...
+                                 partial_eta_sq]);
+    else
+      ## A random factor adds the eight columns MATLAB adds, describing what
+      ## each mean square estimates and what it was tested against.  The two
+      ## effect sizes stay last, as they are in the fixed-effects layout.
+      T = cell (Nt + 3, 17);
+      T(1,:) = {'Source', 'Sum Sq.', 'd.f.', 'Singular?', 'Mean Sq.', 'F', ...
+                'Prob>F', 'Type', 'Expected MS', 'MS denom', 'd.f. denom', ...
+                'Denom. defn.', 'Var. est.', 'Var. lower bnd', ...
+                'Var. upper bnd', 'Eta Sq.', 'Part. Eta Sq.'};
+      T(2:Nt+1,2:7) = num2cell ([ss, df, singular, ms, F, P]);
+      types = repmat ({'fixed'}, Nt, 1);
+      types(is_random) = {'random'};
+      T(2:Nt+1,8) = types;
+      T(2:Nt+1,9) = txtems(1:Nt);
+      T(2:Nt+1,10) = num2cell (msdenom);
+      T(2:Nt+1,11) = num2cell (dfdenom);
+      T(2:Nt+1,12) = txtdenom;
+      rterms = find (is_random);
+      for k = 1:numel (rterms)
+        T(1+rterms(k),13:15) = {varest(k), varci(k,1), varci(k,2)};
+      endfor
+      T(2:Nt+1,16:17) = num2cell ([eta_sq, partial_eta_sq]);
+      T(end-1,8:9) = {'random', txtems{end}};
+      T(end-1,13:15) = {varest(end), varci(end,1), varci(end,2)};
+    endif
     T(end-1,1:5) = {'Error', sse, dfe, 0, mse};
     T(end,1:4) = {'Total', sst, dft, 0};
     formula = sprintf ("Y ~ 1");  # Initialize model formula
@@ -757,11 +837,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       str = mTermName (TERMS(i,:), VARNAMES, NESTED);
       T(i+1,1) = str;
       ## Append model term to formula
-      str = regexprep (str, "\\*", ':');
       if (any (ismember (find (TERMS(i,:) > 0), RANDOM)))
         ## Random intercept term
-        formula = sprintf ("%s + (1|%s)", formula, ...
-                           strrep (str, "'", ""));
+        formula = sprintf ("%s + (1|%s)", formula, str);
         ## Remove statistics for random factors from the ANOVA table
         #T(RANDOM+1,4:7) = cell(1,4);
         #P(RANDOM) = NaN;
@@ -816,15 +894,19 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     'varnames', {VARNAMES}, ...
                     'grpnames', {levels}, ...
                     'vnested', NESTED, ...
-                    'ems', [], ...           # Expected mean squares are computed by anova
-                    'denom', [], ...         # Not used since interactions with random factors is not supported
-                    'dfdenom', [], ...       # Not used since interactions with random factors is not supported
-                    'msdenom', [], ...       # Not used since interactions with random factors is not supported
-                    'varest', [], ...        # Not used since interactions with random factors is not supported
-                    'varci', [], ...         # Not used since interactions with random factors is not supported
-                    'txtdenom', [], ...      # Not used since interactions with random factors is not supported
-                    'txtems', [], ...        # Not used since interactions with random factors is not supported
-                    'rtnames', [], ...       # Not used since interactions with random factors is not supported
+                    ## Empty unless the model holds a random factor, in
+                    ## which case they carry its expected mean squares, the
+                    ## denominator each F ratio was taken against, and the
+                    ## variance component of every random term.
+                    'ems', ems_coef, ...
+                    'denom', denom, ...
+                    'dfdenom', dfdenom_out, ...
+                    'msdenom', msdenom_out, ...
+                    'varest', varest, ...
+                    'varci', varci, ...
+                    'txtdenom', {txtdenom}, ...
+                    'txtems', {txtems}, ...
+                    'rtnames', {rtnames}, ...
                     ## Additional STATS fields used exclusively by Octave
                     'center_continuous', center_continuous, ...
                     'random', RANDOM, ...
@@ -876,15 +958,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
         ## Print ANOVA table
         [nrows, ncols] = size (T);
+        ## The ' marking a random factor is a printing convention of this
+        ## implementation, not part of the names it returns, which carry no
+        ## marker so that they match what MATLAB reports.
+        VARNAMES_DISP = VARNAMES;
+        for v = RANDOM
+          VARNAMES_DISP{v} = strcat (VARNAMES{v}, "'");
+        endfor
         fprintf ("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
         fprintf ("Source                   Sum Sq.    d.f.    Mean Sq.  Part.Eta         F  Prob>F\n");
         fprintf ("--------------------------------------------------------------------------------\n");
         for i = 1:Nt
-          str = T{i+1,1};
+          str = mTermName (TERMS(i,:), VARNAMES_DISP, NESTED);
           l = numel (str);  # Needed to truncate source term name at 18 characters
           ## Format and print the statistics for each model term
           ## Format F statistics and p-values in APA style
-          row = {T{i+1,2}, T{i+1,3}, T{i+1,5}, T{i+1,9}, T{i+1,6}};
+          ## Mean Sq., F and Prob>F sit at 5, 6 and 7 in both layouts, and
+          ## partial eta squared is the last column of either.
+          row = {T{i+1,2}, T{i+1,3}, T{i+1,5}, T{i+1,end}, T{i+1,6}};
           if (P(i) < 0.001)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", ...
                       str(1:min (18,l)), row{:});
@@ -905,6 +996,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           fprintf (strcat ("Singular terms are aliased with the rest of the", ...
                            " model and are not\nuniquely estimable: %s\n"), ...
                    strjoin (T(1 + find (singular), 1)', ", "));
+        endif
+        if (! isempty (RANDOM))
+          fprintf ("\nEach F ratio is taken against the denominator its\n");
+          fprintf ("expected mean square calls for:\n");
+          for i = 1:Nt
+            fprintf ("%-20s  %s  on %.4g d.f.\n", ...
+                     T{i+1,1}(1:min (18, numel (T{i+1,1}))), ...
+                     txtdenom{i}, dfdenom(i));
+          endfor
         endif
         fprintf ("\n");
 
@@ -1133,6 +1233,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     endfunction
 
+
 endfunction
 
 function C = mContrasts (specification, nlevels)
@@ -1170,6 +1271,206 @@ function C = mContrasts (specification, nlevels)
 
 endfunction
 
+function [is_random, ems_coef, txtems, denom, msdenom, dfdenom, txtdenom, ...
+      varest, varci] = mRandomEffects (TERMS, RANDOM, NESTED, X, gid, ...
+                        CONTINUOUS, sstype_id, df, ms, mse, dfe, ...
+                        ALPHA, VARNAMES, Nt)
+
+  ## Derive the expected mean squares of a model holding one or more random
+  ## factors, and from them the denominator each F ratio is taken against.
+
+  ## A term is random when any factor in it is random, counting the
+  ## parents of a nested factor as part of the term.
+  membership = TERMS > 0;
+  for factor = 1:columns (membership)
+    parents = find (NESTED(factor,:));
+    if (! isempty (parents))
+      membership(:,parents) |= membership(:,factor);
+    endif
+  endfor
+  is_random = any (membership(:,RANDOM), 2);
+
+  term_names = cell (Nt, 1);
+  for i = 1:Nt
+    term_names{i} = mTermName (TERMS(i,:), VARNAMES, NESTED);
+  endfor
+
+  ## A term's basis is the set of cells its factors define, so that a
+  ## coefficient counts observations per cell rather than design columns.
+  bases = cell (Nt, 1);
+  for i = 1:Nt
+    factors = find (TERMS(i,:) > 0);
+    nested_here = factors(any (NESTED(factors,:), 2));
+    if (! isempty (nested_here))
+      factors = union (factors, find (any (NESTED(nested_here,:), 1)));
+    endif
+    if (all (! ismember (factors, CONTINUOUS)))
+      [jnk, jnk, ids] = unique (gid(:,factors), 'rows');
+      bases{i} = sparse (1:numel (ids), ids, 1);
+    else
+      bases{i} = X{i+1};
+    endif
+  endfor
+
+  ## The coefficient of a component in an expected mean square is the
+  ## energy its basis gains when the term enters the model that the term's
+  ## sum-of-squares is measured against, per degree of freedom.
+  ems_coef = zeros (Nt, Nt);
+  for i = 1:Nt
+    [included, excluded] = mEmsModels (TERMS, X, sstype_id, Nt, i);
+    Qi = orth (full (included));
+    Qe = orth (full (excluded));
+    for j = 1:Nt
+      gain = sum (sumsq (Qi' * bases{j})) - sum (sumsq (Qe' * bases{j}));
+      ems_coef(i,j) = max (gain, 0) / max (df(i), 1);
+    endfor
+  endfor
+
+  ## Name each component: Q for a fixed term, V for a random one.
+  txtems = cell (Nt + 1, 1);
+  for i = 1:Nt
+    pieces = {};
+    if (! is_random(i))
+      piece = mEmsComponent (ems_coef(i,i), 'Q', term_names{i});
+      if (! isempty (piece))
+        pieces{end+1} = piece;
+      endif
+      for j = find (! is_random(:))'
+        if (j != i && abs (ems_coef(i,j)) > 1e-10)
+          pieces{end+1} = mEmsComponent (ems_coef(i,j), 'Q', ...
+                                         term_names{j});
+        endif
+      endfor
+    endif
+    for j = find (is_random(:))'
+      if (abs (ems_coef(i,j)) > 1e-10)
+        pieces{end+1} = mEmsComponent (ems_coef(i,j), 'V', term_names{j});
+      endif
+    endfor
+    pieces{end+1} = 'V(Error)';
+    txtems{i} = strjoin (pieces, '+');
+  endfor
+  txtems{Nt+1} = 'V(Error)';
+
+  ## The denominator of a term's F ratio is the combination of mean
+  ## squares whose expectation matches the term's, minus the term itself.
+  rt = find (is_random(:));
+  random_ms = [ms(rt); mse];
+  random_df = [df(rt); dfe];
+  coefficients = [ems_coef(rt,rt), ones(numel (rt), 1); ...
+                  zeros(1, numel (rt)), 1];
+  names = [term_names(rt); {'Error'}];
+  denom = zeros (Nt, numel (rt) + 1);
+  msdenom = zeros (Nt, 1);
+  dfdenom = zeros (Nt, 1);
+  txtdenom = cell (Nt, 1);
+  for i = 1:Nt
+    target = [ems_coef(i,rt), 1];
+    own = find (rt == i, 1);
+    if (! isempty (own))
+      target(own) = 0;
+    endif
+    weights = pinv (coefficients') * target';
+    ## pinv leaves rounding dust on the mean squares a denominator does
+    ## not use.  Drop it, so the formula and the number agree.
+    weights(abs (weights) <= 1e-10) = 0;
+    denom(i,:) = weights';
+    msdenom(i) = weights' * random_ms;
+    ## Satterthwaite's approximation over the mean squares in use.  One
+    ## carrying no degrees of freedom has no sampling distribution to
+    ## combine, so the denominator has none either.
+    used = (weights != 0);
+    if (any (used & (random_df(:) <= 0)))
+      dfdenom(i) = 0;
+    else
+      parts = (weights(used) .* random_ms(used)) .^ 2 ./ random_df(used);
+      dfdenom(i) = msdenom(i) ^ 2 / sum (parts);
+    endif
+    txtdenom{i} = mMeanSquareFormula (weights, names);
+  endfor
+
+  ## Variance components, and a confidence interval for each from the
+  ## chi-squared bounds of the mean squares it is built from.
+  varest = coefficients \ random_ms;
+  lower_ms = random_df .* random_ms ./ chi2inv (1 - ALPHA / 2, random_df);
+  upper_ms = random_df .* random_ms ./ chi2inv (ALPHA / 2, random_df);
+  inverse = pinv (coefficients);
+  lo = sum (max (inverse, 0) .* lower_ms' ...
+            + min (inverse, 0) .* upper_ms', 2);
+  hi = sum (max (inverse, 0) .* upper_ms' ...
+            + min (inverse, 0) .* lower_ms', 2);
+  lo = max (lo, 0);
+  undefined = (varest < 0) | (! isfinite (lo)) | (! isfinite (hi));
+  lo(undefined) = NaN;
+  hi(undefined) = NaN;
+  varci = [lo, hi];
+
+  ## Report the coefficients with a row and column for the error term, as
+  ## MATLAB does, so the matrix describes every component of the model.
+  ems_coef = [ems_coef, ones(Nt, 1); zeros(1, Nt), 1];
+
+endfunction
+
+function [included, excluded] = mEmsModels (TERMS, X, sstype_id, Nt, term)
+
+  ## Return the models a term's sum-of-squares is measured between, which is
+  ## what its expected mean square describes.
+  switch (sstype_id)
+    case 1
+      inc = 1:term;
+      exc = 1:term-1;
+    case {2, 'h'}
+      fac = find (TERMS(term,:) > 0);
+      if (isequal (sstype_id, 'h'))
+        exc = find (any (TERMS(:,fac) < TERMS(term,fac), 2))';
+      else
+        exc = find (any (TERMS(:,fac) != TERMS(term,fac), 2))';
+      endif
+      inc = [term, exc];
+    otherwise
+      inc = 1:Nt;
+      exc = setdiff (inc, term, 'stable');
+  endswitch
+  included = cell2mat (X([1, inc + 1]));
+  excluded = cell2mat (X([1, exc + 1]));
+
+endfunction
+
+function value = mEmsComponent (coefficient, symbol, name)
+
+  if (! isfinite (coefficient) || abs (coefficient) <= 1e-10)
+    value = "";
+  elseif (abs (coefficient - 1) <= 1e-10)
+    value = sprintf ("%s(%s)", symbol, name);
+  else
+    value = sprintf ("%.6g*%s(%s)", coefficient, symbol, name);
+  endif
+
+endfunction
+
+function formula = mMeanSquareFormula (weights, names)
+
+  pieces = {};
+  for i = 1:numel (weights)
+    coefficient = weights(i);
+    if (abs (coefficient) <= 1e-10)
+      continue;
+    elseif (abs (coefficient - 1) <= 1e-10)
+      term = sprintf ("MS(%s)", names{i});
+    elseif (abs (coefficient + 1) <= 1e-10)
+      term = sprintf ("-MS(%s)", names{i});
+    else
+      term = sprintf ("%.6g*MS(%s)", coefficient, names{i});
+    endif
+    if (! isempty (pieces) && coefficient > 0)
+      term = ["+", term];
+    endif
+    pieces{end+1} = term;
+  endfor
+  formula = strjoin (pieces, "");
+
+endfunction
+
 function name = mTermName (term, varnames, nested)
 
   pieces = cell (1, nnz (term));
@@ -1178,7 +1479,7 @@ function name = mTermName (term, varnames, nested)
     count += 1;
     factor = varnames{j};
     if (nargin > 2 && any (nested(j,:)))
-      parents = strrep (varnames(nested(j,:)), "'", "");
+      parents = varnames(nested(j,:));
       factor = sprintf ("%s(%s)", factor, strjoin (parents, ","));
     endif
     if (term(j) == 1)
@@ -1187,7 +1488,10 @@ function name = mTermName (term, varnames, nested)
       pieces{count} = sprintf ("%s^%d", factor, term(j));
     endif
   endfor
-  name = strjoin (pieces, "*");
+  ## Wilkinson notation: ':' is the interaction term alone, which is what a
+  ## row of the table holds, where '*' would name the crossed set of the
+  ## factors and every interaction among them.
+  name = strjoin (pieces, ":");
 
 endfunction
 
@@ -1344,9 +1648,9 @@ endfunction
 %!
 %! # Two-sample paired test on dependent or matched samples equivalent to a
 %! # paired t-test. As for the first example, the t-statistic can be obtained by
-%! # taking the square root of the reported F statistic. Note that the interaction
-%! # between treatment x subject was dropped from the full model by assigning
-%! # subject as a random factor (').
+%! # taking the square root of the reported F statistic. Naming subject as a
+%! # random factor (') keeps the treatment x subject interaction in the model
+%! # and makes its mean square the denominator of the test on treatment.
 %!
 %! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
 %! treatment = {'before' 'after'; 'before' 'after'; 'before' 'after';
@@ -1376,9 +1680,9 @@ endfunction
 %!
 %! # One-way repeated measures ANOVA on the data from a study on the number of
 %! # words recalled by 10 subjects for three time conditions, in Loftus & Masson
-%! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2. Note that the interaction
-%! # between seconds x subject was dropped from the full model by assigning
-%! # subject as a random factor (').
+%! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2. Naming subject as a random
+%! # factor (') keeps the seconds x subject interaction in the model and makes
+%! # its mean square the denominator of the test on seconds.
 %!
 %! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
 %!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
@@ -1483,8 +1787,10 @@ endfunction
 %! # factor. The data is from a randomized block design study on the effects
 %! # of antioxidant treatment on glutathione-S-transferase (GST) levels in
 %! # different mouse strains, from Festing (2014), ILAR Journal, 55(3):427-476.
-%! # Note that all interactions involving block were dropped from the full model
-%! # by assigning block as a random factor (').
+%! # Naming block as a random factor (') keeps every interaction with block in
+%! # the model; each F ratio then takes the denominator its expected mean
+%! # square calls for, which for block itself is a combination of three mean
+%! # squares carried on fractional degrees of freedom.
 %!
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
@@ -1846,14 +2152,22 @@ endfunction
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
 %!
 %! [P, ATAB, STATS] = anovan (measurement/10,{strain,treatment,block},'model','full','random',3,'display','off');
-%! assert_equal (P(1), 0.0914352969909372, 1e-09);
-%! assert_equal (P(2), 5.04077373924908e-05, 1e-09);
-%! assert_equal (P(4), 0.0283196918836667, 1e-09);
-%! assert_equal (ATAB{2,2}, 286.132500000002, 1e-09);
-%! assert_equal (ATAB{3,2}, 2275.29, 1e-09);
-%! assert_equal (ATAB{4,2}, 1242.5625, 1e-09);
-%! assert_equal (ATAB{5,2}, 495.905000000001, 1e-09);
-%! assert_equal (ATAB{6,2}, 207.007499999999, 1e-09);
+%! assert_equal (P(1:6), [0.288811428913179; 0.091455278902114; ...
+%!                        0.042134889025806; 0.010944863181481; ...
+%!                        0.061814763198376; 0.066584161056625], 1e-12);
+%! assert_equal (P(7), NaN);
+%! assert_equal (cell2mat (ATAB(2:8,2)), ...
+%!               [286.132499999999; 2275.28999999999; 1242.5625; ...
+%!                495.905000000000; 141.472499999998; 47.6099999999987; ...
+%!                17.9249999999992], 1e-9);
+%! assert_equal (ATAB{9,2}, 0);
+%! assert_equal (ATAB{10,2}, 4506.8975, 1e-9);
+%! assert_equal (STATS.msdenom, ...
+%!               [47.1575; 47.61; 88.7925; 5.975; 5.975; 5.975; 0], 1e-9);
+%! assert_equal (STATS.dfdenom, ...
+%!               [3; 1; 2.610727841363640; 3; 3; 3; 0], 1e-12);
+%! assert_equal (STATS.varest, ...
+%!               [144.22125; 20.59125; 10.40875; 5.975; 0], 1e-9);
 
 ## Test 10 for anovan example 10
 ## Test compares anovan to results from MATLAB's anovan function
@@ -2150,3 +2464,91 @@ endfunction
 %! sst = tbl{end, 2};
 %! assert_equal (cell2mat (tbl(2:4, 8)), ss ./ sst, 1e-12);
 %! assert_equal (cell2mat (tbl(2:4, 9)), ss ./ (ss + sse), 1e-12);
+
+## A model with a random factor reports what each mean square estimates.
+%!test
+%! y = [444 614 423 625 408 856 447 719 ...
+%!      764 831 586 782 609 1002 606 766]' / 10;
+%! g1 = {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
+%!       'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! g2 = {'C','T','C','T','C','T','C','T','C','T','C','T','C','T','C','T'}';
+%! g3 = [1;1;1;1;1;1;1;1;2;2;2;2;2;2;2;2];
+%! [~, tbl] = anovan (y, {g1, g2, g3}, 'model', 'full', 'random', 3, ...
+%!                    'display', 'off');
+%! assert_equal (size (tbl), [10, 17]);
+%! assert_equal (tbl(1, 1:15), {'Source', 'Sum Sq.', 'd.f.', 'Singular?', ...
+%!               'Mean Sq.', 'F', 'Prob>F', 'Type', 'Expected MS', ...
+%!               'MS denom', 'd.f. denom', 'Denom. defn.', 'Var. est.', ...
+%!               'Var. lower bnd', 'Var. upper bnd'});
+%! assert_equal (tbl(2:9, 8), {'fixed'; 'fixed'; 'random'; 'fixed'; ...
+%!                             'random'; 'random'; 'random'; 'random'});
+%! assert_equal (cell2mat (tbl(2:8, 11)), ...
+%!               [3; 1; 2.610727841363640; 3; 3; 3; 0], 1e-12);
+
+## With every factor fixed the table keeps the fixed-effects layout.
+%!test
+%! [~, tbl] = anovan ((1:12)', {repmat([1;2;3],4,1), kron([1;2],ones(6,1))}, ...
+%!                    'model', 'full', 'display', 'off');
+%! assert_equal (size (tbl), [6, 9]);
+%! assert_equal (tbl{1, 9}, 'Part. Eta Sq.');
+
+## A random factor keeps its interactions in the model.
+%!test
+%! y = [444 614 423 625 408 856 447 719 ...
+%!      764 831 586 782 609 1002 606 766]' / 10;
+%! g1 = {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
+%!       'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! g2 = {'C','T','C','T','C','T','C','T','C','T','C','T','C','T','C','T'}';
+%! g3 = [1;1;1;1;1;1;1;1;2;2;2;2;2;2;2;2];
+%! [p, tbl, s, terms] = anovan (y, {g1, g2, g3}, 'model', 'full', ...
+%!                              'random', 3, 'display', 'off');
+%! assert_equal (rows (terms), 7);
+%! assert_equal (numel (p), 7);
+%! assert_equal (size (s.denom), [7, 5]);
+%! assert_equal (size (s.ems), [8, 8]);
+%! assert_equal (numel (s.txtems), 8);
+
+## An interaction term is named with Wilkinson's interaction operator.
+%!test
+%! [~, tbl] = anovan ((1:12)', {repmat([1;2;3],4,1), kron([1;2],ones(6,1))}, ...
+%!                    'model', 'full', 'display', 'off');
+%! assert_equal (tbl(2:end, 1), ...
+%!               {'X1'; 'X2'; 'X1:X2'; 'Error'; 'Total'});
+
+## A three-factor interaction names every factor in it.
+%!test
+%! g = cell (1, 3);
+%! for k = 1:3
+%!   g{k} = mod (floor ((0:15)' / 2^(k-1)), 2) + 1;
+%! endfor
+%! [~, tbl] = anovan ((1:16)', g, 'model', 'full', 'display', 'off');
+%! assert_equal (tbl{8, 1}, 'X1:X2:X3');
+
+## The random-factor marker is a printing convention, not part of the names.
+%!test
+%! y = [3; 4; 7; 8; 5; 6; 9; 11];
+%! A = [1; 1; 2; 2; 1; 1; 2; 2];
+%! B = [1; 2; 1; 2; 1; 2; 1; 2];
+%! [~, tbl, s] = anovan (y, {A, B}, 'model', 'full', 'random', 2, ...
+%!                       'display', 'off');
+%! assert_equal (tbl(2:4, 1), {'X1'; 'X2'; 'X1:X2'});
+%! assert_equal (s.varnames, {'X1', 'X2'});
+%! assert_equal (any (cellfun (@(t) any (t == "'"), s.txtems)), false);
+%! assert_equal (any (cellfun (@(t) any (t == "'"), s.txtdenom)), false);
+
+## The printed table marks a random factor with a trailing quote.
+%!test
+%! y = [3; 4; 7; 8; 5; 6; 9; 11];
+%! A = [1; 1; 2; 2; 1; 1; 2; 2];
+%! B = [1; 2; 1; 2; 1; 2; 1; 2];
+%! visible = get (0, 'defaultfigurevisible');
+%! unwind_protect
+%!   set (0, 'defaultfigurevisible', 'off');
+%!   txt = evalc (["anovan (y, {A, B}, 'model', 'full', 'random', 2, ", ...
+%!                 "'display', 'on');"]);
+%! unwind_protect_cleanup
+%!   set (0, 'defaultfigurevisible', visible);
+%!   close all;
+%! end_unwind_protect
+%! assert_equal (! isempty (strfind (txt, "X2'")), true);
+%! assert_equal (! isempty (strfind (txt, "X1:X2'")), true);

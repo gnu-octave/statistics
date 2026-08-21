@@ -1962,8 +1962,6 @@ classdef anova
     endfunction
 
     function names = publicSourceNames_ (obj, names)
-      names = regexprep (names, "'$", "");
-      names = regexprep (names, "\\*", ":");
       if (strcmp (obj.backend_, "anova1") && ! isempty (names))
         idx = find (strcmpi (names, "Groups"), 1);
         if (! isempty (idx))
@@ -3900,8 +3898,7 @@ endclassdef
 %!   endswitch
 %!   actual = stats (a);
 %!   actual_sources = actual.Properties.RowNames;
-%!   expected_sources = regexprep (ATAB(2:end, 1), "'$", "");
-%!   expected_sources = regexprep (expected_sources, "\\*", ":");
+%!   expected_sources = ATAB(2:end, 1);
 %!   expected_sources = regexprep (expected_sources, "X([0-9]+)", "Factor$1");
 %!   if (strcmp (a.Stats.source, 'anova1'))
 %!     actual_sources{1} = expected_sources{1};
