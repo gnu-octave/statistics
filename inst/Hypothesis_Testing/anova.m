@@ -2370,8 +2370,11 @@ classdef anova
       anova2_model = ischar (obj.ModelType) ...
                      && any (strcmpi (obj.ModelType, ...
                                       {"linear", "interaction", "full"}));
+      ## anova2 requires a balanced design and rejects missing observations,
+      ## so data holding any NaN is fitted through anovan, which omits them.
       if (! isempty (obj.reps_) && ismatrix (obj.Response) ...
           && ! isvector (obj.Response) ...
+          && ! any (isnan (obj.Response(:))) ...
           && isempty (obj.Continuous) && isempty (obj.Weights) ...
           && isempty (obj.RandomFactors) ...
           && (isempty (obj.nesting_) || ! any (obj.nesting_(:))) ...
@@ -2432,25 +2435,9 @@ classdef anova
                                  modelarg);
       obj.AnovaTable = atab;
       obj.Stats      = stats;
-      if (isfield (stats, "source") && strcmp (stats.source, "anovan"))
-        obj.DFE = stats.dfe;
-        obj.MSE = stats.mse;
-        obj.coefficientStats_ = stats.coeffs;
-        obj.Coefficients = stats.coeffs(:, 1);
-        obj.DesignMatrix = stats.X;
-        obj.FittedValues = full (stats.X) * obj.Coefficients;
-        obj.rawResiduals_ = stats.Y - obj.FittedValues;
-        obj.Residuals = obj.residualTable_ (obj.rawResiduals_, obj.MSE);
-        obj.Y = stats.Y;
-        obj.Response = stats.Y;
-        obj.NumObservations = numel (stats.Y);
-        obj.GROUP = {stats.grps(:, 1), stats.grps(:, 2)};
-        obj.Factors = table (obj.GROUP{:}, "VariableNames", obj.VarNames);
-      else
-        obj.DFE = stats.df;
-        obj.MSE = stats.sigmasq;
-        ## Balanced anova2 does not expose coefficients or residuals.
-      endif
+      obj.DFE = stats.df;
+      obj.MSE = stats.sigmasq;
+      ## Balanced anova2 does not expose coefficients or residuals.
     endfunction
 
     function obj = fitAnovan_ (obj)
@@ -2474,6 +2461,19 @@ classdef anova
       endif
       if (isfield (stats, 'mse'))
         obj.MSE = stats.mse;
+      endif
+      ## anovan omits any row holding a missing value, so adopt the
+      ## observations it actually fitted whenever it dropped some.
+      if (isfield (stats, 'Y') && numel (stats.Y) != numel (obj.Y))
+        obj.Y = stats.Y(:);
+        obj.Response = obj.Y;
+        obj.NumObservations = numel (obj.Y);
+        if (isfield (stats, 'grps') ...
+            && columns (stats.grps) == numel (obj.VarNames) ...
+            && rows (stats.grps) == obj.NumObservations)
+          obj.GROUP = num2cell (stats.grps, 1);
+          obj.Factors = table (obj.GROUP{:}, 'VariableNames', obj.VarNames);
+        endif
       endif
       if (! isempty (obj.DesignMatrix) && ! isempty (obj.Coefficients))
         obj.FittedValues = full (obj.DesignMatrix) * obj.Coefficients;
