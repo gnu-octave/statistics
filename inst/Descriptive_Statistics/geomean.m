@@ -138,6 +138,9 @@ function m = geomean (x, varargin)
 
       m = exp (sum (log (x), 1) ./ length (x));
 
+    elseif (ndx == 2 && isempty (x) && szx == [0,0])
+      m = NaN;
+
     else
       ## Find the first non-singleton dimension.
       (dim = find (szx != 1, 1)) || (dim = 1);
@@ -162,92 +165,83 @@ function m = geomean (x, varargin)
       error ("geomean: DIM must be a positive integer scalar or vector.");
     endif
 
-    if (ndx == 2 && isempty (x) && szx == [0,0])
-      ## FIXME: this special case handling could be removed once sum
-      ##        compatibly handles all sizes of empty inputs
-      sz_out = szx;
-      sz_out(vecdim(vecdim <= ndx)) = 1;
-      m = NaN (sz_out);
-    else
+    if (isscalar (vecdim))
+      if (vecdim > ndx)
+        m = x;
+      else
+        n = szx(vecdim);
+        if (omitnan)
+          nanx = isnan (x);
+          n = sum (! nanx, vecdim);
+          x(nanx) = 1;    # log (1) = 0
+        endif
 
-      if (isscalar (vecdim))
-        if (vecdim > ndx)
-          m = x;
-        else
-          n = szx(vecdim);
+        m = exp (sum (log (x), vecdim) ./ n);
+        m(m == -Inf) = 0; # handle zeros in X
+
+      endif
+
+    else
+      vecdim = sort (vecdim);
+      if (! all (diff (vecdim)))
+         error (strcat ("geomean: VECDIM must contain non-repeating", ...
+                        " positive integers."));
+      endif
+      ## Ignore exceeding dimensions in VECDIM
+      vecdim(find (vecdim > ndims (x))) = [];
+
+      if (isempty (vecdim))
+        m = x;
+      else
+        ## Move vecdims to dim 1.
+
+        ## Calculate permutation vector
+        remdims = 1 : ndx;        # All dimensions
+        remdims(vecdim) = [];     # Delete dimensions specified by vecdim
+        nremd = numel (remdims);
+
+        ## If all dimensions are given, it is similar to all flag
+        if (nremd == 0)
+          x = x(:);
+
           if (omitnan)
-            nanx = isnan (x);
-            n = sum (! nanx, vecdim);
-            x(nanx) = 1;    # log (1) = 0
+            x = x(! isnan (x));
           endif
 
-          m = exp (sum (log (x), vecdim) ./ n);
+          if (any (x == 0))
+            m = 0;
+            return;
+          endif
+
+          m = exp (sum (log (x), 1) ./ length (x));
           m(m == -Inf) = 0; # handle zeros in X
 
-        endif
-
-      else
-        vecdim = sort (vecdim);
-        if (! all (diff (vecdim)))
-           error (strcat ("geomean: VECDIM must contain non-repeating", ...
-                          " positive integers."));
-        endif
-        ## Ignore exceeding dimensions in VECDIM
-        vecdim(find (vecdim > ndims (x))) = [];
-
-        if (isempty (vecdim))
-          m = x;
         else
-          ## Move vecdims to dim 1.
+          ## Permute to bring vecdims to front
+          perm = [vecdim, remdims];
+          x = permute (x, perm);
 
-          ## Calculate permutation vector
-          remdims = 1 : ndx;        # All dimensions
-          remdims(vecdim) = [];     # Delete dimensions specified by vecdim
-          nremd = numel (remdims);
+          ## Reshape to squash all vecdims in dim1
+          num_dim = prod (szx(vecdim));
+          szx(vecdim) = [];
+          szx = [ones(1, length(vecdim)), szx];
+          szx(1) = num_dim;
+          x = reshape (x, szx);
 
-          ## If all dimensions are given, it is similar to all flag
-          if (nremd == 0)
-            x = x(:);
-
-            if (omitnan)
-              x = x(! isnan (x));
-            endif
-
-            if (any (x == 0))
-              m = 0;
-              return;
-            endif
-
-            m = exp (sum (log (x), 1) ./ length (x));
-            m(m == -Inf) = 0; # handle zeros in X
-
+          ## Calculate mean on dim1
+          if (omitnan)
+            nanx = isnan (x);
+            n = sum (! nanx, 1);
+            x(nanx) = 1;    # log (1) = 0
           else
-            ## Permute to bring vecdims to front
-            perm = [vecdim, remdims];
-            x = permute (x, perm);
-
-            ## Reshape to squash all vecdims in dim1
-            num_dim = prod (szx(vecdim));
-            szx(vecdim) = [];
-            szx = [ones(1, length(vecdim)), szx];
-            szx(1) = num_dim;
-            x = reshape (x, szx);
-
-            ## Calculate mean on dim1
-            if (omitnan)
-              nanx = isnan (x);
-              n = sum (! nanx, 1);
-              x(nanx) = 1;    # log (1) = 0
-            else
-              n = szx(1);
-            endif
-
-            m = exp (sum (log (x), 1) ./ n);
-            m(m == -Inf) = 0; # handle zeros in X
-
-            ## Inverse permute back to correct dimensions
-            m = ipermute (m, perm);
+            n = szx(1);
           endif
+
+          m = exp (sum (log (x), 1) ./ n);
+          m(m == -Inf) = 0; # handle zeros in X
+
+          ## Inverse permute back to correct dimensions
+          m = ipermute (m, perm);
         endif
       endif
     endif
@@ -308,3 +302,22 @@ endfunction
 %! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), 0)
 %!error <geomean: VECDIM must contain non-repeating positive integers.> ...
 %! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 1])
+
+## Test default handling of empty arrays.
+%!test
+%! a = geomean ([]);
+%! assert_equal (isnan (a), true);
+%! assert_equal (size (a), [1, 1]);
+%!assert_equal (geomean (ones (2, 0, 3, 2)), ones (1, 0, 3, 2))
+%!assert_equal (geomean (ones (2, 0, 3, 2), [1, 2]), NaN (1, 1, 3, 2))
+%!assert_equal (geomean (ones (2, 0, 3, 2), 'all'), NaN)
+%!assert_equal (geomean (ones (2, 0, 3, 2), 1), ones (1, 0, 3, 2))
+%!assert_equal (geomean (ones (2, 0, 3, 2), 2), NaN (2, 1, 3, 2))
+%!assert_equal (geomean (ones (2, 0, 3, 2), 3), ones (2, 0, 1, 2))
+%!assert_equal (geomean (ones (2, 0, 3, 2), 4), ones (2, 0, 3))
+%!assert_equal (geomean ([], 1), ones (1, 0))
+%!assert_equal (geomean ([], 2), ones (0, 1))
+%!assert_equal (geomean ([], 3), [])
+%!assert_equal (geomean (zeros (0, 3)), NaN (1, 3))
+%!assert_equal (geomean (zeros (3, 0)), ones (1, 0))
+%!assert_equal (geomean ([], 'all'), NaN)
