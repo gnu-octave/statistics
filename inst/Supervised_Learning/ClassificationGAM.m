@@ -820,6 +820,17 @@ classdef ClassificationGAM
         this.Prior = Prior / sum (Prior);
       endif
 
+      ## A scalar 'Knots', 'Order' or 'DoF' applies to every predictor, which
+      ## the validation above accepts but nothing expanded, so the fit indexed
+      ## past the end of a scalar for the second predictor onwards.
+      if (isscalar (Knots))
+        Knots = repmat (Knots, 1, ndims_X);
+      endif
+      if (isscalar (Order))
+        Order = repmat (Order, 1, ndims_X);
+      endif
+      DoF = Knots + Order;
+
       ## Assign remaining optional parameters
       this.Formula       = Formula;
       this.Interactions  = Interactions;
