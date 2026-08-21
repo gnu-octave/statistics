@@ -559,7 +559,11 @@ classdef ClassificationPartitionedModel
     function [label, Score, Cost] = kfoldPredict (this)
 
       ## Input validation
-      no_cost_models = {'ClassificationNeuralNetwork', 'ClassificationSVM'};
+      ## Models whose compact form reports no cost.  CompactClassificationGAM
+      ## returns a label and a score only, so asking it for a third output
+      ## raised and kfoldPredict could not run on a cross-validated GAM.
+      no_cost_models = {'ClassificationGAM', 'ClassificationNeuralNetwork', ...
+                        'ClassificationSVM'};
       no_cost = any (strcmp (this.CrossValidatedModel, no_cost_models));
       if (no_cost && nargout > 2)
         error (strcat ("ClassificationPartitionedModel.kfoldPredict:", ...
@@ -626,6 +630,196 @@ classdef ClassificationPartitionedModel
         return;
       endif
 
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationPartitionedModel} {@var{L} =} kfoldLoss (@var{obj})
+    ## @deftypefnx {ClassificationPartitionedModel} {@var{L} =} kfoldLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Compute the cross-validated classification loss.
+    ##
+    ## @code{@var{L} = kfoldLoss (@var{obj})} returns the fraction of
+    ## observations the folds misclassify, each answered for by the fold's
+    ## model that did not see it, which is what @code{kfoldPredict} returns.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationPartitionedModel} object.
+    ## @end itemize
+    ##
+    ## @code{@var{L} = kfoldLoss (@dots{}, @var{name}, @var{value})} accepts
+    ## the following @qcode{Name-Value} pairs.
+    ##
+    ## @multitable @columnfractions 0.24 0.76
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'LossFun'} @tab @qcode{'classiferror'}, the default,
+    ## @qcode{'classifcost'}, @qcode{'mincost'}, or a function handle called
+    ## as
+    ## @code{@var{lossfun} (@var{C}, @var{S}, @var{W}, @var{Cost})}, where
+    ## @var{C} is a logical matrix with one true per row marking the true
+    ## class, @var{S} the scores, @var{W} the weights and @var{Cost} the
+    ## misclassification cost.
+    ##
+    ## @item @qcode{'Mode'} @tab @qcode{'average'}, the default, which returns
+    ## one number over the observations of every fold asked for, or
+    ## @qcode{'individual'}, which returns one number per fold.
+    ##
+    ## @item @qcode{'Folds'} @tab A vector of fold indices to restrict the
+    ## loss to.  It defaults to every fold.
+    ## @end multitable
+    ##
+    ## @seealso{ClassificationPartitionedModel, kfoldPredict}
+    ## @end deftypefn
+    function L = kfoldLoss (this, varargin)
+
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      ## Defaults, then the optional pairs
+      LossFun = 'classiferror';
+      Mode    = 'average';
+      Folds   = 1:this.KFold;
+      ## Only the losses whose value has been measured against R2024a are
+      ## offered.  The margin-based ones are not: ours came out 2x MATLAB's
+      ## for hinge and 4x for quadratic, the square of the same factor, which
+      ## says its margin is not the score difference this would use.  Shipping
+      ## a number that close to right and not right is worse than not
+      ## shipping it.
+      names   = {'classifcost', 'classiferror', 'mincost'};
+      while (numel (varargin) > 0)
+        if (! (ischar (varargin{1}) && isrow (varargin{1})))
+          error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                         " parameter name must be a character vector."));
+        endif
+        switch (tolower (varargin{1}))
+
+          case 'lossfun'
+            LossFun = varargin{2};
+            if (! (is_function_handle (LossFun) ||
+                   (ischar (LossFun) && isrow (LossFun))))
+              error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                             " 'LossFun' must be a character vector or a", ...
+                             " function handle."));
+            endif
+            if (ischar (LossFun))
+              LossFun = tolower (LossFun);
+              if (! any (strcmp (LossFun, names)))
+                error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                               " unsupported 'LossFun' value."));
+              endif
+            endif
+
+          case 'mode'
+            Mode = varargin{2};
+            if (! (ischar (Mode) && isrow (Mode) &&
+                   any (strcmpi (Mode, {'average', 'individual'}))))
+              error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                             " 'Mode' must be either 'average' or", ...
+                             " 'individual'."));
+            endif
+
+          case 'folds'
+            Folds = varargin{2};
+            if (! (isnumeric (Folds) && isvector (Folds)
+                   && all (Folds == fix (Folds))
+                   && all (Folds >= 1) && all (Folds <= this.KFold)))
+              error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                             " 'Folds' must be a vector of fold indices", ...
+                             " between 1 and KFold."));
+            endif
+
+          otherwise
+            error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                           " invalid parameter name in optional paired", ...
+                           " arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## Every observation answered for by the fold that held it out
+      [label, Score] = kfoldPredict (this);
+      classes = this.ClassNames;
+      K = numel (classes);
+      n = rows (this.X);
+
+      ## Index of the true and the predicted class, so the cost matrix and
+      ## the score matrix can be addressed by the same column.
+      true_idx = zeros (n, 1);
+      pred_idx = zeros (n, 1);
+      for i = 1:n
+        t = find (ismember (classes, this.Y(i)));
+        p = find (ismember (classes, label(i)));
+        if (! isempty (t))
+          true_idx(i) = t(1);
+        endif
+        if (! isempty (p))
+          pred_idx(i) = p(1);
+        endif
+      endfor
+
+      if (strcmpi (Mode, 'individual'))
+        L = nan (numel (Folds), 1);
+        for i = 1:numel (Folds)
+          idx = test (this.Partition, Folds(i));
+          L(i) = foldLoss_ (this, idx, Score, true_idx, pred_idx, LossFun, K);
+        endfor
+      else
+        idx = false (n, 1);
+        for i = 1:numel (Folds)
+          idx = idx | test (this.Partition, Folds(i));
+        endfor
+        L = foldLoss_ (this, idx, Score, true_idx, pred_idx, LossFun, K);
+      endif
+
+    endfunction
+
+    ## Loss over the observations selected by IDX, weighted uniformly and
+    ## normalized over that selection, so a subset of folds is an average
+    ## rather than a sum.
+    function L = foldLoss_ (this, idx, Score, true_idx, pred_idx, LossFun, K)
+      if (! any (idx) || ! any (true_idx(idx)))
+        L = NaN;
+        return;
+      endif
+      S = Score(idx, :);
+      ti = true_idx(idx);
+      pi_ = pred_idx(idx);
+      m = sum (idx);
+      W = ones (m, 1) / m;
+
+      if (is_function_handle (LossFun))
+        C = false (m, K);
+        C(sub2ind ([m, K], (1:m)', ti)) = true;
+        L = LossFun (C, S, W, this.Cost);
+        if (! (isnumeric (L) && isscalar (L)))
+          error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                         " 'LossFun' must return a numeric scalar."));
+        endif
+        return;
+      endif
+
+      switch (LossFun)
+        case 'classiferror'
+          L = sum (W .* (pi_ != ti));
+
+        case 'classifcost'
+          L = 0;
+          for i = 1:m
+            L = L + W(i) * this.Cost(ti(i), pi_(i));
+          endfor
+
+        case 'mincost'
+          L = 0;
+          for i = 1:m
+            [~, k] = min (S(i,:) * this.Cost);
+            L = L + W(i) * this.Cost(ti(i), k);
+          endfor
+
+      endswitch
     endfunction
 
   endmethods
@@ -891,3 +1085,85 @@ endclassdef
 %!   assert_equal (sum (CVMdl.Y(idx) == 1) >= 4, true);
 %!   assert_equal (sum (CVMdl.Y(idx) == 2) >= 8, true);
 %! endfor
+
+## kfoldLoss defaults to the misclassification rate of the out-of-fold
+## answers, which is the identity R2024a shows, and holds for every model
+## type the class accepts.
+%!test
+%! load fisheriris
+%! X = meas(51:150,:);
+%! Y = species(51:150);
+%! rand ('seed', 42);
+%! cvp = cvpartition (Y, 'KFold', 5);
+%! for f = {'fitcsvm', 'fitcnet', 'fitcknn', 'fitcdiscr', 'fitcgam'}
+%!   CVMdl = crossval (feval (f{1}, X, Y), 'CVPartition', cvp);
+%!   assert_equal (kfoldLoss (CVMdl), ...
+%!                 mean (! strcmp (kfoldPredict (CVMdl), CVMdl.Y)), 1e-12);
+%! endfor
+
+## Leave-one-out on a two-class fixture agrees with R2024a to the digit for
+## every loss offered: it reports 0.02 for all three.
+%!test
+%! load fisheriris
+%! idx = [51:75, 101:125];
+%! CVMdl = crossval (fitcdiscr (meas(idx,:), species(idx)), 'Leaveout', 'on');
+%! assert_equal (CVMdl.KFold, 50);
+%! assert_equal (kfoldLoss (CVMdl), 0.02, 1e-12);
+%! assert_equal (kfoldLoss (CVMdl, 'LossFun', 'classifcost'), 0.02, 1e-12);
+%! assert_equal (kfoldLoss (CVMdl, 'LossFun', 'mincost'), 0.02, 1e-12);
+
+## 'individual' is one number per fold, 'Folds' restricts to those named, and
+## a handle is called with the class indicator, the scores, the weights and
+## the cost, its weights summing to one as MATLAB's do.
+%!test
+%! load fisheriris
+%! X = meas(51:150,:);
+%! Y = species(51:150);
+%! rand ('seed', 42);
+%! cvp = cvpartition (Y, 'KFold', 5);
+%! CVMdl = crossval (fitcsvm (X, Y), 'CVPartition', cvp);
+%! L = kfoldLoss (CVMdl, 'Mode', 'individual');
+%! assert_equal (size (L), [5, 1]);
+%! lab = kfoldPredict (CVMdl);
+%! k2 = test (cvp, 2);
+%! assert_equal (L(2), mean (! strcmp (lab(k2), CVMdl.Y(k2))), 1e-12);
+%! sel = test (cvp, 1) | test (cvp, 3);
+%! assert_equal (kfoldLoss (CVMdl, 'Folds', [1, 3]), ...
+%!               mean (! strcmp (lab(sel), CVMdl.Y(sel))), 1e-12);
+%! assert_equal (numel (kfoldLoss (CVMdl, 'Folds', [2, 4], ...
+%!                                 'Mode', 'individual')), 2);
+%! assert_equal (kfoldLoss (CVMdl, 'LossFun', @(C, S, W, Cost) sum (W)), ...
+%!               1, 1e-12);
+
+## Cost reaches the cost-aware losses.
+%!test
+%! load fisheriris
+%! X = meas(51:150,:);
+%! Y = species(51:150);
+%! rand ('seed', 42);
+%! CVMdl = crossval (fitcsvm (X, Y, 'Cost', [0, 4; 1, 0]), 'KFold', 5);
+%! assert_equal (CVMdl.Cost, [0, 4; 1, 0]);
+%! assert_equal (kfoldLoss (CVMdl, 'LossFun', 'classifcost') >= ...
+%!               kfoldLoss (CVMdl, 'LossFun', 'classiferror'), true);
+
+## Test input validation for kfoldLoss
+%!shared CVK
+%! load fisheriris
+%! rand ('seed', 42);
+%! CVK = crossval (fitcsvm (meas(51:150,:), species(51:150)), 'KFold', 4);
+%!error<ClassificationPartitionedModel.kfoldLoss: Name-Value arguments must be in pairs.> ...
+%! kfoldLoss (CVK, 'Mode')
+%!error<ClassificationPartitionedModel.kfoldLoss: parameter name must be a character vector.> ...
+%! kfoldLoss (CVK, 5, 1)
+%!error<ClassificationPartitionedModel.kfoldLoss: 'LossFun' must be a character vector or a function handle.> ...
+%! kfoldLoss (CVK, 'LossFun', 5)
+%!error<ClassificationPartitionedModel.kfoldLoss: unsupported 'LossFun' value.> ...
+%! kfoldLoss (CVK, 'LossFun', 'hinge')
+%!error<ClassificationPartitionedModel.kfoldLoss: 'LossFun' must return a numeric scalar.> ...
+%! kfoldLoss (CVK, 'LossFun', @(C, S, W, Cost) [1, 2])
+%!error<ClassificationPartitionedModel.kfoldLoss: 'Mode' must be either 'average' or 'individual'.> ...
+%! kfoldLoss (CVK, 'Mode', 'nope')
+%!error<ClassificationPartitionedModel.kfoldLoss: 'Folds' must be a vector of fold indices between 1 and KFold.> ...
+%! kfoldLoss (CVK, 'Folds', 0)
+%!error<ClassificationPartitionedModel.kfoldLoss: invalid parameter name in optional paired arguments.> ...
+%! kfoldLoss (CVK, 'Nope', 1)
