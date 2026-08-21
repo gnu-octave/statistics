@@ -726,7 +726,16 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     df = df_est;    ## estimable degrees of freedom, as reported in the table
     dfe = n - rank (cell2mat (X));
     ms = ss ./ df;
-    mse = sse / dfe;
+    if (dfe > 0)
+      mse = sse / dfe;
+    else
+      ## A saturated model leaves no residual degrees of freedom.  The
+      ## residual sum-of-squares is zero up to rounding, so report both as
+      ## zero rather than letting 0/0 become Inf and poison every mean square
+      ## that is tested against the error term.
+      sse = 0;
+      mse = 0;
+    endif
     eta_sq = ss ./ sst;
     partial_eta_sq = ss ./ (ss + sse);
     F = ms / mse;

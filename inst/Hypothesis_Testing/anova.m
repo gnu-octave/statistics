@@ -1923,6 +1923,14 @@ classdef anova
           if (! isempty (term))
             pieces{end + 1} = term;
           endif
+          ## A fixed term that contains this one contributes a Q component of
+          ## its own, so the expected mean square names it too.
+          for j = find (! is_random(:))'
+            if (j != i && abs (variance_coeff(i, j)) > 1e-10)
+              pieces{end + 1} = obj.emsTerm_ (variance_coeff(i, j), "Q", ...
+                                              term_names{j});
+            endif
+          endfor
         endif
         for j = find (is_random(:))'
           if (abs (variance_coeff(i, j)) > 1e-10)
@@ -2011,7 +2019,10 @@ classdef anova
         [included, excluded] = obj.emsModels_ (X, blocks, terms, i, sstype);
         q_coeff(i) = obj.projectionDifference_ (included, excluded, ...
                                                 bases{i}) / dfs(i);
-        for j = find (is_random(:))'
+        ## Every term that contains this one contributes to its expected mean
+        ## square, whether that term is fixed or random, so the coefficient is
+        ## taken for all of them; which letter names it is decided later.
+        for j = 1:nterms
           variance_coeff(i, j) = obj.projectionDifference_ (...
                                   included, excluded, bases{j}) / dfs(i);
         endfor
@@ -2063,9 +2074,22 @@ classdef anova
           target(own) = 0;
         endif
         weights = pinv (coefficients') * target';
+        ## pinv leaves rounding dust on the mean squares a denominator does
+        ## not use.  Drop it, so a denominator that is one mean square is
+        ## exactly that mean square, and so the formula and the number agree.
+        weights(abs (weights) <= 1e-10) = 0;
         denominator_ms(i) = weights' * random_ms;
-        denominator_df(i) = denominator_ms(i) ^ 2 ...
-                            / sum ((weights .* random_ms) .^ 2 ./ random_df);
+        ## Satterthwaite's approximation, over the mean squares the
+        ## denominator actually uses.  A mean square carrying no degrees of
+        ## freedom has no sampling distribution to combine, so a denominator
+        ## resting on one has no degrees of freedom either.
+        used = (weights != 0);
+        if (any (used & (random_df(:) <= 0)))
+          denominator_df(i) = 0;
+        else
+          parts = (weights(used) .* random_ms(used)) .^ 2 ./ random_df(used);
+          denominator_df(i) = denominator_ms(i) ^ 2 / sum (parts);
+        endif
         formulas{i} = obj.meanSquareFormula_ (weights, names);
       endfor
     endfunction
@@ -4268,3 +4292,68 @@ endclassdef
 %!error <invalid input arguments>
 %! a = anova ([1; 1; 2; 2], (1:4)');
 %! stats (a, 'summary', 'one');
+
+## A saturated mixed model still yields every F ratio and p-value.
+%!test
+%! y = [444 614 423 625 408 856 447 719 ...
+%!      764 831 586 782 609 1002 606 766]' / 10;
+%! X1 = {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
+%!       'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! X2 = {'C','T','C','T','C','T','C','T','C','T','C','T','C','T','C','T'}';
+%! X3 = [1;1;1;1;1;1;1;1;2;2;2;2;2;2;2;2];
+%! a = anova ({X1, X2, X3}, y, 'ModelSpecification', 'full', ...
+%!            'RandomFactors', 3, 'FactorNames', {'X1', 'X2', 'X3'});
+%! s = stats (a);
+%! assert_equal (s.DF', [3, 1, 1, 3, 3, 1, 3, 0, 15]);
+%! assert_equal (s.SumOfSquares(8), 0);
+%! assert_equal (s.pValue(1:6), ...
+%!               [0.288811428913179; 0.091455278902114; 0.042134889025806; ...
+%!                0.010944863181481; 0.061814763198376; 0.066584161056625], ...
+%!               1e-12);
+%! assert_equal (s.pValue(7), NaN);
+
+## The denominator of each F ratio comes from the expected mean squares.
+%!test
+%! y = [444 614 423 625 408 856 447 719 ...
+%!      764 831 586 782 609 1002 606 766]' / 10;
+%! X1 = {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
+%!       'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! X2 = {'C','T','C','T','C','T','C','T','C','T','C','T','C','T','C','T'}';
+%! X3 = [1;1;1;1;1;1;1;1;2;2;2;2;2;2;2;2];
+%! a = anova ({X1, X2, X3}, y, 'ModelSpecification', 'full', ...
+%!            'RandomFactors', 3, 'FactorNames', {'X1', 'X2', 'X3'});
+%! [~, ems] = stats (a);
+%! assert_equal (ems.MeanSquaresDenominator(1:7), ...
+%!               [47.1575; 47.61; 88.7925; 5.975; 5.975; 5.975; 0], 1e-9);
+%! assert_equal (ems.DFDenominator(1:7), ...
+%!               [3; 1; 2.610727841363640; 3; 3; 3; 0], 1e-12);
+
+## A term contained in another contributes to that term's expected mean square,
+## whether the containing term is fixed or random.
+%!test
+%! y = [444 614 423 625 408 856 447 719 ...
+%!      764 831 586 782 609 1002 606 766]' / 10;
+%! X1 = {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
+%!       'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! X2 = {'C','T','C','T','C','T','C','T','C','T','C','T','C','T','C','T'}';
+%! X3 = [1;1;1;1;1;1;1;1;2;2;2;2;2;2;2;2];
+%! a = anova ({X1, X2, X3}, y, 'ModelSpecification', 'full', ...
+%!            'RandomFactors', 3, 'FactorNames', {'X1', 'X2', 'X3'});
+%! [~, ems] = stats (a);
+%! assert_equal (cellstr (ems.ExpectedMeanSquares), ...
+%!   {'4*Q(X1)+2*Q(X1:X2)+2*V(X1:X3)+V(X1:X2:X3)+V(Error)'; ...
+%!    '8*Q(X2)+2*Q(X1:X2)+4*V(X2:X3)+V(X1:X2:X3)+V(Error)'; ...
+%!    '8*V(X3)+2*V(X1:X3)+4*V(X2:X3)+V(X1:X2:X3)+V(Error)'; ...
+%!    '2*Q(X1:X2)+V(X1:X2:X3)+V(Error)'; ...
+%!    '2*V(X1:X3)+V(X1:X2:X3)+V(Error)'; ...
+%!    '4*V(X2:X3)+V(X1:X2:X3)+V(Error)'; ...
+%!    'V(X1:X2:X3)+V(Error)'; 'V(Error)'});
+
+## A saturated model reports no residual rather than an infinite one.
+%!test
+%! y = [3; 4; 7; 8];
+%! [~, tbl] = anovan (y, {[1;1;2;2], [1;2;1;2]}, 'model', 'full', ...
+%!                    'display', 'off');
+%! assert_equal (tbl{end-1, 2}, 0);
+%! assert_equal (tbl{end-1, 3}, 0);
+%! assert_equal (tbl{end-1, 5}, 0);
