@@ -974,6 +974,23 @@ classdef RegressionSVM
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn {RegressionSVM} {@var{CMdl} =} compact (@var{obj})
+    ##
+    ## Create a @qcode{CompactRegressionSVM} object.
+    ##
+    ## @code{@var{CMdl} = compact (@var{obj})} returns a compact version of
+    ## the @qcode{RegressionSVM} object @var{obj}, which keeps the support
+    ## vectors and their coefficients but drops the training data, so it
+    ## predicts identically while carrying no observations.
+    ##
+    ## @seealso{fitrsvm, RegressionSVM, CompactRegressionSVM}
+    ## @end deftypefn
+    function CMdl = compact (this)
+      ## Create a compact model
+      CMdl = CompactRegressionSVM (this);
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionSVM} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a support vector regression model to a file.
@@ -1356,6 +1373,17 @@ endfunction
 %! assert_equal (M2.SupportVectors, Mdl.SupportVectors);
 %! assert_equal (M2.NumObservations, Mdl.NumObservations);
 %! assert_equal (predict (M2, X), predict (Mdl, X));
+
+## compact drops the training data but predicts identically.
+%!test
+%! randn ('seed', 42);
+%! X = randn (40, 2);
+%! Y = X(:,1) - X(:,2);
+%! Mdl = RegressionSVM (X, Y);
+%! CMdl = compact (Mdl);
+%! assert_equal (class (CMdl), 'CompactRegressionSVM');
+%! assert_equal (predict (CMdl, X), predict (Mdl, X));
+%! assert_equal (loss (CMdl, X, Y), loss (Mdl, X, Y));
 
 ## Test input validation for the constructor
 %!error<RegressionSVM: too few input arguments.> ...

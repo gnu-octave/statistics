@@ -94,6 +94,9 @@ function obj = loadmodel (filename)
     case 'RegressionSVM'
       obj = RegressionSVM.load_model (filename, data);
 
+    case 'CompactRegressionSVM'
+      obj = CompactRegressionSVM.load_model (filename, data);
+
     case 'CompactRegressionNeuralNetwork'
       obj = CompactRegressionNeuralNetwork.load_model (filename, data);
 
