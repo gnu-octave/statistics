@@ -337,7 +337,7 @@ classdef ClassificationNeuralNetwork
     ## Solver used for training
     ##
     ## A character vector specifying the solver algorithm used to train the
-    ## neural network model.  Currently only @qcode{'Gradient Descend'} is
+    ## neural network model.  Currently only @qcode{'Gradient Descent'} is
     ## supported.  This property is read-only.
     ##
     ## @end deftp
@@ -678,7 +678,7 @@ classdef ClassificationNeuralNetwork
       LearningRate            = 0.01;
       IterationLimit          = 1000;
       DisplayInfo             = false;
-      this.Solver = 'Gradient Descend';
+      this.Solver = 'Gradient Descent';
 
       ## Supported activation functions
       acList = {'linear', 'sigmoid', 'relu', 'tanh', 'softmax', ...
@@ -1524,7 +1524,18 @@ classdef ClassificationNeuralNetwork
       ConvergenceInfo         = this.ConvergenceInfo;
       DisplayInfo             = this.DisplayInfo;
       Solver                  = this.Solver;
+      LayerWeights            = this.LayerWeights;
+      LayerBiases             = this.LayerBiases;
+      Cost                    = this.Cost;
+      Prior                   = this.Prior;
+      W                       = this.W;
+      CategoricalPredictors   = this.CategoricalPredictors;
+      ExpandedPredictorNames  = this.ExpandedPredictorNames;
       STname                  = this.STname;
+
+      ## TrainingHistory is a table, and Octave cannot save a classdef object
+      ## to a binary file, so it is left out here and rebuilt on loading from
+      ## ConvergenceInfo, which holds the same numbers as plain vectors.
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
@@ -1532,7 +1543,9 @@ classdef ClassificationNeuralNetwork
             'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
             'LayerSizes', 'Activations', 'OutputLayerActivation', ...
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
-            'ConvergenceInfo', 'DisplayInfo', 'STname');
+            'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...
+            'Cost', 'Prior', 'W', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames', 'STname');
     endfunction
 
   endmethods
@@ -1677,6 +1690,15 @@ classdef ClassificationNeuralNetwork
                          " invalid model in '%s'."), filename)
         end_try_catch
       endfor
+
+      ## Rebuild the TrainingHistory table, which savemodel cannot write out
+      iter = (1:numel (mdl.ConvergenceInfo.TrainingLoss))';
+      mdl.TrainingHistory = table (iter, ...
+                                   mdl.ConvergenceInfo.TrainingLoss(:), ...
+                                   mdl.ConvergenceInfo.Accuracy(:), ...
+                                   'VariableNames', ...
+                                   {'Iteration', 'TrainingLoss', ...
+                                    'TrainingAccuracy'});
     endfunction
 
   endmethods
@@ -1855,6 +1877,69 @@ endfunction
 %! crossval (Mdl, 'CVPartition', 'a')
 %!error<ClassificationNeuralNetwork.crossval: invalid parameter name in optional paired arguments> ...
 %! crossval (Mdl, 'some', 'some')
+## A saved and reloaded model carries the trained parameters, not those of
+## the placeholder object load_model starts from.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
+%!                'LayerSizes', [3, 2], 'IterationLimit', 20);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (Mdl2.LayerWeights, Mdl.LayerWeights);
+%! assert_equal (Mdl2.LayerBiases, Mdl.LayerBiases);
+
+## Cost, Prior, W and the predictor bookkeeping survive a save and load.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 20);
+%! Mdl = setCost (Mdl, [0, 3; 5, 0]);
+%! Mdl = setPrior (Mdl, [0.25; 0.75]);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (Mdl2.Cost, [0, 3; 5, 0]);
+%! assert_equal (Mdl2.Prior, [0.25; 0.75]);
+%! assert_equal (Mdl2.W, Mdl.W);
+%! assert_equal (Mdl2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+%! assert_equal (Mdl2.CategoricalPredictors, Mdl.CategoricalPredictors);
+
+## TrainingHistory comes back a table, rebuilt from ConvergenceInfo because
+## Octave cannot write a classdef object to a binary file.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 25);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (istable (Mdl2.TrainingHistory), true);
+%! assert_equal (height (Mdl2.TrainingHistory), 25);
+%! assert_equal (table2cell (Mdl2.TrainingHistory), ...
+%!               table2cell (Mdl.TrainingHistory));
+
+## A reloaded model predicts exactly what the original did.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! [label, score] = predict (Mdl, meas);
+%! [label2, score2] = predict (Mdl2, meas);
+%! assert_equal (label2, label);
+%! assert_equal (score2, score);
+
+## A non-default ScoreTransform survives a save and load.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 20);
+%! Mdl.ScoreTransform = 'symmetric';
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (Mdl2.ScoreTransform (0.25), -0.5);
+
 %!error <ClassificationNeuralNetwork.savemodel: too few input arguments.> ...
 %! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
 %!error <ClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...

@@ -292,6 +292,10 @@ classdef CompactClassificationNeuralNetwork
     Solver                = [];
   endproperties
 
+  properties(Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
   methods(Hidden)
 
     ## constructor
@@ -312,6 +316,7 @@ classdef CompactClassificationNeuralNetwork
       this.ClassNames            = Mdl.ClassNames;
 
       this.ScoreTransform        = Mdl.ScoreTransform;
+      this.STname                = Mdl.STname;
 
       this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
@@ -348,23 +353,27 @@ classdef CompactClassificationNeuralNetwork
         str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
-      else # numeric
+      elseif (ischar (this.ClassNames))
+        str = repmat ({'''%s'''}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
         str = repmat ({'%d'}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
-      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
-      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       str = repmat ({'%d'}, 1, numel (this.LayerSizes));
       str = strcat ('[', strjoin (str, ' '), ']');
       str = sprintf (str, this.LayerSizes);
-      fprintf ("%+25s: '%s'\n", 'LayerSizes', str);
+      fprintf ("%+25s: %s\n", 'LayerSizes', str);
       if (iscellstr (this.Activations))
         str = repmat ({'''%s'''}, 1, numel (this.Activations));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.Activations{:});
-        fprintf ("%+25s: '%s'\n", 'Activations', str);
+        fprintf ("%+25s: %s\n", 'Activations', str);
       else # character vector
         fprintf ("%+25s: '%s'\n", 'Activations', this.Activations);
       endif
@@ -424,7 +433,8 @@ classdef CompactClassificationNeuralNetwork
           switch (s.subs)
             case 'ScoreTransform'
               name = 'CompactClassificationNeuralNetwork';
-              this.ScoreTransform = parseScoreTransform (val, name);
+              [this.ScoreTransform, this.STname] = parseScoreTransform (val, ...
+                                                                        name);
             otherwise
               error (strcat ("CompactClassificationNeuralNetwork.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -560,6 +570,7 @@ classdef CompactClassificationNeuralNetwork
       ConvergenceInfo         = this.ConvergenceInfo;
       DisplayInfo             = this.DisplayInfo;
       Solver                  = this.Solver;
+      STname                  = this.STname;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -567,7 +578,7 @@ classdef CompactClassificationNeuralNetwork
             'ScoreTransform', 'Standardize', 'Sigma', 'Mu', 'LayerSizes', ...
             'Activations', 'OutputLayerActivation', 'LearningRate', ...
             'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
-            'DisplayInfo', 'Solver');
+            'DisplayInfo', 'Solver', 'STname');
     endfunction
 
   endmethods
@@ -599,19 +610,26 @@ classdef CompactClassificationNeuralNetwork
 endclassdef
 
 %!demo
-%! ## Create a neural network classifier and its compact version
-%! # and compare their size
+%! ## Train a neural network classifier and take its compact version, which
+%! ## drops the training data but predicts identically.
 %!
 %! load fisheriris
 %! X = meas;
 %! Y = species;
 %!
-%! Mdl = fitcnet (X, Y, 'ClassNames', unique (species))
-%! CMdl = crossval (Mdl)
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 100)
+%! CMdl = compact (Mdl)
+%!
+%! ## The compact model keeps no training data
+%! isprop (Mdl, 'X')
+%! isprop (CMdl, 'X')
+%!
+%! ## and predicts the same labels
+%! isequal (predict (Mdl, X), predict (CMdl, X))
 
 ## Test input validation for constructor
-%!error<CompactClassificationDiscriminant: invalid classification object.> ...
-%! CompactClassificationDiscriminant (1)
+%!error<CompactClassificationNeuralNetwork: invalid classification object.> ...
+%! CompactClassificationNeuralNetwork (1)
 
 ## Test output for predict method
 %!shared x, y, CMdl
@@ -626,12 +644,49 @@ endclassdef
 %! predict (CMdl)
 %!error<CompactClassificationNeuralNetwork.predict: XC is empty.> ...
 %! predict (CMdl, [])
-%!error<CompactClassificationNeuralNetwork.predict: XC must have the same number of predictors as the trained neural network.> ...
+%!error<CompactClassificationNeuralNetwork.predict: XC must have the same number of predictors as the trained neural network model.> ...
 %! predict (CMdl, 1)
 
 ## Test input validation for assigning a new ScoreTransform
 %!error<CompactClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
 %! CMdl.ScoreTransform = 'a';
+## A saved and reloaded compact model carries every property it holds.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
+%!                'LayerSizes', [3, 2], 'IterationLimit', 20);
+%! CMdl = compact (Mdl);
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! CMdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (CMdl2.ModelParameters, CMdl.ModelParameters);
+%! assert_equal (CMdl2.LayerSizes, CMdl.LayerSizes);
+%! assert_equal (CMdl2.ClassNames, CMdl.ClassNames);
+%! assert_equal (CMdl2.ConvergenceInfo, CMdl.ConvergenceInfo);
+
+## A reloaded compact model predicts exactly what the full model did.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20);
+%! fname = tempname ();
+%! savemodel (compact (Mdl), fname);
+%! CMdl2 = loadmodel (fname);
+%! delete (fname);
+%! [label, score] = predict (Mdl, meas);
+%! [label2, score2] = predict (CMdl2, meas);
+%! assert_equal (label2, label);
+%! assert_equal (score2, score);
+
+## A non-default ScoreTransform survives compacting and a save and load.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 20);
+%! Mdl.ScoreTransform = 'symmetric';
+%! fname = tempname ();
+%! savemodel (compact (Mdl), fname);
+%! CMdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (CMdl2.ScoreTransform (0.25), -0.5);
+
 %!error <CompactClassificationNeuralNetwork.savemodel: too few input arguments.> ...
 %! savemodel (CompactClassificationNeuralNetwork ())
 %!error <CompactClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...
