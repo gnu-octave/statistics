@@ -753,9 +753,9 @@ endfunction
 %! y = [1; 0; 1; 0; 1];
 %! Mdl = fitcgam (x, y, 'interactions', 'all');
 %! CMdl = compact (Mdl);
-%! l = {'1'; '1'; '1'; '1'; '1'};
-%! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
-%!      0.4259, 0.5741; 0.3760, 0.6240];
+%! l = {'1'; '0'; '1'; '0'; '1'};
+%! s = [0.0334, 0.9666; 0.9648, 0.0352; 0.0334, 0.9666; ...
+%!      0.9648, 0.0352; 0.0334, 0.9666];
 %! [labels, scores] = predict (CMdl, x);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {2, 'Y'})
@@ -772,7 +772,7 @@ endfunction
 %! CMdl = compact (Mdl);
 %! [label, score] = predict (CMdl, x, 'includeinteractions', true);
 %! l = {'0'; '0'; '1'; '1'};
-%! s = [0.5106, 0.4894; 0.5135, 0.4865; 0.4864, 0.5136; 0.4847, 0.5153];
+%! s = [0.9725, 0.0275; 0.9895, 0.0105; 0.0070, 0.9930; 0.0238, 0.9762];
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
 %! assert_equal (CMdl.ClassNames, {'0'; '1'})

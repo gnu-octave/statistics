@@ -1344,7 +1344,25 @@ classdef ClassificationGAM
                                     Knots, Order, learning_rate, num_iterations)
       ## Initialize variables
       [n_samples, n_features] = size (X);
-      RSS = zeros (1, n_features);
+
+      ## Every boosting round fits the same predictor at the same knots and
+      ## the same order, so each feature's design is fixed and only the
+      ## response changes.  Cache a basis of that spline space, its values at
+      ## the observed points and its factorisation once, and a round costs two
+      ## small products rather than a fresh least-squares fit.  Where the
+      ## observations do not determine the space, having fewer of them than
+      ## basis functions, there is no cache and the round is fitted outright.
+      tmpl = cell (1, n_features);
+      cache = cell (1, n_features);
+      for j = 1:n_features
+        [tmpl{j}, cache{j}] = splineCache (X(:,j), Knots(j), Order(j));
+      endfor
+
+      ## One piecewise polynomial per feature, starting at zero
+      param = tmpl{1};
+      for j = 1:n_features
+        param(j) = tmpl{j};
+      endfor
 
       ## Initialize model predictions with the intercept (log-odds)
       p = Inter;
@@ -1361,15 +1379,28 @@ classdef ClassificationGAM
         f_new = zeros (n_samples, 1);
 
         for j = 1:n_features
-          ## Fit a spline to the gradient for feature X_j
-          spline_model = splinefit (X(:, j), gradient, Knots(j), ...
-                                             'order', Order(j));
+          if (isempty (cache{j}))
+            ## Fit a spline to the gradient for feature X_j
+            spline_model = splinefit (X(:, j), gradient, Knots(j), ...
+                                               'order', Order(j));
+            spline_pred = ppval (spline_model, X(:, j));
+            spline_pred = spline_pred(:);
+            round_coefs = spline_model.coefs;
+          else
+            ## The same fit, read off the cached basis
+            b = cache{j};
+            c = b.R \ (b.Q' * gradient);
+            spline_pred = b.F * c;
+            round_coefs = reshape (sum (b.C .* c, 1), ...
+                                   [tmpl{j}.pieces, tmpl{j}.order]);
+          endif
 
-          ## Predict using the fitted spline
-          spline_pred = ppval (spline_model, X(:, j));
-
-          ## Store the spline model parameters
-          param(j) = spline_model;
+          ## Accumulate this round's contribution to the additive term of
+          ## feature j.  Every round fits the same knots at the same order, so
+          ## the piecewise polynomials share a break sequence and their
+          ## coefficients add.  Storing the round on its own would keep the
+          ## last one and discard the boosting.
+          param(j).coefs = param(j).coefs + learning_rate * round_coefs;
 
           ## Update the model predictions
           f_new = f_new + learning_rate * spline_pred;
@@ -1564,9 +1595,9 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
 %! a = ClassificationGAM (x, y, 'interactions', 'all');
-%! l = {'1'; '1'; '1'; '1'; '1'};
-%! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
-%!      0.4259, 0.5741; 0.3760, 0.6240];
+%! l = {'1'; '0'; '1'; '0'; '1'};
+%! s = [0.0334, 0.9666; 0.9648, 0.0352; 0.0334, 0.9666; ...
+%!      0.9648, 0.0352; 0.0334, 0.9666];
 %! [labels, scores] = predict (a, x);
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 5})
@@ -1583,7 +1614,7 @@ endfunction
 %! a = fitcgam (x, y, 'learningrate', 0.2, 'interactions', interactions);
 %! [label, score] = predict (a, x, 'includeinteractions', true);
 %! l = {'0'; '0'; '1'; '1'};
-%! s = [0.5106, 0.4894; 0.5135, 0.4865; 0.4864, 0.5136; 0.4847, 0.5153];
+%! s = [0.9725, 0.0275; 0.9895, 0.0105; 0.0070, 0.9930; 0.0238, 0.9762];
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})

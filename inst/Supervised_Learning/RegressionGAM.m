@@ -724,25 +724,51 @@ classdef RegressionGAM
       res       = Y - Inter;
       ns        = rows (X);
       Tol       = this.Tol;
+
+      ## Every backfitting cycle refits the same predictor at the same knots
+      ## and order and varies only the partial residual, so each predictor's
+      ## design is fixed and its basis and factorisation are built once.
+      tmpl  = cell (1, columns (X));
+      cache = cell (1, columns (X));
+      for j = 1:columns (X)
+        [tmpl{j}, cache{j}] = splineCache (X(:,j), Knots(j), Order(j));
+      endfor
+
+      ## What each predictor last contributed, so a cycle can take it back out
+      ## of the partial residual without evaluating the spline again.
+      contrib = cell (1, columns (X));
+
       ## Start training
       while (! (converged || iter > 1000))
         iter += 1;
 
-        ## Single cycle of backfit
+        ## Calculate residuals to fit spline
         for j = 1:columns (X)
 
-          ## Calculate residuals to fit spline
+          ## Take this predictor's own contribution back out
           if (iter > 1)
-            res = res + ppval (param(j), X(:, j));
+            res = res + contrib{j};
           endif
 
           ## Fit an spline to the data
-          gk = splinefit (X(:,j), res, Knots(j), 'order', Order(j));
+          if (isempty (cache{j}))
+            gk = splinefit (X(:,j), res, Knots(j), 'order', Order(j));
+            gk_pred = ppval (gk, X(:,j));
+            gk_pred = gk_pred(:);
+          else
+            b = cache{j};
+            c = b.R \ (b.Q' * res);
+            gk = tmpl{j};
+            gk.coefs = reshape (sum (b.C .* c, 1), ...
+                                [tmpl{j}.pieces, tmpl{j}.order]);
+            gk_pred = b.F * c;
+          endif
 
           ## This might be wrong! We need to check this out
-          RSSk(j) = abs (sum (abs (Y - ppval (gk, X(:,j)) - Inter)) .^ 2) / ns;
+          RSSk(j) = abs (sum (abs (Y - gk_pred - Inter)) .^ 2) / ns;
           param(j) = gk;
-          res = res - ppval (param(j), X(:,j));
+          contrib{j} = gk_pred;
+          res = res - gk_pred;
         endfor
 
         ## Check if RSS is less than the tolerance
