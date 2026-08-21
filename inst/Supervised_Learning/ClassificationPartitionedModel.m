@@ -34,7 +34,7 @@ classdef ClassificationPartitionedModel
   ## @seealso{crossval}
   ## @end deftp
 
-  properties
+  properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} BinEdges
     ##
@@ -101,24 +101,6 @@ classdef ClassificationPartitionedModel
     ## @end deftp
     ClassNames                   = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} Cost
-    ##
-    ## Cost of Misclassification
-    ##
-    ## A square matrix specifying the cost of misclassification of a point.
-    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
-    ## if its true class is @qcode{i} (that is, the rows correspond to the true
-    ## class and the columns correspond to the predicted class).  The order of
-    ## the rows and columns in @qcode{Cost} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.  The number of rows and columns in
-    ## @qcode{Cost} is the number of unique classes in the response.  By
-    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
-    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
-    ## for correct classification and 1 for incorrect classification.
-    ##
-    ## @end deftp
-    Cost                         = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} CrossValidatedModel
@@ -215,16 +197,6 @@ classdef ClassificationPartitionedModel
     ## @end deftp
     ResponseName                 = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} ScoreTransform
-    ##
-    ## Transformation function for classification scores
-    ##
-    ## Specified as a function handle for transforming the classification
-    ## scores.  This property is read-only.
-    ##
-    ## @end deftp
-    ScoreTransform               = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} Standardize
@@ -251,9 +223,67 @@ classdef ClassificationPartitionedModel
     Trained                      = [];
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set.  Each one is validated by its set method.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## @end deftp
+    Cost                         = [];
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  This property is read-only.
+    ##
+    ## @end deftp
+    ScoreTransform               = [];
+  endproperties
+
+  ## Copied from the parent model and kept out of the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     STname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.Cost (this, val)
+      gnY = this.ClassNames;
+      if (isempty (val))
+        this.Cost = cast (! eye (numel (gnY)), 'double');
+      else
+        if (numel (gnY) != sqrt (numel (val)))
+          error (strcat ("ClassificationPartitionedModel: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
+        endif
+        this.Cost = val;
+      endif
+    endfunction
+
+    function this = set.ScoreTransform (this, val)
+      [f, nm] = parseScoreTransform (val, 'ClassificationPartitionedModel');
+      this.ScoreTransform = f;
+      this.STname = nm;
+    endfunction
+
+  endmethods
 
   methods(Access = public)
     ## -*- texinfo -*-

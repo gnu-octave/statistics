@@ -46,7 +46,7 @@
 
 classdef RegressionPartitionedModel
 
-  properties(Access = public)
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} X
@@ -123,16 +123,6 @@ classdef RegressionPartitionedModel
     ## @end deftp
     ResponseName          = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} ResponseTransform
-    ##
-    ## Transformation applied to the predicted response
-    ##
-    ## A function handle, carried over from the model that was cross
-    ## validated.  This property is read-only.
-    ##
-    ## @end deftp
-    ResponseTransform     = @(y) y;
 
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} NumObservations
@@ -200,9 +190,35 @@ classdef RegressionPartitionedModel
     Standardize           = [];
   endproperties
 
-  properties(Access = private, Hidden)
+  ## Properties a user may set.  Each one is validated by its set method.
+  properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle, carried over from the model that was cross
+    ## validated.  This property is read-only.
+    ##
+    ## @end deftp
+    ResponseTransform     = @(y) y;
+  endproperties
+
+  ## Copied from the parent model and kept out of the documented surface.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     RTname = 'none';
   endproperties
+
+  ## Set methods for the properties a user may assign.
+  methods
+
+    function this = set.ResponseTransform (this, val)
+      [f, nm] = parseResponseTransform (val, 'RegressionPartitionedModel');
+      this.ResponseTransform = f;
+      this.RTname = nm;
+    endfunction
+
+  endmethods
 
   methods(Hidden)
 
