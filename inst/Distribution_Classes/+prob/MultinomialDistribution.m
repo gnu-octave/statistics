@@ -163,7 +163,7 @@ classdef MultinomialDistribution < prob.ProbabilityDistribution
       endif
       checkparams (Probabilities);
       this.IsTruncated = false;
-      this.ParameterValues = Probabilities;
+      this.ParameterValues = {Probabilities(:)'};
     endfunction
 
     function display (this)
@@ -177,11 +177,11 @@ classdef MultinomialDistribution < prob.ProbabilityDistribution
 
     function this = set.Probabilities (this, Probabilities)
       checkparams (Probabilities);
-      this.ParameterValues = Probabilities(:)';
+      this.ParameterValues = {Probabilities(:)'};
     endfunction
 
     function Probabilities = get.Probabilities (this)
-      Probabilities = this.ParameterValues(:)';
+      Probabilities = this.ParameterValues{1};
     endfunction
 
   endmethods
@@ -740,3 +740,19 @@ endfunction
 %!error <truncate: requires a scalar probability distribution.> ...
 %! truncate (pd, 2, 4)
 %!error <var: requires a scalar probability distribution.> var (pd)
+
+## ParameterValues holds one entry per parameter, as MATLAB reports it.
+%!test
+%! pd = makedist ('Multinomial', 'Probabilities', [0.2, 0.3, 0.5]);
+%! assert_equal (iscell (pd.ParameterValues), true);
+%! assert_equal (size (pd.ParameterValues), [1, 1]);
+%! assert_equal (pd.ParameterValues{1}, [0.2, 0.3, 0.5]);
+%! assert_equal (numel (pd.ParameterValues), pd.NumParameters);
+%! assert_equal (size (pd.ParameterValues), size (pd.ParameterNames));
+
+## The entry is a row whichever orientation the parameter was given in.
+%!test
+%! pd = makedist ('Multinomial', 'Probabilities', [0.2; 0.3; 0.5]);
+%! assert_equal (size (pd.ParameterValues{1}), [1, 3]);
+%! pd.Probabilities = [0.5; 0.5];
+%! assert_equal (pd.ParameterValues{1}, [0.5, 0.5]);

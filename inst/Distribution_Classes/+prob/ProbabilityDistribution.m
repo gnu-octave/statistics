@@ -486,7 +486,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
 
   ## Handle special case of multinomial distribution
   if (strcmpi (pd.DistributionCode, 'mn'))
-    y = pd.ParameterValues';
+    y = pd.ParameterValues{1}(:);
     x = [1:numel(y)]';
     if (Discrete)
       h = stem (ax, x, y, 'color', 'b');
@@ -501,8 +501,8 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
 
   ## Handle special case of piecewise linear distribution
   if (strcmpi (pd.DistributionCode, 'pl'))
-    x = pd.ParameterValues(:,1);
-    y = pd.ParameterValues(:,2);
+    x = pd.ParameterValues{1}(:);
+    y = pd.ParameterValues{2}(:);
     h = plot (ax, x, y, ';;b-');
     xgap = (x(end) - x(1)) * 0.1;
     xlim (ax, [x(1)-xgap, x(end)+xgap]);
@@ -640,7 +640,7 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
 
   ## Handle special case of multinomial distribution
   if (strcmpi (pd.DistributionCode, 'mn'))
-    y = pd.ParameterValues';
+    y = pd.ParameterValues{1}(:);
     x = [1:numel(y)]';
     xlim (ax, [0.5, max(x)+0.5]);
     if (Discrete)
@@ -655,8 +655,8 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
 
   ## Handle special case of piecewise linear distribution
   if (strcmpi (pd.DistributionCode, 'pl'))
-    x = pd.ParameterValues(:,1);
-    y = pd.ParameterValues(:,2);
+    x = pd.ParameterValues{1}(:);
+    y = pd.ParameterValues{2}(:);
     h = plot (ax, x, y, ';;b-');
     xgap = (x(end) - x(1)) * 0.1;
     xlim (ax, [x(1)-xgap, x(end)+xgap]);

@@ -179,7 +179,7 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
       endif
       checkparams (x, Fx);
       this.IsTruncated = false;
-      this.ParameterValues = [x, Fx];
+      this.ParameterValues = {x(:)', Fx(:)'};
     endfunction
 
     function display (this)
@@ -192,24 +192,24 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
     endfunction
 
     ## X and FX are reported as rows, as MATLAB reports them, whichever way
-    ## they were given; they are held internally as the columns of
-    ## ParameterValues.
+    ## they were given; ParameterValues holds one entry per parameter, so
+    ## each is a row of its own.
     function this = set.x (this, x)
       checkparams (x(:), this.Fx(:));
-      this.ParameterValues(:,1) = x(:);
+      this.ParameterValues{1} = x(:)';
     endfunction
 
     function x = get.x (this)
-      x = this.ParameterValues(:,1)';
+      x = this.ParameterValues{1};
     endfunction
 
     function this = set.Fx (this, Fx)
       checkparams (this.x(:), Fx(:));
-      this.ParameterValues(:,2) = Fx(:);
+      this.ParameterValues{2} = Fx(:)';
     endfunction
 
     function Fx = get.Fx (this)
-      Fx = this.ParameterValues(:,2)';
+      Fx = this.ParameterValues{2};
     endfunction
 
   endmethods
@@ -721,3 +721,22 @@ endfunction
 %!error <truncate: requires a scalar probability distribution.> ...
 %! truncate (pd, 2, 4)
 %!error <var: requires a scalar probability distribution.> var (pd)
+
+## ParameterValues holds one entry per parameter, as MATLAB reports it.
+%!test
+%! pd = makedist ('PiecewiseLinear', 'x', [0, 1, 2], 'Fx', [0, 0.5, 1]);
+%! assert_equal (iscell (pd.ParameterValues), true);
+%! assert_equal (size (pd.ParameterValues), [1, 2]);
+%! assert_equal (pd.ParameterValues{1}, [0, 1, 2]);
+%! assert_equal (pd.ParameterValues{2}, [0, 0.5, 1]);
+%! assert_equal (numel (pd.ParameterValues), pd.NumParameters);
+%! assert_equal (size (pd.ParameterValues), size (pd.ParameterNames));
+
+## Each entry is a row whichever orientation the parameter was given in.
+%!test
+%! pd = makedist ('PiecewiseLinear', 'x', [0; 1; 2], 'Fx', [0; 0.5; 1]);
+%! assert_equal (size (pd.ParameterValues{1}), [1, 3]);
+%! assert_equal (size (pd.ParameterValues{2}), [1, 3]);
+%! pd.x = [0; 2; 4];
+%! assert_equal (pd.ParameterValues{1}, [0, 2, 4]);
+%! assert_equal (pd.x, [0, 2, 4]);
