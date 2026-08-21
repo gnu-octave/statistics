@@ -24,6 +24,8 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include <cmath>
 #include <algorithm>
+#include <string>
+#include <octave/oct-rand.h>
 #if defined (_OPENMP)
   #include <omp.h>
   #define MY_OMP_SET_THREADS (omp_set_num_threads (this->n_threads))
@@ -35,12 +37,34 @@ using namespace std;
 
 // Helper functions
 
-// Return random number between -1 and 1
+// Return random number between -1 and 1, drawn from Octave's generator rather
+// than the C library's.  The two are unconnected, so a network seeded from
+// rand () ignored rand ('seed', s) and rng () entirely and every fit on the
+// same data returned the same model.
 double get_random ()
 {
-    // return random number between -1 and 1
-    return (rand () / (double) RAND_MAX) * 2 - 1;
+  return octave::rand::scalar () * 2 - 1;
 }
+
+// Select the uniform distribution for as long as the object is in scope, and
+// put back whatever the caller had selected.  The distribution is global state
+// owned by the caller, and an error raised while a network is being built must
+// not leave it changed.
+class uniform_scope
+{
+public:
+  uniform_scope () : saved (octave::rand::distribution ())
+  {
+    octave::rand::uniform_distribution ();
+  }
+  ~uniform_scope ()
+  {
+    octave::rand::distribution (this->saved);
+  }
+
+private:
+  std::string saved;
+};
 
 // Compute accuracy of predicted samples during training
 double accuracy (vector<int> predictions, vector<int> labels)
@@ -81,8 +105,9 @@ double init_scale (int activation, int fan_in, int fan_out)
 class Neuron
 {
 public:
-  // constructor
+  // constructors
   Neuron (int input_size, double scale);
+  Neuron (int input_size);
   // destructor
   ~Neuron ();
 
@@ -109,6 +134,15 @@ Neuron::Neuron (int input_size, double scale)
   {
     this->weights[i] = scale * get_random ();
   }
+}
+
+// Parameters left at zero, for a model that is about to have them loaded.
+// Drawing them would take numbers from Octave's generator and move the
+// caller's random stream on every call to fcnnpredict.
+Neuron::Neuron (int input_size)
+{
+  this->weights = vector<double> (input_size);
+  this->bias = 0.0;
 }
 Neuron::~Neuron () {}
 
@@ -166,8 +200,9 @@ void Neuron::zero_gradient ()
 class DenseLayer
 {
 public:
-  // constructor
+  // constructors
   DenseLayer (int input_size, int output_size, int activation);
+  DenseLayer (int input_size, int output_size);
   // destructor
   ~DenseLayer ();
 
@@ -193,6 +228,16 @@ DenseLayer::DenseLayer (int input_size, int output_size, int activation)
   {
     Neuron to_add = Neuron (input_size, scale);
     this->neurons.push_back (to_add);
+  }
+}
+
+// Layer of zeroed neurons, for a model whose weights are about to be loaded.
+DenseLayer::DenseLayer (int input_size, int output_size)
+{
+  this->neurons = vector<Neuron> ();
+  for (int i = 0; i < output_size; i++)
+  {
+    this->neurons.push_back (Neuron (input_size));
   }
 }
 DenseLayer::~DenseLayer () {}

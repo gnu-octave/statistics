@@ -157,10 +157,6 @@ package:\n\n\
   {
     error ("fcnntrain: too many output arguments.");
   }
-  // int seed = time(NULL);
-  int seed = 0;
-  srand (seed);
-
   // Do some input validation while loading training data and labels
   if (! args(0).isnumeric () || args(0).iscomplex ())
   {
@@ -238,7 +234,9 @@ package:\n\n\
   }
   double Alpha = args(5).scalar_value ();
 
-  // Create a vector of layers sized appropriately
+  // Create a vector of layers sized appropriately.  The initial weights are
+  // drawn from Octave's generator, so rand ('seed', s) reproduces a fit.
+  uniform_scope draw_uniform;
   vector<DenseLayer> WeightBias;
   vector<ActivationLayer> Activation;
   RowVector LayerSizes = args(2).row_vector_value ();

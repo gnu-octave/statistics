@@ -179,7 +179,7 @@ package:\n\n\
       Wb_matrix.push_back (WB_vector);
     }
     // Create dense layer and set its values
-    DenseLayer DL = DenseLayer (input_size, output_size, ActiveCode(i));
+    DenseLayer DL = DenseLayer (input_size, output_size);
     DL.set_layer (Wb_matrix);
     // Create activation layer
     ActivationLayer AL = ActivationLayer (ActiveCode(i), NumThreads, Alpha);
@@ -296,7 +296,9 @@ package:\n\n\
 %! randn ('seed', 42);
 %! Xs = [randn(20,2)*0.3 + 3; randn(20,2)*0.3 - 3];
 %! Ys = [ones(20,1); 2*ones(20,1)];
+%! rand ('seed', 1);
 %! M9 = fcnntrain (Xs, Ys, 6, [1, 1], 1, 0.01, 0.05, 100, false);
+%! rand ('seed', 1);
 %! M0 = fcnntrain (Xs, Ys, 6, [1, 1], 1, 0.01, 0.05, 100, false, 0);
 %! assert_equal (M9.Loss, M0.Loss, 0);
 %!error <fcnnpredict: too few input arguments.> ...
