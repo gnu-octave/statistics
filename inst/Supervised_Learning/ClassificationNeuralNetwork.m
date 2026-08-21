@@ -342,6 +342,105 @@ classdef ClassificationNeuralNetwork
     ##
     ## @end deftp
     Solver                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} LayerWeights
+    ##
+    ## Learned weights of each fully connected layer
+    ##
+    ## A cell array holding one weight matrix per layer, the output layer
+    ## included.  @code{LayerWeights@{i@}} has one row per neuron of layer
+    ## @math{i} and one column per input it receives.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    LayerWeights          = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} LayerBiases
+    ##
+    ## Learned bias of each fully connected layer
+    ##
+    ## A cell array holding one column vector per layer, the output layer
+    ## included, with one entry per neuron of that layer.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    LayerBiases           = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} TrainingHistory
+    ##
+    ## Iteration by iteration record of training
+    ##
+    ## A table with one row per iteration, holding the iteration number, the
+    ## training loss and the training accuracy recorded at it.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    TrainingHistory       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Cost
+    ##
+    ## Cost of misclassification
+    ##
+    ## A numeric matrix with one row and one column per class, where
+    ## @code{Cost(i,j)} is the cost of classifying an observation of class
+    ## @math{i} as class @math{j}.  The default has zeros on the diagonal and
+    ## ones elsewhere.  Change it with @code{setCost}.
+    ##
+    ## @end deftp
+    Cost                  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Prior
+    ##
+    ## Prior probability of each class
+    ##
+    ## A numeric vector with one entry per class, in the order of
+    ## @code{ClassNames}, summing to one.  It defaults to the relative
+    ## frequency of each class in the training data.  Change it with
+    ## @code{setPrior}.
+    ##
+    ## @end deftp
+    Prior                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per training observation.  It
+    ## defaults to a uniform weight for every observation.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    W                     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector of column indices into @code{X} naming the predictors
+    ## treated as categorical, and empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} ExpandedPredictorNames
+    ##
+    ## Names of the predictors as the model expanded them
+    ##
+    ## A cell array of character vectors.  It matches @code{PredictorNames}
+    ## unless a categorical predictor was expanded into indicator variables.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
   endproperties
 
   properties(Access = private, Hidden)
@@ -727,6 +826,7 @@ classdef ClassificationNeuralNetwork
       ## Assign predictors and response variable names
       this.NumPredictors  = NumPredictors;
       this.PredictorNames = PredictorNames;
+      this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
       ## Handle class names
@@ -759,6 +859,18 @@ classdef ClassificationNeuralNetwork
       ## to the ClassificationNeuralNetwork object
       this.NumObservations = sum (RowsUsed);
       this.RowsUsed = RowsUsed;
+
+      ## Cost, Prior and the observation weights.  Cost is zero on the
+      ## diagonal and one elsewhere, Prior follows the class frequencies of
+      ## the training data, and every observation carries the same weight.
+      nclasses = numel (this.ClassNames);
+      this.Cost = ones (nclasses) - eye (nclasses);
+      this.Prior = accumarray (gY(:), 1, [nclasses, 1]) / numel (gY);
+      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+
+      ## No predictor is treated as categorical, so the expanded names are
+      ## the predictor names themselves.
+      this.CategoricalPredictors = [];
 
       ## Handle Standardize flag
       if (Standardize)
@@ -822,6 +934,26 @@ classdef ClassificationNeuralNetwork
       ## Save ModelParameters and ConvergenceInfo
       this.ModelParameters = Mdl;
       this.ConvergenceInfo = ConvergenceInfo;
+
+      ## fcnntrain packs each neuron as [weights, bias] in one row, so the
+      ## last column of every layer's matrix is its bias.
+      nlay = numel (Mdl.LayerWeights);
+      this.LayerWeights = cell (1, nlay);
+      this.LayerBiases = cell (1, nlay);
+      for i = 1:nlay
+        Wb = Mdl.LayerWeights{i};
+        this.LayerWeights{i} = Wb(:, 1:end-1);
+        this.LayerBiases{i} = Wb(:, end);
+      endfor
+
+      ## Iteration by iteration record of the fit
+      iter = (1:numel (ConvergenceInfo.TrainingLoss))';
+      this.TrainingHistory = table (iter, ...
+                                    ConvergenceInfo.TrainingLoss(:), ...
+                                    ConvergenceInfo.Accuracy(:), ...
+                                    'VariableNames', ...
+                                    {'Iteration', 'TrainingLoss', ...
+                                     'TrainingAccuracy'});
 
     endfunction
 
@@ -936,6 +1068,273 @@ classdef ClassificationNeuralNetwork
       ## Apply ScoreTransform
       scores = this.ScoreTransform (scores);
 
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## Classification margin of a neural network classifier.
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns a column
+    ## vector holding, for each row of @var{X}, the score the model gives its
+    ## true class in @var{Y} less the largest score it gives any other class.
+    ## A positive margin means the observation is classified correctly, and
+    ## the larger it is the more confidently so.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, edge, loss, predict}
+    ## @end deftypefn
+    function m = margin (this, X, Y)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationNeuralNetwork.margin: too few input arguments.");
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "margin");
+
+      [~, scores] = predict (this, X);
+      classes = this.ClassNames;
+      m = zeros (rows (X), 1);
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          m(i) = NaN;
+          continue;
+        endif
+        true_score = scores(i, idx);
+        scores(i, idx) = -Inf;
+        m(i) = true_score - max (scores(i,:));
+        scores(i, idx) = true_score;
+      endfor
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge of a neural network classifier.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} returns the mean of
+    ## the classification margins over the rows of @var{X}.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, @var{w} holding one weight per row of @var{X}.
+    ## The weights are normalised to sum to one before they are applied.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, margin, loss, predict}
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationNeuralNetwork.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationNeuralNetwork.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "edge");
+      W = getWeights_ (this, varargin, rows (X), "edge");
+
+      m = margin (this, X, Y);
+      e = sum (W(:) .* m) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of a neural network classifier.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the
+    ## proportion of the rows of @var{X} the model misclassifies against the
+    ## true labels @var{Y}.
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
+    ## following name-value pairs:
+    ##
+    ## @itemize
+    ## @item
+    ## @qcode{"LossFun"} selects the loss.  Supported values are
+    ## @qcode{"mincost"}, the default, @qcode{"binodeviance"},
+    ## @qcode{"classifcost"}, @qcode{"classiferror"}, @qcode{"crossentropy"},
+    ## @qcode{"exponential"}, @qcode{"hinge"}, @qcode{"logit"} and
+    ## @qcode{"quadratic"}.  @qcode{"mincost"} assigns each observation to
+    ## the class of least expected cost and charges what that assignment
+    ## costs, so it reads the scores as a posterior; @qcode{"classifcost"}
+    ## charges what the model's own prediction costs.  @qcode{"crossentropy"}
+    ## is defined for a network only.  Note that the default differs from the
+    ## other classifiers in this package, which default to
+    ## @qcode{"classiferror"}, and follows MATLAB's for this class.
+    ##
+    ## @item
+    ## @qcode{"Weights"} holds one weight per row of @var{X}, normalised to
+    ## sum to one before it is applied.
+    ## @end itemize
+    ##
+    ## @seealso{ClassificationNeuralNetwork, margin, edge, predict}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationNeuralNetwork.loss: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationNeuralNetwork.loss: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      [X, Y] = checkXY_ (this, X, Y, "loss");
+
+      ## Parse optional arguments
+      LossFun = 'mincost';
+      lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
+                   'crossentropy', 'exponential', 'hinge', 'logit', ...
+                   'mincost', 'quadratic'};
+      args = varargin;
+      keep = true (1, numel (args));
+      for i = 1:2:numel (args)
+        if (strcmpi (args{i}, 'lossfun'))
+          LossFun = args{i+1};
+          if (! (ischar (LossFun) && isrow (LossFun)))
+            error (strcat ("ClassificationNeuralNetwork.loss: 'LossFun'", ...
+                           " must be a character vector."));
+          endif
+          LossFun = tolower (LossFun);
+          if (! any (strcmpi (LossFun, lossnames)))
+            error (strcat ("ClassificationNeuralNetwork.loss: unsupported", ...
+                           " Loss function."));
+          endif
+          keep(i:i+1) = false;
+        endif
+      endfor
+      W = getWeights_ (this, args(keep), rows (X), "loss");
+      W = W(:) / sum (W);
+
+      [label, scores] = predict (this, X);
+      classes = this.ClassNames;
+      K = numel (classes);
+
+      ## Membership of the true class, as a +1/-1 indicator per class
+      Yind = zeros (rows (X), K);
+      for i = 1:rows (X)
+        idx = find (ismember (classes, Y(i)));
+        if (isempty (idx))
+          L = NaN;
+          return;
+        endif
+        Yind(i, idx) = 1;
+      endfor
+
+      ## The scalar score of the true class of each observation
+      mj = sum (scores .* Yind, 2);
+
+      switch (LossFun)
+        case 'classiferror'
+          wrong = zeros (rows (X), 1);
+          for i = 1:rows (X)
+            wrong(i) = ! isequal (label(i), Y(i));
+          endfor
+          L = sum (W .* wrong);
+        case 'binodeviance'
+          L = sum (W .* log (1 + exp (-2 * mj)));
+        case 'hinge'
+          L = sum (W .* max (0, 1 - mj));
+        case 'exponential'
+          L = sum (W .* exp (-mj));
+        case 'logit'
+          L = sum (W .* log (1 + exp (-mj)));
+        case 'quadratic'
+          L = sum (W .* (1 - mj) .^ 2);
+        case 'mincost'
+          ## Each observation is assigned to the class of least expected
+          ## cost, and charged what that assignment actually costs given its
+          ## true class.
+          L = 0;
+          for i = 1:rows (X)
+            [~, k] = min (scores(i,:) * this.Cost);
+            true_idx = find (ismember (classes, Y(i)));
+            L = L + W(i) * this.Cost(true_idx, k);
+          endfor
+        case 'classifcost'
+          ## What the model's own prediction costs, given the true class
+          L = 0;
+          for i = 1:rows (X)
+            true_idx = find (ismember (classes, Y(i)));
+            pred_idx = find (ismember (classes, label(i)));
+            L = L + W(i) * this.Cost(true_idx, pred_idx);
+          endfor
+        case 'crossentropy'
+          ## Defined for a network only, whose scores are a posterior.  The
+          ## weights are rescaled to sum to the number of observations, as
+          ## MATLAB documents, and the sum is taken over classes as well.
+          Wn = W * rows (X);
+          L = -sum (Wn .* log (max (mj, realmin))) / (K * rows (X));
+      endswitch
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{m} =} resubMargin (@var{obj})
+    ##
+    ## Classification margin of a neural network classifier on its training
+    ## data.
+    ##
+    ## @code{@var{m} = resubMargin (@var{obj})} is @code{margin} applied to
+    ## the observations the model was fitted on.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, margin}
+    ## @end deftypefn
+    function m = resubMargin (this)
+      if (nargin != 1)
+        error (strcat ("ClassificationNeuralNetwork.resubMargin:", ...
+                       " too many input arguments."));
+      endif
+      m = margin (this, this.X, this.Y);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{e} =} resubEdge (@var{obj})
+    ##
+    ## Classification edge of a neural network classifier on its training
+    ## data.
+    ##
+    ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} applied to the
+    ## observations the model was fitted on, weighted by @code{obj.W}.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, edge}
+    ## @end deftypefn
+    function e = resubEdge (this)
+      if (nargin != 1)
+        error (strcat ("ClassificationNeuralNetwork.resubEdge:", ...
+                       " too many input arguments."));
+      endif
+      e = edge (this, this.X, this.Y, 'Weights', this.W);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{L} =} resubLoss (@var{obj})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of a neural network classifier on its training
+    ## data.
+    ##
+    ## @code{@var{L} = resubLoss (@var{obj})} is @code{loss} applied to the
+    ## observations the model was fitted on, weighted by @code{obj.W}.  It
+    ## takes the same @qcode{"LossFun"} name-value pair.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, loss}
+    ## @end deftypefn
+    function L = resubLoss (this, varargin)
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationNeuralNetwork.resubLoss: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+      L = loss (this, this.X, this.Y, varargin{:}, 'Weights', this.W);
     endfunction
 
     ## -*- texinfo -*-
@@ -1134,6 +1533,127 @@ classdef ClassificationNeuralNetwork
             'LayerSizes', 'Activations', 'OutputLayerActivation', ...
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
             'ConvergenceInfo', 'DisplayInfo', 'STname');
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    ## Shared validation for the assessment methods, so each reports under
+    ## its own name.
+    function [X, Y] = checkXY_ (this, X, Y, caller)
+      if (isempty (X))
+        error ("ClassificationNeuralNetwork.%s: X is empty.", caller);
+      elseif (columns (this.X) != columns (X))
+        error (strcat ("ClassificationNeuralNetwork.%s: X must have the", ...
+                       " same number of predictors as the trained model."), ...
+               caller);
+      endif
+      if (isempty (Y))
+        error ("ClassificationNeuralNetwork.%s: Y is empty.", caller);
+      elseif (rows (X) != rows (Y))
+        error (strcat ("ClassificationNeuralNetwork.%s: Y must have the", ...
+                       " same number of rows as X."), caller);
+      endif
+    endfunction
+
+    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
+    ## uniform weight, and reject any other name.
+    function W = getWeights_ (this, args, n, caller)
+      W = ones (n, 1);
+      for i = 1:2:numel (args)
+        if (! (ischar (args{i}) && isrow (args{i})))
+          error (strcat ("ClassificationNeuralNetwork.%s: parameter name", ...
+                         " must be a character vector."), caller);
+        endif
+        if (strcmpi (args{i}, 'weights'))
+          W = args{i+1};
+          if (! (isnumeric (W) && isvector (W)))
+            error (strcat ("ClassificationNeuralNetwork.%s: 'Weights'", ...
+                           " must be a numeric vector."), caller);
+          endif
+          if (numel (W) != n)
+            error (strcat ("ClassificationNeuralNetwork.%s: size of", ...
+                           " 'Weights' must equal the number of", ...
+                           " rows in X."), caller);
+          endif
+        else
+          error (strcat ("ClassificationNeuralNetwork.%s: invalid", ...
+                         " parameter name in optional paired", ...
+                         " arguments."), caller);
+        endif
+      endfor
+    endfunction
+
+  endmethods
+
+  methods (Access = public)
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{obj} =} setCost (@var{obj}, @var{cost})
+    ##
+    ## Set the misclassification cost of a neural network classifier.
+    ##
+    ## @code{@var{obj} = setCost (@var{obj}, @var{cost})} replaces the
+    ## @code{Cost} property.  @var{cost} must be square with one row and one
+    ## column per class, in the order of @code{ClassNames}.  An empty
+    ## @var{cost} restores the default, zero on the diagonal and one
+    ## elsewhere.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, setPrior, loss}
+    ## @end deftypefn
+    function this = setCost (this, Cost)
+      if (nargin != 2)
+        error ("ClassificationNeuralNetwork.setCost: too few input arguments.");
+      endif
+      K = numel (this.ClassNames);
+      if (isempty (Cost))
+        this.Cost = ones (K) - eye (K);
+        return;
+      endif
+      if (! (isnumeric (Cost) && isreal (Cost)
+             && isequal (size (Cost), [K, K])))
+        error (strcat ("ClassificationNeuralNetwork.setCost: 'Cost' must", ...
+                       " be a square numeric matrix with one row and one", ...
+                       " column per class."));
+      endif
+      this.Cost = Cost;
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{obj} =} setPrior (@var{obj}, @var{prior})
+    ##
+    ## Set the class prior probabilities of a neural network classifier.
+    ##
+    ## @code{@var{obj} = setPrior (@var{obj}, @var{prior})} replaces the
+    ## @code{Prior} property.  @var{prior} may be @qcode{"empirical"}, the
+    ## class frequencies of the training data and the default,
+    ## @qcode{"uniform"}, or a numeric vector with one entry per class in the
+    ## order of @code{ClassNames}.  A numeric vector is normalised to sum to
+    ## one.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, setCost, loss}
+    ## @end deftypefn
+    function this = setPrior (this, Prior)
+      if (nargin != 2)
+        error (strcat ("ClassificationNeuralNetwork.setPrior:", ...
+                       " too few input arguments."));
+      endif
+      K = numel (this.ClassNames);
+      if (ischar (Prior) && strcmpi (Prior, 'uniform'))
+        this.Prior = ones (K, 1) / K;
+      elseif (isempty (Prior)
+              || (ischar (Prior) && strcmpi (Prior, 'empirical')))
+        [~, ~, gY] = unique (this.Y(this.RowsUsed));
+        this.Prior = accumarray (gY(:), 1, [K, 1]) / numel (gY);
+      elseif (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
+              && numel (Prior) == K && all (Prior >= 0) && sum (Prior) > 0)
+        this.Prior = Prior(:) / sum (Prior);
+      else
+        error (strcat ("ClassificationNeuralNetwork.setPrior: 'Prior' must", ...
+                       " be 'empirical', 'uniform', or a non-negative", ...
+                       " numeric vector with one entry per class."));
+      endif
     endfunction
 
   endmethods
@@ -1392,3 +1912,91 @@ endfunction
 %!   assert_equal (label, [1; 2]);
 %!   assert_equal (all (isfinite (score(:))), true);
 %! endfor
+
+## The trained parameters are reachable, one matrix and one bias per layer.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
+%!                'LayerSizes', [3, 2], 'IterationLimit', 20);
+%! assert_equal (numel (Mdl.LayerWeights), 3);
+%! assert_equal (numel (Mdl.LayerBiases), 3);
+%! assert_equal (size (Mdl.LayerWeights{1}), [3, 2]);
+%! assert_equal (size (Mdl.LayerWeights{2}), [2, 3]);
+%! assert_equal (size (Mdl.LayerWeights{3}), [2, 2]);
+%! assert_equal (size (Mdl.LayerBiases{1}), [3, 1]);
+%! assert_equal (size (Mdl.LayerBiases{3}), [2, 1]);
+
+## Cost, Prior, W and the predictor bookkeeping carry their defaults.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 20);
+%! assert_equal (Mdl.Cost, [0, 1; 1, 0]);
+%! assert_equal (Mdl.Prior, [0.5; 0.5]);
+%! assert_equal (size (Mdl.W), [4, 1]);
+%! assert_equal (sum (Mdl.W), 1, 1e-12);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.ExpandedPredictorNames, Mdl.PredictorNames);
+
+## TrainingHistory holds one row per iteration.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 25);
+%! assert_equal (istable (Mdl.TrainingHistory), true);
+%! assert_equal (height (Mdl.TrainingHistory), 25);
+%! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
+%!               {'Iteration', 'TrainingLoss', 'TrainingAccuracy'});
+%! assert_equal (Mdl.TrainingHistory.Iteration', 1:25);
+
+## A margin is positive wherever the model is right, and edge averages it.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! X = [randn(30, 2) * 0.4 + 2; randn(30, 2) * 0.4 - 2];
+%! Y = [ones(30, 1); 2 * ones(30, 1)];
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 200);
+%! m = margin (Mdl, X, Y);
+%! assert_equal (size (m), [60, 1]);
+%! assert_equal (all (m > 0), true);
+%! assert_equal (edge (Mdl, X, Y), mean (m), 1e-12);
+%! assert_equal (resubMargin (Mdl), m, 1e-12);
+%! assert_equal (resubEdge (Mdl), edge (Mdl, X, Y, 'Weights', Mdl.W), 1e-12);
+
+## Every documented loss function is accepted and finite.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! X = [randn(30, 2) * 0.4 + 2; randn(30, 2) * 0.4 - 2];
+%! Y = [ones(30, 1); 2 * ones(30, 1)];
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 200);
+%! names = {'binodeviance', 'classifcost', 'classiferror', 'crossentropy', ...
+%!          'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+%! for k = 1:numel (names)
+%!   L = loss (Mdl, X, Y, 'LossFun', names{k});
+%!   assert_equal (isscalar (L) && isfinite (L) && L >= 0, true);
+%! endfor
+%! assert_equal (loss (Mdl, X, Y), loss (Mdl, X, Y, 'LossFun', 'mincost'));
+%! assert_equal (resubLoss (Mdl), loss (Mdl, X, Y, 'Weights', Mdl.W), 1e-12);
+
+## setPrior and setCost replace the properties they name.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 1; 2], 'IterationLimit', 20);
+%! assert_equal (Mdl.Prior, [0.75; 0.25], 1e-12);
+%! assert_equal (setPrior (Mdl, 'uniform').Prior, [0.5; 0.5]);
+%! assert_equal (setPrior (Mdl, [3, 1]).Prior, [0.75; 0.25], 1e-12);
+%! assert_equal (setPrior (Mdl, 'empirical').Prior, Mdl.Prior, 1e-12);
+%! assert_equal (setCost (Mdl, [0, 2; 1, 0]).Cost, [0, 2; 1, 0]);
+%! assert_equal (setCost (Mdl, []).Cost, [0, 1; 1, 0]);
+
+%!error<ClassificationNeuralNetwork.margin: too few input arguments.> ...
+%! margin (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2])
+%!error<ClassificationNeuralNetwork.loss: X is empty.> ...
+%! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [], [1])
+%!error<ClassificationNeuralNetwork.loss: X must have the same number of predictors> ...
+%! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2, 3], [1])
+%!error<ClassificationNeuralNetwork.loss: Y must have the same number of rows as X.> ...
+%! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], [1; 2])
+%!error<ClassificationNeuralNetwork.loss: unsupported Loss function.> ...
+%! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], 1, 'LossFun', 'bogus')
+%!error<ClassificationNeuralNetwork.edge: invalid parameter name in optional paired arguments.> ...
+%! edge (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], 1, 'bogus', 1)
+%!error<ClassificationNeuralNetwork.setCost: 'Cost' must be a square numeric matrix> ...
+%! setCost (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [0, 1, 2])
+%!error<ClassificationNeuralNetwork.setPrior: 'Prior' must be 'empirical', 'uniform',> ...
+%! setPrior (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 'bogus')
