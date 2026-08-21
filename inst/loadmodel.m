@@ -112,35 +112,164 @@ endfunction
 ## fieldnames (mdl) for exact equality; a private property such as STname is
 ## saved but never reported by fieldnames, so the comparison could not match
 ## and the load always failed.
+## Every property of a saved ClassificationKNN comes back as it was.
 %!test
 %! load fisheriris
 %! Yb = strcmp (species, 'setosa');
-%! mdls = {fitcknn(meas, species, 'ScoreTransform', 'logit'), ...
-%!         fitcdiscr(meas, species, 'ScoreTransform', 'logit'), ...
-%!         fitcsvm(meas(1:100,:), Yb(1:100), 'ScoreTransform', 'logit'), ...
-%!         fitcgam(meas(1:100,:), Yb(1:100))};
-%! for i = 1:numel (mdls)
-%!   m = mdls{i};
-%!   fn = tempname ();
-%!   unwind_protect
-%!     savemodel (m, fn);
-%!     m2 = loadmodel (fn);
-%!     assert_equal (class (m2), class (m));
-%!     for f = fieldnames (m)'
-%!       a = m.(f{1});
-%!       b = m2.(f{1});
-%!       if (is_function_handle (a))
-%!         assert_equal (func2str (b), func2str (a));
-%!       else
-%!         assert_equal (b, a);
-%!       endif
-%!     endfor
-%!   unwind_protect_cleanup
-%!     if (exist (fn, 'file'))
-%!       delete (fn);
-%!     endif
-%!   end_unwind_protect
-%! endfor
+%! m = fitcknn (meas, species, 'ScoreTransform', 'logit');
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (class (m2), class (m));
+%! assert_equal (m2.W, m.W);
+%! assert_equal (m2.X, m.X);
+%! assert_equal (m2.Y, m.Y);
+%! assert_equal (m2.NumObservations, m.NumObservations);
+%! assert_equal (m2.RowsUsed, m.RowsUsed);
+%! assert_equal (m2.NumPredictors, m.NumPredictors);
+%! assert_equal (m2.PredictorNames, m.PredictorNames);
+%! assert_equal (m2.ResponseName, m.ResponseName);
+%! assert_equal (m2.ClassNames, m.ClassNames);
+%! assert_equal (m2.Standardize, m.Standardize);
+%! assert_equal (m2.Sigma, m.Sigma);
+%! assert_equal (m2.Mu, m.Mu);
+%! assert_equal (m2.BreakTies, m.BreakTies);
+%! assert_equal (m2.NumNeighbors, m.NumNeighbors);
+%! assert_equal (m2.Distance, m.Distance);
+%! ## DistanceWeight is a function handle here, so compare what it reads as
+%! assert_equal (func2str (m2.DistanceWeight), func2str (m.DistanceWeight));
+%! assert_equal (m2.DistParameter, m.DistParameter);
+%! assert_equal (m2.NSMethod, m.NSMethod);
+%! assert_equal (m2.IncludeTies, m.IncludeTies);
+%! assert_equal (m2.BucketSize, m.BucketSize);
+%! assert_equal (m2.Cost, m.Cost);
+%! assert_equal (m2.Prior, m.Prior);
+%! assert_equal (m2.ScoreTransform, m.ScoreTransform);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+## Every property of a saved ClassificationDiscriminant comes back as it was.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! m = fitcdiscr (meas, species, 'ScoreTransform', 'logit');
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (class (m2), class (m));
+%! assert_equal (m2.W, m.W);
+%! assert_equal (m2.X, m.X);
+%! assert_equal (m2.Y, m.Y);
+%! assert_equal (m2.NumObservations, m.NumObservations);
+%! assert_equal (m2.RowsUsed, m.RowsUsed);
+%! assert_equal (m2.NumPredictors, m.NumPredictors);
+%! assert_equal (m2.PredictorNames, m.PredictorNames);
+%! assert_equal (m2.ResponseName, m.ResponseName);
+%! assert_equal (m2.ClassNames, m.ClassNames);
+%! assert_equal (m2.Sigma, m.Sigma);
+%! assert_equal (m2.Mu, m.Mu);
+%! assert_equal (m2.Coeffs, m.Coeffs);
+%! assert_equal (m2.Delta, m.Delta);
+%! assert_equal (m2.DiscrimType, m.DiscrimType);
+%! assert_equal (m2.Gamma, m.Gamma);
+%! assert_equal (m2.MinGamma, m.MinGamma);
+%! assert_equal (m2.LogDetSigma, m.LogDetSigma);
+%! assert_equal (m2.XCentered, m.XCentered);
+%! assert_equal (m2.Cost, m.Cost);
+%! assert_equal (m2.Prior, m.Prior);
+%! assert_equal (m2.ScoreTransform, m.ScoreTransform);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+## Every property of a saved ClassificationSVM comes back as it was.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! m = fitcsvm (meas(1:100,:), Yb(1:100), 'ScoreTransform', 'logit');
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (class (m2), class (m));
+%! assert_equal (m2.X, m.X);
+%! assert_equal (m2.Y, m.Y);
+%! assert_equal (m2.NumObservations, m.NumObservations);
+%! assert_equal (m2.RowsUsed, m.RowsUsed);
+%! assert_equal (m2.NumPredictors, m.NumPredictors);
+%! assert_equal (m2.PredictorNames, m.PredictorNames);
+%! assert_equal (m2.ResponseName, m.ResponseName);
+%! assert_equal (m2.ClassNames, m.ClassNames);
+%! assert_equal (m2.Standardize, m.Standardize);
+%! assert_equal (m2.Sigma, m.Sigma);
+%! assert_equal (m2.Mu, m.Mu);
+%! assert_equal (m2.ModelParameters, m.ModelParameters);
+%! assert_equal (m2.Model, m.Model);
+%! assert_equal (m2.Alpha, m.Alpha);
+%! assert_equal (m2.Beta, m.Beta);
+%! assert_equal (m2.Bias, m.Bias);
+%! assert_equal (m2.IsSupportVector, m.IsSupportVector);
+%! assert_equal (m2.SupportVectorLabels, m.SupportVectorLabels);
+%! assert_equal (m2.SupportVectors, m.SupportVectors);
+%! assert_equal (m2.Prior, m.Prior);
+%! assert_equal (m2.Cost, m.Cost);
+%! assert_equal (m2.W, m.W);
+%! assert_equal (m2.CategoricalPredictors, m.CategoricalPredictors);
+%! assert_equal (m2.ExpandedPredictorNames, m.ExpandedPredictorNames);
+%! assert_equal (m2.ScoreTransform, m.ScoreTransform);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+## Every property of a saved ClassificationGAM comes back as it was.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! m = fitcgam (meas(1:100,:), Yb(1:100));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (class (m2), class (m));
+%! assert_equal (m2.X, m.X);
+%! assert_equal (m2.Y, m.Y);
+%! assert_equal (m2.NumObservations, m.NumObservations);
+%! assert_equal (m2.RowsUsed, m.RowsUsed);
+%! assert_equal (m2.NumPredictors, m.NumPredictors);
+%! assert_equal (m2.PredictorNames, m.PredictorNames);
+%! assert_equal (m2.ResponseName, m.ResponseName);
+%! assert_equal (m2.ClassNames, m.ClassNames);
+%! assert_equal (m2.Prior, m.Prior);
+%! assert_equal (m2.Formula, m.Formula);
+%! assert_equal (m2.Interactions, m.Interactions);
+%! assert_equal (m2.Knots, m.Knots);
+%! assert_equal (m2.Order, m.Order);
+%! assert_equal (m2.DoF, m.DoF);
+%! assert_equal (m2.LearningRate, m.LearningRate);
+%! assert_equal (m2.NumIterations, m.NumIterations);
+%! assert_equal (m2.Intercept, m.Intercept);
+%! assert_equal (m2.W, m.W);
+%! assert_equal (m2.CategoricalPredictors, m.CategoricalPredictors);
+%! assert_equal (m2.ExpandedPredictorNames, m.ExpandedPredictorNames);
+%! assert_equal (m2.BaseModel, m.BaseModel);
+%! assert_equal (m2.ModelwInt, m.ModelwInt);
+%! assert_equal (m2.IntMatrix, m.IntMatrix);
+%! assert_equal (m2.Cost, m.Cost);
+%! assert_equal (m2.ScoreTransform, m.ScoreTransform);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
 
 ## A compact model must come back compact.  CompactClassificationSVM was
 ## dispatched to ClassificationSVM.load_model, which builds the wrong class.
