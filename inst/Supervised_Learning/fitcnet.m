@@ -74,15 +74,17 @@
 ##
 ## @item @qcode{'Activations'} @tab A character vector or a cellstr vector
 ## specifying the activation functions for the hidden layers of the neural
-## network (excluding the output layer).  The available activation functions are
-## @qcode{'linear'}, @qcode{'sigmoid'}, @qcode{'tanh'}, @qcode{'sigmoid'}, and
-## @qcode{'none'}. The default value is @qcode{'sigmoid'}.
+## network (excluding the output layer).  The available activation functions
+## are @qcode{'linear'}, @qcode{'sigmoid'}, @qcode{'relu'}, @qcode{'tanh'},
+## @qcode{'softmax'}, @qcode{'lrelu'}, @qcode{'prelu'}, @qcode{'elu'},
+## @qcode{'gelu'}, and @qcode{'none'}.  The default value is @qcode{'relu'}.
 ##
 ## @item @qcode{'OutputLayerActivation'} @tab A character vector specifying
 ## the activation function for the output layer of the neural network.  The
-## available activation functions are @qcode{'linear'}, @qcode{'sigmoid'},
-## @qcode{'tanh'}, @qcode{'sigmoid'}, and @qcode{'none'}. The default value is
-## @qcode{'sigmoid'}.
+## available activation functions are the same as for @qcode{'Activations'}.
+## The default value is @qcode{'softmax'}, which makes the returned scores a
+## probability over the classes and trains the network against cross entropy;
+## any other value trains it against the mean squared error.
 ##
 ## @item @qcode{'IterationLimit'} @tab A positive integer scalar that
 ## specifies the maximum number of training iterations.  The default value is

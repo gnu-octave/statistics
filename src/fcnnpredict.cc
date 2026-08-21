@@ -179,7 +179,7 @@ package:\n\n\
       Wb_matrix.push_back (WB_vector);
     }
     // Create dense layer and set its values
-    DenseLayer DL = DenseLayer (input_size, output_size);
+    DenseLayer DL = DenseLayer (input_size, output_size, ActiveCode(i));
     DL.set_layer (Wb_matrix);
     // Create activation layer
     ActivationLayer AL = ActivationLayer (ActiveCode(i), NumThreads, Alpha);
@@ -273,6 +273,32 @@ package:\n\n\
 %! assert_equal (max (scores(1,:)) > 0.8, true);
 %! assert_equal (max (scores(2,:)) > 0.8, true);
 %! assert_equal (all (abs (sum (scores, 2) - 1) < 0.1), true);
+
+## Cross entropy with a softmax output trains at least as confidently as the
+## mean squared error does, and its rows are a probability by construction.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! Xs = [randn(40,2)*0.3 + 3; randn(40,2)*0.3 - 3];
+%! Ys = [ones(40,1); 2*ones(40,1)];
+%! Mm = fcnntrain (Xs, Ys, [8, 8], [1, 1, 4], 1, 0.01, 0.05, 400, false, 0);
+%! Mc = fcnntrain (Xs, Ys, [8, 8], [1, 1, 4], 1, 0.01, 0.05, 400, false, 1);
+%! [pm, sm] = fcnnpredict (Mm, [3, 3; -3, -3]);
+%! [pc, sc] = fcnnpredict (Mc, [3, 3; -3, -3]);
+%! assert_equal (pm, [1; 2]);
+%! assert_equal (pc, [1; 2]);
+%! assert_equal (all (abs (sum (sc, 2) - 1) < 1e-8), true);
+%! assert_equal (min (max (sc, [], 2)) >= min (max (sm, [], 2)), true);
+
+## Omitting the loss selector keeps the mean squared error.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! Xs = [randn(20,2)*0.3 + 3; randn(20,2)*0.3 - 3];
+%! Ys = [ones(20,1); 2*ones(20,1)];
+%! M9 = fcnntrain (Xs, Ys, 6, [1, 1], 1, 0.01, 0.05, 100, false);
+%! M0 = fcnntrain (Xs, Ys, 6, [1, 1], 1, 0.01, 0.05, 100, false, 0);
+%! assert_equal (M9.Loss, M0.Loss, 0);
 %!error <fcnnpredict: too few input arguments.> ...
 %! fcnnpredict (MODEL);
 %!error <fcnnpredict: too many output arguments.> ...

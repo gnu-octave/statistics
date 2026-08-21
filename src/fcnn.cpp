@@ -59,11 +59,30 @@ double accuracy (vector<int> predictions, vector<int> labels)
 
 // Class definitions
 
+// Half-width of the uniform range a layer's weights are drawn from.  A
+// constant range ignores how many inputs each neuron sums, so the variance of
+// a pre-activation grows with the width of the layer feeding it: deep networks
+// then saturate a sigmoid or drive every ReLU unit negative, where it stays
+// with a gradient of exactly zero.  Scaling by fan-in holds that variance
+// steady from layer to layer.  A rectifier passes only half its input, so it
+// needs the wider He range; the symmetric activations take Glorot, which
+// accounts for the backward pass through the layer as well.
+double init_scale (int activation, int fan_in, int fan_out)
+{
+  bool rectifier = (activation == 2 || activation == 5 || activation == 6
+                    || activation == 7);
+  if (rectifier)
+  {
+    return sqrt (6.0 / fan_in);
+  }
+  return sqrt (6.0 / (fan_in + fan_out));
+}
+
 class Neuron
 {
 public:
   // constructor
-  Neuron (int input_size);
+  Neuron (int input_size, double scale);
   // destructor
   ~Neuron ();
 
@@ -82,13 +101,13 @@ public:
   double bgrad;
 };
 
-Neuron::Neuron (int input_size)
+Neuron::Neuron (int input_size, double scale)
 {
   this->weights = vector<double> (input_size);
   this->bias = 0.01 * get_random ();
   for (int i = 0; i < input_size; i++)
   {
-    this->weights[i] = get_random ();
+    this->weights[i] = scale * get_random ();
   }
 }
 Neuron::~Neuron () {}
@@ -148,7 +167,7 @@ class DenseLayer
 {
 public:
   // constructor
-  DenseLayer (int input_size, int output_size);
+  DenseLayer (int input_size, int output_size, int activation);
   // destructor
   ~DenseLayer ();
 
@@ -165,13 +184,14 @@ public:
   vector<double> last_input;
 };
 
-DenseLayer::DenseLayer (int input_size, int output_size)
+DenseLayer::DenseLayer (int input_size, int output_size, int activation)
 {
-  // initialize neurons
+  // initialize neurons on a range set by the fan-in and the activation
+  double scale = init_scale (activation, input_size, output_size);
   this->neurons = vector<Neuron> ();
   for (int i = 0; i < output_size; i++)
   {
-    Neuron to_add = Neuron (input_size);
+    Neuron to_add = Neuron (input_size, scale);
     this->neurons.push_back (to_add);
   }
 }
@@ -549,3 +569,58 @@ void MeanSquaredErrorLoss::backward (double grad)
     this->grad.at(i) *= grad;
   }
 }
+
+// Cross-entropy loss, for an output layer that reports a probability over the
+// classes.  Paired with softmax the composition of the two gradients reduces
+// to y - t, which is the pairing this loss exists for.
+class CrossEntropyLoss
+{
+public:
+  CrossEntropyLoss ();
+  ~CrossEntropyLoss ();
+
+  double forward (vector<double> inputs, vector<double> targets);
+  void backward (double grad);
+
+  // data
+  vector<double> last_input;
+  vector<double> last_target;
+  vector<double> grad;
+};
+
+CrossEntropyLoss::CrossEntropyLoss () {}
+CrossEntropyLoss::~CrossEntropyLoss () {}
+
+// A predicted probability of zero for the true class carries infinite loss, so
+// the logarithm and the division below are floored rather than allowed to
+// diverge.
+static const double CE_FLOOR = 1e-15;
+
+double CrossEntropyLoss::forward (vector<double> inputs, vector<double> targets)
+{
+  this->last_input = inputs;
+  this->last_target = targets;
+
+  double total = 0.0;
+
+  for (int i = 0; i < inputs.size (); i++)
+  {
+    if (targets[i] != 0.0)
+    {
+      total -= targets[i] * log (inputs[i] > CE_FLOOR ? inputs[i] : CE_FLOOR);
+    }
+  }
+  return total;
+}
+
+void CrossEntropyLoss::backward (double grad)
+{
+  this->grad = vector<double> (this->last_input.size ());
+  for (int i = 0; i < this->last_input.size (); i++)
+  {
+    double y = this->last_input[i] > CE_FLOOR ? this->last_input[i] : CE_FLOOR;
+    this->grad.at (i) = -this->last_target[i] / y;
+    this->grad.at (i) *= grad;
+  }
+}
+

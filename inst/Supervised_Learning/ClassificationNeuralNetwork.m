@@ -256,7 +256,10 @@ classdef ClassificationNeuralNetwork
     ##
     ## A character vector specifying the activation function of the output layer
     ## of the neural network.  Supported activation functions are the same as
-    ## for the @qcode{Activations} property.  This property is read-only.
+    ## for the @qcode{Activations} property.  The default, @qcode{softmax},
+    ## reports a probability over the classes; the network is then trained
+    ## against cross entropy rather than the mean squared error.  This
+    ## property is read-only.
     ##
     ## @end deftp
     OutputLayerActivation = [];
@@ -523,12 +526,16 @@ classdef ClassificationNeuralNetwork
     ## layers.  Supported values include @qcode{'linear'}, @qcode{'sigmoid'},
     ## @qcode{'relu'}, @qcode{'tanh'}, @qcode{'softmax'}, @qcode{'lrelu'},
     ## @qcode{'prelu'}, @qcode{'elu'}, and @qcode{'gelu'}.  The default is
-    ## @qcode{'sigmoid'}.
+    ## @qcode{'relu'}, whose gradient is one wherever a unit is active and so
+    ## does not shrink as it passes back through the layers, where a sigmoid
+    ## multiplies it by at most a quarter at every one.
     ##
     ## @item @qcode{'OutputLayerActivation'} @tab A character vector
     ## specifying the activation function for the output layer.  Supported
     ## values are the same as for @qcode{'Activations'}.  The default is
-    ## @qcode{'sigmoid'}.
+    ## @qcode{'softmax'}, which makes the scores a probability over the
+    ## classes and trains the network against cross entropy; any other value
+    ## trains it against the mean squared error.
     ##
     ## @item @qcode{'LearningRate'} @tab A positive scalar specifying the
     ## learning rate for gradient descent.  The default is 0.01.
@@ -567,8 +574,8 @@ classdef ClassificationNeuralNetwork
       PredictorNames          = [];
       ClassNames              = [];
       LayerSizes              = 10;
-      Activations             = 'sigmoid';
-      OutputLayerActivation   = 'sigmoid';
+      Activations             = 'relu';
+      OutputLayerActivation   = 'softmax';
       LearningRate            = 0.01;
       IterationLimit          = 1000;
       DisplayInfo             = false;
@@ -794,8 +801,14 @@ classdef ClassificationNeuralNetwork
       NumThreads = nproc ();
       Alpha = 0.01;  # used for ReLU and ELU activation layers
       cnn_timer_ = tic;
+      ## A softmax output reports a probability over the classes, and the
+      ## loss that belongs with it is cross entropy: paired that way the two
+      ## gradients compose to y - t.  Any other output layer keeps the mean
+      ## squared error.
+      LossFunction = double (strcmp (OutputLayerActivation, 'softmax'));
       Mdl = fcnntrain (X, gY, LayerSizes, ActivationCodes, NumThreads, ...
-                       Alpha, LearningRate, IterationLimit, DisplayInfo);
+                       Alpha, LearningRate, IterationLimit, DisplayInfo, ...
+                       LossFunction);
 
       ## Store training time, Iterations, and Loss
       ConvergenceInfo.Time = toc (cnn_timer_);
@@ -1343,6 +1356,27 @@ endfunction
 %! assert_equal (all (abs (sum (score, 2) - 1) < 0.1), true);
 %! assert_equal (max (score(1,:)) > 0.8, true);
 %! assert_equal (max (score(2,:)) > 0.8, true);
+
+## The defaults follow MATLAB: rectified hidden layers and a softmax output.
+%!test
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]);
+%! assert_equal (Mdl.Activations, 'relu');
+%! assert_equal (Mdl.OutputLayerActivation, 'softmax');
+
+## Training reports a history that was recorded, one entry per iteration.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! X = [randn(30, 2) * 0.4 + 2; randn(30, 2) * 0.4 - 2];
+%! Y = [ones(30, 1); 2 * ones(30, 1)];
+%! Mdl = fitcnet (X, Y, 'IterationLimit', 100);
+%! loss = Mdl.ConvergenceInfo.TrainingLoss;
+%! acc = Mdl.ConvergenceInfo.Accuracy;
+%! assert_equal (numel (loss), 100);
+%! assert_equal (numel (acc), 100);
+%! assert_equal (any (loss != 0), true);
+%! assert_equal (loss(end) < loss(1), true);
+%! assert_equal (mean (predict (Mdl, X) == Y) > 0.95, true);
 
 ## Every activation trains to a usable posterior on separable data.
 %!test

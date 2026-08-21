@@ -35,6 +35,8 @@ DEFUN_DLD(fcnntrain, args, nargout,
  @deftypefn  {statistics} {@var{Mdl} =} fcnntrain (@var{X}, @var{Y}, @\
  @var{LayerSizes}, @var{Activations}, @var{NumThreads}, @var{Alpha}, @\
  @var{LearningRate}, @var{Epochs}, @var{DisplayInfo})\n\
+ @deftypefnx  {statistics} {@var{Mdl} =} fcnntrain (@dots{}, @\
+ @var{LossFunction})\n\
 \n\
 \n\
 Train a fully connected Neural Network. \n\
@@ -94,6 +96,15 @@ training the model. \
 information during training. \n\
 @end itemize \n\
 \n\
+@code{@var{Mdl} = fcnntrain (@dots{}, @var{LossFunction})} also selects the \
+loss the network is trained against.  @var{LossFunction} is a scalar: 0 for \
+mean squared error, which is the default, and 1 for cross entropy.  Cross \
+entropy expects the output layer to report a probability over the classes, \
+so it belongs with a softmax output; paired that way the two gradients \
+compose to @math{y - t}.  Its loss is undefined where the predicted \
+probability of the true class is zero, so both the logarithm and its \
+derivative are floored. \n\
+\n\
 \n\
 @code{fcnntrain} returns the trained model, @var{Mdl}, as a structure \
 containing the following fields: \
@@ -137,6 +148,10 @@ package:\n\n\
   if (args.length () < 9)
   {
     error ("fcnntrain: too few input arguments.");
+  }
+  if (args.length () > 10)
+  {
+    error ("fcnntrain: too many input arguments.");
   }
   if (nargout > 1)
   {
@@ -237,12 +252,12 @@ package:\n\n\
     {
       error ("fcnntrain: cannot have a layer of zero size.");
     }
-    DenseLayer DL = DenseLayer (input_size, output_size);
     int code = ActiveCode(i);
     if (code < 0 || code > 7)
     {
       error ("fcnntrain: invalid 'Activations' code.");
     }
+    DenseLayer DL = DenseLayer (input_size, output_size, code);
     ActivationLayer AL = ActivationLayer (code, NumThreads, Alpha);
     WeightBias.push_back (DL);
     Activation.push_back (AL);
@@ -250,8 +265,9 @@ package:\n\n\
   }
   // Push back last dense layer
   int output_size = set<int> (labels.begin (), labels.end ()).size ();
-  DenseLayer DL = DenseLayer (input_size, output_size);
   int last_AC = args(2).numel ();
+  DenseLayer DL = DenseLayer (input_size, output_size,
+                              (int) ActiveCode(last_AC));
   ActivationLayer AL = ActivationLayer (ActiveCode(last_AC), NumThreads, Alpha);
   WeightBias.push_back (DL);
   Activation.push_back (AL);
@@ -279,10 +295,33 @@ package:\n\n\
     error ("fcnntrain: 'DisplayInfo' must be a boolean scalar.");
   }
 
+  // Optional tenth argument selecting the loss: 0 for mean squared error,
+  // which is the default and what earlier releases always used, 1 for cross
+  // entropy, which expects the output layer to report a probability.
+  int lossfcn = 0;
+  if (args.length () == 10)
+  {
+    if (! args(9).isnumeric () || ! args(9).is_scalar_type ()
+        || args(9).iscomplex ())
+    {
+      error ("fcnntrain: 'LossFunction' must be a numeric scalar value.");
+    }
+    lossfcn = args(9).int_value ();
+    if (lossfcn != 0 && lossfcn != 1)
+    {
+      error ("fcnntrain: invalid 'LossFunction' code.");
+    }
+  }
+
   // Initialize return variables
   octave_idx_type max_epochs = args(7).idx_type_value ();
-  vector<double> Accuracy (max_epochs);
-  vector<double> Loss (max_epochs);
+  // Reserved, not sized: these are filled with push_back below, and sizing
+  // them here would leave max_epochs zeros in front of the values and the
+  // reported history reading back as all zero.
+  vector<double> Accuracy;
+  vector<double> Loss;
+  Accuracy.reserve (max_epochs);
+  Loss.reserve (max_epochs);
 
   // Start training
   octave_idx_type epoch = 0;
@@ -318,9 +357,23 @@ package:\n\n\
       }
       predictions.push_back (prediction);
 
-      // Compute loss
-      MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
-      double loss_output = loss.forward (sample, label_vector);
+      // Compute loss and the gradient it hands back
+      double loss_output;
+      vector<double> loss_grad;
+      if (lossfcn == 1)
+      {
+        CrossEntropyLoss loss = CrossEntropyLoss ();
+        loss_output = loss.forward (sample, label_vector);
+        loss.backward (1.0);
+        loss_grad = loss.grad;
+      }
+      else
+      {
+        MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
+        loss_output = loss.forward (sample, label_vector);
+        loss.backward (1.0);
+        loss_grad = loss.grad;
+      }
       sum_loss += loss_output;
 
       // Print output
@@ -339,10 +392,8 @@ package:\n\n\
         WeightBias[layer_idx].zero_gradient (); // Reset gradients to zero
       }
 
-      loss.backward(1.0);
-
       // Compute gradients
-      Activation[numlayers-1].backward(loss.grad);
+      Activation[numlayers-1].backward (loss_grad);
 
       for (int layer_idx = numlayers; layer_idx > 0; layer_idx--)
       {
@@ -487,4 +538,29 @@ package:\n\n\
 %! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, 1);
 %!error <fcnntrain: 'DisplayInfo' must be a boolean scalar.> ...
 %! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, [false, false]);
+## The reported training history has one entry per epoch and holds the values
+## actually recorded, not the zeros a pre-sized vector would leave in front of
+## them.
+%!test
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! Xs = [randn(30,2)*0.4 + 2; randn(30,2)*0.4 - 2];
+%! Ys = [ones(30,1); 2*ones(30,1)];
+%! M = fcnntrain (Xs, Ys, 8, [2, 4], 1, 0.01, 0.05, 60, false, 1);
+%! assert_equal (numel (M.Loss), 60);
+%! assert_equal (numel (M.Accuracy), 60);
+%! assert_equal (any (M.Loss != 0), true);
+%! assert_equal (M.Loss(end) < M.Loss(1), true);
+%! assert_equal (M.Accuracy(end) >= M.Accuracy(1), true);
+
+%!error <fcnntrain: too many input arguments.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, 0);
+%!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 'ce');
+%!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, [0, 1]);
+%!error <fcnntrain: invalid 'LossFunction' code.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 2);
+%!error <fcnntrain: invalid 'LossFunction' code.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, -1);
 */
