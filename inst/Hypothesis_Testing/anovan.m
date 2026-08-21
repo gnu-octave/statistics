@@ -129,7 +129,14 @@
 ## 1 : Type I sequential sums-of-squares.
 ##
 ## @item
-## 2 or "h" : Type II partially sequential (or hierarchical) sums-of-squares
+## 2 : Type II partially sequential sums-of-squares.  Each term is adjusted
+## for every other term that does not contain it.
+##
+## @item
+## "h" : hierarchical sums-of-squares.  Each term is adjusted only for the
+## terms below it in the hierarchy, so for a model whose terms are all of
+## first order it agrees with Type II, while a polynomial term is adjusted
+## for its lower powers but not for its higher ones.
 ##
 ## @item
 ## 3 (default) : Type III partial, constrained or marginal sums-of-squares
@@ -637,7 +644,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     mDesignMatrix ();
 
     ## Fit linear models, and calculate sums-of-squares for ANOVA
-    switch (lower (SSTYPE))
+    sstype_id = lower (SSTYPE);
+    switch (sstype_id)
       case 1
         ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
@@ -655,7 +663,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ss = zeros (Nt,1);
         for j = 1:Nt
           i = find (TERMS(j,:) > 0);
-          if (isequal (SSTYPE, 'h'))
+          if (isequal (sstype_id, 'h'))
             excludes_term = any (TERMS(:,i) < TERMS(j,i), 2);
           else
             excludes_term = any (TERMS(:,i) != TERMS(j,i), 2);
@@ -990,6 +998,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       center_continuous = cont_vec;
       for j = 1:N
         if (cont_vec(j))
+          ## Keep the predictor uncentred here.  A term raises it to its
+          ## exponent first and centres the resulting column, so that x^2
+          ## means the square of x rather than the square of x - mean (x).
           base{j} = gid(:,j);
           if (ischar (CONTRASTS{j}) ...
               && strcmpi (CONTRASTS{j}, 'treatment'))
@@ -997,7 +1008,6 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             CONTRASTS{j} = [];
           else
             vmeans(j) = mean (base{j});
-            base{j} -= vmeans(j);
           endif
         elseif (any (NESTED(j,:)))
           if (! isempty (CONTRASTS{j}))
@@ -1041,8 +1051,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                            " exponent values greater than 1."));
           endif
           block = base{j};
-          if (cont_vec(j) && exponent != 1)
-            block = block .^ exponent;
+          if (cont_vec(j))
+            if (exponent != 1)
+              block = block .^ exponent;
+            endif
+            if (center_continuous(j))
+              block -= mean (block);
+            endif
           endif
           tmp = reshape (bsxfun (@times, ...
                          reshape (tmp, n, 1, columns (tmp)), ...
@@ -1050,7 +1065,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         endfor
         X{i + 1} = tmp;
         df(i) = columns (tmp);
-        termcols(i + 1) = columns (tmp);
+        ## termcols counts the columns a dummy coding of the term would take,
+        ## which is one per level rather than the contrast width in df.
+        termcols(i + 1) = prod (nlevels(factors));
         term_name = mTermName (TERMS(i, :), VARNAMES, NESTED);
         if (df(i) == 1)
           coeffnames{i + 1} = term_name;
@@ -1921,16 +1938,40 @@ endfunction
 %! assert_equal (tbl(2:3, 1), {'X2'; 'X1'});
 %! assert_equal (cell2mat (tbl(2:3, 2)), [1; 10000], 1e-10);
 
-## Continuous exponent terms are evaluated element-wise.
+## A continuous factor raised to a power is the power of the raw predictor.
 %!test
-%! x = (-2:2)';
-%! y = 2 + 3 * x + 4 * x .^ 2;
-%! [~, ~, stats, terms] = anovan (y, x, 'model', [1; 2], ...
-%!                                  'continuous', 1, 'display', 'off');
+%! x = (1:5)';
+%! y = 2 + 3 * x + 4 * x .^ 2 + [0.3; -0.2; 0.1; 0.4; -0.6];
+%! [p, tbl, ~, terms] = anovan (y, x, 'model', [1; 2], 'continuous', 1, ...
+%!                              'sstype', 2, 'display', 'off');
 %! assert_equal (terms, [1; 2]);
-%! assert_equal (full (stats.X(:, 2)), x);
-%! assert_equal (full (stats.X(:, 3)), x .^ 2);
-%! assert_equal (stats.resid, zeros (5, 1), 1e-12);
+%! assert_equal (tbl(2:3, 1), {'X1'; 'X1^2'});
+%! assert_equal (cell2mat (tbl(2:3, 2)), ...
+%!               [4.09767456073500; 216.071428571430], 1e-9);
+%! assert_equal (cell2mat (tbl(2:3, 3)), [1; 1]);
+%! assert_equal (cell2mat (tbl(4, 2:3)), [0.444571428570271, 2], 1e-9);
+%! assert_equal (p, [0.0501972848960940; 0.00102717552592300], 1e-12);
+
+## Hierarchical sums-of-squares adjust a power only for its lower powers.
+%!test
+%! x = (1:5)';
+%! y = 2 + 3 * x + 4 * x .^ 2 + [0.3; -0.2; 0.1; 0.4; -0.6];
+%! [p, tbl] = anovan (y, x, 'model', [1; 2], 'continuous', 1, ...
+%!                    'sstype', 'h', 'display', 'off');
+%! assert_equal (cell2mat (tbl(2:3, 2)), ...
+%!               [7225.34400000000; 216.071428571430], 1e-8);
+%! assert_equal (p, [3.07633044150000e-05; 0.00102717552592300], 1e-12);
+
+## The hierarchical sums-of-squares selector is not case sensitive.
+%!test
+%! x = (1:5)';
+%! y = 2 + 3 * x + 4 * x .^ 2 + [0.3; -0.2; 0.1; 0.4; -0.6];
+%! [p_lower, tbl_lower] = anovan (y, x, 'model', [1; 2], 'continuous', 1, ...
+%!                                'sstype', 'h', 'display', 'off');
+%! [p_upper, tbl_upper] = anovan (y, x, 'model', [1; 2], 'continuous', 1, ...
+%!                                'sstype', 'H', 'display', 'off');
+%! assert_equal (p_upper, p_lower);
+%! assert_equal (tbl_upper, tbl_lower);
 
 %!error <categorical factors cannot have exponent> ...
 %! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
