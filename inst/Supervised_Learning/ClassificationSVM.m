@@ -310,6 +310,12 @@ classdef ClassificationSVM
     ## @code{ClassNames}, summing to one.  It defaults to the class
     ## frequencies of the training data.  This property is read-only.
     ##
+    ## Specified as a row vector with one entry per class, in the order of
+    ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
+    ## @qcode{'empirical'}, @qcode{'uniform'}, a numeric vector, or a
+    ## structure with @qcode{ClassNames} and @qcode{ClassProbs} fields, which
+    ## assigns each probability by class name rather than by position.
+    ##
     ## @end deftp
     Prior               = [];
 
@@ -334,6 +340,10 @@ classdef ClassificationSVM
     ## A numeric column vector with one entry per training observation,
     ## normalized to sum to one, as MATLAB reports it.  This property is
     ## read-only.
+    ##
+    ## Each class carries its prior spread evenly over its own observations,
+    ## so an observation of a class weighs @qcode{Prior} for that class
+    ## divided by the number of observations it holds.
     ##
     ## @end deftp
     W                   = [];
@@ -671,8 +681,9 @@ classdef ClassificationSVM
 
           case 'prior'
             Prior = varargin{2};
-            if (! ((isnumeric (Prior) && isvector (Prior) && all (Prior >= 0)
-                    && any (Prior > 0))
+            if (! (isstruct (Prior)
+                   || (isnumeric (Prior) && isvector (Prior) && all (Prior >= 0)
+                       && any (Prior > 0))
                    || (ischar (Prior)
                        && any (strcmpi (Prior, {'empirical', 'uniform'})))))
               error (strcat ("ClassificationSVM: 'Prior' must be a", ...
@@ -831,6 +842,10 @@ classdef ClassificationSVM
       ## Resolve Prior and Cost against the classes that survived.  Prior
       ## defaults to the frequencies of the training data and Cost to zero on
       ## the diagonal and one elsewhere, which is what MATLAB reports.
+      if (isstruct (Prior))
+        Prior = priorFromStruct (Prior, this.ClassNames, ...
+                                 'ClassificationSVM');
+      endif
       freq = accumarray (gY(:), 1, [nclasses, 1])' / numel (gY);
       if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
         Prior = freq;
@@ -949,7 +964,7 @@ classdef ClassificationSVM
       ## weight, normalized to sum to one as MATLAB reports it.
       this.CategoricalPredictors = [];
       this.ExpandedPredictorNames = PredictorNames;
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      this.W = priorWeights (this.Prior, gY, this.NumObservations);
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
@@ -2503,3 +2518,26 @@ endclassdef
 %!                        2.864374999999999, 0.78487499999999988], 1e-13);
 %! assert_equal (Mdl.Sigma, [0.64239212471819018, 0.47709034264660688, ...
 %!                           1.4464268842305728, 0.56625850081877471], 1e-13);
+
+## The prior reweights the observations of each class.  Values from R2024a.
+%!test
+%! load fisheriris
+%! i2 = [1:50, 51:80];
+%! Mdl = fitcsvm (meas(i2,:), species(i2));
+%! assert_equal (Mdl.Prior, [0.625, 0.375], 1e-14);
+%! assert_equal (Mdl.W(1), 0.0125, 1e-14);
+%! Mdl = fitcsvm (meas(i2,:), species(i2), 'Prior', 'uniform');
+%! assert_equal (Mdl.W(1), 0.01, 1e-14);
+%! assert_equal (Mdl.W(51), 1/60, 1e-14);
+
+## Neither Prior nor Cost may be assigned after the fit.  The refusal comes
+## from the property attributes, so the message is core Octave's and is not
+## pinned here.
+%!error ...
+%! load fisheriris; ...
+%! Mdl = fitcsvm (meas(1:80,:), species(1:80)); ...
+%! Mdl.Prior = [0.5, 0.5];
+%!error ...
+%! load fisheriris; ...
+%! Mdl = fitcsvm (meas(1:80,:), species(1:80)); ...
+%! Mdl.Cost = [0, 2; 1, 0];

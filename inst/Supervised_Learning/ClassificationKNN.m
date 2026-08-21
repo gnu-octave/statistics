@@ -42,6 +42,22 @@ classdef ClassificationKNN
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation used for fitting.
+    ## Each class carries its prior spread evenly over its own
+    ## observations, so an observation of class @math{k} weighs
+    ## @qcode{Prior(k)} divided by the number of observations in that class.  This property is read-only.
+    ##
+    ## Each class carries its prior spread evenly over its own observations,
+    ## so an observation of a class weighs @qcode{Prior} for that class
+    ## divided by the number of observations it holds.
+    ##
+    ## @end deftp
+    W               = [];
+    ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} X
     ##
     ## Predictor data
@@ -403,6 +419,12 @@ classdef ClassificationKNN
     ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
     ## @end itemize
     ##
+    ## Specified as a row vector with one entry per class, in the order of
+    ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
+    ## @qcode{'empirical'}, @qcode{'uniform'}, a numeric vector, or a
+    ## structure with @qcode{ClassNames} and @qcode{ClassProbs} fields, which
+    ## assigns each probability by class name rather than by position.
+    ##
     ## @end deftp
     Prior           = [];
     ## -*- texinfo -*-
@@ -470,21 +492,26 @@ classdef ClassificationKNN
 
     function this = set.Prior (this, val)
       [~, gnY, gY] = unique (this.Y);
+      if (isstruct (val))
+        val = priorFromStruct (val, this.ClassNames, 'ClassificationKNN');
+      endif
       if (strcmpi ('uniform', val))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
+        this.Prior = ones (1, numel (gnY)) ./ numel (gnY);
       elseif (isempty (val) || strcmpi ('empirical', val))
         pr = [];
         for i = 1:numel (gnY)
           pr = [pr; sum(gY==i)];
         endfor
-        this.Prior = pr ./ sum (pr);
+        this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (val))
         if (numel (gnY) != numel (val))
           error (strcat ("ClassificationKNN: the elements in 'Prior' do", ...
                          " not correspond to the selected classes in Y."));
         endif
-        this.Prior = val ./ sum (val);
+        this.Prior = val(:)' ./ sum (val);
       endif
+      ## The weights follow the prior, so they are rebuilt with it
+      this.W = priorWeights (this.Prior, gY, numel (gY));
     endfunction
 
     function this = set.ScoreTransform (this, val)
@@ -765,8 +792,9 @@ classdef ClassificationKNN
 
           case 'prior'
             Prior = varargin{2};
-            if (! ((isnumeric (Prior) && isvector (Prior)) ||
-                  (strcmpi (Prior, 'empirical') || strcmpi (Prior, 'uniform'))))
+            if (! (isstruct (Prior) || (isnumeric (Prior) && isvector (Prior))
+                   || (ischar (Prior) && (strcmpi (Prior, 'empirical')
+                       || strcmpi (Prior, 'uniform')))))
               error (strcat ("ClassificationKNN: 'Prior' must be either", ...
                              " a numeric vector or a character vector."));
             endif
@@ -1018,6 +1046,8 @@ classdef ClassificationKNN
       ## Handle Cost and Prior
       this.Cost  = Cost;
       this.Prior = Prior;
+      ## Each class carries its prior, spread over its own observations
+      this.W = priorWeights (this.Prior, gY, this.NumObservations);
 
       ## Get number of neighbors
       if (isempty (NumNeighbors))
@@ -2407,13 +2437,13 @@ endfunction
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
 %! assert_equal (class (a), "ClassificationKNN")
-%! assert_equal (a.Prior, [0.5; 0.5])
+%! assert_equal (a.Prior, [0.5, 0.5])
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
-%! prior = [0.5; 0.5];
+%! prior = [0.5, 0.5];
 %! a = ClassificationKNN (x, y, 'Prior', 'empirical');
 %! assert_equal (class (a), "ClassificationKNN")
 %! assert_equal (a.Prior, prior)
@@ -2422,7 +2452,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'a'; 'b'];
-%! prior = [0.75; 0.25];
+%! prior = [0.75, 0.25];
 %! a = ClassificationKNN (x, y, 'Prior', 'empirical');
 %! assert_equal (class (a), "ClassificationKNN")
 %! assert_equal (a.Prior, prior)
@@ -2431,7 +2461,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'a'; 'b'];
-%! prior = [0.5; 0.5];
+%! prior = [0.5, 0.5];
 %! a = ClassificationKNN (x, y, 'Prior', 'uniform');
 %! assert_equal (class (a), "ClassificationKNN")
 %! assert_equal (a.Prior, prior)
@@ -2459,7 +2489,7 @@ endfunction
 %! x = [1, 2; 3, 4; 5,6; 5, 8];
 %! y = {'9'; '9'; '6'; '7'};
 %! a = ClassificationKNN (x, y);
-%! assert_equal (a.Prior, [0.25; 0.25; 0.5])
+%! assert_equal (a.Prior, [0.25, 0.25, 0.5])
 
 ## Test constructor with ClassNames parameter
 %!test
@@ -3282,3 +3312,23 @@ endfunction
 %! assert_equal (Mdl.Sigma, [0.82627581654893234, 0.43717801242449683, ...
 %!                           1.7652982332594667, 0.76196186774754338], 1e-13);
 %! assert_equal (Mdl.Mu(3), mean (meas(:,3)), 1e-13);
+
+## Each class carries its prior spread over its own observations.  Values
+## from R2024a.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! Mdl = fitcknn (meas(i3,:), species(i3), 'Prior', 'uniform');
+%! assert_equal (Mdl.Prior, [1, 1, 1] / 3, 1e-14);
+%! assert_equal (Mdl.W(1), 1/150, 1e-14);
+%! assert_equal (Mdl.W(51), 1/90, 1e-14);
+%! assert_equal (Mdl.W(81), 1/60, 1e-14);
+
+## Reassigning the prior rebuilds the weights with it.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! Mdl = fitcknn (meas(i3,:), species(i3));
+%! assert_equal (Mdl.W(1), 0.01, 1e-14);
+%! Mdl.Prior = [0.98, 0.01, 0.01];
+%! assert_equal (Mdl.W(1), 0.0196, 1e-14);

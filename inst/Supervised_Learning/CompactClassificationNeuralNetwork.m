@@ -277,18 +277,6 @@ classdef CompactClassificationNeuralNetwork
     ## @end deftp
     LayerBiases           = {};
 
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Cost
-    ##
-    ## Cost of misclassification
-    ##
-    ## A numeric matrix with one row and one column per class, where
-    ## @code{Cost(i,j)} is the cost of classifying an observation of class
-    ## @math{i} as class @math{j}.  It is taken from the model this object was
-    ## compacted from.  This property is read-only.
-    ##
-    ## @end deftp
-    Cost                  = [];
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} Prior
@@ -330,6 +318,18 @@ classdef CompactClassificationNeuralNetwork
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Cost
+    ##
+    ## Cost of misclassification
+    ##
+    ## A numeric matrix with one row and one column per class, where
+    ## @code{Cost(i,j)} is the cost of classifying an observation of class
+    ## @math{i} as class @math{j}.  It is taken from the model this object was
+    ## compacted from.  This property is read-only.
+    ##
+    ## @end deftp
+    Cost                  = [];
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} ScoreTransform
     ##
@@ -383,6 +383,20 @@ classdef CompactClassificationNeuralNetwork
       name = 'CompactClassificationNeuralNetwork';
       [this.ScoreTransform, this.STname] = parseScoreTransform (val, ...
                                                                 name);
+    endfunction
+
+    function this = set.Cost (this, val)
+      gnY = this.ClassNames;
+      if (isempty (val))
+        this.Cost = cast (! eye (numel (gnY)), 'double');
+      else
+        if (numel (gnY) != sqrt (numel (val)))
+          error (strcat ("CompactClassificationNeuralNetwork: the number of rows and", ...
+                         " columns in 'Cost' must correspond to the", ...
+                         " selected classes in Y."));
+        endif
+        this.Cost = val;
+      endif
     endfunction
 
   endmethods

@@ -351,18 +351,6 @@ classdef ClassificationNeuralNetwork
     ## @end deftp
     TrainingHistory       = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Cost
-    ##
-    ## Cost of misclassification
-    ##
-    ## A numeric matrix with one row and one column per class, where
-    ## @code{Cost(i,j)} is the cost of classifying an observation of class
-    ## @math{i} as class @math{j}.  The default has zeros on the diagonal and
-    ## ones elsewhere.  Change it with @code{setCost}.
-    ##
-    ## @end deftp
-    Cost                  = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} Prior
@@ -373,6 +361,12 @@ classdef ClassificationNeuralNetwork
     ## @code{ClassNames}, summing to one.  It defaults to the relative
     ## frequency of each class in the training data.  Change it with
     ## @code{setPrior}.
+    ##
+    ## Specified as a row vector with one entry per class, in the order of
+    ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
+    ## @qcode{'empirical'}, @qcode{'uniform'}, a numeric vector, or a
+    ## structure with @qcode{ClassNames} and @qcode{ClassProbs} fields, which
+    ## assigns each probability by class name rather than by position.
     ##
     ## @end deftp
     Prior                 = [];
@@ -385,6 +379,10 @@ classdef ClassificationNeuralNetwork
     ## A numeric column vector with one entry per training observation.  It
     ## defaults to a uniform weight for every observation.  This property is
     ## read-only.
+    ##
+    ## Each class carries its prior spread evenly over its own observations,
+    ## so an observation of a class weighs @qcode{Prior} for that class
+    ## divided by the number of observations it holds.
     ##
     ## @end deftp
     W                     = [];
@@ -417,6 +415,18 @@ classdef ClassificationNeuralNetwork
   ## Properties a user may set after the model is built.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Cost
+    ##
+    ## Cost of misclassification
+    ##
+    ## A numeric matrix with one row and one column per class, where
+    ## @code{Cost(i,j)} is the cost of classifying an observation of class
+    ## @math{i} as class @math{j}.  The default has zeros on the diagonal and
+    ## ones elsewhere.  Change it with @code{setCost}.
+    ##
+    ## @end deftp
+    Cost                  = [];
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} ScoreTransform
     ##
@@ -470,6 +480,20 @@ classdef ClassificationNeuralNetwork
         name = 'ClassificationNeuralNetwork';
         [this.ScoreTransform, this.STname] = parseScoreTransform (val, ...
                                                                   name);
+    endfunction
+
+    function this = set.Cost (this, val)
+      gnY = this.ClassNames;
+      if (isempty (val))
+        this.Cost = cast (! eye (numel (gnY)), 'double');
+      else
+        if (numel (gnY) != sqrt (numel (val)))
+          error (strcat ("ClassificationNeuralNetwork: the number of rows and", ...
+                         " columns in 'Cost' must correspond to the", ...
+                         " selected classes in Y."));
+        endif
+        this.Cost = val;
+      endif
     endfunction
 
   endmethods
@@ -654,6 +678,8 @@ classdef ClassificationNeuralNetwork
       acList = {'linear', 'none', 'sigmoid', 'relu', 'tanh', 'softmax', ...
                           'lrelu', 'prelu', 'elu', 'gelu'};
       ## Parse extra parameters
+      Prior = [];
+      Cost  = [];
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
@@ -710,6 +736,12 @@ classdef ClassificationNeuralNetwork
             name = 'ClassificationNeuralNetwork';
             [this.ScoreTransform, this.STname] = parseScoreTransform ...
                                                  (varargin{2}, name);
+
+          case 'prior'
+            Prior = varargin{2};
+
+          case 'cost'
+            Cost = varargin{2};
 
           case 'layersizes'
             LayerSizes = varargin{2};
@@ -844,13 +876,41 @@ classdef ClassificationNeuralNetwork
         this.RowsUsed = RowsUsed;
       endif
 
-      ## Cost, Prior and the observation weights.  Cost is zero on the
-      ## diagonal and one elsewhere, Prior follows the class frequencies of
-      ## the training data, and every observation carries the same weight.
+      ## Cost, Prior and the observation weights.  Cost defaults to zero on
+      ## the diagonal and one elsewhere, Prior to the class frequencies of the
+      ## training data, and each class spreads its prior over its own
+      ## observations.  Prior cannot be changed once the model is built, so
+      ## the option here is the only way to weigh the classes differently.
       nclasses = numel (this.ClassNames);
-      this.Cost = ones (nclasses) - eye (nclasses);
-      this.Prior = accumarray (gY(:), 1, [nclasses, 1]) / numel (gY);
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      if (isempty (Cost))
+        this.Cost = ones (nclasses) - eye (nclasses);
+      else
+        if (! (isnumeric (Cost) && issquare (Cost)
+               && rows (Cost) == nclasses))
+          error (strcat ("ClassificationNeuralNetwork: 'Cost' must be a", ...
+                         " numeric square matrix with one row and column", ...
+                         " per class."));
+        endif
+        this.Cost = Cost;
+      endif
+      if (isstruct (Prior))
+        Prior = priorFromStruct (Prior, this.ClassNames, ...
+                                 'ClassificationNeuralNetwork');
+      endif
+      if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
+        this.Prior = accumarray (gY(:), 1, [nclasses, 1])' / numel (gY);
+      elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
+        this.Prior = ones (1, nclasses) / nclasses;
+      elseif (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
+              && numel (Prior) == nclasses && all (Prior >= 0)
+              && sum (Prior) > 0)
+        this.Prior = Prior(:)' / sum (Prior);
+      else
+        error (strcat ("ClassificationNeuralNetwork: 'Prior' must be", ...
+                       " 'empirical', 'uniform', or a non-negative numeric", ...
+                       " vector with one entry per class."));
+      endif
+      this.W = priorWeights (this.Prior, gY, this.NumObservations);
 
       ## No predictor is treated as categorical, so the expanded names are
       ## the predictor names themselves.
@@ -1659,14 +1719,14 @@ classdef ClassificationNeuralNetwork
       endif
       K = numel (this.ClassNames);
       if (ischar (Prior) && strcmpi (Prior, 'uniform'))
-        this.Prior = ones (K, 1) / K;
+        this.Prior = ones (1, K) / K;
       elseif (isempty (Prior)
               || (ischar (Prior) && strcmpi (Prior, 'empirical')))
         [~, ~, gY] = unique (this.Y);
-        this.Prior = accumarray (gY(:), 1, [K, 1]) / numel (gY);
+        this.Prior = accumarray (gY(:), 1, [K, 1])' / numel (gY);
       elseif (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
               && numel (Prior) == K && all (Prior >= 0) && sum (Prior) > 0)
-        this.Prior = Prior(:) / sum (Prior);
+        this.Prior = Prior(:)' / sum (Prior);
       else
         error (strcat ("ClassificationNeuralNetwork.setPrior: 'Prior' must", ...
                        " be 'empirical', 'uniform', or a non-negative", ...
@@ -1901,13 +1961,13 @@ endfunction
 %!test
 %! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 20);
 %! Mdl = setCost (Mdl, [0, 3; 5, 0]);
-%! Mdl = setPrior (Mdl, [0.25; 0.75]);
+%! Mdl = setPrior (Mdl, [0.25, 0.75]);
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
 %! Mdl2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (Mdl2.Cost, [0, 3; 5, 0]);
-%! assert_equal (Mdl2.Prior, [0.25; 0.75]);
+%! assert_equal (Mdl2.Prior, [0.25, 0.75]);
 %! assert_equal (Mdl2.W, Mdl.W);
 %! assert_equal (Mdl2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
 %! assert_equal (Mdl2.CategoricalPredictors, Mdl.CategoricalPredictors);
@@ -2022,7 +2082,7 @@ endfunction
 %!test
 %! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 20);
 %! assert_equal (Mdl.Cost, [0, 1; 1, 0]);
-%! assert_equal (Mdl.Prior, [0.5; 0.5]);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
 %! assert_equal (size (Mdl.W), [4, 1]);
 %! assert_equal (sum (Mdl.W), 1, 1e-12);
 %! assert_equal (Mdl.CategoricalPredictors, []);
@@ -2070,9 +2130,9 @@ endfunction
 ## setPrior and setCost replace the properties they name.
 %!test
 %! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 1; 2], 'IterationLimit', 20);
-%! assert_equal (Mdl.Prior, [0.75; 0.25], 1e-12);
-%! assert_equal (setPrior (Mdl, 'uniform').Prior, [0.5; 0.5]);
-%! assert_equal (setPrior (Mdl, [3, 1]).Prior, [0.75; 0.25], 1e-12);
+%! assert_equal (Mdl.Prior, [0.75, 0.25], 1e-12);
+%! assert_equal (setPrior (Mdl, 'uniform').Prior, [0.5, 0.5]);
+%! assert_equal (setPrior (Mdl, [3, 1]).Prior, [0.75, 0.25], 1e-12);
 %! assert_equal (setPrior (Mdl, 'empirical').Prior, Mdl.Prior, 1e-12);
 %! assert_equal (setCost (Mdl, [0, 2; 1, 0]).Cost, [0, 2; 1, 0]);
 %! assert_equal (setCost (Mdl, []).Cost, [0, 1; 1, 0]);
@@ -2151,3 +2211,31 @@ endfunction
 %!                        3.7612840136054406, 1.1980799319727886], 1e-13);
 %! assert_equal (Mdl.Sigma, [0.82803317153591371, 0.43533400398915184, ...
 %!                           1.7640762592568813, 0.76297286301694878], 1e-13);
+
+## fitcnet takes Prior and Cost, and the prior reweights the observations.
+## Values from R2024a.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! Mdl = fitcnet (meas(i3,:), species(i3), 'IterationLimit', 20, ...
+%!                'Prior', [0.2, 0.3, 0.5]);
+%! assert_equal (Mdl.Prior, [0.2, 0.3, 0.5], 1e-14);
+%! assert_equal (Mdl.W(1), 0.004, 1e-14);
+%! assert_equal (Mdl.W(51), 0.01, 1e-14);
+%! assert_equal (Mdl.W(81), 0.025, 1e-14);
+
+## Cost may be assigned after the fit.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! Mdl = fitcnet (meas(i3,:), species(i3), 'IterationLimit', 20);
+%! Mdl.Cost = [0, 2, 3; 1, 0, 1; 1, 1, 0];
+%! assert_equal (Mdl.Cost, [0, 2, 3; 1, 0, 1; 1, 1, 0]);
+
+## Prior is fixed at construction and cannot be assigned afterwards.  The
+## refusal comes from the property attributes, so the message is core
+## Octave's and is not pinned here.
+%!error ...
+%! load fisheriris; ...
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20); ...
+%! Mdl.Prior = [0.2, 0.3, 0.5];

@@ -512,13 +512,13 @@ endfunction
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = fitcknn (x, y);
 %! assert_equal (class (a), "ClassificationKNN")
-%! assert_equal (a.Prior, [0.5; 0.5])
+%! assert_equal (a.Prior, [0.5, 0.5])
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
-%! prior = [0.5; 0.5];
+%! prior = [0.5, 0.5];
 %! a = fitcknn (x, y, 'Prior', 'empirical');
 %! assert_equal (class (a), "ClassificationKNN")
 %! assert_equal (a.Prior, prior)
@@ -527,7 +527,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'a'; 'b'];
-%! prior = [0.75; 0.25];
+%! prior = [0.75, 0.25];
 %! a = fitcknn (x, y, 'Prior', 'empirical');
 %! assert_equal (class (a), "ClassificationKNN")
 %! assert_equal (a.Prior, prior)
@@ -536,7 +536,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'a'; 'b'];
-%! prior = [0.5; 0.5];
+%! prior = [0.5, 0.5];
 %! a = fitcknn (x, y, 'Prior', 'uniform');
 %! assert_equal (class (a), "ClassificationKNN")
 %! assert_equal (a.Prior, prior)

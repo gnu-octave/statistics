@@ -96,40 +96,7 @@ classdef CompactClassificationDiscriminant
     ## @end deftp
     ClassNames      = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Prior
-    ##
-    ## Prior probability for each class
-    ##
-    ## A numeric vector specifying the prior probabilities for each class.  The
-    ## order of the elements in @qcode{Prior} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.
-    ##
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Prior           = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Cost
-    ##
-    ## Cost of Misclassification
-    ##
-    ## A square matrix specifying the cost of misclassification of a point.
-    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
-    ## if its true class is @qcode{i} (that is, the rows correspond to the true
-    ## class and the columns correspond to the predicted class).  The order of
-    ## the rows and columns in @qcode{Cost} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.  The number of rows and columns in
-    ## @qcode{Cost} is the number of unique classes in the response.  By
-    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
-    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
-    ## for correct classification and 1 for incorrect classification.
-    ##
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Cost            = [];
 
 
     ## -*- texinfo -*-
@@ -245,6 +212,45 @@ classdef CompactClassificationDiscriminant
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
     ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Cost            = [];
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## This property is read-only.
+    ##
+    ## Specified as a row vector with one entry per class, in the order of
+    ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
+    ## @qcode{'empirical'}, @qcode{'uniform'}, a numeric vector, or a
+    ## structure with @qcode{ClassNames} and @qcode{ClassProbs} fields, which
+    ## assigns each probability by class name rather than by position.
+    ##
+    ## @end deftp
+    Prior           = [];
+    ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
@@ -291,6 +297,38 @@ classdef CompactClassificationDiscriminant
       name = 'CompactClassificationDiscriminant';
       [this.ScoreTransform, this.STname] = parseScoreTransform ...
                                            (val, name);
+    endfunction
+
+    function this = set.Cost (this, val)
+      gnY = this.ClassNames;
+      if (isempty (val))
+        this.Cost = cast (! eye (numel (gnY)), 'double');
+      else
+        if (numel (gnY) != sqrt (numel (val)))
+          error (strcat ("CompactClassificationDiscriminant: the number of rows and", ...
+                         " columns in 'Cost' must correspond to the", ...
+                         " selected classes in Y."));
+        endif
+        this.Cost = val;
+      endif
+    endfunction
+
+    function this = set.Prior (this, val)
+      K = numel (this.ClassNames);
+      if (isstruct (val))
+        val = priorFromStruct (val, this.ClassNames, ...
+                               'CompactClassificationDiscriminant');
+      endif
+      if (ischar (val) && strcmpi (val, 'uniform'))
+        this.Prior = ones (1, K) / K;
+      elseif (isnumeric (val) && isreal (val) && isvector (val)
+              && numel (val) == K && all (val >= 0) && sum (val) > 0)
+        this.Prior = val(:)' / sum (val);
+      else
+        error (strcat ("CompactClassificationDiscriminant: 'Prior' must be", ...
+                       " 'uniform' or a non-negative numeric vector with", ...
+                       " one entry per class."));
+      endif
     endfunction
 
   endmethods
@@ -1155,3 +1193,13 @@ endclassdef
 %! CMdl.ScoreTransform = 'symmetric';
 %! assert_equal (class (CMdl.ScoreTransform), 'function_handle');
 %! assert_equal (CMdl.ScoreTransform (0.25), -0.5);
+
+## Prior and Cost are settable on the compact model, as they are on the full
+## one, and an unnormalized prior is rescaled.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! CMdl.Prior = [2, 3, 5];
+%! assert_equal (CMdl.Prior, [0.2, 0.3, 0.5], 1e-14);
+%! CMdl.Cost = [0, 2, 3; 1, 0, 1; 1, 1, 0];
+%! assert_equal (CMdl.Cost, [0, 2, 3; 1, 0, 1; 1, 1, 0]);

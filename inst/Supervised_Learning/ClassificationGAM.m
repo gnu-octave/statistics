@@ -156,6 +156,12 @@ classdef ClassificationGAM
     ## class.  The order of the elements in @qcode{Prior} corresponds to the
     ## order of the classes in @qcode{ClassNames}.  This property is read-only.
     ##
+    ## Specified as a row vector with one entry per class, in the order of
+    ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
+    ## @qcode{'empirical'}, @qcode{'uniform'}, a numeric vector, or a
+    ## structure with @qcode{ClassNames} and @qcode{ClassProbs} fields, which
+    ## assigns each probability by class name rather than by position.
+    ##
     ## @end deftp
     Prior           = [];
 
@@ -258,6 +264,10 @@ classdef ClassificationGAM
     ##
     ## A numeric column vector with one entry per observation used for
     ## training, normalised to sum to one.  This property is read-only.
+    ##
+    ## Each class carries its prior spread evenly over its own observations,
+    ## so an observation of a class weighs @qcode{Prior} for that class
+    ## divided by the number of observations it holds.
     ##
     ## @end deftp
     W               = [];
@@ -653,7 +663,7 @@ classdef ClassificationGAM
 
           case 'prior'
             Prior = varargin{2};
-            if (! (isnumeric (Prior) || ischar (Prior)))
+            if (! (isstruct (Prior) || isnumeric (Prior) || ischar (Prior)))
               error (strcat ("ClassificationGAM: 'Prior' must be", ...
                              " a numeric vector or a string."));
             endif
@@ -661,7 +671,7 @@ classdef ClassificationGAM
               error (strcat ("ClassificationGAM: 'Prior' must be", ...
                              " 'empirical', 'uniform', or a numeric vector."));
             endif
-            if (isnumeric (Prior) && numel (Prior) != 2)
+            if (isnumeric (Prior) && numel (Prior) != 2 && ! isstruct (Prior))
               error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
             endif
 
@@ -850,16 +860,20 @@ classdef ClassificationGAM
 
       ## Assign Cost and compute Prior
       this.Cost = Cost;
+      if (isstruct (Prior))
+        Prior = priorFromStruct (Prior, this.ClassNames, ...
+                                 'ClassificationGAM');
+      endif
       if (ischar (Prior))
         if (strcmpi (Prior, 'uniform'))
           this.Prior = [0.5, 0.5];
         elseif (strcmpi (Prior, 'empirical'))
           counts = histc (gY, 1:2);
-          this.Prior = counts / sum (counts);
+          this.Prior = counts(:)' / sum (counts);
         endif
       else
         ## Numeric prior - normalize to sum to 1
-        this.Prior = Prior / sum (Prior);
+        this.Prior = Prior(:)' / sum (Prior);
       endif
 
       ## A scalar 'Knots', 'Order' or 'DoF' applies to every predictor, which
@@ -895,8 +909,8 @@ classdef ClassificationGAM
 
       ## Bookkeeping MATLAB reports alongside the fit
       this.Intercept             = intercept;
-      this.W                     = ones (this.NumObservations, 1) ...
-                                   / this.NumObservations;
+      this.W                     = priorWeights (this.Prior, gY, ...
+                                                 this.NumObservations);
       this.CategoricalPredictors = [];
       this.ExpandedPredictorNames = this.PredictorNames;
 
@@ -1879,7 +1893,7 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [0; 0; 0; 1; 1];
 %! a = ClassificationGAM (x, y, 'Prior', 'empirical');
-%! assert_equal (a.Prior, [0.6; 0.4], 1e-6);
+%! assert_equal (a.Prior, [0.6, 0.4], 1e-6);
 %!test
 %! ## Test numeric prior
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
@@ -1891,7 +1905,7 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10; 11, 12];
 %! y = [0; 0; 0; 1; 1; 1];
 %! a = ClassificationGAM (x, y);
-%! assert_equal (a.Prior, [0.5; 0.5], 1e-6);
+%! assert_equal (a.Prior, [0.5, 0.5], 1e-6);
 %!test
 %! ## Test prior normalization
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
@@ -2239,3 +2253,14 @@ endfunction
 %! assert_equal (Mdl.NumObservations, 100);
 %! assert_equal (rows (Mdl.X), 100);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## The prior reweights the observations of each class.  Values from R2024a.
+%!test
+%! load fisheriris
+%! i2 = [1:50, 51:80];
+%! Mdl = fitcgam (meas(i2,:), species(i2));
+%! assert_equal (Mdl.Prior, [0.625, 0.375], 1e-14);
+%! assert_equal (Mdl.W(1), 0.0125, 1e-14);
+%! Mdl = fitcgam (meas(i2,:), species(i2), 'Prior', 'uniform');
+%! assert_equal (Mdl.W(1), 0.01, 1e-14);
+%! assert_equal (Mdl.W(51), 1/60, 1e-14);

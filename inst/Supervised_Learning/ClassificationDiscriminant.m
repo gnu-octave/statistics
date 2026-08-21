@@ -40,6 +40,17 @@ classdef ClassificationDiscriminant
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation used for fitting.
+    ## Every observation carries the same weight, so the vector sums
+    ## to one.  This property is read-only.
+    ##
+    ## @end deftp
+    W               = [];
+    ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} X
     ##
     ## Predictor data
@@ -308,6 +319,12 @@ classdef ClassificationDiscriminant
     ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
     ## @end itemize
     ##
+    ## Specified as a row vector with one entry per class, in the order of
+    ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
+    ## @qcode{'empirical'}, @qcode{'uniform'}, a numeric vector, or a
+    ## structure with @qcode{ClassNames} and @qcode{ClassProbs} fields, which
+    ## assigns each probability by class name rather than by position.
+    ##
     ## @end deftp
     Prior           = [];
     ## -*- texinfo -*-
@@ -375,22 +392,26 @@ classdef ClassificationDiscriminant
 
     function this = set.Prior (this, Prior)
       [~, gnY, gY] = unique (this.Y);
+      if (isstruct (Prior))
+        Prior = priorFromStruct (Prior, this.ClassNames, ...
+                                 'ClassificationDiscriminant');
+      endif
       ## Set prior
       if (strcmpi ('uniform', Prior))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
+        this.Prior = ones (1, numel (gnY)) ./ numel (gnY);
       elseif (isempty (Prior) || strcmpi ('empirical', Prior))
         pr = [];
         for i = 1:numel (gnY)
           pr = [pr; sum(gY==i)];
         endfor
-        this.Prior = pr ./ sum (pr);
+        this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (Prior))
         if (numel (gnY) != numel (Prior))
           error (strcat ("ClassificationDiscriminant: the elements", ...
                          " in 'Prior' do not correspond to the", ...
                          " selected classes in Y."));
         endif
-        this.Prior = Prior ./ sum (Prior);
+        this.Prior = Prior(:)' ./ sum (Prior);
       endif
       ## Recalculate the Const field in the Coeffs structure
       if (! isempty (this.Coeffs))
@@ -638,8 +659,9 @@ classdef ClassificationDiscriminant
 
           case 'prior'
             Prior = varargin{2};
-            if (! ((isnumeric (Prior) && isvector (Prior)) ||
-                  (strcmpi (Prior, 'empirical') || strcmpi (Prior, 'uniform'))))
+            if (! (isstruct (Prior) || (isnumeric (Prior) && isvector (Prior))
+                   || (ischar (Prior) && (strcmpi (Prior, 'empirical')
+                       || strcmpi (Prior, 'uniform')))))
               error (strcat ("ClassificationDiscriminant: 'Prior' must", ...
                              " be either a numeric or a character vector."));
             endif
@@ -743,6 +765,9 @@ classdef ClassificationDiscriminant
       ## Handle Cost and Prior
       this.Cost  = Cost;
       this.Prior = Prior;
+      ## A discriminant weighs every observation alike; the prior enters
+      ## prediction rather than the fit, which is what MATLAB reports.
+      this.W = ones (this.NumObservations, 1) / this.NumObservations;
 
       ## Assign DiscrimType
       this.DiscrimType = DiscrimType;
@@ -1996,3 +2021,39 @@ endclassdef
 %! assert_equal (Mdl.NumObservations, 150);
 %! assert_equal (rows (Mdl.X), 150);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## Prior is a row of class frequencies and W stays uniform: a discriminant
+## applies the prior when it predicts, not to the fit.  Values from R2024a.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! Mdl = fitcdiscr (meas(i3,:), species(i3));
+%! assert_equal (size (Mdl.Prior), [1, 3]);
+%! assert_equal (Mdl.Prior, [0.5, 0.3, 0.2], 1e-14);
+%! assert_equal (Mdl.W, ones (100, 1) / 100, 1e-14);
+
+## A uniform prior leaves a discriminant's weights alone.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! Mdl = fitcdiscr (meas(i3,:), species(i3), 'Prior', 'uniform');
+%! assert_equal (Mdl.Prior, [1, 1, 1] / 3, 1e-14);
+%! assert_equal (Mdl.W, ones (100, 1) / 100, 1e-14);
+
+## A structure Prior assigns by class name, whatever order it names them in.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! p = struct ('ClassNames', {{'setosa'; 'virginica'; 'versicolor'}}, ...
+%!             'ClassProbs', [0.2, 0.3, 0.5]);
+%! Mdl = fitcdiscr (meas(i3,:), species(i3), 'Prior', p);
+%! assert_equal (Mdl.Prior, [0.2, 0.5, 0.3], 1e-14);
+
+## An unnormalized Prior is rescaled on assignment.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Prior = [2, 3, 5];
+%! assert_equal (Mdl.Prior, [0.2, 0.3, 0.5], 1e-14);
+%! Mdl.Cost = [0, 2, 3; 1, 0, 1; 1, 1, 0];
+%! assert_equal (Mdl.Cost, [0, 2, 3; 1, 0, 1; 1, 1, 0]);
