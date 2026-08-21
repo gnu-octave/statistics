@@ -1202,6 +1202,12 @@ classdef RegressionSVM
 
       ## Get fieldnames from DATA (including private properties)
       names = fieldnames (data);
+      ## The set methods for these read other properties, and one of them
+      ## rebuilds Coeffs, so they are assigned once everything else is in
+      ## place rather than in the order the file happens to list them.
+      late = ismember (names, {'Cost', 'Prior', 'ScoreTransform', ...
+                               'ResponseTransform'});
+      names = [names(! late); names(late)];
 
       ## Copy data into object
       for i = 1:numel (names)
@@ -1631,3 +1637,20 @@ endclassdef
 %!                        1.203378378378378], 1e-13);
 %! assert_equal (Mdl.Sigma, [0.43214937187299296, 1.7636045663278643, ...
 %!                           0.76339873235638711], 1e-13);
+
+## A fitted model survives savemodel and loadmodel: the properties come
+## back as they were and it predicts the same.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Mdl = fitrsvm (X, Y);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (M2), 'RegressionSVM');
+%! assert_equal (M2.NumObservations, Mdl.NumObservations);
+%! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
+%! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
+%! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);

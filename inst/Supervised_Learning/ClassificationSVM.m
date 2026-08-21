@@ -1801,6 +1801,12 @@ classdef ClassificationSVM
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
       names = fieldnames (data);
+      ## The set methods for these read other properties, and one of them
+      ## rebuilds Coeffs, so they are assigned once everything else is in
+      ## place rather than in the order the file happens to list them.
+      late = ismember (names, {'Cost', 'Prior', 'ScoreTransform', ...
+                               'ResponseTransform'});
+      names = [names(! late); names(late)];
       for i = 1:numel (names)
         try
           mdl.(names{i}) = data.(names{i});
@@ -2541,3 +2547,19 @@ endclassdef
 %! load fisheriris; ...
 %! Mdl = fitcsvm (meas(1:80,:), species(1:80)); ...
 %! Mdl.Cost = [0, 2; 1, 0];
+
+## A fitted model survives savemodel and loadmodel: the properties come
+## back as they were and it predicts the same.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcsvm (meas(inds,:), species(inds));
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (M2), 'ClassificationSVM');
+%! assert_equal (M2.NumObservations, Mdl.NumObservations);
+%! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
+%! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
+%! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));

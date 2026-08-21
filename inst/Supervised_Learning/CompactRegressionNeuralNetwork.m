@@ -634,6 +634,12 @@ classdef CompactRegressionNeuralNetwork
 
       ## Get fieldnames from DATA (including private properties)
       names = fieldnames (data);
+      ## The set methods for these read other properties, and one of them
+      ## rebuilds Coeffs, so they are assigned once everything else is in
+      ## place rather than in the order the file happens to list them.
+      late = ismember (names, {'Cost', 'Prior', 'ScoreTransform', ...
+                               'ResponseTransform'});
+      names = [names(! late); names(late)];
 
       ## Copy data into object
       for i = 1:numel (names)
@@ -791,3 +797,19 @@ endclassdef
 %! CRNN.ResponseTransform = 'nope';
 %!error<CompactRegressionNeuralNetwork: function handle for 'ResponseTransform' must return the same size as its input.> ...
 %! CRNN.ResponseTransform = @(y) [y; y];
+
+## A fitted model survives savemodel and loadmodel: the properties come
+## back as they were and it predicts the same.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Mdl = compact (fitrnet (X, Y, 'IterationLimit', 20));
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (M2), 'CompactRegressionNeuralNetwork');
+%! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
+%! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
+%! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
