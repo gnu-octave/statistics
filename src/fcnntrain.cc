@@ -321,17 +321,42 @@ package:\n\n\
   Accuracy.reserve (max_epochs);
   Loss.reserve (max_epochs);
 
+  // Order the samples are visited in, reshuffled every epoch below.  Visiting
+  // them in a fixed order makes every update for one class precede the first
+  // update for the next whenever the labels arrive sorted, which is what
+  // grp2idx returns, and the weights then swing between the classes instead of
+  // settling.
+  vector<int> order (n);
+  for (int i = 0; i < n; i++)
+  {
+    order[i] = i;
+  }
+
   // Start training
   octave_idx_type epoch = 0;
   for (; epoch < max_epochs; epoch++)
   {
-    // Initialize Loss and Prediction
-    double sum_loss = 0.0;
-    vector<int> predictions = vector<int> ();
+    // Fisher-Yates over Octave's generator, so a seeded fit stays reproducible
+    for (int i = n - 1; i > 0; i--)
+    {
+      int j = (int) (octave::rand::scalar () * (i + 1));
+      if (j > i)          // scalar () is documented on [0, 1); guard the end
+      {
+        j = i;
+      }
+      int keep = order[i];
+      order[i] = order[j];
+      order[j] = keep;
+    }
+
+    // Running loss, for the progress line only: the weights move under it, so
+    // it is not the loss of any one network and is never recorded.
+    double running_loss = 0.0;
 
     // Go through all training samples
-    for (int sample_idx = 0; sample_idx < n; sample_idx++)
+    for (int visit = 0; visit < n; visit++)
     {
+      int sample_idx = order[visit];
       vector<double> sample = data[sample_idx];
       int label = labels[sample_idx];
 
@@ -342,18 +367,8 @@ package:\n\n\
         sample = Activation[layer_idx].forward (sample);
       }
 
-      // Get the prediction for this sample
       vector<double> label_vector = vector<double> (output_size);
       label_vector[label-1] = 1.0;  // Labels in Y start from 1
-      int prediction = 0;           // Search for highest value
-      for (int j = 0; j < output_size; j++)
-      {
-        if (sample[j] > sample[prediction])
-        {
-          prediction = j;
-        }
-      }
-      predictions.push_back (prediction);
 
       // Compute loss and the gradient it hands back
       double loss_output;
@@ -372,15 +387,15 @@ package:\n\n\
         loss.backward (1.0);
         loss_grad = loss.grad;
       }
-      sum_loss += loss_output;
+      running_loss += loss_output;
 
       // Print output
       if (args(8).scalar_value () != 0)
       {
-        if (sample_idx % 500 == 0)
+        if (visit % 500 == 0)
         {
-          cout << setprecision(4) << "i:" << sample_idx << " | Mean Loss: ";
-          cout << (sum_loss / (sample_idx + 1)) << "\r" << flush;
+          cout << setprecision(4) << "i:" << visit << " | Mean Loss: ";
+          cout << (running_loss / (visit + 1)) << "\r" << flush;
         }
       }
 
@@ -409,7 +424,49 @@ package:\n\n\
       }
     }
 
-    // Compute Loss and Accuracy on the training set
+    // Loss and accuracy of the network as it stands at the end of the epoch,
+    // measured in one forward-only pass with the weights held still.  Summing
+    // them inside the loop above instead scores every sample against different
+    // weights, so the figure belongs to no network that ever existed: on
+    // class-interleaved data a network stuck on a constant output reports an
+    // accuracy of exactly zero, each sample being scored against weights just
+    // pulled toward the one before it.
+    double sum_loss = 0.0;
+    vector<int> predictions = vector<int> ();
+    predictions.reserve (n);
+    for (int sample_idx = 0; sample_idx < n; sample_idx++)
+    {
+      vector<double> sample = data[sample_idx];
+      for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+      {
+        sample = WeightBias[layer_idx].forward (sample);
+        sample = Activation[layer_idx].forward (sample);
+      }
+
+      int prediction = 0;           // Search for highest value
+      for (int j = 0; j < output_size; j++)
+      {
+        if (sample[j] > sample[prediction])
+        {
+          prediction = j;
+        }
+      }
+      predictions.push_back (prediction);
+
+      vector<double> label_vector = vector<double> (output_size);
+      label_vector[labels[sample_idx]-1] = 1.0;
+      if (lossfcn == 1)
+      {
+        CrossEntropyLoss loss = CrossEntropyLoss ();
+        sum_loss += loss.forward (sample, label_vector);
+      }
+      else
+      {
+        MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
+        sum_loss += loss.forward (sample, label_vector);
+      }
+    }
+
     double A = accuracy (predictions, labels);
     double L = sum_loss / n;
     Accuracy.push_back (A);
