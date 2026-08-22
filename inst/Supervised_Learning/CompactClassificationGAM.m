@@ -31,6 +31,15 @@ classdef CompactClassificationGAM
   ## A @code{CompactClassificationGAM} object can only be created from a
   ## @code{ClassificationGAM} model by using the @code{compact} method.
   ##
+  ## The weak learner here is a smoothing spline, one per predictor, where
+  ## MATLAB's generalized additive model boosts shallow decision trees, so
+  ## predictions and scores will not agree with MATLAB's on the same data.
+  ## The two are different estimators of the same additive structure, and the
+  ## difference is deliberate.  The spline fit is described by @code{Knots},
+  ## @code{Order}, @code{DoF}, @code{Formula}, @code{LearningRate},
+  ## @code{NumIterations}, @code{BaseModel}, @code{ModelwInt} and
+  ## @code{IntMatrix}, which MATLAB's compact model does not carry.
+  ##
   ## @seealso{ClassificationGAM, fitcgam}
   ## @end deftp
 

@@ -37,6 +37,21 @@ classdef ClassificationGAM
   ## Create a @code{ClassificationGAM} object by using the @code{fitcgam}
   ## function or the class constructor.
   ##
+  ## The weak learner here is a smoothing spline, one per predictor, boosted
+  ## over @code{NumIterations} passes.  MATLAB's generalized additive model
+  ## boosts shallow decision trees instead.  Both fit the same additive
+  ## structure and both are called a GAM, but they are different estimators:
+  ## fitted values, scores and losses will not agree with MATLAB's on the same
+  ## data, and the disagreement is the method rather than a defect.
+  ##
+  ## The choice is visible in the properties.  @code{Knots}, @code{Order},
+  ## @code{DoF}, @code{Formula}, @code{LearningRate}, @code{NumIterations},
+  ## @code{BaseModel}, @code{ModelwInt} and @code{IntMatrix} describe the
+  ## spline fit and have no MATLAB counterpart, while MATLAB's
+  ## @code{ModelParameters}, @code{ReasonForTermination}, @code{BinEdges} and
+  ## @code{PairDetectionBinEdges} describe a tree ensemble and are not
+  ## reported here.
+  ##
   ## @seealso{fitcgam}
   ## @end deftp
 

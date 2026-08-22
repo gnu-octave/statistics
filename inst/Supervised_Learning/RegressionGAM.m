@@ -117,6 +117,22 @@ classdef RegressionGAM
 ## @qcode{'order'}, and @qcode{'dof'} to define the required polynomial for
 ## training the GAM model.
 ##
+## The weak learner here is a smoothing spline, one per predictor, boosted
+## until the residual sum of squares changes by less than @qcode{'tol'}.
+## MATLAB's generalized additive model boosts shallow decision trees instead.
+## Both fit the same additive structure and both are called a GAM, but they
+## are different estimators: fitted values and losses will not agree with
+## MATLAB's on the same data, and the disagreement is the method rather than
+## a defect.
+##
+## The choice is visible in the properties.  @code{Knots}, @code{Order},
+## @code{DoF}, @code{Formula}, @code{Tol}, @code{BaseModel},
+## @code{ModelwInt} and @code{IntMatrix} describe the spline fit and have no
+## MATLAB counterpart, while MATLAB's @code{ModelParameters},
+## @code{ReasonForTermination}, @code{BinEdges} and
+## @code{PairDetectionBinEdges} describe a tree ensemble and are not reported
+## here.
+##
 ## @seealso{fitrgam, regress, regress_gp}
 ## @end deftypefn
 
