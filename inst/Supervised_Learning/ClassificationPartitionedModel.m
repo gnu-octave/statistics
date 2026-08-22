@@ -198,17 +198,6 @@ classdef ClassificationPartitionedModel
     ResponseName                 = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} Standardize
-    ##
-    ## Standardize predictors flag
-    ##
-    ## A logical scalar specifying whether to standardize the predictors.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Standardize                  = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} Trained
     ##
     ## Models trained on each fold
@@ -342,10 +331,6 @@ classdef ClassificationPartitionedModel
       ## whatever was cross validated; this used to name three of the five.
       this.Prior = Mdl.Prior;
       this.Cost = Mdl.Cost;
-      if (ismember (class (Mdl), validTypes(3:5)))
-        this.Standardize = Mdl.Standardize;
-      endif
-
       ## Switch Classification object types
       switch (this.CrossValidatedModel)
 
@@ -459,6 +444,15 @@ classdef ClassificationPartitionedModel
             endif
           endfor
 
+          ## Standardization is told by Mu, and is passed on: leaving it out
+          ## refitted every fold on the raw scale while the parent reported
+          ## itself standardized.  It is passed only when it is on, the
+          ## constructor taking at most one of Standardize, Scale and Cov, so
+          ## a model carrying either of those was never standardized.
+          if (! isempty (Mdl.Mu))
+            args = [args, {'Standardize', true}];
+          endif
+
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
@@ -468,7 +462,7 @@ classdef ClassificationPartitionedModel
           ## Store ModelParameters to ClassificationPartitionedModel object
           params = struct ();
           paramList = {'NumNeighbors', 'Distance', 'DistParameter', ...
-                       'NSMethod', 'DistanceWeight', 'Standardize'};
+                       'NSMethod', 'DistanceWeight'};
           for i = 1:numel (paramList)
             paramName = paramList{i};
             if (isprop (Mdl, paramName))
@@ -482,7 +476,7 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcnet
           NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                      'ScoreTransform', 'Standardize', 'LayerSizes', ...
+                      'ScoreTransform', 'LayerSizes', ...
                       'Activations', 'OutputLayerActivation', ...
                       'LearningRate', 'IterationLimit', 'DisplayInfo'};
           ## Set parameters
@@ -493,6 +487,8 @@ classdef ClassificationPartitionedModel
               args = [args, {paramName, paramValue}];
             endif
           endfor
+          stdz = ! isempty (Mdl.Mu);
+          args = [args, {'Standardize', stdz}];
 
           ## Train model according to partition object
           for k = 1:this.KFold
@@ -522,7 +518,7 @@ classdef ClassificationPartitionedModel
             idx = training (this.Partition, k);
             ## Pass all arguments directly to fitcsvm
             tmp = fitcsvm (this.X(idx, :), this.Y(idx,:), ...
-                           'Standardize', Mdl.Standardize, ...
+                           'Standardize', ! isempty (Mdl.Mu), ...
                            'PredictorNames', Mdl.PredictorNames, ...
                            'ResponseName', Mdl.ResponseName, ...
                            'ClassNames', Mdl.ClassNames, ...
@@ -946,7 +942,7 @@ endclassdef
 %! assert_equal (cvModel.ModelParameters.NumNeighbors, 1);
 %! assert_equal (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert_equal (cvModel.ModelParameters.Distance, "euclidean");
-%! assert_equal (! cvModel.ModelParameters.Standardize, true);
+%! assert_equal (isempty (cvModel.Trained{1}.Mu), true);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
@@ -960,7 +956,7 @@ endclassdef
 %! assert_equal (cvModel.ModelParameters.NumNeighbors, 1);
 %! assert_equal (cvModel.ModelParameters.NSMethod, "exhaustive");
 %! assert_equal (cvModel.ModelParameters.Distance, "euclidean");
-%! assert_equal (! cvModel.ModelParameters.Standardize, true);
+%! assert_equal (isempty (cvModel.Trained{1}.Mu), true);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
@@ -975,7 +971,7 @@ endclassdef
 %! assert_equal (cvModel.ModelParameters.NumNeighbors, k);
 %! assert_equal (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert_equal (cvModel.ModelParameters.Distance, "euclidean");
-%! assert_equal (! cvModel.ModelParameters.Standardize, true);
+%! assert_equal (isempty (cvModel.Trained{1}.Mu), true);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {'a'; 'a'; 'b'; 'b'};
@@ -1073,7 +1069,7 @@ endclassdef
 %! assert_equal (cvModel.ModelParameters.NumNeighbors, k);
 %! assert_equal (cvModel.ModelParameters.NSMethod, "exhaustive");
 %! assert_equal (cvModel.ModelParameters.Distance, "euclidean");
-%! assert_equal (! cvModel.ModelParameters.Standardize, true);
+%! assert_equal (isempty (cvModel.Trained{1}.Mu), true);
 %! assert_equal (label, {'b'; 'b'; 'a'; 'a'});
 %! assert_equal (score, [0.3333, 0.6667; 0.3333, 0.6667; 0.6667, 0.3333; ...
 %!          0.6667, 0.3333], 1e-4);
@@ -1199,3 +1195,29 @@ endclassdef
 %! kfoldLoss (CVK, 'Folds', 0)
 %!error<ClassificationPartitionedModel.kfoldLoss: invalid parameter name in optional paired arguments.> ...
 %! kfoldLoss (CVK, 'Nope', 1)
+
+## Standardization reaches the folds.  It did not for the KNN, whose refit
+## arguments omitted it, so every fold trained on the raw scale while the
+## parent reported itself standardized and nothing said so.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! X(:,1) = X(:,1) * 1000;
+%! CVMdl = crossval (fitcknn (X, species, 'Standardize', true), 'KFold', 5);
+%! assert_equal (isempty (CVMdl.Trained{1}.Mu), false);
+
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! X(:,1) = X(:,1) * 1000;
+%! cvp = cvpartition (species, 'KFold', 5);
+%! CVMdl = crossval (fitcknn (X, species, 'Standardize', true), ...
+%!                   'CVPartition', cvp);
+%! hit = 0;
+%! for k = 1:5
+%!   tr = training (cvp, k);
+%!   te = test (cvp, k);
+%!   Mdl = fitcknn (X(tr,:), species(tr), 'Standardize', true);
+%!   hit += sum (strcmp (predict (Mdl, X(te,:)), species(te)));
+%! endfor
+%! assert_equal (sum (strcmp (kfoldPredict (CVMdl), species)), hit);

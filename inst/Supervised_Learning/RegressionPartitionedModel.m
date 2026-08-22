@@ -176,17 +176,6 @@ classdef RegressionPartitionedModel
     ## @end deftp
     Partition             = [];
 
-    ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} Standardize
-    ##
-    ## Whether the predictor data was standardized
-    ##
-    ## A logical scalar, carried over from the model that was cross
-    ## validated.  Each fold standardizes from its own training set.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
   endproperties
 
   ## Properties a user may set.  Each one is validated by its set method.
@@ -297,11 +286,9 @@ classdef RegressionPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.ResponseTransform = Mdl.ResponseTransform;
       this.RTfun = Mdl.RTfun;
-      ## A GAM neither standardizes its predictors nor carries a fitting
-      ## parameter struct, so both properties keep their defaults rather than
-      ## being read off a model that does not declare them.
+      ## A GAM carries no fitting parameter struct, so the property keeps its
+      ## default rather than being read off a model that does not declare it.
       if (! strcmp (this.CrossValidatedModel, 'RegressionGAM'))
-        this.Standardize = Mdl.Standardize;
         this.ModelParameters = Mdl.ModelParameters;
       endif
 
@@ -329,12 +316,15 @@ classdef RegressionPartitionedModel
           endfor
 
         case 'RegressionNeuralNetwork'
+          ## Computed before the cell literal: inside braces a space before
+          ## the paren would split the call from its argument.
+          stdz = ! isempty (Mdl.Mu);
           args = {'LayerSizes', Mdl.LayerSizes, ...
                   'Activations', Mdl.Activations, ...
                   'OutputLayerActivation', Mdl.OutputLayerActivation, ...
                   'LearningRate', Mdl.LearningRate, ...
                   'IterationLimit', Mdl.IterationLimit, ...
-                  'Standardize', Mdl.Standardize, ...
+                  'Standardize', stdz, ...
                   'ResponseName', Mdl.ResponseName, ...
                   'PredictorNames', Mdl.PredictorNames};
           for k = 1:this.KFold
@@ -345,6 +335,7 @@ classdef RegressionPartitionedModel
 
         case 'RegressionSVM'
           p = Mdl.ModelParameters;
+          stdz = ! isempty (Mdl.Mu);
           args = {'SVMtype', p.SVMtype, ...
                   'KernelFunction', p.KernelFunction, ...
                   'PolynomialOrder', p.PolynomialOrder, ...
@@ -355,7 +346,7 @@ classdef RegressionPartitionedModel
                   'CacheSize', p.CacheSize, ...
                   'Tolerance', p.Tolerance, ...
                   'Shrinking', p.Shrinking, ...
-                  'Standardize', Mdl.Standardize, ...
+                  'Standardize', stdz, ...
                   'ResponseName', Mdl.ResponseName, ...
                   'PredictorNames', Mdl.PredictorNames};
           for k = 1:this.KFold
@@ -584,15 +575,14 @@ endclassdef
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionSVM');
 %! assert_equal (CVMdl.CrossValidatedModel, 'RegressionSVM');
 
-## The same for a generalized additive model, which neither standardizes nor
-## carries a parameter struct, so both properties keep their defaults.
+## The same for a generalized additive model, which carries no parameter
+## struct, so that property keeps its default.
 %!test
 %! load fisheriris
 %! CVMdl = crossval (fitrgam (meas(1:20,1:3), meas(1:20,4)), 'KFold', 4);
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
 %! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGAM');
 %! assert_equal (CVMdl.NumObservations, 20);
-%! assert_equal (CVMdl.Standardize, []);
 %! assert_equal (CVMdl.ModelParameters, []);
 
 %!error<RegressionPartitionedModel: unsupported model type.> ...

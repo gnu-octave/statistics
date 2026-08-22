@@ -73,24 +73,12 @@ classdef CompactRegressionNeuralNetwork
     ResponseName          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} Standardize
-    ##
-    ## Whether the predictor data was standardized
-    ##
-    ## A logical scalar.  When true @code{predict} centres and scales its
-    ## input by @code{Mu} and @code{Sigma}, as training did.  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactRegressionNeuralNetwork} {property} Sigma
     ##
     ## Standard deviation of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -102,7 +90,7 @@ classdef CompactRegressionNeuralNetwork
     ## Mean of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -302,7 +290,6 @@ classdef CompactRegressionNeuralNetwork
       this.ResponseTransform     = Mdl.ResponseTransform;
       this.RTfun                = Mdl.RTfun;
 
-      this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
       this.Mu                    = Mdl.Mu;
 
@@ -399,7 +386,7 @@ classdef CompactRegressionNeuralNetwork
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -537,7 +524,6 @@ classdef CompactRegressionNeuralNetwork
       PredictorNames          = this.PredictorNames;
       ResponseName            = this.ResponseName;
       ResponseTransform       = this.ResponseTransform;
-      Standardize             = this.Standardize;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       LayerSizes              = this.LayerSizes;
@@ -558,7 +544,7 @@ classdef CompactRegressionNeuralNetwork
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
-            'Standardize', 'Sigma', 'Mu', 'LayerSizes', ...
+            'Sigma', 'Mu', 'LayerSizes', ...
             'Activations', 'OutputLayerActivation', 'LearningRate', ...
             'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
             'DisplayInfo', 'Solver', 'LayerWeights', 'LayerBiases', ...
@@ -661,7 +647,7 @@ endclassdef
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), 'CompactRegressionNeuralNetwork');
 %! kept = {'NumPredictors', 'PredictorNames', 'ResponseName', ...
-%!         'ResponseTransform', 'Standardize', 'Sigma', 'Mu', 'LayerSizes', ...
+%!         'ResponseTransform', 'Sigma', 'Mu', 'LayerSizes', ...
 %!         'Activations', 'OutputLayerActivation', 'LayerWeights', ...
 %!         'LayerBiases', 'CategoricalPredictors', 'ExpandedPredictorNames'};
 %! assert_equal (all (ismember (kept, properties (CMdl))), true);
@@ -689,7 +675,6 @@ endclassdef
 %! Y = X(:,1) + X(:,2) / 1000;
 %! Mdl = fitrnet (X, Y, 'Standardize', true, 'IterationLimit', 200);
 %! CMdl = compact (Mdl);
-%! assert_equal (CMdl.Standardize, true);
 %! assert_equal (CMdl.Mu, Mdl.Mu);
 %! assert_equal (CMdl.Sigma, Mdl.Sigma);
 %! assert_equal (predict (CMdl, X), predict (Mdl, X));

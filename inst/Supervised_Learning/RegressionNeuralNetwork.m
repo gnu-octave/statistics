@@ -192,24 +192,12 @@ classdef RegressionNeuralNetwork
 
 
     ## -*- texinfo -*-
-    ## @deftp {RegressionNeuralNetwork} {property} Standardize
-    ##
-    ## Whether the predictor data was standardized
-    ##
-    ## A logical scalar.  When true the training data was centred and scaled
-    ## by @code{Mu} and @code{Sigma}, and @code{predict} applies the same
-    ## transformation.  This property is read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {RegressionNeuralNetwork} {property} Sigma
     ##
     ## Standard deviation of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -221,7 +209,7 @@ classdef RegressionNeuralNetwork
     ## Mean of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -687,16 +675,15 @@ classdef RegressionNeuralNetwork
       ## the predictor names themselves.
       this.CategoricalPredictors = [];
 
-      ## Handle Standardize flag.  The network must be trained on the scale it
-      ## predicts on, so X is transformed here as well as in predict.
+      ## Handle the Standardize option.  The network must be trained on the
+      ## scale it predicts on, so X is transformed here as well as in
+      ## predict.
       if (Standardize)
-        this.Standardize = true;
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
         X = (X - this.Mu) ./ this.Sigma;
       else
-        this.Standardize = false;
         this.Sigma = [];
         this.Mu = [];
       endif
@@ -803,7 +790,7 @@ classdef RegressionNeuralNetwork
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -842,7 +829,7 @@ classdef RegressionNeuralNetwork
       XC = this.X;
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -1138,7 +1125,6 @@ classdef RegressionNeuralNetwork
       PredictorNames          = this.PredictorNames;
       ResponseName            = this.ResponseName;
       ResponseTransform       = this.ResponseTransform;
-      Standardize             = this.Standardize;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       LayerSizes              = this.LayerSizes;
@@ -1164,7 +1150,7 @@ classdef RegressionNeuralNetwork
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
-            'ResponseTransform', 'Standardize', 'Sigma', 'Mu', ...
+            'ResponseTransform', 'Sigma', 'Mu', ...
             'LayerSizes', 'Activations', 'OutputLayerActivation', ...
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
             'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...
@@ -1301,7 +1287,7 @@ endfunction
 %! assert_equal (Mdl.OutputLayerActivation, 'none');
 %! assert_equal (Mdl.LearningRate, 0.003);
 %! assert_equal (Mdl.IterationLimit, 50);
-%! assert_equal (Mdl.Standardize, false);
+%! assert_equal (isempty (Mdl.Mu), true);
 %! assert_equal (Mdl.Solver, 'Gradient Descent');
 %! assert_equal (Mdl.NumObservations, 40);
 %! assert_equal (Mdl.NumPredictors, 1);
@@ -1368,7 +1354,6 @@ endfunction
 %! Y = X(:,1) + X(:,2) / 1000;
 %! Mdl = RegressionNeuralNetwork (X, Y, 'Standardize', true, ...
 %!                                'IterationLimit', 300);
-%! assert_equal (Mdl.Standardize, true);
 %! assert_equal (size (Mdl.Mu), [1, 2]);
 %! assert_equal (size (Mdl.Sigma), [1, 2]);
 %! assert_equal (predict (Mdl, X), resubPredict (Mdl));

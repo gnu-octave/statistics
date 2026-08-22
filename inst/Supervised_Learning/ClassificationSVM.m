@@ -146,17 +146,6 @@ classdef ClassificationSVM
     ClassNames          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property} Standardize
-    ##
-    ## Flag to standardize predictors
-    ##
-    ## A boolean flag indicating whether the data in @var{X} have been
-    ## standardized prior to training.  This property is read-only.
-    ##
-    ## @end deftp
-    Standardize         = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} Sigma
     ##
     ## Predictor standard deviations
@@ -475,7 +464,7 @@ classdef ClassificationSVM
       endif
       fprintf ("%+25s: %f\n", 'Bias', this.Bias);
       fprintf ("%+25s: [1x1 struct]\n", 'KernelParameters');
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         if (numel (this.Mu) < 6)
           str = repmat ({'''%0.4f'''}, 1, numel (this.Mu));
           str = strcat ('[', strjoin (str, ' '), ']');
@@ -912,13 +901,13 @@ classdef ClassificationSVM
         this.RowsUsed = RowsUsed;
       endif
 
-      ## Handle Standardize flag.  The model must be fitted on the scale it
-      ## predicts on: predict and resubPredict standardize their input from
-      ## Mu and Sigma, so the training data is standardized here as well.
+      ## Handle the Standardize option.  The model must be fitted on the
+      ## scale it predicts on: predict and resubPredict standardize their
+      ## input from Mu and Sigma, so the training data is standardized here
+      ## as well.
       ## The support vectors are therefore stored standardized too, which is
       ## the scale svmpredict receives.
       if (Standardize)
-        this.Standardize = true;
         ## Mu and Sigma weight the complete observations so that each class
         ## keeps the share of the observation weight it carried before any row
         ## was set aside, which is what MATLAB reports.
@@ -936,7 +925,6 @@ classdef ClassificationSVM
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         X = (X - this.Mu) ./ this.Sigma;
       else
-        this.Standardize = false;
         this.Sigma = [];
         this.Mu = [];
       endif
@@ -1108,7 +1096,7 @@ classdef ClassificationSVM
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -1175,7 +1163,7 @@ classdef ClassificationSVM
       Y = this.Y;
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         X = (X - this.Mu) ./ this.Sigma;
       endif
 
@@ -1753,7 +1741,6 @@ classdef ClassificationSVM
       ResponseName        = this.ResponseName;
       ClassNames          = this.ClassNames;
       ScoreTransform      = this.ScoreTransform;
-      Standardize         = this.Standardize;
       Sigma               = this.Sigma;
       Mu                  = this.Mu;
       ModelParameters     = this.ModelParameters;
@@ -1775,7 +1762,7 @@ classdef ClassificationSVM
 
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
-            'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu',  ...
+            'ClassNames', 'ScoreTransform', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
             'W', 'Prior', 'Cost', 'CategoricalPredictors', ...

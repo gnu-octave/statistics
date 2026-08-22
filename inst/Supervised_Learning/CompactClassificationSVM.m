@@ -117,17 +117,6 @@ classdef CompactClassificationSVM
     Cost                = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Standardize
-    ##
-    ## Flag to standardize predictors
-    ##
-    ## A boolean flag indicating whether the data in @var{X} have been
-    ## standardized prior to training.  This property is read-only.
-    ##
-    ## @end deftp
-    Standardize         = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} Sigma
     ##
     ## Predictor standard deviations
@@ -332,7 +321,6 @@ classdef CompactClassificationSVM
       this.ScoreTransform        = Mdl.ScoreTransform;
       this.STfun                = Mdl.STfun;
 
-      this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
       this.Mu                    = Mdl.Mu;
 
@@ -439,7 +427,7 @@ classdef CompactClassificationSVM
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -761,7 +749,6 @@ classdef CompactClassificationSVM
       Prior               = this.Prior;
       Cost                = this.Cost;
       ScoreTransform      = this.ScoreTransform;
-      Standardize         = this.Standardize;
       Sigma               = this.Sigma;
       Mu                  = this.Mu;
       ModelParameters     = this.ModelParameters;
@@ -777,7 +764,7 @@ classdef CompactClassificationSVM
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', ...
             'Prior', 'Cost', ...
-            'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
+            'ScoreTransform', 'Sigma', 'Mu', ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'SupportVectorLabels', 'SupportVectors', 'STfun');
     endfunction

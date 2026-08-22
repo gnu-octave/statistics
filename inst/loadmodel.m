@@ -131,7 +131,6 @@ endfunction
 %! assert_equal (m2.PredictorNames, m.PredictorNames);
 %! assert_equal (m2.ResponseName, m.ResponseName);
 %! assert_equal (m2.ClassNames, m.ClassNames);
-%! assert_equal (m2.Standardize, m.Standardize);
 %! assert_equal (m2.Sigma, m.Sigma);
 %! assert_equal (m2.Mu, m.Mu);
 %! assert_equal (m2.BreakTies, m.BreakTies);
@@ -207,7 +206,6 @@ endfunction
 %! assert_equal (m2.PredictorNames, m.PredictorNames);
 %! assert_equal (m2.ResponseName, m.ResponseName);
 %! assert_equal (m2.ClassNames, m.ClassNames);
-%! assert_equal (m2.Standardize, m.Standardize);
 %! assert_equal (m2.Sigma, m.Sigma);
 %! assert_equal (m2.Mu, m.Mu);
 %! assert_equal (m2.ModelParameters, m.ModelParameters);

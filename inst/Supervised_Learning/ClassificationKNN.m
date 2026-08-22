@@ -164,17 +164,6 @@ classdef ClassificationKNN
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Standardize
-    ##
-    ## Standardization flag
-    ##
-    ## A logical scalar specifying whether the predictor data in @var{X} have
-    ## been standardized prior to training.  This property is read-only.
-    ##
-    ## @end deftp
-    Standardize     = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Sigma
     ##
     ## Predictor standard deviations
@@ -1011,9 +1000,8 @@ classdef ClassificationKNN
         this.RowsUsed = RowsUsed;
       endif
 
-      ## Handle Standardize flag
+      ## Handle the Standardize option
       if (Standardize)
-        this.Standardize = true;
         ## A lazy learner standardizes at predict time, so each predictor is
         ## summarized from every observation where it is present, whatever is
         ## missing elsewhere in the row.  This is what MATLAB reports.
@@ -1027,7 +1015,6 @@ classdef ClassificationKNN
         endfor
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
       else
-        this.Standardize = false;
         this.Sigma = [];
         this.Mu = [];
       endif
@@ -1197,7 +1184,7 @@ classdef ClassificationKNN
       Y = this.Y(used,:);
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         X = (X - this.Mu) ./ this.Sigma;
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -2131,7 +2118,6 @@ classdef ClassificationKNN
       NumObservations = this.NumObservations;
       W               = this.W;
       RowsUsed        = this.RowsUsed;
-      Standardize     = this.Standardize;
       Sigma           = this.Sigma;
       Mu              = this.Mu;
       NumPredictors   = this.NumPredictors;
@@ -2153,7 +2139,7 @@ classdef ClassificationKNN
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'W', 'RowsUsed', 'Standardize', 'Sigma', 'Mu', 'NumPredictors', ...
+            'W', 'RowsUsed', 'Sigma', 'Mu', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
             'DistanceWeight', 'DistParameter', 'NSMethod', 'IncludeTies', ...
@@ -2372,7 +2358,6 @@ endfunction
 %! assert_equal (class (a), "ClassificationKNN");
 %! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert_equal ({a.Standardize}, {true})
 %! assert_equal ({a.Sigma}, {std(x, [], 1)})
 %! assert_equal ({a.Mu}, {[3.75, 4.25, 4.75]})
 %!test
@@ -2383,7 +2368,6 @@ endfunction
 %! assert_equal (class (a), "ClassificationKNN");
 %! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert_equal ({a.Standardize}, {false})
 %! assert_equal ({a.Sigma}, {[]})
 %! assert_equal ({a.Mu}, {[]})
 %!test
@@ -3142,7 +3126,7 @@ endfunction
 %! assert_equal (CVMdl.ModelParameters.NumNeighbors == 5, true)
 %! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'), true)
 %! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert_equal (! CVMdl.ModelParameters.Standardize, true)
+%! assert_equal (isempty (CVMdl.Trained{1}.Mu), true)
 %!test
 %! status = warning;
 %! warning ('off');
@@ -3155,7 +3139,7 @@ endfunction
 %! assert_equal (CVMdl.ModelParameters.NumNeighbors == 5, true)
 %! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'), true)
 %! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
+%! assert_equal (isempty (CVMdl.Trained{1}.Mu), isempty (obj.Mu))
 %!test
 %! status = warning;
 %! warning ('off');
@@ -3167,7 +3151,7 @@ endfunction
 %! assert_equal (CVMdl.ModelParameters.NumNeighbors == 5, true)
 %! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'), true)
 %! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
+%! assert_equal (isempty (CVMdl.Trained{1}.Mu), isempty (obj.Mu))
 %!test
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'Distance', 'cityblock');
 %! status = warning;
@@ -3181,7 +3165,7 @@ endfunction
 %! assert_equal (CVMdl.ModelParameters.NumNeighbors == 10, true)
 %! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'), true)
 %! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
+%! assert_equal (isempty (CVMdl.Trained{1}.Mu), isempty (obj.Mu))
 %!test
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'Distance', 'cityblock');
 %! status = warning;
@@ -3195,7 +3179,7 @@ endfunction
 %! assert_equal (CVMdl.ModelParameters.NumNeighbors == 10, true)
 %! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'), true)
 %! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
+%! assert_equal (isempty (CVMdl.Trained{1}.Mu), isempty (obj.Mu))
 
 ## Test input validation for crossval method
 %!error<ClassificationKNN.crossval: Name-Value arguments must be in pairs.> ...

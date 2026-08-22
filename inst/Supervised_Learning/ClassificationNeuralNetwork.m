@@ -145,25 +145,13 @@ classdef ClassificationNeuralNetwork
     ClassNames            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Standardize
-    ##
-    ## Flag to standardize predictors
-    ##
-    ## A boolean flag indicating whether the predictor data has been
-    ## standardized prior to training. When @qcode{true}, the predictors are
-    ## centered and scaled to have zero mean and unit variance. This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} Sigma
     ##
     ## Predictor standard deviations
     ##
     ## A numeric vector containing the standard deviations of the predictors
-    ## used for standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## used for standardization.  Empty when the predictor data were not
+    ## standardized.
     ## This property is read-only.
     ##
     ## Only observations with no missing predictor enter the estimate, and
@@ -179,7 +167,7 @@ classdef ClassificationNeuralNetwork
     ## Predictor means
     ##
     ## A numeric vector containing the means of the predictors used for
-    ## standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## standardization.  Empty when the predictor data were not standardized.
     ## This property is read-only.
     ##
     ## Only observations with no missing predictor enter the estimate, and
@@ -912,9 +900,8 @@ classdef ClassificationNeuralNetwork
       ## the predictor names themselves.
       this.CategoricalPredictors = [];
 
-      ## Handle Standardize flag
+      ## Handle the Standardize option
       if (Standardize)
-        this.Standardize = true;
         ## Mu and Sigma weight the complete observations so that each class
         ## keeps the share of the observation weight it carried before any row
         ## was set aside, which is what MATLAB reports.
@@ -935,7 +922,6 @@ classdef ClassificationNeuralNetwork
         ## training data must be standardized here as well.
         X = (X - this.Mu) ./ this.Sigma;
       else
-        this.Standardize = false;
         this.Sigma = [];
         this.Mu = [];
       endif
@@ -1063,7 +1049,7 @@ classdef ClassificationNeuralNetwork
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -1110,7 +1096,7 @@ classdef ClassificationNeuralNetwork
       X = this.X;
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         X = (X - this.Mu) ./ this.Sigma;
       endif
 
@@ -1573,7 +1559,6 @@ classdef ClassificationNeuralNetwork
       ResponseName            = this.ResponseName;
       ClassNames              = this.ClassNames;
       ScoreTransform          = this.ScoreTransform;
-      Standardize             = this.Standardize;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       LayerSizes              = this.LayerSizes;
@@ -1601,7 +1586,7 @@ classdef ClassificationNeuralNetwork
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
-            'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
+            'ClassNames', 'ScoreTransform', 'Sigma', 'Mu', ...
             'LayerSizes', 'Activations', 'OutputLayerActivation', ...
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
             'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...

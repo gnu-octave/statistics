@@ -209,24 +209,12 @@ classdef RegressionSVM
     Epsilon               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {RegressionSVM} {property} Standardize
-    ##
-    ## Whether the predictor data was standardized
-    ##
-    ## A logical scalar.  When true the training data was centred and scaled
-    ## by @code{Mu} and @code{Sigma}, and @code{predict} applies the same
-    ## transformation.  This property is read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} Sigma
     ##
     ## Standard deviation of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -238,7 +226,7 @@ classdef RegressionSVM
     ## Mean of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -322,7 +310,7 @@ classdef RegressionSVM
     ## The support vectors themselves
     ##
     ## A numeric matrix with one row per support vector, on the scale the
-    ## model was trained on, standardized where @code{Standardize} is true.
+    ## model was trained on, standardized where @code{Mu} is non-empty.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -418,7 +406,7 @@ classdef RegressionSVM
       fprintf ("%+25s: %f\n", 'Bias', this.Bias);
       fprintf ("%+25s: '%s'\n", 'KernelFunction', ...
                this.ModelParameters.KernelFunction);
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         fprintf ("%+25s: [1x%d double]\n", 'Mu', numel (this.Mu));
         fprintf ("%+25s: [1x%d double]\n", 'Sigma', numel (this.Sigma));
       endif
@@ -653,17 +641,16 @@ classdef RegressionSVM
       endif
       this.W = ones (this.NumObservations, 1) / this.NumObservations;
 
-      ## Handle Standardize flag.  The model must be fitted on the scale it
-      ## predicts on: predict and resubPredict standardize their input from
-      ## Mu and Sigma, so the training data is standardized here as well.
+      ## Handle the Standardize option.  The model must be fitted on the
+      ## scale it predicts on: predict and resubPredict standardize their
+      ## input from Mu and Sigma, so the training data is standardized here
+      ## as well.
       if (Standardize)
-        this.Standardize = true;
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
         X = (X - this.Mu) ./ this.Sigma;
       else
-        this.Standardize = false;
         this.Sigma = [];
         this.Mu = [];
       endif
@@ -787,7 +774,7 @@ classdef RegressionSVM
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -1108,7 +1095,6 @@ classdef RegressionSVM
       ResponseName            = this.ResponseName;
       ResponseTransform       = this.ResponseTransform;
       Epsilon                 = this.Epsilon;
-      Standardize             = this.Standardize;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       ModelParameters         = this.ModelParameters;
@@ -1127,7 +1113,7 @@ classdef RegressionSVM
       save ('-binary', fname, 'classdef_name', 'X', 'Y', ...
             'NumObservations', 'RowsUsed', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
-            'Epsilon', 'Standardize', 'Sigma', 'Mu', 'ModelParameters', ...
+            'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'IsSupportVector', ...
             'SupportVectors', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'W', 'RTfun');
@@ -1227,7 +1213,7 @@ endclassdef
 %! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
 %! assert_equal (Mdl.ModelParameters.KernelScale, 1);
 %! assert_equal (Mdl.ModelParameters.PolynomialOrder, 3);
-%! assert_equal (Mdl.Standardize, false);
+%! assert_equal (isempty (Mdl.Mu), true);
 %! assert_equal (Mdl.NumObservations, 40);
 %! assert_equal (Mdl.NumPredictors, 2);
 %! assert_equal (Mdl.ResponseName, 'Y');
@@ -1301,7 +1287,6 @@ endclassdef
 %! X = [randn(60, 1), randn(60, 1) * 1000];
 %! Y = X(:,1) + X(:,2) / 1000;
 %! Mdl = RegressionSVM (X, Y, 'Standardize', true, 'Epsilon', 0.01);
-%! assert_equal (Mdl.Standardize, true);
 %! assert_equal (size (Mdl.Mu), [1, 2]);
 %! assert_equal (size (Mdl.Sigma), [1, 2]);
 %! assert_equal (predict (Mdl, X), resubPredict (Mdl));

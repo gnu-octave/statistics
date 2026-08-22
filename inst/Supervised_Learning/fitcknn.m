@@ -448,7 +448,6 @@ endfunction
 %! assert_equal (class (a), "ClassificationKNN");
 %! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert_equal ({a.Standardize}, {true})
 %! assert_equal ({a.Sigma}, {std(x, [], 1)})
 %! assert_equal ({a.Mu}, {[3.75, 4.25, 4.75]})
 %!test
@@ -459,7 +458,6 @@ endfunction
 %! assert_equal (class (a), "ClassificationKNN");
 %! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert_equal ({a.Standardize}, {false})
 %! assert_equal ({a.Sigma}, {[]})
 %! assert_equal ({a.Mu}, {[]})
 %!test

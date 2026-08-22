@@ -82,24 +82,12 @@ classdef CompactRegressionSVM
     Epsilon               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactRegressionSVM} {property} Standardize
-    ##
-    ## Whether the predictor data was standardized
-    ##
-    ## A logical scalar.  When true @code{predict} centres and scales its
-    ## input by @code{Mu} and @code{Sigma}, as training did.  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} Sigma
     ##
     ## Standard deviation of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -111,7 +99,7 @@ classdef CompactRegressionSVM
     ## Mean of the predictors
     ##
     ## A row vector with one entry per predictor, used for standardization.
-    ## Empty if @qcode{Standardize} is @qcode{false}.  This property is
+    ## Empty when the predictor data were not standardized.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -259,7 +247,6 @@ classdef CompactRegressionSVM
       this.RTfun                = Mdl.RTfun;
 
       this.Epsilon               = Mdl.Epsilon;
-      this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
       this.Mu                    = Mdl.Mu;
 
@@ -343,7 +330,7 @@ classdef CompactRegressionSVM
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -480,7 +467,6 @@ classdef CompactRegressionSVM
       ResponseName            = this.ResponseName;
       ResponseTransform       = this.ResponseTransform;
       Epsilon                 = this.Epsilon;
-      Standardize             = this.Standardize;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       ModelParameters         = this.ModelParameters;
@@ -496,7 +482,7 @@ classdef CompactRegressionSVM
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
-            'Epsilon', 'Standardize', 'Sigma', 'Mu', 'ModelParameters', ...
+            'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'SupportVectors', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
     endfunction
@@ -593,7 +579,7 @@ endclassdef
 %! CMdl = compact (RegressionSVM (X, Y));
 %! assert_equal (class (CMdl), 'CompactRegressionSVM');
 %! kept = {'NumPredictors', 'PredictorNames', 'ResponseName', ...
-%!         'ResponseTransform', 'Epsilon', 'Standardize', 'Sigma', 'Mu', ...
+%!         'ResponseTransform', 'Epsilon', 'Sigma', 'Mu', ...
 %!         'Alpha', 'Beta', 'Bias', 'SupportVectors', ...
 %!         'CategoricalPredictors', 'ExpandedPredictorNames'};
 %! assert_equal (all (ismember (kept, properties (CMdl))), true);
@@ -633,7 +619,6 @@ endclassdef
 %! Y = X(:,1) + X(:,2) / 1000;
 %! Mdl = RegressionSVM (X, Y, 'Standardize', true, 'Epsilon', 0.01);
 %! CMdl = compact (Mdl);
-%! assert_equal (CMdl.Standardize, true);
 %! assert_equal (CMdl.Mu, Mdl.Mu);
 %! assert_equal (CMdl.Sigma, Mdl.Sigma);
 %! assert_equal (predict (CMdl, X), predict (Mdl, X));

@@ -95,25 +95,13 @@ classdef CompactClassificationNeuralNetwork
     ClassNames            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Standardize
-    ##
-    ## Flag to standardize predictors
-    ##
-    ## A boolean flag indicating whether the predictor data has been
-    ## standardized prior to training.  When @qcode{true}, the predictors are
-    ## centered and scaled to have zero mean and unit variance.  This property
-    ## is read-only.
-    ##
-    ## @end deftp
-    Standardize           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} Sigma
     ##
     ## Predictor standard deviations
     ##
     ## A numeric vector containing the standard deviations of the predictors
-    ## used for standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## used for standardization.  Empty when the predictor data were not
+    ## standardized.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -125,7 +113,7 @@ classdef CompactClassificationNeuralNetwork
     ## Predictor means
     ##
     ## A numeric vector containing the means of the predictors used for
-    ## standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## standardization.  Empty when the predictor data were not standardized.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -420,7 +408,6 @@ classdef CompactClassificationNeuralNetwork
       this.ScoreTransform        = Mdl.ScoreTransform;
       this.STfun                = Mdl.STfun;
 
-      this.Standardize           = Mdl.Standardize;
       this.Sigma                 = Mdl.Sigma;
       this.Mu                    = Mdl.Mu;
 
@@ -550,7 +537,7 @@ classdef CompactClassificationNeuralNetwork
       endif
 
       ## Standardize (if necessary)
-      if (this.Standardize)
+      if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
 
@@ -809,7 +796,6 @@ classdef CompactClassificationNeuralNetwork
       ResponseName            = this.ResponseName;
       ClassNames              = this.ClassNames;
       ScoreTransform          = this.ScoreTransform;
-      Standardize             = this.Standardize;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       LayerSizes              = this.LayerSizes;
@@ -832,7 +818,7 @@ classdef CompactClassificationNeuralNetwork
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', ...
-            'ScoreTransform', 'Standardize', 'Sigma', 'Mu', 'LayerSizes', ...
+            'ScoreTransform', 'Sigma', 'Mu', 'LayerSizes', ...
             'Activations', 'OutputLayerActivation', 'LearningRate', ...
             'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
             'DisplayInfo', 'Solver', 'LayerWeights', 'LayerBiases', ...
