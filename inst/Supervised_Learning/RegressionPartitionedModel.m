@@ -29,8 +29,8 @@
 ##
 ## @itemize
 ## @item
-## @var{Mdl} must be a @qcode{RegressionNeuralNetwork} or a
-## @qcode{RegressionSVM} object.
+## @var{Mdl} must be a @qcode{RegressionGAM}, a
+## @qcode{RegressionNeuralNetwork}, or a @qcode{RegressionSVM} object.
 ## @item
 ## @var{Partition} must be a @qcode{cvpartition} object over as many
 ## observations as @var{Mdl} was trained on.
@@ -41,7 +41,8 @@
 ## model that never saw it.  Under a holdout partition only the test set is
 ## answered for, and the rest come back @code{NaN}.
 ##
-## @seealso{crossval, cvpartition, RegressionNeuralNetwork, RegressionSVM}
+## @seealso{crossval, cvpartition, RegressionGAM, RegressionNeuralNetwork,
+## RegressionSVM}
 ## @end deftypefn
 
 classdef RegressionPartitionedModel
@@ -257,7 +258,8 @@ classdef RegressionPartitionedModel
       endif
 
       ## Check for valid Regression object
-      validTypes = {'RegressionNeuralNetwork', 'RegressionSVM'};
+      validTypes = {'RegressionGAM', 'RegressionNeuralNetwork', ...
+                    'RegressionSVM'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("RegressionPartitionedModel: unsupported model type.");
       endif
@@ -295,11 +297,36 @@ classdef RegressionPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.ResponseTransform = Mdl.ResponseTransform;
       this.RTfun = Mdl.RTfun;
-      this.Standardize = Mdl.Standardize;
-      this.ModelParameters = Mdl.ModelParameters;
+      ## A GAM neither standardizes its predictors nor carries a fitting
+      ## parameter struct, so both properties keep their defaults rather than
+      ## being read off a model that does not declare them.
+      if (! strcmp (this.CrossValidatedModel, 'RegressionGAM'))
+        this.Standardize = Mdl.Standardize;
+        this.ModelParameters = Mdl.ModelParameters;
+      endif
 
       ## Switch Regression object types
       switch (this.CrossValidatedModel)
+
+        case 'RegressionGAM'
+          ## Knots, Order and DoF are three views of one parameterisation and
+          ## the constructor accepts any two, recomputing the third, so only
+          ## Knots and Order are passed on.
+          args = {};
+          GAMparams = {'PredictorNames', 'ResponseName', 'Formula', ...
+                       'Interactions', 'Knots', 'Order', 'Tol'};
+          for i = 1:numel (GAMparams)
+            paramName = GAMparams{i};
+            paramValue = Mdl.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, paramValue}];
+            endif
+          endfor
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            tmp = fitrgam (X(idx, :), Y(idx), args{:});
+            this.Trained{k} = compact (tmp);
+          endfor
 
         case 'RegressionNeuralNetwork'
           args = {'LayerSizes', Mdl.LayerSizes, ...
@@ -556,6 +583,20 @@ endclassdef
 %! CVMdl = crossval (fitrsvm (X, Y), 'KFold', 4);
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionSVM');
 %! assert_equal (CVMdl.CrossValidatedModel, 'RegressionSVM');
+
+## The same for a generalized additive model, which neither standardizes nor
+## carries a parameter struct, so both properties keep their defaults.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgam (meas(1:20,1:3), meas(1:20,4)), 'KFold', 4);
+%! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
+%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGAM');
+%! assert_equal (CVMdl.NumObservations, 20);
+%! assert_equal (CVMdl.Standardize, []);
+%! assert_equal (CVMdl.ModelParameters, []);
+
+%!error<RegressionPartitionedModel: unsupported model type.> ...
+%! RegressionPartitionedModel (1, cvpartition (10, 'KFold', 2))
 
 ## Every observation is answered for by the fold that held it out.
 %!test

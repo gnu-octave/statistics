@@ -1019,6 +1019,124 @@ classdef RegressionGAM
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {RegressionGAM} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross validate a Generalized Additive Model regression object.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated
+    ## model object, @var{CVMdl}, from a trained model, @var{obj}, using
+    ## 10-fold cross-validation by default.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})}
+    ## specifies additional name-value pair arguments to customize the
+    ## cross-validation process.
+    ##
+    ## @multitable @columnfractions 0.28 0.7
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KFold'} @tab Specify the number of folds to use in
+    ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
+    ## integer greater than 1.
+    ##
+    ## @item @qcode{'Holdout'} @tab Specify the fraction of the data to
+    ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
+    ## scalar in the range @math{(0,1)}.
+    ##
+    ## @item @qcode{'Leaveout'} @tab Specify whether to perform
+    ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
+    ## @var{Value} is 'on' or 'off'.
+    ##
+    ## @item @qcode{'CVPartition'} @tab Specify a @qcode{cvpartition}
+    ## object used for cross-validation.  @code{"CVPartition", @var{cv}},
+    ## where @code{isa (@var{cv}, "cvpartition")} = 1.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitrgam, RegressionGAM, cvpartition,
+    ## RegressionPartitionedModel}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      if (numel (varargin) == 1)
+        error (strcat ("RegressionGAM.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
+      elseif (numel (varargin) > 2)
+        error (strcat ("RegressionGAM.crossval: specify only", ...
+                       " one of the optional Name-Value paired arguments."));
+      endif
+
+      if (this.NumObservations < 10)
+        numFolds  = this.NumObservations;
+      else
+        numFolds  = 10;
+      endif
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && (numFolds == fix (numFolds)) && numFolds > 1))
+              error (strcat ("RegressionGAM.crossval: 'KFold'", ...
+                             " must be an integer value greater than 1."));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat ("RegressionGAM.crossval: 'Holdout'", ...
+                             " must be a numeric value between 0 and 1."));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
+              error (strcat ("RegressionGAM.crossval: 'Leaveout'", ...
+                             " must be either 'on' or 'off'."));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (! (isa (CVPartition, 'cvpartition')))
+              error (strcat ("RegressionGAM.crossval: 'CVPartition'", ...
+                             " must be a 'cvpartition' object."));
+            endif
+
+          otherwise
+            error (strcat ("RegressionGAM.crossval: invalid", ...
+                           " parameter name in optional paired arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## Determine the cross-validation method to use.  The partition is
+      ## built over the observations actually trained on, so its indices and
+      ## the partitioned model's rows are the same set.
+      n = this.NumObservations;
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (n, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (n, 'LeaveOut');
+      else
+        partition = cvpartition (n, 'KFold', numFolds);
+      endif
+
+      ## Create a cross-validated model object
+      CVMdl = RegressionPartitionedModel (this, partition);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {RegressionGAM} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Create a @qcode{CompactRegressionGAM} object.
@@ -1695,3 +1813,71 @@ endfunction
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## crossval refits one compact model per fold over the observations used.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4));
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
+%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGAM');
+%! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
+%! assert_equal (CVMdl.KFold, 3);
+%! assert_equal (numel (CVMdl.Trained), 3);
+%! assert_equal (CVMdl.NumObservations, 150);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgam (meas(1:20,1:3), meas(1:20,4)));
+%! assert_equal (CVMdl.KFold, 10);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgam (meas(1:20,1:3), meas(1:20,4)), 'Holdout', 0.25);
+%! assert_equal (CVMdl.KFold, 1);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgam (meas(1:12,1:3), meas(1:12,4)), 'Leaveout', 'on');
+%! assert_equal (CVMdl.KFold, 12);
+
+%!test
+%! load fisheriris
+%! cvp = cvpartition (20, 'KFold', 4);
+%! Mdl = fitrgam (meas(1:20,1:3), meas(1:20,4));
+%! assert_equal (crossval (Mdl, 'CVPartition', cvp).KFold, 4);
+
+## The fold models are refitted with the spline parameterisation of the model
+## they came from, DoF following from Knots and Order.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(1:20,1:3), meas(1:20,4), 'Knots', 6, 'Order', 3);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);
+%! assert_equal (CVMdl.Trained{1}.Order, Mdl.Order);
+%! assert_equal (CVMdl.Trained{1}.DoF, Mdl.DoF);
+
+## Held-out error exceeds the resubstitution error of the same fit.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4));
+%! assert (kfoldLoss (crossval (Mdl, 'KFold', 5)) > resubLoss (Mdl));
+
+%!shared cvobj
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6];
+%! y = [1; 2; 3; 4; 5];
+%! cvobj = fitrgam (x, y);
+%!error<RegressionGAM.crossval: Name-Value arguments must be in pairs.> ...
+%! crossval (cvobj, 'kfold')
+%!error<RegressionGAM.crossval: specify only one of the optional Name-Value paired arguments.> ...
+%! crossval (cvobj, 'kfold', 3, 'holdout', 0.2)
+%!error<RegressionGAM.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (cvobj, 'kfold', 'a')
+%!error<RegressionGAM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (cvobj, 'holdout', 2)
+%!error<RegressionGAM.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
+%! crossval (cvobj, 'leaveout', 1)
+%!error<RegressionGAM.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
+%! crossval (cvobj, 'cvpartition', 1)
+%!error<RegressionGAM.crossval: invalid parameter name in optional paired arguments.> ...
+%! crossval (cvobj, 'bogus', 1)
