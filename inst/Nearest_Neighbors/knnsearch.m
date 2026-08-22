@@ -319,8 +319,12 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     endif
   else
 
-    ## Calculate all distances
-    if (K == 1)
+    ## Calculate all distances.  The single-neighbour shortcut applies only
+    ## when ties are not wanted: taking the minimum returns one neighbour
+    ## whatever else sits at the same distance, so asking for K = 1 with
+    ## 'IncludeTies' used to get the flag silently ignored, and a double where
+    ## a cell was promised.
+    if (K == 1 && ! InclTies)
       D = pdist2 (X, Y, Distance, DistParameter);
       D = reshape (D', size (Y, 1), size (X, 1));
       [dist, idx] = min (D, [], 2);
@@ -733,3 +737,22 @@ endfunction
 %!   [~, Dd] = knnsearch (X, Y, "K", 2, "NSMethod", m{1});
 %!   assert_equal (class (Dd), 'double');
 %! endfor
+
+## A single neighbour with 'IncludeTies' used to take a shortcut that ignored
+## the flag, returning one index as a double where a cell of every tied
+## neighbour was promised.  The kd-tree path was unaffected.
+%!test
+%! X = [0, 0; 0, 0; 1, 1; 1, 1; 2, 2; 2, 2];
+%! idx = knnsearch (X, [0.5, 0.5], 'k', 1, 'NSMethod', 'exhaustive', ...
+%!                  'IncludeTies', true);
+%! assert_equal (class (idx), 'cell');
+%! assert_equal (sort (idx{1}), [1, 2, 3, 4]);
+
+%!test
+%! X = [0, 0; 0, 0; 1, 1; 1, 1; 2, 2; 2, 2];
+%! [i1, d1] = knnsearch (X, [0.5, 0.5], 'k', 1, 'NSMethod', 'exhaustive', ...
+%!                       'IncludeTies', true);
+%! [i2, d2] = knnsearch (X, [0.5, 0.5], 'k', 1, 'NSMethod', 'kdtree', ...
+%!                       'IncludeTies', true);
+%! assert_equal (sort (i1{1}), sort (i2{1}));
+%! assert_equal (sort (d1{1}), sort (d2{1}), 1e-12);

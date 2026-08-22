@@ -136,8 +136,7 @@ endfunction
 %! assert_equal (m2.BreakTies, m.BreakTies);
 %! assert_equal (m2.NumNeighbors, m.NumNeighbors);
 %! assert_equal (m2.Distance, m.Distance);
-%! ## DistanceWeight is a function handle here, so compare what it reads as
-%! assert_equal (func2str (m2.DistanceWeight), func2str (m.DistanceWeight));
+%! assert_equal (m2.DistanceWeight, m.DistanceWeight);
 %! assert_equal (m2.DistParameter, m.DistParameter);
 %! assert_equal (m2.NSMethod, m.NSMethod);
 %! assert_equal (m2.IncludeTies, m.IncludeTies);

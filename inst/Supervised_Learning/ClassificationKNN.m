@@ -198,34 +198,44 @@ classdef ClassificationKNN
     Mu              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} BreakTies
+    ## @deftp {ClassificationKNN} {property} NSMethod
     ##
-    ## Tie-breaking algorithm
+    ## Nearest neighbor search method
     ##
-    ## A character vector specifying the tie-breaking algorithm used by the
-    ## @code{predict} method, when multiple classes have the same smallest cost.
-    ## It can be one of the following:
+    ## A character vector specified as either @qcode{'kdtree'}, which creates
+    ## and uses a Kd-tree to find nearest neighbors, or @qcode{'exhaustive'},
+    ## which uses the exhaustive search algorithm by computing the distance
+    ## values from all points in @var{X} to find nearest neighbors.
     ##
+    ## Change the @qcode{NSMethod} property using dot notation as in:
     ## @itemize
-    ## @item @qcode{'smallest'} (default), which favors the class with the
-    ## smallest index among the tied groups, i.e. the one that appears first in
-    ## the training labelled data.
-    ## @item @qcode{'nearest'}, which favors the class with the nearest neighbor
-    ## among the tied groups, i.e. the class with the closest member point
-    ## according to the distance metric used.
-    ## @item @qcode{'random'}, which randomly picks one class among the tied
-    ## groups.
-    ## @end itemize
-    ##
-    ## The tie-breaking algorithm is only used when @qcode{IncludeTies} is
-    ## @qcode{false}.  Change the @qcode{BreakTies} property using dot notation
-    ## as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.BreakTies = @var{algorithm}}
+    ## @item @qcode{@var{obj}.NSMethod = @var{newNSMethod}}
     ## @end itemize
     ##
     ## @end deftp
-    BreakTies       = [];
+    NSMethod        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} BucketSize
+    ##
+    ## Maximum data points in each node
+    ##
+    ## A positive integer scalar specifying the maximum number of data points in
+    ## the leaf node of the Kd-tree.  @qcode{BucketSize} only applies when the
+    ## @qcode{NSMethod} property is @qcode{'kdtree'}.
+    ##
+    ## Change the @qcode{BucketSize} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.BucketSize = @var{maxnum}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    BucketSize      = [];
+  endproperties
+
+  ## Properties a user may set after the model is built.  Each one is
+  ## validated by its set method below.
+  properties (GetAccess = public, SetAccess = public)
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} NumNeighbors
@@ -239,6 +249,9 @@ classdef ClassificationKNN
     ## @item @qcode{@var{obj}.NumNeighbors = @var{newNumNeighbors}}
     ## @end itemize
     ##
+    ##
+    ## This property may be assigned after fitting.  A value larger than
+    ## @qcode{NumObservations} is reduced to it rather than refused.
     ## @end deftp
     NumNeighbors    = [];
 
@@ -255,6 +268,13 @@ classdef ClassificationKNN
     ## @item @qcode{@var{obj}.Distance = @var{newDistance}}
     ## @end itemize
     ##
+    ##
+    ## This property may be assigned after fitting.  @qcode{NSMethod} is
+    ## read-only and constrains it: a @qcode{'kdtree'} model takes
+    ## @qcode{'euclidean'}, @qcode{'cityblock'}, @qcode{'chebychev'} and
+    ## @qcode{'minkowski'} only.  Assigning a different metric recomputes
+    ## @qcode{DistParameter}, since a parameter belonging to one metric means
+    ## nothing under another.
     ## @end deftp
     Distance        = [];
 
@@ -281,8 +301,65 @@ classdef ClassificationKNN
     ## @item @qcode{@var{obj}.DistanceWeight = @var{newDistanceWeight}}
     ## @end itemize
     ##
+    ##
+    ## A character vector naming the weight, or the @code{func2str} form of a
+    ## supplied handle.  This property may be assigned after fitting.
     ## @end deftp
     DistanceWeight  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} BreakTies
+    ##
+    ## Tie-breaking algorithm
+    ##
+    ## A character vector specifying the tie-breaking algorithm used by the
+    ## @code{predict} method, when multiple classes have the same smallest cost.
+    ## It can be one of the following:
+    ##
+    ## @itemize
+    ## @item @qcode{'smallest'} (default), which favors the class with the
+    ## smallest index among the tied groups, i.e. the one that appears first in
+    ## the training labelled data.
+    ## @item @qcode{'nearest'}, which favors the class with the nearest neighbor
+    ## among the tied groups, i.e. the class with the closest member point
+    ## according to the distance metric used.
+    ## @item @qcode{'random'}, which randomly picks one class among the tied
+    ## groups.
+    ## @end itemize
+    ##
+    ## The tie-breaking algorithm is only used when @qcode{IncludeTies} is
+    ## @qcode{false}.  Change the @qcode{BreakTies} property using dot notation
+    ## as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.BreakTies = @var{algorithm}}
+    ## @end itemize
+    ##
+    ##
+    ## This property may be assigned after fitting.  It decides the label
+    ## when two classes hold the same weight among the neighbours, and it
+    ## applies whether or not @qcode{IncludeTies} is set.
+    ## @end deftp
+    BreakTies       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} IncludeTies
+    ##
+    ## Flag for handling ties
+    ##
+    ## A logical scalar specifying whether prediction includes all the neighbors
+    ## whose distance values are equal to the @math{k^th} smallest distance.  If
+    ## @qcode{IncludeTies} is @qcode{true}, prediction includes all of these
+    ## neighbors.  Otherwise, prediction uses exactly @math{k} neighbors.
+    ##
+    ## Change the @qcode{IncludeTies} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.IncludeTies = @var{flag}}
+    ## @end itemize
+    ##
+    ##
+    ## This property may be assigned after fitting.
+    ## @end deftp
+    IncludeTies     = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} DistParameter
@@ -309,66 +386,20 @@ classdef ClassificationKNN
     ## @item @qcode{@var{obj}.DistParameter = @var{distParam}}
     ## @end itemize
     ##
+    ##
+    ## This property may be assigned after fitting, but only under the three
+    ## metrics that carry one: @qcode{'minkowski'}, @qcode{'seuclidean'} and
+    ## @qcode{'mahalanobis'}.  Under any other metric there is nothing for it
+    ## to mean and the assignment is refused.
+    ##
+    ## @strong{Deviation from MATLAB.}  A @qcode{'seuclidean'} scale of zeros
+    ## is refused here.  MATLAB accepts it, then warns from inside its distance
+    ## routine at predict time and answers anyway, which contradicts its own
+    ## message that the scale must hold positive values.  A zero scale divides
+    ## that predictor by nothing, so it is rejected where it is given rather
+    ## than surfacing later as a warning attached to an answer.
     ## @end deftp
     DistParameter   = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} NSMethod
-    ##
-    ## Nearest neighbor search method
-    ##
-    ## A character vector specified as either @qcode{'kdtree'}, which creates
-    ## and uses a Kd-tree to find nearest neighbors, or @qcode{'exhaustive'},
-    ## which uses the exhaustive search algorithm by computing the distance
-    ## values from all points in @var{X} to find nearest neighbors.
-    ##
-    ## Change the @qcode{NSMethod} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.NSMethod = @var{newNSMethod}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    NSMethod        = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} IncludeTies
-    ##
-    ## Flag for handling ties
-    ##
-    ## A logical scalar specifying whether prediction includes all the neighbors
-    ## whose distance values are equal to the @math{k^th} smallest distance.  If
-    ## @qcode{IncludeTies} is @qcode{true}, prediction includes all of these
-    ## neighbors.  Otherwise, prediction uses exactly @math{k} neighbors.
-    ##
-    ## Change the @qcode{IncludeTies} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.IncludeTies = @var{flag}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    IncludeTies     = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} BucketSize
-    ##
-    ## Maximum data points in each node
-    ##
-    ## A positive integer scalar specifying the maximum number of data points in
-    ## the leaf node of the Kd-tree.  @qcode{BucketSize} only applies when the
-    ## @qcode{NSMethod} property is @qcode{'kdtree'}.
-    ##
-    ## Change the @qcode{BucketSize} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.BucketSize = @var{maxnum}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    BucketSize      = [];
-  endproperties
-
-  ## Properties a user may set after the model is built.  Each one is
-  ## validated by its set method below.
-  properties (GetAccess = public, SetAccess = public)
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Cost
@@ -461,6 +492,16 @@ classdef ClassificationKNN
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+
+    ## The callable that DistanceWeight names.  The property itself holds the
+    ## text, as MATLAB reports it, and predict reaches for this.
+    DWfun = @(d) ones (size (d));
+
+    ## Raised once the constructor is done.  The set methods validate a user's
+    ## assignment; the values the fit computes for itself are already checked
+    ## where they are built, and one of them, the Mahalanobis covariance, is
+    ## legitimately singular on data whose predictors are collinear.
+    Fitted = false;
     STfun = @(x) x;
   endproperties
 
@@ -503,6 +544,120 @@ classdef ClassificationKNN
       endif
       ## The weights follow the prior, so they are rebuilt with it
       this.W = priorWeights (this.Prior, gY, numel (gY));
+    endfunction
+
+    ## The six properties a fitted model may be reassigned.  All of them are
+    ## live: a model whose Distance or NumNeighbors is changed predicts exactly
+    ## as one refitted with the new value would, because a lazy learner stores
+    ## its training data and does the work at predict time.
+
+    function this = set.NumNeighbors (this, val)
+      if (! (isnumeric (val) && isscalar (val) && val > 0
+             && fix (val) == val))
+        error (strcat ("ClassificationKNN: 'NumNeighbors' must be a", ...
+                       " positive integer."));
+      endif
+      ## More neighbours than there are observations is reduced rather than
+      ## refused, which is what the fit does with the same value.
+      if (! isempty (this.X))
+        val = min (val, rows (this.X));
+      endif
+      this.NumNeighbors = val;
+    endfunction
+
+    function this = set.Distance (this, val)
+      kdt = {'euclidean', 'cityblock', 'chebychev', 'minkowski'};
+      all = [kdt, {'seuclidean', 'mahalanobis', 'manhattan', 'cosine', ...
+                   'correlation', 'spearman', 'hamming', 'jaccard'}];
+      ## A kd-tree can only be searched with the metrics it was built for, and
+      ## NSMethod is read-only, so the metric is what has to give way.
+      if (strcmpi (this.NSMethod, 'kdtree'))
+        if (! (ischar (val) && any (strcmpi (kdt, val))))
+          error (strcat ("ClassificationKNN: 'Distance' for a kd-tree", ...
+                         " model can only be 'euclidean', 'cityblock',", ...
+                         " 'chebychev', or 'minkowski'."));
+        endif
+      elseif (! (is_function_handle (val)
+                 || (ischar (val) && any (strcmpi (all, val)))))
+        error ("ClassificationKNN: unsupported distance metric.");
+      endif
+      if (ischar (val) && ischar (this.Distance)
+          && strcmpi (val, this.Distance))
+        return;   # unchanged, so the parameter it carries is kept
+      endif
+      this.Distance = val;
+      ## The parameter belongs to the metric, so it is recomputed and whatever
+      ## the previous metric held is discarded.
+      if (! isempty (this.X))
+        this.DistParameter = knndistparam (val, this.X, ! isempty (this.Mu));
+      endif
+    endfunction
+
+    function this = set.DistanceWeight (this, val)
+      [f, dw] = parseDistanceWeight (val, 'ClassificationKNN');
+      this.DistanceWeight = dw;
+      this.DWfun = f;
+    endfunction
+
+    function this = set.BreakTies (this, val)
+      if (! (ischar (val) && any (strcmpi ({'smallest', 'random', ...
+                                            'nearest'}, val))))
+        error (strcat ("ClassificationKNN: 'BreakTies' must be", ...
+                       " 'smallest', 'random' or 'nearest'."));
+      endif
+      this.BreakTies = lower (val);
+    endfunction
+
+    function this = set.IncludeTies (this, val)
+      if (! (islogical (val) && isscalar (val)))
+        error (strcat ("ClassificationKNN: 'IncludeTies' must be a", ...
+                       " logical scalar."));
+      endif
+      this.IncludeTies = val;
+    endfunction
+
+    function this = set.DistParameter (this, val)
+      ## An empty value is the state a metric without a parameter is in, so it
+      ## is always allowed; anything else has to belong to the current metric.
+      if (! isempty (val) && this.Fitted)
+        if (! (ischar (this.Distance)
+               && any (strcmpi ({'minkowski', 'seuclidean', ...
+                                 'mahalanobis'}, this.Distance))))
+          error (strcat ("ClassificationKNN: 'DistParameter' can only be", ...
+                         " provided when 'Distance' is 'minkowski',", ...
+                         " 'mahalanobis', or 'seuclidean'."));
+        endif
+        switch (lower (this.Distance))
+          case 'minkowski'
+            if (! (isnumeric (val) && isscalar (val) && val > 0))
+              error (strcat ("ClassificationKNN: the exponent for the", ...
+                             " Minkowski distance must be a positive", ...
+                             " scalar."));
+            endif
+          case 'seuclidean'
+            if (! (isnumeric (val) && isvector (val) && all (val > 0)
+                   && numel (val) == columns (this.X)))
+              error (strcat ("ClassificationKNN: the scale for the", ...
+                             " standardized Euclidean distance must be a", ...
+                             " vector of positive values, with length", ...
+                             " equal to the number of columns in X."));
+            endif
+          case 'mahalanobis'
+            if (! (isnumeric (val) && issquare (val)
+                   && columns (val) == columns (this.X)))
+              error (strcat ("ClassificationKNN: the covariance for the", ...
+                             " Mahalanobis distance must be a square", ...
+                             " matrix with the same number of columns", ...
+                             " as X."));
+            endif
+            if (! (isequal (val, val') && all (eig (val) > 0)))
+              error (strcat ("ClassificationKNN: the covariance for the", ...
+                             " Mahalanobis distance must be symmetric and", ...
+                             " positive definite."));
+            endif
+        endswitch
+      endif
+      this.DistParameter = val;
     endfunction
 
     function this = set.ScoreTransform (this, val)
@@ -843,30 +998,9 @@ classdef ClassificationKNN
             endif
 
           case 'distanceweight'
-            DistanceWeight = varargin{2};
-            DMs = {'equal', 'inverse', 'squareinverse'};
-            if (is_function_handle (DistanceWeight))
-              m = eye (5);
-              if (! isequal (size (m), size (DistanceWeight(m))))
-                error (strcat ("ClassificationKNN: function handle for", ...
-                               " distance weight must return the same", ...
-                               " size as its input."));
-              endif
-              this.DistanceWeight = DistanceWeight;
-            else
-              if (! any (strcmpi (DMs, DistanceWeight)))
-                error ("ClassificationKNN: invalid distance weight.");
-              endif
-              if (strcmpi ('equal', DistanceWeight))
-                this.DistanceWeight = @(x) x;
-              endif
-              if (strcmpi ('inverse', DistanceWeight))
-                this.DistanceWeight = @(x) x.^(-1);
-              endif
-              if (strcmpi ('squareinverse', DistanceWeight))
-                this.DistanceWeight = @(x) x.^(-2);
-              endif
-            endif
+            [this.DWfun, this.DistanceWeight] = ...
+                parseDistanceWeight (varargin{2}, 'ClassificationKNN');
+            DistanceWeight = this.DistanceWeight;
 
           case 'scale'
             if (SSC < 1)
@@ -1050,7 +1184,8 @@ classdef ClassificationKNN
 
       ## Get distance weight
       if (isempty (DistanceWeight))
-        this.DistanceWeight = @(x) x;
+        [this.DWfun, this.DistanceWeight] = ...
+            parseDistanceWeight ('equal', 'ClassificationKNN');
       endif
 
       ## Handle distance metric parameters (Scale, Cov, Exponent)
@@ -1124,6 +1259,7 @@ classdef ClassificationKNN
       ## Assign IncludeTies and BucketSize properties
       this.IncludeTies = IncludeTies;
       this.BucketSize = BucketSize;
+      this.Fitted = true;
 
     endfunction
 
@@ -1246,10 +1382,20 @@ classdef ClassificationKNN
         k = numel (NN_idx);
         kNNgY = gY(NN_idx);
 
-        ## Count frequency for each class
+        ## Weight each neighbour by its distance and normalize, which is what
+        ## DistanceWeight selects.  Equal weighting reduces to the vote count
+        ## this used to be, and is the default.
+        kNNgY = kNNgY(:)';
+        w = this.DWfun (NNdist(:)');
+        if (any (isinf (w)))
+          ## A neighbour sitting on the query takes the whole vote rather than
+          ## turning every share into a ratio of infinities.
+          w = double (isinf (w));
+        endif
         for c = 1:rows (this.ClassNames)
-          freq(c) = sum (kNNgY == c) / k;
+          freq(c) = sum (w(kNNgY == c));
         endfor
+        freq = freq ./ sum (freq);
 
         ## Get labels according to BreakTies
         if (strcmpi (this.BreakTies, 'smallest'))
@@ -2131,6 +2277,7 @@ classdef ClassificationKNN
       NumNeighbors    = this.NumNeighbors;
       Distance        = this.Distance;
       DistanceWeight  = this.DistanceWeight;
+      DWfun           = this.DWfun;
       DistParameter   = this.DistParameter;
       NSMethod        = this.NSMethod;
       IncludeTies     = this.IncludeTies;
@@ -2142,7 +2289,8 @@ classdef ClassificationKNN
             'W', 'RowsUsed', 'Sigma', 'Mu', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
-            'DistanceWeight', 'DistParameter', 'NSMethod', 'IncludeTies', ...
+            'DistanceWeight', 'DWfun', 'DistParameter', 'NSMethod', ...
+            'IncludeTies', ...
             'BucketSize', 'STfun');
     endfunction
 
@@ -2553,11 +2701,11 @@ endfunction
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', {'mahalanobis'})
 %!error<ClassificationKNN: invalid distance metric.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', logical (5))
-%!error<ClassificationKNN: function handle for distance weight must return the> ...
+%!error<ClassificationKNN: function handle for 'DistanceWeight' must return the same size as its input.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', @(x)sum (x))
-%!error<ClassificationKNN: invalid distance weight.> ...
+%!error<ClassificationKNN: 'DistanceWeight' must be 'equal', 'inverse', 'squaredinverse', or a function handle.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', 'text')
-%!error<ClassificationKNN: invalid distance weight.> ...
+%!error<ClassificationKNN: 'DistanceWeight' must be a character vector or a function handle.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', [1 2 3])
 %!error<ClassificationKNN: 'Scale' must be a numeric vector.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Scale', 'scale')
@@ -3334,3 +3482,168 @@ endfunction
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## The six settable properties.  Every value below was measured on MATLAB
+## R2024a; see KNN_SETTABLE_LEDGER.md for the probes that produced them.
+
+## A lazy learner does its work at predict time, so a reassigned model
+## predicts exactly as one refitted with the same options.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 1);
+%! Mdl.NumNeighbors = 50;
+%! Mdl.DistanceWeight = 'inverse';
+%! Mdl.Distance = 'cityblock';
+%! M2 = fitcknn (meas, species, 'NumNeighbors', 50, ...
+%!               'DistanceWeight', 'inverse', 'Distance', 'cityblock');
+%! assert_equal (predict (Mdl, meas), predict (M2, meas));
+
+## More neighbours than observations is reduced, not refused.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! Mdl.NumNeighbors = 1000;
+%! assert_equal (Mdl.NumNeighbors, 150);
+
+## NSMethod is read-only and constrains the metric: a kd-tree can only be
+## searched with the four metrics it was built for.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (Mdl.NSMethod, 'kdtree');
+%! Mdl.Distance = 'minkowski';
+%! assert_equal (Mdl.NSMethod, 'kdtree');
+%! assert_equal (Mdl.DistParameter, 2);
+
+## The parameter belongs to the metric, so changing the metric recomputes it
+## and whatever the previous one held is discarded.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'Distance', 'minkowski', ...
+%!                'NSMethod', 'exhaustive');
+%! Mdl.DistParameter = 3;
+%! Mdl.Distance = 'euclidean';
+%! assert_equal (Mdl.DistParameter, []);
+%! Mdl.Distance = 'minkowski';
+%! assert_equal (Mdl.DistParameter, 2);
+
+## Reassigning the same metric is not a change, so the parameter survives.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'Distance', 'minkowski', ...
+%!                'NSMethod', 'exhaustive');
+%! Mdl.DistParameter = 3;
+%! Mdl.Distance = 'minkowski';
+%! assert_equal (Mdl.DistParameter, 3);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NSMethod', 'exhaustive');
+%! Mdl.Distance = 'seuclidean';
+%! assert_equal (Mdl.DistParameter, std (meas), 1e-12);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NSMethod', 'exhaustive');
+%! Mdl.Distance = 'mahalanobis';
+%! assert_equal (Mdl.DistParameter, cov (meas), 1e-12);
+
+## DistanceWeight is the text, as MATLAB reports it, and it weights the vote.
+%!test
+%! Mdl = fitcknn ([1, 0; 2, 0; 50, 0; 51, 0], {'b';'a';'a';'b'}, ...
+%!                'NumNeighbors', 2, 'NSMethod', 'exhaustive');
+%! assert_equal (Mdl.DistanceWeight, 'equal');
+%! [label, score] = predict (Mdl, [0, 0]);
+%! assert_equal (label, {'a'});
+%! assert_equal (score, [0.5, 0.5], 1e-6);
+
+%!test
+%! Mdl = fitcknn ([1, 0; 2, 0; 50, 0; 51, 0], {'b';'a';'a';'b'}, ...
+%!                'NumNeighbors', 2, 'DistanceWeight', 'inverse', ...
+%!                'NSMethod', 'exhaustive');
+%! [label, score] = predict (Mdl, [0, 0]);
+%! assert_equal (label, {'b'});
+%! assert_equal (score, [1/3, 2/3], 1e-6);
+
+%!test
+%! Mdl = fitcknn ([1, 0; 2, 0; 50, 0; 51, 0], {'b';'a';'a';'b'}, ...
+%!                'NumNeighbors', 2, 'DistanceWeight', 'squaredinverse', ...
+%!                'NSMethod', 'exhaustive');
+%! [label, score] = predict (Mdl, [0, 0]);
+%! assert_equal (label, {'b'});
+%! assert_equal (score, [0.2, 0.8], 1e-6);
+
+## BreakTies decides the label when two classes hold the same weight: the
+## first class name, or the class of the nearest of the tied neighbours.
+%!test
+%! Mdl = fitcknn ([1, 0; 2, 0; 50, 0; 51, 0], {'b';'a';'a';'b'}, ...
+%!                'NumNeighbors', 2, 'NSMethod', 'exhaustive');
+%! Mdl.BreakTies = 'smallest';
+%! assert_equal (predict (Mdl, [0, 0]), {'a'});
+%! Mdl.BreakTies = 'nearest';
+%! assert_equal (predict (Mdl, [0, 0]), {'b'});
+
+## IncludeTies takes every neighbour sitting at the kth distance, which turns
+## a single winner into a split.
+%!test
+%! x = [0, 0; 0, 0; 1, 1; 1, 1; 2, 2; 2, 2];
+%! y = {'a'; 'b'; 'a'; 'b'; 'a'; 'b'};
+%! Mdl = fitcknn (x, y, 'NumNeighbors', 1, 'NSMethod', 'exhaustive');
+%! [~, score] = predict (Mdl, [0.5, 0.5]);
+%! assert_equal (score, [1, 0]);
+%! Mdl.IncludeTies = true;
+%! [~, score] = predict (Mdl, [0.5, 0.5]);
+%! assert_equal (score, [0.5, 0.5]);
+
+## A saved model comes back with the weight it was given.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'DistanceWeight', 'squaredinverse');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.DistanceWeight, 'squaredinverse');
+%! assert_equal (predict (M2, meas), predict (Mdl, meas));
+
+%!error<ClassificationKNN: 'NumNeighbors' must be a positive integer.> ...
+%! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.NumNeighbors = 0;
+%!error<ClassificationKNN: 'NumNeighbors' must be a positive integer.> ...
+%! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.NumNeighbors = 2.5;
+%!error<ClassificationKNN: 'BreakTies' must be 'smallest', 'random' or 'nearest'.> ...
+%! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.BreakTies = 'bogus';
+%!error<ClassificationKNN: 'IncludeTies' must be a logical scalar.> ...
+%! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.IncludeTies = 2;
+%!error<ClassificationKNN: 'DistanceWeight' must be 'equal', 'inverse', 'squaredinverse', or a function handle.> ...
+%! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.DistanceWeight = 'bogus';
+%!error<ClassificationKNN: 'Distance' for a kd-tree model can only be 'euclidean', 'cityblock', 'chebychev', or 'minkowski'.> ...
+%! load fisheriris; Mdl = fitcknn (meas, species); ...
+%! Mdl.Distance = 'mahalanobis';
+%!error<ClassificationKNN: 'DistParameter' can only be provided when 'Distance' is 'minkowski', 'mahalanobis', or 'seuclidean'.> ...
+%! load fisheriris; ...
+%! Mdl = fitcknn (meas, species, 'NSMethod', 'exhaustive'); ...
+%! Mdl.DistParameter = 2;
+%!error<ClassificationKNN: the exponent for the Minkowski distance must be a positive scalar.> ...
+%! load fisheriris; ...
+%! Mdl = fitcknn (meas, species, 'Distance', 'minkowski', ...
+%!                'NSMethod', 'exhaustive'); ...
+%! Mdl.DistParameter = 0;
+%!error<ClassificationKNN: the scale for the standardized Euclidean distance must be a vector of positive values, with length equal to the number of columns in X.> ...
+%! load fisheriris; ...
+%! Mdl = fitcknn (meas, species, 'Distance', 'seuclidean', ...
+%!                'NSMethod', 'exhaustive'); ...
+%! Mdl.DistParameter = ones (1, 3);
+%!error<ClassificationKNN: the covariance for the Mahalanobis distance must be symmetric and positive definite.> ...
+%! load fisheriris; ...
+%! Mdl = fitcknn (meas, species, 'Distance', 'mahalanobis', ...
+%!                'NSMethod', 'exhaustive'); ...
+%! Mdl.DistParameter = -eye (4);
+
+## A zero scale is refused, where MATLAB accepts it and warns at predict time.
+## The message MATLAB raises for a negative scale already promises positive
+## values, so this keeps the property and its own contract in agreement.
+%!error<ClassificationKNN: the scale for the standardized Euclidean distance must be a vector of positive values, with length equal to the number of columns in X.> ...
+%! load fisheriris; ...
+%! Mdl = fitcknn (meas, species, 'Distance', 'seuclidean', ...
+%!                'NSMethod', 'exhaustive'); ...
+%! Mdl.DistParameter = zeros (1, 4);
