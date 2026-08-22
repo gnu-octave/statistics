@@ -863,35 +863,13 @@ classdef RegressionGAM
         varargin(1:2) = [];
       endwhile
 
-      ## Choose whether interactions must be included
+      ## Choose whether interactions must be included.  The reshaping is done
+      ## by gamTerms rather than inline, because the training data has to be
+      ## reshaped exactly the same way further down: a model built with
+      ## interactions or with a formula has a term for every column of the
+      ## matrix it was fitted on, and that is no longer the stored X.
       if (incInt)
-        if (! isempty (this.Interactions))
-          ## Append interaction terms to the predictor matrix
-          for i = 1:rows (this.IntMatrix)
-            tindex = logical (this.IntMatrix(i,:));
-            Xterms = Xfit(:,tindex);
-            Xinter = ones (rows (Xfit), 1);
-            for c = 1:sum (tindex)
-              Xinter = Xinter .* Xterms(:,c);
-            endfor
-            ## Append interaction terms
-            Xfit = [Xfit, Xinter];
-          endfor
-        else
-          ## Add selected predictors and interaction terms
-          XN = [];
-          for i = 1:rows (this.IntMatrix)
-            tindex = logical (this.IntMatrix(i,:));
-            Xterms = Xfit(:,tindex);
-            Xinter = ones (rows (Xfit), 1);
-            for c = 1:sum (tindex)
-              Xinter = Xinter .* Xterms(:,c);
-            endfor
-            ## Append selected predictors and interaction terms
-            XN = [XN, Xinter];
-          endfor
-          Xfit = XN;
-        endif
+        Xfit = gamTerms (Xfit, this.IntMatrix, ! isempty (this.Interactions));
         ## Get parameters and intercept vectors from model with interactions
         params = this.ModelwInt.Parameters;
         Interc = this.ModelwInt.Intercept;
@@ -916,6 +894,15 @@ classdef RegressionGAM
         used = true (rows (this.X), 1);
         Y = this.Y(used);
         X = this.X(used, :);
+        ## Reshape the training data as the prediction data was reshaped.  It
+        ## used to be passed as stored, so the terms and the columns disagreed
+        ## whenever the model was built with interactions or with a formula:
+        ## with more terms than columns the residuals came from a truncated
+        ## model and ySD was several times too large, and with fewer terms than
+        ## columns the call raised out of bound.
+        if (incInt)
+          X = gamTerms (X, this.IntMatrix, ! isempty (this.Interactions));
+        endif
         ## Predict response from training predictor data with the trained model
         yrs = predict_val (params, X , Interc);
         yrs_fit = predict_val (params, Xfit, Interc);
@@ -1476,6 +1463,30 @@ classdef RegressionGAM
 
 endclassdef
 
+## Reshape a predictor matrix into the terms a model was fitted on.  With
+## APPEND true the interaction columns are added to the predictors, which is
+## what an 'Interactions' model was fitted on; with it false they replace them,
+## which is what a 'Formula' model was fitted on.  Every column of the result
+## carries one term of the model, which is what predict_val walks.
+function XA = gamTerms (X, IntMatrix, append)
+
+  if (append)
+    XA = X;
+  else
+    XA = [];
+  endif
+  for i = 1:rows (IntMatrix)
+    tindex = logical (IntMatrix(i,:));
+    Xterms = X(:,tindex);
+    Xinter = ones (rows (X), 1);
+    for c = 1:sum (tindex)
+      Xinter = Xinter .* Xterms(:,c);
+    endfor
+    XA = [XA, Xinter];
+  endfor
+
+endfunction
+
 ## Helper function for making prediction of new data based on GAM model
 function ypred = predict_val (params, X, intercept)
   [nsample, ndims_X] = size (X);
@@ -1585,6 +1596,12 @@ endfunction
 %! assert_equal (size (ypred2), [4, 1]);
 %! assert_equal (size (ySD), [4, 1]);
 %! assert_equal (size (yInt), [4, 2]);
+%! ## The three terms fit these four points exactly, so the residuals are zero
+%! ## and so is ySD.  This block asserted the three sizes and nothing else,
+%! ## which is why it stayed green while ySD was computed from two of the
+%! ## three terms: a size is true whatever the number is.
+%! assert_equal (ypred2, [10; 20; 30; 40], 1e-10);
+%! assert_equal (ySD, zeros (4, 1), 1e-10);
 
 %!test
 %! ## Verify ySD is based on training residual variance
@@ -1925,3 +1942,70 @@ endfunction
 %! Mdl = fitrgam (meas(:,1:3), meas(:,4));
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## ySD is computed from the model's own terms, not from the stored predictors.
+## The two disagree whenever the model was reshaped, and both directions were
+## wrong: an 'Interactions' model has more terms than X has columns and the
+## residuals came from a truncated model, and a 'Formula' model can have fewer
+## and the call raised.
+
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! Mdl = fitrgam (X, Y, 'Interactions', 'all');
+%! [~, ySD] = predict (Mdl, X(1:4,:));
+%! ## Six terms against three stored columns.  Truncating to three gave
+%! ## 0.9379137529, close to seven times the answer.
+%! assert_equal (ySD, 0.136050646147 * ones (4, 1), 1e-9);
+
+## The same number, derived rather than pinned: ySD is the residual standard
+## deviation of the full model over the training data.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! Mdl = fitrgam (X, Y, 'Interactions', 'all');
+%! Xa = X;
+%! for i = 1:rows (Mdl.IntMatrix)
+%!   t = logical (Mdl.IntMatrix(i,:));
+%!   Xt = X(:,t);
+%!   Xi = ones (rows (X), 1);
+%!   for c = 1:sum (t)
+%!     Xi = Xi .* Xt(:,c);
+%!   endfor
+%!   Xa = [Xa, Xi];
+%! endfor
+%! yr = ones (rows (Xa), 1) * Mdl.ModelwInt.Intercept;
+%! for j = 1:columns (Xa)
+%!   yr = yr + ppval (Mdl.ModelwInt.Parameters(j), Xa(:,j));
+%! endfor
+%! [~, ySD] = predict (Mdl, X(1:4,:));
+%! assert_equal (ySD, sqrt (var (Y - yr)) * ones (4, 1), 1e-12);
+
+## A formula that selects fewer terms than there are predictors.  Asking this
+## model for a standard deviation used to raise out of bound, so the second
+## and third outputs of predict were unreachable on any formula-built model of
+## this shape.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! Mdl = fitrgam (X, Y, 'Formula', 'Y ~ x1 + x2');
+%! assert_equal (numel (Mdl.ModelwInt.Parameters), 2);
+%! assert_equal (columns (Mdl.X), 3);
+%! [~, ySD, yInt] = predict (Mdl, X(1:4,:));
+%! assert_equal (ySD, 0.348625969903 * ones (4, 1), 1e-9);
+%! assert_equal (size (yInt), [4, 2]);
+
+## yFit never had this defect and must not acquire one: the prediction matrix
+## was always reshaped, and still is.
+%!test
+%! load fisheriris
+%! X = meas(:,1:3);
+%! Y = meas(:,4);
+%! Mdl = fitrgam (X, Y, 'Interactions', 'all');
+%! yA = predict (Mdl, X(1:3,:));
+%! [yB, ~] = predict (Mdl, X(1:3,:));
+%! assert_equal (yA, yB);
+%! assert_equal (yA, [0.255203457138; 0.210404303824; 0.162599243283], 1e-9);
