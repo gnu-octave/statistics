@@ -37,15 +37,32 @@ classdef ClassificationPartitionedModel
   properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation, carried over
+    ## from the model that was cross validated.  This property is read-only.
+    ##
+    ## @end deftp
+    W                            = [];
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} BinEdges
     ##
     ## Bin edges
     ##
-    ## A cell array specifying the bin edges for binned predictors.
+    ## A cell array with one entry per predictor, holding that predictor's
+    ## bin edges where the learner discretized it before fitting.  It is
+    ## carried over from the model that was cross validated, and is empty
+    ## whenever that model did no binning, which is every learner this package
+    ## implements: MATLAB fills it only for its GAM, which bins because it is
+    ## built from boosted trees where ours is built from splines.
+    ##
     ## This property is read-only.
     ##
     ## @end deftp
-    BinEdges                     = [];
+    BinEdges                     = {};
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} CategoricalPredictors
@@ -254,6 +271,40 @@ classdef ClassificationPartitionedModel
   ## Set methods for the properties a user may assign.
   methods (Hidden)
 
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Shaped after RegressionPartitionedModel's, with the classifier's own
+    ## fields: the classes it separates and the transform its scores carry.
+    function disp (this)
+      fprintf ("\n  ClassificationPartitionedModel\n\n");
+      fprintf ("%+25s: '%s'\n", 'CrossValidatedModel', ...
+               this.CrossValidatedModel);
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      elseif (ischar (this.ClassNames))
+        str = repmat ({'''%s'''}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else   # single, double, logical
+        str = repmat ({'%d'}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'KFold', this.KFold);
+      fprintf ("%+25s: '%s'\n\n", 'ScoreTransform', this.ScoreTransform);
+    endfunction
+
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
       if (isempty (val))
@@ -331,6 +382,8 @@ classdef ClassificationPartitionedModel
       ## whatever was cross validated; this used to name three of the five.
       this.Prior = Mdl.Prior;
       this.Cost = Mdl.Cost;
+      this.W = Mdl.W;
+      this.BinEdges = Mdl.BinEdges;
       ## Switch Classification object types
       switch (this.CrossValidatedModel)
 
@@ -1221,3 +1274,21 @@ endclassdef
 %!   hit += sum (strcmp (predict (Mdl, X(te,:)), species(te)));
 %! endfor
 %! assert_equal (sum (strcmp (kfoldPredict (CVMdl), species)), hit);
+
+## The weights of the model that was cross validated are carried over, as
+## the regression counterpart already did.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.W, Mdl.W);
+%! assert_equal (size (CVMdl.W), [150, 1]);
+
+## BinEdges is an empty cell, and a cell rather than an empty matrix: code
+## that reaches into it with cellfun works against MATLAB and used to fail
+## here on the type alone.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), 'KFold', 3);
+%! assert_equal (class (CVMdl.BinEdges), 'cell');
+%! assert_equal (CVMdl.BinEdges, {});

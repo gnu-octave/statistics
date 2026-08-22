@@ -346,6 +346,23 @@ classdef ClassificationGAM
     ## @end deftp
     IntMatrix = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} BinEdges
+    ##
+    ## Bin edges of the predictors
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the model discretized it before fitting.  It is empty here
+    ## and stays empty: this generalized additive model is built from splines,
+    ## which take the predictors as they are, where MATLAB's is built from
+    ## boosted trees and bins them.  That difference is described in the class
+    ## documentation.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges        = {};
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1561,6 +1578,7 @@ classdef ClassificationGAM
       RowsUsed        = this.RowsUsed;
       NumPredictors   = this.NumPredictors;
       PredictorNames  = this.PredictorNames;
+      BinEdges        = this.BinEdges;
       ResponseName    = this.ResponseName;
       ClassNames      = this.ClassNames;
       Prior           = this.Prior;
@@ -1585,7 +1603,8 @@ classdef ClassificationGAM
       NumIterations   = this.NumIterations;
 
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
+            'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
+            'ResponseName', ...
             'ClassNames', 'Prior', 'Cost', 'ScoreTransform', 'Formula', ...
             'Interactions', 'Knots', 'Order', 'DoF', 'BaseModel', ...
             'ModelwInt', 'IntMatrix', 'LearningRate', 'NumIterations', ...
@@ -2338,3 +2357,13 @@ endfunction
 %! [~, scores] = predict (Mdl, meas(1:6,:));
 %! assert_equal (sum (scores, 2), ones (6, 1), 1e-12);
 %! assert_equal (all (scores(:) >= 0 & scores(:) <= 1), true);
+
+## BinEdges is an empty cell, as MATLAB reports for every learner that
+## does no binning.  MATLAB's own generalized additive model fills it,
+## being boosted trees where this one is splines.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! assert_equal (class (Mdl.BinEdges), 'cell');
+%! assert_equal (Mdl.BinEdges, {});

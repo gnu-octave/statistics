@@ -382,6 +382,23 @@ classdef RegressionGAM
     ##
     ## @end deftp
     IntMatrix             = [];
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} BinEdges
+    ##
+    ## Bin edges of the predictors
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the model discretized it before fitting.  It is empty here
+    ## and stays empty: this generalized additive model is built from splines,
+    ## which take the predictors as they are, where MATLAB's is built from
+    ## boosted trees and bins them.  That difference is described in the class
+    ## documentation.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges        = {};
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1192,6 +1209,7 @@ classdef RegressionGAM
       Y = obj.Y;
       NumObservations     = obj.NumObservations;
       RowsUsed            = obj.RowsUsed;
+      BinEdges            = obj.BinEdges;
       NumPredictors       = obj.NumPredictors;
       PredictorNames      = obj.PredictorNames;
       ResponseName        = obj.ResponseName;
@@ -1217,7 +1235,8 @@ classdef RegressionGAM
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
+            'RowsUsed', 'BinEdges', 'NumPredictors', 'PredictorNames', ...
+            'ResponseName', ...
             'Formula', 'Interactions', 'Knots', 'Order', 'DoF', 'Tol', ...
             'BaseModel', 'ModelwInt', 'IntMatrix', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'W', 'ResponseTransform', ...
@@ -1897,3 +1916,12 @@ endfunction
 %! crossval (cvobj, 'cvpartition', 1)
 %!error<RegressionGAM.crossval: invalid parameter name in optional paired arguments.> ...
 %! crossval (cvobj, 'bogus', 1)
+
+## BinEdges is an empty cell, as MATLAB reports for every learner that
+## does no binning.  MATLAB's own generalized additive model fills it,
+## being boosted trees where this one is splines.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4));
+%! assert_equal (class (Mdl.BinEdges), 'cell');
+%! assert_equal (Mdl.BinEdges, {});

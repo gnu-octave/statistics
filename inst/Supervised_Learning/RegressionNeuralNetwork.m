@@ -387,6 +387,21 @@ classdef RegressionNeuralNetwork
     ##
     ## @end deftp
     ExpandedPredictorNames = {};
+    ## -*- texinfo -*-
+    ## @deftp {RegressionNeuralNetwork} {property} BinEdges
+    ##
+    ## Bin edges of the predictors
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the learner discretized it before fitting.  It is empty here
+    ## and stays empty: this learner fits the predictors as they are, and
+    ## MATLAB's reports an empty cell for it as well.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges        = {};
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1121,6 +1136,7 @@ classdef RegressionNeuralNetwork
       Y = this.Y;
       NumObservations         = this.NumObservations;
       RowsUsed                = this.RowsUsed;
+      BinEdges            = this.BinEdges;
       NumPredictors           = this.NumPredictors;
       PredictorNames          = this.PredictorNames;
       ResponseName            = this.ResponseName;
@@ -1149,7 +1165,8 @@ classdef RegressionNeuralNetwork
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
+            'RowsUsed', 'BinEdges', 'NumPredictors', 'PredictorNames', ...
+            'ResponseName', ...
             'ResponseTransform', 'Sigma', 'Mu', ...
             'LayerSizes', 'Activations', 'OutputLayerActivation', ...
             'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
@@ -1737,3 +1754,11 @@ endfunction
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## BinEdges is an empty cell, which is what MATLAB reports for this
+## learner as well: it fits the predictors as they are.
+%!test
+%! load fisheriris
+%! Mdl = fitrnet (meas(:,1:3), meas(:,4), 'IterationLimit', 10);
+%! assert_equal (class (Mdl.BinEdges), 'cell');
+%! assert_equal (Mdl.BinEdges, {});

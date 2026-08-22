@@ -231,6 +231,21 @@ classdef ClassificationKNN
     ##
     ## @end deftp
     BucketSize      = [];
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} BinEdges
+    ##
+    ## Bin edges of the predictors
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the learner discretized it before fitting.  It is empty here
+    ## and stays empty: this learner fits the predictors as they are, and
+    ## MATLAB's reports an empty cell for it as well.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges        = {};
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -2369,6 +2384,7 @@ classdef ClassificationKNN
       W               = this.W;
       RowsUsed        = this.RowsUsed;
       Sigma           = this.Sigma;
+      BinEdges        = this.BinEdges;
       Mu              = this.Mu;
       NumPredictors   = this.NumPredictors;
       PredictorNames  = this.PredictorNames;
@@ -2391,7 +2407,8 @@ classdef ClassificationKNN
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'W', 'RowsUsed', 'Sigma', 'Mu', 'NumPredictors', ...
-            'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
+            'PredictorNames', 'BinEdges', 'ResponseName', 'ClassNames', ...
+            'Prior', 'Cost', ...
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
             'DistanceWeight', 'DWfun', 'DistParameter', 'NSMethod', ...
             'IncludeTies', ...
@@ -3801,3 +3818,11 @@ endfunction
 %! edge (fitcknn (meas, species), meas, species, 'Weights', ones (3, 1))
 %!error<ClassificationKNN.edge: invalid parameter name in optional paired arguments.> ...
 %! load fisheriris; edge (fitcknn (meas, species), meas, species, 'Nope', 1)
+
+## BinEdges is an empty cell, which is what MATLAB reports for this
+## learner as well: it fits the predictors as they are.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (class (Mdl.BinEdges), 'cell');
+%! assert_equal (Mdl.BinEdges, {});

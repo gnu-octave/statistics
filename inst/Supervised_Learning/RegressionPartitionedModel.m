@@ -83,6 +83,23 @@ classdef RegressionPartitionedModel
     W                     = [];
 
     ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} BinEdges
+    ##
+    ## Bin edges of the predictors
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the learner discretized it before fitting.  It is carried
+    ## over from the model that was cross validated, and is empty whenever that
+    ## model did no binning, which is every learner this package implements:
+    ## MATLAB fills it only for its generalized additive model, which bins
+    ## because it is built from boosted trees where ours is built from splines.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges              = {};
+
+    ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} CrossValidatedModel
     ##
     ## Name of the class that was cross validated
@@ -276,6 +293,7 @@ classdef RegressionPartitionedModel
       this.X = X;
       this.Y = Y;
       this.W = Mdl.W;
+      this.BinEdges = Mdl.BinEdges;
       this.KFold = Partition.NumTestSets;
       this.Trained = cell (this.KFold, 1);
       this.ResponseName = Mdl.ResponseName;
@@ -740,3 +758,11 @@ endclassdef
 %! kfoldLoss (crossval (fitrnet (randn (20, 2), randn (20, 1), ...
 %!                      'IterationLimit', 5), 'KFold', 4), ...
 %!            'LossFun', 'epsiloninsensitive')
+
+## BinEdges is an empty cell, and a cell rather than an empty matrix, matching
+## the classification counterpart and MATLAB.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3);
+%! assert_equal (class (CVMdl.BinEdges), 'cell');
+%! assert_equal (CVMdl.BinEdges, {});

@@ -360,6 +360,21 @@ classdef ClassificationSVM
     ##
     ## @end deftp
     ExpandedPredictorNames = {};
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} BinEdges
+    ##
+    ## Bin edges of the predictors
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the learner discretized it before fitting.  It is empty here
+    ## and stays empty: this learner fits the predictors as they are, and
+    ## MATLAB's reports an empty cell for it as well.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges        = {};
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1810,6 +1825,7 @@ classdef ClassificationSVM
       ClassNames          = this.ClassNames;
       ScoreTransform      = this.ScoreTransform;
       Sigma               = this.Sigma;
+      BinEdges        = this.BinEdges;
       Mu                  = this.Mu;
       ModelParameters     = this.ModelParameters;
       Model               = this.Model;
@@ -1829,7 +1845,8 @@ classdef ClassificationSVM
       STfun          = this.STfun;
 
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
+            'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
+            'ResponseName', ...
             'ClassNames', 'ScoreTransform', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
@@ -2662,3 +2679,12 @@ endclassdef
 %! load fisheriris; ...
 %! inds = ! strcmp (species, 'virginica'); ...
 %! edge (fitcsvm (meas(inds,:), species(inds)), meas(inds,:))
+
+## BinEdges is an empty cell, which is what MATLAB reports for this
+## learner as well: it fits the predictors as they are.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcsvm (meas(inds,:), species(inds));
+%! assert_equal (class (Mdl.BinEdges), 'cell');
+%! assert_equal (Mdl.BinEdges, {});
