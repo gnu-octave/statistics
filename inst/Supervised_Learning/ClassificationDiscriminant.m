@@ -22,7 +22,7 @@ classdef ClassificationDiscriminant
   ##
   ## Discriminant analysis classification
   ##
-  ## The @code{ClassificationDiscriminant} class implements a linear
+  ## The @code{ClassificationDiscriminant} class implements a
   ## discriminant analysis classifier object, which can predict responses for
   ## new data using the @code{predict} method.
   ##
@@ -34,6 +34,22 @@ classdef ClassificationDiscriminant
   ##
   ## Create a @code{ClassificationDiscriminant} object by using the
   ## @code{fitcdiscr} function or the class constructor.
+  ##
+  ##
+  ## Six discriminant types are available, in two families.  The linear family,
+  ## @qcode{'linear'}, @qcode{'diagLinear'} and @qcode{'pseudoLinear'}, pools
+  ## one covariance across the classes and separates them with a hyperplane.
+  ## The quadratic family, @qcode{'quadratic'}, @qcode{'diagQuadratic'} and
+  ## @qcode{'pseudoQuadratic'}, estimates a covariance per class and separates
+  ## them with a quadric.  A @qcode{'diag'} type keeps only the variances,
+  ## which is the same model as a @qcode{Gamma} of 1, and a @qcode{'pseudo'}
+  ## type inverts a singular covariance rather than refusing it.
+  ##
+  ## @qcode{DiscrimType} may be assigned after fitting, but @emph{only within
+  ## its own family}: the family is fixed when the model is fitted, because it
+  ## decides which covariances the fit has to estimate.  Assigning it, or
+  ## @qcode{Gamma}, re-derives @qcode{Sigma}, @qcode{LogDetSigma} and
+  ## @qcode{Coeffs} without refitting.
   ##
   ## @seealso{fitcdiscr}
   ## @end deftp
@@ -162,10 +178,23 @@ classdef ClassificationDiscriminant
     ##
     ## Within-class covariance
     ##
-    ## A numeric array specifying the within-class covariance.  For linear
-    ## discriminant type (currently supported) this is a @math{P*P} matrix,
-    ## where @math{P} is the number of predictors in @var{X}.  This property is
-    ## read-only.
+    ## A numeric array whose shape follows @qcode{DiscrimType}, with @math{P}
+    ## predictors and @math{K} classes:
+    ##
+    ## @multitable @columnfractions 0.4 0.25 0.35
+    ## @headitem @var{DiscrimType} @tab @var{Sigma} @tab @var{LogDetSigma}
+    ## @item @qcode{'linear'}, @qcode{'pseudoLinear'} @tab @math{PxP}
+    ## @tab scalar
+    ## @item @qcode{'quadratic'}, @qcode{'pseudoQuadratic'} @tab @math{PxPxK}
+    ## @tab @math{Kx1}
+    ## @item @qcode{'diagLinear'} @tab @math{1xP} @tab scalar
+    ## @item @qcode{'diagQuadratic'} @tab @math{1xPxK} @tab @math{Kx1}
+    ## @end multitable
+    ##
+    ## The linear family pools one covariance across the classes and the
+    ## quadratic family estimates one per class.  This property is read-only,
+    ## but it is re-derived whenever @qcode{DiscrimType} or @qcode{Gamma} is
+    ## assigned.
     ##
     ## @end deftp
     Sigma           = [];
@@ -194,9 +223,8 @@ classdef ClassificationDiscriminant
     ## @code{ClassificationDiscriminant} constructor, then @qcode{Coeffs} is
     ## empty @qcode{([])}.  This property is read-only.
     ##
-    ## @qcode{Coeffs(i,j)} contains the coefficients of the linear (currently
-    ## supported) boundaries between the classes @code{i} and @code{j} in the
-    ## following fields:
+    ## @qcode{Coeffs(i,j)} contains the coefficients of the boundary between
+    ## the classes @code{i} and @code{j} in the following fields:
     ##
     ## @itemize
     ## @item @qcode{DiscrimType} - A character vector
@@ -204,53 +232,46 @@ classdef ClassificationDiscriminant
     ## @item @qcode{Class2} - @qcode{@var{ClassNames}(j)}
     ## @item @qcode{Const} - A scalar
     ## @item @qcode{Linear} - A vector with length as the number of predictors.
+    ## @item @qcode{Quadratic} - The quadratic family only.  A @math{PxP}
+    ## matrix, or a @math{1xP} vector for @qcode{'diagQuadratic'}, following
+    ## the shape of @qcode{Sigma}.
     ## @end itemize
+    ##
+    ## The diagonal entries carry the two class names and nothing else.  The
+    ## structure is rebuilt whenever @qcode{DiscrimType}, @qcode{Gamma} or
+    ## @qcode{Prior} is assigned.
     ##
     ## @end deftp
     Coeffs          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property} Delta
+    ## @deftp {%s} {property} DeltaPredictor
     ##
-    ## Delta threshold
+    ## Minimum Delta at which each predictor drops out
     ##
-    ## A nonnegative scalar specifying the threshold for linear discriminant
-    ## model.  Currently unimplemented and fixed to 0.  This property is
-    ## read-only.
+    ## A row vector with one entry per predictor, the value of @qcode{Delta} at
+    ## which that predictor's coefficient is zero for every class and the
+    ## predictor leaves the model altogether.  It is all zeros for the
+    ## quadratic family, which has no linear coefficients to eliminate.
     ##
-    ## @end deftp
-    Delta           = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property} DiscrimType
-    ##
-    ## Discriminant type
-    ##
-    ## A character vector specifying the type discriminant model.  Currently
-    ## only linear discriminant models are supported.  This property is
-    ## read-only.
+    ## This property is read-only, and it describes the fit rather than the
+    ## threshold: assigning @qcode{Delta} does not move it.
     ##
     ## @end deftp
-    DiscrimType     = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property} Gamma
-    ##
-    ## Gamma regularization parameter
-    ##
-    ## A scalar value ranging from 0 to 1, specifying the Gamma regularization
-    ## parameter.  This property is read-only.
-    ##
-    ## @end deftp
-    Gamma           = [];
+    DeltaPredictor  = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} MinGamma
     ##
-    ## Minimum value for Gamma regularization parameter
+    ## Minimum value for the Gamma regularization parameter
     ##
-    ## A scalar value ranging from 0 to 1, specifying the minimum value that the
-    ## Gamma regularization parameter can have.  This property is read-only.
+    ## A scalar from 0 to 1, the least regularization that leaves the
+    ## correlation matrix invertible.  It is 0 when the matrix is already
+    ## invertible, and positive when the predictors are collinear, in which
+    ## case a plain @qcode{'linear'} or @qcode{'quadratic'} fit is raised to it
+    ## rather than failing.  Assigning a @qcode{Gamma} below it is refused.
+    ##
+    ## This property is read-only.
     ##
     ## @end deftp
     MinGamma        = [];
@@ -260,8 +281,15 @@ classdef ClassificationDiscriminant
     ##
     ## Logarithm of the determinant of the within-class covariance matrix
     ##
-    ## A scalar value specifying the logarithm of the determinant of the
-    ## within-class covariance matrix.  This property is read-only.
+    ## A scalar for the linear family and a @math{Kx1} vector for the quadratic
+    ## one, one entry per class.  It is computed in correlation space, as the
+    ## sum of the logarithms of the predictor variances plus the log
+    ## determinant of the correlation matrix, which is far better conditioned
+    ## than the covariance when the data are nearly collinear.  A predictor
+    ## with no variance contributes nothing rather than an infinity, and the
+    ## @qcode{'pseudo'} types sum only over the directions that carry variance.
+    ##
+    ## This property is read-only.
     ##
     ## @end deftp
     LogDetSigma     = [];
@@ -282,6 +310,71 @@ classdef ClassificationDiscriminant
   ## Properties a user may set after the model is fitted.  Each one is
   ## validated by its set method below.
   properties (GetAccess = public, SetAccess = public)
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} DiscrimType
+    ##
+    ## Discriminant type
+    ##
+    ## A character vector naming the discriminant model, one of
+    ## @qcode{'linear'}, @qcode{'quadratic'}, @qcode{'diagLinear'},
+    ## @qcode{'diagQuadratic'}, @qcode{'pseudoLinear'} or
+    ## @qcode{'pseudoQuadratic'}.  A linear type pools one covariance across
+    ## the classes; a quadratic type estimates one per class.  A
+    ## @qcode{'diag'} type keeps only the variances, and a @qcode{'pseudo'}
+    ## type inverts a singular covariance instead of refusing it.
+    ##
+    ## This property may be assigned, but @emph{only within its own family}:
+    ## the three linear types interchange freely and so do the three quadratic
+    ## ones, while no assignment moves a model between the two.  The family is
+    ## fixed when the model is fitted, because it decides which covariances the
+    ## fit has to estimate.  Assigning re-derives @qcode{Sigma},
+    ## @qcode{LogDetSigma}, @qcode{Gamma} and @qcode{Coeffs}.
+    ##
+    ## @end deftp
+    DiscrimType     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Gamma
+    ##
+    ## Gamma regularization parameter
+    ##
+    ## A scalar from 0 to 1 shrinking the covariance towards its diagonal.
+    ## @qcode{Gamma} and @qcode{DiscrimType} are one state: a value of 1 is the
+    ## diagonal type, so assigning it renames @qcode{DiscrimType} to
+    ## @qcode{'diagLinear'} or @qcode{'diagQuadratic'}, and assigning a
+    ## diagonal type sets @qcode{Gamma} to 1.
+    ##
+    ## The quadratic family admits 0 and 1 only.  A value below
+    ## @qcode{MinGamma} is refused, since it would leave the covariance
+    ## singular.  Assigning re-derives @qcode{Sigma}, @qcode{LogDetSigma} and
+    ## @qcode{Coeffs}.
+    ##
+    ## @end deftp
+    Gamma           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Delta
+    ##
+    ## Delta threshold for the linear coefficients
+    ##
+    ## A nonnegative scalar that eliminates predictors.  A per-class linear
+    ## coefficient is set to zero when it falls below @qcode{Delta}, and the
+    ## comparison is made on the @strong{standardized} coefficient, the
+    ## coefficient times the within-class standard deviation of its predictor.
+    ## Scaling matters here: a threshold on the raw coefficients would depend
+    ## on the units each predictor is measured in, so the same model in
+    ## centimetres and in metres would drop different predictors.
+    ##
+    ## @qcode{DeltaPredictor} reports, per predictor, the value at which it
+    ## drops out of every class at once.
+    ##
+    ## It applies to the linear family only, a quadratic discriminant having no
+    ## linear coefficients to eliminate.  Assigning it rebuilds @qcode{Coeffs}
+    ## and changes what @code{predict} answers.
+    ##
+    ## @end deftp
+    Delta           = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} Cost
@@ -375,6 +468,12 @@ classdef ClassificationDiscriminant
   ## the documented surface.  MATLAB hides its own equivalent the same way.
   properties (GetAccess = public, SetAccess = protected, Hidden)
     STfun = @(x) x;
+
+    ## The unregularized within-class covariance the fit estimated, PxP for the
+    ## linear family and PxPxK for the quadratic one.  Sigma, LogDetSigma and
+    ## Coeffs are all derived from it, so assigning DiscrimType within the
+    ## family re-derives rather than refits.
+    BaseSigma = [];
   endproperties
 
   ## Set methods for the properties a user may assign after fitting.
@@ -417,24 +516,133 @@ classdef ClassificationDiscriminant
         endif
         this.Prior = Prior(:)' ./ sum (Prior);
       endif
-      ## Recalculate the Const field in the Coeffs structure
+      ## Rebuild the coefficients, whose constant term reads the priors.
+      ## Delegating rather than restating the linear formula is what keeps the
+      ## six discriminant types in step: the formula here was linear only, and
+      ## a quadratic model's Sigma is not even the same shape.
+      if (! isempty (this.Coeffs) && ! isempty (this.BaseSigma))
+        ## Derived here rather than read off Sigma, so the covariance and the
+        ## type always agree even when the object is part way through a load.
+        [Sg, Ld] = discrimderive (this.BaseSigma, this.DiscrimType, ...
+                                  this.Gamma, this.MinGamma);
+        this.Coeffs = discrimcoeffs (this.Mu, Sg, Ld, this.Prior, ...
+                                     this.DiscrimType, this.Delta, ...
+                                     this.ClassNames);
+      endif
+    endfunction
+
+    ## DiscrimType, Gamma and Delta are one state, and these three methods are
+    ## the only place it is changed.  Assigning the type or the regularization
+    ## re-derives Sigma, LogDetSigma and Coeffs from BaseSigma, the covariance
+    ## the fit estimated, so no assignment ever refits.  Each writes its own
+    ## property directly, which does not re-enter its own set method, and
+    ## reaches the others through theirs, which is what keeps the three
+    ## consistent whichever one the user assigns.
+    function this = set.DiscrimType (this, val)
+      [t, fam] = discrimcanon (val);
+      ## The family a fit belongs to is written in BaseSigma's shape: one
+      ## covariance for the linear family, one per class for the quadratic.
+      ## Reading it there rather than from the stored type is what lets a
+      ## loaded model take its own type back, the stub it is loaded into
+      ## carrying the default type until the file has been read.
+      if (! isempty (this.BaseSigma) && size (this.BaseSigma, 3) > 1)
+        cur = 'quadratic';
+      elseif (! isempty (this.BaseSigma))
+        cur = 'linear';
+      else
+        [~, cur] = discrimcanon (this.DiscrimType);
+      endif
+      if (isempty (t) || (! isempty (cur) && ! strcmp (fam, cur)))
+        ## The family was fixed by the fit, so only three types are on offer,
+        ## and an unrecognized name is refused by the same message.
+        if (strcmp (cur, 'quadratic'))
+          ok = "quadratic, diagQuadratic, or pseudoQuadratic";
+        else
+          ok = "linear, diagLinear, or pseudoLinear";
+        endif
+        error (strcat ("ClassificationDiscriminant: 'DiscrimType' can only", ...
+                       " be set to one of: %s."), ok);
+      endif
+      this.DiscrimType = t;
+      if (isempty (this.BaseSigma))
+        return;   # not fitted yet, nothing to derive
+      endif
+      ## A diagonal type is Gamma of 1 and every other type starts from 0,
+      ## which is what the oracle reports for each transition.  The derivation
+      ## raises it to MinGamma where the covariance needs it.
+      g = double (strncmp (t, 'diag', 4));
+      [~, ~, g] = discrimderive (this.BaseSigma, t, g, this.MinGamma);
+      this.Gamma = g;
+    endfunction
+
+    function this = set.Gamma (this, val)
+      if (! (isnumeric (val) && isscalar (val) && val >= 0 && val <= 1))
+        error (strcat ("ClassificationDiscriminant: 'Gamma' must be a", ...
+                       " scalar between 0 and 1."));
+      endif
+      if (isempty (this.BaseSigma))
+        this.Gamma = val;
+        return;
+      endif
+      [~, fam] = discrimcanon (this.DiscrimType);
+      if (strcmp (fam, 'quadratic') && val > 0 && val < 1)
+        error (strcat ("ClassificationDiscriminant: cannot set 'Gamma' to", ...
+                       " any value but 0 or 1 for a quadratic discriminant."));
+      endif
+
+      ## Gamma of 1 IS the diagonal type.  Naming the type does the rest, and
+      ## comes back here with a value that no longer needs the rename.
+      if (val == 1 && ! strncmp (this.DiscrimType, 'diag', 4))
+        if (strcmp (fam, 'quadratic'))
+          this.DiscrimType = 'diagQuadratic';
+        else
+          this.DiscrimType = 'diagLinear';
+        endif
+        return;
+      elseif (val < 1 && strncmp (this.DiscrimType, 'diag', 4))
+        if (strcmp (fam, 'quadratic'))
+          this.DiscrimType = 'quadratic';
+        else
+          this.DiscrimType = 'linear';
+        endif
+      endif
+
+      ## The MinGamma floor belongs to the one type that regularizes its way
+      ## out of a singular covariance.  A pseudo type is Gamma of 0 by
+      ## definition, inverting the rank it has instead; a diagonal type is
+      ## Gamma of 1 and never near the floor; and the quadratic family refuses
+      ## a singular class covariance outright rather than ridging it.
+      Mg = this.MinGamma;
+      [Sg, Ld, Ge] = discrimderive (this.BaseSigma, this.DiscrimType, val, Mg);
+      if (val < Mg && strcmp (this.DiscrimType, 'linear'))
+        error (strcat ("ClassificationDiscriminant: 'Gamma' must be", ...
+                       " between %g and 1."), Mg);
+      endif
+      this.Gamma = Ge;
+      this.Sigma = Sg;
+      this.LogDetSigma = Ld;
       if (! isempty (this.Coeffs))
-        num_classes = rows (this.ClassNames);
-        ## Calculate coefficients
-        switch (this.DiscrimType)
-          case 'linear'
-            for i = 1:num_classes
-              for j = 1:num_classes
-                if (i != j)
-                  K = log (this.Prior(i) ...
-                      / this.Prior(j)) - 0.5 * (this.Mu(i, :) ...
-                      / this.Sigma * this.Mu(i, :)') + 0.5 * (this.Mu(j, :) ...
-                      / this.Sigma * this.Mu(j, :)');
-                  this.Coeffs(i, j).Const = K;
-                endif
-              endfor
-            endfor
-        endswitch
+        this.Coeffs = discrimcoeffs (this.Mu, Sg, Ld, this.Prior, ...
+                                     this.DiscrimType, this.Delta, ...
+                                     this.ClassNames);
+      endif
+    endfunction
+
+    function this = set.Delta (this, val)
+      if (! (isnumeric (val) && isscalar (val) && val >= 0))
+        error (strcat ("ClassificationDiscriminant: 'Delta' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      [~, fam] = discrimcanon (this.DiscrimType);
+      if (val > 0 && strcmp (fam, 'quadratic'))
+        error (strcat ("ClassificationDiscriminant: cannot eliminate", ...
+                       " linear predictors in a quadratic discriminant."));
+      endif
+      this.Delta = val;
+      if (! isempty (this.BaseSigma) && ! isempty (this.Coeffs))
+        this.Coeffs = discrimcoeffs (this.Mu, this.Sigma, this.LogDetSigma, ...
+                                     this.Prior, this.DiscrimType, val, ...
+                                     this.ClassNames);
       endif
     endfunction
 
@@ -477,7 +685,9 @@ classdef ClassificationDiscriminant
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
       fprintf ("%+25s: [%dx%d double]\n", 'Mu', size (this.Mu));
-      fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', size (this.Sigma));
+      ## Coeffs is KxK, which is Sigma's shape only for a linear discriminant.
+      fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', ...
+               rows (this.ClassNames), rows (this.ClassNames));
     endfunction
 
   endmethods
@@ -675,10 +885,12 @@ classdef ClassificationDiscriminant
             this.ScoreTransform = varargin{2};
 
           case 'discrimtype'
-            DiscrimType = tolower (varargin{2});
-            if (! (strcmpi (DiscrimType, 'linear')))
-                error (strcat ("ClassificationDiscriminant: unsupported", ...
-                               " discriminant type."));
+            DiscrimType = discrimcanon (varargin{2});
+            if (isempty (DiscrimType))
+              error (strcat ("ClassificationDiscriminant: 'DiscrimType'", ...
+                             " must be one of the following: linear,", ...
+                             " quadratic, diagLinear, diagQuadratic,", ...
+                             " pseudoLinear, or pseudoQuadratic."));
             endif
 
           case 'fillcoeffs'
@@ -690,10 +902,19 @@ classdef ClassificationDiscriminant
 
           case 'gamma'
             Gamma = varargin{2};
-            if (Gamma >= 1 || Gamma < 0)
+            if (! (isnumeric (Gamma) && isscalar (Gamma)
+                   && Gamma >= 0 && Gamma <= 1))
               error (strcat ("ClassificationDiscriminant: 'Gamma'", ...
-                             " must be between 0 and 1."));
+                             " must be a scalar between 0 and 1."));
             endif
+
+          case 'delta'
+            Delta = varargin{2};
+            if (! (isnumeric (Delta) && isscalar (Delta) && Delta >= 0))
+              error (strcat ("ClassificationDiscriminant: 'Delta'", ...
+                             " must be a nonnegative scalar."));
+            endif
+
 
           otherwise
             error (strcat ("ClassificationDiscriminant: invalid", ...
@@ -768,6 +989,25 @@ classdef ClassificationDiscriminant
       this.W = ones (this.NumObservations, 1) / this.NumObservations;
 
       ## Assign DiscrimType
+      ## Reconcile the type with the regularization before anything is
+      ## estimated.  Gamma of 1 IS the diagonal type, in both directions, and
+      ## the quadratic family admits neither an intermediate Gamma nor a Delta.
+      [~, fam] = discrimcanon (DiscrimType);
+      if (Gamma == 1 && ! strncmp (DiscrimType, 'diag', 4))
+        if (strcmp (fam, 'linear'))
+          DiscrimType = 'diagLinear';
+        else
+          DiscrimType = 'diagQuadratic';
+        endif
+      elseif (Gamma > 0 && Gamma < 1 && strcmp (fam, 'quadratic'))
+        error (strcat ("ClassificationDiscriminant: cannot set 'Gamma' to", ...
+                       " any value but 0 or 1 for a quadratic discriminant."));
+      endif
+      if (Delta > 0 && strcmp (fam, 'quadratic'))
+        error (strcat ("ClassificationDiscriminant: cannot set linear", ...
+                       " coefficients to zero for a quadratic discriminant."));
+      endif
+
       this.DiscrimType = DiscrimType;
       this.Delta = Delta;
       this.Gamma = Gamma;
@@ -788,100 +1028,105 @@ classdef ClassificationDiscriminant
       ## Center the predictors (XCentered), keeping the missing entries
       this.XCentered = X - this.Mu(gY, :);
 
-      ## Calculate Within-class covariance (Sigma)
-      if (strcmp (this.DiscrimType, 'linear'))
-        ## Only complete observations enter the covariance, reweighted so that
-        ## each class keeps the total weight it carried before any was dropped
-        cobs = ! any (isnan (X), 2);
-        cw   = zeros (rows (X), 1);
-        Wk   = zeros (num_classes, 1);
-        for i = 1:num_classes
-          Wk(i) = sum (gY == i) / rows (X);
-          ci = (gY == i) & cobs;
-          cw(ci) = Wk(i) / sum (ci);
-        endfor
-        den = 1;
-        for i = 1:num_classes
-          ci = (gY == i) & cobs;
-          den -= sum (cw(ci) .^ 2) / Wk(i);
-        endfor
-        Zc = this.XCentered(cobs, :);
-        this.Sigma = (Zc .* cw(cobs))' * Zc / den;
+      ## Estimate the covariance the family calls for.  A linear family pools
+      ## one covariance across the classes and a quadratic family estimates one
+      ## per class; every type in a family is derived from what is estimated
+      ## here, which is what lets DiscrimType be assigned after the fit without
+      ## the model having to keep both.
+      [~, fam] = discrimcanon (this.DiscrimType);
+      cobs = ! any (isnan (X), 2);
 
-        ## Check for predictors with zero within-class variance
-        zwcv = find (diag (this.Sigma) == 0);
-        if (! isempty (zwcv))
-          msg = strcat ("ClassificationDiscriminant: Predictor", ...
-                        " '%s' has zero within-class variance.");
-          error (msg, PredictorNames{zwcv(1)});
+      ## The pooled covariance is estimated whatever the family, because
+      ## MinGamma is taken from it.  Only complete observations enter it,
+      ## reweighted so that each class keeps the total weight it carried
+      ## before any was dropped.
+      cw   = zeros (rows (X), 1);
+      Wk   = zeros (num_classes, 1);
+      for i = 1:num_classes
+        Wk(i) = sum (gY == i) / rows (X);
+        ci = (gY == i) & cobs;
+        cw(ci) = Wk(i) / sum (ci);
+      endfor
+      den = 1;
+      for i = 1:num_classes
+        ci = (gY == i) & cobs;
+        den -= sum (cw(ci) .^ 2) / Wk(i);
+      endfor
+      Zc = this.XCentered(cobs, :);
+      pooled = (Zc .* cw(cobs))' * Zc / den;
+      this.MinGamma = discrimmingamma (pooled);
+
+      if (strcmp (fam, 'linear'))
+        this.BaseSigma = pooled;
+
+        ## A predictor with no within-class variance cannot be inverted, so the
+        ## plain type refuses it and names the two types that can take it.
+        zwcv = find (diag (this.BaseSigma) == 0);
+        if (! isempty (zwcv) && strcmp (this.DiscrimType, 'linear'))
+          error (strcat ("ClassificationDiscriminant: predictor '%s'", ...
+                         " has zero within-class variance.  Either exclude", ...
+                         " this predictor or set 'DiscrimType' to", ...
+                         " 'pseudoLinear' or 'diagLinear'."), ...
+                 PredictorNames{zwcv(1)});
         endif
+      else
+        this.BaseSigma = zeros (num_features, num_features, num_classes);
+        for i = 1:num_classes
+          ci = (gY == i) & cobs;
+          Zi = this.XCentered(ci, :);
+          this.BaseSigma(:,:,i) = (Zi' * Zi) / (sum (ci) - 1);
 
-        D = diag (diag (this.Sigma));
-
-        ## FIX ME: MinGamma calculation is not same as Matlab.
-        ## Instead of using (det (sigma) > 0) as a criterion (see code below),
-        ## maybe Matlab is using some threshold.
-        ## Also linear search might not be best here.
-
-        ## Regularize Sigma
-        this.Sigma = (this.Sigma * (1 - this.Gamma)) + (D * this.Gamma);
-        this.MinGamma = 0;
-        ## Calculate the MinGamma
-        if (det (this.Sigma) <= 0)
-          gamma = 0;
-          step = 1e-15;
-          sigma = this.Sigma;
-          while (true)
-            sigma = (sigma * (1 - gamma)) + (D * gamma);
-            if (det (sigma) > 0)
-              minGamma = gamma;
-              break;
+          zwcv = find (diag (this.BaseSigma(:,:,i)) == 0);
+          if (! isempty (zwcv) && strcmp (this.DiscrimType, 'quadratic'))
+            ## ClassNames keeps the type of Y, so the name is rendered rather
+            ## than indexed as though it were always a cell.
+            if (iscellstr (this.ClassNames))
+              cname = this.ClassNames{i};
+            elseif (ischar (this.ClassNames))
+              cname = this.ClassNames(i,:);
+            else
+              cname = num2str (this.ClassNames(i));
             endif
-            gamma = gamma + step;
-            if (gamma > 1)
-              error (strcat ("ClassificationDiscriminant: failed to", ...
-                             " find 'MinGamma' within reasonable range."));
-            endif
-          endwhile
-
-          this.MinGamma = minGamma;
-          if (this.Gamma < minGamma)
-            this.Gamma = minGamma;
+            error (strcat ("ClassificationDiscriminant: predictor '%s' has", ...
+                           " zero variance for class '%s'.  Either exclude", ...
+                           " this predictor or set 'DiscrimType' to", ...
+                           " 'pseudoQuadratic' or 'diagQuadratic'."), ...
+                   PredictorNames{zwcv(1)}, cname);
           endif
-          this.Sigma = (this.Sigma * (1 - this.Gamma)) + (D * this.Gamma);
-        endif
+        endfor
       endif
 
-      ## Calculate log determinant of Sigma
-      if (strcmp (this.DiscrimType, 'linear'))
-        this.LogDetSigma = log (det (this.Sigma));
+      ## Derive Sigma, its log determinant and the regularization from the
+      ## estimate above.  The type and Gamma are one state, so both come back.
+      [this.Sigma, this.LogDetSigma, this.Gamma] = ...
+              discrimderive (this.BaseSigma, this.DiscrimType, this.Gamma, ...
+                             this.MinGamma);
+
+      ## A singular class covariance is what the plain quadratic type cannot
+      ## take; the pseudo and diagonal ones answer it.
+      if (strcmp (this.DiscrimType, 'quadratic'))
+        for i = 1:num_classes
+          if (rcond (this.Sigma(:,:,i)) < num_features * eps)
+            error (strcat ("ClassificationDiscriminant: cannot use", ...
+                           " 'quadratic' type because one or more classes", ...
+                           " have singular covariance matrices."));
+          endif
+        endfor
+      endif
+
+      ## Delta is a threshold on the linear coefficients, so the quadratic
+      ## family reports it as zeros and has nothing to eliminate.
+      if (strcmp (fam, 'linear'))
+        [~, ~, this.DeltaPredictor] = discrimlinear (this.Mu, this.Sigma, ...
+                                       this.Prior, this.DiscrimType, 0);
+      else
+        this.DeltaPredictor = zeros (1, num_features);
       endif
 
       if (strcmpi (FillCoeffs, 'on'))
-        ## Calculate coefficients
-        switch (this.DiscrimType)
-          case 'linear'
-            this.Coeffs = struct ();
-            for i = 1:num_classes
-              for j = 1:num_classes
-                this.Coeffs(i, j).DiscrimType = '';
-                this.Coeffs(i, j).Const = [];
-                this.Coeffs(i, j).Linear = [];
-                this.Coeffs(i, j).Class1 = this.ClassNames(i,:);
-                this.Coeffs(i, j).Class2 = this.ClassNames(j,:);
-                if (i != j)
-                  A = (this.Mu(i, :) - this.Mu(j, :)) / this.Sigma;
-                  K = log (this.Prior(i) ...
-                      / this.Prior(j)) - 0.5 * (this.Mu(i, :) ...
-                      / this.Sigma * this.Mu(i, :)') + 0.5 * (this.Mu(j, :) ...
-                      / this.Sigma * this.Mu(j, :)');
-                  this.Coeffs(i, j).DiscrimType = this.DiscrimType;
-                  this.Coeffs(i, j).Linear = A';
-                  this.Coeffs(i, j).Const = K;
-                endif
-              endfor
-            endfor
-        endswitch
+        this.Coeffs = discrimcoeffs (this.Mu, this.Sigma, this.LogDetSigma, ...
+                                     this.Prior, this.DiscrimType, ...
+                                     this.Delta, this.ClassNames);
       endif
 
     endfunction
@@ -947,19 +1192,40 @@ classdef ClassificationDiscriminant
       score = zeros (numObservations, numClasses);
       cost = zeros (numObservations, numClasses);
 
-      ## Calculate discriminant score (posterior probabilities)
-      for i = 1:numClasses
-        for j = 1:numObservations
-          P_x_given_k = mvnpdf (XC(j, :), this.Mu(i, :), this.Sigma);
-          score(j, i) = P_x_given_k * this.Prior(i);
+      ## Score from the inverse covariance and its log determinant rather than
+      ## through mvnpdf.  A pseudo type's covariance is deliberately singular
+      ## and mvnpdf refuses it, and LogDetSigma has to be the value the
+      ## property reports, so the score and the property cannot drift apart.
+      [~, fam] = discrimcanon (this.DiscrimType);
+      logscore = zeros (numObservations, numClasses);
+      if (strcmp (fam, 'linear'))
+        ## The linear family scores from its per-class coefficients, which is
+        ## the same function with the terms common to every class dropped, and
+        ## is the only form in which Delta can eliminate a predictor.
+        [Z, b] = discrimlinear (this.Mu, this.Sigma, this.Prior, ...
+                                this.DiscrimType, this.Delta);
+        logscore = XC * Z' + b;
+      else
+        SigmaInv = discriminv (this.Sigma, this.DiscrimType);
+        nInv = size (SigmaInv, 3);
+        logdet = this.LogDetSigma;
+        if (isscalar (logdet))
+          logdet = repmat (logdet, numClasses, 1);
+        endif
+        for i = 1:numClasses
+          Si = SigmaInv(:,:,min (i, nInv));
+          Zc = XC - this.Mu(i, :);
+          logscore(:, i) = -0.5 * sum ((Zc * Si) .* Zc, 2) ...
+                           - 0.5 * logdet(i) + log (this.Prior(i));
         endfor
-      endfor
+      endif
 
-      ## Normalize score to get posterior probabilities
-      scoreSum = sum (score, 2);
-      score = bsxfun (@rdivide, score, scoreSum);
-
-      ## Handle numerical issues
+      ## The shared 2*pi factor cancels in the normalization, and subtracting
+      ## the row maximum first keeps a well separated observation a posterior
+      ## rather than a ratio of two underflowed zeros.
+      logscore = logscore - max (logscore, [], 2);
+      score = exp (logscore);
+      score = score ./ sum (score, 2);
       score(isnan (score)) = 0;
 
       ## Calculate expected classification cost
@@ -1542,6 +1808,7 @@ classdef ClassificationDiscriminant
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
       Sigma           = this.Sigma;
+      BaseSigma       = this.BaseSigma;
       Mu              = this.Mu;
       Coeffs          = this.Coeffs;
       Delta           = this.Delta;
@@ -1556,7 +1823,8 @@ classdef ClassificationDiscriminant
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'W', 'RowsUsed', 'NumPredictors', 'PredictorNames', ...
             'ResponseName', ...
-            'ClassNames', 'ScoreTransform', 'Prior', 'Cost', 'Sigma', 'Mu', ...
+            'ClassNames', 'ScoreTransform', 'Prior', 'Cost', 'Sigma', ...
+            'BaseSigma', 'Mu', ...
             'Coeffs', 'Delta', 'DiscrimType', 'Gamma', 'MinGamma', ...
             'LogDetSigma', 'XCentered', 'STfun');
     endfunction
@@ -1567,7 +1835,9 @@ classdef ClassificationDiscriminant
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationDiscriminant object
-      mdl = ClassificationDiscriminant (1, 1);
+      ## Built without coefficients: every set method rebuilds Coeffs when it
+      ## finds one, and a stub's would be rebuilt against half a loaded model.
+      mdl = ClassificationDiscriminant (1, 1, 'FillCoeffs', 'off');
 
       ## Copy the saved data into the object.  Iterate over what was
       ## saved rather than over fieldnames (mdl): a private property such
@@ -1576,12 +1846,26 @@ classdef ClassificationDiscriminant
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
       names = fieldnames (data);
-      ## The set methods for these read other properties, and one of them
-      ## rebuilds Coeffs, so they are assigned once everything else is in
-      ## place rather than in the order the file happens to list them.
-      late = ismember (names, {'Cost', 'Prior', 'ScoreTransform', ...
-                               'ResponseTransform'});
-      names = [names(! late); names(late)];
+      ## The set methods for these read other properties, and some of them
+      ## rebuild Sigma or Coeffs, so they are assigned once everything else is
+      ## in place rather than in the order the file happens to list them.
+      ## Order matters within the late group as well: Prior and Cost before
+      ## DiscrimType, because assigning the type rebuilds Coeffs and Coeffs
+      ## reads the priors; and DiscrimType before Gamma, because assigning the
+      ## type implies a Gamma and would overwrite the saved one if it came
+      ## second.  Coeffs is installed last of all: the set methods rebuild it
+      ## whenever it is already there, and rebuilding it from a half-loaded
+      ## model is how a diagonal Sigma met a linear formula.
+      order = {'Cost', 'Prior', 'ScoreTransform', 'ResponseTransform', ...
+               'DiscrimType', 'Gamma', 'Delta', 'Coeffs'};
+      late = ismember (names, order);
+      tail = {};
+      for k = 1:numel (order)
+        if (any (strcmp (names, order{k})))
+          tail{end+1} = order{k};
+        endif
+      endfor
+      names = [names(! late); tail(:)];
       for i = 1:numel (names)
         try
           mdl.(names{i}) = data.(names{i});
@@ -1735,13 +2019,13 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, 'Cost', {eye(2)})
 %!error<ClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
 %! ClassificationDiscriminant (X, Y, 'Cost', ones (3))
-%!error<ClassificationDiscriminant: Predictor 'x1' has zero within-class variance.> ...
+%!error<ClassificationDiscriminant: predictor 'x1' has zero within-class variance.  Either exclude this predictor or set 'DiscrimType' to 'pseudoLinear' or 'diagLinear'.> ...
 %! ClassificationDiscriminant (ones (5,2), [1; 1; 2; 2; 2])
-%!error<ClassificationDiscriminant: Predictor 'A' has zero within-class variance.> ...
+%!error<ClassificationDiscriminant: predictor 'A' has zero within-class variance.  Either exclude this predictor or set 'DiscrimType' to 'pseudoLinear' or 'diagLinear'.> ...
 %! ClassificationDiscriminant (ones (5,2), [1; 1; 2; 2; 2], 'PredictorNames', {'A', 'B'})
-%!error<ClassificationDiscriminant: Predictor 'x2' has zero within-class variance.> ...
+%!error<ClassificationDiscriminant: predictor 'x2' has zero within-class variance.  Either exclude this predictor or set 'DiscrimType' to 'pseudoLinear' or 'diagLinear'.> ...
 %! ClassificationDiscriminant ([1,2;2,2;3,2;4,2;5,2], ones (5, 1))
-%!error<ClassificationDiscriminant: Predictor 'B' has zero within-class variance.> ...
+%!error<ClassificationDiscriminant: predictor 'B' has zero within-class variance.  Either exclude this predictor or set 'DiscrimType' to 'pseudoLinear' or 'diagLinear'.> ...
 %! ClassificationDiscriminant ([1,2;2,2;3,2;4,2;5,2], ones (5, 1), 'PredictorNames', {'A', 'B'})
 
 ## Test predict method
@@ -2079,3 +2363,346 @@ endclassdef
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## The six discriminant types.  Every value below was measured on MATLAB
+## R2024a; see DISCRIMINANT_LEDGER.md for the probes that produced them.
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'linear');
+%! assert_equal (Mdl.DiscrimType, 'linear');
+%! assert_equal (size (Mdl.Sigma), [4, 4]);
+%! assert_equal (Mdl.LogDetSigma, -9.9585, 1e-4);
+%! assert_equal (Mdl.Gamma, 0);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! assert_equal (Mdl.DiscrimType, 'quadratic');
+%! assert_equal (size (Mdl.Sigma), [4, 4, 3]);
+%! assert_equal (Mdl.LogDetSigma', [-13.0674, -10.8743, -8.9271], 1e-4);
+%! assert_equal (Mdl.Gamma, 0);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagLinear');
+%! assert_equal (Mdl.DiscrimType, 'diagLinear');
+%! assert_equal (size (Mdl.Sigma), [1, 4]);
+%! assert_equal (Mdl.LogDetSigma, -8.3467, 1e-4);
+%! assert_equal (Mdl.Gamma, 1);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagQuadratic');
+%! assert_equal (Mdl.DiscrimType, 'diagQuadratic');
+%! assert_equal (size (Mdl.Sigma), [1, 4, 3]);
+%! assert_equal (Mdl.LogDetSigma', [-12.0271, -8.3925, -6.9421], 1e-4);
+%! assert_equal (Mdl.Gamma, 1);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'pseudoLinear');
+%! assert_equal (Mdl.DiscrimType, 'pseudoLinear');
+%! assert_equal (size (Mdl.Sigma), [4, 4]);
+%! assert_equal (Mdl.LogDetSigma, -9.9585, 1e-4);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'pseudoQuadratic');
+%! assert_equal (Mdl.DiscrimType, 'pseudoQuadratic');
+%! assert_equal (size (Mdl.Sigma), [4, 4, 3]);
+%! assert_equal (Mdl.LogDetSigma', [-13.0674, -10.8743, -8.9271], 1e-4);
+
+## The posterior of the one iris the model is unsure about separates the six
+## types from one another, which a correctly classified row does not.
+%!test
+%! load fisheriris
+%! [~, s] = predict (fitcdiscr (meas, species), meas(71,:));
+%! assert_equal (s, [0, 0.2532, 0.7468], 1e-4);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! [~, s] = predict (Mdl, meas(71,:));
+%! assert_equal (s, [0, 0.3359, 0.6641], 1e-4);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagLinear');
+%! [~, s] = predict (Mdl, meas(71,:));
+%! assert_equal (s, [0, 0.2646, 0.7354], 1e-4);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagQuadratic');
+%! [~, s] = predict (Mdl, meas(71,:));
+%! assert_equal (s, [0, 0.1609, 0.8391], 1e-4);
+
+## Exact coefficients on a fixture small enough that every figure is closed
+## form: the pooled covariance is 13.75/6 and each class covariance n_k-1.
+%!test
+%! x = [1, 2; 2, 1; 3, 4; 4, 3; 5, 7; 7, 5; 8, 9; 9, 8];
+%! y = [1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = fitcdiscr (x, y, 'DiscrimType', 'linear');
+%! assert_equal (Mdl.Sigma, [2.2917, 1.125; 1.125, 2.2917], 1e-4);
+%! assert_equal (Mdl.LogDetSigma, 1.3828, 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Const, 13.5549, 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Linear', [-1.3902, -1.3902], 1e-4);
+
+%!test
+%! x = [1, 2; 2, 1; 3, 4; 4, 3; 5, 7; 7, 5; 8, 9; 9, 8];
+%! y = [1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = fitcdiscr (x, y, 'DiscrimType', 'quadratic');
+%! assert_equal (Mdl.Sigma(:,:,1), [1.6667, 1; 1, 1.6667], 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Const, 10.9525, 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Linear', [-0.8025, -0.8025], 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Quadratic, ...
+%!               [-0.2587, 0.1912; 0.1912, -0.2587], 1e-4);
+
+%!test
+%! x = [1, 2; 2, 1; 3, 4; 4, 3; 5, 7; 7, 5; 8, 9; 9, 8];
+%! y = [1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = fitcdiscr (x, y, 'DiscrimType', 'diagQuadratic');
+%! assert_equal (Mdl.Sigma(:,:,1), [1.6667, 1.6667], 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Const, 14.8310, 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Quadratic, [-0.1286, -0.1286], 1e-4);
+
+## The quadratic family reports a Quadratic field and the linear family does
+## not, which is how a user tells the two apart from the structure alone.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (fieldnames (Mdl.Coeffs)', ...
+%!               {'DiscrimType', 'Const', 'Linear', 'Class1', 'Class2'});
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! assert_equal (fieldnames (Mdl.Coeffs)', {'DiscrimType', 'Const', ...
+%!               'Linear', 'Quadratic', 'Class1', 'Class2'});
+
+## DiscrimType is assignable within its family and re-derives the covariance.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.DiscrimType = 'diagLinear';
+%! assert_equal (size (Mdl.Sigma), [1, 4]);
+%! assert_equal (Mdl.Gamma, 1);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagLinear');
+%! Mdl.DiscrimType = 'linear';
+%! assert_equal (size (Mdl.Sigma), [4, 4]);
+%! assert_equal (Mdl.Gamma, 0);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! Mdl.DiscrimType = 'diagQuadratic';
+%! assert_equal (size (Mdl.Sigma), [1, 4, 3]);
+
+## Assigning the type rebuilds the coefficients rather than leaving the ones
+## the previous type produced.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! before = Mdl.Coeffs(1,2).Const;
+%! Mdl.DiscrimType = 'diagLinear';
+%! assert (abs (Mdl.Coeffs(1,2).Const - before) > 1);
+
+## Gamma and the diagonal type are one state, in both directions.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Gamma = 1;
+%! assert_equal (Mdl.DiscrimType, 'diagLinear');
+%! assert_equal (size (Mdl.Sigma), [1, 4]);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! Mdl.Gamma = 1;
+%! assert_equal (Mdl.DiscrimType, 'diagQuadratic');
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'Gamma', 1);
+%! assert_equal (Mdl.DiscrimType, 'diagLinear');
+
+## An intermediate Gamma shrinks the covariance towards its diagonal, which
+## the resubstitution error follows.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Gamma = 0.25;
+%! assert_equal (loss (Mdl, meas, species), 0.0267, 1e-4);
+
+## A collinear fit is raised to MinGamma rather than failing, and cannot be
+## brought back below it.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr ([meas(:,1:3), meas(:,3)], species);
+%! assert (Mdl.MinGamma > 0);
+%! assert_equal (Mdl.Gamma, Mdl.MinGamma);
+%! assert_equal (Mdl.LogDetSigma, -41.3112, 1e-4);
+
+## The pseudo types answer a singular covariance where the plain one is
+## regularized and the diagonal one drops the correlations.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr ([meas(:,1:3), meas(:,3)], species, ...
+%!                  'DiscrimType', 'pseudoLinear');
+%! assert_equal (Mdl.LogDetSigma, -7.3470, 1e-4);
+%! assert_equal (Mdl.Gamma, 0);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr ([meas(:,1:3), meas(:,3)], species, ...
+%!                  'DiscrimType', 'pseudoQuadratic');
+%! assert_equal (Mdl.LogDetSigma', [-11.2116, -7.2229, -6.4619], 1e-4);
+
+## A predictor with no variance is dropped rather than inverted, so its
+## coefficient is zero.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr ([meas(:,1:3), ones(150,1)], species, ...
+%!                  'DiscrimType', 'pseudoLinear');
+%! assert_equal (Mdl.Coeffs(1,2).Linear(4), 0);
+%! assert_equal (Mdl.LogDetSigma, -6.3538, 1e-4);
+
+## The compact model answers identically for every type.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! CMdl = compact (Mdl);
+%! assert_equal (predict (CMdl, meas), predict (Mdl, meas));
+%! assert_equal (CMdl.Sigma, Mdl.Sigma);
+
+## A saved quadratic model comes back able to change its type, which it can
+## only do if the covariance the fit estimated was saved with it.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, meas), predict (Mdl, meas));
+%! M2.DiscrimType = 'diagQuadratic';
+%! assert_equal (size (M2.Sigma), [1, 4, 3]);
+
+## Five observations per class over two predictors, enough for a quadratic
+## discriminant to have a covariance it can invert.
+%!function x = dfix ()
+%!  x = [1, 2; 2, 1; 3, 4; 4, 3; 2, 3; 5, 7; 7, 5; 8, 9; 9, 8; 7, 8];
+%!endfunction
+
+## Delta eliminates predictors, and the threshold is on the standardized
+## coefficient: the raw one would depend on the units each predictor is
+## measured in.  Values measured on MATLAB R2024a.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (Mdl.DeltaPredictor, ...
+%!               [3.2508, 4.1236, 7.2926, 4.2506], 1e-4);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagLinear');
+%! assert_equal (Mdl.DeltaPredictor, ...
+%!               [1.6266, 1.0912, 5.3354, 4.6584], 1e-4);
+
+## The quadratic family has no linear coefficients to eliminate.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! assert_equal (Mdl.DeltaPredictor, [0, 0, 0, 0]);
+
+## A coefficient drops out one class at a time, and the boundary follows.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Delta = 2.25;
+%! assert_equal (Mdl.Coeffs(1,2).Linear', ...
+%!               [6.3148, 12.1393, -16.9464, -20.7701], 1e-4);
+%! assert_equal (Mdl.Coeffs(1,2).Const, -14.3792, 1e-4);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Delta = 5;
+%! assert_equal (Mdl.Coeffs(1,2).Linear', [0, 0, -16.9464, 0], 1e-4);
+%! assert_equal (loss (Mdl, meas, species), 0.08, 1e-10);
+
+## Past the largest DeltaPredictor every predictor is gone and the model
+## answers from the priors alone.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Delta = 8;
+%! assert_equal (Mdl.Coeffs(1,2).Linear', [0, 0, 0, 0]);
+%! assert_equal (loss (Mdl, meas, species), 2/3, 1e-10);
+
+## Delta changes what predict answers, which is the whole point of it.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! before = loss (Mdl, meas, species);
+%! Mdl.Delta = 5;
+%! assert_equal (before, 0.02, 1e-10);
+%! assert (loss (Mdl, meas, species) > before);
+
+## DeltaPredictor describes the fit, not the threshold, so assigning Delta
+## leaves it where it was.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! before = Mdl.DeltaPredictor;
+%! Mdl.Delta = 5;
+%! assert_equal (Mdl.DeltaPredictor, before);
+
+%!error<ClassificationDiscriminant: 'DiscrimType' must be one of the following: linear, quadratic, diagLinear, diagQuadratic, pseudoLinear, or pseudoQuadratic.> ...
+%! fitcdiscr (ones (10, 2), [1;1;1;1;1;2;2;2;2;2], 'DiscrimType', 'bogus')
+%!error<ClassificationDiscriminant: 'DiscrimType' can only be set to one of: linear, diagLinear, or pseudoLinear.> ...
+%! Mdl = fitcdiscr (dfix (), [1;1;1;1;1;2;2;2;2;2]); ...
+%! Mdl.DiscrimType = 'quadratic';
+%!error<ClassificationDiscriminant: 'DiscrimType' can only be set to one of: quadratic, diagQuadratic, or pseudoQuadratic.> ...
+%! Mdl = fitcdiscr (dfix (), [1;1;1;1;1;2;2;2;2;2], ...
+%!                  'DiscrimType', 'quadratic'); ...
+%! Mdl.DiscrimType = 'linear';
+%!error<ClassificationDiscriminant: 'DiscrimType' can only be set to one of: linear, diagLinear, or pseudoLinear.> ...
+%! Mdl = fitcdiscr (dfix (), [1;1;1;1;1;2;2;2;2;2]); Mdl.DiscrimType = 'bogus';
+%!error<ClassificationDiscriminant: cannot set 'Gamma' to any value but 0 or 1 for a quadratic discriminant.> ...
+%! Mdl = fitcdiscr (dfix (), [1;1;1;1;1;2;2;2;2;2], ...
+%!                  'DiscrimType', 'quadratic'); ...
+%! Mdl.Gamma = 0.5;
+%!error<ClassificationDiscriminant: 'Gamma' must be a scalar between 0 and 1.> ...
+%! Mdl = fitcdiscr (dfix (), [1;1;1;1;1;2;2;2;2;2]); Mdl.Gamma = 1.5;
+%!error<ClassificationDiscriminant: cannot eliminate linear predictors in a quadratic discriminant.> ...
+%! Mdl = fitcdiscr (dfix (), [1;1;1;1;1;2;2;2;2;2], ...
+%!                  'DiscrimType', 'quadratic'); ...
+%! Mdl.Delta = 0.5;
+%!error<ClassificationDiscriminant: cannot use 'quadratic' type because one or more classes have singular covariance matrices.> ...
+%! load fisheriris; ...
+%! fitcdiscr ([meas(:,1:3), meas(:,3)], species, 'DiscrimType', 'quadratic')
+%!error<ClassificationDiscriminant: predictor 'x4' has zero variance for class 'setosa'.  Either exclude this predictor or set 'DiscrimType' to 'pseudoQuadratic' or 'diagQuadratic'.> ...
+%! load fisheriris; ...
+%! fitcdiscr ([meas(:,1:3), ones(150,1)], species, 'DiscrimType', 'quadratic')
+
+## MinGamma describes the data rather than the type, so a pseudo fit reports
+## the same value as a plain one on the same predictors while regularizing by
+## nothing at all.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr ([meas(:,1:3), meas(:,3)], species, ...
+%!                  'DiscrimType', 'pseudoLinear');
+%! assert (Mdl.MinGamma > 0);
+%! assert_equal (Mdl.Gamma, 0);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr ([meas(:,1:3), meas(:,3)], species, ...
+%!                  'DiscrimType', 'diagLinear');
+%! assert (Mdl.MinGamma > 0);
+%! assert_equal (Mdl.Gamma, 1);

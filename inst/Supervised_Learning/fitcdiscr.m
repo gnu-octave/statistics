@@ -70,9 +70,15 @@
 ## otherwise 0. cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @qcode{'DiscrimType'} @tab A character vector or string scalar
-## specifying the type of discriminant analysis to perform. The only supported
-## value is @qcode{'linear'}.
+## @item @qcode{'DiscrimType'} @tab A character vector naming the type of
+## discriminant analysis to perform, one of @qcode{'linear'} (default),
+## @qcode{'quadratic'}, @qcode{'diagLinear'}, @qcode{'diagQuadratic'},
+## @qcode{'pseudoLinear'} or @qcode{'pseudoQuadratic'}.  A linear type pools
+## one covariance across the classes and a quadratic type estimates one per
+## class; a @qcode{'diag'} type keeps only the variances, and a
+## @qcode{'pseudo'} type inverts a singular covariance rather than refusing
+## it.  The property may be reassigned after fitting, but only within its own
+## family, since the family decides which covariances the fit estimates.
 ##
 ## @item @qcode{'FillCoeffs'} @tab A character vector or string scalar
 ## with values @qcode{'on'} or @qcode{'off'} specifying whether to fill the
