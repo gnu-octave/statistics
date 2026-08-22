@@ -516,8 +516,13 @@ classdef CompactClassificationSVM
                        " the same number of rows as X."));
       endif
 
-      [~, ~, dec_values_L] = svmpredict (Y, X, this.Model, '-q');
-      m = 2 * Y .* dec_values_L;
+      ## Y may be the class labels, which is what this method documents and
+      ## what MATLAB accepts, or already the +1/-1 coding the solver works in.
+      ## It used to be the latter only, so passing the labels the docstring
+      ## promises reached LIBSVM as a cell array and raised its own message.
+      Ypm = svmPlusMinus (Y, this.ClassNames);
+      [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
+      m = 2 * Ypm .* dec_values_L;
 
     endfunction
 
@@ -717,6 +722,42 @@ classdef CompactClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationSVM} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationSVM} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge, the mean of the classification margins.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} reduces the vector
+    ## that @code{margin} returns to a single number, the mean margin over the
+    ## rows of @var{X}.  It says how far the model puts the true class ahead of
+    ## its nearest rival on average, so a larger edge is a better model, and
+    ## unlike a loss it is not bounded above and rewards confidence rather than
+    ## bare correctness.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      if (nargin < 3)
+        error ("CompactClassificationSVM.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationSVM.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "CompactClassificationSVM", "edge");
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationSVM} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a CompactClassificationSVM object.
@@ -893,11 +934,17 @@ endclassdef
 %!                'KernelFunction', 'rbf', 'Tolerance', 1e-7);
 %! CMdl = compact (Mdl);
 %! testInds = test (C);
+%! ## Every one of these fifteen is classified correctly, so every margin is
+%! ## positive.  They used to read -4.0000 downwards for the second class:
+%! ## the margin was formed from the response as given, so a 1/2 coding
+%! ## scaled that class by four instead of negating it, and the model looked
+%! ## as though it misclassified every observation of it.
 %! expected_margin = [2.0000;  0.8579;  1.6690;  3.4141;  3.4552; ...
-%!                    2.6605;  3.5251; -4.0000; -6.3411; -6.4511; ...
-%!                   -3.0532; -7.5054; -1.6700; -5.6227; -7.3640];
+%!                    2.6605;  3.5251;  2.0000;  3.1705;  3.2256; ...
+%!                    1.5266;  3.7527;  0.8350;  2.8113;  3.6820];
 %! computed_margin = margin (CMdl, x(testInds,:), y(testInds,:));
 %! assert_equal (computed_margin, expected_margin, 1e-4);
+%! assert (all (computed_margin > 0));
 
 ## Test input validation for margin method
 %!error<CompactClassificationSVM.margin: too few input arguments.> ...
@@ -982,3 +1029,22 @@ endclassdef
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## edge.  The absolute value is not pinned to the oracle: this class fits
+## through LIBSVM where MATLAB uses SMO and the two disagree on the support
+## vector set, so what is pinned is that the edge is the mean of the margins
+## and that the compact model answers as the full one does.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcsvm (X, Y);
+%! CMdl = compact (Mdl);
+%! assert_equal (edge (CMdl, X, Y), mean (margin (CMdl, X, Y)), 1e-12);
+%! assert_equal (edge (CMdl, X, Y), edge (Mdl, X, Y), 1e-12);
+
+%!error<CompactClassificationSVM.edge: too few input arguments.> ...
+%! load fisheriris; ...
+%! inds = ! strcmp (species, 'virginica'); ...
+%! edge (compact (fitcsvm (meas(inds,:), species(inds))), meas(inds,:))

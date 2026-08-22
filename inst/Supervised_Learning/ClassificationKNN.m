@@ -2234,6 +2234,110 @@ classdef ClassificationKNN
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationKNN} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationKNN} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge, the mean of the classification margins.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} reduces the vector
+    ## that @code{margin} returns to a single number, the mean margin over the
+    ## rows of @var{X}.  It says how far the model puts the true class ahead of
+    ## its nearest rival on average, so a larger edge is a better model, and
+    ## unlike a loss it is not bounded above and rewards confidence rather than
+    ## bare correctness.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      if (nargin < 3)
+        error ("ClassificationKNN.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationKNN.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "ClassificationKNN", "edge");
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationKNN} {@var{label} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationKNN} {[@var{label}, @var{score}, @var{cost}] =} resubPredict (@var{obj})
+    ##
+    ## Classify the training data with the model fitted to it.
+    ##
+    ## @code{@var{label} = resubPredict (@var{obj})} is @code{predict} applied
+    ## to the observations the model was fitted on, which it holds in
+    ## @qcode{X}.  Handing them over yourself is not the same thing: a row
+    ## dropped for a missing response is not in @qcode{X}, so the original
+    ## matrix and the model's own are different data.
+    ##
+    ## The result measures fit and not generalization, and is optimistic by
+    ## construction.  @code{crossval} is what estimates performance on data the
+    ## model has not seen.
+    ##
+    ## @end deftypefn
+    function [label, score, cost] = resubPredict (this)
+      [label, score, cost] = predict (this, this.X);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationKNN} {@var{m} =} resubMargin (@var{obj})
+    ##
+    ## Classification margins of the model on its own training data.
+    ##
+    ## @code{@var{m} = resubMargin (@var{obj})} is @code{margin} applied to the
+    ## observations the model was fitted on, one number per observation.  Being
+    ## a resubstitution quantity it is optimistic by construction.
+    ##
+    ## @end deftypefn
+    function m = resubMargin (this)
+      m = margin (this, this.X, this.Y);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationKNN} {@var{e} =} resubEdge (@var{obj})
+    ##
+    ## Classification edge of the model on its own training data.
+    ##
+    ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} applied to the
+    ## observations the model was fitted on, the mean of @code{resubMargin}.
+    ##
+    ## @end deftypefn
+    function e = resubEdge (this)
+      e = edge (this, this.X, this.Y);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationKNN} {@var{L} =} resubLoss (@var{obj})
+    ## @deftypefnx {ClassificationKNN} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of the model on its own training data.
+    ##
+    ## @code{@var{L} = resubLoss (@var{obj})} is @code{loss} applied to the
+    ## observations the model was fitted on, defaulting to
+    ## @qcode{'mincost'}, and it accepts the same @qcode{Name-Value} pairs.
+    ##
+    ## Being a resubstitution quantity it is a lower bound on the error rather
+    ## than an estimate of it.  It is worth least on a lazy learner: a
+    ## one-neighbour @code{ClassificationKNN} has a resubstitution loss of
+    ## exactly zero, every training point being its own nearest neighbour.
+    ##
+    ## @end deftypefn
+    function L = resubLoss (this, varargin)
+      L = loss (this, this.X, this.Y, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationKNN} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationKNN object.
@@ -3647,3 +3751,53 @@ endfunction
 %! Mdl = fitcknn (meas, species, 'Distance', 'seuclidean', ...
 %!                'NSMethod', 'exhaustive'); ...
 %! Mdl.DistParameter = zeros (1, 4);
+
+## edge, resubPredict, resubMargin, resubEdge and resubLoss.  Measured on
+## MATLAB R2024a, whose posteriors this class reproduces exactly.
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! assert_equal (edge (Mdl, meas, species), 0.9253333333, 1e-9);
+%! assert_equal (edge (Mdl, meas, species), ...
+%!               mean (margin (Mdl, meas, species)), 1e-12);
+
+## Weights normalized within class to the prior, not divided by their total,
+## which would give 0.9006799117.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! assert_equal (edge (Mdl, meas, species, 'Weights', (1:150)'), ...
+%!               0.9265719286, 1e-9);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! assert_equal (resubEdge (Mdl), 0.9253333333, 1e-9);
+%! assert_equal (resubLoss (Mdl), 1/30, 1e-12);
+%! assert_equal (sum (resubMargin (Mdl)), 138.8, 1e-9);
+
+## A one-neighbour model is its own nearest neighbour everywhere, so the
+## resubstitution numbers are perfect and say nothing about the model.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (resubLoss (Mdl), 0);
+%! assert_equal (resubEdge (Mdl), 1);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [label, score, cost] = resubPredict (Mdl);
+%! [l2, s2, c2] = predict (Mdl, meas);
+%! assert_equal (label, l2);
+%! assert_equal (score, s2);
+%! assert_equal (cost, c2);
+
+%!error<ClassificationKNN.edge: too few input arguments.> ...
+%! load fisheriris; edge (fitcknn (meas, species), meas)
+%!error<ClassificationKNN.edge: size of 'Weights' must equal the number of rows in X.> ...
+%! load fisheriris; ...
+%! edge (fitcknn (meas, species), meas, species, 'Weights', ones (3, 1))
+%!error<ClassificationKNN.edge: invalid parameter name in optional paired arguments.> ...
+%! load fisheriris; edge (fitcknn (meas, species), meas, species, 'Nope', 1)

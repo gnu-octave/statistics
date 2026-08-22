@@ -1771,6 +1771,110 @@ classdef ClassificationDiscriminant
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge, the mean of the classification margins.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} reduces the vector
+    ## that @code{margin} returns to a single number, the mean margin over the
+    ## rows of @var{X}.  It says how far the model puts the true class ahead of
+    ## its nearest rival on average, so a larger edge is a better model, and
+    ## unlike a loss it is not bounded above and rewards confidence rather than
+    ## bare correctness.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      if (nargin < 3)
+        error ("ClassificationDiscriminant.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationDiscriminant.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "ClassificationDiscriminant", "edge");
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{label} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {[@var{label}, @var{score}, @var{cost}] =} resubPredict (@var{obj})
+    ##
+    ## Classify the training data with the model fitted to it.
+    ##
+    ## @code{@var{label} = resubPredict (@var{obj})} is @code{predict} applied
+    ## to the observations the model was fitted on, which it holds in
+    ## @qcode{X}.  Handing them over yourself is not the same thing: a row
+    ## dropped for a missing response is not in @qcode{X}, so the original
+    ## matrix and the model's own are different data.
+    ##
+    ## The result measures fit and not generalization, and is optimistic by
+    ## construction.  @code{crossval} is what estimates performance on data the
+    ## model has not seen.
+    ##
+    ## @end deftypefn
+    function [label, score, cost] = resubPredict (this)
+      [label, score, cost] = predict (this, this.X);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationDiscriminant} {@var{m} =} resubMargin (@var{obj})
+    ##
+    ## Classification margins of the model on its own training data.
+    ##
+    ## @code{@var{m} = resubMargin (@var{obj})} is @code{margin} applied to the
+    ## observations the model was fitted on, one number per observation.  Being
+    ## a resubstitution quantity it is optimistic by construction.
+    ##
+    ## @end deftypefn
+    function m = resubMargin (this)
+      m = margin (this, this.X, this.Y);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationDiscriminant} {@var{e} =} resubEdge (@var{obj})
+    ##
+    ## Classification edge of the model on its own training data.
+    ##
+    ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} applied to the
+    ## observations the model was fitted on, the mean of @code{resubMargin}.
+    ##
+    ## @end deftypefn
+    function e = resubEdge (this)
+      e = edge (this, this.X, this.Y);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{L} =} resubLoss (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification loss of the model on its own training data.
+    ##
+    ## @code{@var{L} = resubLoss (@var{obj})} is @code{loss} applied to the
+    ## observations the model was fitted on, defaulting to
+    ## @qcode{'mincost'}, and it accepts the same @qcode{Name-Value} pairs.
+    ##
+    ## Being a resubstitution quantity it is a lower bound on the error rather
+    ## than an estimate of it.  It is worth least on a lazy learner: a
+    ## one-neighbour @code{ClassificationKNN} has a resubstitution loss of
+    ## exactly zero, every training point being its own nearest neighbour.
+    ##
+    ## @end deftypefn
+    function L = resubLoss (this, varargin)
+      L = loss (this, this.X, this.Y, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationDiscriminant} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationDiscriminant object.
@@ -2706,3 +2810,71 @@ endclassdef
 %!                  'DiscrimType', 'diagLinear');
 %! assert (Mdl.MinGamma > 0);
 %! assert_equal (Mdl.Gamma, 1);
+
+## edge, resubPredict, resubMargin, resubEdge and resubLoss.  Every value
+## below was measured on MATLAB R2024a; the discriminant's scores agree with
+## it exactly, so these are the oracle's own numbers and not ours.
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (edge (Mdl, meas, species), 0.9454289377, 1e-9);
+
+## The edge is the mean of the margins, by definition.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! m = margin (Mdl, meas, species);
+%! assert_equal (edge (Mdl, meas, species), mean (m), 1e-12);
+
+## Weights are normalized within each class to that class's prior, which is
+## not the same as dividing by their total: that would give 0.9269539697.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (edge (Mdl, meas, species, 'Weights', (1:150)'), ...
+%!               0.9438468986, 1e-9);
+
+## A weight constant within a class therefore changes nothing.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! w = [ones(50,1); 7 * ones(50,1); 0.5 * ones(50,1)];
+%! assert_equal (edge (Mdl, meas, species, 'Weights', w), ...
+%!               edge (Mdl, meas, species), 1e-12);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (resubEdge (Mdl), 0.9454289377, 1e-9);
+%! assert_equal (resubLoss (Mdl), 0.02, 1e-12);
+%! assert_equal (sum (resubMargin (Mdl)), 141.8143406564, 1e-8);
+
+## resubPredict is predict on the data the model kept.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! [label, score, cost] = resubPredict (Mdl);
+%! [l2, s2, c2] = predict (Mdl, meas);
+%! assert_equal (label, l2);
+%! assert_equal (score, s2);
+%! assert_equal (cost, c2);
+%! assert_equal (numel (label), 150);
+
+## The compact model answers the same edge as the full one.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (edge (compact (Mdl), meas, species), 0.9454289377, 1e-9);
+
+%!error<ClassificationDiscriminant.edge: too few input arguments.> ...
+%! load fisheriris; edge (fitcdiscr (meas, species), meas)
+%!error<ClassificationDiscriminant.edge: Name-Value arguments must be in pairs.> ...
+%! load fisheriris; ...
+%! edge (fitcdiscr (meas, species), meas, species, 'Weights')
+%!error<ClassificationDiscriminant.edge: size of 'Weights' must equal the number of rows in X.> ...
+%! load fisheriris; ...
+%! edge (fitcdiscr (meas, species), meas, species, 'Weights', ones (3, 1))
+%!error<ClassificationDiscriminant.edge: invalid parameter name in optional paired arguments.> ...
+%! load fisheriris; ...
+%! edge (fitcdiscr (meas, species), meas, species, 'Nope', 1)

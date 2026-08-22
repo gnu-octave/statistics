@@ -622,10 +622,16 @@ classdef CompactClassificationNeuralNetwork
       endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
-      W = getWeights_ (this, varargin, rows (X), "edge");
 
+      ## The weights are normalized within each class to that class's prior,
+      ## which is what the oracle does and is not the same as dividing by
+      ## their total.  This used to divide by the total.
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "CompactClassificationNeuralNetwork", "edge");
       m = margin (this, X, Y);
-      e = sum (W(:) .* m) / sum (W);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -988,10 +994,13 @@ endclassdef
 %!test
 %! load fisheriris
 %! CMdl = compact (fitcnet (meas, species, 'IterationLimit', 20));
+%! ## The weights are normalized within each class to that class's prior,
+%! ## not divided by their total.  A weight constant within a class therefore
+%! ## leaves the edge exactly where the unweighted one is.
 %! w = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
 %! m = margin (CMdl, meas, species);
 %! assert_equal (edge (CMdl, meas, species, 'Weights', w), ...
-%!               sum (w .* m) / sum (w), 1e-12);
+%!               edge (CMdl, meas, species), 1e-12);
 
 ## Test input validation for margin method
 %!error<CompactClassificationNeuralNetwork.margin: too few input arguments.> ...

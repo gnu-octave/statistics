@@ -1178,10 +1178,16 @@ classdef ClassificationNeuralNetwork
       endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
-      W = getWeights_ (this, varargin, rows (X), "edge");
 
+      ## The weights are normalized within each class to that class's prior,
+      ## which is what the oracle does and is not the same as dividing by
+      ## their total.  This used to divide by the total.
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "ClassificationNeuralNetwork", "edge");
       m = margin (this, X, Y);
-      e = sum (W(:) .* m) / sum (W);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 

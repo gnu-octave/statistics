@@ -1115,6 +1115,43 @@ classdef CompactClassificationDiscriminant
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationDiscriminant} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationDiscriminant} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge, the mean of the classification margins.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} reduces the vector
+    ## that @code{margin} returns to a single number, the mean margin over the
+    ## rows of @var{X}.  It says how far the model puts the true class ahead of
+    ## its nearest rival on average, so a larger edge is a better model, and
+    ## unlike a loss it is not bounded above and rewards confidence rather than
+    ## bare correctness.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      if (nargin < 3)
+        error (strcat ("CompactClassificationDiscriminant.edge: too few", ...
+                       " input arguments."));
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationDiscriminant.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "CompactClassificationDiscriminant", "edge");
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationDiscriminant} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a CompactClassificationDiscriminant object.
@@ -1539,3 +1576,22 @@ endclassdef
 %! load fisheriris; ...
 %! CMdl = compact (fitcdiscr (meas, species, 'DiscrimType', 'quadratic')); ...
 %! CMdl.Gamma = 0.5;
+
+## edge, measured on MATLAB R2024a, whose discriminant scores this class
+## reproduces exactly.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! assert_equal (edge (CMdl, meas, species), 0.9454289377, 1e-9);
+%! assert_equal (edge (CMdl, meas, species), ...
+%!               mean (margin (CMdl, meas, species)), 1e-12);
+
+## Weights are normalized within each class to that class's prior.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! assert_equal (edge (CMdl, meas, species, 'Weights', (1:150)'), ...
+%!               0.9438468986, 1e-9);
+
+%!error<CompactClassificationDiscriminant.edge: too few input arguments.> ...
+%! load fisheriris; edge (compact (fitcdiscr (meas, species)), meas)

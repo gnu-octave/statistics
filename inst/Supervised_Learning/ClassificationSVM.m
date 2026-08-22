@@ -1249,8 +1249,13 @@ classdef ClassificationSVM
                        " the same number of rows as X."));
       endif
 
-      [~, ~, dec_values_L] = svmpredict (Y, X, this.Model, '-q');
-      m = 2 * Y .* dec_values_L;
+      ## Y may be the class labels, which is what this method documents and
+      ## what MATLAB accepts, or already the +1/-1 coding the solver works in.
+      ## It used to be the latter only, so passing the labels the docstring
+      ## promises reached LIBSVM as a cell array and raised its own message.
+      Ypm = svmPlusMinus (Y, this.ClassNames);
+      [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
+      m = 2 * Ypm .* dec_values_L;
 
     endfunction
 
@@ -1705,6 +1710,69 @@ classdef ClassificationSVM
     function CVMdl = compact (this)
       ## Create a compact model
       CVMdl = CompactClassificationSVM (this);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
+    ##
+    ## Classification edge, the mean of the classification margins.
+    ##
+    ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} reduces the vector
+    ## that @code{margin} returns to a single number, the mean margin over the
+    ## rows of @var{X}.  It says how far the model puts the true class ahead of
+    ## its nearest rival on average, so a larger edge is a better model, and
+    ## unlike a loss it is not bounded above and rewards confidence rather than
+    ## bare correctness.
+    ##
+    ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
+    ## weighted mean instead, with one weight per row of @var{X}.
+    ##
+    ## @end deftypefn
+    function e = edge (this, X, Y, varargin)
+
+      if (nargin < 3)
+        error ("ClassificationSVM.edge: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationSVM.edge: Name-Value", ...
+                       " arguments must be in pairs."));
+      endif
+
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "ClassificationSVM", "edge");
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationSVM} {@var{m} =} resubMargin (@var{obj})
+    ##
+    ## Classification margins of the model on its own training data.
+    ##
+    ## @code{@var{m} = resubMargin (@var{obj})} is @code{margin} applied to the
+    ## observations the model was fitted on, one number per observation.  Being
+    ## a resubstitution quantity it is optimistic by construction.
+    ##
+    ## @end deftypefn
+    function m = resubMargin (this)
+      m = margin (this, this.X, this.Y);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationSVM} {@var{e} =} resubEdge (@var{obj})
+    ##
+    ## Classification edge of the model on its own training data.
+    ##
+    ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} applied to the
+    ## observations the model was fitted on, the mean of @code{resubMargin}.
+    ##
+    ## @end deftypefn
+    function e = resubEdge (this)
+      e = edge (this, this.X, this.Y);
     endfunction
 
     ## -*- texinfo -*-
@@ -2278,11 +2346,17 @@ endclassdef
 %!                       'Tolerance', 1e-7);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
+%! ## Every one of these fifteen is classified correctly, so every margin is
+%! ## positive.  They used to read -4.0000 downwards for the second class:
+%! ## the margin was formed from the response as given, so a 1/2 coding
+%! ## scaled that class by four instead of negating it, and the model looked
+%! ## as though it misclassified every observation of it.
 %! expected_margin = [2.0000;  0.8579;  1.6690;  3.4141;  3.4552; ...
-%!                    2.6605;  3.5251; -4.0000; -6.3411; -6.4511; ...
-%!                   -3.0532; -7.5054; -1.6700; -5.6227; -7.3640];
+%!                    2.6605;  3.5251;  2.0000;  3.1705;  3.2256; ...
+%!                    1.5266;  3.7527;  0.8350;  2.8113;  3.6820];
 %! computed_margin = margin (obj, x(testInds,:), y(testInds,:));
 %! assert_equal (computed_margin, expected_margin, 1e-4);
+%! assert (all (computed_margin > 0));
 
 ## Test input validation for margin method
 %!error<ClassificationSVM.margin: too few input arguments.> ...
@@ -2546,3 +2620,45 @@ endclassdef
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## edge, resubMargin and resubEdge.  The absolute value is not pinned to the
+## oracle here: this class fits through LIBSVM where MATLAB uses SMO, and the
+## two disagree on the support vector set, so the edge reads 3.6942705869
+## against MATLAB's 3.6935623843 on the iris pair.  What is pinned is what the
+## methods mean.
+
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (edge (Mdl, X, Y), mean (margin (Mdl, X, Y)), 1e-12);
+%! assert_equal (resubEdge (Mdl), edge (Mdl, X, Y), 1e-12);
+%! assert_equal (resubMargin (Mdl), margin (Mdl, X, Y), 1e-12);
+
+## margin takes the class labels, as it documents, and the +1/-1 coding the
+## solver works in gives the same answer.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcsvm (X, Y);
+%! Ypm = ones (100, 1);
+%! Ypm(strcmp (Y, Mdl.ClassNames{2})) = -1;
+%! assert_equal (margin (Mdl, X, Y), margin (Mdl, X, Ypm), 1e-12);
+
+## The compact model answers the same edge as the full one.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Y = species(inds);
+%! Mdl = fitcsvm (X, Y);
+%! assert_equal (edge (compact (Mdl), X, Y), edge (Mdl, X, Y), 1e-12);
+
+%!error<ClassificationSVM.edge: too few input arguments.> ...
+%! load fisheriris; ...
+%! inds = ! strcmp (species, 'virginica'); ...
+%! edge (fitcsvm (meas(inds,:), species(inds)), meas(inds,:))

@@ -1338,10 +1338,16 @@ classdef ClassificationGAM
       endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
-      W = getWeights_ (this, varargin, rows (X), "edge");
 
+      ## The weights are normalized within each class to that class's prior,
+      ## which is what the oracle does and is not the same as dividing by
+      ## their total.  This used to divide by the total.
+      ## The weights are parsed before anything is computed, so a bad
+      ## Name-Value pair is reported as such rather than after a margin.
+      W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
+                       "ClassificationGAM", "edge");
       m = margin (this, X, Y);
-      e = sum (W(:) .* m) / sum (W);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -2144,8 +2150,18 @@ endfunction
 %! Mdl = fitcgam (X, Y);
 %! m = margin (Mdl, X, Y);
 %! assert_equal (edge (Mdl, X, Y), mean (m), 1e-12);
+%! ## The weights are normalized within each class to that class's prior,
+%! ## not divided by their total, so a class keeps the influence its prior
+%! ## gives it however the weights inside it are spread.
 %! w = [ones(50, 1); 3 * ones(50, 1)];
-%! assert_equal (edge (Mdl, X, Y, 'Weights', w), sum (w .* m) / sum (w), 1e-12);
+%! wn = w;
+%! wn(1:50) = w(1:50) / sum (w(1:50)) * Mdl.Prior(1);
+%! wn(51:100) = w(51:100) / sum (w(51:100)) * Mdl.Prior(2);
+%! assert_equal (edge (Mdl, X, Y, 'Weights', w), ...
+%!               sum (wn .* m) / sum (wn), 1e-12);
+%! ## Scaling a whole class leaves the edge where it was.
+%! assert_equal (edge (Mdl, X, Y, 'Weights', w), ...
+%!               edge (Mdl, X, Y, 'Weights', [ones(50,1); ones(50,1)]), 1e-12);
 
 ## The resubstitution methods are the assessment methods on the training data.
 %!test
