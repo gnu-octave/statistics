@@ -1358,69 +1358,14 @@ classdef RegressionGAM
 
     ## Fit the model
     function [iter, param, res, RSS] = fitGAM (this, X, Y, Inter, Knots, Order)
-      ## Initialize variables
-      converged = false;
-      iter      = 0;
-      RSS       = zeros (1, columns (X));
-      res       = Y - Inter;
-      ns        = rows (X);
-      Tol       = this.Tol;
-
-      ## Every backfitting cycle refits the same predictor at the same knots
-      ## and order and varies only the partial residual, so each predictor's
-      ## design is fixed and its basis and factorisation are built once.
-      tmpl  = cell (1, columns (X));
-      cache = cell (1, columns (X));
-      for j = 1:columns (X)
-        [tmpl{j}, cache{j}] = splineCache (X(:,j), Knots(j), Order(j));
-      endfor
-
-      ## What each predictor last contributed, so a cycle can take it back out
-      ## of the partial residual without evaluating the spline again.
-      contrib = cell (1, columns (X));
-
-      ## Start training
-      while (! (converged || iter > 1000))
-        iter += 1;
-
-        ## Calculate residuals to fit spline
-        for j = 1:columns (X)
-
-          ## Take this predictor's own contribution back out
-          if (iter > 1)
-            res = res + contrib{j};
-          endif
-
-          ## Fit an spline to the data
-          if (isempty (cache{j}))
-            gk = splinefit (X(:,j), res, Knots(j), 'order', Order(j));
-            gk_pred = ppval (gk, X(:,j));
-            gk_pred = gk_pred(:);
-          else
-            b = cache{j};
-            c = b.R \ (b.Q' * res);
-            gk = tmpl{j};
-            gk.coefs = reshape (sum (b.C .* c, 1), ...
-                                [tmpl{j}.pieces, tmpl{j}.order]);
-            gk_pred = b.F * c;
-          endif
-
-          ## This might be wrong! We need to check this out
-          RSSk(j) = abs (sum (abs (Y - gk_pred - Inter)) .^ 2) / ns;
-          param(j) = gk;
-          contrib{j} = gk_pred;
-          res = res - gk_pred;
-        endfor
-
-        ## Check if RSS is less than the tolerance
-        if (all (abs (RSS - RSSk) <= Tol))
-          converged = true;
-        endif
-
-        ## Update RSS
-        RSS = RSSk;
-      endwhile
-
+      ## The fit is performed by the shared spline engine, which builds and
+      ## factorises each predictor's design once and reduces a backfitting
+      ## cycle to two products against the factors per term.
+      Mdl = gamtrain (X, Y, Knots, Order, 2, Inter, this.Tol, 1000);
+      iter  = Mdl.Iterations;
+      param = Mdl.Parameters;
+      res   = Mdl.Residuals;
+      RSS   = Mdl.RSS;
     endfunction
 
   endmethods
@@ -1489,12 +1434,9 @@ endfunction
 
 ## Helper function for making prediction of new data based on GAM model
 function ypred = predict_val (params, X, intercept)
-  [nsample, ndims_X] = size (X);
-  ypred = ones (nsample, 1) * intercept;
-  ## Add the remaining terms
-  for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), X(:,j));
-  endfor
+  ## The shared prediction engine evaluates every additive term and adds the
+  ## intercept.
+  ypred = gampredict (params, X, intercept);
 endfunction
 
 %!demo

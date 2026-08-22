@@ -694,13 +694,9 @@ endclassdef
 
 ## Helper function
 function ypred = predict_val (params, X, intercept)
-  [nsample, ndims_X] = size (X);
-  ypred = ones (nsample, 1) * intercept;
-
-  ## Add the remaining terms
-  for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), X(:,j));
-  endfor
+  ## The shared prediction engine evaluates every additive term and adds the
+  ## intercept.
+  ypred = gampredict (params, X, intercept);
 endfunction
 
 %!demo

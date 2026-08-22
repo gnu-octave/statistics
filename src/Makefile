@@ -2,7 +2,8 @@
 
 # List all target oct files
 OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
-           svmtrain.oct fcnntrain.oct fcnnpredict.oct
+           svmtrain.oct fcnntrain.oct fcnnpredict.oct \
+           gamtrain.oct gampredict.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -30,6 +31,15 @@ fcnntrain.oct: fcnntrain.cc fcnn.cpp
 
 fcnnpredict.oct: fcnnpredict.cc fcnn.cpp
 	$(MKOCTFILE) fcnnpredict.cc
+
+# gam.cpp is #included by both, exactly as fcnn.cpp is, and for the same
+# reason: the engine is shared between the classification and the regression
+# learner, and an edit to it must rebuild both oct-files.
+gamtrain.oct: gamtrain.cc gam.cpp
+	$(MKOCTFILE) gamtrain.cc
+
+gampredict.oct: gampredict.cc gam.cpp
+	$(MKOCTFILE) gampredict.cc
 
 # Clean target
 clean:

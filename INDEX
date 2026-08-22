@@ -147,6 +147,8 @@ Supervised Learning
  fitrgam
  fitrnet
  fitrsvm
+ gampredict
+ gamtrain
  RegressionGAM
  RegressionNeuralNetwork
  RegressionPartitionedModel

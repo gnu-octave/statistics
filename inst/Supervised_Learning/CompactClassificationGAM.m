@@ -949,19 +949,9 @@ endclassdef
 
 ## Helper function
 function scores = predict_val (params, XC, intercept)
-  [nsample, ndims_X] = size (XC);
-  ypred = ones (nsample, 1) * intercept;
-
-  ## Add the remaining terms
-  for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), XC(:,j));
-  endfor
-
-  ## Apply the sigmoid function to get probabilities
-  pos_prob = 1 ./ (1 + exp (-ypred));
-  neg_prob = 1 - pos_prob;
-
-  scores = [neg_prob, pos_prob];
+  ## The shared prediction engine evaluates every additive term and maps the
+  ## sum through the logistic link, returning both class probabilities.
+  scores = gampredict (params, XC, intercept, 1);
 endfunction
 
 %!demo

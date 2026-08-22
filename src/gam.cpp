@@ -1,0 +1,794 @@
+/*
+Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+
+This file is part of the statistics package for GNU Octave.
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, see <http://www.gnu.org/licenses/>.
+*/
+
+// The spline engine shared by the GAM learners.  Both fitting schemes refit
+// the same predictor at the same breaks and the same order in every round and
+// vary only the response, so the design matrix of each predictor is fixed for
+// the whole fit.  It is built and factorised once here, which reduces a round
+// to two products against the factors; the m-code it replaces called splinefit
+// inside the loop, where the fit was dominated not by the solve but by the
+// interpreter's overhead on very small arrays.
+
+// The spline space is the one splinefit builds: a B-spline basis of order N
+// over BREAKS, evaluated by the same recursion, so the piecewise polynomial
+// returned here is splinefit's to rounding.  What is not reproduced is its
+// option surface -- periodic boundaries, robust fitting and linear constraints
+// are not used by either learner and are absent.
+
+#include <cmath>
+#include <limits>
+#include <vector>
+#include <algorithm>
+#include <octave/svd.h>
+
+using namespace std;
+
+// The interval a value falls in, as lookup (BREAKS, V, "lr") returns it: the
+// last break at or below V, clamped to the first and last piece so that a
+// point outside the domain is extrapolated from the nearest polynomial rather
+// than dropped.  Returned 0-based.
+octave_idx_type gam_interval (const RowVector& breaks, double v)
+{
+  octave_idx_type pieces = breaks.numel () - 1;
+  octave_idx_type lo = 0;
+  octave_idx_type hi = pieces - 1;
+  if (! (v >= breaks(1)))       // false for NaN as well, which lands on piece 0
+  {
+    return 0;
+  }
+  if (v >= breaks(pieces - 1))
+  {
+    return pieces - 1;
+  }
+  while (hi - lo > 1)
+  {
+    octave_idx_type mid = (lo + hi) / 2;
+    if (v >= breaks(mid))
+    {
+      lo = mid;
+    }
+    else
+    {
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+// A basis of the spline space of order N over BREAKS, held as the polynomial
+// coefficients of the N basis functions that are nonzero on each piece.
+struct SplineBasis
+{
+  RowVector breaks;         // 1 x (pieces + 1)
+  Matrix bcoefs;            // (N * pieces) x N, row (p * N + i) is basis i on p
+  octave_idx_type n;        // spline order, the number of coefficients a piece
+  octave_idx_type pieces;
+  octave_idx_type dim;      // pieces + n - 1, the dimension of the space
+};
+
+// Breaks from a piece count, interpolated linearly from the sorted data as
+// splinefit does.  X must already be sorted ascending and hold no NaN.
+RowVector gam_breaks_from_count (const ColumnVector& x, octave_idx_type p)
+{
+  octave_idx_type mx = x.numel ();
+  RowVector breaks (p + 1);
+
+  if (x(0) < x(mx - 1))
+  {
+    for (octave_idx_type k = 0; k <= p; k++)
+    {
+      // linspace (1, mx, p+1), in the m-code's 1-based indexing
+      double ib = (p == 0) ? 1.0 : 1.0 + (double) k * (mx - 1) / p;
+      if (k == p)
+      {
+        ib = (double) mx;     // linspace pins its last point exactly
+      }
+      octave_idx_type ibin = (octave_idx_type) floor (ib);
+      if (ibin < 1)
+      {
+        ibin = 1;
+      }
+      if (ibin > mx - 1)
+      {
+        ibin = mx - 1;
+      }
+      double dx = x(ibin) - x(ibin - 1);
+      breaks(k) = x(ibin - 1) + dx * (ib - ibin);
+    }
+  }
+  else
+  {
+    // Every observation the same: splinefit spreads unit breaks from it
+    for (octave_idx_type k = 0; k <= p; k++)
+    {
+      breaks(k) = x(0) + ((p == 0) ? 0.0 : (double) k / p);
+    }
+  }
+
+  return breaks;
+}
+
+// Drop breaks that do not increase, which interpolation from tied data can
+// produce, matching splinefit's unique () pass.
+RowVector gam_unique_breaks (const RowVector& breaks)
+{
+  octave_idx_type nb = breaks.numel ();
+  bool monotone = true;
+  for (octave_idx_type k = 1; k < nb; k++)
+  {
+    if (breaks(k) <= breaks(k - 1))
+    {
+      monotone = false;
+      break;
+    }
+  }
+  if (monotone)
+  {
+    return breaks;
+  }
+
+  vector<double> v (breaks.data (), breaks.data () + nb);
+  sort (v.begin (), v.end ());
+  v.erase (unique (v.begin (), v.end ()), v.end ());
+
+  RowVector out (v.size ());
+  for (size_t k = 0; k < v.size (); k++)
+  {
+    out(k) = v[k];
+  }
+  return out;
+}
+
+// Build the B-spline basis of order N over BREAKS.  This is splinefit's
+// splinebase, transliterated: the breaks are extended periodically by DEG on
+// each side, the basis is generated by repeated antidifferentiation and
+// normalisation, and the pieces added for the extension are dropped again.
+SplineBasis gam_splinebase (const RowVector& breaks0, octave_idx_type n)
+{
+  SplineBasis base;
+  base.breaks = breaks0;
+  base.n = n;
+  base.pieces = breaks0.numel () - 1;
+  base.dim = base.pieces + n - 1;
+
+  octave_idx_type deg = n - 1;
+  octave_idx_type pieces = base.pieces;
+
+  // Extended breaks
+  vector<double> br;
+  if (deg > 0)
+  {
+    vector<double> h (pieces);
+    for (octave_idx_type k = 0; k < pieces; k++)
+    {
+      h[k] = breaks0(k + 1) - breaks0(k);
+    }
+    vector<double> hcopy = h;
+    while ((octave_idx_type) hcopy.size () < deg)
+    {
+      hcopy.insert (hcopy.end (), h.begin (), h.end ());
+    }
+    // To the left: bl(t) = breaks(1) - cumsum (hcopy(end:-1:end-deg+1))(t),
+    // laid down in reverse so the sequence stays increasing.
+    vector<double> bl (deg);
+    double acc = breaks0(0);
+    for (octave_idx_type t = 0; t < deg; t++)
+    {
+      acc -= hcopy[hcopy.size () - 1 - t];
+      bl[t] = acc;
+    }
+    for (octave_idx_type t = deg - 1; t >= 0; t--)
+    {
+      br.push_back (bl[t]);
+    }
+    for (octave_idx_type k = 0; k <= pieces; k++)
+    {
+      br.push_back (breaks0(k));
+    }
+    // And to the right
+    acc = breaks0(pieces);
+    for (octave_idx_type t = 0; t < deg; t++)
+    {
+      acc += hcopy[t];
+      br.push_back (acc);
+    }
+    pieces = (octave_idx_type) br.size () - 1;
+  }
+  else
+  {
+    for (octave_idx_type k = 0; k <= pieces; k++)
+    {
+      br.push_back (breaks0(k));
+    }
+  }
+
+  vector<double> h (pieces);
+  for (octave_idx_type k = 0; k < pieces; k++)
+  {
+    h[k] = br[k + 1] - br[k];
+  }
+
+  // H(p * n + i) is the spacing of the piece basis function i reaches from p
+  vector<double> H (n * pieces);
+  for (octave_idx_type p = 0; p < pieces; p++)
+  {
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      octave_idx_type q = p + i;
+      H[p * n + i] = h[q < pieces ? q : pieces - 1];
+    }
+  }
+
+  Matrix coefs (n * pieces, n, 0.0);
+  for (octave_idx_type p = 0; p < pieces; p++)
+  {
+    coefs(p * n, 0) = 1.0;
+  }
+
+  vector<double> Q (n * pieces);
+  for (octave_idx_type k = 1; k < n; k++)      // k is the m-code's k - 1
+  {
+    // Antiderivatives of the splines of the previous order
+    for (octave_idx_type j = 0; j < k; j++)
+    {
+      for (octave_idx_type r = 0; r < n * pieces; r++)
+      {
+        coefs(r, j) = coefs(r, j) * H[r] / (k - j);
+      }
+    }
+    // Q, cumulated down each piece, is the antiderivative at the break above
+    for (octave_idx_type p = 0; p < pieces; p++)
+    {
+      double run = 0.0;
+      for (octave_idx_type i = 0; i < n; i++)
+      {
+        double s = 0.0;
+        for (octave_idx_type j = 0; j < n; j++)
+        {
+          s += coefs(p * n + i, j);
+        }
+        run += s;
+        Q[p * n + i] = run;
+      }
+    }
+    for (octave_idx_type p = 0; p < pieces; p++)
+    {
+      coefs(p * n, k) = 0.0;
+      for (octave_idx_type i = 1; i < n; i++)
+      {
+        coefs(p * n + i, k) = Q[p * n + i - 1];
+      }
+    }
+    // Normalise by the value the antiderivative reaches over the piece
+    for (octave_idx_type p = 0; p < pieces; p++)
+    {
+      double fmax = Q[p * n + n - 1];
+      for (octave_idx_type i = 0; i < n; i++)
+      {
+        for (octave_idx_type j = 0; j <= k; j++)
+        {
+          coefs(p * n + i, j) /= fmax;
+        }
+      }
+    }
+    // Difference of adjacent antiderivatives.  Row r reads row r + n - 1,
+    // which is never one this pass has already written, so ascending order is
+    // the simultaneous assignment the m-code performs.
+    for (octave_idx_type r = 0; r < n * pieces - deg; r++)
+    {
+      for (octave_idx_type j = 0; j <= k; j++)
+      {
+        coefs(r, j) -= coefs(r + n - 1, j);
+      }
+    }
+    for (octave_idx_type p = 0; p < pieces; p++)
+    {
+      coefs(p * n, k) = 0.0;
+    }
+  }
+
+  // Scale for the width of each piece
+  vector<double> scale (n * pieces, 1.0);
+  for (octave_idx_type k = 1; k < n; k++)
+  {
+    for (octave_idx_type r = 0; r < n * pieces; r++)
+    {
+      scale[r] /= H[r];
+      coefs(r, n - k - 1) *= scale[r];
+    }
+  }
+
+  // Drop the pieces the extension added, keeping for each remaining piece the
+  // N basis functions that are nonzero on it.
+  octave_idx_type kept = pieces - 2 * deg;
+  base.bcoefs = Matrix (n * kept, n, 0.0);
+  for (octave_idx_type p = 0; p < kept; p++)
+  {
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      octave_idx_type src = n * (p + 1) + i * deg - 1;
+      for (octave_idx_type j = 0; j < n; j++)
+      {
+        base.bcoefs(p * n + i, j) = coefs(src, j);
+      }
+    }
+  }
+
+  return base;
+}
+
+// One predictor's design, factorised once for the whole fit.
+class SplineFitter
+{
+public:
+
+  SplineBasis basis;
+  Matrix Ur;                        // used x rank, the left singular vectors
+  Matrix Wr;                        // dim x rank, V scaled by 1 / sigma
+  Array<octave_idx_type> used;      // rows that carry finite data
+  octave_idx_type nobs;
+  bool all_used;
+
+  // Fit one response: PRED is its projection on the spline space at every
+  // observation, U the B-spline coefficients of that projection.  Rows that
+  // were dropped predict NaN, which is what evaluating the fitted spline at a
+  // missing predictor returns.
+  void fit_round (const ColumnVector& y, ColumnVector& pred,
+                  ColumnVector& u) const
+  {
+    octave_idx_type m = Ur.rows ();
+    octave_idx_type r = Ur.columns ();
+
+    ColumnVector z (r, 0.0);
+    for (octave_idx_type k = 0; k < r; k++)
+    {
+      double s = 0.0;
+      for (octave_idx_type i = 0; i < m; i++)
+      {
+        s += Ur(i, k) * y(all_used ? i : used(i));
+      }
+      z(k) = s;
+    }
+
+    pred = ColumnVector (nobs, octave::numeric_limits<double>::NaN ());
+    for (octave_idx_type i = 0; i < m; i++)
+    {
+      double s = 0.0;
+      for (octave_idx_type k = 0; k < r; k++)
+      {
+        s += Ur(i, k) * z(k);
+      }
+      pred(all_used ? i : used(i)) = s;
+    }
+
+    u = ColumnVector (basis.dim, 0.0);
+    for (octave_idx_type i = 0; i < basis.dim; i++)
+    {
+      double s = 0.0;
+      for (octave_idx_type k = 0; k < r; k++)
+      {
+        s += Wr(i, k) * z(k);
+      }
+      u(i) = s;
+    }
+  }
+
+  // The piecewise polynomial coefficients of a spline given as B-spline
+  // coefficients: on piece p the polynomial is the combination of the N basis
+  // functions that reach it.
+  Matrix coefs_from_u (const ColumnVector& u) const
+  {
+    octave_idx_type n = basis.n;
+    Matrix coefs (basis.pieces, n, 0.0);
+    for (octave_idx_type p = 0; p < basis.pieces; p++)
+    {
+      for (octave_idx_type j = 0; j < n; j++)
+      {
+        double s = 0.0;
+        for (octave_idx_type i = 0; i < n; i++)
+        {
+          s += u(p + i) * basis.bcoefs(p * n + i, j);
+        }
+        coefs(p, j) = s;
+      }
+    }
+    return coefs;
+  }
+};
+
+// Build the fitter for one predictor.  KNOTS is either a piece count or an
+// explicit break vector, ORD is splinefit's order (the polynomial degree).
+// ROWOK marks the observations whose predictor and response are both finite;
+// the breaks are interpolated from those alone, as splinefit interpolates them
+// from the data left after it has dropped the rest.
+SplineFitter gam_make_fitter (const ColumnVector& x, const RowVector& knots,
+                              octave_idx_type ord,
+                              const boolNDArray& rowok, const string& caller)
+{
+  SplineFitter F;
+  octave_idx_type n = ord + 1;
+  F.nobs = x.numel ();
+
+  octave_idx_type nused = 0;
+  for (octave_idx_type i = 0; i < F.nobs; i++)
+  {
+    if (rowok(i) && ! octave::math::isnan (x(i)))
+    {
+      nused++;
+    }
+  }
+  if (nused == 0)
+  {
+    error ("%s: there must be at least one data point.", caller.c_str ());
+  }
+
+  F.used = Array<octave_idx_type> (dim_vector (nused, 1));
+  octave_idx_type c = 0;
+  for (octave_idx_type i = 0; i < F.nobs; i++)
+  {
+    if (rowok(i) && ! octave::math::isnan (x(i)))
+    {
+      F.used(c++) = i;
+    }
+  }
+  F.all_used = (nused == F.nobs);
+
+  ColumnVector xs (nused);
+  for (octave_idx_type i = 0; i < nused; i++)
+  {
+    xs(i) = x(F.used(i));
+  }
+
+  RowVector breaks;
+  if (knots.numel () == 1)
+  {
+    ColumnVector xsorted = xs;
+    sort (xsorted.fortran_vec (), xsorted.fortran_vec () + nused);
+    breaks = gam_breaks_from_count (xsorted, (octave_idx_type) knots(0));
+  }
+  else
+  {
+    breaks = knots;
+  }
+  breaks = gam_unique_breaks (breaks);
+  if (breaks.numel () < 2)
+  {
+    error ("%s: at least two unique breaks are required.", caller.c_str ());
+  }
+
+  F.basis = gam_splinebase (breaks, n);
+
+  // Design matrix: row i holds the N basis functions that are nonzero at
+  // x(i), at the columns their B-spline indices name.
+  Matrix D (nused, F.basis.dim, 0.0);
+  for (octave_idx_type i = 0; i < nused; i++)
+  {
+    octave_idx_type p = gam_interval (breaks, xs(i));
+    double dx = xs(i) - breaks(p);
+    for (octave_idx_type k = 0; k < n; k++)
+    {
+      double v = 0.0;
+      for (octave_idx_type j = 0; j < n; j++)
+      {
+        v = v * dx + F.basis.bcoefs(p * n + k, j);
+      }
+      D(i, p + k) = v;
+    }
+  }
+
+  // Factorise once.  The fit is the minimum-norm least squares solution, which
+  // is what splinefit's u = y / A takes wherever the design has full rank.
+  //
+  // Where it does not -- fewer observations than basis functions, tied
+  // predictor values, or a piece no observation falls in -- the solution is
+  // not unique, and the direction that makes it so must be discarded rather
+  // than divided by.  Octave's operator keeps every singular value above
+  // eps / 2, which on such a design means keeping one that is rounding noise
+  // and scaling it by its reciprocal: on the four-observation fixture in
+  // ClassificationGAM the coefficients came back at 1e14 and the residual at
+  // 1.45, where no spline of that space can do worse than 0.71.  The cut here
+  // is the rank-revealing one, max (rows, columns) * eps, which rank () itself
+  // uses.  It changes nothing for a design of full rank and gives the genuine
+  // minimum-norm fit for one that is deficient.
+  octave::math::svd<Matrix> fact (D, octave::math::svd<Matrix>::Type::economy,
+                                  octave::math::svd<Matrix>::Driver::GESVD);
+  Matrix U = fact.left_singular_matrix ();
+  Matrix V = fact.right_singular_matrix ();
+  DiagMatrix S = fact.singular_values ();
+
+  octave_idx_type nsv = S.rows () < S.columns () ? S.rows () : S.columns ();
+  double smax = (nsv > 0) ? S(0, 0) : 0.0;
+  octave_idx_type dmax = (nused > F.basis.dim) ? nused : F.basis.dim;
+  double tol = smax * std::numeric_limits<double>::epsilon () * dmax;
+  octave_idx_type rank = 0;
+  while (rank < nsv && S(rank, rank) > tol)
+  {
+    rank++;
+  }
+
+  F.Ur = Matrix (nused, rank);
+  for (octave_idx_type i = 0; i < nused; i++)
+  {
+    for (octave_idx_type k = 0; k < rank; k++)
+    {
+      F.Ur(i, k) = U(i, k);
+    }
+  }
+  F.Wr = Matrix (F.basis.dim, rank);
+  for (octave_idx_type i = 0; i < F.basis.dim; i++)
+  {
+    for (octave_idx_type k = 0; k < rank; k++)
+    {
+      F.Wr(i, k) = V(i, k) / S(k, k);
+    }
+  }
+
+  return F;
+}
+
+// Evaluate a piecewise polynomial, as ppval does: Horner on the offset from
+// the interval's left break, with points outside the domain extrapolated from
+// the nearest piece.
+double gam_ppval (const RowVector& breaks, const Matrix& coefs, double v)
+{
+  if (octave::math::isnan (v))
+  {
+    return octave::numeric_limits<double>::NaN ();
+  }
+  octave_idx_type p = gam_interval (breaks, v);
+  double dx = v - breaks(p);
+  double y = 0.0;
+  for (octave_idx_type j = 0; j < coefs.columns (); j++)
+  {
+    y = y * dx + coefs(p, j);
+  }
+  return y;
+}
+
+// Pack the per-predictor splines as the 1 x P struct array of pp forms the
+// classdefs store and ppval consumes.
+octave_map gam_pack_params (const vector<RowVector>& breaks,
+                            const vector<Matrix>& coefs)
+{
+  octave_idx_type p = (octave_idx_type) breaks.size ();
+  Cell c_form (1, p), c_breaks (1, p), c_coefs (1, p);
+  Cell c_pieces (1, p), c_order (1, p), c_dim (1, p);
+
+  for (octave_idx_type j = 0; j < p; j++)
+  {
+    c_form(j) = octave_value ("pp");
+    c_breaks(j) = octave_value (breaks[j]);
+    c_coefs(j) = octave_value (coefs[j]);
+    c_pieces(j) = octave_value ((double) coefs[j].rows ());
+    c_order(j) = octave_value ((double) coefs[j].columns ());
+    c_dim(j) = octave_value (1.0);
+  }
+
+  octave_map params (dim_vector (1, p));
+  params.assign ("form", c_form);
+  params.assign ("breaks", c_breaks);
+  params.assign ("coefs", c_coefs);
+  params.assign ("pieces", c_pieces);
+  params.assign ("order", c_order);
+  params.assign ("dim", c_dim);
+
+  return params;
+}
+
+// What a fit produces, in the shape the learners store it.
+struct GamFit
+{
+  octave_map params;
+  ColumnVector res;
+  Matrix RSS;
+  double iterations;
+  double intercept;
+};
+
+// Build one fitter per predictor.  Every round of either scheme works in
+// these same spaces, so this is the whole of the per-fit setup.
+vector<SplineFitter> gam_fitters (const Matrix& X, const ColumnVector& Y,
+                                  const Matrix& knots, const Matrix& order,
+                                  const string& caller)
+{
+  octave_idx_type n = X.rows ();
+  octave_idx_type d = X.columns ();
+
+  boolNDArray rowok (dim_vector (n, 1));
+  for (octave_idx_type i = 0; i < n; i++)
+  {
+    rowok(i) = ! octave::math::isnan (Y(i));
+  }
+
+  vector<SplineFitter> F;
+  F.reserve (d);
+  for (octave_idx_type j = 0; j < d; j++)
+  {
+    ColumnVector x (n);
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      x(i) = X(i, j);
+    }
+    RowVector k (1);
+    k(0) = knots(j);
+    F.push_back (gam_make_fitter (x, k, (octave_idx_type) order(j), rowok,
+                                  caller));
+  }
+  return F;
+}
+
+// Gradient boosting on the log-odds, the scheme ClassificationGAM fits.  Every
+// round takes one step of the negative gradient of the log loss and adds a
+// spline of it to each additive term; the terms accumulate because every round
+// fits the same breaks at the same order, so their polynomials add.
+GamFit gam_boost (const Matrix& X, const ColumnVector& Y, double Inter,
+                  const Matrix& knots, const Matrix& order, double lrate,
+                  octave_idx_type niter)
+{
+  octave_idx_type n = X.rows ();
+  octave_idx_type d = X.columns ();
+
+  vector<SplineFitter> F = gam_fitters (X, Y, knots, order,
+                                        "ClassificationGAM");
+
+  vector<RowVector> breaks (d);
+  vector<Matrix> coefs (d);
+  for (octave_idx_type j = 0; j < d; j++)
+  {
+    breaks[j] = F[j].basis.breaks;
+    coefs[j] = Matrix (F[j].basis.pieces, F[j].basis.n, 0.0);
+  }
+
+  double intercept = log (Inter / (1 - Inter));
+  ColumnVector f (n, intercept);
+  ColumnVector grad (n), pred, u;
+
+  for (octave_idx_type it = 0; it < niter; it++)
+  {
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      grad(i) = Y(i) - 1.0 / (1.0 + exp (-f(i)));
+    }
+
+    ColumnVector fnew (n, 0.0);
+    for (octave_idx_type j = 0; j < d; j++)
+    {
+      F[j].fit_round (grad, pred, u);
+      Matrix rc = F[j].coefs_from_u (u);
+      for (octave_idx_type p = 0; p < rc.rows (); p++)
+      {
+        for (octave_idx_type c = 0; c < rc.columns (); c++)
+        {
+          coefs[j](p, c) += lrate * rc(p, c);
+        }
+      }
+      for (octave_idx_type i = 0; i < n; i++)
+      {
+        fnew(i) += lrate * pred(i);
+      }
+    }
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      f(i) += fnew(i);
+    }
+  }
+
+  GamFit out;
+  out.res = ColumnVector (n);
+  double rss = 0.0;
+  for (octave_idx_type i = 0; i < n; i++)
+  {
+    out.res(i) = Y(i) - 1.0 / (1.0 + exp (-f(i)));
+    rss += out.res(i) * out.res(i);
+  }
+  out.RSS = Matrix (1, 1, rss);
+  out.params = gam_pack_params (breaks, coefs);
+  out.iterations = (double) niter;
+  out.intercept = intercept;
+
+  return out;
+}
+
+// Backfitting, the scheme RegressionGAM fits.  A cycle takes each predictor's
+// own contribution back out of the partial residual, refits it, and puts the
+// new one in; it stops when no term's residual sum of squares moves by more
+// than TOL.
+GamFit gam_backfit (const Matrix& X, const ColumnVector& Y, double Inter,
+                    const Matrix& knots, const Matrix& order, double tol,
+                    octave_idx_type maxiter)
+{
+  octave_idx_type n = X.rows ();
+  octave_idx_type d = X.columns ();
+
+  vector<SplineFitter> F = gam_fitters (X, Y, knots, order, "RegressionGAM");
+
+  vector<RowVector> breaks (d);
+  vector<Matrix> coefs (d);
+  for (octave_idx_type j = 0; j < d; j++)
+  {
+    breaks[j] = F[j].basis.breaks;
+    coefs[j] = Matrix (F[j].basis.pieces, F[j].basis.n, 0.0);
+  }
+
+  ColumnVector res (n);
+  for (octave_idx_type i = 0; i < n; i++)
+  {
+    res(i) = Y(i) - Inter;
+  }
+
+  Matrix RSS (1, d, 0.0);
+  Matrix RSSk (1, d, 0.0);
+  vector<ColumnVector> contrib (d);
+  ColumnVector pred, u;
+
+  bool converged = false;
+  octave_idx_type iter = 0;
+  while (! (converged || iter > maxiter))
+  {
+    iter++;
+    for (octave_idx_type j = 0; j < d; j++)
+    {
+      if (iter > 1)
+      {
+        for (octave_idx_type i = 0; i < n; i++)
+        {
+          res(i) += contrib[j](i);
+        }
+      }
+
+      F[j].fit_round (res, pred, u);
+      coefs[j] = F[j].coefs_from_u (u);
+
+      // The m-code's own formula, sum of absolute deviations squared over the
+      // sample size.  It is not a residual sum of squares despite the name and
+      // is reproduced as it stands: it decides only when the loop stops.
+      double s = 0.0;
+      for (octave_idx_type i = 0; i < n; i++)
+      {
+        s += fabs (Y(i) - pred(i) - Inter);
+      }
+      RSSk(j) = fabs (s * s) / n;
+
+      contrib[j] = pred;
+      for (octave_idx_type i = 0; i < n; i++)
+      {
+        res(i) -= pred(i);
+      }
+    }
+
+    converged = true;
+    for (octave_idx_type j = 0; j < d; j++)
+    {
+      if (! (fabs (RSS(j) - RSSk(j)) <= tol))
+      {
+        converged = false;
+      }
+    }
+    RSS = RSSk;
+  }
+
+  GamFit out;
+  out.res = res;
+  out.RSS = RSS;
+  out.params = gam_pack_params (breaks, coefs);
+  out.iterations = (double) iter;
+  out.intercept = Inter;
+
+  return out;
+}

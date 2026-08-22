@@ -1778,77 +1778,16 @@ classdef ClassificationGAM
     ## Fit the model
     function [iter, param, res, RSS, intercept] = fitGAM (this, X, Y, Inter, ...
                                     Knots, Order, learning_rate, num_iterations)
-      ## Initialize variables
-      [n_samples, n_features] = size (X);
-
-      ## Every boosting round fits the same predictor at the same knots and
-      ## the same order, so each feature's design is fixed and only the
-      ## response changes.  Cache a basis of that spline space, its values at
-      ## the observed points and its factorisation once, and a round costs two
-      ## small products rather than a fresh least-squares fit.  Where the
-      ## observations do not determine the space, having fewer of them than
-      ## basis functions, there is no cache and the round is fitted outright.
-      tmpl = cell (1, n_features);
-      cache = cell (1, n_features);
-      for j = 1:n_features
-        [tmpl{j}, cache{j}] = splineCache (X(:,j), Knots(j), Order(j));
-      endfor
-
-      ## One piecewise polynomial per feature, starting at zero
-      param = tmpl{1};
-      for j = 1:n_features
-        param(j) = tmpl{j};
-      endfor
-
-      ## Initialize model predictions with the intercept (log-odds)
-      p = Inter;
-      intercept = log (p / (1 - p));
-      f = intercept * ones (n_samples, 1);
-
-      ## Start boosting iterations
-      for iter = 1:num_iterations
-        ## Compute the gradient
-        y_pred = 1 ./ (1 + exp (-f));  ## Sigmoid function
-        gradient = Y - y_pred;         ## Negative gradient of log-loss
-
-        ## Initialize a variable to store predictions for this iteration
-        f_new = zeros (n_samples, 1);
-
-        for j = 1:n_features
-          if (isempty (cache{j}))
-            ## Fit a spline to the gradient for feature X_j
-            spline_model = splinefit (X(:, j), gradient, Knots(j), ...
-                                               'order', Order(j));
-            spline_pred = ppval (spline_model, X(:, j));
-            spline_pred = spline_pred(:);
-            round_coefs = spline_model.coefs;
-          else
-            ## The same fit, read off the cached basis
-            b = cache{j};
-            c = b.R \ (b.Q' * gradient);
-            spline_pred = b.F * c;
-            round_coefs = reshape (sum (b.C .* c, 1), ...
-                                   [tmpl{j}.pieces, tmpl{j}.order]);
-          endif
-
-          ## Accumulate this round's contribution to the additive term of
-          ## feature j.  Every round fits the same knots at the same order, so
-          ## the piecewise polynomials share a break sequence and their
-          ## coefficients add.  Storing the round on its own would keep the
-          ## last one and discard the boosting.
-          param(j).coefs = param(j).coefs + learning_rate * round_coefs;
-
-          ## Update the model predictions
-          f_new = f_new + learning_rate * spline_pred;
-        endfor
-
-        ## Update the overall model predictions
-        f = f + f_new ;
-      endfor
-
-      ## Final residuals and RSS calculation
-      res = Y  - 1 ./ (1 + exp (-f));
-      RSS = sum (res .^ 2);
+      ## The fit is performed by the shared spline engine, which builds and
+      ## factorises each predictor's design once and reduces a boosting round
+      ## to two products against the factors.
+      Mdl = gamtrain (X, Y, Knots, Order, 1, Inter, learning_rate, ...
+                      num_iterations);
+      iter      = Mdl.Iterations;
+      param     = Mdl.Parameters;
+      res       = Mdl.Residuals;
+      RSS       = Mdl.RSS;
+      intercept = Mdl.Intercept;
     endfunction
 
     ## Set cost
@@ -1859,19 +1798,9 @@ endclassdef
 
 ## Helper function
 function scores = predict_val (params, XC, intercept)
-  [nsample, ndims_X] = size (XC);
-  ypred = ones (nsample, 1) * intercept;
-
-  ## Add the remaining terms
-  for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), XC(:,j));
-  endfor
-
-  ## Apply the sigmoid function to get probabilities
-  pos_prob = 1 ./ (1 + exp (-ypred));
-  neg_prob = 1 - pos_prob;
-
-  scores = [neg_prob, pos_prob];
+  ## The shared prediction engine evaluates every additive term and maps the
+  ## sum through the logistic link, returning both class probabilities.
+  scores = gampredict (params, XC, intercept, 1);
 endfunction
 
 %!demo
