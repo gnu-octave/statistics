@@ -974,54 +974,8 @@ classdef ClassificationGAM
 
       ## Handle interaction terms (if given)
       if (F_I > 0)
-        if (isempty (this.Formula))
-          ## Analyze Interactions optional parameter
-          this.IntMatrix = this.parseInteractions ();
-          ## Append interaction terms to the predictor matrix
-          for i = 1:rows (this.IntMatrix)
-            tindex = logical (this.IntMatrix(i,:));
-            Xterms = X(:,tindex);
-            Xinter = ones (this.NumObservations, 1);
-            for c = 1:sum (tindex)
-              Xinter = Xinter .* Xterms(:,c);
-            endfor
-            ## Append interaction terms
-            X = [X, Xinter];
-          endfor
-
-        else
-          ## Analyze Formula optional parameter
-          this.IntMatrix = this.parseFormula ();
-          ## Add selected predictors and interaction terms
-          XN = [];
-          for i = 1:rows (this.IntMatrix)
-            tindex = logical (this.IntMatrix(i,:));
-            Xterms = X(:,tindex);
-            Xinter = ones (this.NumObservations, 1);
-            for c = 1:sum (tindex)
-              Xinter = Xinter .* Xterms(:,c);
-            endfor
-            ## Append selected predictors and interaction terms
-            XN = [XN, Xinter];
-          endfor
-          X = XN;
-        endif
-
-        ## Update length of Knots, Order, and DoF vectors to match
-        ## the columns of X with the interaction terms
-        Knots = ones (1, columns (X)) * Knots(1); # Knots
-        Order = ones (1, columns (X)) * Order(1); # Order of spline
-        DoF   = ones (1, columns (X)) * DoF(1);   # Degrees of freedom
-
-        ## Fit the model with interactions
-        [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, ...
-                                                          Order, LearningRate, ...
-                                                          NumIterations);
-        this.ModelwInt.Intercept  = intercept;
-        this.ModelwInt.Parameters = param;
-        this.ModelwInt.Iterations = iter;
-        this.ModelwInt.Residuals  = res;
-        this.ModelwInt.RSS        = RSS;
+        this = this.fitModelwInt (X, Y, Inter, Knots, Order, DoF, ...
+                                  LearningRate, NumIterations);
       endif
 
       ## The property MATLAB reports is the two-way terms the fitted model
@@ -1029,6 +983,75 @@ classdef ClassificationGAM
       ## in.  The term matrix stays the complete record: it also holds the
       ## main effects a formula names and any term above two predictors,
       ## neither of which has a two-column form.
+      this.Interactions = interactionPairs (this.IntMatrix);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{obj} =} addInteractions (@var{obj}, @var{interactions})
+    ##
+    ## Add interaction terms to a fitted model.
+    ##
+    ## @code{@var{obj} = addInteractions (@var{obj}, @var{interactions})} fits
+    ## the interaction terms named by @var{interactions} on top of the terms
+    ## the model already carries and returns the updated model.  The univariate
+    ## fit is left alone, so @code{predict} with
+    ## @qcode{'IncludeInteractions'} set @qcode{false} answers exactly as it
+    ## answered before.
+    ##
+    ## @var{interactions} takes the forms the constructor's
+    ## @qcode{'Interactions'} option takes: a nonnegative integer count of
+    ## terms, a logical matrix with a column per predictor, or @qcode{'all'}.
+    ##
+    ## A model already carrying interaction terms is not extended, which is
+    ## what MATLAB refuses too.  A model fitted from a @qcode{'Formula'} names
+    ## every term it has, interactions among them, and is refused for the same
+    ## reason.
+    ##
+    ## Which terms a count selects is this implementation's own: they are
+    ## taken in the order @code{nchoosek} lists the pairs, where MATLAB ranks
+    ## them by how much each contributes.  The constructor's option chooses
+    ## the same way, so the two agree with each other.
+    ##
+    ## @seealso{fitcgam, ClassificationGAM}
+    ## @end deftypefn
+    function this = addInteractions (this, interactions)
+
+      if (nargin != 2)
+        print_usage ();
+      endif
+
+      if (! isempty (this.IntMatrix))
+        error (strcat ("ClassificationGAM.addInteractions: adding", ...
+                       " interaction terms to a model that already", ...
+                       " includes them is not supported."));
+      endif
+
+      if (! ((isnumeric (interactions) && isscalar (interactions)
+              && interactions == fix (interactions) && interactions >= 0)
+             || islogical (interactions)
+             || (ischar (interactions) && strcmpi (interactions, 'all'))))
+        error (strcat ("ClassificationGAM.addInteractions: invalid", ...
+                       " 'Interactions' parameter."));
+      endif
+
+      ## parseInteractions reads the specification from the property, which
+      ## afterwards holds the pairs the fit settled on, exactly as the
+      ## constructor leaves it.
+      this.Interactions = interactions;
+      this.IntMatrix = this.parseInteractions ();
+
+      ## The fit sees the complete observations and the response in the
+      ## coding the boosting works in, prepared as the constructor prepares
+      ## them.  Knots, Order and DoF are held unexpanded on the object and
+      ## are widened to the interaction columns by fitModelwInt.
+      cobs = ! any (isnan (this.X), 2);
+      Xfit = this.X(cobs, :);
+      [~, ~, gY] = uniqueLabels (this.Y(cobs, :));
+      Yfit = gY(:) - 1;
+      this = this.fitModelwInt (Xfit, Yfit, mean (Yfit), this.Knots, ...
+                                this.Order, this.DoF, this.LearningRate, ...
+                                this.NumIterations);
       this.Interactions = interactionPairs (this.IntMatrix);
 
     endfunction
@@ -1727,6 +1750,64 @@ classdef ClassificationGAM
     endfunction
 
     ## Determine interactions from Interactions optional parameter
+    ## Fit the model that carries the interaction terms.  The constructor and
+    ## addInteractions both arrive here with IntMatrix already decided and the
+    ## predictors and response prepared as the fit wants them, so the two
+    ## cannot drift: a model given its interactions after the fact is the
+    ## model it would have been had they been asked for at the outset.
+    function this = fitModelwInt (this, X, Y, Inter, Knots, Order, DoF, ...
+                                  LearningRate, NumIterations)
+
+      if (isempty (this.Formula))
+        ## Analyze Interactions optional parameter
+        this.IntMatrix = this.parseInteractions ();
+        ## Append interaction terms to the predictor matrix
+        for i = 1:rows (this.IntMatrix)
+          tindex = logical (this.IntMatrix(i,:));
+          Xterms = X(:,tindex);
+          Xinter = ones (this.NumObservations, 1);
+          for c = 1:sum (tindex)
+            Xinter = Xinter .* Xterms(:,c);
+          endfor
+          ## Append interaction terms
+          X = [X, Xinter];
+        endfor
+
+      else
+        ## Analyze Formula optional parameter
+        this.IntMatrix = this.parseFormula ();
+        ## Add selected predictors and interaction terms
+        XN = [];
+        for i = 1:rows (this.IntMatrix)
+          tindex = logical (this.IntMatrix(i,:));
+          Xterms = X(:,tindex);
+          Xinter = ones (this.NumObservations, 1);
+          for c = 1:sum (tindex)
+            Xinter = Xinter .* Xterms(:,c);
+          endfor
+          ## Append selected predictors and interaction terms
+          XN = [XN, Xinter];
+        endfor
+        X = XN;
+      endif
+
+      ## Update length of Knots, Order, and DoF vectors to match
+      ## the columns of X with the interaction terms
+      Knots = ones (1, columns (X)) * Knots(1); # Knots
+      Order = ones (1, columns (X)) * Order(1); # Order of spline
+      DoF   = ones (1, columns (X)) * DoF(1);   # Degrees of freedom
+
+      ## Fit the model with interactions
+      [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, ...
+                                                        Order, LearningRate, ...
+                                                        NumIterations);
+      this.ModelwInt.Intercept  = intercept;
+      this.ModelwInt.Parameters = param;
+      this.ModelwInt.Iterations = iter;
+      this.ModelwInt.Residuals  = res;
+      this.ModelwInt.RSS        = RSS;
+    endfunction
+
     function intMat = parseInteractions (this)
       if (islogical (this.Interactions))
         ## Check that interaction matrix corresponds to predictors
@@ -2064,6 +2145,58 @@ endfunction
 %! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
 %! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
 %! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
+
+## addInteractions fits the interaction terms onto a model that already has
+## its univariate ones.  The result is the model that would have been fitted
+## had the terms been asked for at the outset: both go through one private
+## method, so the two cannot drift apart.
+%!test
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! Xai = meas(bai,2:4); Yai = species(bai);
+%! Aai = addInteractions (fitcgam (Xai, Yai), "all");
+%! Bai = fitcgam (Xai, Yai, "Interactions", "all");
+%! assert_equal (Aai.Interactions, Bai.Interactions);
+%! assert_equal (Aai.ModelwInt, Bai.ModelwInt);
+%! assert_equal (predict (Aai, Xai), predict (Bai, Xai));
+
+## The univariate fit is left alone, which is what MATLAB leaves alone too.
+%!test
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! Xai = meas(bai,2:4); Yai = species(bai);
+%! Cai = fitcgam (Xai, Yai);
+%! Aai = addInteractions (Cai, "all");
+%! assert_equal (predict (Aai, Xai, "IncludeInteractions", false), ...
+%!               predict (Cai, Xai));
+
+## A count and a logical matrix name terms as the constructor's option does.
+%!test
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! Xai = meas(bai,2:4); Yai = species(bai);
+%! Aai = addInteractions (fitcgam (Xai, Yai), 2);
+%! assert_equal (Aai.Interactions, [1, 2; 1, 3]);
+%! Lai = addInteractions (fitcgam (Xai, Yai), logical ([1 1 0; 0 1 1]));
+%! assert_equal (Lai.Interactions, [1, 2; 2, 3]);
+
+## A model that already carries interaction terms is not extended, and a
+## model fitted from a formula names every term it has, interactions among
+## them, so it is refused for the same reason.  R2024a refuses both.
+%!error<ClassificationGAM.addInteractions: adding interaction terms to a model that already includes them is not supported.> ...
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! Mai = fitcgam (meas(bai,2:4), species(bai), "Interactions", 2);
+%! addInteractions (Mai, "all")
+%!error<ClassificationGAM.addInteractions: adding interaction terms to a model that already includes them is not supported.> ...
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! addInteractions (fitcgam (meas(bai,2:4), species(bai), ...
+%!                  "Formula", "Y ~ x1 + x2 + x1:x2"), "all")
+%!error<ClassificationGAM.addInteractions: invalid 'Interactions' parameter.> ...
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! addInteractions (fitcgam (meas(bai,2:4), species(bai)), {1})
 
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
 %! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', [1])
