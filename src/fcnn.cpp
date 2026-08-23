@@ -119,17 +119,35 @@ public:
   void set_neuron (vector<double> Wb_vector);
   void zero_gradient ();
 
+  // Flat view, laid out as [weights, bias] to match get_neuron.  It exists
+  // so that a whole network can be handed to an optimizer as one vector and
+  // set back from one, which the per-neuron accessors above cannot do
+  // without copying the model on every trial step of a line search.
+  int nparams () const;
+  void pack (double *p) const;
+  void unpack (const double *p);
+  void pack_grad (double *p) const;
+
   // data
   vector<double> weights;
   vector<double> wgrad;
   double bias;
   double bgrad;
+  // The gradient this neuron received from the sample being processed, as
+  // distinct from bgrad, which accumulates it.  Backpropagation into the
+  // layer below needs the one and full-batch training needs the other, and
+  // reading bgrad for both is only correct while the gradient is cleared
+  // between samples.
+  double delta;
 };
 
 Neuron::Neuron (int input_size, double scale)
 {
   this->weights = vector<double> (input_size);
+  this->wgrad = vector<double> (input_size, 0.0);
   this->bias = 0.01 * get_random ();
+  this->bgrad = 0.0;
+  this->delta = 0.0;
   for (int i = 0; i < input_size; i++)
   {
     this->weights[i] = scale * get_random ();
@@ -142,7 +160,10 @@ Neuron::Neuron (int input_size, double scale)
 Neuron::Neuron (int input_size)
 {
   this->weights = vector<double> (input_size);
+  this->wgrad = vector<double> (input_size, 0.0);
   this->bias = 0.0;
+  this->bgrad = 0.0;
+  this->delta = 0.0;
 }
 Neuron::~Neuron () {}
 
@@ -158,6 +179,7 @@ double Neuron::forward (vector<double> inputs)
 
 void Neuron::backward (vector<double> last_input, double grad)
 {
+  this->delta = grad;
   this->bgrad += grad;
   for (int i = 0; i < this->wgrad.size (); i++)
   {
@@ -197,6 +219,41 @@ void Neuron::zero_gradient ()
   this->bgrad = 0.0;
 }
 
+int Neuron::nparams () const
+{
+  return this->weights.size () + 1;
+}
+
+void Neuron::pack (double *p) const
+{
+  int n = this->weights.size ();
+  for (int i = 0; i < n; i++)
+  {
+    p[i] = this->weights[i];
+  }
+  p[n] = this->bias;
+}
+
+void Neuron::unpack (const double *p)
+{
+  int n = this->weights.size ();
+  for (int i = 0; i < n; i++)
+  {
+    this->weights[i] = p[i];
+  }
+  this->bias = p[n];
+}
+
+void Neuron::pack_grad (double *p) const
+{
+  int n = this->wgrad.size ();
+  for (int i = 0; i < n; i++)
+  {
+    p[i] = this->wgrad[i];
+  }
+  p[n] = this->bgrad;
+}
+
 class DenseLayer
 {
 public:
@@ -213,6 +270,12 @@ public:
   vector<vector<double>> get_layer ();
   void set_layer (vector<vector<double>> Wb_matrix);
   void zero_gradient ();
+
+  // Flat view over every neuron of the layer, in neuron order.
+  int nparams () const;
+  void pack (double *p) const;
+  void unpack (const double *p);
+  void pack_grad (double *p) const;
 
   // data
   vector<Neuron> neurons;
@@ -293,6 +356,43 @@ void DenseLayer::zero_gradient ()
   for (int i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].zero_gradient ();
+  }
+}
+
+int DenseLayer::nparams () const
+{
+  int total = 0;
+  for (size_t i = 0; i < this->neurons.size (); i++)
+  {
+    total += this->neurons[i].nparams ();
+  }
+  return total;
+}
+
+void DenseLayer::pack (double *p) const
+{
+  for (size_t i = 0; i < this->neurons.size (); i++)
+  {
+    this->neurons[i].pack (p);
+    p += this->neurons[i].nparams ();
+  }
+}
+
+void DenseLayer::unpack (const double *p)
+{
+  for (size_t i = 0; i < this->neurons.size (); i++)
+  {
+    this->neurons[i].unpack (p);
+    p += this->neurons[i].nparams ();
+  }
+}
+
+void DenseLayer::pack_grad (double *p) const
+{
+  for (size_t i = 0; i < this->neurons.size (); i++)
+  {
+    this->neurons[i].pack_grad (p);
+    p += this->neurons[i].nparams ();
   }
 }
 
@@ -548,17 +648,19 @@ void ActivationLayer::backward (vector<double> chain_grad)
 void ActivationLayer::backward (DenseLayer &prev_layer)
 {
   // The gradient arriving here is W' * delta, where delta is the gradient at
-  // each neuron of the layer that follows.  Every neuron has accumulated its
-  // own delta into the bias gradient, so it is read from there rather than
+  // each neuron of the layer that follows.  Every neuron stores the delta of
+  // the sample being processed, so it is read from there rather than
   // recovered by dividing the weight gradient by the input, which is
-  // undefined wherever an activation output is zero.  The local derivative is
+  // undefined wherever an activation output is zero.  Reading the bias
+  // gradient instead is only correct while it is cleared between samples,
+  // which full-batch training does not do.  The local derivative is
   // then applied by the overload above, so both paths share one definition of
   // every activation.
   int layer_size = this->last_input.size ();
   vector<double> chain_grad = vector<double> (layer_size, 0.0);
   for (int n = 0; n < prev_layer.neurons.size (); n++)
   {
-    double delta = prev_layer.neurons[n].bgrad;
+    double delta = prev_layer.neurons[n].delta;
     for (int i = 0; i < layer_size; i++)
     {
       chain_grad[i] += prev_layer.neurons[n].weights[i] * delta;

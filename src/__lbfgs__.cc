@@ -84,27 +84,6 @@ private:
   octave_idx_type m_n;
 };
 
-// MATLAB's own wording, kept verbatim so a caller rebuilding fitcnet's
-// ConvergenceInfo can pass the string straight through.  The gradient test it
-// names is absolute rather than relative; see the note in lbfgs.h.
-static const char *
-criterion_message (int crit)
-{
-  switch (crit)
-  {
-    case lbfgs::CRIT_GRADIENT:
-      return "Relative gradient tolerance reached.";
-    case lbfgs::CRIT_STEP:
-      return "Step size tolerance reached.";
-    case lbfgs::CRIT_LOSS:
-      return "Loss tolerance reached.";
-    case lbfgs::CRIT_ITERATION_LIMIT:
-      return "Iteration limit reached.";
-    default:
-      return "Line search could not improve the objective.";
-  }
-}
-
 static bool
 is_real_scalar (const octave_value& v)
 {
@@ -318,7 +297,8 @@ This is an internal function and is not meant to be called directly.\n\
     info.assign ("Fval", res.fval);
     info.assign ("Gradient", res.gradient);
     info.assign ("Step", res.step);
-    info.assign ("ConvergenceCriterion", criterion_message (res.crit));
+    info.assign ("ConvergenceCriterion",
+                 lbfgs::criterion_message (res.crit));
     info.assign ("History", history);
 
     retval(1) = info;

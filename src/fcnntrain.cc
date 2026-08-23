@@ -27,8 +27,122 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <octave/parse.h>
 #include <octave/ov-struct.h>
 #include "fcnn.cpp"
+#include "lbfgs.h"
 
 using namespace std;
+
+// Full-batch objective: the mean loss over every training sample together
+// with its gradient against the flat parameter vector.  One call is one sweep
+// forward and back over the whole training set, which is what each trial step
+// of a line search costs.
+//
+// This is the piece the epoch loop cannot supply.  That loop clears the
+// gradient before every sample and consumes it immediately, so no gradient of
+// the summed loss ever exists; here it is cleared once and accumulated across
+// the batch.
+class fcnn_objective
+{
+public:
+
+  fcnn_objective (vector<DenseLayer>& wb, vector<ActivationLayer>& act,
+                  const vector<vector<double>>& data,
+                  const vector<vector<double>>& targets,
+                  const vector<int>& labels, int output_size, int lossfcn,
+                  bool regression)
+    : m_wb (wb), m_act (act), m_data (data), m_targets (targets),
+      m_labels (labels), m_output_size (output_size), m_lossfcn (lossfcn),
+      m_regression (regression)
+  { }
+
+  double operator () (const vector<double>& w, vector<double>& g)
+  {
+    octave_quit ();
+
+    const int numlayers = m_wb.size ();
+    const int n = m_data.size ();
+
+    const double *p = w.data ();
+    for (int l = 0; l < numlayers; l++)
+    {
+      m_wb[l].unpack (p);
+      p += m_wb[l].nparams ();
+    }
+
+    for (int l = 0; l < numlayers; l++)
+    {
+      m_wb[l].zero_gradient ();
+    }
+
+    double total = 0.0;
+    for (int s = 0; s < n; s++)
+    {
+      vector<double> sample = m_data[s];
+      for (int l = 0; l < numlayers; l++)
+      {
+        sample = m_wb[l].forward (sample);
+        sample = m_act[l].forward (sample);
+      }
+
+      vector<double> label_vector;
+      if (m_regression)
+      {
+        label_vector = m_targets[s];
+      }
+      else
+      {
+        label_vector = vector<double> (m_output_size, 0.0);
+        label_vector[m_labels[s]-1] = 1.0;   // labels in Y start from 1
+      }
+
+      vector<double> loss_grad;
+      if (m_lossfcn == 1)
+      {
+        CrossEntropyLoss loss = CrossEntropyLoss ();
+        total += loss.forward (sample, label_vector);
+        // The objective is the mean, so each sample's gradient carries 1/n.
+        loss.backward (1.0 / n);
+        loss_grad = loss.grad;
+      }
+      else
+      {
+        MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
+        total += loss.forward (sample, label_vector);
+        loss.backward (1.0 / n);
+        loss_grad = loss.grad;
+      }
+
+      m_act[numlayers-1].backward (loss_grad);
+      for (int l = numlayers; l > 0; l--)
+      {
+        m_wb[l-1].backward (m_act[l-1].grad);
+        if (l > 1)
+        {
+          m_act[l-2].backward (m_wb[l-1]);
+        }
+      }
+    }
+
+    double *q = &g[0];
+    for (int l = 0; l < numlayers; l++)
+    {
+      m_wb[l].pack_grad (q);
+      q += m_wb[l].nparams ();
+    }
+
+    return total / n;
+  }
+
+private:
+
+  vector<DenseLayer>& m_wb;
+  vector<ActivationLayer>& m_act;
+  const vector<vector<double>>& m_data;
+  const vector<vector<double>>& m_targets;
+  const vector<int>& m_labels;
+  int m_output_size;
+  int m_lossfcn;
+  bool m_regression;
+};
 
 DEFUN_DLD(fcnntrain, args, nargout,
           "-*- texinfo -*-\n\
@@ -156,7 +270,7 @@ package:\n\n\
   {
     error ("fcnntrain: too few input arguments.");
   }
-  if (args.length () > 10)
+  if (args.length () > 11)
   {
     error ("fcnntrain: too many input arguments.");
   }
@@ -172,7 +286,7 @@ package:\n\n\
   // which is regression.  It is read first because it decides whether Y holds
   // class labels or response values.
   int lossfcn = 0;
-  if (args.length () == 10)
+  if (args.length () >= 10)
   {
     if (! args(9).isnumeric () || ! args(9).is_scalar_type ()
         || args(9).iscomplex ())
@@ -353,6 +467,50 @@ package:\n\n\
   // Reserved, not sized: these are filled with push_back below, and sizing
   // them here would leave max_epochs zeros in front of the values and the
   // reported history reading back as all zero.
+  // Optional eleventh argument: the solver and its tolerances, as a scalar
+  // struct.  Absent, the epoch loop below runs exactly as it always has, and
+  // every default in this file is unchanged.
+  bool use_lbfgs = false;
+  lbfgs::options lbopt;
+  lbopt.iteration_limit = max_epochs;
+  lbfgs::result lbres;
+  if (args.length () > 10)
+  {
+    if (! args(10).isstruct () || args(10).numel () != 1)
+    {
+      error ("fcnntrain: 'SolverOptions' must be a scalar struct.");
+    }
+    octave_scalar_map so = args(10).scalar_map_value ();
+    if (so.isfield ("Solver"))
+    {
+      std::string sv = so.contents ("Solver").string_value ();
+      if (sv == "lbfgs")
+      {
+        use_lbfgs = true;
+      }
+      else if (sv != "sgd")
+      {
+        error ("fcnntrain: 'Solver' must be 'sgd' or 'lbfgs'.");
+      }
+    }
+    if (so.isfield ("GradientTolerance"))
+    {
+      lbopt.gradient_tolerance
+        = so.contents ("GradientTolerance").double_value ();
+    }
+    if (so.isfield ("LossTolerance"))
+    {
+      lbopt.loss_tolerance = so.contents ("LossTolerance").double_value ();
+    }
+    if (so.isfield ("StepTolerance"))
+    {
+      lbopt.step_tolerance = so.contents ("StepTolerance").double_value ();
+    }
+    if (so.isfield ("HistorySize"))
+    {
+      lbopt.history_size = so.contents ("HistorySize").int_value ();
+    }
+  }
   vector<double> Accuracy;
   vector<double> Loss;
   Accuracy.reserve (max_epochs);
@@ -369,172 +527,218 @@ package:\n\n\
     order[i] = i;
   }
 
-  // Start training
-  octave_idx_type epoch = 0;
-  for (; epoch < max_epochs; epoch++)
+  // The epoch loop is the stochastic solver.  LBFGS replaces it whole rather
+  // than adjusting it: it needs the gradient of the summed loss, which no
+  // per-sample update can produce, so the two paths share the network and
+  // nothing else.  The sample order is not shuffled here, the fit being
+  // deterministic once the weights are drawn.
+  if (use_lbfgs)
   {
-    // Fisher-Yates over Octave's generator, so a seeded fit stays reproducible
-    for (int i = n - 1; i > 0; i--)
+    int nparams = 0;
+    for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
     {
-      int j = (int) (octave::rand::scalar () * (i + 1));
-      if (j > i)          // scalar () is documented on [0, 1); guard the end
-      {
-        j = i;
-      }
-      int keep = order[i];
-      order[i] = order[j];
-      order[j] = keep;
+      nparams += WeightBias[layer_idx].nparams ();
     }
 
-    // Running loss, for the progress line only: the weights move under it, so
-    // it is not the loss of any one network and is never recorded.
-    double running_loss = 0.0;
-
-    // Go through all training samples
-    for (int visit = 0; visit < n; visit++)
+    vector<double> w (nparams, 0.0);
+    double *p = &w[0];
+    for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
     {
-      int sample_idx = order[visit];
-      vector<double> sample = data[sample_idx];
+      WeightBias[layer_idx].pack (p);
+      p += WeightBias[layer_idx].nparams ();
+    }
 
-      // Forward pass
-      for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+    fcnn_objective fobj (WeightBias, Activation, data, targets, labels,
+                         output_size, lossfcn, regression);
+    lbres = lbfgs::minimize (fobj, w, lbopt);
+
+    // minimize leaves the network holding whatever the last trial step set,
+    // which is the accepted point only by construction of the line search;
+    // writing the returned vector back makes that explicit.
+    const double *q = w.data ();
+    for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+    {
+      WeightBias[layer_idx].unpack (q);
+      q += WeightBias[layer_idx].nparams ();
+    }
+
+    if (args(8).scalar_value () != 0)
+    {
+      cout << "Iterations: " << lbres.iterations << " | Loss: "
+           << lbres.fval << " | " << lbfgs::criterion_message (lbres.crit)
+           << endl;
+    }
+  }
+  else
+  {
+    // Start training
+    octave_idx_type epoch = 0;
+    for (; epoch < max_epochs; epoch++)
+    {
+      // Fisher-Yates over Octave's generator, so that a seeded fit stays
+      // reproducible
+      for (int i = n - 1; i > 0; i--)
       {
-        sample = WeightBias[layer_idx].forward (sample);
-        sample = Activation[layer_idx].forward (sample);
+        int j = (int) (octave::rand::scalar () * (i + 1));
+        if (j > i)          // scalar () is documented on [0, 1); guard the end
+        {
+          j = i;
+        }
+        int keep = order[i];
+        order[i] = order[j];
+        order[j] = keep;
       }
 
-      vector<double> label_vector;
-      if (regression)
+      // Running loss, for the progress line only: the weights move under it, so
+      // it is not the loss of any one network and is never recorded.
+      double running_loss = 0.0;
+
+      // Go through all training samples
+      for (int visit = 0; visit < n; visit++)
       {
-        label_vector = targets[sample_idx];
-      }
-      else
-      {
-        label_vector = vector<double> (output_size);
-        label_vector[labels[sample_idx]-1] = 1.0;  // Labels in Y start from 1
+        int sample_idx = order[visit];
+        vector<double> sample = data[sample_idx];
+
+        // Forward pass
+        for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+        {
+          sample = WeightBias[layer_idx].forward (sample);
+          sample = Activation[layer_idx].forward (sample);
+        }
+
+        vector<double> label_vector;
+        if (regression)
+        {
+          label_vector = targets[sample_idx];
+        }
+        else
+        {
+          label_vector = vector<double> (output_size);
+          label_vector[labels[sample_idx]-1] = 1.0;  // Labels in Y start from 1
+        }
+
+        // Compute loss and the gradient it hands back
+        double loss_output;
+        vector<double> loss_grad;
+        if (lossfcn == 1)
+        {
+          CrossEntropyLoss loss = CrossEntropyLoss ();
+          loss_output = loss.forward (sample, label_vector);
+          loss.backward (1.0);
+          loss_grad = loss.grad;
+        }
+        else
+        {
+          MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
+          loss_output = loss.forward (sample, label_vector);
+          loss.backward (1.0);
+          loss_grad = loss.grad;
+        }
+        running_loss += loss_output;
+
+        // Print output
+        if (args(8).scalar_value () != 0)
+        {
+          if (visit % 500 == 0)
+          {
+            cout << setprecision(4) << "i:" << visit << " | Mean Loss: ";
+            cout << (running_loss / (visit + 1)) << "\r" << flush;
+          }
+        }
+
+        // Backward pass
+        for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+        {
+          WeightBias[layer_idx].zero_gradient (); // Reset gradients to zero
+        }
+
+        // Compute gradients
+        Activation[numlayers-1].backward (loss_grad);
+
+        for (int layer_idx = numlayers; layer_idx > 0; layer_idx--)
+        {
+          WeightBias[layer_idx-1].backward (Activation[layer_idx-1].grad);
+          if (layer_idx > 1)
+          {
+            Activation[layer_idx-2].backward (WeightBias[layer_idx-1]);
+          }
+        }
+
+        // Update weights
+        for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+        {
+          WeightBias[layer_idx].descend (learning_rate);
+        }
       }
 
-      // Compute loss and the gradient it hands back
-      double loss_output;
-      vector<double> loss_grad;
-      if (lossfcn == 1)
+      // Loss and accuracy of the network as it stands at the end of the
+      // epoch, measured in one forward-only pass with the weights held
+      // still.  Summing them inside the loop above instead scores every
+      // sample against different weights, so the figure belongs to no
+      // network that ever existed: on class-interleaved data a network stuck
+      // on a constant output reports an accuracy of exactly zero, each sample
+      // being scored against weights just pulled toward the one before it.
+      double sum_loss = 0.0;
+      vector<int> predictions = vector<int> ();
+      predictions.reserve (n);
+      for (int sample_idx = 0; sample_idx < n; sample_idx++)
       {
-        CrossEntropyLoss loss = CrossEntropyLoss ();
-        loss_output = loss.forward (sample, label_vector);
-        loss.backward (1.0);
-        loss_grad = loss.grad;
+        vector<double> sample = data[sample_idx];
+        for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
+        {
+          sample = WeightBias[layer_idx].forward (sample);
+          sample = Activation[layer_idx].forward (sample);
+        }
+
+        vector<double> label_vector;
+        if (regression)
+        {
+          label_vector = targets[sample_idx];
+        }
+        else
+        {
+          int prediction = 0;         // Search for highest value
+          for (int j = 0; j < output_size; j++)
+          {
+            if (sample[j] > sample[prediction])
+            {
+              prediction = j;
+            }
+          }
+          predictions.push_back (prediction);
+          label_vector = vector<double> (output_size);
+          label_vector[labels[sample_idx]-1] = 1.0;
+        }
+
+        if (lossfcn == 1)
+        {
+          CrossEntropyLoss loss = CrossEntropyLoss ();
+          sum_loss += loss.forward (sample, label_vector);
+        }
+        else
+        {
+          MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
+          sum_loss += loss.forward (sample, label_vector);
+        }
       }
-      else
-      {
-        MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
-        loss_output = loss.forward (sample, label_vector);
-        loss.backward (1.0);
-        loss_grad = loss.grad;
-      }
-      running_loss += loss_output;
+
+      // Accuracy counts correct labels, which regression has none of.
+      double A = regression ? 0.0 : accuracy (predictions, labels);
+      double L = sum_loss / n;
+      Accuracy.push_back (A);
+      Loss.push_back (L);
 
       // Print output
       if (args(8).scalar_value () != 0)
       {
-        if (visit % 500 == 0)
+        cout << "                                              \r"
+             << "Epoch: " << epoch + 1 << " | Loss: " << L;
+        if (! regression)
         {
-          cout << setprecision(4) << "i:" << visit << " | Mean Loss: ";
-          cout << (running_loss / (visit + 1)) << "\r" << flush;
+          cout << " | Train Accuracy: " << A;
         }
+        cout << endl;
       }
-
-      // Backward pass
-      for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
-      {
-        WeightBias[layer_idx].zero_gradient (); // Reset gradients to zero
-      }
-
-      // Compute gradients
-      Activation[numlayers-1].backward (loss_grad);
-
-      for (int layer_idx = numlayers; layer_idx > 0; layer_idx--)
-      {
-        WeightBias[layer_idx-1].backward (Activation[layer_idx-1].grad);
-        if (layer_idx > 1)
-        {
-          Activation[layer_idx-2].backward (WeightBias[layer_idx-1]);
-        }
-      }
-
-      // Update weights
-      for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
-      {
-        WeightBias[layer_idx].descend (learning_rate);
-      }
-    }
-
-    // Loss and accuracy of the network as it stands at the end of the epoch,
-    // measured in one forward-only pass with the weights held still.  Summing
-    // them inside the loop above instead scores every sample against different
-    // weights, so the figure belongs to no network that ever existed: on
-    // class-interleaved data a network stuck on a constant output reports an
-    // accuracy of exactly zero, each sample being scored against weights just
-    // pulled toward the one before it.
-    double sum_loss = 0.0;
-    vector<int> predictions = vector<int> ();
-    predictions.reserve (n);
-    for (int sample_idx = 0; sample_idx < n; sample_idx++)
-    {
-      vector<double> sample = data[sample_idx];
-      for (int layer_idx = 0; layer_idx < numlayers; layer_idx++)
-      {
-        sample = WeightBias[layer_idx].forward (sample);
-        sample = Activation[layer_idx].forward (sample);
-      }
-
-      vector<double> label_vector;
-      if (regression)
-      {
-        label_vector = targets[sample_idx];
-      }
-      else
-      {
-        int prediction = 0;         // Search for highest value
-        for (int j = 0; j < output_size; j++)
-        {
-          if (sample[j] > sample[prediction])
-          {
-            prediction = j;
-          }
-        }
-        predictions.push_back (prediction);
-        label_vector = vector<double> (output_size);
-        label_vector[labels[sample_idx]-1] = 1.0;
-      }
-
-      if (lossfcn == 1)
-      {
-        CrossEntropyLoss loss = CrossEntropyLoss ();
-        sum_loss += loss.forward (sample, label_vector);
-      }
-      else
-      {
-        MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
-        sum_loss += loss.forward (sample, label_vector);
-      }
-    }
-
-    // Accuracy counts correct labels, which regression has none of.
-    double A = regression ? 0.0 : accuracy (predictions, labels);
-    double L = sum_loss / n;
-    Accuracy.push_back (A);
-    Loss.push_back (L);
-
-    // Print output
-    if (args(8).scalar_value () != 0)
-    {
-      cout << "                                              \r"
-           << "Epoch: " << epoch + 1 << " | Loss: " << L;
-      if (! regression)
-      {
-        cout << " | Train Accuracy: " << A;
-      }
-      cout << endl;
     }
   }
 
@@ -558,24 +762,49 @@ package:\n\n\
     LayerWeights.elem(layer_idx) = WB;
   }
 
-  // Store accuracy and loss vectors in RowVector
-  RowVector A(max_epochs);
-  RowVector L(max_epochs);
-  for (epoch = 0; epoch < max_epochs; epoch++)
+  // The recorded history: one row per epoch under the stochastic solver, one
+  // per iteration under LBFGS, which also reports the two quantities it
+  // measured to decide it had converged and which of them stopped it.
+  // Accuracy is not among them, MATLAB not reporting it either, and computing
+  // it would cost a forward pass over the whole set at every iteration.
+  octave_idx_type nrec = use_lbfgs
+                         ? (octave_idx_type) lbres.history.size ()
+                         : (octave_idx_type) Loss.size ();
+  RowVector A(nrec), L(nrec), G(nrec), S(nrec);
+  for (octave_idx_type i = 0; i < nrec; i++)
   {
-    A(epoch) = Accuracy[epoch];
-    L(epoch) = Loss[epoch];
+    if (use_lbfgs)
+    {
+      L(i) = lbres.history[i].fval;
+      G(i) = lbres.history[i].gradient;
+      S(i) = lbres.history[i].step;
+    }
+    else
+    {
+      A(i) = Accuracy[i];
+      L(i) = Loss[i];
+    }
   }
 
   // Prepare returning arguments
   octave_scalar_map fcnn_model;
   fcnn_model.assign ("LayerWeights", LayerWeights);
   fcnn_model.assign ("Activations", ActiveCode);
-  if (! regression)
+  if (use_lbfgs)
   {
-    fcnn_model.assign ("Accuracy", A);
+    fcnn_model.assign ("Loss", L);
+    fcnn_model.assign ("Gradient", G);
+    fcnn_model.assign ("Step", S);
+    fcnn_model.assign ("Criterion", lbfgs::criterion_message (lbres.crit));
   }
-  fcnn_model.assign ("Loss", L);
+  else
+  {
+    if (! regression)
+    {
+      fcnn_model.assign ("Accuracy", A);
+    }
+    fcnn_model.assign ("Loss", L);
+  }
   fcnn_model.assign ("Alpha", Alpha);
   octave_value_list retval (1);
   retval(0) = fcnn_model;
@@ -669,7 +898,12 @@ package:\n\n\
 %! assert_equal (M.Accuracy(end) >= M.Accuracy(1), true);
 
 %!error <fcnntrain: too many input arguments.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, struct (), 0);
+%!error <fcnntrain: 'SolverOptions' must be a scalar struct.> ...
 %! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, 0);
+%!error <fcnntrain: 'Solver' must be 'sgd' or 'lbfgs'.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, ...
+%!            struct ("Solver", "bogus"));
 %!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
 %! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 'ce');
 %!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
@@ -723,4 +957,51 @@ package:\n\n\
 %! fcnntrain ([1; 2; 3], [1; Inf; 3], 4, [2, 0], 1, 0.01, 0.01, 10, false, 2);
 %!error <fcnntrain: Y must be finite.> ...
 %! fcnntrain ([1; 2; 3], [1; NaN; 3], 4, [2, 0], 1, 0.01, 0.01, 10, false, 2);
+
+## The full-batch solver drives the loss down and reports what it measured to
+## decide it had stopped.  Accuracy is not among them: MATLAB does not report
+## it either, and it would cost a forward pass over the whole set per
+## iteration.
+%!test
+%! so = struct ("Solver", "lbfgs");
+%! M = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 100, false, 1, so);
+%! assert_equal (fieldnames (M), ...
+%!               {'LayerWeights'; 'Activations'; 'Loss'; 'Gradient'; ...
+%!                'Step'; 'Criterion'; 'Alpha'});
+%! assert_equal (M.Loss(end) < M.Loss(1), true);
+%! assert_equal (numel (M.Gradient), numel (M.Loss));
+%! assert_equal (numel (M.Step), numel (M.Loss));
+
+## It reaches a lower training loss than the epoch loop does, in fewer passes
+## over the data, which is the whole reason for offering it.
+%!test
+%! rand ("state", 3); randn ("state", 3);
+%! Ms = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 200, false, 1);
+%! rand ("state", 3); randn ("state", 3);
+%! so = struct ("Solver", "lbfgs");
+%! Ml = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 200, false, 1, so);
+%! assert_equal (Ml.Loss(end) < Ms.Loss(end), true);
+%! assert_equal (numel (Ml.Loss) < numel (Ms.Loss), true);
+
+## An explicit 'sgd' is the epoch loop, unchanged.
+%!test
+%! rand ("state", 5); randn ("state", 5);
+%! Ma = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 30, false, 1);
+%! rand ("state", 5); randn ("state", 5);
+%! so = struct ("Solver", "sgd");
+%! Mb = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 30, false, 1, so);
+%! assert_equal (Mb.Loss, Ma.Loss);
+%! assert_equal (Mb.LayerWeights, Ma.LayerWeights);
+
+## The tolerances reach the solver: from the same starting weights, a loose
+## gradient tolerance stops sooner than a tight one.
+%!test
+%! rand ("state", 9); randn ("state", 9);
+%! so = struct ("Solver", "lbfgs", "GradientTolerance", 1e3);
+%! Ma = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 100, false, 1, so);
+%! rand ("state", 9); randn ("state", 9);
+%! so = struct ("Solver", "lbfgs", "GradientTolerance", 1e-8);
+%! Mb = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 100, false, 1, so);
+%! assert_equal (Ma.Criterion, "Relative gradient tolerance reached.");
+%! assert_equal (numel (Ma.Loss) < numel (Mb.Loss), true);
 */

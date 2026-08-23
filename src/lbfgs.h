@@ -115,6 +115,26 @@ namespace lbfgs
     vector<record> history;
   };
 
+  // MATLAB's own wording, kept verbatim so a caller rebuilding fitcnet's
+  // ConvergenceInfo can pass the string straight through.  The gradient test
+  // it names is absolute rather than relative; see the note above.
+  inline const char * criterion_message (int crit)
+  {
+    switch (crit)
+    {
+      case CRIT_GRADIENT:
+        return "Relative gradient tolerance reached.";
+      case CRIT_STEP:
+        return "Step size tolerance reached.";
+      case CRIT_LOSS:
+        return "Loss tolerance reached.";
+      case CRIT_ITERATION_LIMIT:
+        return "Iteration limit reached.";
+      default:
+        return "Line search could not improve the objective.";
+    }
+  }
+
   inline double dot (const vector<double> &a, const vector<double> &b)
   {
     double s = 0.0;
