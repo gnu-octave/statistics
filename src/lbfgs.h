@@ -46,7 +46,18 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 //      stopped at iteration 1.
 //   3. When several tolerances are met at once the reported criterion follows
 //      a fixed order: gradient, then step, then loss.
-//   4. The gradient and step are reduced by their infinity norm, which is
+//   4. BetaTolerance is a RELATIVE change and is measured differently from
+//      the two above: the two-norm of the step over the two-norm of the
+//      iterate it landed on, with no guard on the denominator.  Measured on
+//      R2024a's fitclinear, where a fit from a zero start reports exactly 1
+//      at the first iteration, which every guarded candidate contradicts.
+//      A tolerance of zero there does not mean "test against zero" but "do
+//      not run this test", and MATLAB then does not compute the quantity at
+//      all, reporting NaN.  Note that LossTolerance disables with -Inf and
+//      BetaTolerance with 0: the two differ deliberately, each following
+//      MATLAB for the quantity it governs, and unifying them would break
+//      one or the other.
+//   5. The gradient and step are reduced by their infinity norm, which is
 //      what MATLAB reports.  Letting R2024a's fitrnet converge and computing
 //      both norms at the weights it returned, its reported gradient matched
 //      the infinity norm to twelve significant digits and the two-norm not at
@@ -68,6 +79,7 @@ namespace lbfgs
   enum criterion
   {
     CRIT_GRADIENT = 0,
+    CRIT_BETA,
     CRIT_STEP,
     CRIT_LOSS,
     CRIT_ITERATION_LIMIT,
@@ -80,6 +92,7 @@ namespace lbfgs
     double gradient_tolerance;
     double loss_tolerance;
     double step_tolerance;
+    double beta_tolerance;
     int history_size;
     double initial_step_size;   // non-positive selects the automatic value
     int max_line_search;
@@ -91,7 +104,8 @@ namespace lbfgs
     // learning solver both use, and 15 is what fitclinear uses.
     options ()
       : iteration_limit (1000), gradient_tolerance (1e-6),
-        loss_tolerance (1e-6), step_tolerance (1e-6), history_size (10),
+        loss_tolerance (1e-6), step_tolerance (1e-6), beta_tolerance (0.0),
+        history_size (10),
         initial_step_size (0.0), max_line_search (25), wolfe_c1 (1e-4),
         wolfe_c2 (0.9)
     { }
@@ -102,6 +116,7 @@ namespace lbfgs
     double fval;
     double gradient;
     double step;
+    double rel_beta;
   };
 
   struct result
@@ -112,26 +127,32 @@ namespace lbfgs
     double fval;
     double gradient;
     double step;
+    double rel_beta;
     vector<record> history;
   };
 
-  // MATLAB's own wording, kept verbatim so a caller rebuilding fitcnet's
-  // ConvergenceInfo can pass the string straight through.  The gradient test
-  // it names is absolute rather than relative; see the note above.
-  inline const char * criterion_message (int crit)
+  // A stable name for the test that stopped the iteration, never edited for
+  // readability.  The engine deliberately does not hand out prose: MATLAB
+  // words the same criterion differently per function, fitcnet reporting
+  // "Relative gradient tolerance reached." where fitclinear reports
+  // "Tolerance on gradient satisfied.", so each caller maps this token to
+  // the wording, and where applicable the code, of the function it mirrors.
+  inline const char * criterion_token (int crit)
   {
     switch (crit)
     {
       case CRIT_GRADIENT:
-        return "Relative gradient tolerance reached.";
+        return "gradient";
+      case CRIT_BETA:
+        return "beta";
       case CRIT_STEP:
-        return "Step size tolerance reached.";
+        return "step";
       case CRIT_LOSS:
-        return "Loss tolerance reached.";
+        return "loss";
       case CRIT_ITERATION_LIMIT:
-        return "Iteration limit reached.";
+        return "iteration";
       default:
-        return "Line search could not improve the objective.";
+        return "linesearch";
     }
   }
 
@@ -157,6 +178,16 @@ namespace lbfgs
       }
     }
     return m;
+  }
+
+  inline double two_norm (const vector<double> &a)
+  {
+    double s = 0.0;
+    for (size_t i = 0; i < a.size (); i++)
+    {
+      s += a[i] * a[i];
+    }
+    return sqrt (s);
   }
 
   inline bool is_finite (double v)
@@ -337,6 +368,7 @@ namespace lbfgs
     out.fval = fun (x, g);
     out.gradient = inf_norm (g);
     out.step = 0.0;
+    out.rel_beta = NAN;
 
     for (int k = 1; k <= opt.iteration_limit; k++)
     {
@@ -478,16 +510,37 @@ namespace lbfgs
       out.step = stepnorm;
       out.iterations = k;
 
+      // The relative change in the iterate, which MATLAB reports as
+      // RelativeChangeInBeta: the two-norm of the step over the two-norm of
+      // the point it landed on.  The denominator is deliberately unguarded,
+      // and a zero tolerance switches the test off rather than testing
+      // against zero, leaving the quantity uncomputed as MATLAB leaves it.
+      // A zero iterate can only be reached by a zero step, so the division
+      // is 0/0 and yields NaN rather than a spurious number; the other way
+      // round it yields Inf, which no tolerance accepts.
+      if (opt.beta_tolerance > 0.0)
+      {
+        out.rel_beta = two_norm (S[idx]) / two_norm (x);
+      }
+
       record r;
       r.fval = out.fval;
       r.gradient = out.gradient;
       r.step = out.step;
+      r.rel_beta = out.rel_beta;
       out.history.push_back (r);
 
-      // MATLAB's order, verified on R2024a: gradient, then step, then loss.
+      // MATLAB's order, verified on R2024a: gradient, then the relative
+      // change in the coefficients, then step, then loss.  The first two
+      // were measured on fitclinear, the rest on fitcnet.
       if (out.gradient <= opt.gradient_tolerance)
       {
         out.crit = CRIT_GRADIENT;
+        break;
+      }
+      if (opt.beta_tolerance > 0.0 && out.rel_beta <= opt.beta_tolerance)
+      {
+        out.crit = CRIT_BETA;
         break;
       }
       if (out.step <= opt.step_tolerance)

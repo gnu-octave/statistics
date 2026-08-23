@@ -135,6 +135,14 @@ objective, which is what the name suggests; it matches MATLAB.  Pass\n\
 @code{-Inf} to disable it, which any objective that can go negative, or whose\n\
 minimum is zero, will want.\n\
 \n\
+@item @qcode{BetaTolerance} @tab @qcode{0} @tab Stop once the RELATIVE change\n\
+in the iterate falls to or below this value, measured as the two-norm of the\n\
+step over the two-norm of the point it landed on, with the denominator\n\
+unguarded.  A value of @qcode{0} does not test against zero: it switches the\n\
+test off and leaves @qcode{RelativeChangeInBeta} at @code{NaN}, as MATLAB\n\
+does.  Note that this disables with @qcode{0} where @qcode{LossTolerance}\n\
+disables with @code{-Inf}; each follows MATLAB for its own quantity.\n\
+\n\
 @item @qcode{HistorySize} @tab @qcode{10} @tab Number of curvature pairs the\n\
 inverse Hessian approximation is built from.\n\
 \n\
@@ -143,12 +151,19 @@ the opening iteration.  Scaled from the gradient when left empty.\n\
 @end multitable\n\
 \n\
 When more than one tolerance is met at the same iteration the reported\n\
-criterion follows MATLAB's order: gradient, then step, then loss.\n\
+criterion follows MATLAB's order: gradient, then the relative change in the\n\
+iterate, then step, then loss.\n\
 \n\
 @var{info} is a struct with fields @qcode{Iterations}, @qcode{FuncCount},\n\
-@qcode{Fval}, @qcode{Gradient}, @qcode{Step}, @qcode{ConvergenceCriterion}\n\
-and @qcode{History}, the last being a struct of per-iteration column vectors\n\
-@qcode{Iteration}, @qcode{Fval}, @qcode{Gradient} and @qcode{Step}.\n\
+@qcode{Fval}, @qcode{Gradient}, @qcode{Step}, @qcode{RelativeChangeInBeta},\n\
+@qcode{Criterion} and @qcode{History}, the last being a struct of\n\
+per-iteration column vectors of the same names.\n\
+\n\
+@qcode{Criterion} is one of @qcode{'gradient'}, @qcode{'beta'},\n\
+@qcode{'step'}, @qcode{'loss'}, @qcode{'iteration'} or\n\
+@qcode{'linesearch'}.  It is a token and not a sentence on purpose: MATLAB\n\
+words the same criterion differently per function, so each caller maps it to\n\
+the wording of the function it mirrors.\n\
 \n\
 This is an internal function and is not meant to be called directly.\n\
 @end deftypefn")
@@ -198,7 +213,8 @@ This is an internal function and is not meant to be called directly.\n\
         }
         opt.iteration_limit = val.int_value ();
       }
-      else if (name == "GradientTolerance" || name == "StepTolerance")
+      else if (name == "GradientTolerance" || name == "StepTolerance"
+               || name == "BetaTolerance")
       {
         if (! is_real_scalar (val) || val.double_value () < 0)
         {
@@ -209,9 +225,13 @@ This is an internal function and is not meant to be called directly.\n\
         {
           opt.gradient_tolerance = val.double_value ();
         }
-        else
+        else if (name == "StepTolerance")
         {
           opt.step_tolerance = val.double_value ();
+        }
+        else
+        {
+          opt.beta_tolerance = val.double_value ();
         }
       }
       else if (name == "LossTolerance")
@@ -276,13 +296,15 @@ This is an internal function and is not meant to be called directly.\n\
   if (nargout > 1)
   {
     octave_idx_type nh = res.history.size ();
-    ColumnVector h_iter (nh), h_fval (nh), h_grad (nh), h_step (nh);
+    ColumnVector h_iter (nh), h_fval (nh), h_grad (nh), h_step (nh),
+                 h_beta (nh);
     for (octave_idx_type i = 0; i < nh; i++)
     {
       h_iter(i) = i + 1;
       h_fval(i) = res.history[i].fval;
       h_grad(i) = res.history[i].gradient;
       h_step(i) = res.history[i].step;
+      h_beta(i) = res.history[i].rel_beta;
     }
 
     octave_scalar_map history;
@@ -290,6 +312,7 @@ This is an internal function and is not meant to be called directly.\n\
     history.assign ("Fval", h_fval);
     history.assign ("Gradient", h_grad);
     history.assign ("Step", h_step);
+    history.assign ("RelativeChangeInBeta", h_beta);
 
     octave_scalar_map info;
     info.assign ("Iterations", static_cast<double> (res.iterations));
@@ -297,8 +320,8 @@ This is an internal function and is not meant to be called directly.\n\
     info.assign ("Fval", res.fval);
     info.assign ("Gradient", res.gradient);
     info.assign ("Step", res.step);
-    info.assign ("ConvergenceCriterion",
-                 lbfgs::criterion_message (res.crit));
+    info.assign ("RelativeChangeInBeta", res.rel_beta);
+    info.assign ("Criterion", lbfgs::criterion_token (res.crit));
     info.assign ("History", history);
 
     retval(1) = info;
@@ -387,10 +410,10 @@ This is an internal function and is not meant to be called directly.\n\
 %!test
 %! opt = struct ("LossTolerance", -Inf);
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
-%! crit = info.ConvergenceCriterion;
+%! crit = info.Criterion;
 %! assert_equal (x, [1; 1], 1e-5);
 %! assert_equal (info.Fval < 1e-8, true);
-%! assert_equal (crit, "Relative gradient tolerance reached.");
+%! assert_equal (crit, "gradient");
 
 ## LossTolerance tests the objective VALUE, not the change in it, so on a
 ## problem whose minimum is zero the default 1e-6 pre-empts the gradient test
@@ -399,8 +422,8 @@ This is an internal function and is not meant to be called directly.\n\
 ## a first-iteration loss of 0.3551 stopped fitcnet at iteration 1.
 %!test
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1]);
-%! crit = info.ConvergenceCriterion;
-%! assert_equal (crit, "Loss tolerance reached.");
+%! crit = info.Criterion;
+%! assert_equal (crit, "loss");
 %! assert_equal (info.Fval <= 1e-6, true);
 %! assert_equal (info.Gradient > 1e-6, true);
 
@@ -445,9 +468,9 @@ This is an internal function and is not meant to be called directly.\n\
 %! opt = struct ("GradientTolerance", 1e-10, "LossTolerance", -Inf, ...
 %!               "StepTolerance", 0);
 %! [x, info] = __lbfgs__ (@__quadtri__, zeros (n, 1), opt);
-%! crit = info.ConvergenceCriterion;
+%! crit = info.Criterion;
 %! assert_equal (x, xs, 1e-6);
-%! assert_equal (crit, "Relative gradient tolerance reached.");
+%! assert_equal (crit, "gradient");
 
 ## A single stored pair still converges, it just takes longer.
 %!test
@@ -474,24 +497,24 @@ This is an internal function and is not meant to be called directly.\n\
 %!test
 %! opt = struct ("LossTolerance", 1);
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
-%! crit = info.ConvergenceCriterion;
-%! assert_equal (crit, "Loss tolerance reached.");
+%! crit = info.Criterion;
+%! assert_equal (crit, "loss");
 %! assert_equal (info.Fval <= 1, true);
 
 ## Reported criterion when several are met at once: gradient outranks step.
 %!test
 %! opt = struct ("GradientTolerance", 1e3, "StepTolerance", 1e3);
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
-%! crit = info.ConvergenceCriterion;
-%! assert_equal (crit, "Relative gradient tolerance reached.");
+%! crit = info.Criterion;
+%! assert_equal (crit, "gradient");
 %! assert_equal (info.Iterations, 1);
 
 ## And step outranks loss.
 %!test
 %! opt = struct ("StepTolerance", 1e3, "LossTolerance", 1e3);
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
-%! crit = info.ConvergenceCriterion;
-%! assert_equal (crit, "Step size tolerance reached.");
+%! crit = info.Criterion;
+%! assert_equal (crit, "step");
 %! assert_equal (info.Iterations, 1);
 
 ## The history holds one row per iteration taken, and the line search costs
@@ -499,8 +522,8 @@ This is an internal function and is not meant to be called directly.\n\
 %!test
 %! opt = struct ("IterationLimit", 4);
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
-%! crit = info.ConvergenceCriterion;
-%! assert_equal (crit, "Iteration limit reached.");
+%! crit = info.Criterion;
+%! assert_equal (crit, "iteration");
 %! assert_equal (info.Iterations, 4);
 %! assert_equal (info.History.Iteration, (1:4)');
 %! assert_equal (numel (info.History.Fval), 4);
@@ -513,6 +536,45 @@ This is an internal function and is not meant to be called directly.\n\
 %! assert_equal (x, [-1.2; 1]);
 %! assert_equal (info.Iterations, 0);
 %! assert_equal (isempty (info.History.Fval), true);
+
+## BetaTolerance is off by default, and off means the quantity is not
+## computed rather than tested against zero: MATLAB reports NaN for it, and
+## so does this.
+%!test
+%! opt = struct ("LossTolerance", -Inf, "IterationLimit", 5);
+%! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
+%! assert_equal (info.RelativeChangeInBeta, NaN);
+%! assert_equal (info.History.RelativeChangeInBeta, NaN (5, 1));
+
+## The relative change is the two-norm of the step over the two-norm of the
+## point it landed on, unguarded.  From a zero start the first iteration is
+## therefore exactly 1, which is what R2024a's fitclinear reports and what
+## rules out every max (1, .) guarded candidate.
+%!test
+%! n = 50;
+%! opt = struct ("LossTolerance", -Inf, "BetaTolerance", 1e-12, ...
+%!               "IterationLimit", 4);
+%! [x, info] = __lbfgs__ (@__quadtri__, zeros (n, 1), opt);
+%! assert_equal (info.History.RelativeChangeInBeta(1), 1);
+
+## It stops on the relative change, and reports which test did it.
+%!test
+%! opt = struct ("LossTolerance", -Inf, "BetaTolerance", 1e3);
+%! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
+%! assert_equal (info.Criterion, "beta");
+%! assert_equal (info.Iterations, 1);
+
+## Gradient outranks it, and it outranks step, which is MATLAB's order.
+%!test
+%! opt = struct ("GradientTolerance", 1e3, "BetaTolerance", 1e3, ...
+%!               "StepTolerance", 1e3);
+%! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
+%! assert_equal (info.Criterion, "gradient");
+%!test
+%! opt = struct ("BetaTolerance", 1e3, "StepTolerance", 1e3, ...
+%!               "LossTolerance", 1e3);
+%! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
+%! assert_equal (info.Criterion, "beta");
 
 %!error <Invalid call to __lbfgs__.> __lbfgs__ (@__rosen__)
 %!error <__lbfgs__: FCN must be a function handle.> ...
@@ -537,6 +599,8 @@ This is an internal function and is not meant to be called directly.\n\
 %! __lbfgs__ (@__rosen__, [1; 1], struct ("StepTolerance", -1))
 %!error <__lbfgs__: 'LossTolerance' must be a real scalar.> ...
 %! __lbfgs__ (@__rosen__, [1; 1], struct ("LossTolerance", NaN))
+%!error <__lbfgs__: 'BetaTolerance' must be a nonnegative scalar.> ...
+%! __lbfgs__ (@__rosen__, [1; 1], struct ("BetaTolerance", -1))
 %!error <__lbfgs__: 'HistorySize' must be a positive integer scalar.> ...
 %! __lbfgs__ (@__rosen__, [1; 1], struct ("HistorySize", 0))
 %!error <__lbfgs__: 'InitialStepSize' must be a positive scalar.> ...

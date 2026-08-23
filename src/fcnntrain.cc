@@ -31,6 +31,29 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
+// fitcnet's wording for each stopping criterion, measured on R2024a.  It
+// lives here and not in lbfgs.h because MATLAB words the same criterion
+// differently per function: fitclinear reports "Tolerance on gradient
+// satisfied." where this reports "Relative gradient tolerance reached.",
+// so the engine hands out a token and every caller supplies its own prose.
+static const char *
+criterion_message (int crit)
+{
+  switch (crit)
+  {
+    case lbfgs::CRIT_GRADIENT:
+      return "Relative gradient tolerance reached.";
+    case lbfgs::CRIT_STEP:
+      return "Step size tolerance reached.";
+    case lbfgs::CRIT_LOSS:
+      return "Loss tolerance reached.";
+    case lbfgs::CRIT_ITERATION_LIMIT:
+      return "Iteration limit reached.";
+    default:
+      return "Line search could not improve the objective.";
+  }
+}
+
 // Full-batch objective: the mean loss over every training sample together
 // with its gradient against the flat parameter vector.  One call is one sweep
 // forward and back over the whole training set, which is what each trial step
@@ -565,7 +588,7 @@ package:\n\n\
     if (args(8).scalar_value () != 0)
     {
       cout << "Iterations: " << lbres.iterations << " | Loss: "
-           << lbres.fval << " | " << lbfgs::criterion_message (lbres.crit)
+           << lbres.fval << " | " << criterion_message (lbres.crit)
            << endl;
     }
   }
@@ -795,7 +818,7 @@ package:\n\n\
     fcnn_model.assign ("Loss", L);
     fcnn_model.assign ("Gradient", G);
     fcnn_model.assign ("Step", S);
-    fcnn_model.assign ("Criterion", lbfgs::criterion_message (lbres.crit));
+    fcnn_model.assign ("Criterion", criterion_message (lbres.crit));
   }
   else
   {
