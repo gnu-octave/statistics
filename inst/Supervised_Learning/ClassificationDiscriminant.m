@@ -1884,6 +1884,169 @@ classdef ClassificationDiscriminant
 
     endfunction
 
+
+
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{M} =} mahal (@var{obj}, @var{X})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{M} =} mahal (@dots{}, @qcode{'ClassLabels'}, @var{labels})
+    ##
+    ## Squared Mahalanobis distance to the class means.
+    ##
+    ## @code{@var{M} = mahal (@var{obj}, @var{X})} returns an @math{NxK}
+    ## matrix whose element @math{(i,j)} is the squared Mahalanobis distance
+    ## from observation @math{i} to the mean of class @math{j}, measured
+    ## against the covariance that class carries: the one shared covariance
+    ## for a linear discriminant and the class's own for a quadratic one.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationDiscriminant} object.
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix with one column per
+    ## predictor of the trained model.
+    ## @end itemize
+    ##
+    ## @code{@var{M} = mahal (@dots{}, @qcode{'ClassLabels'}, @var{labels})}
+    ## returns an @math{Nx1} vector instead, holding for each observation the
+    ## distance to the mean of the class @var{labels} names for it.
+    ## @var{labels} must have one entry per row of @var{X}, each of them one
+    ## of @code{ClassNames}.
+    ##
+    ## The distance is measured against the covariance the model reports, so
+    ## a regularized model is measured against its regularized covariance.
+    ## The prior does not enter it.
+    ##
+    ## @end deftypefn
+    function M = mahal (this, X, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 2)
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " too few input arguments."));
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " X is empty."));
+      elseif (! (isnumeric (X) && isreal (X)))
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " X must be a real numeric matrix."));
+      elseif (columns (this.X) != columns (X))
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " X must have the same number of predictors as the", ...
+                       " trained model."));
+      endif
+
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      labels = [];
+      while (numel (varargin) > 0)
+        if (! (ischar (varargin{1}) && isrow (varargin{1})))
+          error (strcat ("ClassificationDiscriminant.mahal:", ...
+                         " parameter name must be a character vector."));
+        endif
+        switch (tolower (varargin{1}))
+          case 'classlabels'
+            labels = varargin{2};
+          otherwise
+            error (strcat ("ClassificationDiscriminant.mahal:", ...
+                           " invalid parameter name in optional paired", ...
+                           " arguments."));
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      M = discrimmahal (X, this.Mu, this.Sigma, this.DiscrimType);
+
+      if (isempty (labels))
+        return;
+      endif
+
+      ## One distance per observation, to the mean of the class named for it
+      if (ischar (labels))
+        labels = cellstr (labels);
+      elseif (isnumeric (labels) || islogical (labels))
+        labels = cellstr (num2str (labels(:)));
+      elseif (! iscellstr (labels))
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " 'ClassLabels' must be of a valid type."));
+      endif
+      if (numel (labels) != rows (X))
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " 'ClassLabels' must have one entry per row of X."));
+      endif
+      classes = this.ClassNames;
+      if (isnumeric (classes) || islogical (classes))
+        classes = cellstr (num2str (classes(:)));
+      elseif (ischar (classes))
+        classes = cellstr (classes);
+      endif
+      [tf, idx] = ismember (strtrim (labels(:)), strtrim (classes));
+      if (! all (tf))
+        error (strcat ("ClassificationDiscriminant.mahal:", ...
+                       " every 'ClassLabels' entry must be one of", ...
+                       " ClassNames."));
+      endif
+      M = M(sub2ind (size (M), (1:rows (X))', idx));
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationDiscriminant} {@var{lp} =} logp (@var{obj}, @var{X})
+    ##
+    ## Log unconditional probability density of the observations.
+    ##
+    ## @code{@var{lp} = logp (@var{obj}, @var{X})} returns an @math{Nx1}
+    ## vector holding, for each row of @var{X}, the natural logarithm of
+    ## @math{P(x) = sum_k P(k) P(x|k)}, the density of the observation summed
+    ## over the classes with each class weighted by its prior @math{P(k)}.
+    ## Each @math{P(x|k)} is the multivariate normal density of class
+    ## @math{k}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationDiscriminant} object.
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix with one column per
+    ## predictor of the trained model.
+    ## @end itemize
+    ##
+    ## An unusually low value marks an observation the model finds unlikely
+    ## under every class, which is what makes this an outlier test rather
+    ## than a classification.
+    ##
+    ## @end deftypefn
+    function lp = logp (this, X)
+
+      ## Check for sufficient input arguments
+      if (nargin < 2)
+        error (strcat ("ClassificationDiscriminant.logp:", ...
+                       " too few input arguments."));
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error (strcat ("ClassificationDiscriminant.logp:", ...
+                       " X is empty."));
+      elseif (! (isnumeric (X) && isreal (X)))
+        error (strcat ("ClassificationDiscriminant.logp:", ...
+                       " X must be a real numeric matrix."));
+      elseif (columns (this.X) != columns (X))
+        error (strcat ("ClassificationDiscriminant.logp:", ...
+                       " X must have the same number of predictors as the", ...
+                       " trained model."));
+      endif
+
+      lp = discrimlogp (X, this.Mu, this.Sigma, this.LogDetSigma, ...
+                        this.Prior, this.DiscrimType);
+
+    endfunction
+
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationDiscriminant} {@var{label} =} resubPredict (@var{obj})
     ## @deftypefnx {ClassificationDiscriminant} {[@var{label}, @var{score}, @var{cost}] =} resubPredict (@var{obj})
@@ -3066,3 +3229,120 @@ endclassdef
 %! M2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (M2.BetweenSigma, Mdl.BetweenSigma);
+
+## mahal is the squared distance to every class mean.  Measured on R2024a.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! M = mahal (Mdl, meas(1:5,:));
+%! assert_equal (size (M), [5, 3]);
+%! assert_equal (M(1,:), [0.2910898404344, 98.8847494279393, ...
+%!                        191.788642179719], 1e-10);
+%! assert_equal (M(5,:), [0.5956300391717, 100.923170228959, ...
+%!                        193.854037009331], 1e-10);
+
+## 'ClassLabels' picks one class mean per observation.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! M = mahal (Mdl, meas(1:5,:), 'ClassLabels', species(1:5));
+%! assert_equal (size (M), [5, 1]);
+%! assert_equal (M, [0.291089840434356; 2.031345104042097; ...
+%!                   0.553281423559203; 2.086697905677364; ...
+%!                   0.595630039171744], 1e-12);
+
+## A quadratic model measures against each class's own covariance.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! M = mahal (Mdl, meas(1:5,:));
+%! assert_equal (M(1,:), [0.4491137892273, 114.804489260461, ...
+%!                        182.935908699285], 1e-10);
+
+## The distance follows the regularized covariance the model reports.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
+%! M = mahal (Mdl, meas(1:5,:));
+%! assert_equal (M(1,:), [0.1926136709121, 79.4757202663154, ...
+%!                        163.294484902038], 1e-10);
+
+## The prior does not enter the distance.
+%!test
+%! load fisheriris
+%! M1 = mahal (fitcdiscr (meas, species), meas(1:5,:));
+%! Mdl = fitcdiscr (meas, species, 'Prior', [0.6, 0.2, 0.2]);
+%! assert_equal (mahal (Mdl, meas(1:5,:)), M1, 1e-12);
+
+## logp is the log density summed over the classes at their priors.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! lp = logp (Mdl, meas(1:5,:));
+%! assert_equal (size (lp), [5, 1]);
+%! assert_equal (lp, [0.059358043320009; -0.810769588483861; ...
+%!                    -0.071737748242414; -0.838445989301495; ...
+%!                    -0.092912056048684], 1e-12);
+
+## logp on a quadratic model.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! lp = logp (Mdl, meas(1:5,:));
+%! assert_equal (lp, [1.534756847193468; 0.718766664165731; ...
+%!                    1.117146185488189; 0.906210252665867; ...
+%!                    1.378471050607217], 1e-12);
+
+## The prior reweights the density, unlike the distance.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'Prior', [0.6, 0.2, 0.2]);
+%! lp = logp (Mdl, meas(1:5,:));
+%! assert_equal (lp, [0.647144708222129; -0.222982923581741; ...
+%!                    0.516048916659706; -0.250659324399375; ...
+%!                    0.494874608853435], 1e-12);
+
+%!error<ClassificationDiscriminant.mahal: X is empty.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, [])
+%!error<ClassificationDiscriminant.mahal: X must have the same number of predictors as the trained model.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, ones (3, 2))
+%!error<ClassificationDiscriminant.mahal: X must be a real numeric matrix.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, {1, 2, 3, 4})
+%!error<ClassificationDiscriminant.mahal: Name-Value arguments must be in pairs.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:5,:), 'ClassLabels')
+%!error<ClassificationDiscriminant.mahal: parameter name must be a character vector.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:5,:), 5, 1)
+%!error<ClassificationDiscriminant.mahal: invalid parameter name in optional paired arguments.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:5,:), 'bogus', 1)
+%!error<ClassificationDiscriminant.mahal: 'ClassLabels' must have one entry per row of X.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:5,:), 'ClassLabels', species(1:3))
+%!error<ClassificationDiscriminant.mahal: every 'ClassLabels' entry must be one of ClassNames.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:2,:), 'ClassLabels', {'setosa'; 'nosuchspecies'})
+%!error<ClassificationDiscriminant.logp: X is empty.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! logp (Mdl, [])
+%!error<ClassificationDiscriminant.logp: X must have the same number of predictors as the trained model.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! logp (Mdl, ones (3, 2))
+%!error<ClassificationDiscriminant.logp: X must be a real numeric matrix.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! logp (Mdl, {1, 2, 3, 4})
