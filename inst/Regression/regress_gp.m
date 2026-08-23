@@ -48,7 +48,7 @@
 ## @qcode{@var{Yint}(:,2)} the upper boundary of the interval about
 ## @var{Yfit}, at the confidence level @qcode{1 - @var{alpha}}.
 ##
-## @code{[@var{Yfit}, @var{Yint}, @var{Ysd}, @var{K}] = regress_gp (@var{X},
+## @code{[@var{Yfit}, @var{Yint}, @var{Ysd}] = regress_gp (@var{X},
 ## @var{Y}, @var{Xfit}, @qcode{'rbf'})} will estimate a Gaussian Process model
 ## with a Radial Basis Function (RBF) kernel with default parameters
 ## @qcode{@var{theta} = 5} and @qcode{@var{g} = 0.01}, which corresponds to the
@@ -59,7 +59,7 @@
 ## @var{X} the function will automatically normalize each column to a zero mean
 ## and a standard deviation to one.
 ##
-## Three things about the RBF kernel are worth stating, because they decide
+## Four things about the RBF kernel are worth stating, because they decide
 ## what the numbers mean.
 ##
 ## @itemize
@@ -78,6 +78,15 @@
 ## The predictors are centred and scaled only when there is more than one of
 ## them, so @var{theta} is measured in the units of @var{X} for a single
 ## predictor and in standard deviations for several.
+##
+## @item
+## A nugget of zero is accepted and gives an interpolating process, one that
+## reproduces @var{Y} at the training points and reports almost no uncertainty
+## there.  It also leaves the kernel matrix rank deficient whenever two inputs
+## are close, so in that case the covariance is applied through its
+## pseudoinverse and the fit is the minimum-norm solution.  This is a genuine
+## answer rather than a refusal, but a small nugget is the better way to ask
+## for a smooth fit.
 ## @end itemize
 ##
 ## Run @code{demo regress_gp} to see examples.
@@ -206,22 +215,34 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     ## sigma = 1/sqrt(2);
     ## Ks = exp (-(Xsq' * ones (1, n) -ones (n, 1) * Xsq + 2 * X * X') / (2 * sigma ^ 2));
 
-    A  = X * X' + inv (Sp);
-    K  = inv (A);
-    wm = K * X * Y;
+    ## Sp and A are both positive definite, so their inverses are taken
+    ## through a Cholesky factor rather than by inv.  A is built from a Gram
+    ## matrix and inherits the square of the predictors' conditioning, which is
+    ## exactly where a general inverse loses digits and a triangular solve does
+    ## not.  K is still formed because it is the fourth output.
+    Rp = chol (Sp);
+    A  = X * X' + Rp \ (Rp' \ eye (rows (Sp)));
+    Ra = chol (A);
+    K  = Ra \ (Ra' \ eye (rows (A)));
+    wm = Ra \ (Ra' \ (X * Y));
 
     ## Add constant vector
     Xfit = [ones(size(Xfit,1),1), Xfit];
 
     ## Compute predictions
     Yfit = Xfit*wm;
-    Ysd = Xfit * K * Xfit';
+    ## Only the diagonal of Xfit * K * Xfit' is ever read here, so the full
+    ## m-by-m matrix is never formed: with A = Ra' * Ra the product is U' * U
+    ## for U = Ra' \ Xfit', whose diagonal is the squared column norms of U.
+    ## Exact, not an approximation, and O(m) in place of O(m^2).
+    U = Ra' \ Xfit';
+    Ysd = sum (U .^ 2, 1)';
     ## The diagonal of a covariance is a variance, so it is the square root
     ## that scales the interval, and the interval is that many standard
     ## deviations wide for the confidence level asked for.  This branch used
     ## the variance itself, applied no level at all, and returned its columns
     ## in the opposite order to the other branch.
-    dy = norminv (1 - alpha / 2) * sqrt (diag (Ysd));
+    dy = norminv (1 - alpha / 2) * sqrt (Ysd);
     Yint = [Yfit-dy, Yfit+dy];
     if (nargout > 2)
       varargout{1} = wm;
@@ -248,26 +269,46 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     ## Compute kernel covariance for training quantities
     S = exp (-D / theta) + g * eye (n);
 
-    ## Compute kernel covariance for testing quantities
-    Dxi = squareform (pdist (Xfit) .^ 2);
-    Sxi = exp (-Dxi / theta) + g * eye (size (Dxi, 1));
-
     ## Compute kernel covariance for prediction
     Dx = pdist2 (Xfit, X) .^ 2;
     Sx = exp (-Dx / theta);
 
-    ## Calculate predictive covariance
-    K = inv (S);
+    ## S is symmetric, and positive definite whenever the nugget is, so every
+    ## quantity below goes through a solve rather than through inv (S).  The
+    ## inverse was not merely slower: at g = 0 it warns "matrix singular to
+    ## machine precision" with an rcond of 1e-18 and returns what that implies,
+    ## on an argument the function accepts.
+    SinvY = Y;
+    SinvSx = Sx';
+    if (rcond (S) > eps)
+      SinvY = S \ Y;
+      SinvSx = S \ Sx';
+    else
+      ## A nugget of zero on repeated or near-repeated inputs leaves S rank
+      ## deficient.  The minimum-norm solution is the defensible answer here
+      ## and pinv gives it without the warning inv emitted.
+      Sinv = pinv (S);
+      SinvY = Sinv * Y;
+      SinvSx = Sinv * Sx';
+    endif
 
     ## Calculate response output
-    Yfit = Sx * K * Y;
+    Yfit = Sx * SinvY;
 
     ## Estimate scale parameter for predictive variance
-    scale = (Y' * K * Y) / size (Y, 1);
+    scale = (Y' * SinvY) / size (Y, 1);
 
-    ## Calculate standard deviation of the response output
-    Ysd = scale * (Sxi - Sx * K * Sx');
-    ysd1 = sqrt (diag (Ysd));
+    ## The interval needs only the diagonal of the predictive covariance, and
+    ## the test-test prior contributes exactly 1 + g to it, since a point is at
+    ## zero distance from itself.  So neither the m-by-m distance matrix nor
+    ## the full covariance is built unless the caller asks for the covariance
+    ## itself as the third output.
+    ysd1 = sqrt (scale * ((1 + g) - sum (Sx' .* SinvSx, 1)'));
+    if (nargout > 2)
+      Dxi = squareform (pdist (Xfit) .^ 2);
+      Sxi = exp (-Dxi / theta) + g * eye (rows (Xfit));
+      Ysd = scale * (Sxi - Sx * SinvSx);
+    endif
 
     ## Calculate prediction intervals.  A two sided interval puts alpha/2 in
     ## each tail, so the quantile is of 1 - alpha/2; taking it at alpha
@@ -650,6 +691,52 @@ endfunction
 %! [~, yiR] = regress_gp (x, y, xq, 'rbf');
 %! assert (all (yiL(:,1) < yiL(:,2)));
 %! assert (all (yiR(:,1) < yiR(:,2)));
+
+## The Cholesky path and the predictive covariance must agree: the interval is
+## built from the diagonal computed directly, the third output from the full
+## matrix, and the two are formed by different routes.
+%!test
+%! rand ('seed', 91);
+%! x = 2 * rand (12, 1) - 1;
+%! y = sin (3 * x);
+%! xq = linspace (-1, 1, 6)';
+%! [yf, yi, S] = regress_gp (x, y, xq, 'rbf');
+%! assert_equal (yi(:,2) - yf, norminv (0.975) * sqrt (diag (S)), 1e-12);
+%! assert_equal (yf - yi(:,1), norminv (0.975) * sqrt (diag (S)), 1e-12);
+
+## Asking for the covariance must not change the fit or the interval.
+%!test
+%! rand ('seed', 91);
+%! x = 2 * rand (12, 1) - 1;
+%! y = sin (3 * x);
+%! xq = linspace (-1, 1, 6)';
+%! [yf2, yi2] = regress_gp (x, y, xq, 'rbf');
+%! [yf3, yi3, S] = regress_gp (x, y, xq, 'rbf');
+%! assert_equal (yf2, yf3);
+%! assert_equal (yi2, yi3);
+
+## Without a nugget the process interpolates its training data.  This used to
+## be computed through inv () on a kernel matrix with an rcond of 1e-18, which
+## warned and returned what that implies.
+%!test
+%! rand ('seed', 3);
+%! x = sort (2 * rand (10, 1) - 1);
+%! y = sin (3 * x) + 0.1;
+%! [yf, yi] = regress_gp (x, y, x, 'rbf', 1, 0);
+%! assert_equal (yf, y, 1e-4);
+%! assert (max (abs (yi(:,2) - yf)) < 1e-2);
+
+## The linear branch reports the posterior covariance of the weights as its
+## fourth output, and the interval must follow that same matrix.
+%!test
+%! rand ('seed', 17);
+%! x = 2 * rand (10, 2) - 1;
+%! y = x(:,1) - 2 * x(:,2) + 0.1;
+%! xq = 2 * rand (4, 2) - 1;
+%! [yf, yi, wm, K] = regress_gp (x, y, xq);
+%! xa = [ones(4, 1), xq];
+%! assert_equal (yi(:,2) - yf, ...
+%!               norminv (0.975) * sqrt (diag (xa * K * xa')), 1e-12);
 
 %!error<Invalid call to regress_gp.> regress_gp (ones (20, 2))
 %!error<Invalid call to regress_gp.> regress_gp (ones (20, 2), ones (20, 1))
