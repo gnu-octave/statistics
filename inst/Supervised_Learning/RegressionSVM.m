@@ -317,6 +317,34 @@ classdef RegressionSVM
     SupportVectors        = [];
 
     ## -*- texinfo -*-
+    ## @deftp {RegressionSVM} {property} KernelParameters
+    ##
+    ## Parameters of the kernel function
+    ##
+    ## A structure with fields @qcode{Function} and @qcode{Scale}, and
+    ## @qcode{Order} for a polynomial kernel.  @qcode{Function} names the
+    ## kernel as MATLAB names it, so a radial basis kernel reports
+    ## @qcode{'gaussian'} whichever spelling was given; the kernel the fit was
+    ## handed is unchanged in @qcode{ModelParameters}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    KernelParameters       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionSVM} {property} BoxConstraints
+    ##
+    ## Box constraints
+    ##
+    ## A numeric column vector with one entry per observation, holding the box
+    ## constraint the fit applied to it.  A regression has no classes to
+    ## reweight, so every entry is @qcode{BoxConstraint}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    BoxConstraints        = [];
+
+    ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} CategoricalPredictors
     ##
     ## Indices of the categorical predictors
@@ -738,6 +766,13 @@ classdef RegressionSVM
       this.IsSupportVector(Model.sv_indices) = true;
       this.SupportVectors = Model.SVs;
 
+      ## The kernel and the per-observation box constraints, in the shapes
+      ## MATLAB reports them.  A regression has no classes to reweight, so the
+      ## scalar applies to every observation.
+      this.KernelParameters = svmKernelParams (KernelFunction, KernelScale, ...
+                                               PolynomialOrder);
+      this.BoxConstraints = BoxConstraint * ones (this.NumObservations, 1);
+
       ## Populate ModelParameters structure
       this.ModelParameters = struct ('SVMtype', SVMtype, 'BoxConstraint', ...
                                      BoxConstraint, 'CacheSize', CacheSize, ...
@@ -1114,6 +1149,8 @@ classdef RegressionSVM
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       ModelParameters         = this.ModelParameters;
+      KernelParameters        = this.KernelParameters;
+      BoxConstraints          = this.BoxConstraints;
       Model                   = this.Model;
       Alpha                   = this.Alpha;
       Beta                    = this.Beta;
@@ -1132,7 +1169,8 @@ classdef RegressionSVM
             'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'IsSupportVector', ...
             'SupportVectors', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'W', 'RTfun');
+            'ExpandedPredictorNames', 'KernelParameters', ...
+            'BoxConstraints', 'W', 'RTfun');
     endfunction
 
   endmethods
@@ -1654,3 +1692,29 @@ endclassdef
 %! Mdl = fitrsvm (meas(:,1:3), meas(:,4));
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## KernelParameters and BoxConstraints, measured on MATLAB R2024a.  A
+## regression has no classes to reweight, so the scalar applies throughout.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4));
+%! assert_equal (Mdl.KernelParameters, struct ('Function', 'linear', ...
+%!                                             'Scale', 1));
+%! assert_equal (Mdl.BoxConstraints, ones (150, 1));
+
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelFunction', 'rbf', ...
+%!                'BoxConstraint', 2);
+%! assert_equal (Mdl.KernelParameters.Function, 'gaussian');
+%! assert_equal (unique (Mdl.BoxConstraints), 2);
+
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4));
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.KernelParameters, Mdl.KernelParameters);
+%! assert_equal (M2.BoxConstraints, Mdl.BoxConstraints);

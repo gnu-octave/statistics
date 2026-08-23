@@ -64,6 +64,45 @@ classdef CompactClassificationSVM
     PredictorNames      = [];
 
     ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} KernelParameters
+    ##
+    ## Parameters of the kernel function
+    ##
+    ## A structure with fields @qcode{Function} and @qcode{Scale}, and
+    ## @qcode{Order} for a polynomial kernel.  @qcode{Function} names the
+    ## kernel as MATLAB names it, so a radial basis kernel reports
+    ## @qcode{'gaussian'} whichever spelling was given; the kernel the fit was
+    ## handed is unchanged in @qcode{ModelParameters}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    KernelParameters     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector of column indices into @code{X} naming the predictors
+    ## treated as categorical, and empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} ExpandedPredictorNames
+    ##
+    ## Names of the predictors as the model expanded them
+    ##
+    ## A cell array of character vectors.  It matches @code{PredictorNames}
+    ## unless a categorical predictor was expanded into indicator variables.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} ResponseName
     ##
     ## Response variable name
@@ -313,6 +352,8 @@ classdef CompactClassificationSVM
       ## Save properties to compact model
       this.NumPredictors         = Mdl.NumPredictors;
       this.PredictorNames        = Mdl.PredictorNames;
+      this.CategoricalPredictors = Mdl.CategoricalPredictors;
+      this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
       this.ResponseName          = Mdl.ResponseName;
       this.ClassNames            = Mdl.ClassNames;
       this.Prior                 = Mdl.Prior;
@@ -325,6 +366,7 @@ classdef CompactClassificationSVM
       this.Mu                    = Mdl.Mu;
 
       this.ModelParameters       = Mdl.ModelParameters;
+      this.KernelParameters      = Mdl.KernelParameters;
       this.Model                 = Mdl.Model;
 
       this.Alpha                 = Mdl.Alpha;
@@ -793,6 +835,7 @@ classdef CompactClassificationSVM
       Sigma               = this.Sigma;
       Mu                  = this.Mu;
       ModelParameters     = this.ModelParameters;
+      KernelParameters    = this.KernelParameters;
       Model               = this.Model;
       Alpha               = this.Alpha;
       Beta                = this.Beta;
@@ -800,6 +843,8 @@ classdef CompactClassificationSVM
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
       STfun              = this.STfun;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -807,7 +852,9 @@ classdef CompactClassificationSVM
             'Prior', 'Cost', ...
             'ScoreTransform', 'Sigma', 'Mu', ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
-            'SupportVectorLabels', 'SupportVectors', 'STfun');
+            'SupportVectorLabels', 'SupportVectors', ...
+            'CategoricalPredictors', 'ExpandedPredictorNames', ...
+            'KernelParameters', 'STfun');
     endfunction
 
   endmethods
@@ -1048,3 +1095,32 @@ endclassdef
 %! load fisheriris; ...
 %! inds = ! strcmp (species, 'virginica'); ...
 %! edge (compact (fitcsvm (meas(inds,:), species(inds))), meas(inds,:))
+
+## Both carry across to the compact form, and survive a round trip.
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! CMdl = compact (fitcsvm (meas(b,:), species(b)));
+%! assert_equal (CMdl.CategoricalPredictors, []);
+%! assert_equal (CMdl.ExpandedPredictorNames, CMdl.PredictorNames);
+%! assert_equal (size (CMdl.ExpandedPredictorNames), [1, 4]);
+
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! CMdl = compact (fitcsvm (meas(b,:), species(b)));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! C2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (C2.CategoricalPredictors, CMdl.CategoricalPredictors);
+%! assert_equal (C2.ExpandedPredictorNames, CMdl.ExpandedPredictorNames);
+
+## KernelParameters comes across with the compact form.
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b), 'KernelFunction', 'rbf');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.KernelParameters, Mdl.KernelParameters);
+%! assert_equal (CMdl.KernelParameters.Function, 'gaussian');

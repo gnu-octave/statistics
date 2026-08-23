@@ -174,6 +174,21 @@ classdef CompactRegressionSVM
     SupportVectors        = [];
 
     ## -*- texinfo -*-
+    ## @deftp {CompactRegressionSVM} {property} KernelParameters
+    ##
+    ## Parameters of the kernel function
+    ##
+    ## A structure with fields @qcode{Function} and @qcode{Scale}, and
+    ## @qcode{Order} for a polynomial kernel.  @qcode{Function} names the
+    ## kernel as MATLAB names it, so a radial basis kernel reports
+    ## @qcode{'gaussian'} whichever spelling was given; the kernel the fit was
+    ## handed is unchanged in @qcode{ModelParameters}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    KernelParameters     = [];
+
+    ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} CategoricalPredictors
     ##
     ## Indices of the categorical predictors
@@ -251,6 +266,7 @@ classdef CompactRegressionSVM
       this.Mu                    = Mdl.Mu;
 
       this.ModelParameters       = Mdl.ModelParameters;
+      this.KernelParameters      = Mdl.KernelParameters;
       this.Model                 = Mdl.Model;
 
       this.Alpha                 = Mdl.Alpha;
@@ -470,6 +486,7 @@ classdef CompactRegressionSVM
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
       ModelParameters         = this.ModelParameters;
+      KernelParameters        = this.KernelParameters;
       Model                   = this.Model;
       Alpha                   = this.Alpha;
       Beta                    = this.Beta;
@@ -484,7 +501,8 @@ classdef CompactRegressionSVM
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
             'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'SupportVectors', ...
-            'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
+            'CategoricalPredictors', 'ExpandedPredictorNames', ...
+            'KernelParameters', 'RTfun');
     endfunction
 
   endmethods
@@ -743,3 +761,11 @@ endclassdef
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## KernelParameters comes across with the compact form.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4));
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.KernelParameters, Mdl.KernelParameters);
+%! assert_equal (CMdl.KernelParameters.Function, 'linear');

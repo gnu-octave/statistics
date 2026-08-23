@@ -144,6 +144,57 @@ classdef ClassificationDiscriminant
     PredictorNames  = {};
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} BetweenSigma
+    ##
+    ## Between-class covariance matrix
+    ##
+    ## A @math{P}-by-@math{P} matrix holding the covariance of the class means
+    ## about the overall mean, weighted by how many observations each class
+    ## contributes.  With @math{n_k} observations in class @math{k},
+    ## @math{p_k = n_k / n} and @math{\bar{\mu} = \sum_k p_k \mu_k}, it is
+    ##
+    ## @example
+    ## @group
+    ## BetweenSigma = sum_k n_k (Mu(k,:) - mubar)' * (Mu(k,:) - mubar)
+    ##                / (n * (1 - sum_k p_k^2))
+    ## @end group
+    ## @end example
+    ##
+    ## The denominator is the unbiased one for a weighted covariance, so a
+    ## balanced fit divides by @math{n (K-1) / K}.  It reads the @strong{class
+    ## sizes}, not @qcode{Prior}: assigning a prior leaves it where it was.  It
+    ## is estimated for every discriminant type, the quadratic family included,
+    ## since it describes the classes rather than the fit.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    BetweenSigma    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector of column indices into @code{X} naming the predictors
+    ## treated as categorical, and empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} ExpandedPredictorNames
+    ##
+    ## Names of the predictors as the model expanded them
+    ##
+    ## A cell array of character vectors.  It matches @code{PredictorNames}
+    ## unless a categorical predictor was expanded into indicator variables.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} ResponseName
     ##
     ## Response variable name
@@ -952,6 +1003,8 @@ classdef ClassificationDiscriminant
       ## Assign predictors and response variable names
       this.NumPredictors  = NumPredictors;
       this.PredictorNames = PredictorNames;
+      this.CategoricalPredictors = [];
+      this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
       ## Handle class names
@@ -1039,6 +1092,15 @@ classdef ClassificationDiscriminant
           this.Mu(i, j) = mean (xj(! isnan (xj)));
         endfor
       endfor
+
+      ## The between-class covariance of the means about the overall mean,
+      ## weighted by class size and divided by the unbiased weighted-covariance
+      ## denominator.  It reads the class sizes rather than Prior, which is why
+      ## assigning a prior does not move it.
+      nk = accumarray (gY(:), 1, [num_classes, 1]);
+      pk = nk ./ sum (nk);
+      D = this.Mu - pk' * this.Mu;
+      this.BetweenSigma = (D' * (D .* nk)) ./ (sum (nk) * (1 - sum (pk .^ 2)));
 
       ## Center the predictors (XCentered), keeping the missing entries
       this.XCentered = X - this.Mu(gY, :);
@@ -1937,6 +1999,9 @@ classdef ClassificationDiscriminant
       MinGamma        = this.MinGamma;
       LogDetSigma     = this.LogDetSigma;
       XCentered       = this.XCentered;
+      BetweenSigma    = this.BetweenSigma;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
       STfun          = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
@@ -1946,7 +2011,8 @@ classdef ClassificationDiscriminant
             'ClassNames', 'ScoreTransform', 'Prior', 'Cost', 'Sigma', ...
             'BaseSigma', 'Mu', ...
             'Coeffs', 'Delta', 'DiscrimType', 'Gamma', 'MinGamma', ...
-            'LogDetSigma', 'XCentered', 'STfun');
+            'LogDetSigma', 'XCentered', 'BetweenSigma', ...
+            'CategoricalPredictors', 'ExpandedPredictorNames', 'STfun');
     endfunction
 
   endmethods
@@ -2912,3 +2978,86 @@ endclassdef
 %! Mdl = fitcdiscr (meas, species);
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## CategoricalPredictors and ExpandedPredictorNames, shapes measured on
+## R2024a: an empty double and one name per predictor.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (size (Mdl.CategoricalPredictors), [0, 0]);
+%! assert_equal (Mdl.ExpandedPredictorNames, Mdl.PredictorNames);
+%! assert_equal (size (Mdl.ExpandedPredictorNames), [1, 4]);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.CategoricalPredictors, Mdl.CategoricalPredictors);
+%! assert_equal (M2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+
+## BetweenSigma, measured on MATLAB R2024a.  It weights the class means by
+## class size, not by Prior, and the denominator is the unbiased one for a
+## weighted covariance.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (Mdl.BetweenSigma, ...
+%!               [0.632121333333333, -0.199526666666667, ...
+%!                1.652483999999999, 0.712793333333333;
+%!                -0.199526666666667, 0.113449333333333, ...
+%!                -0.572395999999999, -0.229326666666666;
+%!                1.652483999999999, -0.572395999999999, ...
+%!                4.371027999999996, 1.867739999999998;
+%!                0.712793333333333, -0.229326666666666, ...
+%!                1.867739999999998, 0.804133333333333], 1e-12);
+
+## Unequal class sizes: 50, 30 and 10 of the three species.
+%!test
+%! load fisheriris
+%! k = [1:50, 51:80, 101:110];
+%! Mdl = fitcdiscr (meas(k,:), species(k));
+%! assert_equal (Mdl.BetweenSigma, ...
+%!               [0.651346086956520, -0.299426956521739, ...
+%!                1.775435652173911, 0.711567826086955;
+%!                -0.299426956521739, 0.160084347826087, ...
+%!                -0.811819130434784, -0.318816086956522;
+%!                1.775435652173911, -0.811819130434784, ...
+%!                4.840319130434781, 1.941198695652173;
+%!                0.711567826086955, -0.318816086956522, ...
+%!                1.941198695652173, 0.780424347826086], 1e-12);
+
+## A row missing a predictor still counts towards the others, as it does for
+## Mu; only a missing response drops one.
+%!test
+%! load fisheriris
+%! X = meas; X(3,2) = NaN; X(77,4) = NaN;
+%! Mdl = fitcdiscr (X, species);
+%! assert_equal (Mdl.BetweenSigma(1,2), -0.201474748299320, 1e-12);
+%! assert_equal (Mdl.BetweenSigma(4,4), 0.803942801055115, 1e-12);
+
+## It describes the classes, not the fit, so the quadratic family reports it
+## and assigning a prior does not move it.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'quadratic');
+%! assert_equal (Mdl.BetweenSigma(1,1), 0.632121333333333, 1e-12);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! before = Mdl.BetweenSigma;
+%! Mdl.Prior = [0.6, 0.2, 0.2];
+%! assert_equal (Mdl.BetweenSigma, before);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.BetweenSigma, Mdl.BetweenSigma);

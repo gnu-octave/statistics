@@ -134,6 +134,30 @@ classdef ClassificationKNN
     PredictorNames  = [];
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector of column indices into @code{X} naming the predictors
+    ## treated as categorical, and empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} ExpandedPredictorNames
+    ##
+    ## Names of the predictors as the model expanded them
+    ##
+    ## A cell array of character vectors.  It matches @code{PredictorNames}
+    ## unless a categorical predictor was expanded into indicator variables.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} ResponseName
     ##
     ## Response variable name
@@ -1102,6 +1126,8 @@ classdef ClassificationKNN
       ## Assign predictors and response variable names
       this.NumPredictors  = NumPredictors;
       this.PredictorNames = PredictorNames;
+      this.CategoricalPredictors = [];
+      this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
       ## Handle class names
@@ -2403,6 +2429,8 @@ classdef ClassificationKNN
       IncludeTies     = this.IncludeTies;
       BucketSize      = this.BucketSize;
       STfun          = this.STfun;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
@@ -2412,7 +2440,8 @@ classdef ClassificationKNN
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
             'DistanceWeight', 'DWfun', 'DistParameter', 'NSMethod', ...
             'IncludeTies', ...
-            'BucketSize', 'STfun');
+            'BucketSize', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames', 'STfun');
     endfunction
 
   endmethods
@@ -3826,3 +3855,23 @@ endfunction
 %! Mdl = fitcknn (meas, species);
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## CategoricalPredictors and ExpandedPredictorNames, shapes measured on
+## R2024a: an empty double and one name per predictor.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (size (Mdl.CategoricalPredictors), [0, 0]);
+%! assert_equal (Mdl.ExpandedPredictorNames, Mdl.PredictorNames);
+%! assert_equal (size (Mdl.ExpandedPredictorNames), [1, 4]);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.CategoricalPredictors, Mdl.CategoricalPredictors);
+%! assert_equal (M2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);

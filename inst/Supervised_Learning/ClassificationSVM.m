@@ -338,6 +338,65 @@ classdef ClassificationSVM
     W                   = [];
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} KernelParameters
+    ##
+    ## Parameters of the kernel function
+    ##
+    ## A structure with fields @qcode{Function} and @qcode{Scale}, and
+    ## @qcode{Order} for a polynomial kernel.  @qcode{Function} names the
+    ## kernel as MATLAB names it, so a radial basis kernel reports
+    ## @qcode{'gaussian'} whichever spelling was given; the kernel the fit was
+    ## handed is unchanged in @qcode{ModelParameters}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    KernelParameters = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} BoxConstraints
+    ##
+    ## Box constraints
+    ##
+    ## A numeric column vector with one entry per observation, holding the
+    ## box constraint the fit applied to it.  It is @qcode{BoxConstraint} for
+    ## every observation unless @qcode{Prior} or @qcode{Cost} reweighted the
+    ## classes, in which case each class is scaled by the weight it carried
+    ## into the fit, normalized so the weights average to one.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    BoxConstraints = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} OutlierFraction
+    ##
+    ## Expected fraction of outliers in the training data
+    ##
+    ## A scalar in @code{[0, 1)}, zero unless one was asked for.
+    ##
+    ## @strong{Deviation from MATLAB.}  The value is reported as it was given,
+    ## but it reaches the fit by a different route: MATLAB removes outliers
+    ## iteratively and reports @qcode{Solver} as @qcode{'ISDA'}, where a
+    ## nonzero fraction here selects LIBSVM's @math{\nu}-SVC, in which
+    ## @math{\nu} bounds the fraction of margin errors.  The two agree on what
+    ## the number means and not on how the fit reaches it.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    OutlierFraction = 0;
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Nu
+    ##
+    ## Nu parameter for one-class learning
+    ##
+    ## A positive scalar, and empty unless the model is a one-class learner,
+    ## which is what MATLAB reports.  This property is read-only.
+    ##
+    ## @end deftp
+    Nu = [];
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} CategoricalPredictors
     ##
     ## Indices of the categorical predictors
@@ -616,6 +675,7 @@ classdef ClassificationSVM
       PolynomialOrder         = 3;
       BoxConstraint           = 1;
       Nu                      = 0.5;
+      OutlierFraction         = 0;
       CacheSize               = 1000;
       Tolerance               = 1e-6;
       Shrinking               = 1;
@@ -713,6 +773,7 @@ classdef ClassificationSVM
 
           case 'outlierfraction'
             Nu = varargin{2};
+            OutlierFraction = Nu;
             if (! (isscalar (Nu) && Nu >= 0 && Nu < 1))
               error (strcat ("ClassificationSVM: 'OutlierFraction' must", ...
                              " be a positive scalar in the range 0 =<", ...
@@ -1013,6 +1074,7 @@ classdef ClassificationSVM
       ## divided by how often it actually occurs.  The default prior is the
       ## observed frequency and the default cost is one, so the default weight
       ## is one for every class and the fit is the same as with no weights.
+      cw = ones (1, nclasses);
       if (nclasses == 2 && ! strcmp (SVMtype, 'one_class_svm'))
         cw = (Prior .* sum (Cost, 2)') ./ max (freq, eps);
         cw = cw / mean (cw);
@@ -1052,6 +1114,19 @@ classdef ClassificationSVM
       this.IsSupportVector = false (this.NumObservations, 1);
       this.IsSupportVector(Model.sv_indices) = true;
       this.SupportVectors = Model.SVs;
+
+      ## The kernel, the per-observation box constraints and the two
+      ## one-class parameters, in the shapes MATLAB reports them.  The box
+      ## constraints are the scalar scaled by the very weights the fit was
+      ## given above, so they describe what was solved rather than what was
+      ## asked for.
+      this.KernelParameters = svmKernelParams (KernelFunction, KernelScale, ...
+                                               PolynomialOrder);
+      this.BoxConstraints = BoxConstraint * cw(gY)(:);
+      this.OutlierFraction = OutlierFraction;
+      if (strcmp (SVMtype, 'one_class_svm'))
+        this.Nu = Nu;
+      endif
 
       ## Populate ModelParameters structure
       params = struct ('SVMtype', SVMtype, 'BoxConstraint', BoxConstraint, ...
@@ -1828,6 +1903,10 @@ classdef ClassificationSVM
       BinEdges        = this.BinEdges;
       Mu                  = this.Mu;
       ModelParameters     = this.ModelParameters;
+      KernelParameters    = this.KernelParameters;
+      BoxConstraints      = this.BoxConstraints;
+      OutlierFraction     = this.OutlierFraction;
+      Nu                  = this.Nu;
       Model               = this.Model;
       Alpha               = this.Alpha;
       Beta                = this.Beta;
@@ -1851,7 +1930,8 @@ classdef ClassificationSVM
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
             'W', 'Prior', 'Cost', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STfun');
+            'ExpandedPredictorNames', 'KernelParameters', ...
+            'BoxConstraints', 'OutlierFraction', 'Nu', 'STfun');
     endfunction
 
   endmethods
@@ -2688,3 +2768,60 @@ endclassdef
 %! Mdl = fitcsvm (meas(inds,:), species(inds));
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## KernelParameters, BoxConstraints, OutlierFraction and Nu, all measured on
+## MATLAB R2024a.  A radial basis kernel reports MATLAB's name for it.
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b));
+%! assert_equal (Mdl.KernelParameters, struct ('Function', 'linear', ...
+%!                                             'Scale', 1));
+%! assert_equal (Mdl.BoxConstraints, ones (100, 1));
+%! assert_equal (Mdl.OutlierFraction, 0);
+%! assert_equal (Mdl.Nu, []);
+
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b), 'KernelFunction', 'rbf', ...
+%!                'KernelScale', 2.5, 'BoxConstraint', 3);
+%! assert_equal (Mdl.KernelParameters.Function, 'gaussian');
+%! assert_equal (Mdl.KernelParameters.Scale, 2.5);
+%! assert_equal (unique (Mdl.BoxConstraints), 3);
+
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b), 'KernelFunction', 'polynomial', ...
+%!                'PolynomialOrder', 3);
+%! assert_equal (fieldnames (Mdl.KernelParameters), ...
+%!               {'Function'; 'Scale'; 'Order'});
+%! assert_equal (Mdl.KernelParameters.Order, 3);
+
+## A cost matrix reweights the classes, and the box constraints report what
+## the fit actually solved: 1.6 and 0.4 against MATLAB's 1.6 and 0.4.
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b), 'Cost', [0, 4; 1, 0]);
+%! assert_equal (Mdl.BoxConstraints(1), 1.6, 1e-12);
+%! assert_equal (Mdl.BoxConstraints(51), 0.4, 1e-12);
+%! assert_equal (mean (Mdl.BoxConstraints), 1, 1e-12);
+
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b), 'OutlierFraction', 0.05);
+%! assert_equal (Mdl.OutlierFraction, 0.05);
+
+%!test
+%! load fisheriris
+%! b = ismember (species, {'setosa', 'versicolor'});
+%! Mdl = fitcsvm (meas(b,:), species(b));
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.KernelParameters, Mdl.KernelParameters);
+%! assert_equal (M2.BoxConstraints, Mdl.BoxConstraints);

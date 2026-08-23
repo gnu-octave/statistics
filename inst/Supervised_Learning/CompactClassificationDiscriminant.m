@@ -84,6 +84,57 @@ classdef CompactClassificationDiscriminant
     PredictorNames  = [];
 
     ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} BetweenSigma
+    ##
+    ## Between-class covariance matrix
+    ##
+    ## A @math{P}-by-@math{P} matrix holding the covariance of the class means
+    ## about the overall mean, weighted by how many observations each class
+    ## contributes.  With @math{n_k} observations in class @math{k},
+    ## @math{p_k = n_k / n} and @math{\bar{\mu} = \sum_k p_k \mu_k}, it is
+    ##
+    ## @example
+    ## @group
+    ## BetweenSigma = sum_k n_k (Mu(k,:) - mubar)' * (Mu(k,:) - mubar)
+    ##                / (n * (1 - sum_k p_k^2))
+    ## @end group
+    ## @end example
+    ##
+    ## The denominator is the unbiased one for a weighted covariance, so a
+    ## balanced fit divides by @math{n (K-1) / K}.  It reads the @strong{class
+    ## sizes}, not @qcode{Prior}: assigning a prior leaves it where it was.  It
+    ## is estimated for every discriminant type, the quadratic family included,
+    ## since it describes the classes rather than the fit.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    BetweenSigma = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A numeric vector of column indices into @code{X} naming the predictors
+    ## treated as categorical, and empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} ExpandedPredictorNames
+    ##
+    ## Names of the predictors as the model expanded them
+    ##
+    ## A cell array of character vectors.  It matches @code{PredictorNames}
+    ## unless a categorical predictor was expanded into indicator variables.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} ResponseName
     ##
     ## Response variable name
@@ -562,6 +613,8 @@ classdef CompactClassificationDiscriminant
       ## Save properties to compact model
       this.NumPredictors   = Mdl.NumPredictors;
       this.PredictorNames  = Mdl.PredictorNames;
+      this.CategoricalPredictors  = Mdl.CategoricalPredictors;
+      this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
       this.ResponseName    = Mdl.ResponseName;
       this.ClassNames      = Mdl.ClassNames;
 
@@ -572,6 +625,7 @@ classdef CompactClassificationDiscriminant
 
       this.Sigma           = Mdl.Sigma;
       this.Mu              = Mdl.Mu;
+      this.BetweenSigma    = Mdl.BetweenSigma;
       this.Coeffs          = Mdl.Coeffs;
       this.Delta           = Mdl.Delta;
       this.DiscrimType     = Mdl.DiscrimType;
@@ -1184,6 +1238,9 @@ classdef CompactClassificationDiscriminant
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
       STfun          = this.STfun;
+      BetweenSigma   = this.BetweenSigma;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
       Sigma           = this.Sigma;
       BaseSigma       = this.BaseSigma;
       Mu              = this.Mu;
@@ -1199,7 +1256,9 @@ classdef CompactClassificationDiscriminant
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
             'Cost', 'ScoreTransform', 'STfun', 'Sigma', 'BaseSigma', ...
             'Mu', 'Coeffs', ...
-            'Delta', 'DiscrimType', 'Gamma', 'MinGamma', 'LogDetSigma');
+            'Delta', 'DiscrimType', 'Gamma', 'MinGamma', 'LogDetSigma', ...
+            'BetweenSigma', 'CategoricalPredictors', ...
+            'ExpandedPredictorNames');
     endfunction
 
   endmethods
@@ -1602,3 +1661,38 @@ endclassdef
 
 %!error<CompactClassificationDiscriminant.edge: too few input arguments.> ...
 %! load fisheriris; edge (compact (fitcdiscr (meas, species)), meas)
+
+## Both carry across to the compact form, and survive a round trip.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! assert_equal (CMdl.CategoricalPredictors, []);
+%! assert_equal (CMdl.ExpandedPredictorNames, CMdl.PredictorNames);
+%! assert_equal (size (CMdl.ExpandedPredictorNames), [1, 4]);
+
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! C2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (C2.CategoricalPredictors, CMdl.CategoricalPredictors);
+%! assert_equal (C2.ExpandedPredictorNames, CMdl.ExpandedPredictorNames);
+
+## BetweenSigma comes across with the compact form and survives a round trip.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.BetweenSigma, Mdl.BetweenSigma);
+%! assert_equal (CMdl.BetweenSigma(1,1), 0.632121333333333, 1e-12);
+
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! C2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (C2.BetweenSigma, CMdl.BetweenSigma);
