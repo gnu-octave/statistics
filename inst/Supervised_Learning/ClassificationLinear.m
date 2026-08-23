@@ -1002,7 +1002,7 @@ classdef ClassificationLinear
                        " value of 'Lambda'; give the response as a cell", ...
                        " array of character vectors."));
       endif
-      labels = binaryLabels (this.ClassNames, f > 0);
+      labels = labelsFromIndex (this.ClassNames, 1 + (f > 0));
 
       if (nargout > 1)
         L = numel (this.Lambda);
@@ -1033,8 +1033,10 @@ classdef ClassificationLinear
       if (nargin < 3)
         error ("ClassificationLinear.margin: too few input arguments.");
       endif
-      gY = binaryIndex (this.ClassNames, Y, ...
-                        'ClassificationLinear', 'margin');
+      [gY, errmsg] = labelIndices (this.ClassNames, Y);
+      if (! isempty (errmsg))
+        error ("ClassificationLinear.margin: %s", errmsg);
+      endif
       if (rows (X) != numel (gY))
         error (strcat ("ClassificationLinear.margin: number of rows in", ...
                        " X and Y must be equal."));
@@ -1131,8 +1133,10 @@ classdef ClassificationLinear
         varargin(1:2) = [];
       endwhile
 
-      gY = binaryIndex (this.ClassNames, Y, ...
-                        'ClassificationLinear', 'loss');
+      [gY, errmsg] = labelIndices (this.ClassNames, Y);
+      if (! isempty (errmsg))
+        error ("ClassificationLinear.loss: %s", errmsg);
+      endif
       if (rows (X) != numel (gY))
         error (strcat ("ClassificationLinear.loss: number of rows in X", ...
                        " and Y must be equal."));

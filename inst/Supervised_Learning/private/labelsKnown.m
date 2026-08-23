@@ -28,10 +28,8 @@
 
 function tf = labelsKnown (Y, C)
 
-  if (ischar (Y) || ischar (C))
-    tf = all (ismember (cellstr (Y), cellstr (C)));
-  else
-    tf = all (ismember (unique (Y), C));
-  endif
+  ## Delegated so the matching rules live in one place: labelIndices reports
+  ## a zero for any label that is not one of the classes.
+  tf = all (labelIndices (C, Y) > 0);
 
 endfunction

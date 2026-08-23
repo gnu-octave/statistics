@@ -807,7 +807,7 @@ classdef ClassificationKernel
       endif
 
       f = rawScore (this, XC);
-      labels = binaryLabels (this.ClassNames, f > 0);
+      labels = labelsFromIndex (this.ClassNames, 1 + (f > 0));
 
       if (nargout > 1)
         scores = this.STfun ([-f, f]);
@@ -830,7 +830,10 @@ classdef ClassificationKernel
       if (nargin < 3)
         error ("ClassificationKernel.margin: too few input arguments.");
       endif
-      gY = binaryIndex (this.ClassNames, Y, 'ClassificationKernel', 'margin');
+      [gY, errmsg] = labelIndices (this.ClassNames, Y);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.margin: %s", errmsg);
+      endif
       if (rows (X) != numel (gY))
         error (strcat ("ClassificationKernel.margin: number of rows in X", ...
                        " and Y must be equal."));
@@ -921,7 +924,10 @@ classdef ClassificationKernel
         varargin(1:2) = [];
       endwhile
 
-      gY = binaryIndex (this.ClassNames, Y, 'ClassificationKernel', 'loss');
+      [gY, errmsg] = labelIndices (this.ClassNames, Y);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.loss: %s", errmsg);
+      endif
       if (rows (X) != numel (gY))
         error (strcat ("ClassificationKernel.loss: number of rows in X", ...
                        " and Y must be equal."));
@@ -1143,7 +1149,10 @@ classdef ClassificationKernel
                        " number of predictors as the trained model."), ...
                caller);
       endif
-      gY = binaryIndex (this.ClassNames, Y, 'ClassificationKernel', caller);
+      [gY, errmsg] = labelIndices (this.ClassNames, Y);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.%s: %s", caller, errmsg);
+      endif
       if (rows (X) != numel (gY))
         error (strcat ("ClassificationKernel.%s: number of rows in X and", ...
                        " Y must be equal."), caller);

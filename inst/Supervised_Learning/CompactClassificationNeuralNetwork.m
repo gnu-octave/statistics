@@ -589,8 +589,11 @@ classdef CompactClassificationNeuralNetwork
       [~, scores] = predict (this, X);
       classes = this.ClassNames;
       m = zeros (rows (X), 1);
+      ## Resolve every observation's class once, rather than once per
+      ## iteration: the lookup does not depend on i.
+      [gYidx, ~] = labelIndices (classes, Y);
       for i = 1:rows (X)
-        idx = labelIndex (classes, Y, i);
+        idx = gYidx(i);
         if (isempty (idx))
           m(i) = NaN;
           continue;
@@ -723,8 +726,11 @@ classdef CompactClassificationNeuralNetwork
 
       ## Membership of the true class, as a +1/-1 indicator per class
       Yind = zeros (rows (X), K);
+      ## Resolve every observation's class once, rather than once per
+      ## iteration: the lookup does not depend on i.
+      [gYidx, ~] = labelIndices (classes, Y);
       for i = 1:rows (X)
-        idx = labelIndex (classes, Y, i);
+        idx = gYidx(i);
         if (isempty (idx))
           L = NaN;
           return;
@@ -757,16 +763,22 @@ classdef CompactClassificationNeuralNetwork
           ## cost, and charged what that assignment actually costs given its
           ## true class.
           L = 0;
+          ## Resolve every observation's class once, rather than once per
+          ## iteration: the lookup does not depend on i.
+          [gYidx, ~] = labelIndices (classes, Y);
           for i = 1:rows (X)
             [~, k] = min (scores(i,:) * this.Cost);
-            true_idx = labelIndex (classes, Y, i);
+            true_idx = gYidx(i);
             L = L + W(i) * this.Cost(true_idx, k);
           endfor
         case 'classifcost'
           ## What the model's own prediction costs, given the true class
           L = 0;
+          ## Resolve every observation's class once, rather than once per
+          ## iteration: the lookup does not depend on i.
+          [gYidx, ~] = labelIndices (classes, Y);
           for i = 1:rows (X)
-            true_idx = labelIndex (classes, Y, i);
+            true_idx = gYidx(i);
             pred_idx = find (ismember (classes, label(i)));
             L = L + W(i) * this.Cost(true_idx, pred_idx);
           endfor

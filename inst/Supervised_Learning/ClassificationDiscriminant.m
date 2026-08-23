@@ -1578,8 +1578,11 @@ classdef ClassificationDiscriminant
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
       C = false (n, K);
+      ## Resolve every observation's class once, rather than once per
+      ## iteration: the lookup does not depend on i.
+      [gYidx, ~] = labelIndices (classes, Y);
       for i = 1:n
-        class_idx = labelIndex (classes, Y, i);
+        class_idx = gYidx(i);
         C(i, class_idx) = true;
       endfor
       Y_new = C';
@@ -1621,18 +1624,24 @@ classdef ClassificationDiscriminant
         case 'mincost'
           Cost = this.Cost;
           L = 0;
+          ## Resolve every observation's class once, rather than once per
+          ## iteration: the lookup does not depend on i.
+          [gYidx, ~] = labelIndices (classes, Y);
           for i = 1:n
             f_Xj = scores(i, :);
             gamma_jk = f_Xj * Cost;
             [~, min_cost_class] = min (gamma_jk);
-            cj = Cost(labelIndex (classes, Y, i), min_cost_class);
+            cj = Cost(gYidx(i), min_cost_class);
             L = L + Weights(i) * cj;
           endfor
         case 'classifcost'
           Cost = this.Cost;
           L = 0;
+          ## Resolve every observation's class once, rather than once per
+          ## iteration: the lookup does not depend on i.
+          [gYidx, ~] = labelIndices (classes, Y);
           for i = 1:n
-            y_idx = labelIndex (classes, Y, i);
+            y_idx = gYidx(i);
             y_hat_idx = find (ismember (classes, label(i)));
             L = L + Weights(i) * Cost(y_idx, y_hat_idx);
           endfor
@@ -1734,9 +1743,12 @@ classdef ClassificationDiscriminant
       [~, scores] = predict (this, X);
 
       ## Loop over each observation to compute the margin
+      ## Resolve every observation's class once, rather than once per
+      ## iteration: the lookup does not depend on i.
+      [gYidx, ~] = labelIndices (classes, Y);
       for i = 1:n
         ## True class index
-        true_class_idx = labelIndex (classes, Y, i);
+        true_class_idx = gYidx(i);
 
         ## Score for the true class
         true_class_score = scores(i, true_class_idx);

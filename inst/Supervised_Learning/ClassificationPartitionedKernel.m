@@ -372,8 +372,10 @@ classdef ClassificationPartitionedKernel
       [~, raw] = kfoldScores (this.Trained, this.Partition, this.X_, ...
                               this.Y, this.ClassNames, this.NumLambda_);
       s = transformScores (this, raw);
-      gY = binaryIndex (this.ClassNames, this.Y, ...
-                        'ClassificationPartitionedKernel', 'kfoldMargin');
+      [gY, errmsg] = labelIndices (this.ClassNames, this.Y);
+      if (! isempty (errmsg))
+        error ("ClassificationPartitionedKernel.kfoldMargin: %s", errmsg);
+      endif
       m = marginsOf (s, gY, this.NumLambda_);
 
     endfunction
@@ -397,8 +399,10 @@ classdef ClassificationPartitionedKernel
       [~, raw] = kfoldScores (this.Trained, this.Partition, this.X_, ...
                               this.Y, this.ClassNames, this.NumLambda_);
       s = transformScores (this, raw);
-      gY = binaryIndex (this.ClassNames, this.Y, ...
-                        'ClassificationPartitionedKernel', 'kfoldEdge');
+      [gY, errmsg] = labelIndices (this.ClassNames, this.Y);
+      if (! isempty (errmsg))
+        error ("ClassificationPartitionedKernel.kfoldEdge: %s", errmsg);
+      endif
       m = marginsOf (s, gY, this.NumLambda_);
 
       sets = foldSets (this.Partition, O.Folds, O.Mode, ...
@@ -442,8 +446,10 @@ classdef ClassificationPartitionedKernel
       [~, raw] = kfoldScores (this.Trained, this.Partition, this.X_, ...
                               this.Y, this.ClassNames, this.NumLambda_);
       s = transformScores (this, raw);
-      gY = binaryIndex (this.ClassNames, this.Y, ...
-                        'ClassificationPartitionedKernel', 'kfoldLoss');
+      [gY, errmsg] = labelIndices (this.ClassNames, this.Y);
+      if (! isempty (errmsg))
+        error ("ClassificationPartitionedKernel.kfoldLoss: %s", errmsg);
+      endif
 
       sets = foldSets (this.Partition, O.Folds, O.Mode, ...
                        this.NumObservations);
