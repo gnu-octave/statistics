@@ -50,9 +50,18 @@
 ## A @math{P * @var{Q}} initial value for the weights.  The default is random.
 ##
 ## @item @qcode{'GradientTolerance'}, @qcode{'StepTolerance'}
-## Accepted for MATLAB compatibility and recorded in @qcode{ModelParameters};
-## the built-in solver iterates up to @qcode{'IterationLimit'} with tight
-## internal tolerances.
+## Stop once the gradient's or the step's infinity norm falls to or below the
+## given value (default @qcode{1e-6} each).  They govern the fit only under
+## @qcode{'Solver', 'lbfgs'}; the @qcode{'quasinewton'} solver runs to its own
+## tighter internal tolerances and records these without acting on them.
+##
+## @item @qcode{'Solver'}
+## @qcode{'quasinewton'} (default) minimizes through Octave's @code{fminunc},
+## which carries a full inverse Hessian.  @qcode{'lbfgs'} selects the
+## limited-memory BFGS solver MATLAB uses, holding as many curvature pairs as
+## the transform has parameters, and is several times faster here.  It stops
+## where @qcode{'GradientTolerance'} and @qcode{'StepTolerance'} say to, so a
+## value tighter than the default carries it further.
 ## @end table
 ##
 ## @subheading Note on reproducibility
@@ -169,6 +178,37 @@ endfunction
 %! assert_equal (size (Mdl.FitInfo.Objective < 20), size (Mdl.FitInfo.Objective));
 
 ## Test input validation
+%!test
+%! ## The lbfgs solver reaches a low objective value (MATLAB's is 12.2532).
+%! ## It does not land where the default solver lands: this objective is far
+%! ## from convex and the two take different steps from the same weights.
+%! ## Both tolerances are tightened because the step reaches 1e-6 here while
+%! ## the gradient is still well above it, so the default stops the fit
+%! ## early; that is StepTolerance doing exactly what it says.
+%! Mdl = sparsefilt (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!                   "Standardize", false, "IterationLimit", 1000, ...
+%!                   "Solver", "lbfgs", "GradientTolerance", 1e-8, ...
+%!                   "StepTolerance", 1e-8);
+%! assert_equal (Mdl.FitInfo.Objective(end) < 12.5, true);
+
+%!test
+%! ## The trajectory starts at the initial weights whichever solver ran
+%! args = {"InitialTransformWeights", W0, "IterationLimit", 20};
+%! Mq = sparsefilt (X, 3, args{:});
+%! Ml = sparsefilt (X, 3, args{:}, "Solver", "lbfgs");
+%! assert_equal (Ml.FitInfo.Iteration(1), 0);
+%! assert_equal (Ml.FitInfo.Objective(1), Mq.FitInfo.Objective(1), 1e-10);
+
+%!test
+%! ## The solver that ran is recorded
+%! Mdl = sparsefilt (X, 3, "InitialTransformWeights", W0, "Solver", "lbfgs");
+%! assert_equal (Mdl.ModelParameters.Solver, "lbfgs");
+
+%!error<sparsefilt: 'Solver' must be 'quasinewton' or 'lbfgs'.> ...
+%! sparsefilt (X, 3, "Solver", "bogus")
+%!error<sparsefilt: 'Solver' must be 'quasinewton' or 'lbfgs'.> ...
+%! sparsefilt (X, 3, "Solver", 5)
+
 %!error<Invalid call to sparsefilt> sparsefilt (ones (5, 3))
 %!error<sparsefilt: X must be a numeric matrix.> sparsefilt ({1, 2}, 1)
 %!error<sparsefilt: X must be real and finite.> sparsefilt ([1, Inf; 2, 3], 1)

@@ -60,9 +60,18 @@
 ## A @math{P * @var{Q}} initial value for the weights.  The default is random.
 ##
 ## @item @qcode{'GradientTolerance'}, @qcode{'StepTolerance'}
-## Accepted for MATLAB compatibility and recorded in @qcode{ModelParameters};
-## the built-in solver iterates up to @qcode{'IterationLimit'} with tight
-## internal tolerances.
+## Stop once the gradient's or the step's infinity norm falls to or below the
+## given value (default @qcode{1e-6} each).  They govern the fit only under
+## @qcode{'Solver', 'lbfgs'}; the @qcode{'quasinewton'} solver runs to its own
+## tighter internal tolerances and records these without acting on them.
+##
+## @item @qcode{'Solver'}
+## @qcode{'quasinewton'} (default) minimizes through Octave's @code{fminunc},
+## which carries a full inverse Hessian.  @qcode{'lbfgs'} selects the
+## limited-memory BFGS solver MATLAB uses, holding as many curvature pairs as
+## the transform has parameters, and is several times faster here.  It stops
+## where @qcode{'GradientTolerance'} and @qcode{'StepTolerance'} say to, so a
+## value tighter than the default carries it further.
 ## @end table
 ##
 ## @subheading Note on reproducibility
@@ -183,6 +192,32 @@ endfunction
 %! assert_equal (Mdl.FitInfo.Iteration(1), 0);
 
 ## Test input validation
+%!test
+%! ## 'lbfgs' reaches the optimum the default solver reaches
+%! args = {"InitialTransformWeights", W0, "Lambda", 1, ...
+%!         "Standardize", false, "IterationLimit", 1000};
+%! Mq = rica (X, 3, args{:});
+%! Ml = rica (X, 3, args{:}, "Solver", "lbfgs");
+%! assert_equal (Ml.FitInfo.Objective(end), Mq.FitInfo.Objective(end), 1e-6);
+
+%!test
+%! ## The trajectory starts at the initial weights whichever solver ran
+%! args = {"InitialTransformWeights", W0, "IterationLimit", 20};
+%! Mq = rica (X, 3, args{:});
+%! Ml = rica (X, 3, args{:}, "Solver", "lbfgs");
+%! assert_equal (Ml.FitInfo.Iteration(1), 0);
+%! assert_equal (Ml.FitInfo.Objective(1), Mq.FitInfo.Objective(1), 1e-10);
+
+%!test
+%! ## The solver that ran is recorded
+%! Mdl = rica (X, 3, "InitialTransformWeights", W0, "Solver", "lbfgs");
+%! assert_equal (Mdl.ModelParameters.Solver, "lbfgs");
+
+%!error<rica: 'Solver' must be 'quasinewton' or 'lbfgs'.> ...
+%! rica (X, 3, "Solver", "bogus")
+%!error<rica: 'Solver' must be 'quasinewton' or 'lbfgs'.> ...
+%! rica (X, 3, "Solver", 5)
+
 %!error<Invalid call to rica> rica (ones (5, 3))
 %!error<rica: X must be a numeric matrix.> rica ({1, 2}, 1)
 %!error<rica: X must be real and finite.> rica ([1, Inf; 2, 3], 1)

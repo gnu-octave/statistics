@@ -38,12 +38,13 @@
 ## @qcode{Objective(1)} is the objective at the starting weights, so the last
 ## entry of each is the solution the fit returned.
 ##
-## The values along that trajectory are this implementation's own: the
-## minimisation runs through Octave's @code{fminunc}, where MATLAB uses a
-## limited-memory BFGS solver, and the two take different steps from the same
-## starting weights.  The length of the history and the iteration counts
-## differ accordingly.  The fitted @qcode{TransformWeights} are unaffected,
-## both solvers reaching the same optimum.
+## The values along that trajectory are this implementation's own.  Under the
+## default @qcode{'quasinewton'} solver the minimisation runs through Octave's
+## @code{fminunc}; @qcode{'Solver', 'lbfgs'} selects the limited-memory BFGS
+## solver MATLAB uses.  Either way the steps taken from the same starting
+## weights differ from MATLAB's, so the length of the history and the
+## iteration counts differ, and on an objective this far from convex the
+## optimum reached need not be MATLAB's either.
 ## @item @qcode{ModelParameters} — a structure of the options used for the fit.
 ## @item @qcode{NumPredictors}, @qcode{NumLearnedFeatures} — the input dimension
 ## @math{P} and the number of learned features @math{Q}.
@@ -84,7 +85,8 @@ classdef SparseFiltering
       opts = struct ("IterationLimit", 1000, "Lambda", 1, ...
                      "Standardize", false, ...
                      "InitialTransformWeights", [], ...
-                     "GradientTolerance", 1e-6, "StepTolerance", 1e-6);
+                     "GradientTolerance", 1e-6, "StepTolerance", 1e-6, ...
+                     "Solver", "quasinewton");
       for k = 1:2:numel (varargin)
         name = varargin{k};
         val = varargin{k+1};
@@ -101,6 +103,12 @@ classdef SparseFiltering
             opts.GradientTolerance = val;
           case 'steptolerance'
             opts.StepTolerance = val;
+          case 'solver'
+            if (! ischar (val) || ...
+                ! any (strcmpi (val, {'quasinewton', 'lbfgs'})))
+              error ("sparsefilt: 'Solver' must be 'quasinewton' or 'lbfgs'.");
+            endif
+            opts.Solver = lower (val);
           otherwise
             error ("sparsefilt: unknown parameter name '%s'.", name);
         endswitch
@@ -125,12 +133,34 @@ classdef SparseFiltering
 
       lambda = opts.Lambda;
       ofun = @(wv) __sparsefilt_objective__ (wv, X, p, Q, lambda);
-      objective_history ("reset");
-      fmopts = optimset ("GradObj", "on", "MaxIter", opts.IterationLimit, ...
-                         "TolFun", 1e-10, "TolX", 1e-10, "Display", "off", ...
-                         "OutputFcn", @objective_history_fcn);
-      [wv, fval, ~, output] = fminunc (ofun, W0(:), fmopts);
-      obj = objective_history ("get");
+      if (strcmpi (opts.Solver, 'lbfgs'))
+        ## LossTolerance is switched off because MATLAB has no such option
+        ## here: the fit stops on the gradient or the step, never on the
+        ## objective's own value.
+        ## The history is sized to the problem rather than left at the
+        ## engine's default ten.  A transform carries only p * Q parameters,
+        ## and once the stored pairs reach that count the recursion is full
+        ## BFGS, which converges further here and in fewer iterations.  The
+        ## cap bounds the memory when Q is large.
+        lbopts = struct ("IterationLimit", opts.IterationLimit, ...
+                         "GradientTolerance", opts.GradientTolerance, ...
+                         "StepTolerance", opts.StepTolerance, ...
+                         "LossTolerance", -Inf, ...
+                         "HistorySize", min (max (10, numel (W0)), 50));
+        [wv, lbinfo] = __lbfgs__ (ofun, W0(:), lbopts);
+        fval = lbinfo.Fval;
+        ## The engine records from the first step, where MATLAB's trajectory
+        ## starts at the initial weights.
+        f0 = ofun (W0(:));
+        obj = [f0; lbinfo.History.Fval];
+      else
+        objective_history ("reset");
+        fmopts = optimset ("GradObj", "on", "MaxIter", opts.IterationLimit, ...
+                           "TolFun", 1e-10, "TolX", 1e-10, "Display", "off", ...
+                           "OutputFcn", @objective_history_fcn);
+        [wv, fval, ~, output] = fminunc (ofun, W0(:), fmopts);
+        obj = objective_history ("get");
+      endif
 
       this.TransformWeights = reshape (wv, p, Q);
       this.NumPredictors = p;
