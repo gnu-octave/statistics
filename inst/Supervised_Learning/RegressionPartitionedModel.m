@@ -425,6 +425,13 @@ classdef RegressionPartitionedModel
         yFit(testIdx) = predict (this.Trained{k}, this.X(testIdx, :));
       endfor
 
+      ## As on the classification side, the folds never carry the transform and
+      ## it is applied once to the assembled predictions.  MathWorks documents
+      ## ResponseTransform as the function for transforming the predicted
+      ## response values and documents assigning it by dot notation, so this is
+      ## what the property is for; it used to be stored and never read.
+      yFit = this.RTfun (yFit);
+
     endfunction
 
     ## -*- texinfo -*-
@@ -784,3 +791,31 @@ endclassdef
 %! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3);
 %! assert_equal (class (CVMdl.BinEdges), 'cell');
 %! assert_equal (CVMdl.BinEdges, {});
+
+## ResponseTransform is applied to the assembled predictions, not carried into
+## the folds.  MathWorks documents it as the function for transforming the
+## predicted response values; it used to be stored here and never read.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3);
+%! y0 = kfoldPredict (CVMdl);
+%! CVMdl.ResponseTransform = @(x) x + 100;
+%! y1 = kfoldPredict (CVMdl);
+%! assert_equal (CVMdl.Trained{1}.ResponseTransform, 'none');
+%! assert_equal (y1, y0 + 100, 1e-12);
+
+## And it reaches kfoldLoss, which is computed from those predictions.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3);
+%! before = kfoldLoss (CVMdl);
+%! CVMdl.ResponseTransform = @(x) x + 100;
+%! assert (kfoldLoss (CVMdl) > before);
+
+## 'none' is the identity, so the default transforms nothing.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrnet (meas(:,1:3), meas(:,4)), 'KFold', 3);
+%! y0 = kfoldPredict (CVMdl);
+%! CVMdl.ResponseTransform = 'none';
+%! assert_equal (kfoldPredict (CVMdl), y0);

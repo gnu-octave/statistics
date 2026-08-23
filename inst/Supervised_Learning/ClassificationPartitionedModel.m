@@ -770,6 +770,14 @@ classdef ClassificationPartitionedModel
 
       endfor
 
+      ## The folds never carry the transform: assigning ScoreTransform on a
+      ## cross-validated model leaves every Trained{k} at 'none', in MATLAB as
+      ## here, and it is applied once to the assembled scores instead.  It used
+      ## to be accepted and never read, so the property was inert on every
+      ## cross-validated classifier.  kfoldLoss reads these scores, so the
+      ## margin-based losses follow the transform as they should.
+      Score = this.STfun (Score);
+
       ## Handle single fold case (holdout)
       if (this.KFold == 1)
         testIdx = test (this.Partition, 1);
@@ -1438,3 +1446,37 @@ endclassdef
 %! load fisheriris; ...
 %! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3); ...
 %! CVMdl.Prior = [0.5, 0.5];
+
+## ScoreTransform is applied to the assembled scores, not carried into the
+## folds.  MATLAB leaves every Trained{k} at 'none' and transforms at the
+## wrapper; the property used to be stored here and never read.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! [~, s0] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'doublelogit';
+%! [~, s1] = kfoldPredict (CVMdl);
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+%! assert_equal (s1, 1 ./ (1 + exp (-2 * s0)), 1e-12);
+
+## The transform reaches kfoldLoss, which reads those scores.  A loss that
+## sums them shows it; mincost and classiferror do not move on this fixture,
+## since a monotone transform leaves the chosen labels where they were.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! f = @(C, S, W, Cost) sum (S(:));
+%! [~, s0] = kfoldPredict (CVMdl);
+%! assert_equal (kfoldLoss (CVMdl, 'LossFun', f), 150, 1e-12);
+%! CVMdl.ScoreTransform = 'doublelogit';
+%! assert_equal (kfoldLoss (CVMdl, 'LossFun', f), ...
+%!               sum (sum (1 ./ (1 + exp (-2 * s0)))), 1e-12);
+
+## 'none' is the identity, so the default transforms nothing.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), 'KFold', 3);
+%! [~, s0] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'none';
+%! [~, s1] = kfoldPredict (CVMdl);
+%! assert_equal (s1, s0);
