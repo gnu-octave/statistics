@@ -550,7 +550,8 @@ classdef ClassificationDiscriminant
       if (isempty (Cost))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (Cost)))
+        K = numel (gnY);
+        if (! isequal (size (Cost), [K, K]))
           error (strcat ("ClassificationDiscriminant: the number", ...
                          " of rows and columns in 'Cost' must", ...
                          " correspond to selected classes in Y."));
@@ -2199,6 +2200,10 @@ endclassdef
 %! ClassificationDiscriminant (X, ones (10,1), 'Prior', [1 2])
 %!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationDiscriminant (X, Y, 'Cost', [1, 2])
+%!error<ClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = 1:9;
 %!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationDiscriminant (X, Y, 'Cost', 'string')
 %!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...

@@ -338,7 +338,8 @@ classdef ClassificationPartitionedModel
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (val)))
+        K = numel (gnY);
+        if (! isequal (size (val), [K, K]))
           error (strcat ("ClassificationPartitionedModel: the number", ...
                          " of rows and columns in 'Cost' must", ...
                          " correspond to selected classes in Y."));
@@ -1488,3 +1489,8 @@ endclassdef
 %! CVMdl.ScoreTransform = 'none';
 %! [~, s1] = kfoldPredict (CVMdl);
 %! assert_equal (s1, s0);
+
+%!error<ClassificationPartitionedModel: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! CVMdl.Cost = 1:9;

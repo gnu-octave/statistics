@@ -552,7 +552,8 @@ classdef ClassificationKNN
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (val)))
+        K = numel (gnY);
+        if (! isequal (size (val), [K, K]))
           error (strcat ("ClassificationKNN: the number", ...
                          " of rows and columns in 'Cost' must", ...
                          " correspond to selected classes in Y."));
@@ -2827,6 +2828,9 @@ endfunction
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Prior', {'1', '2'})
 %!error<ClassificationKNN: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Cost', [1, 2])
+%!error<ClassificationKNN: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
+%! Mdl = fitcknn ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]);
+%! Mdl.Cost = 1:4;
 %!error<ClassificationKNN: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Cost', 'string')
 %!error<ClassificationKNN: 'Cost' must be a numeric square matrix.> ...

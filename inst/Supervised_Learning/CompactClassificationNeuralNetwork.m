@@ -379,7 +379,8 @@ classdef CompactClassificationNeuralNetwork
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (val)))
+        K = numel (gnY);
+        if (! isequal (size (val), [K, K]))
           error (strcat ("CompactClassificationNeuralNetwork: the number", ...
                          " of rows and columns in 'Cost' must correspond", ...
                          " to the selected classes in Y."));
@@ -1096,3 +1097,7 @@ endclassdef
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+%!error<CompactClassificationNeuralNetwork: the number of rows and columns in 'Cost' must correspond to the selected classes in Y.> ...
+%! CMdl = compact (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]));
+%! CMdl.Cost = 1:4;

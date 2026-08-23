@@ -356,7 +356,8 @@ classdef CompactClassificationGAM
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (val)))
+        K = numel (gnY);
+        if (! isequal (size (val), [K, K]))
           error (strcat ("CompactClassificationGAM: the number", ...
                          " of rows and columns in 'Cost' must", ...
                          " correspond to selected classes in Y."));
@@ -1139,3 +1140,8 @@ endfunction
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+%!error<CompactClassificationGAM: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
+%! Mdl = fitcgam ([1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1], [0; 0; 1; 1]);
+%! CMdl = compact (Mdl);
+%! CMdl.Cost = 1:4;

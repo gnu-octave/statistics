@@ -572,7 +572,8 @@ classdef CompactClassificationDiscriminant
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (val)))
+        K = numel (gnY);
+        if (! isequal (size (val), [K, K]))
           error (strcat ("CompactClassificationDiscriminant: the number", ...
                          " of rows and columns in 'Cost' must correspond", ...
                          " to the selected classes in Y."));
@@ -1696,3 +1697,8 @@ endclassdef
 %! C2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (C2.BetweenSigma, CMdl.BetweenSigma);
+
+%!error<CompactClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to the selected classes in Y.> ...
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! CMdl.Cost = 1:9;

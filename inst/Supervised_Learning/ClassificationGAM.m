@@ -458,7 +458,8 @@ classdef ClassificationGAM
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
       else
-        if (numel (gnY) != sqrt (numel (val)))
+        K = numel (gnY);
+        if (! isequal (size (val), [K, K]))
           error (strcat ("ClassificationGAM: the number", ...
                          " of rows and columns in 'Cost' must", ...
                          " correspond to selected classes in Y."));
@@ -1935,6 +1936,9 @@ endfunction
 %! ClassificationGAM (ones (10,2), logical (ones (10,1)), 'ClassNames', [true, false])
 %!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), 'Cost', [1, 2])
+%!error<ClassificationGAM: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
+%! Mdl = fitcgam ([1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1], [0; 0; 1; 1]);
+%! Mdl.Cost = 1:4;
 %!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), 'Cost', 'string')
 %!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
