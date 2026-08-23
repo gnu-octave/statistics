@@ -127,14 +127,20 @@ classdef CompactClassificationGAM
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} Interactions
     ##
-    ## Interaction terms specification
+    ## Two-way interaction terms of the fitted model
     ##
-    ## A logical matrix, positive integer scalar, or character vector
-    ## @qcode{'all'} specifying the interaction terms between predictor
-    ## variables.  This property is read-only.
+    ## A @math{Kx2} matrix of predictor index pairs, one row per two-way term
+    ## the model carries, and @code{zeros (0, 2)} when it carries none.  It
+    ## reports what was fitted rather than what was asked for, so a count of
+    ## terms, @qcode{'all'}, a logical matrix and a formula all leave the same
+    ## kind of value behind.  This property is read-only.
+    ##
+    ## A main effect names one predictor and a higher-order term names three
+    ## or more, and neither has a two-column form, so neither appears here.
+    ## @code{IntMatrix} remains the complete record of every term fitted.
     ##
     ## @end deftp
-    Interactions    = [];
+    Interactions    = zeros (0, 2);
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} Knots
@@ -444,13 +450,9 @@ classdef CompactClassificationGAM
         fprintf ("%+25s: '%s'\n", 'Formula', this.Formula);
       endif
       if (! isempty (this.Interactions))
-        if (ischar (this.Interactions))
-          fprintf ("%+25s: '%s'\n", 'Interactions', this.Interactions);
-        else
-          fprintf ("%+25s: [%dx%d %s]\n", 'Interactions', ...
-                   size (this.Interactions, 1), size (this.Interactions, 2), ...
-                   class (this.Interactions));
-        endif
+        fprintf ("%+25s: [%dx%d %s]\n", 'Interactions', ...
+                 size (this.Interactions, 1), size (this.Interactions, 2), ...
+                 class (this.Interactions));
       endif
     endfunction
 
@@ -540,7 +542,10 @@ classdef CompactClassificationGAM
 
       ## Choose whether interactions must be included
       if (incInt)
-        if (! isempty (this.Interactions))
+        ## Which construction path the model took: an interaction
+        ## list appends its terms to the predictors, a formula
+        ## names every term the model has and replaces them.
+        if (isempty (this.Formula))
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
             tindex = logical (this.IntMatrix(i,:));

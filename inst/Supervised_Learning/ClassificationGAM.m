@@ -196,14 +196,20 @@ classdef ClassificationGAM
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Interactions
     ##
-    ## Interaction terms specification
+    ## Two-way interaction terms of the fitted model
     ##
-    ## A logical matrix, positive integer scalar, or character vector
-    ## @qcode{'all'} specifying the interaction terms between predictor
-    ## variables.  This property is read-only.
+    ## A @math{Kx2} matrix of predictor index pairs, one row per two-way term
+    ## the model carries, and @code{zeros (0, 2)} when it carries none.  It
+    ## reports what was fitted rather than what was asked for, so a count of
+    ## terms, @qcode{'all'}, a logical matrix and a formula all leave the same
+    ## kind of value behind.  This property is read-only.
+    ##
+    ## A main effect names one predictor and a higher-order term names three
+    ## or more, and neither has a two-column form, so neither appears here.
+    ## @code{IntMatrix} remains the complete record of every term fitted.
     ##
     ## @end deftp
-    Interactions    = [];
+    Interactions    = zeros (0, 2);
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Knots
@@ -509,13 +515,9 @@ classdef ClassificationGAM
         fprintf ("%+25s: '%s'\n", 'Formula', this.Formula);
       endif
       if (! isempty (this.Interactions))
-        if (ischar (this.Interactions))
-          fprintf ("%+25s: '%s'\n", 'Interactions', this.Interactions);
-        else
-          fprintf ("%+25s: [%dx%d %s]\n", 'Interactions', ...
-                   size (this.Interactions, 1), size (this.Interactions, 2), ...
-                   class (this.Interactions));
-        endif
+        fprintf ("%+25s: [%dx%d %s]\n", 'Interactions', ...
+                 size (this.Interactions, 1), size (this.Interactions, 2), ...
+                 class (this.Interactions));
       endif
     endfunction
 
@@ -1006,6 +1008,13 @@ classdef ClassificationGAM
         this.ModelwInt.RSS        = RSS;
       endif
 
+      ## The property MATLAB reports is the two-way terms the fitted model
+      ## carries, as predictor index pairs, whatever form they were asked for
+      ## in.  The term matrix stays the complete record: it also holds the
+      ## main effects a formula names and any term above two predictors,
+      ## neither of which has a two-column form.
+      this.Interactions = interactionPairs (this.IntMatrix);
+
     endfunction
 
     ## -*- texinfo -*-
@@ -1092,7 +1101,10 @@ classdef ClassificationGAM
 
       ## Choose whether interactions must be included
       if (incInt)
-        if (! isempty (this.Interactions))
+        ## Which construction path the model took: an interaction
+        ## list appends its terms to the predictors, a formula
+        ## names every term the model has and replaces them.
+        if (isempty (this.Formula))
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
             tindex = logical (this.IntMatrix(i,:));
@@ -1897,6 +1909,55 @@ endfunction
 %! assert_equal (a.Prior, [2/3, 1/3], 1e-6);
 
 ## Test input validation for Prior
+## Interactions reports the two-way terms the fitted model carries, as
+## predictor index pairs.  R2024a's GAM with 'Interactions', 'all' over three
+## predictors returns [1 2; 1 3; 2 3], which is what this matches.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = double (X(:,1).*X(:,2) > 0) + 1;
+%! Mdl = fitcgam (X, y, "Interactions", "all");
+%! assert_equal (Mdl.Interactions, [1, 2; 1, 3; 2, 3]);
+
+## No interactions is an empty list of pairs, keeping its two columns, and
+## not an empty matrix of no width.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = double (X(:,1).*X(:,2) > 0) + 1;
+%! Mdl = fitcgam (X, y);
+%! assert_equal (size (Mdl.Interactions), [0, 2]);
+%! assert_equal (class (Mdl.Interactions), "double");
+
+## The same kind of value follows whatever form the request took.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = double (X(:,1).*X(:,2) > 0) + 1;
+%! Mc = fitcgam (X, y, "Interactions", 2);
+%! Ml = fitcgam (X, y, "Interactions", logical ([1, 1, 0; 0, 1, 1]));
+%! assert_equal (Mc.Interactions, [1, 2; 1, 3]);
+%! assert_equal (Ml.Interactions, [1, 2; 2, 3]);
+
+## A formula names its main effects as terms of the model, and a main effect
+## is not an interaction: the term matrix holds all three, Interactions the
+## one two-way term among them.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = double (X(:,1).*X(:,2) > 0) + 1;
+%! Mdl = fitcgam (X, y, "Formula", "Y ~ x1 + x2 + x1:x2");
+%! assert_equal (Mdl.Interactions, [1, 2]);
+%! assert_equal (rows (Mdl.IntMatrix), 3);
+
+## The compact model carries the same pairs.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = double (X(:,1).*X(:,2) > 0) + 1;
+%! Mdl = fitcgam (X, y, "Interactions", "all");
+%! assert_equal (compact (Mdl).Interactions, Mdl.Interactions);
+
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
 %! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', [1])
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...

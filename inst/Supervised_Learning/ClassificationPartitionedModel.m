@@ -500,7 +500,7 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcdiscr
           GAMparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                       'Cost', 'Formula', 'Interactions', 'Knots', 'Order', ...
+                       'Cost', 'Formula', 'Knots', 'Order', ...
                        'LearningRate', 'NumIterations'};
           ## Set parameters
           for i = 1:numel (GAMparams)
@@ -510,6 +510,15 @@ classdef ClassificationPartitionedModel
               args = [args, {paramName, paramValue}];
             endif
           endfor
+
+          ## Interactions now holds the fitted pairs, which the constructor
+          ## does not take as a specification.  The term matrix does, and it
+          ## reproduces the parent's terms exactly rather than re-selecting
+          ## them.  A formula names its own terms and is passed instead, so
+          ## this must not be passed alongside one.
+          if (isempty (Mdl.Formula) && ! isempty (Mdl.IntMatrix))
+            args = [args, {'Interactions', Mdl.IntMatrix}];
+          endif
 
           ## Train model according to partition object
           for k = 1:this.KFold
@@ -1358,6 +1367,19 @@ endclassdef
 %! assert_equal (CVMdl.CrossValidatedModel, "KNN");
 
 ## Test input validation for ClassificationPartitionedModel
+## Cross-validating a GAM rebuilds each fold from the term matrix, the
+## interaction pairs no longer being a form the constructor accepts.  Every
+## fold carries the parent's terms.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = double (X(:,1).*X(:,2) > 0) + 1;
+%! Mdl = fitcgam (X, y, "Interactions", "all");
+%! cv = crossval (Mdl, "KFold", 3);
+%! assert_equal (numel (cv.Trained), 3);
+%! assert_equal (cv.Trained{1}.Interactions, [1, 2; 1, 3; 2, 3]);
+%! assert_equal (cv.Trained{3}.Interactions, Mdl.Interactions);
+
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
 %! ClassificationPartitionedModel ()
 %!error<ClassificationPartitionedModel: too few input arguments.> ...

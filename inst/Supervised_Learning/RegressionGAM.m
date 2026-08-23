@@ -279,14 +279,20 @@ classdef RegressionGAM
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} Interactions
     ##
-    ## Interaction terms of the model
+    ## Two-way interaction terms of the fitted model
     ##
-    ## A logical matrix, a matrix of column indices, a count of terms, or the
-    ## character vector @qcode{'all'}, describing the interaction terms asked
-    ## for.  This property is read-only.
+    ## A @math{Kx2} matrix of predictor index pairs, one row per two-way term
+    ## the model carries, and @code{zeros (0, 2)} when it carries none.  It
+    ## reports what was fitted rather than what was asked for, so a count of
+    ## terms, @qcode{'all'}, a logical matrix and a formula all leave the same
+    ## kind of value behind.  This property is read-only.
+    ##
+    ## A main effect names one predictor and a higher-order term names three
+    ## or more, and neither has a two-column form, so neither appears here.
+    ## @code{IntMatrix} remains the complete record of every term fitted.
     ##
     ## @end deftp
-    Interactions          = [];
+    Interactions          = zeros (0, 2);
 
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} Knots
@@ -747,6 +753,13 @@ classdef RegressionGAM
         this.ModelwInt.RSS        = RSS;
       endif
 
+      ## The property MATLAB reports is the two-way terms the fitted model
+      ## carries, as predictor index pairs, whatever form they were asked for
+      ## in.  The term matrix stays the complete record: it also holds the
+      ## main effects a formula names and any term above two predictors,
+      ## neither of which has a two-column form.
+      this.Interactions = interactionPairs (this.IntMatrix);
+
     endfunction
 
     ## -*- texinfo -*-
@@ -869,7 +882,7 @@ classdef RegressionGAM
       ## interactions or with a formula has a term for every column of the
       ## matrix it was fitted on, and that is no longer the stored X.
       if (incInt)
-        Xfit = gamTerms (Xfit, this.IntMatrix, ! isempty (this.Interactions));
+        Xfit = gamTerms (Xfit, this.IntMatrix, isempty (this.Formula));
         ## Get parameters and intercept vectors from model with interactions
         params = this.ModelwInt.Parameters;
         Interc = this.ModelwInt.Intercept;
@@ -901,7 +914,7 @@ classdef RegressionGAM
         ## model and ySD was several times too large, and with fewer terms than
         ## columns the call raised out of bound.
         if (incInt)
-          X = gamTerms (X, this.IntMatrix, ! isempty (this.Interactions));
+          X = gamTerms (X, this.IntMatrix, isempty (this.Formula));
         endif
         ## Predict response from training predictor data with the trained model
         yrs = predict_val (params, X , Interc);
@@ -1569,6 +1582,31 @@ endfunction
 %! assert_equal (ySD_3, expected_ySD * ones (3, 1), 1e-10);
 
 ## Test input validation for constructor
+## Interactions reports the two-way terms the fitted model carries, as
+## predictor index pairs, matching what R2024a's fitrgam returns.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = X(:,1) .* X(:,2) + 0.5 * X(:,3);
+%! Mdl = fitrgam (X, y, "Interactions", "all");
+%! assert_equal (Mdl.Interactions, [1, 2; 1, 3; 2, 3]);
+
+## No interactions is an empty list of pairs, keeping its two columns.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! Mdl = fitrgam (X, X(:,1) + X(:,3));
+%! assert_equal (size (Mdl.Interactions), [0, 2]);
+
+## A formula's main effects are terms of the model but not interactions.
+%!test
+%! k = (1:60)';
+%! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
+%! y = X(:,1) .* X(:,2) + 0.5 * X(:,3);
+%! Mdl = fitrgam (X, y, "Formula", "Y ~ x1 + x2 + x1:x2");
+%! assert_equal (Mdl.Interactions, [1, 2]);
+%! assert_equal (compact (Mdl).Interactions, [1, 2]);
+
 %!error<RegressionGAM: too few input arguments.> RegressionGAM ()
 %!error<RegressionGAM: too few input arguments.> RegressionGAM (ones (10,2))
 %!error<RegressionGAM: number of rows in X and Y must be equal.> ...

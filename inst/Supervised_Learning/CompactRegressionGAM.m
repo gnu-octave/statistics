@@ -130,14 +130,20 @@ classdef CompactRegressionGAM
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} Interactions
     ##
-    ## Interaction terms of the model
+    ## Two-way interaction terms of the fitted model
     ##
-    ## A logical matrix, a matrix of column indices, a count of terms, or the
-    ## character vector @qcode{'all'}, describing the interaction terms asked
-    ## for.  This property is read-only.
+    ## A @math{Kx2} matrix of predictor index pairs, one row per two-way term
+    ## the model carries, and @code{zeros (0, 2)} when it carries none.  It
+    ## reports what was fitted rather than what was asked for, so a count of
+    ## terms, @qcode{'all'}, a logical matrix and a formula all leave the same
+    ## kind of value behind.  This property is read-only.
+    ##
+    ## A main effect names one predictor and a higher-order term names three
+    ## or more, and neither has a two-column form, so neither appears here.
+    ## @code{IntMatrix} remains the complete record of every term fitted.
     ##
     ## @end deftp
-    Interactions          = [];
+    Interactions          = zeros (0, 2);
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} Knots
@@ -433,7 +439,10 @@ classdef CompactRegressionGAM
 
       ## Choose whether interactions must be included
       if (incInt)
-        if (! isempty (this.Interactions))
+        ## Which construction path the model took: an interaction
+        ## list appends its terms to the predictors, a formula
+        ## names every term the model has and replaces them.
+        if (isempty (this.Formula))
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
             tindex = logical (this.IntMatrix(i,:));

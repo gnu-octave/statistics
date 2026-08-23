@@ -325,7 +325,7 @@ classdef RegressionPartitionedModel
           ## Knots and Order are passed on.
           args = {};
           GAMparams = {'PredictorNames', 'ResponseName', 'Formula', ...
-                       'Interactions', 'Knots', 'Order', 'Tol'};
+                       'Knots', 'Order', 'Tol'};
           for i = 1:numel (GAMparams)
             paramName = GAMparams{i};
             paramValue = Mdl.(paramName);
@@ -333,6 +333,15 @@ classdef RegressionPartitionedModel
               args = [args, {paramName, paramValue}];
             endif
           endfor
+
+          ## Interactions now holds the fitted pairs, which the constructor
+          ## does not take as a specification.  The term matrix does, and it
+          ## reproduces the parent's terms exactly rather than re-selecting
+          ## them.  A formula names its own terms and is passed instead, so
+          ## this must not be passed alongside one.
+          if (isempty (Mdl.Formula) && ! isempty (Mdl.IntMatrix))
+            args = [args, {'Interactions', Mdl.IntMatrix}];
+          endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);
             tmp = fitrgam (X(idx, :), Y(idx), args{:});
