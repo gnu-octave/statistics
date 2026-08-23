@@ -44,24 +44,46 @@
 ## positive definite matrix.  The model is evaluated for input @var{Xfit}, which
 ## must have the same columns as @var{X}, and the estimates are returned in
 ## @var{Yfit} along with the estimated variation in @var{Yint}.
-## @qcode{@var{Yint}(:,1)} contains the upper boundary estimate and
-## @qcode{@var{Yint}(:,1)} contains the upper boundary estimate with respect to
-## @var{Yfit}.
+## @qcode{@var{Yint}(:,1)} contains the lower boundary and
+## @qcode{@var{Yint}(:,2)} the upper boundary of the interval about
+## @var{Yfit}, at the confidence level @qcode{1 - @var{alpha}}.
 ##
 ## @code{[@var{Yfit}, @var{Yint}, @var{Ysd}, @var{K}] = regress_gp (@var{X},
 ## @var{Y}, @var{Xfit}, @qcode{'rbf'})} will estimate a Gaussian Process model
 ## with a Radial Basis Function (RBF) kernel with default parameters
-## @qcode{@var{theta} = 5}, which corresponds to the characteristic lengthscale,
-## and @qcode{@var{g} = 0.01}, which corresponds to the nugget effect, and
+## @qcode{@var{theta} = 5} and @qcode{@var{g} = 0.01}, which corresponds to the
+## nugget effect, and
 ## @qcode{@var{alpha} = 0.05} which defines the confidence level for the
 ## estimated intervals returned in @var{Yint}.  The function also returns the
 ## predictive covariance matrix in @var{Ysd}.  For multidimensional predictors
 ## @var{X} the function will automatically normalize each column to a zero mean
 ## and a standard deviation to one.
 ##
+## Three things about the RBF kernel are worth stating, because they decide
+## what the numbers mean.
+##
+## @itemize
+## @item
+## @var{theta} is not the characteristic lengthscale.  The kernel is
+## @code{exp (-d^2 / @var{theta})} with @math{d} the distance between two
+## points, so @var{theta} is twice the square of a lengthscale @math{l}, and
+## @code{@var{theta} = 2 * l^2}.
+##
+## @item
+## The intervals in @var{Yint} are prediction intervals for a @emph{new
+## observation}, not confidence intervals on the mean: the nugget is carried
+## in the predictive variance, so the noise of an observation is included.
+##
+## @item
+## The predictors are centred and scaled only when there is more than one of
+## them, so @var{theta} is measured in the units of @var{X} for a single
+## predictor and in standard deviations for several.
+## @end itemize
+##
 ## Run @code{demo regress_gp} to see examples.
 ##
-## @seealso{regress, regression_ftest, regression_ttest}
+## @seealso{fitrgp, RegressionGP, regress, regression_ftest,
+## regression_ttest}
 ## @end deftypefn
 
 function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
@@ -102,7 +124,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     elseif (isnumeric (tmp) && ! isscalar (tmp))
       kernel = 'linear';
       sinput = false;
-      Sp = tmp;
+      Sp = checkSp (tmp, size (X, 2));
     elseif (isnumeric (tmp) && isscalar (tmp))
       kernel = 'rbf';
       sinput = false;
@@ -118,10 +140,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
         if (strcmpi (kernel, 'rbf'))
           error ("regress_gp: theta must be a scalar when using RBF kernel.");
         endif
-        Sp = tmp;
-        if (! isequal (size (Sp), (size (X, 2) + 1) * [1, 1]))
-          error ("regress_gp: wrong size for prior covariance matrix Sp.");
-        endif
+        Sp = checkSp (tmp, size (X, 2));
       elseif (isnumeric (tmp) && isscalar (tmp))
         if (strcmpi (kernel, 'linear'))
           error ("regress_gp: wrong size for prior covariance matrix Sp.");
@@ -132,6 +151,13 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
       endif
     else
       if (strcmpi (kernel, 'linear'))
+        error ("regress_gp: invalid 5th argument.");
+      endif
+      ## Every other argument in this function is validated before it is
+      ## used.  This one was not, so a non-numeric nugget reached the kernel
+      ## and failed inside a matrix product with a message about
+      ## nonconformant arguments, naming neither g nor this function.
+      if (! (isnumeric (tmp) && isscalar (tmp)))
         error ("regress_gp: invalid 5th argument.");
       endif
       g = tmp;
@@ -190,8 +216,13 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     ## Compute predictions
     Yfit = Xfit*wm;
     Ysd = Xfit * K * Xfit';
-    dy = diag (Ysd);
-    Yint = [Yfit+dy, Yfit-dy];
+    ## The diagonal of a covariance is a variance, so it is the square root
+    ## that scales the interval, and the interval is that many standard
+    ## deviations wide for the confidence level asked for.  This branch used
+    ## the variance itself, applied no level at all, and returned its columns
+    ## in the opposite order to the other branch.
+    dy = norminv (1 - alpha / 2) * sqrt (diag (Ysd));
+    Yint = [Yfit-dy, Yfit+dy];
     if (nargout > 2)
       varargout{1} = wm;
     endif
@@ -238,13 +269,35 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     Ysd = scale * (Sxi - Sx * K * Sx');
     ysd1 = sqrt (diag (Ysd));
 
-    ## Calculate prediction intervals
-    Yint = norminv (alpha, 0, ysd1);
-    Yint = [Yfit+Yint, Yfit-Yint];
+    ## Calculate prediction intervals.  A two sided interval puts alpha/2 in
+    ## each tail, so the quantile is of 1 - alpha/2; taking it at alpha
+    ## returned a 100*(1-2*alpha) per cent interval under a 100*(1-alpha) per
+    ## cent name, which at the default made every interval a 90 per cent one.
+    dy = norminv (1 - alpha / 2) * ysd1;
+    Yint = [Yfit-dy, Yfit+dy];
 
     if (nargout > 2)
       varargout{1} = Ysd;
     endif
+  endif
+
+endfunction
+
+## Validate the prior covariance of the weights.  Both argument positions that
+## accept Sp check it here, because they did not check the same things: the
+## fourth-argument form validated nothing at all, and the fifth validated the
+## size but not the definiteness the documentation requires.  A singular Sp is
+## inverted to infinities and every prediction comes back NaN, warning about a
+## matrix the caller never handed to inv.
+function Sp = checkSp (Sp, p)
+
+  if (! isequal (size (Sp), (p + 1) * [1, 1]))
+    error ("regress_gp: wrong size for prior covariance matrix Sp.");
+  endif
+  [~, spd] = chol (Sp);
+  if (spd != 0)
+    error (strcat ("regress_gp: prior covariance matrix Sp must be", ...
+                   " positive definite."));
   endif
 
 endfunction
@@ -278,10 +331,10 @@ endfunction
 %! Xfit = [x1(:), x2(:)];
 %!
 %! ## Fit regression model
-%! [Ypred, Yint, Ysd] = regress_gp (X, Y, Xfit);
+%! [Ypred, Yint, m] = regress_gp (X, Y, Xfit);
 %! Ypred = reshape (Ypred, 10, 10);
-%! YintU = reshape (Yint(:,1), 10, 10);
-%! YintL = reshape (Yint(:,2), 10, 10);
+%! YintL = reshape (Yint(:,1), 10, 10);
+%! YintU = reshape (Yint(:,2), 10, 10);
 %!
 %! ## Plot fitted data
 %! plot3 (X(:,1), X(:,2), Y, '.k', 'markersize', 16);
@@ -318,7 +371,7 @@ endfunction
 %! Sp(2,2) = 1; # We don't believe the sqrt(abs(X)) is present
 %!
 %! ## Fit regression model
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, Sp);
+%! [Yfit, Yint, m] = regress_gp (px, Y, pxi, Sp);
 %!
 %! ## Plot fitted data
 %! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
@@ -326,7 +379,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('Linear kernel over basis function with prior covariance');
 
@@ -347,7 +401,7 @@ endfunction
 %! pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
 %!
 %! ## Fit regression model without any assumption on prior covariance
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi);
+%! [Yfit, Yint, m] = regress_gp (px, Y, pxi);
 %!
 %! ## Plot fitted data
 %! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
@@ -355,7 +409,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('Linear kernel over basis function without prior covariance');
 
@@ -384,7 +439,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('RBF kernel over basis function with standard parameters');
 %! text (-0.5, 4, "theta = 5\n g = 0.01");
@@ -414,7 +470,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 10\n g = 0.01");
@@ -429,7 +486,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 50\n g = 0.01");
@@ -444,7 +502,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 50\n g = 0.001");
@@ -459,7 +518,8 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
+%! plot (Xfit, Yint(:,1), 'b-;Lower bound;', ...
+%!       Xfit, Yint(:,2), 'm-;Upper bound;');
 %! hold off
 %! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 50\n g = 0.05");
@@ -514,6 +574,83 @@ endfunction
 %! text (0, -7, "theta = 5\n g = 0.01");
 
 ## Test input validation
+## The value tests this function never had.  Its two branches are checked
+## against closed forms computed here, and the RBF branch additionally against
+## RegressionGP, whose arithmetic is verified against MATLAB.
+
+%!test
+%! ## The RBF mean is the Gaussian process posterior mean, which RegressionGP
+%! ## computes too.  Matching the parameterisations: this function writes the
+%! ## kernel as exp (-d2 / theta) with a noise variance g added, where
+%! ## RegressionGP writes it as SigmaF^2 * exp (-0.5 * d2 / SigmaL^2) with a
+%! ## noise standard deviation, so SigmaL = sqrt (theta/2), SigmaF = 1 and
+%! ## Sigma = sqrt (g).
+%! x = linspace (0, 1, 20)';
+%! y = sin (2*pi*x);
+%! xq = [0.15; 0.45; 0.75];
+%! theta = 0.5;
+%! g = 0.01;
+%! yf = regress_gp (x, y, xq, 'rbf', theta, g);
+%! Mdl = RegressionGP (x, y, 'KernelFunction', 'squaredexponential', ...
+%!                     'KernelParameters', [sqrt(theta/2); 1], ...
+%!                     'Sigma', sqrt (g), 'BasisFunction', 'none', ...
+%!                     'FitMethod', 'none');
+%! assert_equal (yf, predict (Mdl, xq), 1e-10);
+
+%!test
+%! ## The RBF interval is the normal quantile of the level times the standard
+%! ## deviation, on both sides of the fit
+%! x = linspace (0, 1, 20)';
+%! y = sin (2*pi*x);
+%! xq = [0.2; 0.5; 0.8];
+%! [yf, yi, ys] = regress_gp (x, y, xq, 'rbf');
+%! sd = sqrt (diag (ys));
+%! assert_equal (yi(:,1), yf - norminv (0.975) * sd, 1e-12);
+%! assert_equal (yi(:,2), yf + norminv (0.975) * sd, 1e-12);
+
+%!test
+%! ## A looser level gives a narrower interval, and the level reaches the
+%! ## interval at all, which it did not before
+%! x = linspace (0, 1, 20)';
+%! y = sin (2*pi*x);
+%! xq = [0.2; 0.5; 0.8];
+%! [~, yi95] = regress_gp (x, y, xq, 'rbf', 5, 0.01, 0.05);
+%! [~, yi80] = regress_gp (x, y, xq, 'rbf', 5, 0.01, 0.20);
+%! assert (all (yi80(:,2) - yi80(:,1) < yi95(:,2) - yi95(:,1)));
+
+%!test
+%! ## The linear mean is the Bayesian linear regression posterior mean
+%! x = linspace (0, 1, 15)';
+%! y = 2 * x + 0.5;
+%! xq = [0.25; 0.75];
+%! Sp = 100 * eye (2);
+%! yf = regress_gp (x, y, xq);
+%! Xd = [ones(1, 15); x'];
+%! wm = inv (Xd * Xd' + inv (Sp)) * Xd * y;
+%! assert_equal (yf, [ones(2, 1), xq] * wm, 1e-12);
+
+%!test
+%! ## The linear interval is built from a standard deviation and carries the
+%! ## confidence level, where it used to be a bare variance
+%! x = linspace (0, 1, 15)';
+%! y = 2 * x + 0.5;
+%! xq = [0.25; 0.75];
+%! [yf, yi, wm, K] = regress_gp (x, y, xq);
+%! sd = sqrt (diag ([ones(2, 1), xq] * K * [ones(2, 1), xq]'));
+%! assert_equal (yi(:,1), yf - norminv (0.975) * sd, 1e-12);
+%! assert_equal (yi(:,2), yf + norminv (0.975) * sd, 1e-12);
+
+%!test
+%! ## Both branches order the interval the same way, lower bound first, as
+%! ## every other prediction interval in the package does
+%! x = linspace (0, 1, 15)';
+%! y = sin (3*x);
+%! xq = [0.3; 0.6];
+%! [~, yiL] = regress_gp (x, y, xq, 'linear');
+%! [~, yiR] = regress_gp (x, y, xq, 'rbf');
+%! assert (all (yiL(:,1) < yiL(:,2)));
+%! assert (all (yiR(:,1) < yiR(:,2)));
+
 %!error<Invalid call to regress_gp.> regress_gp (ones (20, 2))
 %!error<Invalid call to regress_gp.> regress_gp (ones (20, 2), ones (20, 1))
 %!error<regress_gp: X must be a 2-D matrix.> ...
@@ -530,6 +667,14 @@ endfunction
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'kernel')
 %!error<regress_gp: theta must be a scalar when using RBF kernel.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', ones (4))
+%!error<regress_gp: invalid 5th argument.> ...
+%! regress_gp (ones (20, 2), ones (20, 1), ones (20, 2), 5, 'junk')
+%!error<regress_gp: prior covariance matrix Sp must be positive definite.> ...
+%! regress_gp (ones (20, 2), ones (20, 1), ones (20, 2), zeros (3, 3))
+%!error<regress_gp: prior covariance matrix Sp must be positive definite.> ...
+%! regress_gp (ones (20, 2), ones (20, 1), ones (20, 2), 'linear', zeros (3, 3))
+%!error<regress_gp: wrong size for prior covariance matrix Sp.> ...
+%! regress_gp (ones (20, 2), ones (20, 1), ones (20, 2), eye (4))
 %!error<regress_gp: wrong size for prior covariance matrix Sp.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'linear', 1)
 %!error<regress_gp: invalid 5th argument.> ...
@@ -537,7 +682,7 @@ endfunction
 %!error<regress_gp: invalid 5th argument.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', {5})
 %!error<regress_gp: invalid 5th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), ones (3), 5)
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), eye (3), 5)
 %!error<regress_gp: wrong size for prior covariance matrix Sp.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'linear', 5)
 %!error<regress_gp: invalid 6th argument.> ...
