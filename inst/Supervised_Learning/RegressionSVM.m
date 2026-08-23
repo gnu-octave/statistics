@@ -245,17 +245,6 @@ classdef RegressionSVM
     ModelParameters       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {RegressionSVM} {property} Model
-    ##
-    ## The trained LIBSVM model
-    ##
-    ## A structure as returned by @code{svmtrain} and consumed by
-    ## @code{svmpredict}.  This property is read-only.
-    ##
-    ## @end deftp
-    Model                 = [];
-
-    ## -*- texinfo -*-
     ## @deftp {RegressionSVM} {property} Alpha
     ##
     ## Dual coefficients of the support vectors
@@ -391,6 +380,26 @@ classdef RegressionSVM
     ## @end deftp
     BinEdges        = {};
 
+  endproperties
+
+  ## The LIBSVM structure the engine works in.  It is ours alone, with no
+  ## MATLAB counterpart, so it is kept out of the property listing while
+  ## staying readable for anyone who needs the raw model.
+  properties (Hidden, GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {RegressionSVM} {property} Model
+    ##
+    ## The trained LIBSVM model
+    ##
+    ## A structure as returned by @code{svmtrain} and consumed by
+    ## @code{svmpredict}.  This property is read-only.
+    ##
+    ## It is the engine's own structure and has no MATLAB counterpart,
+    ## so it is kept out of @code{properties} and out of the online
+    ## documentation.  Reading it works exactly as it always did.
+    ##
+    ## @end deftp
+    Model                 = [];
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1254,7 +1263,6 @@ classdef RegressionSVM
   endmethods
 
 endclassdef
-
 
 ## A fitted model carries the defaults MATLAB documents for fitrsvm.
 %!test

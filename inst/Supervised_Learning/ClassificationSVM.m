@@ -193,17 +193,6 @@ classdef ClassificationSVM
     ModelParameters     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property} Model
-    ##
-    ## Trained SVM model
-    ##
-    ## A structure containing the trained model in @qcode{'libsvm'} format.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Model               = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} Alpha
     ##
     ## Trained classifier coefficients
@@ -434,6 +423,26 @@ classdef ClassificationSVM
     ## @end deftp
     BinEdges        = {};
 
+  endproperties
+
+  ## The LIBSVM structure the engine works in.  It is ours alone, with no
+  ## MATLAB counterpart, so it is kept out of the property listing while
+  ## staying readable for anyone who needs the raw model.
+  properties (Hidden, GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Model
+    ##
+    ## Trained SVM model
+    ##
+    ## A structure containing the trained model in @qcode{'libsvm'} format.
+    ## This property is read-only.
+    ##
+    ## It is the engine's own structure and has no MATLAB counterpart,
+    ## so it is kept out of @code{properties} and out of the online
+    ## documentation.  Reading it works exactly as it always did.
+    ##
+    ## @end deftp
+    Model               = [];
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is

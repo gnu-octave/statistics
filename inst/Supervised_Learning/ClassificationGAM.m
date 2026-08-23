@@ -344,10 +344,17 @@ classdef ClassificationGAM
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} IntMatrix
     ##
-    ## Interaction matrix
+    ## Every term the model fits
     ##
-    ## A logical matrix or matrix of column indices describing the interaction
-    ## terms applied to the predictor data.  This property is read-only.
+    ## A logical matrix with one row per term and one column per predictor,
+    ## true wherever the term multiplies that predictor.  A row naming one
+    ## predictor is a main effect, two an interaction, and three or more a
+    ## higher-order term.  This property is read-only.
+    ##
+    ## It is the complete record, where @code{Interactions} reports only the
+    ## two-way terms, in the form MATLAB reports them.  It is also the form
+    ## the @qcode{'Interactions'} option takes back, so passing it to the
+    ## constructor rebuilds a model over the same terms.
     ##
     ## @end deftp
     IntMatrix = [];
