@@ -796,6 +796,44 @@ classdef RegressionSVM
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionSVM} {@var{obj} =} discardSupportVectors (@var{obj})
+    ##
+    ## Discard the support vectors of a linear SVM model.
+    ##
+    ## @code{@var{obj} = discardSupportVectors (@var{obj})} empties
+    ## @code{Alpha} and @code{SupportVectors}, leaving @code{Beta} and
+    ## @code{Bias} to decide every prediction.  A linear kernel needs
+    ## nothing else, so the returned model predicts what it predicted
+    ## before while carrying one vector in place of many.
+    ##
+    ## The kernel must be linear.  Under any other the support vectors are
+    ## part of the decision function and cannot be dropped.  Discarding twice
+    ## is not an error and changes nothing.
+    ##
+    ## @seealso{fitrsvm, RegressionSVM, CompactRegressionSVM}
+    ## @end deftypefn
+    function this = discardSupportVectors (this)
+
+      if (nargin != 1)
+        print_usage ();
+      endif
+
+      if (! strcmpi (this.ModelParameters.KernelFunction, 'linear'))
+        error (strcat ("RegressionSVM.discardSupportVectors: you", ...
+                       " cannot discard support vectors for a non-linear", ...
+                       " kernel."));
+      endif
+
+      ## The engine keeps its own copy of the support vectors, so emptying
+      ## the properties alone would free nothing.  Collapsing the model onto
+      ## the single vector that decides it leaves every scoring path as it
+      ## was, svmpredict going on being the engine over one vector.
+      this.Model = discardSVs (this.Model);
+      this.Alpha = [];
+      this.SupportVectors = [];
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionSVM} {@var{yFit} =} predict (@var{obj}, @var{XC})
     ##
     ## Predict the response for new data with a support vector regression
@@ -1508,6 +1546,51 @@ endclassdef
 %! assert_equal (isfinite (kfoldLoss (CVMdl)), true);
 
 ## Test input validation for crossval
+## discardSupportVectors empties what R2024a empties and keeps what it
+## keeps: Alpha and the support vectors go, Beta, Bias and IsSupportVector
+## stay, and the class is unchanged.
+%!test
+%! load fisheriris
+%! keep = ! strcmp (species, "setosa");
+%! X = meas(keep,2:4); y = meas(keep,1);
+%! Mdl = fitrsvm (X, y, "KernelFunction", "linear");
+%! D = discardSupportVectors (Mdl);
+%! assert_equal (class (D), "RegressionSVM");
+%! assert_equal (isempty (D.Alpha), true);
+%! assert_equal (isempty (D.SupportVectors), true);
+%! assert_equal (D.Beta, Mdl.Beta);
+%! assert_equal (D.Bias, Mdl.Bias);
+%! assert_equal (D.IsSupportVector, Mdl.IsSupportVector);
+
+## A linear decision needs only Beta and Bias, so the model predicts what it
+## predicted before.
+%!test
+%! load fisheriris
+%! keep = ! strcmp (species, "setosa");
+%! X = meas(keep,2:4); y = meas(keep,1);
+%! Mdl = fitrsvm (X, y, "KernelFunction", "linear");
+%! D = discardSupportVectors (Mdl);
+%! assert_equal (predict (D, X), predict (Mdl, X), 1e-10);
+
+## The saving is real rather than cosmetic: the engine keeps its own copy of
+## the support vectors, and it collapses to the one vector that decides a
+## linear model.  Emptying the properties alone would free nothing.
+%!test
+%! load fisheriris
+%! keep = ! strcmp (species, "setosa");
+%! X = meas(keep,2:4); y = meas(keep,1);
+%! Mdl = fitrsvm (X, y, "KernelFunction", "linear");
+%! D = discardSupportVectors (Mdl);
+%! assert_equal (rows (Mdl.Model.SVs) > 1, true);
+%! assert_equal (rows (D.Model.SVs), 1);
+%! assert_equal (predict (discardSupportVectors (D), X), predict (D, X));
+
+%!error<RegressionSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
+%! load fisheriris
+%! keep = ! strcmp (species, "setosa");
+%! X = meas(keep,2:4); y = meas(keep,1);
+%! discardSupportVectors (fitrsvm (X, y, "KernelFunction", "rbf"))
+
 %!error<RegressionSVM.crossval: Name-Value arguments must be in pairs.> ...
 %! crossval (fitrsvm (randn (12, 2), randn (12, 1)), 'KFold')
 %!error<RegressionSVM.crossval: specify only one of the optional Name-Value paired arguments.> ...
