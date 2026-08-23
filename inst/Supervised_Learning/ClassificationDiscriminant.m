@@ -1210,6 +1210,50 @@ classdef ClassificationDiscriminant
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{n} =} nLinearCoeffs (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{n} =} nLinearCoeffs (@var{obj}, @var{delta})
+    ##
+    ## Number of nonzero linear coefficients at a regularization threshold.
+    ##
+    ## @code{@var{n} = nLinearCoeffs (@var{obj})} returns the number of
+    ## predictors the discriminant keeps at its own @code{Delta}.
+    ##
+    ## @code{@var{n} = nLinearCoeffs (@var{obj}, @var{delta})} returns the
+    ## number it would keep at each threshold in @var{delta}, as a column
+    ## vector however @var{delta} is shaped.
+    ##
+    ## A predictor survives a threshold when its @code{DeltaPredictor} reaches
+    ## it, the comparison including equality, so @var{delta} at exactly a
+    ## predictor's own value still counts it.  A threshold above every
+    ## @code{DeltaPredictor} therefore leaves nothing and returns zero.
+    ##
+    ## The count is taken whatever the @code{DiscrimType}, as MATLAB takes it,
+    ## even though @code{Delta} regularizes the linear types alone.
+    ##
+    ## @seealso{fitcdiscr, ClassificationDiscriminant,
+    ## CompactClassificationDiscriminant}
+    ## @end deftypefn
+    function n = nLinearCoeffs (this, delta)
+
+      if (nargin < 1 || nargin > 2)
+        print_usage ();
+      endif
+
+      if (nargin < 2)
+        delta = this.Delta;
+      endif
+
+      if (! (isnumeric (delta) && isreal (delta)))
+        error (strcat ("ClassificationDiscriminant.nLinearCoeffs: DELTA", ...
+                       " must be a real numeric value."));
+      endif
+
+      ## One column per threshold, one row per predictor, summed down.
+      n = sum (this.DeltaPredictor(:) >= delta(:)', 1)';
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationDiscriminant} {@var{label} =} predict (@var{obj}, @var{XC})
     ## @deftypefnx {ClassificationDiscriminant} {[@var{label}, @var{score}, @var{cost}] =} predict (@var{obj}, @var{XC})
     ##
@@ -2328,6 +2372,41 @@ endclassdef
 %! X = rand (10,2);
 %! Y = [ones(5,1);2*ones(5,1)];
 %! MODEL = ClassificationDiscriminant (X, Y);
+## nLinearCoeffs counts the predictors a threshold keeps.  R2024a on
+## fisheriris reports 4 at the model's own Delta of zero.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (nLinearCoeffs (Mdl), 4);
+
+## The comparison includes equality, which only a threshold sitting exactly
+## on a DeltaPredictor can show: R2024a returns 4, 3, 2, 1 at the four
+## sorted values, where a strict comparison would return 3, 2, 1, 0.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! dps = sort (Mdl.DeltaPredictor);
+%! assert_equal (nLinearCoeffs (Mdl, dps), [4; 3; 2; 1]);
+
+## A threshold above every DeltaPredictor keeps nothing, and the result is a
+## column however the thresholds were shaped.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (nLinearCoeffs (Mdl, [0, 1e6]), [4; 0]);
+%! assert_equal (size (nLinearCoeffs (Mdl, [0, 1, 2])), [3, 1]);
+
+## The count is taken whatever the DiscrimType, as MATLAB takes it, even
+## though Delta regularizes the linear types alone.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, "DiscrimType", "quadratic");
+%! assert_equal (nLinearCoeffs (Mdl), 4);
+
+%!error<ClassificationDiscriminant.nLinearCoeffs: DELTA must be a real numeric value.> ...
+%! load fisheriris
+%! nLinearCoeffs (fitcdiscr (meas, species), "a")
+
 %!error<ClassificationDiscriminant: too few input arguments.> ClassificationDiscriminant ()
 %!error<ClassificationDiscriminant: too few input arguments.> ...
 %! ClassificationDiscriminant (ones (4, 1))
