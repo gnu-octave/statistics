@@ -2389,7 +2389,7 @@ endclassdef
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 10, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "Discriminant")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2400,7 +2400,7 @@ endclassdef
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 3, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "Discriminant")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2410,7 +2410,7 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "Discriminant")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2420,7 +2420,7 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "Discriminant")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2431,7 +2431,7 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal (CVMdl.KFold == 3, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "Discriminant")
 
 ## Test input validation for crossval method
 %!error<ClassificationDiscriminant.crossval: Name-Value arguments must be in pairs.> ...

@@ -125,7 +125,7 @@ endfunction
 %! CVMdl = fitrgp (x, y, 'KFold', 4);
 %! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
 %! assert_equal (CVMdl.KFold, 4);
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGP');
+%! assert_equal (CVMdl.CrossValidatedModel, 'GP');
 
 %!test
 %! ## 'CrossVal' on gives the ten folds it defaults to

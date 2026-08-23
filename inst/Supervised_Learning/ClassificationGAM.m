@@ -1997,7 +1997,7 @@ endfunction
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 5, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "GAM")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2008,7 +2008,7 @@ endfunction
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 2, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "GAM")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2018,7 +2018,7 @@ endfunction
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "GAM")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -2029,7 +2029,7 @@ endfunction
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal (CVMdl.KFold == 3, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "GAM")
 
 ## Test input validation for crossval method
 %!error<ClassificationGAM.crossval: Name-Value arguments must be in pairs.> ...

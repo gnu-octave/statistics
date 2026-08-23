@@ -1850,7 +1850,7 @@ endfunction
 %! CVMdl = crossval (Mdl, 'KFold', 4);
 %! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
 %! assert_equal (CVMdl.KFold, 4);
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGP');
+%! assert_equal (CVMdl.CrossValidatedModel, 'GP');
 %! assert_equal (numel (CVMdl.Trained), 4);
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGP');
 %! assert_equal (size (kfoldPredict (CVMdl)), [20, 1]);

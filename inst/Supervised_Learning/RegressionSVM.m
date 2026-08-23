@@ -1495,7 +1495,7 @@ endclassdef
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
 %! assert_equal (CVMdl.KFold, 3);
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionSVM');
+%! assert_equal (CVMdl.CrossValidatedModel, 'SVM');
 %! assert_equal (numel (kfoldPredict (CVMdl)), 30);
 %! assert_equal (isfinite (kfoldLoss (CVMdl)), true);
 

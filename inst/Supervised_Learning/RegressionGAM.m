@@ -1814,7 +1814,7 @@ endfunction
 %! Mdl = fitrgam (meas(:,1:3), meas(:,4));
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGAM');
+%! assert_equal (CVMdl.CrossValidatedModel, 'GAM');
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
 %! assert_equal (CVMdl.KFold, 3);
 %! assert_equal (numel (CVMdl.Trained), 3);

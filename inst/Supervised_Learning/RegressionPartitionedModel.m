@@ -102,9 +102,13 @@ classdef RegressionPartitionedModel
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} CrossValidatedModel
     ##
-    ## Name of the class that was cross validated
+    ## Name of the cross-validated model
     ##
-    ## A character vector.  This property is read-only.
+    ## A character vector holding the short name of the learner that was
+    ## cross validated, as MATLAB reports it: @qcode{'GAM'}, @qcode{'GP'},
+    ## @qcode{'NeuralNetwork'} or @qcode{'SVM'}.  It is not the class name of
+    ## that learner, and the classification side uses the same names.  This
+    ## property is read-only.
     ##
     ## @end deftp
     CrossValidatedModel   = [];
@@ -301,19 +305,21 @@ classdef RegressionPartitionedModel
       this.PredictorNames = Mdl.PredictorNames;
       this.CategoricalPredictors = Mdl.CategoricalPredictors;
       this.Partition = Partition;
-      this.CrossValidatedModel = class (Mdl);
+      ## MATLAB stores a short name here, shared with the classification
+      ## side: 'GAM', 'GP', 'NeuralNetwork', 'SVM'.  All measured.
+      this.CrossValidatedModel = strrep (class (Mdl), 'Regression', '');
       this.ResponseTransform = Mdl.ResponseTransform;
       this.RTfun = Mdl.RTfun;
       ## A GAM carries no fitting parameter struct, so the property keeps its
       ## default rather than being read off a model that does not declare it.
-      if (! strcmp (this.CrossValidatedModel, 'RegressionGAM'))
+      if (! strcmp (this.CrossValidatedModel, 'GAM'))
         this.ModelParameters = Mdl.ModelParameters;
       endif
 
       ## Switch Regression object types
       switch (this.CrossValidatedModel)
 
-        case 'RegressionGAM'
+        case 'GAM'
           ## Knots, Order and DoF are three views of one parameterisation and
           ## the constructor accepts any two, recomputing the third, so only
           ## Knots and Order are passed on.
@@ -333,7 +339,7 @@ classdef RegressionPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-        case 'RegressionNeuralNetwork'
+        case 'NeuralNetwork'
           ## Computed before the cell literal: inside braces a space before
           ## the paren would split the call from its argument.
           stdz = ! isempty (Mdl.Mu);
@@ -351,7 +357,7 @@ classdef RegressionPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-        case 'RegressionGP'
+        case 'GP'
           p = Mdl.ModelParameters;
           args = {'KernelFunction', Mdl.KernelFunction, ...
                   'BasisFunction', Mdl.BasisFunction, ...
@@ -369,7 +375,7 @@ classdef RegressionPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-        case 'RegressionSVM'
+        case 'SVM'
           p = Mdl.ModelParameters;
           stdz = ! isempty (Mdl.Mu);
           args = {'SVMtype', p.SVMtype, ...
@@ -534,7 +540,7 @@ classdef RegressionPartitionedModel
       ## other cross-validated model has nothing to measure against.  Answering
       ## anyway would report a number for a quantity the model does not have.
       if (ischar (LossFun) && strcmpi (LossFun, 'epsiloninsensitive')
-          && ! strcmp (this.CrossValidatedModel, 'RegressionSVM'))
+          && ! strcmp (this.CrossValidatedModel, 'SVM'))
         error (strcat ("RegressionPartitionedModel.kfoldLoss: the", ...
                        " 'epsiloninsensitive' loss applies to a", ...
                        " RegressionSVM model only."));
@@ -604,7 +610,7 @@ endclassdef
 %! assert_equal (CVMdl.KFold, 4);
 %! assert_equal (numel (CVMdl.Trained), 4);
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionNeuralNetwork');
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionNeuralNetwork');
+%! assert_equal (CVMdl.CrossValidatedModel, 'NeuralNetwork');
 %! assert_equal (CVMdl.NumObservations, 40);
 %! assert_equal (CVMdl.ResponseName, 'Y');
 %! assert_equal (class (CVMdl.Partition), 'cvpartition');
@@ -616,7 +622,7 @@ endclassdef
 %! Y = X(:,1) + X(:,2);
 %! CVMdl = crossval (fitrsvm (X, Y), 'KFold', 4);
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionSVM');
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionSVM');
+%! assert_equal (CVMdl.CrossValidatedModel, 'SVM');
 
 ## The same for a generalized additive model, which carries no parameter
 ## struct, so that property keeps its default.
@@ -624,7 +630,7 @@ endclassdef
 %! load fisheriris
 %! CVMdl = crossval (fitrgam (meas(1:20,1:3), meas(1:20,4)), 'KFold', 4);
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
-%! assert_equal (CVMdl.CrossValidatedModel, 'RegressionGAM');
+%! assert_equal (CVMdl.CrossValidatedModel, 'GAM');
 %! assert_equal (CVMdl.NumObservations, 20);
 %! assert_equal (CVMdl.ModelParameters, []);
 

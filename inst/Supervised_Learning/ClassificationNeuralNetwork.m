@@ -1910,7 +1910,7 @@ endfunction
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 5, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationNeuralNetwork")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationNeuralNetwork")
+%! assert_equal (CVMdl.CrossValidatedModel, "NeuralNetwork")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -1920,7 +1920,7 @@ endfunction
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationNeuralNetwork")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationNeuralNetwork")
+%! assert_equal (CVMdl.CrossValidatedModel, "NeuralNetwork")
 
 ## Test input validation for crossval method
 %!error<ClassificationNeuralNetwork.crossval: Name-Value arguments must be in pairs.> ...

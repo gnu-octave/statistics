@@ -2556,7 +2556,7 @@ endclassdef
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 5, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM")
+%! assert_equal (CVMdl.CrossValidatedModel, "SVM")
 %!test
 %! obj = fitcsvm (x, y);
 %! status = warning;
@@ -2567,7 +2567,7 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM")
+%! assert_equal (CVMdl.CrossValidatedModel, "SVM")
 %!test
 %! obj = fitcsvm (x, y);
 %! status = warning;
@@ -2578,7 +2578,7 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM")
+%! assert_equal (CVMdl.CrossValidatedModel, "SVM")
 
 ## Test input validation for crossval method
 %!error<ClassificationSVM.crossval: Name-Value arguments must be in pairs.> ...

@@ -124,9 +124,11 @@ classdef ClassificationPartitionedModel
     ##
     ## Cross-validated model class
     ##
-    ## A character vector specifying the class of the cross-validated model.
-    ## This field contains the type of model that was used for the training,
-    ## e.g., @qcode{'ClassificationKNN'}.  This property is read-only.
+    ## A character vector holding the short name of the learner that was
+    ## cross validated, as MATLAB reports it: @qcode{'Discriminant'},
+    ## @qcode{'GAM'}, @qcode{'KNN'}, @qcode{'NeuralNetwork'} or
+    ## @qcode{'SVM'}.  It is not the class name of that learner, and the
+    ## regression side uses the same names.  This property is read-only.
     ##
     ## @end deftp
     CrossValidatedModel          = [];
@@ -327,8 +329,7 @@ classdef ClassificationPartitionedModel
     ## the SVM's costs enter its box constraint while it is being fitted, so a
     ## model fitted under one cost matrix cannot be made to report another.
     function this = set.Cost (this, val)
-      if (this.Fitted && strcmp (this.CrossValidatedModel, ...
-                                 'ClassificationSVM'))
+      if (this.Fitted && strcmp (this.CrossValidatedModel, 'SVM'))
         error (strcat ("ClassificationPartitionedModel: cannot assign", ...
                        " 'Cost' on a cross-validated ClassificationSVM,", ...
                        " whose costs are consumed while it is fitted."));
@@ -352,7 +353,7 @@ classdef ClassificationPartitionedModel
     ## a prior assigned after the fit.  MATLAB draws the same line.
     function this = set.Prior (this, val)
       if (this.Fitted && ! strcmp (this.CrossValidatedModel, ...
-                                   'ClassificationDiscriminant'))
+                                   'Discriminant'))
         error (strcat ("ClassificationPartitionedModel: 'Prior' can only", ...
                        " be assigned on a cross-validated", ...
                        " ClassificationDiscriminant."));
@@ -442,7 +443,9 @@ classdef ClassificationPartitionedModel
       this.NumObservations = rows (this.X);
       this.PredictorNames = Mdl.PredictorNames;
       this.Partition = Partition;
-      this.CrossValidatedModel = class (Mdl);
+      ## MATLAB stores a short name here, shared with the regression
+      ## side: 'Discriminant', 'GAM', 'KNN', 'NeuralNetwork', 'SVM'.
+      this.CrossValidatedModel = strrep (class (Mdl), 'Classification', '');
       this.ScoreTransform = Mdl.ScoreTransform;
       this.STfun = Mdl.STfun;
       ## Every classifier reports a prior and a cost now, so they are carried
@@ -454,7 +457,7 @@ classdef ClassificationPartitionedModel
       ## Switch Classification object types
       switch (this.CrossValidatedModel)
 
-        case 'ClassificationDiscriminant'
+        case 'Discriminant'
           ## Arguments to pass in fitcdiscr
           args = {};
           ## List of acceptable parameters for fitcdiscr
@@ -491,7 +494,7 @@ classdef ClassificationPartitionedModel
           endfor
           this.ModelParameters = params;
 
-        case 'ClassificationGAM'
+        case 'GAM'
           ## Arguments to pass in fitcgam
           args = {};
           ## List of acceptable parameters for fitcdiscr
@@ -526,7 +529,7 @@ classdef ClassificationPartitionedModel
           endfor
           this.ModelParameters = params;
 
-        case 'ClassificationKNN'
+        case 'KNN'
           ## Arguments to pass in fitcknn
           args = {};
           ## List of acceptable parameters for fitcknn
@@ -591,7 +594,7 @@ classdef ClassificationPartitionedModel
           endfor
           this.ModelParameters = params;
 
-        case 'ClassificationNeuralNetwork'
+        case 'NeuralNetwork'
           ## Arguments to pass in fitcnet
           args = {};
           ## List of acceptable parameters for fitcnet
@@ -629,7 +632,7 @@ classdef ClassificationPartitionedModel
           endfor
           this.ModelParameters = params;
 
-        case 'ClassificationSVM'
+        case 'SVM'
           ## Get ModelParameters structure from ClassificationSVM object
           params = Mdl.ModelParameters;
 
@@ -712,8 +715,7 @@ classdef ClassificationPartitionedModel
       ## Models whose compact form reports no cost.  CompactClassificationGAM
       ## returns a label and a score only, so asking it for a third output
       ## raised and kfoldPredict could not run on a cross-validated GAM.
-      no_cost_models = {'ClassificationGAM', 'ClassificationNeuralNetwork', ...
-                        'ClassificationSVM'};
+      no_cost_models = {'GAM', 'NeuralNetwork', 'SVM'};
       no_cost = any (strcmp (this.CrossValidatedModel, no_cost_models));
       if (no_cost && nargout > 2)
         error (strcat ("ClassificationPartitionedModel.kfoldPredict:", ...
@@ -1044,7 +1046,7 @@ endclassdef
 %! assert_equal (cvModel.NumObservations, 150);
 %! assert_equal (numel (cvModel.Trained), 5);
 %! assert_equal (class (cvModel.Trained{1}), "CompactClassificationDiscriminant");
-%! assert_equal (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
+%! assert_equal (cvModel.CrossValidatedModel, "Discriminant");
 %! assert_equal (cvModel.KFold, 5);
 %!test
 %! load fisheriris
@@ -1055,7 +1057,7 @@ endclassdef
 %! assert_equal (cvModel.NumObservations, 150);
 %! assert_equal (numel (cvModel.Trained), 1);
 %! assert_equal (class (cvModel.Trained{1}), "CompactClassificationDiscriminant");
-%! assert_equal (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
+%! assert_equal (cvModel.CrossValidatedModel, "Discriminant");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
@@ -1065,7 +1067,7 @@ endclassdef
 %! assert_equal (cvModel.NumObservations, 4);
 %! assert_equal (numel (cvModel.Trained), 2);
 %! assert_equal (class (cvModel.Trained{1}), "CompactClassificationGAM");
-%! assert_equal (cvModel.CrossValidatedModel, "ClassificationGAM");
+%! assert_equal (cvModel.CrossValidatedModel, "GAM");
 %! assert_equal (cvModel.KFold, 2);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
@@ -1077,7 +1079,7 @@ endclassdef
 %! assert_equal (cvModel.NumObservations, 4);
 %! assert_equal (numel (cvModel.Trained), 4);
 %! assert_equal (class (cvModel.Trained{1}), "CompactClassificationGAM");
-%! assert_equal (cvModel.CrossValidatedModel, "ClassificationGAM");
+%! assert_equal (cvModel.CrossValidatedModel, "GAM");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
@@ -1129,7 +1131,7 @@ endclassdef
 %! assert_equal (cvModel.NumObservations, 4);
 %! assert_equal (numel (cvModel.Trained), 2);
 %! assert_equal (class (cvModel.Trained{1}), "CompactClassificationNeuralNetwork");
-%! assert_equal (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
+%! assert_equal (cvModel.CrossValidatedModel, "NeuralNetwork");
 %! assert_equal (cvModel.KFold, 2);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
@@ -1141,7 +1143,7 @@ endclassdef
 %! assert_equal (cvModel.NumObservations, 4);
 %! assert_equal (numel (cvModel.Trained), 4);
 %! assert_equal (class (cvModel.Trained{1}), "CompactClassificationNeuralNetwork");
-%! assert_equal (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
+%! assert_equal (cvModel.CrossValidatedModel, "NeuralNetwork");
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'setosa');
@@ -1153,7 +1155,7 @@ endclassdef
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (CVMdl.KFold == 5, true)
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM");
+%! assert_equal (CVMdl.CrossValidatedModel, "SVM");
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'setosa');
@@ -1164,7 +1166,7 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM");
+%! assert_equal (CVMdl.CrossValidatedModel, "SVM");
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'setosa');
@@ -1175,7 +1177,13 @@ endclassdef
 %! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
 %! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM");
+%! assert_equal (CVMdl.CrossValidatedModel, "SVM");
+
+## The KNN short name, the one of the five that no test pinned.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), 'KFold', 5);
+%! assert_equal (CVMdl.CrossValidatedModel, "KNN");
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
@@ -1225,9 +1233,9 @@ endclassdef
 %!          0.3333, 0.6667], 1e-4);
 
 ## Test input validation for kfoldPredict
-%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationSVM cross validated models.> ...
+%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for SVM cross validated models.> ...
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
-%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationNeuralNetwork cross validated models.> ...
+%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for NeuralNetwork cross validated models.> ...
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationNeuralNetwork (ones (40,2), randi ([1, 2], 40, 1))))
 
 ## The partition, the stored data and NumObservations all describe the same
