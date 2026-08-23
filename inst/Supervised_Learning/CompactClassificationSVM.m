@@ -526,26 +526,16 @@ classdef CompactClassificationSVM
       [out, ~, scores] = svmpredict (ones (rows (XC), 1), XC, this.Model, '-q');
 
       ## Expand scores for two classes
-      if (numel (this.ClassNames) == 2)
+      if (classCount (this.ClassNames) == 2)
         scores = [scores, -scores];
       endif
 
-      ## Translate labels to classnames
-      if (iscellstr (this.ClassNames))
-        labels = cell (rows (XC), 1);
-        labels(out==1) = this.ClassNames{1};
-        labels(out!=1) = this.ClassNames{2};
-      elseif (islogical (this.ClassNames))
-        labels = false (rows (XC), 1);
-      elseif (isnumeric (this.ClassNames))
-        labels = zeros (rows (XC), 1);
-      elseif (ischar (this.ClassNames))
-        labels = char (zeros (rows (XC), size (this.ClassNames, 2)));
-      endif
-      if (! iscellstr (this.ClassNames))
-        labels(out==1) = this.ClassNames(1);
-        labels(out!=1) = this.ClassNames(2);
-      endif
+      ## Translate labels to classnames.  Indexing the class names by a
+      ## per-observation class number keeps every response type on one path:
+      ## assigning into a preallocated result instead has to know that a
+      ## character matrix holds a name per row and not per element.
+      idx = 2 - (out == 1);
+      labels = labelsFromIndex (this.ClassNames, idx);
 
       if (nargout > 1)
         ## Apply ScoreTransform
@@ -998,6 +988,25 @@ endclassdef
 %! assert_equal (rows (Mdl.Model.SVs) > 1, true);
 %! assert_equal (rows (D.Model.SVs), 1);
 %! assert_equal (predict (discardSupportVectors (D), X), predict (D, X));
+
+## A compact model keeps the character class names and predicts whole names.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcsvm (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcsvm (Xch, Ycell));
+%! assert_equal (cellstr (Cc.ClassNames), Cs.ClassNames);
+%! assert_equal (cellstr (predict (Cc, Xch)), predict (Cs, Xch));
+
+## and reads one back in its assessment methods.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcsvm (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcsvm (Xch, Ycell));
+%! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
 
 %!error<CompactClassificationSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris

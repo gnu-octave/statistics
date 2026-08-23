@@ -336,9 +336,9 @@ classdef ClassificationPartitionedModel
       endif
       gnY = this.ClassNames;
       if (isempty (val))
-        this.Cost = cast (! eye (numel (gnY)), 'double');
+        this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = numel (gnY);
+        K = classCount (gnY);
         if (! isequal (size (val), [K, K]))
           error (strcat ("ClassificationPartitionedModel: the number", ...
                          " of rows and columns in 'Cost' must", ...
@@ -368,14 +368,14 @@ classdef ClassificationPartitionedModel
                                'ClassificationPartitionedModel');
       endif
       if (ischar (val) && strcmpi ('uniform', val))
-        n = numel (this.ClassNames);
+        n = classCount (this.ClassNames);
         this.Prior = ones (1, n) ./ n;
       elseif (isempty (val) || (ischar (val) && strcmpi ('empirical', val)))
-        [~, gnY, gY] = unique (this.Y);
+        [~, gnY, gY] = uniqueLabels (this.Y);
         pr = accumarray (gY(:), 1, [numel(gnY), 1]);
         this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (val))
-        if (numel (this.ClassNames) != numel (val))
+        if (classCount (this.ClassNames) != numel (val))
           error (strcat ("ClassificationPartitionedModel: the elements", ...
                          " in 'Prior' do not correspond to the selected", ...
                          " classes in Y."));
@@ -760,8 +760,8 @@ classdef ClassificationPartitionedModel
       endif
 
       ## Initialize the score and cost matrices
-      Score = nan (this.NumObservations, numel (this.ClassNames));
-      Cost = nan (this.NumObservations, numel (this.ClassNames));
+      Score = nan (this.NumObservations, classCount (this.ClassNames));
+      Cost = nan (this.NumObservations, classCount (this.ClassNames));
 
       ## Predict label, score, and cost (if applicable) for each KFold partition
       for k = 1:this.KFold
@@ -788,8 +788,11 @@ classdef ClassificationPartitionedModel
           endif
         endif
 
-        ## Get labels, score, and cost (if applicable)
-        label(testIdx) = predictedLabel;
+        ## Get labels, score, and cost (if applicable).  The rows are
+        ## assigned and not the elements: a character matrix of labels was
+        ## allocated one name per row above, and a linear index would write
+        ## down its first column.
+        label(testIdx, :) = predictedLabel;
         Score(testIdx, :) = score;
         if (nargout > 2)
           Cost(testIdx, :) = cost;
@@ -918,7 +921,7 @@ classdef ClassificationPartitionedModel
       ## Every observation answered for by the fold that held it out
       [label, Score] = kfoldPredict (this);
       classes = this.ClassNames;
-      K = numel (classes);
+      K = classCount (classes);
       n = rows (this.X);
 
       ## Index of the true and the predicted class, so the cost matrix and
@@ -1090,7 +1093,7 @@ classdef ClassificationPartitionedModel
     function m = foldMargin_ (this)
       [~, Score] = kfoldPredict (this);
       classes = this.ClassNames;
-      K = numel (classes);
+      K = classCount (classes);
       n = rows (this.X);
       m = nan (n, 1);
       for i = 1:n
@@ -1379,6 +1382,20 @@ endclassdef
 %! assert_equal (numel (cv.Trained), 3);
 %! assert_equal (cv.Trained{1}.Interactions, [1, 2; 1, 3; 2, 3]);
 %! assert_equal (cv.Trained{3}.Interactions, Mdl.Interactions);
+
+## kfoldPredict writes whole names into its result: the labels are laid out
+## one name per row, and assigning by element would fill the first column.
+%!test
+%! load fisheriris
+%! b = ! strcmp (species, "setosa");
+%! X = meas(b,:); Ys = species(b); Yc = char (Ys);
+%! rand ("state", 1); Mc = fitcdiscr (X, Yc);
+%! rand ("state", 1); Ms = fitcdiscr (X, Ys);
+%! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
+%! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
+%! p = kfoldPredict (cvc);
+%! assert_equal (columns (p), 10);
+%! assert_equal (cellstr (p), kfoldPredict (cvs));
 
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
 %! ClassificationPartitionedModel ()

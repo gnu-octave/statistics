@@ -367,9 +367,9 @@ classdef CompactClassificationGAM
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
       if (isempty (val))
-        this.Cost = cast (! eye (numel (gnY)), 'double');
+        this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = numel (gnY);
+        K = classCount (gnY);
         if (! isequal (size (val), [K, K]))
           error (strcat ("CompactClassificationGAM: the number", ...
                          " of rows and columns in 'Cost' must", ...
@@ -603,7 +603,7 @@ classdef CompactClassificationGAM
 
       ## Select the class with the minimum expected misclassification cost
       [~, minIdx] = min (CE, [], 2);
-      labels = this.ClassNames (minIdx);
+      labels = labelsFromIndex (this.ClassNames, minIdx);
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -637,7 +637,7 @@ classdef CompactClassificationGAM
       classes = this.ClassNames;
       m = zeros (rows (X), 1);
       for i = 1:rows (X)
-        idx = find (ismember (classes, Y(i)));
+        idx = labelIndex (classes, Y, i);
         if (isempty (idx))
           m(i) = NaN;
           continue;
@@ -761,9 +761,9 @@ classdef CompactClassificationGAM
       classes = this.ClassNames;
 
       ## Membership of the true class, as an indicator per class
-      Yind = zeros (rows (X), numel (classes));
+      Yind = zeros (rows (X), classCount (classes));
       for i = 1:rows (X)
-        idx = find (ismember (classes, Y(i)));
+        idx = labelIndex (classes, Y, i);
         if (isempty (idx))
           L = NaN;
           return;
@@ -798,14 +798,14 @@ classdef CompactClassificationGAM
           L = 0;
           for i = 1:rows (X)
             [~, k] = min (scores(i,:) * this.Cost);
-            true_idx = find (ismember (classes, Y(i)));
+            true_idx = labelIndex (classes, Y, i);
             L = L + W(i) * this.Cost(true_idx, k);
           endfor
         case 'classifcost'
           ## What the model's own prediction costs, given the true class
           L = 0;
           for i = 1:rows (X)
-            true_idx = find (ismember (classes, Y(i)));
+            true_idx = labelIndex (classes, Y, i);
             pred_idx = find (ismember (classes, label(i)));
             L = L + W(i) * this.Cost(true_idx, pred_idx);
           endfor
@@ -1022,6 +1022,25 @@ endfunction
 %! assert_equal (CMdl.BaseModel.Intercept, 0.4055, 1e-1)
 
 ## Test input validation for constructor
+## A compact model keeps the character class names and predicts whole names.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcgam (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcgam (Xch, Ycell));
+%! assert_equal (cellstr (Cc.ClassNames), Cs.ClassNames);
+%! assert_equal (cellstr (predict (Cc, Xch)), predict (Cs, Xch));
+
+## and reads one back in its assessment methods.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcgam (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcgam (Xch, Ycell));
+%! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
+
 %!error<CompactClassificationGAM: invalid classification object.> ...
 %! CompactClassificationGAM (1)
 

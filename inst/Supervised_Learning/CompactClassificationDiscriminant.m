@@ -570,9 +570,9 @@ classdef CompactClassificationDiscriminant
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
       if (isempty (val))
-        this.Cost = cast (! eye (numel (gnY)), 'double');
+        this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = numel (gnY);
+        K = classCount (gnY);
         if (! isequal (size (val), [K, K]))
           error (strcat ("CompactClassificationDiscriminant: the number", ...
                          " of rows and columns in 'Cost' must correspond", ...
@@ -583,7 +583,7 @@ classdef CompactClassificationDiscriminant
     endfunction
 
     function this = set.Prior (this, val)
-      K = numel (this.ClassNames);
+      K = classCount (this.ClassNames);
       if (isstruct (val))
         val = priorFromStruct (val, this.ClassNames, ...
                                'CompactClassificationDiscriminant');
@@ -777,7 +777,7 @@ classdef CompactClassificationDiscriminant
 
       ## Initialize matrices
       numObservations = rows (XC);
-      numClasses = numel (this.ClassNames);
+      numClasses = classCount (this.ClassNames);
       score = zeros (numObservations, numClasses);
       cost = zeros (numObservations, numClasses);
 
@@ -824,7 +824,7 @@ classdef CompactClassificationDiscriminant
 
       ## Predict the class labels based on the minimum cost
       [~, minIdx] = min (cost, [], 2);
-      label = this.ClassNames(minIdx);
+      label = labelsFromIndex (this.ClassNames, minIdx);
 
     endfunction
 
@@ -1007,7 +1007,7 @@ classdef CompactClassificationDiscriminant
       endif
 
       ## Check if Y contains correct classes
-      if (! all (ismember (unique (Y), this.ClassNames)))
+      if (! labelsKnown (Y, this.ClassNames))
         error (strcat ("CompactClassificationDiscriminant.loss: Y must", ...
                        " contain only the classes in ClassNames."));
       endif
@@ -1021,8 +1021,8 @@ classdef CompactClassificationDiscriminant
       unique_classes = this.ClassNames;
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
-      for i = 1:numel (unique_classes)
-        class_idx = ismember (Y, unique_classes{i});
+      for i = 1:classCount (unique_classes)
+        class_idx = classMembers (Y, unique_classes, i);
         if (sum (Weights(class_idx)) > 0)
           norm_weights(class_idx) = ...
           Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
@@ -1038,10 +1038,10 @@ classdef CompactClassificationDiscriminant
 
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
-      K = numel (this.ClassNames);
+      K = classCount (this.ClassNames);
       C = false (n, K);
       for i = 1:n
-        class_idx = find (ismember (this.ClassNames, Y{i}));
+        class_idx = labelIndex (this.ClassNames, Y, i);
         C(i, class_idx) = true;
       endfor
       Y_new = C';
@@ -1087,14 +1087,14 @@ classdef CompactClassificationDiscriminant
             f_Xj = scores(i, :);
             gamma_jk = f_Xj * Cost;
             [~, min_cost_class] = min (gamma_jk);
-            cj = Cost(find (ismember (this.ClassNames, Y(i))), min_cost_class);
+            cj = Cost(labelIndex (this.ClassNames, Y, i), min_cost_class);
             L = L + Weights(i) * cj;
           endfor
         case 'classifcost'
           Cost = this.Cost;
           L = 0;
           for i = 1:n
-            y_idx = find (ismember (this.ClassNames, Y(i)));
+            y_idx = labelIndex (this.ClassNames, Y, i);
             y_hat_idx = find (ismember (this.ClassNames, label(i)));
             L = L + Weights(i) * Cost(y_idx, y_hat_idx);
           endfor
@@ -1176,7 +1176,7 @@ classdef CompactClassificationDiscriminant
       endif
 
       ## Check if Y contains correct classes
-      if (! all (ismember (unique (Y), this.ClassNames)))
+      if (! labelsKnown (Y, this.ClassNames))
         error (strcat ("CompactClassificationDiscriminant.margin: Y must", ...
                        " contain only the classes in ClassNames."));
       endif
@@ -1193,7 +1193,7 @@ classdef CompactClassificationDiscriminant
       ## Loop over each observation to compute the margin
       for i = 1:n
         ## True class index
-        true_class_idx = find (ismember (this.ClassNames, Y{i}));
+        true_class_idx = labelIndex (this.ClassNames, Y, i);
 
         ## Score for the true class
         true_class_score = scores(i, true_class_idx);
@@ -1611,6 +1611,25 @@ endclassdef
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species, "DiscrimType", "quadratic"));
 %! assert_equal (nLinearCoeffs (Mdl), 4);
+
+## A compact model keeps the character class names and predicts whole names.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcdiscr (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcdiscr (Xch, Ycell));
+%! assert_equal (cellstr (Cc.ClassNames), Cs.ClassNames);
+%! assert_equal (cellstr (predict (Cc, Xch)), predict (Cs, Xch));
+
+## and reads one back in its assessment methods.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcdiscr (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcdiscr (Xch, Ycell));
+%! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
 
 %!error<CompactClassificationDiscriminant.nLinearCoeffs: DELTA must be a real numeric value.> ...
 %! load fisheriris

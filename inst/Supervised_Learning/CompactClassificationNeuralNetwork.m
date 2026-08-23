@@ -385,9 +385,9 @@ classdef CompactClassificationNeuralNetwork
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
       if (isempty (val))
-        this.Cost = cast (! eye (numel (gnY)), 'double');
+        this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = numel (gnY);
+        K = classCount (gnY);
         if (! isequal (size (val), [K, K]))
           error (strcat ("CompactClassificationNeuralNetwork: the number", ...
                          " of rows and columns in 'Cost' must correspond", ...
@@ -555,7 +555,7 @@ classdef CompactClassificationNeuralNetwork
       [labels, scores] = fcnnpredict (this.ModelParameters, XC, NumThreads);
 
       # Get class labels
-      labels = this.ClassNames(labels);
+      labels = labelsFromIndex (this.ClassNames, labels);
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -590,7 +590,7 @@ classdef CompactClassificationNeuralNetwork
       classes = this.ClassNames;
       m = zeros (rows (X), 1);
       for i = 1:rows (X)
-        idx = find (ismember (classes, Y(i)));
+        idx = labelIndex (classes, Y, i);
         if (isempty (idx))
           m(i) = NaN;
           continue;
@@ -719,12 +719,12 @@ classdef CompactClassificationNeuralNetwork
 
       [label, scores] = predict (this, X);
       classes = this.ClassNames;
-      K = numel (classes);
+      K = classCount (classes);
 
       ## Membership of the true class, as a +1/-1 indicator per class
       Yind = zeros (rows (X), K);
       for i = 1:rows (X)
-        idx = find (ismember (classes, Y(i)));
+        idx = labelIndex (classes, Y, i);
         if (isempty (idx))
           L = NaN;
           return;
@@ -759,14 +759,14 @@ classdef CompactClassificationNeuralNetwork
           L = 0;
           for i = 1:rows (X)
             [~, k] = min (scores(i,:) * this.Cost);
-            true_idx = find (ismember (classes, Y(i)));
+            true_idx = labelIndex (classes, Y, i);
             L = L + W(i) * this.Cost(true_idx, k);
           endfor
         case 'classifcost'
           ## What the model's own prediction costs, given the true class
           L = 0;
           for i = 1:rows (X)
-            true_idx = find (ismember (classes, Y(i)));
+            true_idx = labelIndex (classes, Y, i);
             pred_idx = find (ismember (classes, label(i)));
             L = L + W(i) * this.Cost(true_idx, pred_idx);
           endfor
@@ -944,6 +944,25 @@ endclassdef
 %! isequal (predict (Mdl, X), predict (CMdl, X))
 
 ## Test input validation for constructor
+## A compact model keeps the character class names and predicts whole names.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcnet (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcnet (Xch, Ycell));
+%! assert_equal (cellstr (Cc.ClassNames), Cs.ClassNames);
+%! assert_equal (cellstr (predict (Cc, Xch)), predict (Cs, Xch));
+
+## and reads one back in its assessment methods.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Cc = compact (fitcnet (Xch, Ych));
+%! rand ("state", 1); randn ("state", 1); Cs = compact (fitcnet (Xch, Ycell));
+%! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
+
 %!error<CompactClassificationNeuralNetwork: invalid classification object.> ...
 %! CompactClassificationNeuralNetwork (1)
 

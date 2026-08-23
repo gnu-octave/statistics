@@ -721,6 +721,15 @@ classdef cvpartition
           error ("cvpartition: invalid optional paired argument.");
         endif
 
+      ## A grouping variable may name its groups in the rows of a character
+      ## matrix, which is one label per row and not one per element.  Such a
+      ## matrix is not a vector, so it is turned into the cell array of names
+      ## it stands for and taken down the vector branch below.  A character
+      ## vector is left alone: there each element is already an observation.
+      elseif (ischar (X) && ! isvector (X))
+        this = cvpartition (cellstr (X), varargin{:});
+        return;
+
       ## Check first input being a vector for stratification
       elseif (isvector (X))
         ## Get number of observations (including missing values)
@@ -2229,6 +2238,22 @@ endclassdef
 %!   assert_equal (any (ismember (unique (g(te)), ...
 %!                                unique (g(training (c, s))))), false);
 %! endfor
+
+## A grouping variable may name its groups in the rows of a character
+## matrix, which MATLAB accepts and reports the same partition for as the
+## cell array of the same names.
+%!test
+%! load fisheriris
+%! c1 = cvpartition (char (species), "KFold", 3);
+%! c2 = cvpartition (species, "KFold", 3);
+%! assert_equal (c1.TestSize, c2.TestSize);
+%! assert_equal (c1.NumObservations, 150);
+
+## A character vector is left alone: there each element is an observation
+## already, and turning it into names would change what it partitions.
+%!test
+%! c = cvpartition ("aabbcc", "KFold", 3);
+%! assert_equal (c.NumObservations, 6);
 
 %!error <cvpartition: 'GroupingVariables' does not apply to 'resubstitution'> ...
 %! cvpartition (12, 'Resubstitution', 'GroupingVariables', ...

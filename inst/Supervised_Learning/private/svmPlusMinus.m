@@ -41,12 +41,12 @@ function Ypm = svmPlusMinus (Y, ClassNames)
     return;
   endif
 
-  if (iscellstr (ClassNames))
-    idx = cellfun (@(v) find (strcmp (v, ClassNames), 1), cellstr (Y), ...
-                   'UniformOutput', false);
-  elseif (ischar (ClassNames))
-    idx = arrayfun (@(k) find (strcmp (Y(k,:), cellstr (ClassNames)), 1), ...
-                    (1:rows (Y))', 'UniformOutput', false);
+  ## Both sides go through cellstr so that the padding a character matrix
+  ## carries is stripped from each consistently: comparing a padded row of Y
+  ## against an unpadded class name matches nothing.
+  if (iscellstr (ClassNames) || ischar (ClassNames))
+    idx = cellfun (@(v) find (strcmp (v, cellstr (ClassNames)), 1), ...
+                   cellstr (Y), 'UniformOutput', false);
   else
     idx = arrayfun (@(v) find (v == ClassNames(:), 1), Y(:), ...
                     'UniformOutput', false);

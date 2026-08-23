@@ -880,8 +880,12 @@ classdef ClassificationSVM
 
       ## Handle class names
       if (! isempty (ClassNames))
-        if (iscellstr (ClassNames))
-          ru = find (! ismember (gnY, ClassNames));
+        ## Anything textual is matched as whole names, gnY being grp2idx's
+        ## own cellstr of them.  A character matrix is not a cellstr, and
+        ## ismember between two of them compares character by character, so
+        ## it would answer a question nobody asked.
+        if (iscellstr (ClassNames) || ischar (ClassNames))
+          ru = find (! ismember (gnY, cellstr (ClassNames)));
         else
           ru = find (! ismember (glY, ClassNames));
         endif
@@ -894,12 +898,17 @@ classdef ClassificationSVM
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
       RowsUsed  = ! isnan (gY);
-      Yret      = Y(RowsUsed);
+      ## Index the rows and not the elements: a response naming its
+      ## classes in the rows of a character matrix has one column per
+      ## character, and a linear index flattens the names into single
+      ## letters.  Every other accepted type is a column, for which
+      ## the two forms agree.
+      Yret      = Y(RowsUsed, :);
       Xret      = X(RowsUsed, :);
       this.X    = Xret;
       this.Y    = Yret;
       cobs      = ! any (isnan (Xret), 2);
-      Y         = Yret(cobs);
+      Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
 
       ## Renew groups in Y over the retained observations, so a class held
@@ -1243,26 +1252,16 @@ classdef ClassificationSVM
       [out, ~, scores] = svmpredict (ones (rows (XC), 1), XC, this.Model, '-q');
 
       ## Expand scores for two classes
-      if (numel (this.ClassNames) == 2)
+      if (classCount (this.ClassNames) == 2)
         scores = [scores, -scores];
       endif
 
-      ## Translate labels to classnames
-      if (iscellstr (this.Y))
-        labels = cell (rows (XC), 1);
-        labels(out==1) = this.ClassNames{1};
-        labels(out!=1) = this.ClassNames{2};
-      elseif (islogical (this.Y))
-        labels = false (rows (XC), 1);
-      elseif (isnumeric (this.Y))
-        labels = zeros (rows (XC), 1);
-      elseif (ischar (this.Y))
-        labels = char (zeros (rows (XC), size (this.Y, 2)));
-      endif
-      if (! iscellstr (this.Y))
-        labels(out==1) = this.ClassNames(1);
-        labels(out!=1) = this.ClassNames(2);
-      endif
+      ## Translate labels to classnames.  Indexing the class names by a
+      ## per-observation class number keeps every response type on one path:
+      ## assigning into a preallocated result instead has to know that a
+      ## character matrix holds a name per row and not per element.
+      idx = 2 - (out == 1);
+      labels = labelsFromIndex (this.ClassNames, idx);
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -1310,7 +1309,7 @@ classdef ClassificationSVM
       [out, ~, scores] = svmpredict (ones (rows (X), 1), X, this.Model, '-q');
 
       ## Expand scores for two classes
-      if (numel (this.ClassNames) == 2)
+      if (classCount (this.ClassNames) == 2)
         scores = [scores, -scores];
       endif
 
@@ -2296,6 +2295,97 @@ endclassdef
 %! assert_equal (rows (Mdl.Model.SVs) > 1, true);
 %! assert_equal (rows (D.Model.SVs), 1);
 %! assert_equal (predict (discardSupportVectors (D), X), predict (D, X));
+
+## A response naming its classes in the rows of a character matrix is one
+## of the documented types and MATLAB accepts it on every classifier.  The
+## whole surface below was broken and untested, which is why it stayed so.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcsvm (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcsvm (Xch, Ycell);
+%! assert_equal (size (Mc.ClassNames), [2, 10]);
+%! assert_equal (cellstr (Mc.ClassNames), Ms.ClassNames);
+
+## predict returns whole names, not their first letters.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcsvm (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcsvm (Xch, Ycell);
+%! pch = predict (Mc, Xch);
+%! assert_equal (columns (pch), 10);
+%! assert_equal (cellstr (pch), predict (Ms, Xch));
+
+## loss, margin and edge read a character response as the same response.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcsvm (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcsvm (Xch, Ycell);
+%! assert_equal (loss (Mc, Xch, Ych), loss (Ms, Xch, Ycell), 1e-12);
+%! assert_equal (margin (Mc, Xch, Ych), margin (Ms, Xch, Ycell), 1e-12);
+%! assert_equal (edge (Mc, Xch, Ych), edge (Ms, Xch, Ycell), 1e-12);
+
+## A character matrix pads its rows out to the longest name, and the padding
+## is part of the name: R2024a reports ClassNames of ['ab  '; 'abcd'].
+%!test
+%! Xpad = [1 2; 3 4; 1.1 2.1; 3.1 4.1; 1.2 2.2; 3.2 4.2];
+%! Ypad = char ({"ab", "abcd", "ab", "abcd", "ab", "abcd"});
+%! rand ("state", 1); randn ("state", 1);
+%! Mp = fitcsvm (Xpad, Ypad);
+%! assert_equal (size (Mp.ClassNames), [2, 4]);
+%! assert_equal (Mp.ClassNames(1,:), "ab  ");
+
+## A row dropped for a missing predictor is the only case that exercises
+## indexing the response by row rather than by element.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! Xmiss = Xch; Xmiss(3,2) = NaN;
+%! rand ("state", 1); randn ("state", 1); Md = fitcsvm (Xmiss, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcsvm (Xmiss, Ycell);
+%! assert_equal (size (Md.ClassNames), [2, 10]);
+%! assert_equal (cellstr (Md.ClassNames), Ms.ClassNames);
+
+## ClassNames may itself be given as a character matrix, which selects the
+## classes by whole name: ismember between two character matrices compares
+## them character by character and would select by letter.
+%!test
+%! load fisheriris
+%! rand ("state", 1); randn ("state", 1);
+%! Mf = fitcsvm (meas, char (species), ...
+%!               "ClassNames", char ({"versicolor", "virginica"}));
+%! assert_equal (rows (Mf.ClassNames), 2);
+%! assert_equal (cellstr (Mf.ClassNames), {"versicolor"; "virginica"});
+
+## A model fitted from a character response comes back off disk unchanged.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcsvm (Xch, Ych);
+%! fname = tempname ();
+%! savemodel (Mc, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.ClassNames, Mc.ClassNames);
+%! assert_equal (predict (M2, Xch), predict (Mc, Xch));
+
+## crossval carries a character response through cvpartition and back.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcsvm (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcsvm (Xch, Ycell);
+%! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
+%! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
+%! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
 
 %!error<ClassificationSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris

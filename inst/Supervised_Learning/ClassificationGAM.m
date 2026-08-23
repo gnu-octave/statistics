@@ -469,9 +469,9 @@ classdef ClassificationGAM
     function this = set.Cost (this, val)
       gnY = this.ClassNames;
       if (isempty (val))
-        this.Cost = cast (! eye (numel (gnY)), 'double');
+        this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = numel (gnY);
+        K = classCount (gnY);
         if (! isequal (size (val), [K, K]))
           error (strcat ("ClassificationGAM: the number", ...
                          " of rows and columns in 'Cost' must", ...
@@ -848,8 +848,12 @@ classdef ClassificationGAM
 
       ## Handle class names
       if (! isempty (ClassNames))
-        if (iscellstr (ClassNames))
-          ru = find (! ismember (gnY, ClassNames));
+        ## Anything textual is matched as whole names, gnY being grp2idx's
+        ## own cellstr of them.  A character matrix is not a cellstr, and
+        ## ismember between two of them compares character by character, so
+        ## it would answer a question nobody asked.
+        if (iscellstr (ClassNames) || ischar (ClassNames))
+          ru = find (! ismember (gnY, cellstr (ClassNames)));
         else
           ru = find (! ismember (glY, ClassNames));
         endif
@@ -862,12 +866,17 @@ classdef ClassificationGAM
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
       RowsUsed  = ! isnan (gY);
-      Yret      = Y(RowsUsed);
+      ## Index the rows and not the elements: a response naming its
+      ## classes in the rows of a character matrix has one column per
+      ## character, and a linear index flattens the names into single
+      ## letters.  Every other accepted type is a column, for which
+      ## the two forms agree.
+      Yret      = Y(RowsUsed, :);
       Xret      = X(RowsUsed, :);
       this.X    = Xret;
       this.Y    = Yret;
       cobs      = ! any (isnan (Xret), 2);
-      Y         = Yret(cobs);
+      Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
 
       ## Renew groups in Y.  The third output of grp2idx holds the levels in
@@ -1162,7 +1171,7 @@ classdef ClassificationGAM
 
       ## Select the class with the minimum expected misclassification cost
       [~, minIdx] = min (CE, [], 2);
-      labels = this.ClassNames (minIdx);
+      labels = labelsFromIndex (this.ClassNames, minIdx);
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -1335,7 +1344,7 @@ classdef ClassificationGAM
       classes = this.ClassNames;
       m = zeros (rows (X), 1);
       for i = 1:rows (X)
-        idx = find (ismember (classes, Y(i)));
+        idx = labelIndex (classes, Y, i);
         if (isempty (idx))
           m(i) = NaN;
           continue;
@@ -1458,9 +1467,9 @@ classdef ClassificationGAM
       classes = this.ClassNames;
 
       ## Membership of the true class, as an indicator per class
-      Yind = zeros (rows (X), numel (classes));
+      Yind = zeros (rows (X), classCount (classes));
       for i = 1:rows (X)
-        idx = find (ismember (classes, Y(i)));
+        idx = labelIndex (classes, Y, i);
         if (isempty (idx))
           L = NaN;
           return;
@@ -1495,14 +1504,14 @@ classdef ClassificationGAM
           L = 0;
           for i = 1:rows (X)
             [~, k] = min (scores(i,:) * this.Cost);
-            true_idx = find (ismember (classes, Y(i)));
+            true_idx = labelIndex (classes, Y, i);
             L = L + W(i) * this.Cost(true_idx, k);
           endfor
         case 'classifcost'
           ## What the model's own prediction costs, given the true class
           L = 0;
           for i = 1:rows (X)
-            true_idx = find (ismember (classes, Y(i)));
+            true_idx = labelIndex (classes, Y, i);
             pred_idx = find (ismember (classes, label(i)));
             L = L + W(i) * this.Cost(true_idx, pred_idx);
           endfor
@@ -1964,6 +1973,97 @@ endfunction
 %! y = double (X(:,1).*X(:,2) > 0) + 1;
 %! Mdl = fitcgam (X, y, "Interactions", "all");
 %! assert_equal (compact (Mdl).Interactions, Mdl.Interactions);
+
+## A response naming its classes in the rows of a character matrix is one
+## of the documented types and MATLAB accepts it on every classifier.  The
+## whole surface below was broken and untested, which is why it stayed so.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcgam (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcgam (Xch, Ycell);
+%! assert_equal (size (Mc.ClassNames), [2, 10]);
+%! assert_equal (cellstr (Mc.ClassNames), Ms.ClassNames);
+
+## predict returns whole names, not their first letters.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcgam (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcgam (Xch, Ycell);
+%! pch = predict (Mc, Xch);
+%! assert_equal (columns (pch), 10);
+%! assert_equal (cellstr (pch), predict (Ms, Xch));
+
+## loss, margin and edge read a character response as the same response.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcgam (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcgam (Xch, Ycell);
+%! assert_equal (loss (Mc, Xch, Ych), loss (Ms, Xch, Ycell), 1e-12);
+%! assert_equal (margin (Mc, Xch, Ych), margin (Ms, Xch, Ycell), 1e-12);
+%! assert_equal (edge (Mc, Xch, Ych), edge (Ms, Xch, Ycell), 1e-12);
+
+## A character matrix pads its rows out to the longest name, and the padding
+## is part of the name: R2024a reports ClassNames of ['ab  '; 'abcd'].
+%!test
+%! Xpad = [1 2; 3 4; 1.1 2.1; 3.1 4.1; 1.2 2.2; 3.2 4.2];
+%! Ypad = char ({"ab", "abcd", "ab", "abcd", "ab", "abcd"});
+%! rand ("state", 1); randn ("state", 1);
+%! Mp = fitcgam (Xpad, Ypad);
+%! assert_equal (size (Mp.ClassNames), [2, 4]);
+%! assert_equal (Mp.ClassNames(1,:), "ab  ");
+
+## A row dropped for a missing predictor is the only case that exercises
+## indexing the response by row rather than by element.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! Xmiss = Xch; Xmiss(3,2) = NaN;
+%! rand ("state", 1); randn ("state", 1); Md = fitcgam (Xmiss, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcgam (Xmiss, Ycell);
+%! assert_equal (size (Md.ClassNames), [2, 10]);
+%! assert_equal (cellstr (Md.ClassNames), Ms.ClassNames);
+
+## ClassNames may itself be given as a character matrix, which selects the
+## classes by whole name: ismember between two character matrices compares
+## them character by character and would select by letter.
+%!test
+%! load fisheriris
+%! rand ("state", 1); randn ("state", 1);
+%! Mf = fitcgam (meas, char (species), ...
+%!               "ClassNames", char ({"versicolor", "virginica"}));
+%! assert_equal (rows (Mf.ClassNames), 2);
+%! assert_equal (cellstr (Mf.ClassNames), {"versicolor"; "virginica"});
+
+## A model fitted from a character response comes back off disk unchanged.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcgam (Xch, Ych);
+%! fname = tempname ();
+%! savemodel (Mc, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.ClassNames, Mc.ClassNames);
+%! assert_equal (predict (M2, Xch), predict (Mc, Xch));
+
+## crossval carries a character response through cvpartition and back.
+%!test
+%! load fisheriris
+%! bch = ! strcmp (species, "setosa");
+%! Xch = meas(bch,:); Ycell = species(bch); Ych = char (Ycell);
+%! rand ("state", 1); randn ("state", 1); Mc = fitcgam (Xch, Ych);
+%! rand ("state", 1); randn ("state", 1); Ms = fitcgam (Xch, Ycell);
+%! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
+%! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
+%! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
 
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
 %! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', [1])
