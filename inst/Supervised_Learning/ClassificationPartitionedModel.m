@@ -684,6 +684,18 @@ classdef ClassificationPartitionedModel
     ## The function predicts the response for each observation that was
     ## held out during training in the cross-validation process.
     ##
+    ## An observation that no fold held out is not predicted at all: its
+    ## scores and costs are @qcode{NaN} and its label is missing, an empty
+    ## character vector for a cell array of strings and @qcode{NaN} for a
+    ## numeric response.  Under a @qcode{'Holdout'} partition that is every
+    ## observation outside the holdout set.  @strong{This differs from
+    ## MATLAB}, which reports @qcode{NaN} scores for those rows as we do but
+    ## labels every one of them with the @emph{first} class, whatever their
+    ## response: that label is the least-cost class of a row of @qcode{NaN}
+    ## costs rather than a prediction any model made, and naming a class for
+    ## an observation nothing scored would be wrong.  A logical response has
+    ## no missing value to give, so those rows stay @qcode{false}.
+    ##
     ## @multitable @columnfractions 0.28 0.7
     ## @headitem @var{Output} @tab @var{Description}
     ##
@@ -724,15 +736,18 @@ classdef ClassificationPartitionedModel
                        " validated models."), this.CrossValidatedModel);
       endif
 
-      ## Initialize the label vector based on the type of Y
+      ## The label vector starts missing rather than empty, so an observation
+      ## no fold tests is reported as missing instead of carrying a class.
+      ## Under a holdout partition that is most of them.  A logical response
+      ## has no missing value to give, so those rows stay false.
       if (iscellstr (this.Y))
-        label = cell (this.NumObservations, 1);
+        label = repmat ({''}, this.NumObservations, 1);
       elseif (islogical (this.Y))
         label = false (this.NumObservations, 1);
       elseif (isnumeric (this.Y))
-        label = zeros (this.NumObservations, 1);
+        label = nan (this.NumObservations, 1);
       elseif (ischar (this.Y))
-        label = char (zeros (this.NumObservations, size (this.Y, 2)));
+        label = repmat (' ', this.NumObservations, size (this.Y, 2));
       endif
 
       ## Initialize the score and cost matrices
@@ -780,16 +795,6 @@ classdef ClassificationPartitionedModel
       ## cross-validated classifier.  kfoldLoss reads these scores, so the
       ## margin-based losses follow the transform as they should.
       Score = this.STfun (Score);
-
-      ## Handle single fold case (holdout)
-      if (this.KFold == 1)
-        testIdx = test (this.Partition, 1);
-        y = grp2idx (this.Y);
-        label(testIdx) = this.Y(find (y == mode (y), 1));
-        Score(testIdx, :) = NaN;
-        Cost(testIdx, :) = NaN;
-        return;
-      endif
 
     endfunction
 
@@ -938,9 +943,175 @@ classdef ClassificationPartitionedModel
 
     endfunction
 
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationPartitionedModel} {@var{m} =} kfoldMargin (@var{obj})
+    ##
+    ## Classification margins of the cross-validated observations.
+    ##
+    ## @code{@var{m} = kfoldMargin (@var{obj})} returns an @math{Nx1} vector
+    ## holding, for every observation, the score its own fold's model gave the
+    ## true class less the largest score that model gave any other class.  A
+    ## larger margin is a more confident correct answer and a negative one is
+    ## a misclassification.  Every observation is scored by the fold that held
+    ## it out, so no model answers for a row it was trained on.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationPartitionedModel} object.
+    ## @end itemize
+    ##
+    ## Where the fold that held an observation out produced no score for it,
+    ## the margin is @qcode{NaN}.  This method takes no optional arguments,
+    ## as MATLAB's does not.
+    ##
+    ## @end deftypefn
+    function m = kfoldMargin (this)
+
+      m = foldMargin_ (this);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationPartitionedModel} {@var{e} =} kfoldEdge (@var{obj})
+    ## @deftypefnx {ClassificationPartitionedModel} {@var{e} =} kfoldEdge (@dots{}, @var{name}, @var{value})
+    ##
+    ## Classification edge of the cross-validated observations.
+    ##
+    ## @code{@var{e} = kfoldEdge (@var{obj})} returns the mean of the
+    ## classification margins over every cross-validated observation, which is
+    ## the mean of @code{kfoldMargin (@var{obj})}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationPartitionedModel} object.
+    ## @end itemize
+    ##
+    ## @code{@var{e} = kfoldEdge (@dots{}, @var{name}, @var{value})} accepts
+    ## the following @qcode{Name-Value} pairs.
+    ##
+    ## @multitable @columnfractions 0.24 0.76
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Mode'} @tab @qcode{'average'}, the default, which returns
+    ## one number over the observations of every fold asked for, or
+    ## @qcode{'individual'}, which returns one number per fold.
+    ##
+    ## @item @qcode{'Folds'} @tab A vector of fold indices to restrict the
+    ## edge to.  It defaults to every fold.
+    ## @end multitable
+    ##
+    ## The observations of a selection are weighted uniformly and normalized
+    ## over that selection, so a subset of folds is an average rather than a
+    ## sum, exactly as @code{kfoldLoss} does.
+    ##
+    ## @end deftypefn
+    function e = kfoldEdge (this, varargin)
+
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      ## Defaults, then the optional pairs
+      Mode  = 'average';
+      Folds = 1:this.KFold;
+      while (numel (varargin) > 0)
+        if (! (ischar (varargin{1}) && isrow (varargin{1})))
+          error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
+                         " parameter name must be a character vector."));
+        endif
+        switch (tolower (varargin{1}))
+
+          case 'mode'
+            Mode = varargin{2};
+            if (! (ischar (Mode) && isrow (Mode) &&
+                   any (strcmpi (Mode, {'average', 'individual'}))))
+              error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
+                             " 'Mode' must be either 'average' or", ...
+                             " 'individual'."));
+            endif
+
+          case 'folds'
+            Folds = varargin{2};
+            if (! (isnumeric (Folds) && isvector (Folds)
+                   && all (Folds == fix (Folds))
+                   && all (Folds >= 1) && all (Folds <= this.KFold)))
+              error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
+                             " 'Folds' must be a vector of fold indices", ...
+                             " between 1 and KFold."));
+            endif
+
+          otherwise
+            error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
+                           " invalid parameter name in optional paired", ...
+                           " arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      m = foldMargin_ (this);
+      n = rows (this.X);
+
+      if (strcmpi (Mode, 'individual'))
+        e = nan (numel (Folds), 1);
+        for i = 1:numel (Folds)
+          idx = test (this.Partition, Folds(i));
+          e(i) = foldEdge_ (this, m, idx);
+        endfor
+      else
+        idx = false (n, 1);
+        for i = 1:numel (Folds)
+          idx = idx | test (this.Partition, Folds(i));
+        endfor
+        e = foldEdge_ (this, m, idx);
+      endif
+
+    endfunction
+
   endmethods
 
   methods (Access = private)
+
+    ## Margin of every observation from the fold that held it out: the score
+    ## of the true class less the largest score given any other class.  NaN
+    ## where the response is not one of the trained classes, since a margin
+    ## needs a true class to measure from.
+    function m = foldMargin_ (this)
+      [~, Score] = kfoldPredict (this);
+      classes = this.ClassNames;
+      K = numel (classes);
+      n = rows (this.X);
+      m = nan (n, 1);
+      for i = 1:n
+        t = find (ismember (classes, this.Y(i)));
+        if (isempty (t))
+          continue;
+        endif
+        t = t(1);
+        if (K < 2)
+          ## Degenerate single-class model: nothing competes, so the score
+          ## itself is the whole margin.
+          m(i) = Score(i, t);
+        else
+          other = Score(i, [1:t-1, t+1:K]);
+          m(i) = Score(i, t) - max (other);
+        endif
+      endfor
+    endfunction
+
+    ## Edge over the observations selected by IDX: the margins weighted
+    ## uniformly and normalized over that selection, so a subset of folds is
+    ## an average rather than a sum, as foldLoss_ does for the losses.
+    function e = foldEdge_ (this, m, idx)
+      if (! any (idx))
+        e = NaN;
+        return;
+      endif
+      mi = m(idx);
+      e = sum (mi) / numel (mi);
+    endfunction
 
     ## Loss over the observations selected by IDX, weighted uniformly and
     ## normalized over that selection, so a subset of folds is an average
@@ -1499,3 +1670,96 @@ endclassdef
 %!test
 %! assert_equal (any (strcmp (methods ("ClassificationPartitionedModel"), ...
 %!                           "foldLoss_")), false);
+
+## kfoldMargin answers for every observation, from the fold that held it out.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), 'Leaveout', 'on');
+%! m = kfoldMargin (CVMdl);
+%! assert_equal (size (m), [150, 1]);
+%! assert_equal (all (m >= -1 & m <= 1), true);
+
+## kfoldEdge is the mean of the margins.  R2024a returns 0.92 on this
+## leave-one-out KNN and ours reproduces it exactly.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), 'Leaveout', 'on');
+%! assert_equal (kfoldEdge (CVMdl), 0.92, 1e-14);
+%! assert_equal (kfoldEdge (CVMdl), mean (kfoldMargin (CVMdl)), 1e-14);
+
+## 'Mode' selects one number per fold or one over them all.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 5);
+%! assert_equal (size (kfoldEdge (CVMdl, 'Mode', 'individual')), [5, 1]);
+%! assert_equal (isscalar (kfoldEdge (CVMdl, 'Mode', 'average')), true);
+
+## 'Folds' restricts the selection, and one fold's edge is that fold's mean.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 5);
+%! m = kfoldMargin (CVMdl);
+%! idx = test (CVMdl.Partition, 2);
+%! assert_equal (kfoldEdge (CVMdl, 'Folds', 2), mean (m(idx)), 1e-12);
+%! assert_equal (kfoldEdge (CVMdl, 'Folds', 1:5), kfoldEdge (CVMdl), 1e-12);
+
+%!error<ClassificationPartitionedModel.kfoldEdge: Name-Value arguments must be in pairs.> ...
+%! load fisheriris
+%! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 'Mode')
+%!error<ClassificationPartitionedModel.kfoldEdge: parameter name must be a character vector.> ...
+%! load fisheriris
+%! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 5, 'average')
+%!error<ClassificationPartitionedModel.kfoldEdge: 'Mode' must be either 'average' or 'individual'.> ...
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! kfoldEdge (CVMdl, 'Mode', 'cumulative')
+%!error<ClassificationPartitionedModel.kfoldEdge: 'Folds' must be a vector of fold indices between 1 and KFold.> ...
+%! load fisheriris
+%! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 'Folds', 7)
+%!error<ClassificationPartitionedModel.kfoldEdge: invalid parameter name in optional paired arguments.> ...
+%! load fisheriris
+%! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 'bogus', 1)
+
+## A holdout partition predicts the holdout set and leaves the rest missing.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'Holdout', 0.2);
+%! idx = test (CVMdl.Partition, 1);
+%! [label, Score] = kfoldPredict (CVMdl);
+%! assert_equal (iscellstr (label), true);
+%! assert_equal (all (strcmp (label(! idx), '')), true);
+%! assert_equal (any (strcmp (label(idx), '')), false);
+%! assert_equal (all (all (isnan (Score(! idx, :)))), true);
+%! assert_equal (any (any (isnan (Score(idx, :)))), false);
+
+## The holdout predictions are the fold's own, not a stand-in class.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'Holdout', 0.2);
+%! idx = test (CVMdl.Partition, 1);
+%! label = kfoldPredict (CVMdl);
+%! assert_equal (label(idx), predict (CVMdl.Trained{1}, meas(idx,:)));
+%! assert_equal (mean (strcmp (label(idx), species(idx))) > 0.9, true);
+
+## A numeric response reports a missing label as NaN.
+%!test
+%! load fisheriris
+%! y = grp2idx (species);
+%! CVMdl = crossval (fitcdiscr (meas, y), 'Holdout', 0.2);
+%! idx = test (CVMdl.Partition, 1);
+%! label = kfoldPredict (CVMdl);
+%! assert_equal (all (isnan (label(! idx))), true);
+%! assert_equal (any (isnan (label(idx))), false);
+
+## kfoldLoss and kfoldEdge answer over the holdout set alone.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'Holdout', 0.2);
+%! idx = test (CVMdl.Partition, 1);
+%! label = kfoldPredict (CVMdl);
+%! assert_equal (kfoldLoss (CVMdl), ...
+%!               mean (! strcmp (label(idx), species(idx))), 1e-12);
+%! m = kfoldMargin (CVMdl);
+%! assert_equal (all (isnan (m(! idx))), true);
+%! assert_equal (kfoldEdge (CVMdl), mean (m(idx)), 1e-12);
+
