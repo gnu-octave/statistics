@@ -73,6 +73,33 @@
 ## the learning rate during the gradient descent.  Default value is 0.003.
 ## A larger rate can drive every unit of a hidden layer negative, after which
 ## a rectifier passes no gradient and the network stops training.
+## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
+##
+## @item @qcode{'Solver'} @tab A character vector naming the solver that
+## trains the network, either @qcode{'sgd'} or @qcode{'lbfgs'}.  The
+## default is @qcode{'sgd'}, which visits the samples one at a time and
+## steps down the gradient of each, running for @qcode{'IterationLimit'}
+## epochs.  @qcode{'lbfgs'} minimizes the loss over the whole training
+## set at once by limited-memory BFGS, which is the solver MATLAB uses.
+## It takes no learning rate, stops on the three tolerances below, and
+## reaches a lower training loss in fewer passes over the data, though
+## each of its iterations costs several passes where an epoch costs one.
+##
+## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
+## stops once the gradient's infinity norm falls to or below it.  The
+## default is @qcode{1e-6}.  Applies only when @qcode{'Solver'} is
+## @qcode{'lbfgs'}.
+##
+## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
+## stops once the step's infinity norm falls to or below it.  The
+## default is @qcode{1e-6}.  Applies only when @qcode{'Solver'} is
+## @qcode{'lbfgs'}.
+##
+## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
+## the training loss falls to or below it.  The test is on the loss
+## itself and not on its change, matching MATLAB; pass @code{-Inf} to
+## switch it off.  The default is @qcode{1e-6}.  Applies only when
+## @qcode{'Solver'} is @qcode{'lbfgs'}.
 ##
 ## @item @qcode{'Activations'} @tab A character vector or a cellstr vector
 ## specifying the activation functions for the hidden layers of the neural
@@ -91,6 +118,8 @@
 ## @item @qcode{'IterationLimit'} @tab A positive integer scalar that
 ## specifies the maximum number of training iterations.  The default value is
 ## 1000.
+## Under @qcode{'sgd'} this counts epochs, under
+## @qcode{'lbfgs'} solver iterations.
 ##
 ## @item @qcode{'DisplayInfo'} @tab A boolean flag indicating whether to
 ## print information during training.  Default is @qcode{false}.

@@ -169,6 +169,13 @@ classdef CompactRegressionNeuralNetwork
     ## over from the model this one was compacted from.  This property is
     ## read-only.
     ##
+    ##
+    ## Under @qcode{'lbfgs'} the structure carries @code{Gradient} and
+    ## @code{Step}, the two quantities the solver measured to decide it had
+    ## converged, and @code{ConvergenceCriterion}, naming the test that
+    ## stopped it.  It carries no @code{Accuracy}: MATLAB reports none, and
+    ## measuring it would cost a pass over the whole training set at every
+    ## iteration.
     ## @end deftp
     ConvergenceInfo       = [];
 
@@ -187,7 +194,9 @@ classdef CompactRegressionNeuralNetwork
     ##
     ## Solver used to train the network
     ##
-    ## A character vector.  This property is read-only.
+    ## A character vector, either @qcode{'Gradient Descent'} for the
+    ## stochastic solver or @qcode{'LBFGS'} for the full-batch one.
+    ## This property is read-only.
     ##
     ## @end deftp
     Solver                = [];

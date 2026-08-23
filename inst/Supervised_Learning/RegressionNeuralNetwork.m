@@ -85,9 +85,38 @@
 ## rate for gradient descent.  The default is 0.003.  A larger rate can drive
 ## every unit of a hidden layer negative, after which a rectifier passes no
 ## gradient and the network stops training.
+## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
+##
+## @item @qcode{'Solver'} @tab A character vector naming the solver that
+## trains the network, either @qcode{'sgd'} or @qcode{'lbfgs'}.  The
+## default is @qcode{'sgd'}, which visits the samples one at a time and
+## steps down the gradient of each, running for @qcode{'IterationLimit'}
+## epochs.  @qcode{'lbfgs'} minimizes the loss over the whole training
+## set at once by limited-memory BFGS, which is the solver MATLAB uses.
+## It takes no learning rate, stops on the three tolerances below, and
+## reaches a lower training loss in fewer passes over the data, though
+## each of its iterations costs several passes where an epoch costs one.
+##
+## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
+## stops once the gradient's infinity norm falls to or below it.  The
+## default is @qcode{1e-6}.  Applies only when @qcode{'Solver'} is
+## @qcode{'lbfgs'}.
+##
+## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
+## stops once the step's infinity norm falls to or below it.  The
+## default is @qcode{1e-6}.  Applies only when @qcode{'Solver'} is
+## @qcode{'lbfgs'}.
+##
+## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
+## the training loss falls to or below it.  The test is on the loss
+## itself and not on its change, matching MATLAB; pass @code{-Inf} to
+## switch it off.  The default is @qcode{1e-6}.  Applies only when
+## @qcode{'Solver'} is @qcode{'lbfgs'}.
 ##
 ## @item @qcode{'IterationLimit'} @tab A positive integer specifying the
 ## maximum number of training iterations.  The default is 1000.
+## Under @qcode{'sgd'} this counts epochs, under
+## @qcode{'lbfgs'} solver iterations.
 ##
 ## @item @qcode{'DisplayInfo'} @tab A logical scalar specifying whether to
 ## print information during training.  The default is @qcode{false}.
@@ -293,6 +322,13 @@ classdef RegressionNeuralNetwork
     ## @code{TrainingLoss}, the mean squared error of the network at the end of
     ## each iteration.  This property is read-only.
     ##
+    ##
+    ## Under @qcode{'lbfgs'} the structure carries @code{Gradient} and
+    ## @code{Step}, the two quantities the solver measured to decide it had
+    ## converged, and @code{ConvergenceCriterion}, naming the test that
+    ## stopped it.  It carries no @code{Accuracy}: MATLAB reports none, and
+    ## measuring it would cost a pass over the whole training set at every
+    ## iteration.
     ## @end deftp
     ConvergenceInfo       = [];
 
@@ -311,7 +347,9 @@ classdef RegressionNeuralNetwork
     ##
     ## Solver used to train the network
     ##
-    ## A character vector.  This property is read-only.
+    ## A character vector, either @qcode{'Gradient Descent'} for the
+    ## stochastic solver or @qcode{'LBFGS'} for the full-batch one.
+    ## This property is read-only.
     ##
     ## @end deftp
     Solver                = [];
@@ -349,6 +387,11 @@ classdef RegressionNeuralNetwork
     ## @code{TrainingLoss}, one row per training iteration.  This property is
     ## read-only.
     ##
+    ##
+    ## The columns follow the solver.  Under @qcode{'sgd'} they are
+    ## @code{Iteration} and @code{TrainingLoss}, with @code{TrainingAccuracy}
+    ## for a classifier.  Under @qcode{'lbfgs'} they are @code{Iteration},
+    ## @code{TrainingLoss}, @code{Gradient} and @code{Step}, as MATLAB's are.
     ## @end deftp
     TrainingHistory       = [];
 
@@ -522,7 +565,14 @@ classdef RegressionNeuralNetwork
       LearningRate            = 0.003;
       IterationLimit          = 1000;
       DisplayInfo             = false;
-      this.Solver = 'Gradient Descent';
+      Solver                  = 'sgd';
+      GradientTolerance       = 1e-6;
+      LossTolerance           = 1e-6;
+      StepTolerance           = 1e-6;
+      ## Which of the solver-specific options the caller actually named, so
+      ## that one meant for the other solver can be refused by name.
+      GivenTols               = {};
+      LearningRateGiven       = false;
 
       ## Supported activation functions.  'none' is MATLAB's name for the
       ## identity and is what a regression output layer wants.
@@ -572,6 +622,7 @@ classdef RegressionNeuralNetwork
 
           case 'learningrate'
             LearningRate = varargin{2};
+            LearningRateGiven = true;
             if (! (isnumeric (LearningRate) && isscalar (LearningRate) &&
                    LearningRate > 0))
               error (strcat ("RegressionNeuralNetwork:", ...
@@ -616,6 +667,45 @@ classdef RegressionNeuralNetwork
               && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
               error (strcat ("RegressionNeuralNetwork:", ...
                              " 'IterationLimit' must be a positive integer."));
+            endif
+
+          case 'solver'
+            Solver = varargin{2};
+            if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
+                                                             'lbfgs'}))))
+              error (strcat ("RegressionNeuralNetwork: 'Solver' must", ...
+                             " be either 'sgd' or 'lbfgs'."));
+            endif
+            Solver = tolower (Solver);
+
+          case 'gradienttolerance'
+            GradientTolerance = varargin{2};
+            GivenTols{end+1} = 'GradientTolerance';
+            if (! (isnumeric (GradientTolerance)
+                   && isscalar (GradientTolerance)
+                   && GradientTolerance >= 0))
+              error (strcat ("RegressionNeuralNetwork:", ...
+                             " 'GradientTolerance' must be a nonnegative", ...
+                             " scalar."));
+            endif
+
+          case 'losstolerance'
+            LossTolerance = varargin{2};
+            GivenTols{end+1} = 'LossTolerance';
+            if (! (isnumeric (LossTolerance) && isscalar (LossTolerance)
+                   && ! isnan (LossTolerance)))
+              error (strcat ("RegressionNeuralNetwork:", ...
+                             " 'LossTolerance' must be a real scalar."));
+            endif
+
+          case 'steptolerance'
+            StepTolerance = varargin{2};
+            GivenTols{end+1} = 'StepTolerance';
+            if (! (isnumeric (StepTolerance) && isscalar (StepTolerance)
+                   && StepTolerance >= 0))
+              error (strcat ("RegressionNeuralNetwork:", ...
+                             " 'StepTolerance' must be a nonnegative", ...
+                             " scalar."));
             endif
 
           case 'displayinfo'
@@ -703,6 +793,25 @@ classdef RegressionNeuralNetwork
         this.Mu = [];
       endif
 
+      ## An option that cannot act is refused rather than ignored.  The three
+      ## tolerances are how the lbfgs solver decides it has converged and mean
+      ## nothing to the epoch loop, which runs to 'IterationLimit' whatever
+      ## they say; a learning rate is what the epoch loop scales its step by
+      ## and means nothing to a line search, which finds its own.
+      if (strcmp (Solver, 'sgd') && ! isempty (GivenTols))
+        error (strcat ("RegressionNeuralNetwork: '", GivenTols{1}, ...
+                       "' applies only when 'Solver' is 'lbfgs'."));
+      endif
+      if (strcmp (Solver, 'lbfgs') && LearningRateGiven)
+        error (strcat ("RegressionNeuralNetwork: 'LearningRate'", ...
+                       " applies only when 'Solver' is 'sgd'."));
+      endif
+      if (strcmp (Solver, 'lbfgs'))
+        this.Solver = 'LBFGS';
+      else
+        this.Solver = 'Gradient Descent';
+      endif
+
       ## Store training parameters
       this.LayerSizes = LayerSizes;
       this.Activations = Activations;
@@ -733,15 +842,27 @@ classdef RegressionNeuralNetwork
       NumThreads = nproc ();
       Alpha = 0.01;  # used for ReLU and ELU activation layers
       rnn_timer_ = tic;
+      SolverOptions = struct ('Solver', Solver, ...
+                              'GradientTolerance', GradientTolerance, ...
+                              'LossTolerance', LossTolerance, ...
+                              'StepTolerance', StepTolerance);
       Mdl = fcnntrain (X, Y(:), LayerSizes, ActivationCodes, NumThreads, ...
-                       Alpha, LearningRate, IterationLimit, DisplayInfo, 2);
+                       Alpha, LearningRate, IterationLimit, DisplayInfo, 2, ...
+                       SolverOptions);
 
       ## Store training time and Loss
       ConvergenceInfo.Time = toc (rnn_timer_);
       ConvergenceInfo.TrainingLoss = Mdl.Loss;
-
-      ## Remove redundant field
       Mdl = rmfield (Mdl, 'Loss');
+
+      ## The lbfgs solver also reports the gradient and step it measured to
+      ## decide it had stopped, and which test stopped it, as MATLAB does.
+      if (strcmp (Solver, 'lbfgs'))
+        ConvergenceInfo.Gradient = Mdl.Gradient;
+        ConvergenceInfo.Step = Mdl.Step;
+        ConvergenceInfo.ConvergenceCriterion = Mdl.Criterion;
+        Mdl = rmfield (Mdl, {'Gradient', 'Step', 'Criterion'});
+      endif
 
       ## Save ModelParameters and ConvergenceInfo
       this.ModelParameters = Mdl;
@@ -759,10 +880,7 @@ classdef RegressionNeuralNetwork
       endfor
 
       ## Iteration by iteration record of the fit
-      iter = (1:numel (ConvergenceInfo.TrainingLoss))';
-      this.TrainingHistory = table (iter, ConvergenceInfo.TrainingLoss(:), ...
-                                    'VariableNames', ...
-                                    {'Iteration', 'TrainingLoss'});
+      this.TrainingHistory = trainingTable_ (ConvergenceInfo);
 
     endfunction
 
@@ -1256,11 +1374,7 @@ classdef RegressionNeuralNetwork
       endfor
 
       ## Rebuild the TrainingHistory table, which savemodel cannot write out
-      iter = (1:numel (mdl.ConvergenceInfo.TrainingLoss))';
-      mdl.TrainingHistory = table (iter, ...
-                                   mdl.ConvergenceInfo.TrainingLoss(:), ...
-                                   'VariableNames', ...
-                                   {'Iteration', 'TrainingLoss'});
+      mdl.TrainingHistory = trainingTable_ (mdl.ConvergenceInfo);
     endfunction
 
   endmethods
@@ -1269,6 +1383,22 @@ endclassdef
 
 ## Map an activation name to the code fcnntrain expects.  'none' and 'linear'
 ## are the same identity map; MATLAB spells the output layer's 'none'.
+## The recorded history, whose columns follow the solver that produced it.
+## Building it in one place keeps the fit and the model reloaded from disk
+## from drifting apart.
+function T = trainingTable_ (ConvergenceInfo)
+  iter = (1:numel (ConvergenceInfo.TrainingLoss))';
+  if (isfield (ConvergenceInfo, 'Gradient'))
+    T = table (iter, ConvergenceInfo.TrainingLoss(:), ...
+               ConvergenceInfo.Gradient(:), ConvergenceInfo.Step(:), ...
+               'VariableNames', ...
+               {'Iteration', 'TrainingLoss', 'Gradient', 'Step'});
+  else
+    T = table (iter, ConvergenceInfo.TrainingLoss(:), 'VariableNames', ...
+               {'Iteration', 'TrainingLoss'});
+  endif
+endfunction
+
 function numCode = activationCode_ (strCode)
   switch (strCode)
     case {'linear', 'none'}
@@ -1541,6 +1671,51 @@ endfunction
 %! assert_equal (isfinite (kfoldLoss (CVMdl)), true);
 
 ## Test input validation for crossval
+## The full-batch solver is selected by name and says so.
+%!test
+%! x = linspace (0, 1, 40)';
+%! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 50, "Solver", "lbfgs");
+%! assert_equal (Mdl.Solver, "LBFGS");
+%! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
+
+## It records what it measured to decide it had stopped.
+%!test
+%! x = linspace (0, 1, 40)';
+%! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 50, "Solver", "lbfgs");
+%! ci = Mdl.ConvergenceInfo;
+%! assert_equal (isfield (ci, "Gradient"), true);
+%! assert_equal (isfield (ci, "Step"), true);
+%! assert_equal (isfield (ci, "ConvergenceCriterion"), true);
+
+## The default solver is unchanged.
+%!test
+%! x = linspace (0, 1, 40)';
+%! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 20);
+%! assert_equal (Mdl.Solver, "Gradient Descent");
+%! assert_equal (columns (Mdl.TrainingHistory), 2);
+
+## A model trained by lbfgs comes back off disk with its own four columns.
+%!test
+%! x = linspace (0, 1, 40)';
+%! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 30, "Solver", "lbfgs");
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (table2cell (Mdl2.TrainingHistory), ...
+%!               table2cell (Mdl.TrainingHistory));
+
+## An option that cannot act is refused rather than ignored.
+%!error<RegressionNeuralNetwork: 'GradientTolerance' applies only when 'Solver' is 'lbfgs'.> ...
+%! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "GradientTolerance", 1e-8)
+%!error<RegressionNeuralNetwork: 'LearningRate' applies only when 'Solver' is 'sgd'.> ...
+%! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "Solver", "lbfgs", "LearningRate", 0.1)
+%!error<RegressionNeuralNetwork: 'Solver' must be either 'sgd' or 'lbfgs'.> ...
+%! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "Solver", "bogus")
+%!error<RegressionNeuralNetwork: 'LossTolerance' must be a real scalar.> ...
+%! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "Solver", "lbfgs", "LossTolerance", NaN)
+
 %!error<RegressionNeuralNetwork.crossval: Name-Value arguments must be in pairs.> ...
 %! crossval (fitrnet (randn (12, 2), randn (12, 1), ...
 %!                    'IterationLimit', 20), 'KFold')
