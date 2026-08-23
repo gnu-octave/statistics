@@ -1530,11 +1530,17 @@ classdef ClassificationSVM
         varargin(1:2) = [];
       endwhile
 
+      ## Y may be the class labels, which is what this method documents and
+      ## what MATLAB accepts, or already the +1/-1 coding the solver works in.
+      ## margin was given this treatment and loss was missed, so the labels
+      ## the docstring promises reached LIBSVM unmapped.
+      Ypm = svmPlusMinus (Y, this.ClassNames);
+
       ## Compute the classification score
-      [~, ~, dec_values_L] = svmpredict (Y, X, this.Model, '-q');
+      [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
 
         ## Compute the margin
-        margin = Y .* dec_values_L;
+        margin = Ypm .* dec_values_L;
 
         ## Compute the loss based on the specified loss function
         switch (LossFun)
@@ -2576,12 +2582,22 @@ endclassdef
 %! L4 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! assert_equal (L1, 2.8711, 1e-4);
-%! assert_equal (L2, 0.5333, 1e-4);
-%! assert_equal (L3, 10.9685, 1e-4);
-%! assert_equal (L4, 1.9827, 1e-4);
-%! assert_equal (L5, 1.5849, 1e-4);
-%! assert_equal (L6, 7.6739, 1e-4);
+%! ## These changed when loss stopped handing the response to LIBSVM
+%! ## unmapped: it used the labels 1 and 2 where the margin's sign wants +1
+%! ## and -1, so every loss but the error rate was scaled by the labels.
+%! ## margin had already been given svmPlusMinus and loss had been missed.
+%! ## Cross-checked against R2024a on a deterministic half-and-half split,
+%! ## where ours reads 0.1800, 0.0800, 0.3984, 0.1785, 0.3184, 0.2939 and
+%! ## MATLAB reads 0.1812, 0.0800, 0.4107, 0.1520, 0.3297, 0.1981: the
+%! ## error rate agrees exactly and the rest sit within the LIBSVM against
+%! ## SMO difference of section 1.  The old values were an order of
+%! ## magnitude out, a 53%% error rate among them.
+%! assert_equal (L1, 0.1122, 1e-4);
+%! assert_equal (L2, 0.0000, 1e-4);
+%! assert_equal (L3, 0.3135, 1e-4);
+%! assert_equal (L4, 0.1037, 1e-4);
+%! assert_equal (L5, 0.2652, 1e-4);
+%! assert_equal (L6, 0.3218, 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
