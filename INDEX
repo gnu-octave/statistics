@@ -135,6 +135,7 @@ Supervised Learning
  CompactClassificationNeuralNetwork
  CompactClassificationSVM
  CompactRegressionGAM
+ CompactRegressionGP
  CompactRegressionNeuralNetwork
  CompactRegressionSVM
  fcnnpredict
@@ -145,11 +146,13 @@ Supervised Learning
  fitcnet
  fitcsvm
  fitrgam
+ fitrgp
  fitrnet
  fitrsvm
  gampredict
  gamtrain
  RegressionGAM
+ RegressionGP
  RegressionNeuralNetwork
  RegressionPartitionedModel
  RegressionSVM

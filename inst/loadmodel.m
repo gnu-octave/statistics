@@ -82,6 +82,12 @@ function obj = loadmodel (filename)
     case 'CompactClassificationSVM'
       obj = CompactClassificationSVM.load_model (filename, data);
 
+    case 'RegressionGP'
+      obj = RegressionGP.load_model (filename, data);
+
+    case 'CompactRegressionGP'
+      obj = CompactRegressionGP.load_model (filename, data);
+
     case 'RegressionGAM'
       obj = RegressionGAM.load_model (filename, data);
 
