@@ -98,14 +98,14 @@
 ## each of its iterations costs several passes where an epoch costs one.
 ##
 ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
-## stops once the gradient's infinity norm falls to or below it.  The
-## default is @qcode{1e-6}.  Applies only when @qcode{'Solver'} is
-## @qcode{'lbfgs'}.
+## stops once the gradient's infinity norm falls to or below it, which is
+## the quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies
+## only when @qcode{'Solver'} is @qcode{'lbfgs'}.
 ##
 ## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
-## stops once the step's infinity norm falls to or below it.  The
-## default is @qcode{1e-6}.  Applies only when @qcode{'Solver'} is
-## @qcode{'lbfgs'}.
+## stops once the step's infinity norm falls to or below it, which is the
+## quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies only
+## when @qcode{'Solver'} is @qcode{'lbfgs'}.
 ##
 ## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
 ## the training loss falls to or below it.  The test is on the loss

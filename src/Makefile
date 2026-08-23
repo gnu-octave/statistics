@@ -26,7 +26,8 @@ svmtrain.oct: svmtrain.cc svm.cpp svm_model_octave.cc
 
 # fcnn.cpp is #included by both, so it is a prerequisite of both: without it
 # an edit to the network code leaves the oct-files stale and the build silent.
-fcnntrain.oct: fcnntrain.cc fcnn.cpp
+# fcnntrain also includes the lbfgs engine, and for the same reason.
+fcnntrain.oct: fcnntrain.cc fcnn.cpp lbfgs.h
 	$(MKOCTFILE) fcnntrain.cc
 
 fcnnpredict.oct: fcnnpredict.cc fcnn.cpp
