@@ -192,18 +192,6 @@ classdef ClassificationPartitionedModel
     PredictorNames               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} Prior
-    ##
-    ## Prior probability for each class
-    ##
-    ## A numeric vector specifying the prior probabilities for each class.  The
-    ## order of the elements in @qcode{Prior} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.  This property is read-only.
-    ##
-    ## @end deftp
-    Prior                        = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} ResponseName
     ##
     ## Response variable name
@@ -247,8 +235,32 @@ classdef ClassificationPartitionedModel
     ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
     ## for correct classification and 1 for incorrect classification.
     ##
+    ## Assigning @qcode{Cost} rebuilds it on every fold in @qcode{Trained}, so
+    ## @code{kfoldPredict} and @code{kfoldLoss} answer under the new costs.  It
+    ## is refused on a cross-validated @code{ClassificationSVM}, whose costs
+    ## enter the box constraint while it is being fitted: a model already fitted
+    ## under one cost matrix cannot be made to describe another.
+    ##
     ## @end deftp
     Cost                         = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## It may be assigned only on a cross-validated
+    ## @code{ClassificationDiscriminant}, the one learner that re-derives its
+    ## coefficients from the priors it is given; every other learner consumes
+    ## them while it fits and cannot revisit them afterwards.  Assigning it
+    ## rebuilds the priors on every fold in @qcode{Trained}.
+    ##
+    ## @end deftp
+    Prior                        = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} ScoreTransform
@@ -256,7 +268,7 @@ classdef ClassificationPartitionedModel
     ## Transformation function for classification scores
     ##
     ## Specified as a function handle for transforming the classification
-    ## scores.  This property is read-only.
+    ## scores.
     ##
     ## @end deftp
     ScoreTransform               = [];
@@ -266,6 +278,12 @@ classdef ClassificationPartitionedModel
   ## Copied from the parent model and kept out of the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
     STfun = @(x) x;
+
+    ## Raised once the constructor is done.  Cost and Prior are refused for
+    ## the learners MATLAB refuses them for, but the constructor has to carry
+    ## whatever the cross validated model held, so the guards only apply to a
+    ## user's assignment.
+    Fitted = false;
   endproperties
 
   ## Set methods for the properties a user may assign.
@@ -305,7 +323,16 @@ classdef ClassificationPartitionedModel
       fprintf ("%+25s: '%s'\n\n", 'ScoreTransform', this.ScoreTransform);
     endfunction
 
+    ## MATLAB refuses this one on a cross-validated SVM alone, and so do we:
+    ## the SVM's costs enter its box constraint while it is being fitted, so a
+    ## model fitted under one cost matrix cannot be made to report another.
     function this = set.Cost (this, val)
+      if (this.Fitted && strcmp (this.CrossValidatedModel, ...
+                                 'ClassificationSVM'))
+        error (strcat ("ClassificationPartitionedModel: cannot assign", ...
+                       " 'Cost' on a cross-validated ClassificationSVM,", ...
+                       " whose costs are consumed while it is fitted."));
+      endif
       gnY = this.ClassNames;
       if (isempty (val))
         this.Cost = cast (! eye (numel (gnY)), 'double');
@@ -317,6 +344,46 @@ classdef ClassificationPartitionedModel
         endif
         this.Cost = val;
       endif
+      this = pushToFolds (this, 'Cost', this.Cost);
+    endfunction
+
+    ## The discriminant is the only learner that re-derives its coefficients
+    ## from the priors it holds, so it is the only one whose folds can honour
+    ## a prior assigned after the fit.  MATLAB draws the same line.
+    function this = set.Prior (this, val)
+      if (this.Fitted && ! strcmp (this.CrossValidatedModel, ...
+                                   'ClassificationDiscriminant'))
+        error (strcat ("ClassificationPartitionedModel: 'Prior' can only", ...
+                       " be assigned on a cross-validated", ...
+                       " ClassificationDiscriminant."));
+      endif
+      if (! this.Fitted)
+        this.Prior = val;
+        return;
+      endif
+      if (isstruct (val))
+        val = priorFromStruct (val, this.ClassNames, ...
+                               'ClassificationPartitionedModel');
+      endif
+      if (ischar (val) && strcmpi ('uniform', val))
+        n = numel (this.ClassNames);
+        this.Prior = ones (1, n) ./ n;
+      elseif (isempty (val) || (ischar (val) && strcmpi ('empirical', val)))
+        [~, gnY, gY] = unique (this.Y);
+        pr = accumarray (gY(:), 1, [numel(gnY), 1]);
+        this.Prior = pr(:)' ./ sum (pr);
+      elseif (isnumeric (val))
+        if (numel (this.ClassNames) != numel (val))
+          error (strcat ("ClassificationPartitionedModel: the elements", ...
+                         " in 'Prior' do not correspond to the selected", ...
+                         " classes in Y."));
+        endif
+        this.Prior = val(:)' ./ sum (val);
+      else
+        error (strcat ("ClassificationPartitionedModel: invalid value", ...
+                       " for 'Prior'."));
+      endif
+      this = pushToFolds (this, 'Prior', this.Prior);
     endfunction
 
     function this = set.ScoreTransform (this, val)
@@ -592,6 +659,9 @@ classdef ClassificationPartitionedModel
           this.ModelParameters = params;
 
       endswitch
+
+      this.Fitted = true;
+
     endfunction
 
     ## -*- texinfo -*-
@@ -900,6 +970,23 @@ classdef ClassificationPartitionedModel
           endfor
 
       endswitch
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    ## Carry an assigned property down into every fold.  MATLAB's Cost and
+    ## Prior reach the fold models, so kfoldPredict and kfoldLoss answer under
+    ## what was assigned rather than under what was fitted.  The folds are
+    ## absent while the constructor is still running, and the two properties
+    ## are only ever pushed for the learners that accept the assignment.
+    function this = pushToFolds (this, name, val)
+      for k = 1:numel (this.Trained)
+        if (! isempty (this.Trained{k}))
+          this.Trained{k}.(name) = val;
+        endif
+      endfor
     endfunction
 
   endmethods
@@ -1292,3 +1379,62 @@ endclassdef
 %! CVMdl = crossval (fitcknn (meas, species), 'KFold', 3);
 %! assert_equal (class (CVMdl.BinEdges), 'cell');
 %! assert_equal (CVMdl.BinEdges, {});
+
+## An assigned Cost reaches every fold, so the folds predict under what was
+## assigned rather than under what was fitted.  Values measured on R2024a.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! C = double (! eye (3)); C(1,2) = 4;
+%! CVMdl.Cost = C;
+%! assert_equal (CVMdl.Trained{1}.Cost, C);
+%! assert_equal (CVMdl.Trained{3}.Cost, C);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), 'KFold', 3);
+%! C = double (! eye (3)); C(1,2) = 4;
+%! CVMdl.Cost = C;
+%! assert_equal (CVMdl.Trained{2}.Cost, C);
+
+## The discriminant is the only learner whose priors may be assigned after
+## the fit, and they reach the folds too.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! CVMdl.Prior = [0.6, 0.2, 0.2];
+%! assert_equal (CVMdl.Prior, [0.6, 0.2, 0.2], 1e-15);
+%! assert_equal (CVMdl.Trained{1}.Prior, [0.6, 0.2, 0.2], 1e-15);
+
+## Priors are normalized, as they are on the learner itself.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! CVMdl.Prior = [3, 1, 1];
+%! assert_equal (CVMdl.Prior, [0.6, 0.2, 0.2], 1e-15);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
+%! CVMdl.Prior = 'uniform';
+%! assert_equal (CVMdl.Prior, [1, 1, 1] / 3, 1e-15);
+
+## An SVM's costs enter its box constraint while it is fitted, so MATLAB
+## refuses them afterwards on the cross-validated model and so do we.
+%!error<ClassificationPartitionedModel: cannot assign 'Cost' on a cross-validated ClassificationSVM, whose costs are consumed while it is fitted.> ...
+%! load fisheriris; ...
+%! b = ismember (species, {'setosa', 'versicolor'}); ...
+%! CVMdl = crossval (fitcsvm (meas(b,:), species(b)), 'KFold', 3); ...
+%! CVMdl.Cost = [0, 4; 1, 0];
+%!error<ClassificationPartitionedModel: 'Prior' can only be assigned on a cross-validated ClassificationDiscriminant.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitcknn (meas, species), 'KFold', 3); ...
+%! CVMdl.Prior = [0.6, 0.2, 0.2];
+%!error<ClassificationPartitionedModel: 'Prior' can only be assigned on a cross-validated ClassificationDiscriminant.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitcnet (meas, species), 'KFold', 3); ...
+%! CVMdl.Prior = [0.6, 0.2, 0.2];
+%!error<ClassificationPartitionedModel: the elements in 'Prior' do not correspond to the selected classes in Y.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3); ...
+%! CVMdl.Prior = [0.5, 0.5];
