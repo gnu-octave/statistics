@@ -126,8 +126,12 @@ Regression
 Supervised Learning
  ClassificationDiscriminant
  ClassificationGAM
+ ClassificationKernel
  ClassificationKNN
+ ClassificationLinear
  ClassificationNeuralNetwork
+ ClassificationPartitionedKernel
+ ClassificationPartitionedLinear
  ClassificationPartitionedModel
  ClassificationSVM
  CompactClassificationDiscriminant
@@ -142,18 +146,26 @@ Supervised Learning
  fcnntrain
  fitcdiscr
  fitcgam
+ fitckernel
  fitcknn
+ fitclinear
  fitcnet
  fitcsvm
  fitrgam
  fitrgp
+ fitrkernel
+ fitrlinear
  fitrnet
  fitrsvm
  gampredict
  gamtrain
  RegressionGAM
  RegressionGP
+ RegressionKernel
+ RegressionLinear
  RegressionNeuralNetwork
+ RegressionPartitionedKernel
+ RegressionPartitionedLinear
  RegressionPartitionedModel
  RegressionSVM
  svmpredict

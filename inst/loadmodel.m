@@ -67,8 +67,14 @@ function obj = loadmodel (filename)
     case 'CompactClassificationGAM'
       obj = CompactClassificationGAM.load_model (filename, data);
 
+    case 'ClassificationKernel'
+      obj = ClassificationKernel.load_model (filename, data);
+
     case 'ClassificationKNN'
       obj = ClassificationKNN.load_model (filename, data);
+
+    case 'ClassificationLinear'
+      obj = ClassificationLinear.load_model (filename, data);
 
     case 'ClassificationNeuralNetwork'
       obj = ClassificationNeuralNetwork.load_model (filename, data);
@@ -90,6 +96,12 @@ function obj = loadmodel (filename)
 
     case 'RegressionGAM'
       obj = RegressionGAM.load_model (filename, data);
+
+    case 'RegressionKernel'
+      obj = RegressionKernel.load_model (filename, data);
+
+    case 'RegressionLinear'
+      obj = RegressionLinear.load_model (filename, data);
 
     case 'CompactRegressionGAM'
       obj = CompactRegressionGAM.load_model (filename, data);
