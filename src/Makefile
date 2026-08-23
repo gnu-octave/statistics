@@ -3,7 +3,7 @@
 # List all target oct files
 OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            svmtrain.oct fcnntrain.oct fcnnpredict.oct \
-           gamtrain.oct gampredict.oct
+           gamtrain.oct gampredict.oct __lbfgs__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -40,6 +40,11 @@ gamtrain.oct: gamtrain.cc gam.cpp
 
 gampredict.oct: gampredict.cc gam.cpp
 	$(MKOCTFILE) gampredict.cc
+
+# lbfgs.h is the engine both this wrapper and any compiled learner include, so
+# an edit to it must rebuild the oct-file.
+__lbfgs__.oct: __lbfgs__.cc lbfgs.h
+	$(MKOCTFILE) __lbfgs__.cc
 
 # Clean target
 clean:
