@@ -89,9 +89,12 @@
 ## deviation and a prediction interval are available.
 ##
 ## @item @qcode{'Optimizer'} @tab A character vector naming the optimizer used
-## to maximize the log marginal likelihood, either @qcode{'quasinewton'} or
-## @qcode{'fminunc'}, which are the same thing, or @qcode{'fminsearch'}.  The
-## default is @qcode{'quasinewton'}.
+## to maximize the log marginal likelihood.  @qcode{'quasinewton'} and
+## @qcode{'fminunc'} name the same dense solver and are the default,
+## @qcode{'lbfgs'} selects limited-memory BFGS, which holds a fixed number of
+## curvature pairs rather than a full inverse Hessian and is the cheaper
+## choice when the kernel carries many parameters, and @qcode{'fminsearch'}
+## is derivative-free.
 ##
 ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
 ## predictor data should be centred and scaled before training.  The same
@@ -1416,6 +1419,14 @@ function [theta, sigmaN, beta, LL] = gpFit (X, Y, kern, theta0, basis, ...
     opts = optimset ('MaxFunEvals', 5000, 'MaxIter', 2000, 'TolX', 1e-10, ...
                      'TolFun', 1e-10);
     u = fminsearch (@(u) f(u), u0, opts);
+  elseif (strcmpi (optimizer, 'lbfgs'))
+    ## LossTolerance is switched off rather than left at its default: the
+    ## objective here is a negative log likelihood, which goes negative, and
+    ## the test is on the value rather than on its change, so any default
+    ## would stop the fit on the first step past zero.
+    opts = struct ('IterationLimit', 1000, 'GradientTolerance', 1e-8, ...
+                   'StepTolerance', 1e-12, 'LossTolerance', -Inf);
+    u = __lbfgs__ (f, u0, opts);
   else
     opts = optimset ('GradObj', 'on', 'MaxFunEvals', 5000, ...
                      'MaxIter', 1000, 'TolX', 1e-12, 'TolFun', 1e-12);
@@ -1657,6 +1668,32 @@ endfunction
 %! assert_equal (Mdl.Beta, -0.072781321631854, 1e-7);
 %! assert_equal (Mdl.Sigma, 0.006877618228324, 1e-7);
 %! assert_equal (Mdl.LogLikelihood, 47.574057509534278, 1e-4);
+
+%!test
+%! ## 'lbfgs' finds the same optimum the dense solver does
+%! x = linspace (0, 1, 20)';
+%! y = sin (2*pi*x) + 0.1 * cos (7*x);
+%! Mdl = RegressionGP (x, y, 'Optimizer', 'lbfgs');
+%! assert_equal (Mdl.KernelInformation.KernelParameters, ...
+%!               [0.386370514454926; 1.505132511329997], 1e-6);
+%! assert_equal (Mdl.Beta, -0.072781321631854, 1e-6);
+
+%!test
+%! ## The likelihood agrees far more tightly than the parameters do, because
+%! ## the surface is flat there: a 2e-7 move in the parameters buys 2e-10 of
+%! ## likelihood.  Comparing the parameters alone understates the agreement.
+%! x = linspace (0, 1, 20)';
+%! y = sin (2*pi*x) + 0.1 * cos (7*x);
+%! Mq = RegressionGP (x, y, 'Optimizer', 'quasinewton');
+%! Ml = RegressionGP (x, y, 'Optimizer', 'lbfgs');
+%! assert_equal (Ml.LogLikelihood, Mq.LogLikelihood, 1e-8);
+
+%!test
+%! ## The optimizer that ran is recorded
+%! x = linspace (0, 1, 20)';
+%! y = sin (2*pi*x) + 0.1 * cos (7*x);
+%! Mdl = RegressionGP (x, y, 'Optimizer', 'lbfgs');
+%! assert_equal (Mdl.ModelParameters.Optimizer, 'lbfgs');
 
 %!test
 %! ## predict reproduces the R2024a values, and the standard deviation is
