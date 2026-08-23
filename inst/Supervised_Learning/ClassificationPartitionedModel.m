@@ -938,6 +938,10 @@ classdef ClassificationPartitionedModel
 
     endfunction
 
+  endmethods
+
+  methods (Access = private)
+
     ## Loss over the observations selected by IDX, weighted uniformly and
     ## normalized over that selection, so a subset of folds is an average
     ## rather than a sum.
@@ -982,10 +986,6 @@ classdef ClassificationPartitionedModel
 
       endswitch
     endfunction
-
-  endmethods
-
-  methods (Access = private)
 
     ## Carry an assigned property down into every fold.  MATLAB's Cost and
     ## Prior reach the fold models, so kfoldPredict and kfoldLoss answer under
@@ -1494,3 +1494,8 @@ endclassdef
 %! load fisheriris
 %! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
 %! CVMdl.Cost = 1:9;
+
+## foldLoss_ is a private helper and stays out of the method list.
+%!test
+%! assert_equal (any (strcmp (methods ("ClassificationPartitionedModel"), ...
+%!                           "foldLoss_")), false);

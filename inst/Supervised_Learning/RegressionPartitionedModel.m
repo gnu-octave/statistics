@@ -825,3 +825,8 @@ endclassdef
 %! y0 = kfoldPredict (CVMdl);
 %! CVMdl.ResponseTransform = 'none';
 %! assert_equal (kfoldPredict (CVMdl), y0);
+
+## foldLoss_ is a private helper and stays out of the method list.
+%!test
+%! assert_equal (any (strcmp (methods ("RegressionPartitionedModel"), ...
+%!                           "foldLoss_")), false);
