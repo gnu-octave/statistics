@@ -461,6 +461,16 @@ classdef ClassificationKNN
     ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
     ## @end itemize
     ##
+    ##
+    ## A cost may also be given as a struct with the fields
+    ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
+    ## order its own matrix is written in.  That matrix is permuted into the
+    ## order of @qcode{ClassNames} above, so a caller need not know which
+    ## order the classes were sorted into.  It must name every class.
+    ##
+    ## A cost must be floating point, not sparse, not complex, non-negative
+    ## and zero down its diagonal, and must hold no @qcode{NaN} or
+    ## @qcode{Inf}.  A @code{single} is widened to @code{double}.
     ## @end deftp
     Cost            = [];
 
@@ -552,11 +562,11 @@ classdef ClassificationKNN
       if (isempty (val))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = classCount (gnY);
-        if (! isequal (size (val), [K, K]))
-          error (strcat ("ClassificationKNN: the number", ...
-                         " of rows and columns in 'Cost' must", ...
-                         " correspond to selected classes in Y."));
+        ## Everything a cost must be, and the struct form, which
+        ## is permuted into this model's class order.
+        [val, errmsg] = costMatrix (val, gnY);
+        if (! isempty (errmsg))
+          error ("ClassificationKNN: %s", errmsg);
         endif
         this.Cost = val;
       endif
@@ -981,7 +991,10 @@ classdef ClassificationKNN
 
           case 'cost'
             Cost = varargin{2};
-            if (! (isnumeric (Cost) && issquare (Cost)))
+            ## A struct carrying its own class order is a cost too,
+            ## and is resolved by the property's own set method.
+            if (! (isstruct (Cost)
+                   || (isnumeric (Cost) && issquare (Cost))))
               error (strcat ("ClassificationKNN: 'Cost' must be", ...
                              " a numeric square matrix."));
             endif
@@ -2774,19 +2787,19 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
-%! cost = eye (2);
+%! cost = [0, 1; 1, 0];
 %! a = ClassificationKNN (x, y, 'Cost', cost);
 %! assert_equal (class (a), "ClassificationKNN")
-%! assert_equal (a.Cost, [1, 0; 0, 1])
+%! assert_equal (a.Cost, [0, 1; 1, 0])
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
-%! cost = eye (2);
+%! cost = [0, 1; 1, 0];
 %! a = ClassificationKNN (x, y, 'Cost', cost, 'Distance', 'hamming' );
 %! assert_equal (class (a), "ClassificationKNN")
-%! assert_equal (a.Cost, [1, 0; 0, 1])
+%! assert_equal (a.Cost, [0, 1; 1, 0])
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -4017,3 +4030,19 @@ endfunction
 %! delete (fname);
 %! assert_equal (M2.CategoricalPredictors, Mdl.CategoricalPredictors);
 %! assert_equal (M2.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+
+## The shared cost guard is in force here too, and the struct form is
+## permuted into this model's class order.  The battery is on
+## ClassificationDiscriminant.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! S = struct ('ClassNames', {{'virginica'; 'setosa'; 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+%! Mdl.Cost = S;
+%! assert_equal (Mdl.Cost, [0, 4, 3; 6, 0, 5; 1, 2, 0]);
+
+%!error<ClassificationKNN: 'Cost' must have zeros on its diagonal.> ...
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! Mdl.Cost = ones (3);

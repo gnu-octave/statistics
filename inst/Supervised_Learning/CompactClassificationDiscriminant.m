@@ -373,6 +373,16 @@ classdef CompactClassificationDiscriminant
     ##
     ## This property is read-only.
     ##
+    ##
+    ## A cost may also be given as a struct with the fields
+    ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
+    ## order its own matrix is written in.  That matrix is permuted into the
+    ## order of @qcode{ClassNames} above, so a caller need not know which
+    ## order the classes were sorted into.  It must name every class.
+    ##
+    ## A cost must be floating point, not sparse, not complex, non-negative
+    ## and zero down its diagonal, and must hold no @qcode{NaN} or
+    ## @qcode{Inf}.  A @code{single} is widened to @code{double}.
     ## @end deftp
     Cost            = [];
 
@@ -572,11 +582,11 @@ classdef CompactClassificationDiscriminant
       if (isempty (val))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = classCount (gnY);
-        if (! isequal (size (val), [K, K]))
-          error (strcat ("CompactClassificationDiscriminant: the number", ...
-                         " of rows and columns in 'Cost' must correspond", ...
-                         " to the selected classes in Y."));
+        ## Everything a cost must be, and the struct form, which
+        ## is permuted into this model's class order.
+        [val, errmsg] = costMatrix (val, gnY);
+        if (! isempty (errmsg))
+          error ("CompactClassificationDiscriminant: %s", errmsg);
         endif
         this.Cost = val;
       endif
@@ -1971,7 +1981,7 @@ endclassdef
 %! delete (fname);
 %! assert_equal (C2.BetweenSigma, CMdl.BetweenSigma);
 
-%!error<CompactClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to the selected classes in Y.> ...
+%!error<CompactClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
 %! load fisheriris
 %! CMdl = compact (fitcdiscr (meas, species));
 %! CMdl.Cost = 1:9;
@@ -2092,3 +2102,19 @@ endclassdef
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! logp (Mdl, {1, 2, 3, 4})
+
+## The shared cost guard is in force here too, and the struct form is
+## permuted into this model's class order.  The battery is on
+## ClassificationDiscriminant.
+%!test
+%! load fisheriris
+%! Mdl = compact (fitcdiscr (meas, species));
+%! S = struct ('ClassNames', {{'virginica'; 'setosa'; 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+%! Mdl.Cost = S;
+%! assert_equal (Mdl.Cost, [0, 4, 3; 6, 0, 5; 1, 2, 0]);
+
+%!error<CompactClassificationDiscriminant: 'Cost' must have zeros on its diagonal.> ...
+%! load fisheriris
+%! Mdl = compact (fitcdiscr (meas, species));
+%! Mdl.Cost = ones (3);

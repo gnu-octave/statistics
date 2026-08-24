@@ -301,6 +301,16 @@ classdef CompactClassificationGAM
     ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
     ## @end itemize
     ##
+    ##
+    ## A cost may also be given as a struct with the fields
+    ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
+    ## order its own matrix is written in.  That matrix is permuted into the
+    ## order of @qcode{ClassNames} above, so a caller need not know which
+    ## order the classes were sorted into.  It must name every class.
+    ##
+    ## A cost must be floating point, not sparse, not complex, non-negative
+    ## and zero down its diagonal, and must hold no @qcode{NaN} or
+    ## @qcode{Inf}.  A @code{single} is widened to @code{double}.
     ## @end deftp
     Cost            = [];
 
@@ -366,11 +376,11 @@ classdef CompactClassificationGAM
       if (isempty (val))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = classCount (gnY);
-        if (! isequal (size (val), [K, K]))
-          error (strcat ("CompactClassificationGAM: the number", ...
-                         " of rows and columns in 'Cost' must", ...
-                         " correspond to selected classes in Y."));
+        ## Everything a cost must be, and the struct form, which
+        ## is permuted into this model's class order.
+        [val, errmsg] = costMatrix (val, gnY);
+        if (! isempty (errmsg))
+          error ("CompactClassificationGAM: %s", errmsg);
         endif
         this.Cost = val;
       endif
@@ -1202,3 +1212,21 @@ endfunction
 %! Mdl = fitcgam ([1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1], [0; 0; 1; 1]);
 %! CMdl = compact (Mdl);
 %! CMdl.Cost = 1:4;
+
+## The shared cost guard is in force here too, and the struct form is
+## permuted into this model's class order.  The battery is on
+## ClassificationDiscriminant.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = compact (fitcgam (meas(inds,:), species(inds)));
+%! S = struct ('ClassNames', {{'versicolor'; 'setosa'}}, ...
+%!             'ClassificationCosts', [0, 1; 2, 0]);
+%! Mdl.Cost = S;
+%! assert_equal (Mdl.Cost, [0, 2; 1, 0]);
+
+%!error<CompactClassificationGAM: 'Cost' must have zeros on its diagonal.> ...
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = compact (fitcgam (meas(inds,:), species(inds)));
+%! Mdl.Cost = ones (2);

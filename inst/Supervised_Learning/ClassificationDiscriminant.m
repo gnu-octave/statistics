@@ -463,6 +463,16 @@ classdef ClassificationDiscriminant
     ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
     ## @end itemize
     ##
+    ##
+    ## A cost may also be given as a struct with the fields
+    ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
+    ## order its own matrix is written in.  That matrix is permuted into the
+    ## order of @qcode{ClassNames} above, so a caller need not know which
+    ## order the classes were sorted into.  It must name every class.
+    ##
+    ## A cost must be floating point, not sparse, not complex, non-negative
+    ## and zero down its diagonal, and must hold no @qcode{NaN} or
+    ## @qcode{Inf}.  A @code{single} is widened to @code{double}.
     ## @end deftp
     Cost            = [];
 
@@ -546,15 +556,15 @@ classdef ClassificationDiscriminant
   methods (Hidden)
 
     function this = set.Cost (this, Cost)
-      [~, gnY] = uniqueLabels (this.Y);
+      gnY = uniqueLabels (this.Y);
       if (isempty (Cost))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = classCount (gnY);
-        if (! isequal (size (Cost), [K, K]))
-          error (strcat ("ClassificationDiscriminant: the number", ...
-                         " of rows and columns in 'Cost' must", ...
-                         " correspond to selected classes in Y."));
+        ## Everything a cost must be, and the struct form, which
+        ## is permuted into this model's class order.
+        [Cost, errmsg] = costMatrix (Cost, gnY);
+        if (! isempty (errmsg))
+          error ("ClassificationDiscriminant: %s", errmsg);
         endif
         this.Cost = Cost;
       endif
@@ -943,7 +953,10 @@ classdef ClassificationDiscriminant
 
           case 'cost'
             Cost = varargin{2};
-            if (! (isnumeric (Cost) && issquare (Cost)))
+            ## A struct carrying its own class order is a cost too,
+            ## and is resolved by the property's own set method.
+            if (! (isstruct (Cost)
+                   || (isnumeric (Cost) && issquare (Cost))))
               error (strcat ("ClassificationDiscriminant: 'Cost'", ...
                              " must be a numeric square matrix."));
             endif
@@ -2547,6 +2560,118 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, 'Prior', {'1', '2'})
 %!error<ClassificationDiscriminant: the elements in 'Prior' do not correspond to the selected classes in Y.> ...
 %! ClassificationDiscriminant (X, ones (10,1), 'Prior', [1 2])
+## What a misclassification cost may be, measured against MATLAB R2024a.
+## The guard is shared by every class with a settable Cost; the battery is
+## here, the other classes each check that they are behind it.
+
+%!test
+%! ## A single cost is widened to double rather than refused
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = single ([0, 1, 2; 3, 0, 4; 5, 6, 0]);
+%! assert_equal (class (Mdl.Cost), 'double');
+%! assert_equal (Mdl.Cost, [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!test
+%! ## A cost need not be symmetric, and is stored as it was given
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = [0, 1, 2; 3, 0, 4; 5, 6, 0];
+%! assert_equal (Mdl.Cost, [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!test
+%! ## Complex means a nonzero imaginary part: a zero one is accepted and
+%! ## stored as a double, so the guard is not ! isreal
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = complex ([0, 1, 2; 3, 0, 4; 5, 6, 0], 0);
+%! assert_equal (class (Mdl.Cost), 'double');
+%! assert_equal (Mdl.Cost, [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!test
+%! ## A struct names the order its matrix is written in, and the matrix is
+%! ## permuted into the model's order entry by entry
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! S = struct ('ClassNames', {{'virginica'; 'setosa'; 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+%! Mdl.Cost = S;
+%! assert_equal (Mdl.Cost, [0, 4, 3; 6, 0, 5; 1, 2, 0]);
+
+%!test
+%! ## A struct already in the model's order permutes to itself
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! S = struct ('ClassNames', {{'setosa'; 'versicolor'; 'virginica'}}, ...
+%!             'ClassificationCosts', [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+%! Mdl.Cost = S;
+%! assert_equal (Mdl.Cost, [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!test
+%! ## The constructor takes the struct form too
+%! load fisheriris
+%! S = struct ('ClassNames', {{'virginica'; 'setosa'; 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+%! Mdl = fitcdiscr (meas, species, 'Cost', S);
+%! assert_equal (Mdl.Cost, [0, 4, 3; 6, 0, 5; 1, 2, 0]);
+
+%!error<ClassificationDiscriminant: 'Cost' must be a floating point matrix.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = int32 ([0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!error<ClassificationDiscriminant: 'Cost' must be a numeric matrix, or a struct with the fields 'ClassNames' and 'ClassificationCosts'.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = ! logical (eye (3));
+
+%!error<ClassificationDiscriminant: 'Cost' must not be sparse.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = sparse ([0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!error<ClassificationDiscriminant: 'Cost' must not be complex.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = [0, 1, 2; 3, 0, 4i; 5, 6, 0];
+
+%!error<ClassificationDiscriminant: 'Cost' must not contain negative values.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = [0, -1, 2; 3, 0, 4; 5, 6, 0];
+
+%!error<ClassificationDiscriminant: 'Cost' must have zeros on its diagonal.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = ones (3);
+
+%!error<ClassificationDiscriminant: 'Cost' must not contain NaN or Inf values.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = [0, 1, 2; 3, 0, NaN; 5, 6, 0];
+
+%!error<ClassificationDiscriminant: 'Cost' must not contain NaN or Inf values.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = [0, 1, 2; 3, 0, Inf; 5, 6, 0];
+
+%!error<ClassificationDiscriminant: 'Cost' given as a struct must have the fields 'ClassNames' and 'ClassificationCosts'.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = struct ('ClassificationCosts', [0, 1, 2; 3, 0, 4; 5, 6, 0]);
+
+%!error<ClassificationDiscriminant: 'Cost' given as a struct must name every class; there is no cost for class 3.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = struct ('ClassNames', {{'setosa'; 'versicolor'}}, ...
+%!                    'ClassificationCosts', [0, 1; 2, 0]);
+
+%!error<ClassificationDiscriminant: 'Cost' given as a struct must have one row and one column of 'ClassificationCosts' per name in 'ClassNames'.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.Cost = struct ('ClassNames', {{'setosa'; 'versicolor'; 'virginica'}}, ...
+%!                    'ClassificationCosts', [0, 1; 2, 0]);
+
 %!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationDiscriminant (X, Y, 'Cost', [1, 2])
 %!error<ClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...

@@ -543,19 +543,19 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
-%! cost = eye (2);
+%! cost = [0, 1; 1, 0];
 %! a = fitcknn (x, y, 'Cost', cost);
 %! assert_equal (class (a), "ClassificationKNN")
-%! assert_equal (a.Cost, [1, 0; 0, 1])
+%! assert_equal (a.Cost, [0, 1; 1, 0])
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
-%! cost = eye (2);
+%! cost = [0, 1; 1, 0];
 %! a = fitcknn (x, y, 'Cost', cost, 'Distance', 'hamming' );
 %! assert_equal (class (a), "ClassificationKNN")
-%! assert_equal (a.Cost, [1, 0; 0, 1])
+%! assert_equal (a.Cost, [0, 1; 1, 0])
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test

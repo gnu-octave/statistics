@@ -403,6 +403,16 @@ classdef ClassificationGAM
     ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
     ## @end itemize
     ##
+    ##
+    ## A cost may also be given as a struct with the fields
+    ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
+    ## order its own matrix is written in.  That matrix is permuted into the
+    ## order of @qcode{ClassNames} above, so a caller need not know which
+    ## order the classes were sorted into.  It must name every class.
+    ##
+    ## A cost must be floating point, not sparse, not complex, non-negative
+    ## and zero down its diagonal, and must hold no @qcode{NaN} or
+    ## @qcode{Inf}.  A @code{single} is widened to @code{double}.
     ## @end deftp
     Cost            = [];
 
@@ -468,11 +478,11 @@ classdef ClassificationGAM
       if (isempty (val))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
-        K = classCount (gnY);
-        if (! isequal (size (val), [K, K]))
-          error (strcat ("ClassificationGAM: the number", ...
-                         " of rows and columns in 'Cost' must", ...
-                         " correspond to selected classes in Y."));
+        ## Everything a cost must be, and the struct form, which
+        ## is permuted into this model's class order.
+        [val, errmsg] = costMatrix (val, gnY);
+        if (! isempty (errmsg))
+          error ("ClassificationGAM: %s", errmsg);
         endif
         this.Cost = val;
       endif
@@ -723,7 +733,10 @@ classdef ClassificationGAM
 
           case 'cost'
             Cost = varargin{2};
-            if (! (isnumeric (Cost) && issquare (Cost)))
+            ## A struct carrying its own class order is a cost too,
+            ## and is resolved by the property's own set method.
+            if (! (isstruct (Cost)
+                   || (isnumeric (Cost) && issquare (Cost))))
               error (strcat ("ClassificationGAM: 'Cost' must be", ...
                              " a numeric square matrix."));
             endif
@@ -2631,3 +2644,21 @@ endfunction
 %! Mdl = fitcgam (meas(inds,:), species(inds));
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## The shared cost guard is in force here too, and the struct form is
+## permuted into this model's class order.  The battery is on
+## ClassificationDiscriminant.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! S = struct ('ClassNames', {{'versicolor'; 'setosa'}}, ...
+%!             'ClassificationCosts', [0, 1; 2, 0]);
+%! Mdl.Cost = S;
+%! assert_equal (Mdl.Cost, [0, 2; 1, 0]);
+
+%!error<ClassificationGAM: 'Cost' must have zeros on its diagonal.> ...
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! Mdl.Cost = ones (2);
