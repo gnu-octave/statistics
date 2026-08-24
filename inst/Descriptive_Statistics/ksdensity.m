@@ -194,15 +194,24 @@ function [f, xi, bw] = ksdensity (x, varargin)
   endif
 
   ## Bandwidth: robust normal-reference rule unless supplied (working space).
+  ## Where the data is discrete enough that more than half of it sits on the
+  ## median, the median absolute deviation is exactly zero and the rule has no
+  ## scale to work from.  MATLAB falls back to the range there, not to the
+  ## standard deviation: the standard deviation of such data is small, and a
+  ## bandwidth taken from it is narrow enough to leave a spike over each
+  ## repeated value instead of a density.  Measured against R2024a on setosa
+  ## petal width and three constructed vectors.  A constant vector has no
+  ## range either, and takes a bandwidth of one.
   if (isempty (bw))
     sigma = median (abs (xw - median (xw))) / 0.6745;
     if (sigma <= 0)
-      sigma = std (xw);
+      sigma = max (xw) - min (xw);
     endif
     if (sigma <= 0)
-      sigma = 1;
+      bw = 1;
+    else
+      bw = sigma * (4 / (3 * n)) ^ (1 / 5);
     endif
-    bw = sigma * (4 / (3 * n)) ^ (1 / 5);
   elseif (! (isnumeric (bw) && isscalar (bw) && isreal (bw) && bw > 0))
     error ("ksdensity: 'Bandwidth' must be a positive scalar.");
   endif
@@ -453,6 +462,24 @@ endfunction
 %! f1 = ksdensity ([x, 3], pts, "Bandwidth", 0.5);
 %! f2 = ksdensity (x, pts, "Bandwidth", 0.5, "Weights", [1 1 1 2]);
 %! assert_equal (f1, f2, 1e-12);
+
+## Where more than half the data sits on the median the median absolute
+## deviation is exactly zero, and the rule falls back to the range rather than
+## to the standard deviation, which is far too small on such data.
+%!test  # MATLAB parity: the bandwidth when the robust scale vanishes
+%! load fisheriris
+%! pw = meas(strcmp (species, 'setosa'), 4);
+%! assert_equal (median (abs (pw - median (pw))), 0);
+%! [~, ~, bw] = ksdensity (pw);
+%! assert_equal (bw, 0.242194206816745, 1e-12);
+%! [~, ~, bw] = ksdensity ([1; 1; 1; 1; 1; 1; 1; 2; 3; 0]);
+%! assert_equal (bw, 2.004975185874807, 1e-12);
+%! [~, ~, bw] = ksdensity ([5; 5; 5; 5; 5; 5; 5; 5; 5; 9]);
+%! assert_equal (bw, 2.673300247833076, 1e-12);
+
+%!test  # MATLAB parity: data with no spread at all takes a bandwidth of one
+%! [~, ~, bw] = ksdensity (repmat (2, 10, 1));
+%! assert_equal (bw, 1);
 
 %!test  # MATLAB parity: default bandwidth, grid size and range
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
