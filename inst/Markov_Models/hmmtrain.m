@@ -113,6 +113,22 @@
 ## @end group
 ## @end example
 ##
+## Two results of Viterbi training differ from MATLAB's, deliberately.
+##
+## Given several sequences, the counts of every sequence are pooled and
+## normalized once, so a sequence contributes in proportion to its length.
+## MATLAB normalizes each sequence separately and averages the results, which
+## weights an eight-symbol sequence as heavily as a twenty-four-symbol one and
+## is not the maximum likelihood estimate.  Its own Baum-Welch pools expected
+## counts, as both algorithms do here.
+##
+## Given @code{"pseudotransitions"} or @code{"pseudoemissions"}, the
+## pseudo-counts are added to the counted transitions and outputs, once per
+## iteration, before the row is normalized.  MATLAB does the same on its first
+## iteration; from its second it adds them to an estimate that has already been
+## normalized, so its iterate mixes counts with probabilities and is no longer
+## a count matrix of any state path.
+##
 ## @subheading References
 ##
 ## @enumerate
@@ -299,10 +315,19 @@ function [esttr, estout] = hmmtrain (sequence, transguess, outguess, varargin)
         endfor
       endfor
     else
-      # Viterbi training: count the transitions and outputs along the best
-      # path of each sequence.  Only observed consecutive-state transitions are
-      # counted -- no transition out of the initial state -- matching
-      # hmmestimate and MATLAB's first Viterbi iteration.
+      ## Viterbi training: count the transitions and outputs along the best
+      ## path of each sequence.  Only observed consecutive-state transitions are
+      ## counted -- no transition out of the initial state -- matching
+      ## hmmestimate and MATLAB's first Viterbi iteration.
+      ##
+      ## Counts are pooled across sequences and normalized once, the maximum
+      ## likelihood estimate over the pooled data.  MATLAB normalizes each
+      ## sequence and averages, weighting every sequence equally whatever its
+      ## length; its own Baum-Welch pools, as this does.  Deliberate deviation.
+      ##
+      ## Pseudo-counts seed the count matrix, so they are counts throughout.
+      ## From its second iteration MATLAB adds them to the normalized estimate
+      ## instead, mixing counts with probabilities.  Deliberate deviation.
       TR = pseudotr;
       OUT = pseudoout;
       for j = 1:nseq
@@ -497,6 +522,33 @@ endfunction
 %!                      'symbols', {'A', 'B', 'C'});
 %! assert_equal (t1, t2, 1e-12);
 %! assert_equal (o1, o2, 1e-12);
+
+%!test
+%! ## Several sequences pool their counts, so the estimate follows sequence
+%! ## length.  MATLAB averages the per-sequence estimates (deviation).
+%! s1 = [1, 2, 2, 3, 3, 3, 3, 3];
+%! s2 = [2, 2, 2, 3, 2, 2, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1, 2, 2, 3, 3, 3, 2, 3, 2];
+%! transguess = [0.7, 0.3; 0.4, 0.6];
+%! outguess = [0.5, 0.3, 0.2; 0.2, 0.3, 0.5];
+%! [esttr, estout] = hmmtrain ({s1, s2}, transguess, outguess, ...
+%!                             'algorithm', 'Viterbi', 'maxiterations', 1, ...
+%!                             'tolerance', 1e6);
+%! assert_equal (esttr, [19/21, 2/21; 0, 1], 1e-14);
+%! assert_equal (estout, [9/21, 10/21, 2/21; 0, 2/11, 9/11], 1e-14);
+
+%!test
+%! ## Pseudo-counts stay counts on every iteration.  MATLAB adds them to the
+%! ## normalized estimate from its second iteration on (deviation).
+%! seq = [2, 2, 2, 2, 3, 2, 3, 3, 1, 2, 3, 3, 3, 2, 3, 1, 2, 2, 1, 2, ...
+%!        3, 3, 1, 2, 3, 1, 3, 3, 2, 1];
+%! transguess = [0.7, 0.3; 0.4, 0.6];
+%! outguess = [0.5, 0.3, 0.2; 0.2, 0.3, 0.5];
+%! [esttr, estout] = hmmtrain (seq, transguess, outguess, ...
+%!                             'algorithm', 'Viterbi', ...
+%!                             'pseudotransitions', [2, 1; 1, 3], ...
+%!                             'pseudoemissions', [1, 2, 1; 3, 1, 2]);
+%! assert_equal (esttr, [5/7, 2/7; 1/29, 28/29], 1e-14);
+%! assert_equal (estout, [1/8, 6/8, 1/8; 9/32, 9/32, 14/32], 1e-14);
 
 %!warning <did not converge> ...
 %! transprob = [0.8, 0.2; 0.4, 0.6];
