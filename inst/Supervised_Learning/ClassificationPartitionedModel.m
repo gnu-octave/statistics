@@ -520,10 +520,15 @@ classdef ClassificationPartitionedModel
             args = [args, {'Interactions', Mdl.IntMatrix}];
           endif
 
-          ## Train model according to partition object
+          ## Train model according to partition object.  The fold is pinned
+          ## at 'none' so that it hands back the raw log-odds: the transform
+          ## belongs to the parent, which applies it once to the assembled
+          ## score, and a fold left at the class default would apply it a
+          ## second time.
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), args{:});
+            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), args{:}, ...
+                           'ScoreTransform', 'none');
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -1668,6 +1673,19 @@ endclassdef
 %! load fisheriris; ...
 %! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3); ...
 %! CVMdl.Prior = [0.5, 0.5];
+
+## A GAM backing transforms once, like every other.  Its class default is
+## 'logit', so the fold has to be pinned at 'none' or the parent's transform
+## lands on scores the fold has already transformed and the rows sum to about
+## 1.23 instead of one.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! CVMdl = crossval (fitcgam (meas(inds,:), species(inds)), 'KFold', 3);
+%! assert_equal (CVMdl.ScoreTransform, 'logit');
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+%! [~, s] = kfoldPredict (CVMdl);
+%! assert_equal (sum (s, 2), ones (rows (s), 1), 1e-12);
 
 ## ScoreTransform is applied to the assembled scores, not carried into the
 ## folds.  MATLAB leaves every Trained{k} at 'none' and transforms at the

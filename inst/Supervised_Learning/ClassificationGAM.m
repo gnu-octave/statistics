@@ -442,25 +442,22 @@ classdef ClassificationGAM
     ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
-    ## The default is @qcode{'none'} because this model's @code{predict}
-    ## already returns posterior probabilities, which sum to one across the
-    ## classes.  MATLAB's generalized additive model is built from boosted
-    ## trees whose raw scores are log-odds, so it defaults to
-    ## @qcode{'logit'} and reports probabilities only after applying it.
-    ## Both return the same kind of quantity while naming a different
-    ## transform, so do not set @qcode{'logit'} here expecting to match
-    ## MATLAB: applying it to numbers that are already probabilities
-    ## leaves them summing to about 1.23 rather than one.
+    ## The default is @qcode{'logit'}, as in MATLAB.  This model's raw
+    ## score is a log-odds, reported as the pair @math{[-f, f]} whose two
+    ## columns sum to zero, and the transform is what turns it into the
+    ## posterior probabilities that sum to one.  Every transform therefore
+    ## composes on the log-odds and not on the probabilities, so
+    ## @qcode{'none'} returns the log-odds themselves.
     ##
     ## @end deftp
-    ScoreTransform  = 'none';
+    ScoreTransform  = 'logit';
 
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STfun = @(x) x;
+    STfun = @(x) 1 ./ (1 + exp (-x));
   endproperties
 
   ## Set methods for the properties a user may assign.
@@ -1179,8 +1176,13 @@ classdef ClassificationGAM
         Interc = this.BaseModel.Intercept;
       endif
 
-      ## Predict probabilities from testing data
+      ## Predict the raw score from testing data
       scores = predict_val (params, XC, Interc);
+
+      ## Expected misclassification cost is defined on the posteriors, which
+      ## the score becomes only under the logistic link, so the label is
+      ## taken from those and not from the score the caller is handed.
+      post = 1 ./ (1 + exp (-scores));
 
       ## Compute the expected misclassification cost matrix
       numObservations = size (XC, 1);
@@ -1188,7 +1190,7 @@ classdef ClassificationGAM
 
       for k = 1:2
         for i = 1:2
-          CE(:, k) = CE(:, k) + scores(:, i) * Cost(k, i);
+          CE(:, k) = CE(:, k) + post(:, i) * Cost(k, i);
         endfor
       endfor
 
@@ -1920,9 +1922,11 @@ endclassdef
 
 ## Helper function
 function scores = predict_val (params, XC, intercept)
-  ## The shared prediction engine evaluates every additive term and maps the
-  ## sum through the logistic link, returning both class probabilities.
-  scores = gampredict (params, XC, intercept, 1);
+  ## The shared prediction engine evaluates every additive term and sums
+  ## them.  That sum is the log-odds of the second class, so the raw score of
+  ## the first is its negative and the pair sums to zero, as MATLAB's does.
+  f = gampredict (params, XC, intercept, 0);
+  scores = [-f, f];
 endfunction
 
 %!demo
@@ -2396,15 +2400,18 @@ endfunction
 %!               {'a'; 'b'});
 %! assert_equal (fitcgam ([1;2;3;4], ['b';'a';'b';'a']).ClassNames, ['a';'b']);
 
-## An assigned ScoreTransform reaches the scores predict returns.
+## An assigned ScoreTransform reaches the scores predict returns, and it
+## composes on the raw log-odds rather than on the posteriors, as measured
+## on MATLAB R2024a.
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
 %! Mdl = fitcgam (meas(inds,:), species(inds));
-%! [~, s0] = predict (Mdl, meas(inds,:));
+%! Mdl.ScoreTransform = 'none';
+%! [~, raw] = predict (Mdl, meas(inds,:));
 %! Mdl.ScoreTransform = 'symmetric';
 %! [~, s1] = predict (Mdl, meas(inds,:));
-%! assert_equal (s1, 2 * s0 - 1, 1e-12);
+%! assert_equal (s1, 2 * raw - 1, 1e-12);
 
 ## The edge is the mean of the margins, and weights reweight that mean.
 %!test
@@ -2592,17 +2599,28 @@ endfunction
 %! assert_equal (class (M2.ScoreTransform), class (Mdl.ScoreTransform));
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
 
-## predict returns posterior probabilities directly, so the default transform
-## is 'none' and the scores already sum to one.  MATLAB's GAM is boosted trees
-## whose raw scores are log-odds, which is why it names 'logit' instead.
+## The default transform is 'logit', as MATLAB's is, so the scores predict
+## reports are posterior probabilities that sum to one.
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
 %! Mdl = fitcgam (meas(inds,:), species(inds));
-%! assert_equal (Mdl.ScoreTransform, 'none');
+%! assert_equal (Mdl.ScoreTransform, 'logit');
 %! [~, scores] = predict (Mdl, meas(1:6,:));
 %! assert_equal (sum (scores, 2), ones (6, 1), 1e-12);
 %! assert_equal (all (scores(:) >= 0 & scores(:) <= 1), true);
+
+## The untransformed score is the log-odds pair whose columns sum to zero,
+## and the default transform is what maps it to the posteriors.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! [~, post] = predict (Mdl, meas(1:6,:));
+%! Mdl.ScoreTransform = 'none';
+%! [~, raw] = predict (Mdl, meas(1:6,:));
+%! assert_equal (sum (raw, 2), zeros (6, 1), 1e-12);
+%! assert_equal (1 ./ (1 + exp (-raw)), post, 1e-12);
 
 ## BinEdges is an empty cell, as MATLAB reports for every learner that
 ## does no binning.  MATLAB's own generalized additive model fills it,

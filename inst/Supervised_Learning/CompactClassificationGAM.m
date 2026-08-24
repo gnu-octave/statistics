@@ -340,25 +340,22 @@ classdef CompactClassificationGAM
     ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
-    ## The default is @qcode{'none'} because this model's @code{predict}
-    ## already returns posterior probabilities, which sum to one across the
-    ## classes.  MATLAB's generalized additive model is built from boosted
-    ## trees whose raw scores are log-odds, so it defaults to
-    ## @qcode{'logit'} and reports probabilities only after applying it.
-    ## Both return the same kind of quantity while naming a different
-    ## transform, so do not set @qcode{'logit'} here expecting to match
-    ## MATLAB: applying it to numbers that are already probabilities
-    ## leaves them summing to about 1.23 rather than one.
+    ## The default is @qcode{'logit'}, as in MATLAB.  This model's raw
+    ## score is a log-odds, reported as the pair @math{[-f, f]} whose two
+    ## columns sum to zero, and the transform is what turns it into the
+    ## posterior probabilities that sum to one.  Every transform therefore
+    ## composes on the log-odds and not on the probabilities, so
+    ## @qcode{'none'} returns the log-odds themselves.
     ##
     ## @end deftp
-    ScoreTransform  = 'none';
+    ScoreTransform  = 'logit';
 
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
-    STfun = @(x) x;
+    STfun = @(x) 1 ./ (1 + exp (-x));
   endproperties
 
   ## Set methods for the properties a user may assign.
@@ -588,8 +585,13 @@ classdef CompactClassificationGAM
         Interc = this.BaseModel.Intercept;
       endif
 
-      ## Predict probabilities from testing data
+      ## Predict the raw score from testing data
       scores = predict_val (params, XC, Interc);
+
+      ## Expected misclassification cost is defined on the posteriors, which
+      ## the score becomes only under the logistic link, so the label is
+      ## taken from those and not from the score the caller is handed.
+      post = 1 ./ (1 + exp (-scores));
 
       ## Compute the expected misclassification cost matrix
       numObservations = size (XC, 1);
@@ -597,7 +599,7 @@ classdef CompactClassificationGAM
 
       for k = 1:2
         for i = 1:2
-          CE(:, k) = CE(:, k) + scores(:, i) * Cost(k, i);
+          CE(:, k) = CE(:, k) + post(:, i) * Cost(k, i);
         endfor
       endfor
 
@@ -974,9 +976,11 @@ endclassdef
 
 ## Helper function
 function scores = predict_val (params, XC, intercept)
-  ## The shared prediction engine evaluates every additive term and maps the
-  ## sum through the logistic link, returning both class probabilities.
-  scores = gampredict (params, XC, intercept, 1);
+  ## The shared prediction engine evaluates every additive term and sums
+  ## them.  That sum is the log-odds of the second class, so the raw score of
+  ## the first is its negative and the pair sums to zero, as MATLAB's does.
+  f = gampredict (params, XC, intercept, 0);
+  scores = [-f, f];
 endfunction
 
 %!demo
@@ -1106,6 +1110,16 @@ endfunction
 %! savemodel (CompactClassificationGAM (), 1)
 %!error <CompactClassificationGAM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (CompactClassificationGAM (), ['ab'; 'cd'])
+
+## The compact model carries the full model's transform, which defaults to
+## 'logit' as MATLAB's does, so its scores are posteriors summing to one.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! CMdl = compact (fitcgam (meas(inds,:), species(inds)));
+%! assert_equal (CMdl.ScoreTransform, 'logit');
+%! [~, scores] = predict (CMdl, meas(1:6,:));
+%! assert_equal (sum (scores, 2), ones (6, 1), 1e-12);
 
 ## A ScoreTransform can be assigned, and is stored as a function handle.
 %!test
