@@ -155,17 +155,25 @@ function f = mvksdensity (x, pts, varargin)
 endfunction
 
 ## Diagonal normal-reference (Silverman) bandwidth, one element per dimension.
-## The per-column spread is a robust estimate of the standard deviation (the
-## same rule ksdensity uses), falling back to the ordinary standard deviation
-## for any degenerate column, matching MATLAB.
+## The per-column spread is a robust estimate of the standard deviation, the
+## same rule ksdensity uses, and a column whose median absolute deviation is
+## zero falls back to its RANGE rather than to its standard deviation.  A
+## column with no range either takes the whole bandwidth to ones, not just its
+## own element: MATLAB abandons the rule for every dimension once one of them
+## is degenerate, and the other columns' bandwidths change with it.  Measured
+## against R2024a, which agrees to 3.2e-14 on ordinary data and differed by 86%
+## and 99% on the two degenerate cases before this.
 function bw = default_bw (x, n, d)
   sigma = median (abs (x - median (x, 1)), 1) / 0.6745;
   bad = ! (sigma > 0);
   if (any (bad))
-    s = std (x, 0, 1);
-    sigma(bad) = s(bad);
+    r = max (x, [], 1) - min (x, [], 1);
+    sigma(bad) = r(bad);
   endif
-  sigma(! (sigma > 0)) = 1;
+  if (any (! (sigma > 0)))
+    bw = ones (1, d);
+    return;
+  endif
   bw = sigma * (4 / ((d + 2) * n)) ^ (1 / (d + 4));
 endfunction
 
@@ -218,6 +226,42 @@ endfunction
 %! f = mvksdensity (X, [gx(:), gy(:)]);
 %! dx = gx(1,2) - gx(1,1);
 %! assert_equal (sum (f) * dx ^ 2, 1, 1e-2);
+
+## MATLAB parity: the default bandwidth where a column's median absolute
+## deviation is zero.  The fallback is that column's RANGE, not its standard
+## deviation, which is the same rule ksdensity follows.  Before this the two
+## differed by 86%.
+%!test
+%! xz = [1, 2.3; 1, 3.1; 1, 4.8; 1, 5.5; 1, 6.1; 3, 7.9; 5, 8.2; 9, 9.4];
+%! f = mvksdensity (xz, [3, 4; 5, 6]);
+%! assert_equal (f, [0.006520360257529; 0.006588943731769], 1e-12);
+
+## MATLAB parity: a column with no range at all takes the WHOLE bandwidth to
+## ones, not merely its own element, so the other columns' bandwidths move
+## with it.  Before this the two differed by 99%.
+%!test
+%! xc = [2, 2.3; 2, 3.1; 2, 4.8; 2, 5.5; 2, 6.1; 2, 7.9; 2, 8.2; 2, 9.4];
+%! f = mvksdensity (xc, [3, 4; 5, 6]);
+%! assert_equal (f, [0.024910428037417; 0.000582734811254], 1e-12);
+%! assert_equal (f, mvksdensity (xc, [3, 4; 5, 6], 'Bandwidth', [1, 1]), 1e-12);
+
+## An ordinary column is untouched by either fallback.
+%!test
+%! xh = [1.1, 2.3; 2.4, 3.1; 3.9, 4.8; 4.2, 5.5; 5.7, 6.1; 6.3, 7.9; ...
+%!       7.1, 8.2; 8.8, 9.4];
+%! assert_equal (mvksdensity (xh, [3, 4; 5, 6]), ...
+%!               [0.014366107896069; 0.016985761603336], 1e-12);
+
+## Three or more predictors take a default bandwidth here.  R2024a cannot:
+## its default path yields a two-element bandwidth whatever the dimension and
+## it raises "Bandwidth must be a scalar or a vector with 3 elements" on any
+## three-column call, healthy data included.  Documented deviation.
+%!test
+%! x3 = [1.1, 5.2, 2.3; 2.4, 6.1, 3.1; 3.9, 4.4, 4.8; 4.2, 7.7, 5.5; ...
+%!       5.7, 5.9, 6.1; 6.3, 8.3, 7.9; 7.1, 6.6, 8.2; 8.8, 9.1, 9.4];
+%! f = mvksdensity (x3, [3, 6, 4; 5, 7, 6]);
+%! assert_equal (size (f), [2, 1]);
+%! assert_equal (all (f > 0), true);
 
 ## Test input validation
 %!error <Invalid call to mvksdensity> mvksdensity (ones (3, 2))
