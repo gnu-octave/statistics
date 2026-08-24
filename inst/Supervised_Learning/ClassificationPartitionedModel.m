@@ -542,9 +542,11 @@ classdef ClassificationPartitionedModel
         case 'KNN'
           ## Arguments to pass in fitcknn
           args = {};
-          ## List of acceptable parameters for fitcknn
+          ## List of acceptable parameters for fitcknn.  ScoreTransform is
+          ## deliberately absent: the parent applies it to the assembled
+          ## scores, so a fold carrying it too would apply it twice.
           KNNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                       'Prior', 'Cost', 'ScoreTransform', 'BreakTies', ...
+                       'Prior', 'Cost', 'BreakTies', ...
                        'NSMethod', 'BucketSize', 'NumNeighbors', 'Exponent', ...
                        'Scale', 'Cov', 'Distance', 'DistanceWeight', ...
                        'IncludeTies'};
@@ -607,9 +609,10 @@ classdef ClassificationPartitionedModel
         case 'NeuralNetwork'
           ## Arguments to pass in fitcnet
           args = {};
-          ## List of acceptable parameters for fitcnet
+          ## List of acceptable parameters for fitcnet.  ScoreTransform is
+          ## deliberately absent, as it is for the KNN above.
           NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                      'ScoreTransform', 'LayerSizes', ...
+                      'LayerSizes', ...
                       'Activations', 'OutputLayerActivation', ...
                       'LearningRate', 'IterationLimit', 'DisplayInfo'};
           ## Set parameters
@@ -1699,6 +1702,46 @@ endclassdef
 %! CVMdl.ScoreTransform = 'none';
 %! [~, s1] = kfoldPredict (CVMdl);
 %! assert_equal (s1, s0);
+
+## A transform carried by the model being cross-validated moves to the parent
+## and is not handed to the folds.  R2024a leaves every Trained@{k@} at 'none'
+## for all five backings; the KNN and the network used to be given it as well
+## and so applied it a second time.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species, ...
+%!                            'ScoreTransform', 'doublelogit'), 'KFold', 3);
+%! assert_equal (CVMdl.ScoreTransform, 'doublelogit');
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcnet (meas, species, ...
+%!                            'ScoreTransform', 'doublelogit'), 'KFold', 3);
+%! assert_equal (CVMdl.ScoreTransform, 'doublelogit');
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+
+## And it is applied once, not twice.  A KNN is deterministic given the
+## partition, so the two fits share their folds and the untransformed one is
+## an exact baseline: doublelogit applied twice would not match it.
+%!test
+%! load fisheriris
+%! c = cvpartition (species, 'KFold', 3);
+%! CV0 = crossval (fitcknn (meas, species), 'CVPartition', c);
+%! CV1 = crossval (fitcknn (meas, species, ...
+%!                          'ScoreTransform', 'doublelogit'), 'CVPartition', c);
+%! [~, s0] = kfoldPredict (CV0);
+%! [~, s1] = kfoldPredict (CV1);
+%! assert_equal (s1, 1 ./ (1 + exp (-2 * s0)), 1e-12);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcnet (meas, species, ...
+%!                            'ScoreTransform', 'doublelogit'), 'KFold', 3);
+%! [~, s1] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'none';
+%! [~, s0] = kfoldPredict (CVMdl);
+%! assert_equal (s1, 1 ./ (1 + exp (-2 * s0)), 1e-12);
 
 %!error<ClassificationPartitionedModel: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
 %! load fisheriris

@@ -1467,10 +1467,12 @@ classdef ClassificationKNN
         scores = [scores; freq];
         cost = [cost; 1-freq];
 
-        ## Apply ScoreTransform
-        scores = this.STfun (scores);
-
       endfor
+
+      ## Apply ScoreTransform once to the whole matrix.  Inside the loop it
+      ## was applied to everything accumulated so far, so observation i of n
+      ## came back transformed n-i+1 times.
+      scores = this.STfun (scores);
 
       ## Convert double to logical if ClassNames are logical
       if (islogical (this.ClassNames))
@@ -3630,6 +3632,35 @@ endfunction
 %! Mdl.ScoreTransform = 'logit';
 %! [~, s1] = predict (Mdl, meas(60,:));
 %! assert_equal (s1, 1 ./ (1 + exp (-s0)), 1e-12);
+
+## The transform is applied once per prediction, not once per observation.
+## It used to sit inside the loop over the query rows and be applied to
+## everything accumulated so far, so row i of n came back transformed n-i+1
+## times and only the last row was right.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [~, s0] = predict (Mdl, meas(1:6,:));
+%! Mdl.ScoreTransform = 'logit';
+%! [~, s1] = predict (Mdl, meas(1:6,:));
+%! assert_equal (s1, 1 ./ (1 + exp (-s0)), 1e-12);
+
+## A row predicted on its own and the same row predicted among others get the
+## same scores, which is what applying the transform once per row means.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'ScoreTransform', 'doublelogit');
+%! [~, s1] = predict (Mdl, meas(1,:));
+%! [~, s6] = predict (Mdl, meas(1:6,:));
+%! assert_equal (s6(1,:), s1, 1e-12);
+
+## The values are R2024a's: a default KNN scores the first four observations
+## [1 0 0] and doublelogit takes that to [0.8808 0.5 0.5], every row alike.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'ScoreTransform', 'doublelogit');
+%! [~, s] = predict (Mdl, meas(1:4,:));
+%! assert_equal (s, repmat ([0.880797077977882, 0.5, 0.5], 4, 1), 1e-12);
 
 ## 'logit' is the logistic function and 'invlogit' its inverse, as MATLAB has
 ## them, and not the other way about.

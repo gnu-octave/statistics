@@ -46,7 +46,7 @@
 
 classdef RegressionPartitionedKernel
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties (GetAccess = public, SetAccess = public)
 
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedKernel} {property} ResponseTransform
@@ -54,12 +54,16 @@ classdef RegressionPartitionedKernel
     ## Transformation applied to the predicted response
     ##
     ## A character vector, or the text of the function handle that was
-    ## supplied.  The fold models carry no transform of their own; this one
-    ## is applied once to the assembled predictions.  This property is
-    ## read-only.
+    ## supplied, which may be assigned after the model is built.  The fold
+    ## models carry no transform of their own; this one is applied once to
+    ## the assembled predictions.
     ##
     ## @end deftp
     ResponseTransform      = 'none';
+
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedKernel} {property} CrossValidatedModel
@@ -367,6 +371,12 @@ classdef RegressionPartitionedKernel
 
   methods (Access = public, Hidden)
 
+    function this = set.ResponseTransform (this, val)
+      [f, nm] = parseResponseTransform (val, 'RegressionPartitionedKernel');
+      this.ResponseTransform = nm;
+      this.RTfun = f;
+    endfunction
+
     function display (this)
       in_name = inputname (1);
       if (! isempty (in_name))
@@ -483,6 +493,34 @@ endclassdef
 %!                                      'Standardize', true);
 %! assert_equal (isempty (CVMdl.Trained{1}.Mu), false);
 %! assert_equal (isempty (CVMdl.Trained{4}.Sigma), false);
+
+%!test
+%! ## It can be assigned after the model is built, and reaches kfoldPredict
+%! ## without being carried into the folds
+%! CVMdl = RegressionPartitionedKernel (X, Y, 'KFold', 4);
+%! y0 = kfoldPredict (CVMdl);
+%! CVMdl.ResponseTransform = @(y) y + 100;
+%! y1 = kfoldPredict (CVMdl);
+%! assert_equal (CVMdl.Trained{1}.ResponseTransform, 'none');
+%! assert_equal (y1, y0 + 100, 1e-10);
+
+%!test
+%! ## And it reaches kfoldLoss, which is computed from those predictions
+%! CVMdl = RegressionPartitionedKernel (X, Y, 'KFold', 4);
+%! before = kfoldLoss (CVMdl);
+%! CVMdl.ResponseTransform = @(y) y + 100;
+%! assert (kfoldLoss (CVMdl) > before);
+
+%!test
+%! ## 'none' is the identity, so assigning it transforms nothing
+%! CVMdl = RegressionPartitionedKernel (X, Y, 'KFold', 4);
+%! y0 = kfoldPredict (CVMdl);
+%! CVMdl.ResponseTransform = 'none';
+%! assert_equal (kfoldPredict (CVMdl), y0);
+
+%!error<RegressionPartitionedKernel: unrecognized 'ResponseTransform' function.> ...
+%! CVMdl = RegressionPartitionedKernel (X, Y, 'KFold', 4);
+%! CVMdl.ResponseTransform = 'nosuchtransform';
 
 ## Test input validation
 %!error<RegressionPartitionedKernel: too few input arguments.> ...

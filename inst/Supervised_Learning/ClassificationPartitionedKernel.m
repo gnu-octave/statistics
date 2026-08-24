@@ -82,18 +82,28 @@ classdef ClassificationPartitionedKernel
     ## @end deftp
     Prior                  = [];
 
+  endproperties
+
+  properties (GetAccess = public, SetAccess = public)
+
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedKernel} {property} ScoreTransform
     ##
     ## Transformation applied to the predicted scores
     ##
     ## A character vector naming a transformation, or the text of the
-    ## function handle that was supplied.  The fold models carry no
-    ## transform of their own; this one is applied once to the assembled
-    ## scores.  This property is read-only.
+    ## function handle that was supplied, which may be assigned after the
+    ## model is built.  It is applied once to the assembled scores and is
+    ## not handed to the folds.  A transform the learner implies, as
+    ## @qcode{'logistic'} implies @qcode{'logit'}, does stay with the folds,
+    ## and this one is then applied on top of it.
     ##
     ## @end deftp
     ScoreTransform         = 'none';
+
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedKernel} {property} CrossValidatedModel
@@ -286,16 +296,15 @@ classdef ClassificationPartitionedKernel
       [part, args] = cvPartitionOf (args, F.Y, F.n, ...
                                     'ClassificationPartitionedKernel');
 
-      ## The score transform stays with the fold models: a logistic fold
-      ## reports posteriors and the parent reports no transform of its own.
-      ## Measured on R2024a, where a cross-validated logistic model has
-      ## ScoreTransform 'none' while every Trained@{k@} has 'logit', and the
-      ## assembled scores nonetheless sum to one.
+      ## A transform asked for by name belongs to the parent, which applies
+      ## it once to the assembled scores, and the folds are not given it.
+      ## Measured on R2024a, where a cross-validated model fitted with a
+      ## ScoreTransform reports it and leaves every Trained@{k@} at 'none'.
+      ## A transform the learner implies is a different thing: a logistic
+      ## fold reports posteriors and carries 'logit' of its own, which
+      ## R2024a also does, and the parent's transform composes on top of it.
       fargs = [args, {'ClassNames', F.ClassNames, 'Prior', F.Prior, ...
                       'Cost', F.Cost}];
-      if (! isempty (P.ScoreTransform))
-        fargs = [fargs, {'ScoreTransform', P.ScoreTransform}];
-      endif
       ## Built field by field rather than with one struct call: a cell
       ## array response passed to struct () makes a struct array of that
       ## size instead of a scalar struct holding the cell.
@@ -320,11 +329,11 @@ classdef ClassificationPartitionedKernel
       this.CategoricalPredictors = this.Trained{1}.CategoricalPredictors;
       this.ResponseName = this.Trained{1}.ResponseName;
 
-      ## The parent applies nothing further, the folds having applied
-      ## whatever transform they carry.  Its property reports that plainly
-      ## rather than restating the folds'.
+      if (isempty (P.ScoreTransform))
+        P.ScoreTransform = 'none';
+      endif
       [this.STfun, this.ScoreTransform] = ...
-              parseScoreTransform ('none', ...
+              parseScoreTransform (P.ScoreTransform, ...
                                    'ClassificationPartitionedKernel');
 
       this.ModelParameters = struct ('Type', 'classification', ...
@@ -473,6 +482,12 @@ classdef ClassificationPartitionedKernel
   endmethods
 
   methods (Access = public, Hidden)
+
+    function this = set.ScoreTransform (this, val)
+      [f, nm] = parseScoreTransform (val, 'ClassificationPartitionedKernel');
+      this.ScoreTransform = nm;
+      this.STfun = f;
+    endfunction
 
     function display (this)
       in_name = inputname (1);
@@ -647,6 +662,66 @@ endclassdef
 %! assert_equal (size (kfoldPredict (CVm)), [100, 10]);
 %! assert_equal (isfinite (kfoldLoss (CVm)), true);
 %! assert_equal (isfinite (kfoldEdge (CVm)), true);
+
+%!test
+%! ## A transform asked for by name goes to the parent and not to the folds,
+%! ## and is applied once to the assembled scores.  R2024a's arrangement.
+%! ## The baseline is read from the same object with the transform switched
+%! ## off, a second fit being no baseline at all here: the random feature
+%! ## expansion differs between two fits of the same data.
+%! load fisheriris
+%! CVMdl = ClassificationPartitionedKernel (meas(51:end,:), species(51:end), ...
+%!                                          'KFold', 5, ...
+%!                                          'ScoreTransform', 'doublelogit');
+%! assert_equal (CVMdl.ScoreTransform, 'doublelogit');
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+%! [~, s1] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'none';
+%! [~, s0] = kfoldPredict (CVMdl);
+%! assert_equal (s1, 1 ./ (1 + exp (-2 * s0)), 1e-12);
+
+%!test
+%! ## It can be assigned after the model is built, and reaches kfoldPredict
+%! ## without being carried into the folds
+%! load fisheriris
+%! CVMdl = ClassificationPartitionedKernel (meas(51:end,:), species(51:end), ...
+%!                                          'KFold', 5);
+%! [~, s0] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'doublelogit';
+%! [~, s1] = kfoldPredict (CVMdl);
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+%! assert_equal (s1, 1 ./ (1 + exp (-2 * s0)), 1e-12);
+
+%!test
+%! ## A transform the learner implies stays with the folds, and an assigned
+%! ## one is applied on top of it rather than replacing it.  Measured on
+%! ## R2024a, where the folds keep 'logit' and the parent's transform
+%! ## composes.
+%! load fisheriris
+%! CVMdl = ClassificationPartitionedKernel (meas(51:end,:), species(51:end), ...
+%!                                          'KFold', 5, ...
+%!                                          'Learner', 'logistic');
+%! [~, s0] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'doublelogit';
+%! [~, s1] = kfoldPredict (CVMdl);
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'logit');
+%! assert_equal (s1, 1 ./ (1 + exp (-2 * s0)), 1e-12);
+
+%!test
+%! ## 'none' is the identity, so assigning it transforms nothing
+%! load fisheriris
+%! CVMdl = ClassificationPartitionedKernel (meas(51:end,:), species(51:end), ...
+%!                                          'KFold', 5);
+%! [~, s0] = kfoldPredict (CVMdl);
+%! CVMdl.ScoreTransform = 'none';
+%! [~, s1] = kfoldPredict (CVMdl);
+%! assert_equal (s1, s0);
+
+%!error<ClassificationPartitionedKernel: unrecognized 'ScoreTransform' function.> ...
+%! load fisheriris
+%! CVMdl = ClassificationPartitionedKernel (meas(51:end,:), species(51:end), ...
+%!                                          'KFold', 5);
+%! CVMdl.ScoreTransform = 'nosuchtransform';
 
 ## Test input validation
 %!error<ClassificationPartitionedKernel: too few input arguments.> ...
