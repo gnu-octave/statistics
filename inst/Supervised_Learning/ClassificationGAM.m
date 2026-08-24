@@ -23,10 +23,10 @@ classdef ClassificationGAM
   ##
   ## Generalized additive model classification
   ##
-  ## The @code{ClassificationGAM} class implements a gradient boosting algorithm
-  ## for classification, using spline fitting as the weak learner.  This
-  ## approach allows the model to capture non-linear relationships between
-  ## predictors and the binary response variable.
+  ## The @code{ClassificationGAM} class implements a gradient boosting
+  ## algorithm for classification.  This approach allows the model to capture
+  ## non-linear relationships between predictors and the binary response
+  ## variable.
   ##
   ## Generalized additive model classification is a statistical method that
   ## extends linear models by allowing non-linear relationships between each
@@ -37,20 +37,34 @@ classdef ClassificationGAM
   ## Create a @code{ClassificationGAM} object by using the @code{fitcgam}
   ## function or the class constructor.
   ##
-  ## The weak learner here is a smoothing spline, one per predictor, boosted
-  ## over @code{NumIterations} passes.  MATLAB's generalized additive model
-  ## boosts shallow decision trees instead.  Both fit the same additive
-  ## structure and both are called a GAM, but they are different estimators:
-  ## fitted values, scores and losses will not agree with MATLAB's on the same
-  ## data, and the disagreement is the method rather than a defect.
+  ## Two weak learners are available, selected by @code{FitMethod}.
+  ##
+  ## @qcode{'boostedtrees'}, the default, boosts one shallow decision tree per
+  ## predictor in each round, which is the scheme MATLAB's generalized
+  ## additive model uses.  A second phase then boosts trees over pairs of
+  ## predictors, where interactions are asked for.
+  ##
+  ## @qcode{'splines'} boosts a smoothing spline per predictor over
+  ## @code{NumIterations} passes.  It has no MATLAB counterpart and is an
+  ## Octave extension, kept because a smooth additive fit is a genuinely
+  ## different and often better answer than a staircase of stumps.
+  ##
+  ## The two take different arguments, and an argument meant for one is
+  ## refused by the other rather than ignored.
   ##
   ## The choice is visible in the properties.  @code{Knots}, @code{Order},
   ## @code{DoF}, @code{Formula}, @code{LearningRate}, @code{NumIterations},
-  ## @code{BaseModel}, @code{ModelwInt} and @code{IntMatrix} describe the
-  ## spline fit and have no MATLAB counterpart, while MATLAB's
-  ## @code{ModelParameters}, @code{ReasonForTermination}, @code{BinEdges} and
-  ## @code{PairDetectionBinEdges} describe a tree ensemble and are not
-  ## reported here.
+  ## @code{BaseModel}, @code{ModelwInt} and @code{IntMatrix} describe a spline
+  ## fit and are empty under the boosted-tree engine, while
+  ## @code{ModelParameters}, @code{ReasonForTermination}, @code{BinEdges},
+  ## @code{PairDetectionBinEdges} and @code{TreeModel} describe a tree fit and
+  ## are empty under the spline engine.
+  ##
+  ## Fitted values are not expected to equal MATLAB's even under
+  ## @qcode{'boostedtrees'}.  The stopping rule and the step-reduction limit
+  ## are not recoverable from anything MATLAB reports, so this engine
+  ## documents its own; what the two share is the estimator and the reported
+  ## surface, not the arithmetic.
   ##
   ## @seealso{fitcgam}
   ## @end deftp
@@ -460,7 +474,7 @@ classdef ClassificationGAM
     ## This property is read-only.
     ##
     ## @end deftp
-    FitMethod = 'splines';
+    FitMethod = 'boostedtrees';
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} TreeModel
@@ -713,7 +727,8 @@ classdef ClassificationGAM
     ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
     ## @qcode{'symmetriclogit'}.
     ##
-    ## @item @qcode{'Formula'} @tab A character vector specifying the model
+    ## @item @qcode{'Formula'} @tab (spline option) A character vector
+    ## specifying the model
     ## formula in the form @qcode{'Y ~ terms'} where @qcode{Y} represents the
     ## response variable and @qcode{terms} specifies the predictor variables and
     ## interaction terms.
@@ -722,21 +737,32 @@ classdef ClassificationGAM
     ## integer scalar, or the string @qcode{'all'} for defining the interactions
     ## between predictor variables.
     ##
-    ## @item @qcode{'Knots'} @tab A scalar or row vector specifying the
+    ## @item @qcode{'Knots'} @tab (spline option) A scalar or row vector
+    ## specifying the
     ## number of knots for each predictor variable in the spline fitting.
     ##
-    ## @item @qcode{'Order'} @tab A scalar or row vector specifying the
+    ## @item @qcode{'Order'} @tab (spline option) A scalar or row vector
+    ## specifying the
     ## order of the spline for each predictor variable.
     ##
-    ## @item @qcode{'DoF'} @tab A scalar or row vector specifying the
+    ## @item @qcode{'DoF'} @tab (spline option) A scalar or row vector
+    ## specifying the
     ## degrees of freedom for each predictor variable in the spline fitting.
     ##
-    ## @item @qcode{'LearningRate'} @tab A scalar value between 0 and 1
+    ## @item @qcode{'LearningRate'} @tab (spline option) A scalar value between
+    ## 0 and 1
     ## specifying the learning rate used in the gradient boosting algorithm.
     ##
-    ## @item @qcode{'NumIterations'} @tab A positive integer specifying
+    ## @item @qcode{'NumIterations'} @tab (spline option) A positive integer
+    ## specifying
     ## the maximum number of iterations for the gradient boosting algorithm.
     ## @end multitable
+    ##
+    ## A row marked @qcode{(spline option)} belongs to the spline
+    ## engine and requires @qcode{'FitMethod', 'splines'}; passing one
+    ## under the default boosted-tree engine is an error rather than
+    ## being ignored.  The boosted-tree engine's own options are
+    ## documented under @code{fitcgam}.
     ##
     ## @seealso{fitcgam}
     ## @end deftypefn
@@ -782,7 +808,7 @@ classdef ClassificationGAM
       ## far harder than a step of 1, scikit-learn, gbm and mboost defaulting
       ## to 0.1 and the Explainable Boosting Machine to 0.015.  The docstring
       ## says so rather than the default being quietly changed.
-      FitMethod                       = 'splines';
+      FitMethod                       = 'boostedtrees';
       NumTreesPerPredictor            = 300;
       NumTreesPerInteraction          = 100;
       MaxNumSplitsPerPredictor        = 1;
@@ -2502,6 +2528,7 @@ function scores = predict_val (params, XC, intercept)
   f = gampredict (params, XC, intercept, 0);
   scores = [-f, f];
 endfunction
+
 %!demo
 %! ## Train a GAM classifier for binary classification
 %! ## using specific data and plot the decision boundaries.
@@ -2527,7 +2554,8 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
-%! a = ClassificationGAM (x, y, 'PredictorNames', PredictorNames);
+%! a = ClassificationGAM (x, y, 'FitMethod', 'splines', ...
+%!                       'PredictorNames', PredictorNames);
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
@@ -2540,7 +2568,8 @@ endfunction
 %! X = meas(inds, :);
 %! Y = species(inds, :)';
 %! Y = strcmp (Y, 'virginica')';
-%! a = ClassificationGAM (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
+%! a = ClassificationGAM (X, Y, 'FitMethod', 'splines', ...
+%!                       'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
@@ -2551,7 +2580,8 @@ endfunction
 %!test
 %! X = [2, 3, 5; 4, 6, 8; 1, 2, 3; 7, 8, 9; 5, 4, 3];
 %! Y = [0; 1; 0; 1; 1];
-%! a = ClassificationGAM (X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
+%! a = ClassificationGAM (X, Y, 'FitMethod', 'splines', ...
+%!                       'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 5})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
@@ -2632,7 +2662,8 @@ endfunction
 %! k = (1:60)';
 %! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
 %! y = double (X(:,1).*X(:,2) > 0) + 1;
-%! Mdl = fitcgam (X, y, "Formula", "Y ~ x1 + x2 + x1:x2");
+%! Mdl = fitcgam (X, y, "FitMethod", "splines", ...
+%!                "Formula", "Y ~ x1 + x2 + x1:x2");
 %! assert_equal (Mdl.Interactions, [1, 2]);
 %! assert_equal (rows (Mdl.IntMatrix), 3);
 
@@ -2764,10 +2795,26 @@ endfunction
 %! load fisheriris
 %! bai = ! strcmp (species, "setosa");
 %! Xai = meas(bai,2:4); Yai = species(bai);
-%! Aai = addInteractions (fitcgam (Xai, Yai), 2);
+%! Aai = addInteractions (fitcgam (Xai, Yai, 'FitMethod', 'splines'), 2);
 %! assert_equal (Aai.Interactions, [1, 2; 1, 3]);
+%! Lai = addInteractions (fitcgam (Xai, Yai, 'FitMethod', 'splines'), ...
+%!                        logical ([1 1 0; 0 1 1]));
+%! assert_equal (Lai.Interactions, [1, 2; 2, 3]);
+
+## The boosted-tree engine names the same terms from the same specifications,
+## but a count takes the pairs the interaction search ranked highest rather
+## than the first in index order, so the two engines select differently and
+## both selections are pinned exactly.
+%!test
+%! load fisheriris
+%! bai = ! strcmp (species, "setosa");
+%! Xai = meas(bai,2:4); Yai = species(bai);
+%! Aai = addInteractions (fitcgam (Xai, Yai), 2);
+%! assert_equal (Aai.Interactions, [2, 3; 1, 3]);
 %! Lai = addInteractions (fitcgam (Xai, Yai), logical ([1 1 0; 0 1 1]));
 %! assert_equal (Lai.Interactions, [1, 2; 2, 3]);
+%! All = addInteractions (fitcgam (Xai, Yai), "all");
+%! assert_equal (All.Interactions, [2, 3; 1, 3; 1, 2]);
 
 ## A model that already carries interaction terms is not extended, and a
 ## model fitted from a formula names every term it has, interactions among
@@ -2781,6 +2828,7 @@ endfunction
 %! load fisheriris
 %! bai = ! strcmp (species, "setosa");
 %! addInteractions (fitcgam (meas(bai,2:4), species(bai), ...
+%!                  "FitMethod", "splines", ...
 %!                  "Formula", "Y ~ x1 + x2 + x1:x2"), "all")
 %!error<ClassificationGAM.addInteractions: invalid 'Interactions' parameter.> ...
 %! load fisheriris
@@ -2838,7 +2886,8 @@ endfunction
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
-%! a = ClassificationGAM (x, y, 'interactions', 'all');
+%! a = ClassificationGAM (x, y, 'FitMethod', 'splines', ...
+%!                       'interactions', 'all');
 %! l = [1; 0; 1; 0; 1];
 %! s = [0.0334, 0.9666; 0.9648, 0.0352; 0.0334, 0.9666; ...
 %!      0.9648, 0.0352; 0.0334, 0.9666];
@@ -2855,7 +2904,8 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! interactions = [false, true, false; true, false, true; false, true, false];
-%! a = fitcgam (x, y, 'learningrate', 0.2, 'interactions', interactions);
+%! a = fitcgam (x, y, 'FitMethod', 'splines', ...
+%!               'learningrate', 0.2, 'interactions', interactions);
 %! [label, score] = predict (a, x, 'includeinteractions', true);
 %! l = [0; 0; 1; 1];
 %! s = [0.9725, 0.0275; 0.9895, 0.0105; 0.0070, 0.9930; 0.0238, 0.9762];
@@ -2884,7 +2934,7 @@ endfunction
 ## and predict answered class 1 for every row.
 %!test
 %! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! Mn = fitcgam (Xn, [1; 1; 2; 2]);
+%! Mn = fitcgam (Xn, [1; 1; 2; 2], 'FitMethod', 'splines');
 %! assert_equal (Mn.BaseModel.Intercept, 0, 1e-12);
 %! [label, score] = predict (Mn, Xn);
 %! assert_equal (label, [1; 1; 2; 2]);
@@ -2894,16 +2944,25 @@ endfunction
 ## index rather than the label.
 %!test
 %! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! Mn = fitcgam (Xn, [5; 5; 9; 9]);
+%! Mn = fitcgam (Xn, [5; 5; 9; 9], 'FitMethod', 'splines');
 %! assert_equal (Mn.BaseModel.Intercept, 0, 1e-12);
 %! assert_equal (predict (Mn, Xn), [5; 5; 9; 9]);
 
 ## A response already coded 0 and 1 is unchanged by that coding.
 %!test
 %! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! M0 = fitcgam (Xn, [0; 0; 1; 1]);
+%! M0 = fitcgam (Xn, [0; 0; 1; 1], 'FitMethod', 'splines');
 %! assert_equal (M0.BaseModel.Intercept, 0, 1e-12);
 %! assert_equal (predict (M0, Xn), [0; 0; 1; 1]);
+
+## The coding of a numeric response is a property of the class, not of either
+## engine: the boosted-tree engine reads labels of 1 and 2, or 5 and 9, the
+## same way and returns them unchanged.
+%!test
+%! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! assert_equal (predict (fitcgam (Xn, [1; 1; 2; 2]), Xn), [1; 1; 2; 2]);
+%! assert_equal (predict (fitcgam (Xn, [5; 5; 9; 9]), Xn), [5; 5; 9; 9]);
+%! assert_equal (predict (fitcgam (Xn, [0; 0; 1; 1]), Xn), [0; 0; 1; 1]);
 
 %!shared x, y, obj
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6];
@@ -2985,7 +3044,7 @@ endfunction
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
-%! Mdl = fitcgam (meas(inds,:), species(inds));
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'splines');
 %! assert_equal (Mdl.Intercept, Mdl.BaseModel.Intercept);
 %! assert_equal (size (Mdl.W), [Mdl.NumObservations, 1]);
 %! assert_equal (sum (Mdl.W), 1, 1e-12);
@@ -3075,7 +3134,8 @@ endfunction
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
 %! X = meas(inds,:);
-%! Mdl = fitcgam (X, species(inds), 'Interactions', 'all', 'NumIterations', 20);
+%! Mdl = fitcgam (X, species(inds), 'FitMethod', 'splines', ...
+%!                'Interactions', 'all', 'NumIterations', 20);
 %! Mdl.ScoreTransform = 'symmetric';
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
@@ -3223,15 +3283,19 @@ endfunction
 %! assert_equal (sum (raw, 2), zeros (6, 1), 1e-12);
 %! assert_equal (1 ./ (1 + exp (-raw)), post, 1e-12);
 
-## BinEdges is an empty cell, as MATLAB reports for every learner that
-## does no binning.  MATLAB's own generalized additive model fills it,
-## being boosted trees where this one is splines.
+## BinEdges reports the cut points the boosted-tree engine binned each
+## predictor at, as MATLAB's generalized additive model does.  Under the
+## spline engine, which does no binning, it stays the empty cell MATLAB
+## reports for every learner that does none.
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
 %! Mdl = fitcgam (meas(inds,:), species(inds));
 %! assert_equal (class (Mdl.BinEdges), 'cell');
-%! assert_equal (Mdl.BinEdges, {});
+%! assert_equal (numel (Mdl.BinEdges), 4);
+%! assert_equal (numel (Mdl.BinEdges{1}), 27);
+%! Msp = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'splines');
+%! assert_equal (Msp.BinEdges, {});
 
 ## The shared cost guard is in force here too, and the struct form is
 ## permuted into this model's class order.  The battery is on

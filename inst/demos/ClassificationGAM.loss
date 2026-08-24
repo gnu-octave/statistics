@@ -18,7 +18,7 @@
 %! inds = ! strcmp (species, 'setosa');
 %! X = meas(inds, :);
 %! Y = species(inds);
-%! mdl = fitcgam (X, Y, 'NumIterations', 20);
+%! mdl = fitcgam (X, Y, 'NumTreesPerPredictor', 20);
 %!
 %! ## Each is a function of the same margins, so they rank models alike but
 %! ## not on the same scale

@@ -18,7 +18,7 @@
 %! inds = ! strcmp (species, 'setosa');
 %! X = meas(inds, :);
 %! Y = species(inds);
-%! cmdl = compact (fitcgam (X, Y, 'NumIterations', 20));
+%! cmdl = compact (fitcgam (X, Y, 'NumTreesPerPredictor', 20));
 %!
 %! ## margin, edge and loss are all available without the training data
 %! [edge(cmdl, X, Y), loss(cmdl, X, Y, 'LossFun', 'classiferror')]

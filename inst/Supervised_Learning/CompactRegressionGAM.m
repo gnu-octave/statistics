@@ -33,14 +33,16 @@ classdef CompactRegressionGAM
   ## Create a @code{CompactRegressionGAM} object by using the @code{compact}
   ## method on a @code{RegressionGAM} object.
   ##
-  ## The weak learner here is a smoothing spline, one per predictor, where
-  ## MATLAB's generalized additive model boosts shallow decision trees, so
-  ## predictions will not agree with MATLAB's on the same data.  The two are
-  ## different estimators of the same additive structure, and the difference
-  ## is deliberate.  The spline fit is described by @code{Knots},
-  ## @code{Order}, @code{DoF}, @code{Formula}, @code{BaseModel},
-  ## @code{ModelwInt} and @code{IntMatrix}, which MATLAB's compact model does
-  ## not carry.
+  ## The engine that fitted the model is carried over in @code{FitMethod},
+  ## and the compact model predicts by the same scheme the full one did.
+  ## Under @qcode{'boostedtrees'}, the default, the fit is described by
+  ## @code{TreeModel}, @code{BinEdges}, @code{PairDetectionBinEdges},
+  ## @code{ModelParameters} and @code{ReasonForTermination}.  Under
+  ## @qcode{'splines'} it is described by @code{Knots}, @code{Order},
+  ## @code{DoF}, @code{Formula}, @code{BaseModel}, @code{ModelwInt} and
+  ## @code{IntMatrix}, which MATLAB's compact model does not carry.
+  ## Whichever fitted the model, the other set is empty.  A standard
+  ## deviation is available from the spline engine alone.
   ##
   ## @seealso{RegressionGAM, fitrgam}
   ## @end deftp
@@ -277,7 +279,7 @@ classdef CompactRegressionGAM
     ## @qcode{'splines'}.  This property is read-only.
     ##
     ## @end deftp
-    FitMethod = 'splines';
+    FitMethod = 'boostedtrees';
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} TreeModel
@@ -810,6 +812,7 @@ function ypred = predict_val (params, X, intercept)
   ## intercept.
   ypred = gampredict (params, X, intercept);
 endfunction
+
 %!demo
 %! ## Take the compact version of a fitted model and predict with it
 %!
@@ -894,7 +897,7 @@ endfunction
 %! load fisheriris
 %! X = meas(:,2:4);
 %! Y = meas(:,1);
-%! Mdl = compact (fitrgam (X, Y));
+%! Mdl = compact (fitrgam (X, Y, 'FitMethod', 'splines'));
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
 %! M2 = loadmodel (fname);
@@ -902,6 +905,22 @@ endfunction
 %! assert_equal (class (M2), 'CompactRegressionGAM');
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
+%! assert_equal (M2.BaseModel.Parameters(1).coefs, ...
+%!               Mdl.BaseModel.Parameters(1).coefs);
+%! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## The same round trip under the boosted-tree engine.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Mdl = compact (fitrgam (X, Y, 'FitMethod', 'boostedtrees'));
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.FitMethod, 'boostedtrees');
+%! assert_equal (M2.TreeModel.ShapeValues, Mdl.TreeModel.ShapeValues);
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
 
 ## A compacted tree-fitted model predicts as the full model does.
@@ -912,4 +931,3 @@ endfunction
 %! assert_equal (CMdl.FitMethod, 'boostedtrees');
 %! assert_equal (numel (CMdl.BinEdges), 3);
 %! assert_equal (numel (predict (CMdl, X)), rows (X));
-

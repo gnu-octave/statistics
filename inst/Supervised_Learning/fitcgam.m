@@ -44,6 +44,15 @@
 ## @multitable @columnfractions 0.18 0.8
 ## @headitem @var{Name} @tab @var{Value}
 ##
+## @item @qcode{'FitMethod'} @tab A character vector selecting the weak
+## learner, either @qcode{'boostedtrees'} or @qcode{'splines'}.  The default
+## is @qcode{'boostedtrees'}, which boosts one shallow decision tree per
+## predictor and is the scheme MATLAB uses.  @qcode{'splines'} boosts a
+## smoothing spline per predictor instead and is an Octave extension.  The
+## two take different options and an option meant for one is refused by the
+## other rather than ignored, so the rows below say which engine each
+## belongs to.
+##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## specifying the names of the predictors. The length of this array must match
 ## the number of columns in @var{X}.
@@ -62,7 +71,8 @@
 ## otherwise 0. cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @qcode{'Formula'} @tab A model specification given as a string in
+## @item @qcode{'Formula'} @tab (spline option) A model specification given as a
+## string in
 ## the form @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable
 ## and @qcode{terms} the predictor variables.  The formula can be used to
 ## specify a subset of variables for training model.  For example:
@@ -90,26 +100,73 @@
 ## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object.
 ##
-## @item @qcode{'Knots'} @tab A scalar or a row vector with the same
+## @item @qcode{'Knots'} @tab (spline option) A scalar or a row vector
+## with the same
 ## columns as @var{X}.  It defines the knots for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
 ## parse a row vector with different number of knots for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @qcode{'Order'} @tab A scalar or a row vector with the same
+## @item @qcode{'Order'} @tab (spline option) A scalar or a row vector
+## with the same
 ## columns as @var{X}.  It defines the order of the polynomial when training the
 ## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
 ## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @qcode{'DoF'} @tab A scalar or a row vector with the same columns
+## @item @qcode{'DoF'} @tab (spline option) A scalar or a row vector
+## with the same columns
 ## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can
 ## parse a row vector with different degrees of freedom for each predictor
 ## variable to be fitted with, although not recommended.
+##
+## @end multitable
+##
+## The rows above marked as spline options require
+## @qcode{'FitMethod', 'splines'}.  The remaining options belong to the
+## boosted-tree engine and require @qcode{'FitMethod', 'boostedtrees'}, which
+## is the default.
+##
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
+##
+## @item @qcode{'NumTreesPerPredictor'} @tab A positive integer, the number of
+## boosting rounds of the predictor phase.  It is a budget rather than a
+## count: a fit that stops improving ends earlier and reports so.  The default
+## is 300.
+##
+## @item @qcode{'NumTreesPerInteraction'} @tab A positive integer, the same
+## budget for the interaction phase.  The default is 100.
+##
+## @item @qcode{'MaxNumSplitsPerPredictor'} @tab A positive integer, the
+## largest number of splits any one predictor tree may make.  The default is
+## 1, which makes each tree a stump.
+##
+## @item @qcode{'MaxNumSplitsPerInteraction'} @tab The same limit for a tree
+## over a pair of predictors.  The default is 4.
+##
+## @item @qcode{'InitialLearnRateForPredictors'} @tab A value greater than 0
+## and at most 1, the step a round of the predictor phase starts at.  A round
+## that fails to improve the fit is retried at half the step, so this is an
+## initial value rather than a fixed one.  The default is 1.
+##
+## @item @qcode{'InitialLearnRateForInteractions'} @tab The same for the
+## interaction phase.  The default is 1.
+##
+## @item @qcode{'MaxPValue'} @tab A value between 0 and 1.  A candidate pair
+## of predictors is kept only if its interaction test gives a @math{p}-value
+## no larger than this.  The default is 1, which keeps every pair asked for.
+##
+## @item @qcode{'Verbose'} @tab A non-negative integer.  Greater than zero
+## prints a trace of the fit.  The default is 0.
+##
+## @item @qcode{'NumPrint'} @tab A positive integer, how often the trace
+## reports: the first round and then every @var{NumPrint} rounds.  The
+## default is 10.
 ##
 ## @end multitable
 ## You can parse either a @qcode{'Formula'} or an @qcode{'Interactions'}
@@ -185,7 +242,8 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
-%! a = fitcgam (x, y, 'PredictorNames', PredictorNames);
+%! a = fitcgam (x, y, 'FitMethod', 'splines', ...
+%!              'PredictorNames', PredictorNames);
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
@@ -195,7 +253,7 @@ endfunction
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
-%! a = fitcgam (x, y, 'interactions', 'all');
+%! a = fitcgam (x, y, 'FitMethod', 'splines', 'interactions', 'all');
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 5})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
@@ -208,7 +266,8 @@ endfunction
 %! X = meas(inds, :);
 %! Y = species(inds, :)';
 %! Y = strcmp (Y, 'virginica')';
-%! a = fitcgam (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
+%! a = fitcgam (X, Y, 'FitMethod', 'splines', ...
+%!              'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
 %! assert_equal (class (a), "ClassificationGAM");
 %! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
 %! assert_equal ({a.NumPredictors, a.ResponseName}, {4, 'Y'})

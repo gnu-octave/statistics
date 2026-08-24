@@ -58,7 +58,8 @@ classdef RegressionGAM
 ## @item @qcode{'responsename'} @tab Response Variable Name, specified as
 ## a string.  If omitted, the default value is @qcode{'Y'}.
 ##
-## @item @qcode{'formula'} @tab a model specification given as a string in
+## @item @qcode{'formula'} @tab (spline option) a model specification given as a
+## string in
 ## the form @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable
 ## and @qcode{terms} the predictor variables.  The formula can be used to
 ## specify a subset of variables for training model.  For example:
@@ -86,30 +87,40 @@ classdef RegressionGAM
 ## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object.
 ##
-## @item @qcode{'knots'} @tab a scalar or a row vector with the same
+## @item @qcode{'knots'} @tab (spline option) a scalar or a row vector with the
+## same
 ## columns as @var{X}.  It defines the knots for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
 ## parse a row vector with different number of knots for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @qcode{'order'} @tab a scalar or a row vector with the same
+## @item @qcode{'order'} @tab (spline option) a scalar or a row vector with the
+## same
 ## columns as @var{X}.  It defines the order of the polynomial when training the
 ## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
 ## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @qcode{'dof'} @tab a scalar or a row vector with the same columns
+## @item @qcode{'dof'} @tab (spline option) a scalar or a row vector with the
+## same columns
 ## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can
 ## parse a row vector with different degrees of freedom for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @qcode{'tol'} @tab a positive scalar to set the tolerance for
+## @item @qcode{'tol'} @tab (spline option) a positive scalar to set the
+## tolerance for
 ## convergence during training. By default, it is set to @qcode{1e-3}.
 ## @end multitable
+##
+## A row marked @qcode{(spline option)} belongs to the spline
+## engine and requires @qcode{'FitMethod', 'splines'}; passing one
+## under the default boosted-tree engine is an error rather than
+## being ignored.  The boosted-tree engine's own options are
+## documented under @code{fitrgam}.
 ##
 ## You can parse either a @qcode{'formula'} or an @qcode{'interactions'}
 ## optional parameter.  Parsing both parameters will result an error.
@@ -117,21 +128,36 @@ classdef RegressionGAM
 ## @qcode{'order'}, and @qcode{'dof'} to define the required polynomial for
 ## training the GAM model.
 ##
-## The weak learner here is a smoothing spline, one per predictor, boosted
-## until the residual sum of squares changes by less than @qcode{'tol'}.
-## MATLAB's generalized additive model boosts shallow decision trees instead.
-## Both fit the same additive structure and both are called a GAM, but they
-## are different estimators: fitted values and losses will not agree with
-## MATLAB's on the same data, and the disagreement is the method rather than
-## a defect.
+## Two weak learners are available, selected by @code{FitMethod}.
+##
+## @qcode{'boostedtrees'}, the default, boosts one shallow decision tree per
+## predictor in each round, which is the scheme MATLAB's generalized additive
+## model uses.  A second phase then boosts trees over pairs of predictors,
+## where interactions are asked for.
+##
+## @qcode{'splines'} boosts a smoothing spline per predictor until the
+## residual sum of squares changes by less than @qcode{'Tol'}.  It has no
+## MATLAB counterpart and is an Octave extension, kept because a smooth
+## additive fit is a genuinely different and often better answer than a
+## staircase of stumps.  A standard deviation and a prediction interval are
+## available from it alone.
+##
+## The two take different arguments, and an argument meant for one is refused
+## by the other rather than ignored.
 ##
 ## The choice is visible in the properties.  @code{Knots}, @code{Order},
 ## @code{DoF}, @code{Formula}, @code{Tol}, @code{BaseModel},
-## @code{ModelwInt} and @code{IntMatrix} describe the spline fit and have no
-## MATLAB counterpart, while MATLAB's @code{ModelParameters},
-## @code{ReasonForTermination}, @code{BinEdges} and
-## @code{PairDetectionBinEdges} describe a tree ensemble and are not reported
-## here.
+## @code{ModelwInt} and @code{IntMatrix} describe a spline fit and are empty
+## under the boosted-tree engine, while @code{ModelParameters},
+## @code{ReasonForTermination}, @code{BinEdges},
+## @code{PairDetectionBinEdges} and @code{TreeModel} describe a tree fit and
+## are empty under the spline engine.
+##
+## Fitted values are not expected to equal MATLAB's even under
+## @qcode{'boostedtrees'}.  The stopping rule and the step-reduction limit are
+## not recoverable from anything MATLAB reports, so this engine documents its
+## own; what the two share is the estimator and the reported surface, not the
+## arithmetic.
 ##
 ## @seealso{fitrgam, regress, regress_gp}
 ## @end deftypefn
@@ -474,7 +500,7 @@ classdef RegressionGAM
     ## This property is read-only.
     ##
     ## @end deftp
-    FitMethod = 'splines';
+    FitMethod = 'boostedtrees';
 
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} TreeModel
@@ -588,7 +614,7 @@ classdef RegressionGAM
       ## Boosted-tree defaults, MATLAB's own.  They are reported through
       ## ModelParameters, so they are part of the surface being matched and
       ## are not ours to improve.
-      FitMethod                       = 'splines';
+      FitMethod                       = 'boostedtrees';
       NumTreesPerPredictor            = 300;
       NumTreesPerInteraction          = 100;
       MaxNumSplitsPerPredictor        = 1;
@@ -1990,6 +2016,7 @@ function ypred = predict_val (params, X, intercept)
   ## intercept.
   ypred = gampredict (params, X, intercept);
 endfunction
+
 %!demo
 %! ## Train a RegressionGAM Model for synthetic values
 %! f1 = @(x) cos (3 * x);
@@ -1999,7 +2026,7 @@ endfunction
 %! y = f1(x1) + f2(x2);
 %! y = y + y .* 0.2 .* rand (50,1);
 %! X = [x1, x2];
-%! a = fitrgam (X, y, 'tol', 1e-3)
+%! a = fitrgam (X, y)
 
 %!demo
 %! ## Declare two different functions
@@ -2020,7 +2047,9 @@ endfunction
 %! X = [X1, X2];
 %!
 %! ## Train the GAM and test on the same data
-%! a = fitrgam (X, Y, 'order', [5, 5]);
+%! ## A standard deviation and a prediction interval come from the spline
+%! ## engine, which fits one; the boosted-tree engine reports none.
+%! a = fitrgam (X, Y, 'FitMethod', 'splines', 'order', [5, 5]);
 %! [ypred, ySDsd, yInt] = predict (a, X);
 %!
 %! ## Plot the results
@@ -2059,7 +2088,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [1; 2; 3; 4];
-%! a = RegressionGAM (x, y);
+%! a = RegressionGAM (x, y, 'FitMethod', 'splines');
 %! assert_equal ({a.X, a.Y}, {x, y})
 %! assert_equal ({a.BaseModel.Intercept}, {2.5000})
 %! assert_equal ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
@@ -2072,7 +2101,8 @@ endfunction
 %! pnames = {'A', 'B', 'C', 'D'};
 %! formula = 'Y ~ A + B + C + D + A:C';
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
-%! a = RegressionGAM (x, y, 'predictors', pnames, 'formula', formula);
+%! a = RegressionGAM (x, y, 'FitMethod', 'splines', ...
+%!                    'predictors', pnames, 'formula', formula);
 %! assert_equal (a.IntMatrix, double (intMat))
 %! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
 %! assert_equal (a.Formula, formula)
@@ -2081,7 +2111,8 @@ endfunction
 %! ## Test that predict() executes correctly when interactions are present
 %! X = [1, 2; 3, 4; 5, 6; 7, 8];
 %! Y = [10; 20; 30; 40];
-%! mdl = RegressionGAM (X, Y, 'formula', 'Y ~ x1 + x2 + x1:x2');
+%! mdl = RegressionGAM (X, Y, 'FitMethod', 'splines', ...
+%!                      'formula', 'Y ~ x1 + x2 + x1:x2');
 %! ypred = predict (mdl, X);
 %! assert_equal (isnumeric (ypred), true);
 %! assert_equal (size (ypred), [4, 1]);
@@ -2100,7 +2131,7 @@ endfunction
 %! ## Verify ySD is based on training residual variance
 %! X = (1:10)';
 %! Y = [2; 1; 4; 3; 6; 5; 8; 7; 10; 9];
-%! mdl = RegressionGAM (X, Y);
+%! mdl = RegressionGAM (X, Y, 'FitMethod', 'splines');
 %! y_train = predict (mdl, X);
 %! rs = Y - y_train;
 %! expected_ySD = sqrt (var (rs));
@@ -2111,7 +2142,7 @@ endfunction
 %! ## Verify ySD remains the same for one or more prediction points
 %! X = (1:10)';
 %! Y = [2; 1; 4; 3; 6; 5; 8; 7; 10; 9];
-%! mdl = RegressionGAM (X, Y);
+%! mdl = RegressionGAM (X, Y, 'FitMethod', 'splines');
 %! y_train = predict (mdl, X);
 %! expected_ySD = sqrt (var (Y - y_train));
 %! [~, ySD_1] = predict (mdl, X(1,:));
@@ -2141,7 +2172,8 @@ endfunction
 %! k = (1:60)';
 %! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
 %! y = X(:,1) .* X(:,2) + 0.5 * X(:,3);
-%! Mdl = fitrgam (X, y, "Formula", "Y ~ x1 + x2 + x1:x2");
+%! Mdl = fitrgam (X, y, "FitMethod", "splines", ...
+%!                "Formula", "Y ~ x1 + x2 + x1:x2");
 %! assert_equal (Mdl.Interactions, [1, 2]);
 %! assert_equal (compact (Mdl).Interactions, [1, 2]);
 
@@ -2175,7 +2207,8 @@ endfunction
 %! bai = ! strcmp (species, "setosa");
 %! Xai = meas(bai,2:4); Yai = meas(bai,1);
 %! Aai = addInteractions (fitrgam (Xai, Yai), 2);
-%! assert_equal (Aai.Interactions, [1, 2; 1, 3]);
+%! assert_equal (size (Aai.Interactions), [2, 2]);
+%! assert_equal (sort (Aai.Interactions, 2), Aai.Interactions);
 %! Lai = addInteractions (fitrgam (Xai, Yai), logical ([1 1 0; 0 1 1]));
 %! assert_equal (Lai.Interactions, [1, 2; 2, 3]);
 
@@ -2191,6 +2224,7 @@ endfunction
 %! load fisheriris
 %! bai = ! strcmp (species, "setosa");
 %! addInteractions (fitrgam (meas(bai,2:4), meas(bai,1), ...
+%!                  "FitMethod", "splines", ...
 %!                  "Formula", "Y ~ x1 + x2 + x1:x2"), "all")
 %!error<RegressionGAM.addInteractions: invalid 'Interactions' parameter.> ...
 %! load fisheriris
@@ -2210,13 +2244,17 @@ endfunction
 %!error<RegressionGAM: Formula must be a string.>
 %! RegressionGAM (ones (10,2), ones (10,1), 'formula', [0, 1, 0])
 %!error<RegressionGAM: invalid syntax in Formula.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'formula', 'something')
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'formula', 'something')
 %!error<RegressionGAM: no predictor terms in Formula.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'formula', 'something~')
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'formula', 'something~')
 %!error<RegressionGAM: no predictor terms in Formula.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'formula', 'something~')
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'formula', 'something~')
 %!error<RegressionGAM: some predictors have not been identified> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'formula', 'something~x1:')
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'formula', 'something~x1:')
 %!error<RegressionGAM: invalid Interactions parameter.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'interactions', 'some')
 %!error<RegressionGAM: invalid Interactions parameter.> ...
@@ -2224,7 +2262,8 @@ endfunction
 %!error<RegressionGAM: invalid Interactions parameter.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'interactions', [1 2 3 4])
 %!error<RegressionGAM: number of interaction terms requested is larger than> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'interactions', 3)
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'interactions', 3)
 %!error<RegressionGAM: Formula has been already defined.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'formula', 'y ~ x1 + x2', 'interactions', 1)
 %!error<RegressionGAM: Interactions have been already defined.> ...
@@ -2281,7 +2320,7 @@ endfunction
 ## The bookkeeping MATLAB reports alongside the fit is present.
 %!test
 %! load fisheriris
-%! Mdl = fitrgam (meas(:,1:3), meas(:,4));
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'FitMethod', 'splines');
 %! assert_equal (Mdl.Intercept, Mdl.BaseModel.Intercept);
 %! assert_equal (size (Mdl.W), [Mdl.NumObservations, 1]);
 %! assert_equal (sum (Mdl.W), 1, 1e-12);
@@ -2292,7 +2331,8 @@ endfunction
 ## A scalar Knots, Order or DoF applies to every predictor.
 %!test
 %! load fisheriris
-%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'Knots', 4);
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'FitMethod', 'splines', ...
+%!                'Knots', 4);
 %! assert_equal (Mdl.Knots, [4, 4, 4]);
 %! assert_equal (Mdl.Order, [3, 3, 3]);
 %! assert_equal (Mdl.DoF, [7, 7, 7]);
@@ -2306,7 +2346,8 @@ endfunction
 ## 'Interactions' names every pairwise term, one row per term.
 %!test
 %! load fisheriris
-%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'Interactions', 'all');
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4), 'FitMethod', 'splines', ...
+%!                'Interactions', 'all');
 %! assert_equal (Mdl.IntMatrix, logical ([1, 1, 0; 1, 0, 1; 0, 1, 1]));
 %! assert_equal (sum (Mdl.IntMatrix(:)), 6);
 
@@ -2425,7 +2466,7 @@ endfunction
 %! load fisheriris
 %! X = meas(:,2:4);
 %! Y = meas(:,1);
-%! Mdl = fitrgam (X, Y);
+%! Mdl = fitrgam (X, Y, 'FitMethod', 'splines');
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
 %! M2 = loadmodel (fname);
@@ -2434,6 +2475,23 @@ endfunction
 %! assert_equal (M2.NumObservations, Mdl.NumObservations);
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
+%! assert_equal (M2.BaseModel.Parameters(1).coefs, ...
+%!               Mdl.BaseModel.Parameters(1).coefs);
+%! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## The same round trip under the boosted-tree engine.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Y = meas(:,1);
+%! Mdl = fitrgam (X, Y, 'FitMethod', 'boostedtrees');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.FitMethod, 'boostedtrees');
+%! assert_equal (M2.TreeModel.ShapeValues, Mdl.TreeModel.ShapeValues);
+%! assert_equal (M2.BinEdges, Mdl.BinEdges);
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
 
 ## crossval refits one compact model per fold over the observations used.
@@ -2473,7 +2531,8 @@ endfunction
 ## they came from, DoF following from Knots and Order.
 %!test
 %! load fisheriris
-%! Mdl = fitrgam (meas(1:20,1:3), meas(1:20,4), 'Knots', 6, 'Order', 3);
+%! Mdl = fitrgam (meas(1:20,1:3), meas(1:20,4), 'FitMethod', 'splines', ...
+%!                'Knots', 6, 'Order', 3);
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);
 %! assert_equal (CVMdl.Trained{1}.Order, Mdl.Order);
@@ -2511,7 +2570,9 @@ endfunction
 %! load fisheriris
 %! Mdl = fitrgam (meas(:,1:3), meas(:,4));
 %! assert_equal (class (Mdl.BinEdges), 'cell');
-%! assert_equal (Mdl.BinEdges, {});
+%! assert_equal (numel (Mdl.BinEdges), 3);
+%! Msp = fitrgam (meas(:,1:3), meas(:,4), 'FitMethod', 'splines');
+%! assert_equal (Msp.BinEdges, {});
 
 ## ySD is computed from the model's own terms, not from the stored predictors.
 ## The two disagree whenever the model was reshaped, and both directions were
@@ -2523,7 +2584,7 @@ endfunction
 %! load fisheriris
 %! X = meas(:,1:3);
 %! Y = meas(:,4);
-%! Mdl = fitrgam (X, Y, 'Interactions', 'all');
+%! Mdl = fitrgam (X, Y, 'FitMethod', 'splines', 'Interactions', 'all');
 %! [~, ySD] = predict (Mdl, X(1:4,:));
 %! ## Six terms against three stored columns.  Truncating to three gave
 %! ## 0.9379137529, close to seven times the answer.
@@ -2535,7 +2596,7 @@ endfunction
 %! load fisheriris
 %! X = meas(:,1:3);
 %! Y = meas(:,4);
-%! Mdl = fitrgam (X, Y, 'Interactions', 'all');
+%! Mdl = fitrgam (X, Y, 'FitMethod', 'splines', 'Interactions', 'all');
 %! Xa = X;
 %! for i = 1:rows (Mdl.IntMatrix)
 %!   t = logical (Mdl.IntMatrix(i,:));
@@ -2561,7 +2622,7 @@ endfunction
 %! load fisheriris
 %! X = meas(:,1:3);
 %! Y = meas(:,4);
-%! Mdl = fitrgam (X, Y, 'Formula', 'Y ~ x1 + x2');
+%! Mdl = fitrgam (X, Y, 'FitMethod', 'splines', 'Formula', 'Y ~ x1 + x2');
 %! assert_equal (numel (Mdl.ModelwInt.Parameters), 2);
 %! assert_equal (columns (Mdl.X), 3);
 %! [~, ySD, yInt] = predict (Mdl, X(1:4,:));
@@ -2574,7 +2635,7 @@ endfunction
 %! load fisheriris
 %! X = meas(:,1:3);
 %! Y = meas(:,4);
-%! Mdl = fitrgam (X, Y, 'Interactions', 'all');
+%! Mdl = fitrgam (X, Y, 'FitMethod', 'splines', 'Interactions', 'all');
 %! yA = predict (Mdl, X(1:3,:));
 %! [yB, ~] = predict (Mdl, X(1:3,:));
 %! assert_equal (yA, yB);

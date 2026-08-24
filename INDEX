@@ -157,6 +157,10 @@ Supervised Learning
  fitrlinear
  fitrnet
  fitrsvm
+ gamboostinter
+ gamboostpairs
+ gamboostpredict
+ gamboosttrain
  gampredict
  gamtrain
  RegressionGAM

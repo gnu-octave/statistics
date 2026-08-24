@@ -1233,6 +1233,8 @@ classdef ClassificationPartitionedModel
   endmethods
 
 endclassdef
+
+
 %!demo
 %!
 %! load fisheriris

@@ -31,14 +31,16 @@ classdef CompactClassificationGAM
   ## A @code{CompactClassificationGAM} object can only be created from a
   ## @code{ClassificationGAM} model by using the @code{compact} method.
   ##
-  ## The weak learner here is a smoothing spline, one per predictor, where
-  ## MATLAB's generalized additive model boosts shallow decision trees, so
-  ## predictions and scores will not agree with MATLAB's on the same data.
-  ## The two are different estimators of the same additive structure, and the
-  ## difference is deliberate.  The spline fit is described by @code{Knots},
-  ## @code{Order}, @code{DoF}, @code{Formula}, @code{LearningRate},
-  ## @code{NumIterations}, @code{BaseModel}, @code{ModelwInt} and
-  ## @code{IntMatrix}, which MATLAB's compact model does not carry.
+  ## The engine that fitted the model is carried over in @code{FitMethod},
+  ## and the compact model predicts by the same scheme the full one did.
+  ## Under @qcode{'boostedtrees'}, the default, the fit is described by
+  ## @code{TreeModel}, @code{BinEdges}, @code{PairDetectionBinEdges},
+  ## @code{ModelParameters} and @code{ReasonForTermination}.  Under
+  ## @qcode{'splines'} it is described by @code{Knots}, @code{Order},
+  ## @code{DoF}, @code{Formula}, @code{LearningRate}, @code{NumIterations},
+  ## @code{BaseModel}, @code{ModelwInt} and @code{IntMatrix}, which MATLAB's
+  ## compact model does not carry.  Whichever fitted the model, the other
+  ## set is empty.
   ##
   ## @seealso{ClassificationGAM, fitcgam}
   ## @end deftp
@@ -329,7 +331,7 @@ classdef CompactClassificationGAM
     ## compacted from was fitted.  This property is read-only.
     ##
     ## @end deftp
-    FitMethod = 'splines';
+    FitMethod = 'boostedtrees';
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} TreeModel
@@ -1123,6 +1125,7 @@ function scores = predict_val (params, XC, intercept)
   f = gampredict (params, XC, intercept, 0);
   scores = [-f, f];
 endfunction
+
 %!demo
 %! ## Create a generalized additive model classifier and its compact version
 %! # and compare their size
@@ -1142,7 +1145,8 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
-%! Mdl = fitcgam (x, y, 'PredictorNames', PredictorNames);
+%! Mdl = fitcgam (x, y, 'FitMethod', 'splines', ...
+%!                'PredictorNames', PredictorNames);
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
@@ -1155,7 +1159,8 @@ endfunction
 %! X = meas(inds, :);
 %! Y = species(inds, :)';
 %! Y = strcmp (Y, 'virginica')';
-%! Mdl = fitcgam (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
+%! Mdl = fitcgam (X, Y, 'FitMethod', 'splines', ...
+%!                'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {4, 'Y'})
@@ -1166,7 +1171,8 @@ endfunction
 %!test
 %! X = [2, 3, 5; 4, 6, 8; 1, 2, 3; 7, 8, 9; 5, 4, 3];
 %! Y = [0; 1; 0; 1; 1];
-%! Mdl = fitcgam (X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
+%! Mdl = fitcgam (X, Y, 'FitMethod', 'splines', ...
+%!                'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
 %! CMdl = compact (Mdl);
 %! assert_equal (class (CMdl), "CompactClassificationGAM");
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
@@ -1204,7 +1210,7 @@ endfunction
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
-%! Mdl = fitcgam (x, y, 'interactions', 'all');
+%! Mdl = fitcgam (x, y, 'FitMethod', 'splines', 'interactions', 'all');
 %! CMdl = compact (Mdl);
 %! l = [1; 0; 1; 0; 1];
 %! s = [0.0334, 0.9666; 0.9648, 0.0352; 0.0334, 0.9666; ...
@@ -1221,7 +1227,8 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! interactions = [false, true, false; true, false, true; false, true, false];
-%! Mdl = fitcgam (x, y, 'learningrate', 0.2, 'interactions', interactions);
+%! Mdl = fitcgam (x, y, 'FitMethod', 'splines', ...
+%!                'learningrate', 0.2, 'interactions', interactions);
 %! CMdl = compact (Mdl);
 %! [label, score] = predict (CMdl, x, 'includeinteractions', true);
 %! l = [0; 0; 1; 1];
@@ -1295,7 +1302,8 @@ endfunction
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
-%! CMdl = compact (fitcgam (meas(inds,:), species(inds)));
+%! CMdl = compact (fitcgam (meas(inds,:), species(inds), ...
+%!                          'FitMethod', 'splines'));
 %! fname = tempname ();
 %! savemodel (CMdl, fname);
 %! CMdl2 = loadmodel (fname);
@@ -1304,6 +1312,22 @@ endfunction
 %! assert_equal (CMdl2.ClassNames, CMdl.ClassNames);
 %! assert_equal (CMdl2.BaseModel.Parameters(1).coefs, ...
 %!               CMdl.BaseModel.Parameters(1).coefs);
+%! assert_equal (predict (CMdl2, meas(inds,:)), predict (CMdl, meas(inds,:)));
+
+## The same round trip under the boosted-tree engine, whose fit lives in
+## TreeModel rather than BaseModel.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! CMdl = compact (fitcgam (meas(inds,:), species(inds), ...
+%!                          'FitMethod', 'boostedtrees'));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! CMdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (CMdl2.Intercept, CMdl.Intercept);
+%! assert_equal (CMdl2.TreeModel.ShapeValues, CMdl.TreeModel.ShapeValues);
+%! assert_equal (CMdl2.BinEdges, CMdl.BinEdges);
 %! assert_equal (predict (CMdl2, meas(inds,:)), predict (CMdl, meas(inds,:)));
 
 %!shared x2, y2, CM
