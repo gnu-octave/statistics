@@ -38,6 +38,19 @@ classdef KernelDistribution < prob.ProbabilityDistribution
   ## @seealso{fitdist, ksdensity, mvksdensity}
   ## @end deftp
 
+  properties (GetAccess = public, Constant = true)
+    ## -*- texinfo -*-
+    ## @deftp {prob.KernelDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
+    DistributionName = 'Kernel';
+  endproperties
+
   properties (Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {prob.KernelDistribution} {property} Kernel
@@ -64,56 +77,12 @@ classdef KernelDistribution < prob.ProbabilityDistribution
     Bandwidth
   endproperties
 
-  properties (GetAccess = public, Constant = true)
-    ## -*- texinfo -*-
-    ## @deftp {prob.KernelDistribution} {property} DistributionName
-    ##
-    ## Probability distribution name
-    ##
-    ## A character vector specifying the name of the probability distribution
-    ## object.  This property is read-only.
-    ##
-    ## @end deftp
-    DistributionName = 'Kernel';
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.KernelDistribution} {property} NumParameters
-    ##
-    ## Number of parameters
-    ##
-    ## A scalar integer value specifying the number of parameters characterizing
-    ## the probability distribution.  A kernel distribution is nonparametric, so
-    ## this value is always @qcode{0}.  This property is read-only.
-    ##
-    ## @end deftp
-    NumParameters = 0;
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.KernelDistribution} {property} ParameterNames
-    ##
-    ## Names of parameters
-    ##
-    ## An empty cell array, since a kernel distribution has no estimated
-    ## parameters.  This property is read-only.
-    ##
-    ## @end deftp
-    ParameterNames = {};
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.KernelDistribution} {property} ParameterDescription
-    ##
-    ## Description of parameters
-    ##
-    ## An empty cell array, since a kernel distribution has no estimated
-    ## parameters.  This property is read-only.
-    ##
-    ## @end deftp
-    ParameterDescription = {};
-  endproperties
-
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'kernel';
+    NumParameters = 0;
+    ParameterNames = {};
+    ParameterDescription = {};
   endproperties
 
   properties (GetAccess = public, SetAccess = protected)
