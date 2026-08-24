@@ -520,15 +520,10 @@ classdef ClassificationPartitionedModel
             args = [args, {'Interactions', Mdl.IntMatrix}];
           endif
 
-          ## Train model according to partition object.  The fold is pinned
-          ## at 'none' so that it hands back the raw log-odds: the transform
-          ## belongs to the parent, which applies it once to the assembled
-          ## score, and a fold left at the class default would apply it a
-          ## second time.
+          ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), args{:}, ...
-                           'ScoreTransform', 'none');
+            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), args{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -680,6 +675,20 @@ classdef ClassificationPartitionedModel
           this.ModelParameters = params;
 
       endswitch
+
+      ## No fold carries the transform: the parent applies it once to the
+      ## assembled score.  Cleared here rather than at each fit call so that
+      ## a backing added later cannot reintroduce the double application by
+      ## inheriting a class default of its own, which is how a cross
+      ## validated GAM came to transform twice.  The KNN case stores a full
+      ## ClassificationKNN where the other four store compacts, and both
+      ## accept the assignment.
+      ##
+      ## Safe because the transform here is a caller's preference and not
+      ## fitted content.  A fitted transform would not be: fitPosterior
+      ## installs a sigmoid it has estimated, so if that is ever implemented
+      ## through crossval it must not be cleared here.
+      this = pushToFolds (this, 'ScoreTransform', 'none');
 
       this.Fitted = true;
 
@@ -1735,6 +1744,14 @@ endclassdef
 %!test
 %! load fisheriris
 %! CVMdl = crossval (fitcnet (meas, species, ...
+%!                            'ScoreTransform', 'doublelogit'), 'KFold', 3);
+%! assert_equal (CVMdl.ScoreTransform, 'doublelogit');
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! CVMdl = crossval (fitcsvm (meas(inds,:), species(inds), ...
 %!                            'ScoreTransform', 'doublelogit'), 'KFold', 3);
 %! assert_equal (CVMdl.ScoreTransform, 'doublelogit');
 %! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');

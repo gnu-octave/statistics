@@ -408,6 +408,19 @@ classdef RegressionPartitionedModel
 
       endswitch
 
+      ## No fold carries the transform: the parent applies it once to the
+      ## assembled prediction.  Cleared here rather than at each fit call so
+      ## that a backing added later cannot reintroduce a double application
+      ## by inheriting a class default of its own.
+      ##
+      ## Safe because the transform here is a caller's preference and not
+      ## fitted content.
+      for k = 1:this.KFold
+        T = this.Trained{k};
+        T.ResponseTransform = 'none';
+        this.Trained{k} = T;
+      endfor
+
     endfunction
 
     ## -*- texinfo -*-
@@ -806,6 +819,30 @@ endclassdef
 %! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3);
 %! assert_equal (class (CVMdl.BinEdges), 'cell');
 %! assert_equal (CVMdl.BinEdges, {});
+
+## No fold carries the transform, whichever model was cross validated.  The
+## parent applies it once to the assembled prediction, so a fold that kept one
+## of its own would apply it twice.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgam (meas(:,1:3), meas(:,4), ...
+%!                            'ResponseTransform', 'exp'), 'KFold', 3);
+%! assert_equal (CVMdl.ResponseTransform, 'exp');
+%! assert_equal (CVMdl.Trained{1}.ResponseTransform, 'none');
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrnet (meas(:,1:3), meas(:,4), ...
+%!                            'ResponseTransform', 'exp'), 'KFold', 3);
+%! assert_equal (CVMdl.ResponseTransform, 'exp');
+%! assert_equal (CVMdl.Trained{1}.ResponseTransform, 'none');
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4), ...
+%!                           'ResponseTransform', 'exp'), 'KFold', 3);
+%! assert_equal (CVMdl.ResponseTransform, 'exp');
+%! assert_equal (CVMdl.Trained{1}.ResponseTransform, 'none');
 
 ## ResponseTransform is applied to the assembled predictions, not carried into
 ## the folds.  MathWorks documents it as the function for transforming the
