@@ -274,6 +274,73 @@ classdef CompactClassificationGAM
     ##
     ## @end deftp
     ExpandedPredictorNames = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} BinEdges
+    ##
+    ## Bin edges of the fitted shape functions
+    ##
+    ## A cell array with one row vector per predictor, holding the cut points
+    ## the boosted-tree engine binned it at.  It is the empty cell under the
+    ## spline engine, which does no binning.  This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} PairDetectionBinEdges
+    ##
+    ## Bin edges the interaction terms are held on
+    ##
+    ## A cell array with one coarse row vector per predictor, empty when the
+    ## model carries no interaction terms.  This property is read-only.
+    ##
+    ## @end deftp
+    PairDetectionBinEdges = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ModelParameters
+    ##
+    ## Parameters the model was fitted with
+    ##
+    ## The structure the full model reports, carried over unchanged.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ReasonForTermination
+    ##
+    ## Why each fitting phase stopped
+    ##
+    ## The structure the full model reports, carried over unchanged.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    ReasonForTermination = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} FitMethod
+    ##
+    ## Which engine fitted the model
+    ##
+    ## Either @qcode{'boostedtrees'} or @qcode{'splines'}, as the model it was
+    ## compacted from was fitted.  This property is read-only.
+    ##
+    ## @end deftp
+    FitMethod = 'splines';
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} TreeModel
+    ##
+    ## The fitted shape functions and interaction surfaces
+    ##
+    ## The structure the full model reports, carried over unchanged, and
+    ## empty under the spline engine.  This property is read-only.
+    ##
+    ## @end deftp
+    TreeModel = [];
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -424,6 +491,12 @@ classdef CompactClassificationGAM
       this.ModelwInt       = Mdl.ModelwInt;
       this.IntMatrix       = Mdl.IntMatrix;
       this.Intercept       = Mdl.Intercept;
+      this.FitMethod             = Mdl.FitMethod;
+      this.TreeModel             = Mdl.TreeModel;
+      this.BinEdges              = Mdl.BinEdges;
+      this.PairDetectionBinEdges = Mdl.PairDetectionBinEdges;
+      this.ModelParameters       = Mdl.ModelParameters;
+      this.ReasonForTermination  = Mdl.ReasonForTermination;
       this.CategoricalPredictors  = Mdl.CategoricalPredictors;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
@@ -527,7 +600,14 @@ classdef CompactClassificationGAM
       XC        = XC(notnansf, :);
 
       ## Default values for Name-Value Pairs
-      incInt = ! isempty (this.IntMatrix);
+      ## Which store holds the interaction terms depends on the engine: the
+      ## spline scheme keeps them as extra columns described by IntMatrix,
+      ## the boosted-tree scheme as surfaces over predictor pairs.
+      hasInt = ! isempty (this.IntMatrix);
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        hasInt = ! isempty (this.TreeModel.Pairs);
+      endif
+      incInt = hasInt;
       Cost = this.Cost;
 
       ## Parse optional arguments
@@ -541,7 +621,7 @@ classdef CompactClassificationGAM
                      " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
-            if (tmpInt && isempty (this.IntMatrix))
+            if (tmpInt && ! hasInt)
               error (strcat ("CompactClassificationGAM.predict: trained", ...
                              " model does not include any interactions."));
             endif
@@ -553,6 +633,49 @@ classdef CompactClassificationGAM
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## The boosted-tree engine keeps its fit as step functions over bins, so
+      ## a term is a lookup rather than a spline evaluation and the whole
+      ## prediction is one call.  Everything after it is shared: the cost
+      ## matrix, the label, and the transform.
+      ## An empty TreeModel means no tree fit is present, whatever FitMethod
+      ## says: a default-constructed object has one, and so would a model
+      ## saved before the engine existed.  Such an object falls through to
+      ## the spline path rather than indexing into nothing.
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        ## Excluding the interactions means excluding the constant they
+        ## handed the intercept as well.
+        interc = this.Intercept;
+        if (! incInt && isfield (this.TreeModel, 'PairIntercept'))
+          interc = interc - this.TreeModel.PairIntercept;
+        endif
+        if (! incInt || isempty (this.TreeModel.Pairs))
+          scores = gamboostpredict (this.BinEdges, ...
+                                    this.TreeModel.ShapeValues, XC, ...
+                                    interc);
+        else
+          scores = gamboostpredict (this.BinEdges, ...
+                                    this.TreeModel.ShapeValues, XC, ...
+                                    interc, 0, ...
+                                    this.PairDetectionBinEdges, ...
+                                    this.TreeModel.PairValues, ...
+                                    this.TreeModel.Pairs);
+        endif
+        scores = [-scores, scores];
+
+        post = 1 ./ (1 + exp (-scores));
+        numObservations = size (XC, 1);
+        CE = zeros (numObservations, 2);
+        for k = 1:2
+          for i = 1:2
+            CE(:, k) = CE(:, k) + post(:, i) * Cost(k, i);
+          endfor
+        endfor
+        [~, minIdx] = min (CE, [], 2);
+        labels = labelsFromIndex (this.ClassNames, minIdx);
+        scores = this.STfun (scores);
+        return;
+      endif
 
       ## Choose whether interactions must be included
       if (incInt)
@@ -883,6 +1006,12 @@ classdef CompactClassificationGAM
       BaseModel       = this.BaseModel;
       ModelwInt       = this.ModelwInt;
       IntMatrix       = this.IntMatrix;
+      FitMethod             = this.FitMethod;
+      TreeModel             = this.TreeModel;
+      BinEdges              = this.BinEdges;
+      PairDetectionBinEdges = this.PairDetectionBinEdges;
+      ModelParameters       = this.ModelParameters;
+      ReasonForTermination  = this.ReasonForTermination;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -891,7 +1020,9 @@ classdef CompactClassificationGAM
             'CategoricalPredictors', 'ExpandedPredictorNames', ...
             'Formula', 'Interactions', 'Knots', ...
             'Order', 'DoF', 'BaseModel', 'ModelwInt', 'IntMatrix', ...
-            'LearningRate', 'NumIterations');
+            'LearningRate', 'NumIterations', 'FitMethod', 'TreeModel', ...
+            'BinEdges', 'PairDetectionBinEdges', 'ModelParameters', ...
+            'ReasonForTermination');
     endfunction
 
   endmethods
@@ -992,7 +1123,6 @@ function scores = predict_val (params, XC, intercept)
   f = gampredict (params, XC, intercept, 0);
   scores = [-f, f];
 endfunction
-
 %!demo
 %! ## Create a generalized additive model classifier and its compact version
 %! # and compare their size
@@ -1230,3 +1360,19 @@ endfunction
 %! inds = ! strcmp (species, 'virginica');
 %! Mdl = compact (fitcgam (meas(inds,:), species(inds)));
 %! Mdl.Cost = ones (2);
+
+## A compacted tree-fitted model carries the engine and predicts alike.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Mdl = fitcgam (X, species(inds), 'FitMethod', 'boostedtrees');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.FitMethod, 'boostedtrees');
+%! assert_equal (CMdl.TreeModel.ShapeValues, Mdl.TreeModel.ShapeValues);
+%! assert_equal (predict (CMdl, X), predict (Mdl, X));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! C2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (C2, X), predict (CMdl, X));

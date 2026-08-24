@@ -376,6 +376,115 @@ classdef ClassificationGAM
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} PairDetectionBinEdges
+    ##
+    ## Bin edges used to detect interactions
+    ##
+    ## A cell array with one row vector per predictor, holding the coarse cut
+    ## points the residuals of the predictor phase were laid on while pairs
+    ## were being tested.  The grid is eight equal-frequency bins whatever the
+    ## sample size, as MATLAB's is.  It is empty when the model carries no
+    ## interaction terms, and empty throughout under the spline engine, which
+    ## does not bin.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    PairDetectionBinEdges = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ModelParameters
+    ##
+    ## Parameters the model was fitted with
+    ##
+    ## A structure holding the fitting parameters.  Under the boosted-tree
+    ## engine it carries MATLAB's own fields: @qcode{NumPrint},
+    ## @qcode{MaxPValue}, @qcode{InitialLearnRateForPredictors},
+    ## @qcode{InitialLearnRateForInteractions},
+    ## @qcode{NumTreesPerPredictor}, @qcode{NumTreesPerInteraction},
+    ## @qcode{MaxNumSplitsPerPredictor}, @qcode{MaxNumSplitsPerInteraction},
+    ## @qcode{VerbosityLevel}, @qcode{Interactions}, @qcode{Version},
+    ## @qcode{Method} and @qcode{Type}.  @qcode{Interactions} here is the
+    ## request as it was made, a count or @qcode{'all'}, where the
+    ## @qcode{Interactions} property of the model is the pairs actually
+    ## selected.
+    ##
+    ## Under the spline engine it describes that scheme instead, carrying
+    ## @qcode{Knots}, @qcode{Order}, @qcode{DoF}, @qcode{Formula},
+    ## @qcode{Interactions}, @qcode{LearningRate} and @qcode{NumIterations},
+    ## since none of the tree vocabulary applies to it.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ReasonForTermination
+    ##
+    ## Why each fitting phase stopped
+    ##
+    ## A structure with the fields @qcode{PredictorTrees} and
+    ## @qcode{InteractionTrees}, each a character vector saying why that phase
+    ## of the fit ended: that it trained the trees it was asked for, or that
+    ## it could no longer improve the model.  A phase that never ran reports
+    ## an empty character vector, which is what a model with no interaction
+    ## terms shows for the second field.
+    ##
+    ## It is empty under the spline engine, which has no tree budget to
+    ## exhaust.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ReasonForTermination = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} FitMethod
+    ##
+    ## Which engine fitted the model
+    ##
+    ## A character vector, either @qcode{'boostedtrees'} or
+    ## @qcode{'splines'}.  The default is @qcode{'boostedtrees'}, which is the
+    ## scheme MATLAB's generalized additive model uses and the one the
+    ## tree-shaped properties above describe.
+    ##
+    ## @qcode{'splines'} selects the penalised-spline engine instead, which is
+    ## an Octave extension with no MATLAB counterpart.  It is the scheme this
+    ## class fitted before version 1.9.0, and it is kept because a smooth
+    ## additive fit is a genuinely different and often better answer than a
+    ## staircase of stumps.  The two engines take different arguments and an
+    ## argument meant for one is refused by the other rather than ignored.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    FitMethod = 'splines';
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} TreeModel
+    ##
+    ## The fitted shape functions and interaction surfaces
+    ##
+    ## A structure holding what the boosted-tree engine fitted, with fields
+    ## @qcode{ShapeValues}, one column vector per predictor giving that
+    ## predictor's contribution in each of its bins, @qcode{PairValues}, one
+    ## matrix per selected pair, and @qcode{Pairs}, the predictor indices those
+    ## matrices belong to.  A shape function is a step function, so these are
+    ## the whole of the fit however many trees produced them.
+    ##
+    ## MATLAB exposes no equivalent: it reports the bin edges but never the
+    ## values on them, so its shape functions can only be reached through
+    ## @code{predict}.  This property is an Octave extension, and it is empty
+    ## under the spline engine, whose fit lives in @code{BaseModel} and
+    ## @code{ModelwInt}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    TreeModel = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -667,6 +776,27 @@ classdef ClassificationGAM
       NumIterations  = 100;
       Cost           = [];
 
+      ## Boosted-tree defaults, MATLAB's own.  They are reported through
+      ## ModelParameters, so they are part of the surface being matched and
+      ## are not ours to improve: every other boosted additive model shrinks
+      ## far harder than a step of 1, scikit-learn, gbm and mboost defaulting
+      ## to 0.1 and the Explainable Boosting Machine to 0.015.  The docstring
+      ## says so rather than the default being quietly changed.
+      FitMethod                       = 'splines';
+      NumTreesPerPredictor            = 300;
+      NumTreesPerInteraction          = 100;
+      MaxNumSplitsPerPredictor        = 1;
+      MaxNumSplitsPerInteraction      = 4;
+      InitialLearnRateForPredictors   = 1;
+      InitialLearnRateForInteractions = 1;
+      MaxPValue                       = 1;
+      Verbose                         = 0;
+      NumPrint                        = 10;
+
+      ## Every name the caller asked for, so an argument meant for the other
+      ## engine is refused instead of quietly doing nothing.
+      namesGiven = {};
+
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
       ## Number of parameters for Formula, Interactions (maximum 1 allowed)
@@ -674,6 +804,7 @@ classdef ClassificationGAM
 
       ## Parse extra parameters
       while (numel (varargin) > 0)
+        namesGiven{end+1} = tolower (varargin{1});
         switch (tolower (varargin {1}))
 
           case 'predictornames'
@@ -834,6 +965,105 @@ classdef ClassificationGAM
                              " must be a positive integer value."));
             endif
 
+          case 'fitmethod'
+            FitMethod = varargin{2};
+            if (! (ischar (FitMethod) && isrow (FitMethod)) ||
+                ! any (strcmpi (FitMethod, {'boostedtrees', 'splines'})))
+              error (strcat ("ClassificationGAM: 'FitMethod' must be", ...
+                             " 'boostedtrees' or 'splines'."));
+            endif
+            FitMethod = tolower (FitMethod);
+
+          case 'numtreesperpredictor'
+            NumTreesPerPredictor = varargin{2};
+            if (! isnumeric (NumTreesPerPredictor) ||
+                ! isscalar (NumTreesPerPredictor) ||
+                NumTreesPerPredictor < 1 ||
+                fix (NumTreesPerPredictor) != NumTreesPerPredictor)
+              error (strcat ("ClassificationGAM:", ...
+                             " 'NumTreesPerPredictor' must be a positive", ...
+                             " integer value."));
+            endif
+
+          case 'numtreesperinteraction'
+            NumTreesPerInteraction = varargin{2};
+            if (! isnumeric (NumTreesPerInteraction) ||
+                ! isscalar (NumTreesPerInteraction) ||
+                NumTreesPerInteraction < 1 ||
+                fix (NumTreesPerInteraction) != NumTreesPerInteraction)
+              error (strcat ("ClassificationGAM:", ...
+                             " 'NumTreesPerInteraction' must be a", ...
+                             " positive integer value."));
+            endif
+
+          case 'maxnumsplitsperpredictor'
+            MaxNumSplitsPerPredictor = varargin{2};
+            if (! isnumeric (MaxNumSplitsPerPredictor) ||
+                ! isscalar (MaxNumSplitsPerPredictor) ||
+                MaxNumSplitsPerPredictor < 1 ||
+                fix (MaxNumSplitsPerPredictor) != MaxNumSplitsPerPredictor)
+              error (strcat ("ClassificationGAM:", ...
+                             " 'MaxNumSplitsPerPredictor' must be a", ...
+                             " positive integer value."));
+            endif
+
+          case 'maxnumsplitsperinteraction'
+            MaxNumSplitsPerInteraction = varargin{2};
+            if (! isnumeric (MaxNumSplitsPerInteraction) ||
+                ! isscalar (MaxNumSplitsPerInteraction) ||
+                MaxNumSplitsPerInteraction < 1 ||
+                fix (MaxNumSplitsPerInteraction) != MaxNumSplitsPerInteraction)
+              error (strcat ("ClassificationGAM:", ...
+                             " 'MaxNumSplitsPerInteraction' must be a", ...
+                             " positive integer value."));
+            endif
+
+          case 'initiallearnrateforpredictors'
+            InitialLearnRateForPredictors = varargin{2};
+            if (! isnumeric (InitialLearnRateForPredictors) ||
+                ! isscalar (InitialLearnRateForPredictors) ||
+                InitialLearnRateForPredictors <= 0 ||
+                InitialLearnRateForPredictors > 1)
+              error (strcat ("ClassificationGAM:", ...
+                             " 'InitialLearnRateForPredictors' must be", ...
+                             " greater than 0 and at most 1."));
+            endif
+
+          case 'initiallearnrateforinteractions'
+            InitialLearnRateForInteractions = varargin{2};
+            if (! isnumeric (InitialLearnRateForInteractions) ||
+                ! isscalar (InitialLearnRateForInteractions) ||
+                InitialLearnRateForInteractions <= 0 ||
+                InitialLearnRateForInteractions > 1)
+              error (strcat ("ClassificationGAM:", ...
+                             " 'InitialLearnRateForInteractions' must be", ...
+                             " greater than 0 and at most 1."));
+            endif
+
+          case 'verbose'
+            Verbose = varargin{2};
+            if (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
+                || fix (Verbose) != Verbose)
+              error (strcat ("ClassificationGAM: 'Verbose' must be a", ...
+                             " non-negative integer value."));
+            endif
+
+          case 'numprint'
+            NumPrint = varargin{2};
+            if (! isnumeric (NumPrint) || ! isscalar (NumPrint)
+                || NumPrint < 1 || fix (NumPrint) != NumPrint)
+              error (strcat ("ClassificationGAM: 'NumPrint' must be a", ...
+                             " positive integer value."));
+            endif
+
+          case 'maxpvalue'
+            MaxPValue = varargin{2};
+            if (! isnumeric (MaxPValue) || ! isscalar (MaxPValue) ||
+                MaxPValue < 0 || MaxPValue > 1)
+              error (strcat ("ClassificationGAM: 'MaxPValue' must be", ...
+                             " between 0 and 1."));
+            endif
+
           otherwise
             error (strcat ("ClassificationGAM: invalid parameter", ...
                            " name in optional pair arguments."));
@@ -841,6 +1071,34 @@ classdef ClassificationGAM
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## An argument belongs to one engine or the other, and asking for one
+      ## the chosen engine cannot honour is refused rather than ignored.  The
+      ## alternative is the trap MATLAB sets with a name it accepts and never
+      ## reads: the caller gets a fit that quietly disregarded what it asked
+      ## for.
+      splineOnly = {'knots', 'order', 'dof', 'formula', ...
+                    'learningrate', 'numiterations'};
+      treeOnly = {'numtreesperpredictor', 'numtreesperinteraction', ...
+                  'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
+                  'initiallearnrateforpredictors', ...
+                  'initiallearnrateforinteractions', 'maxpvalue', ...
+                  'verbose', 'numprint'};
+      if (strcmp (FitMethod, 'boostedtrees'))
+        clash = intersect (namesGiven, splineOnly);
+        if (! isempty (clash))
+          error (strcat ("ClassificationGAM: '", clash{1}, "' is a", ...
+                         " parameter of the spline engine and cannot be", ...
+                         " used with 'FitMethod' 'boostedtrees'."));
+        endif
+      else
+        clash = intersect (namesGiven, treeOnly);
+        if (! isempty (clash))
+          error (strcat ("ClassificationGAM: '", clash{1}, "' is a", ...
+                         " parameter of the boosted-tree engine and cannot", ...
+                         " be used with 'FitMethod' 'splines'."));
+        endif
+      endif
 
       ## Generate default predictors and response variable names (if necessary)
       if (isempty (PredictorNames))
@@ -968,36 +1226,71 @@ classdef ClassificationGAM
       this.LearningRate  = LearningRate;
       this.NumIterations = NumIterations;
 
-      ## Fit the basic model
-      Inter = mean (Y);
-      [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, ...
-                                                        Order, LearningRate, ...
-                                                        NumIterations);
-      this.BaseModel.Intercept  = intercept;
-      this.BaseModel.Parameters = param;
-      this.BaseModel.Iterations = iter;
-      this.BaseModel.Residuals  = res;
-      this.BaseModel.RSS        = RSS;
+      this.FitMethod = FitMethod;
 
-      ## Bookkeeping MATLAB reports alongside the fit
-      this.Intercept             = intercept;
+      ## Bookkeeping MATLAB reports alongside the fit, whichever engine ran
       this.W                     = priorWeights (this.Prior, gY, ...
                                                  this.NumObservations);
       this.CategoricalPredictors = [];
       this.ExpandedPredictorNames = this.PredictorNames;
 
-      ## Handle interaction terms (if given)
-      if (F_I > 0)
-        this = this.fitModelwInt (X, Y, Inter, Knots, Order, DoF, ...
-                                  LearningRate, NumIterations);
-      endif
+      if (strcmp (FitMethod, 'boostedtrees'))
+        ## The spline parameters describe a scheme that did not run, so they
+        ## are left empty rather than reporting numbers nothing used.
+        this.Knots         = [];
+        this.Order         = [];
+        this.DoF           = [];
+        this.LearningRate  = [];
+        this.NumIterations = [];
+        ## The engine wants the response as zeros and ones.  Y itself is
+        ## only converted when it was not numeric to begin with, so a numeric
+        ## label of 1 and 2 would arrive unconverted; the group index is the
+        ## encoding that is always right.
+        this = this.fitBoosted (X, gY(:) - 1, Interactions, ...
+                                NumTreesPerPredictor, ...
+                                NumTreesPerInteraction, ...
+                                MaxNumSplitsPerPredictor, ...
+                                MaxNumSplitsPerInteraction, ...
+                                InitialLearnRateForPredictors, ...
+                                InitialLearnRateForInteractions, MaxPValue, ...
+                                Verbose, NumPrint);
+      else
+        ## Fit the basic model
+        Inter = mean (Y);
+        [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, ...
+                                                          Knots, Order, ...
+                                                          LearningRate, ...
+                                                          NumIterations);
+        this.BaseModel.Intercept  = intercept;
+        this.BaseModel.Parameters = param;
+        this.BaseModel.Iterations = iter;
+        this.BaseModel.Residuals  = res;
+        this.BaseModel.RSS        = RSS;
+        this.Intercept            = intercept;
 
-      ## The property MATLAB reports is the two-way terms the fitted model
-      ## carries, as predictor index pairs, whatever form they were asked for
-      ## in.  The term matrix stays the complete record: it also holds the
-      ## main effects a formula names and any term above two predictors,
-      ## neither of which has a two-column form.
-      this.Interactions = interactionPairs (this.IntMatrix);
+        ## Handle interaction terms (if given)
+        if (F_I > 0)
+          this = this.fitModelwInt (X, Y, Inter, Knots, Order, DoF, ...
+                                    LearningRate, NumIterations);
+        endif
+
+        ## The property MATLAB reports is the two-way terms the fitted model
+        ## carries, as predictor index pairs, whatever form they were asked
+        ## for in.  The term matrix stays the complete record: it also holds
+        ## the main effects a formula names and any term above two
+        ## predictors, neither of which has a two-column form.
+        this.Interactions = interactionPairs (this.IntMatrix);
+
+        ## The spline scheme has no tree vocabulary to report, so its
+        ## parameter struct describes itself instead.
+        this.ModelParameters = struct ('Knots', this.Knots, ...
+                                       'Order', this.Order, ...
+                                       'DoF', this.DoF, ...
+                                       'Formula', this.Formula, ...
+                                       'Interactions', this.Interactions, ...
+                                       'LearningRate', this.LearningRate, ...
+                                       'NumIterations', this.NumIterations);
+      endif
 
     endfunction
 
@@ -1035,7 +1328,12 @@ classdef ClassificationGAM
         print_usage ();
       endif
 
-      if (! isempty (this.IntMatrix))
+      ## Which store already holds interaction terms depends on the engine.
+      hasInt = ! isempty (this.IntMatrix);
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        hasInt = ! isempty (this.TreeModel.Pairs);
+      endif
+      if (hasInt)
         error (strcat ("ClassificationGAM.addInteractions: adding", ...
                        " interaction terms to a model that already", ...
                        " includes them is not supported."));
@@ -1047,6 +1345,26 @@ classdef ClassificationGAM
              || (ischar (interactions) && strcmpi (interactions, 'all'))))
         error (strcat ("ClassificationGAM.addInteractions: invalid", ...
                        " 'Interactions' parameter."));
+      endif
+
+      ## Under the boosted-tree engine the interaction phase simply runs now,
+      ## starting from the predictor phase the model already carries, which is
+      ## the same order the constructor would have run them in.  The predictor
+      ## phase is not refitted, so the main effects are untouched and a model
+      ## with interactions added is the model the constructor would have built
+      ## had it been asked for them.
+      if (strcmp (this.FitMethod, 'boostedtrees'))
+        cobs = ! any (isnan (this.X), 2);
+        Xfit = this.X(cobs, :);
+        [~, ~, gY] = uniqueLabels (this.Y(cobs, :));
+        Yfit = gY(:) - 1;
+        MP = this.ModelParameters;
+        lrInter = MP.InitialLearnRateForInteractions;
+        this = this.fitBoostedInteractions (Xfit, Yfit, interactions, ...
+                                            MP.NumTreesPerInteraction, ...
+                                            MP.MaxNumSplitsPerInteraction, ...
+                                            lrInter, MP.MaxPValue);
+        return;
       endif
 
       ## parseInteractions reads the specification from the property, which
@@ -1125,7 +1443,14 @@ classdef ClassificationGAM
       XC        = XC(notnansf, :);
 
       ## Default values for Name-Value Pairs
-      incInt = ! isempty (this.IntMatrix);
+      ## Which store holds the interaction terms depends on the engine: the
+      ## spline scheme keeps them as extra columns described by IntMatrix,
+      ## the boosted-tree scheme as surfaces over predictor pairs.
+      hasInt = ! isempty (this.IntMatrix);
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        hasInt = ! isempty (this.TreeModel.Pairs);
+      endif
+      incInt = hasInt;
       Cost = this.Cost;
 
       ## Parse optional arguments
@@ -1139,7 +1464,7 @@ classdef ClassificationGAM
                              " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
-            if (tmpInt && isempty (this.IntMatrix))
+            if (tmpInt && ! hasInt)
               error (strcat ("ClassificationGAM.predict: trained model", ...
                              " does not include any interactions."));
             endif
@@ -1151,6 +1476,49 @@ classdef ClassificationGAM
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## The boosted-tree engine keeps its fit as step functions over bins,
+      ## so a term is a lookup rather than a spline evaluation and the whole
+      ## prediction is one call.  It shares everything after it: the cost
+      ## matrix, the label, and the transform.
+      ## An empty TreeModel means no tree fit is present, whatever FitMethod
+      ## says: a default-constructed object has one, and so would a model
+      ## saved before the engine existed.  Such an object falls through to
+      ## the spline path rather than indexing into nothing.
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        ## Excluding the interactions means excluding the constant they
+        ## handed the intercept as well.
+        interc = this.Intercept;
+        if (! incInt && isfield (this.TreeModel, 'PairIntercept'))
+          interc = interc - this.TreeModel.PairIntercept;
+        endif
+        if (! incInt || isempty (this.TreeModel.Pairs))
+          scores = gamboostpredict (this.BinEdges, ...
+                                    this.TreeModel.ShapeValues, XC, ...
+                                    interc);
+        else
+          scores = gamboostpredict (this.BinEdges, ...
+                                    this.TreeModel.ShapeValues, XC, ...
+                                    interc, 0, ...
+                                    this.PairDetectionBinEdges, ...
+                                    this.TreeModel.PairValues, ...
+                                    this.TreeModel.Pairs);
+        endif
+        scores = [-scores, scores];
+
+        post = 1 ./ (1 + exp (-scores));
+        numObservations = size (XC, 1);
+        CE = zeros (numObservations, 2);
+        for k = 1:2
+          for i = 1:2
+            CE(:, k) = CE(:, k) + post(:, i) * Cost(k, i);
+          endfor
+        endfor
+        [~, minIdx] = min (CE, [], 2);
+        labels = labelsFromIndex (this.ClassNames, minIdx);
+        scores = this.STfun (scores);
+        return;
+      endif
 
       ## Choose whether interactions must be included
       if (incInt)
@@ -1680,6 +2048,11 @@ classdef ClassificationGAM
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
       STfun          = this.STfun;
+      FitMethod             = this.FitMethod;
+      TreeModel             = this.TreeModel;
+      ModelParameters       = this.ModelParameters;
+      ReasonForTermination  = this.ReasonForTermination;
+      PairDetectionBinEdges = this.PairDetectionBinEdges;
 
       ## Save classdef name and all model properties as individual variables
       LearningRate    = this.LearningRate;
@@ -1692,7 +2065,9 @@ classdef ClassificationGAM
             'Interactions', 'Knots', 'Order', 'DoF', 'BaseModel', ...
             'ModelwInt', 'IntMatrix', 'LearningRate', 'NumIterations', ...
             'Intercept', 'W', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STfun');
+            'ExpandedPredictorNames', 'STfun', 'FitMethod', ...
+            'TreeModel', 'ModelParameters', 'ReasonForTermination', ...
+            'PairDetectionBinEdges');
     endfunction
 
   endmethods
@@ -1782,6 +2157,188 @@ classdef ClassificationGAM
 
     ## Determine interactions from Interactions optional parameter
     ## Fit the model that carries the interaction terms.  The constructor and
+    ## Run the interaction phase alone, over a model whose predictor phase is
+    ## already fitted.  Shared by addInteractions and by the constructor, so
+    ## that asking for interactions after the fact gives the same model as
+    ## asking for them up front.
+    function this = fitBoostedInteractions (this, X, Y, Interactions, NTI, ...
+                                            MSI, LRI, MaxPValue)
+
+      f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
+                           this.Intercept);
+
+      ## Residuals of the predictor phase, which is what pairs are tested on.
+      res = Y - 1 ./ (1 + exp (-f));
+
+      wanted = -1;
+      pairs = zeros (0, 2);
+      if (ischar (Interactions))
+        wanted = Inf;
+      elseif (isscalar (Interactions) && ! isempty (Interactions))
+        wanted = Interactions;
+      elseif (! isempty (Interactions))
+        pairs = interactionPairs (logical (Interactions));
+      endif
+
+      if (wanted > 0 && columns (X) > 1)
+        S = gamboostpairs (X, res);
+        pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+        pval(S.DF1 <= 0) = 1;
+        [pval, ord] = sort (pval);
+        ranked = S.Pairs(ord, :);
+        ranked = ranked(pval <= MaxPValue, :);
+        if (isfinite (wanted) && rows (ranked) > wanted)
+          ranked = ranked(1:wanted, :);
+        endif
+        pairs = ranked;
+        this.PairDetectionBinEdges = S.BinEdges;
+        if (isempty (pairs))
+          warning (strcat ("ClassificationGAM: model does not include", ...
+                           " interaction terms because all interaction", ...
+                           " terms have p-values greater than the", ...
+                           " 'MaxPValue' value, or the software was unable", ...
+                           " to improve the model fit."));
+        endif
+      endif
+
+      reason = this.ReasonForTermination;
+      if (! isempty (pairs))
+        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI);
+        this.Intercept = this.Intercept + I.Intercept;
+        this.PairDetectionBinEdges = I.PairBinEdges;
+        this.TreeModel.PairValues = I.PairValues;
+        this.TreeModel.PairIntercept = I.Intercept;
+        reason.InteractionTrees = I.ReasonForTermination;
+      endif
+
+      this.TreeModel.Pairs = pairs;
+      if (isempty (pairs))
+        this.TreeModel.PairIntercept = 0;
+      endif
+      this.Interactions = pairs;
+      this.ReasonForTermination = reason;
+      MP = this.ModelParameters;
+      if (ischar (Interactions))
+        MP.Interactions = Interactions;
+      elseif (isempty (Interactions))
+        MP.Interactions = 0;
+      else
+        MP.Interactions = Interactions;
+      endif
+      this.ModelParameters = MP;
+
+    endfunction
+
+    ## Drive the boosted-tree engine: the predictor phase, then a search for
+    ## interactions worth adding, then the interaction phase over whichever
+    ## pairs survived.  The two phases share a running fit, so the second
+    ## continues from the prediction the first left rather than starting over,
+    ## which is how MATLAB's own trace behaves.
+    function this = fitBoosted (this, X, Y, Interactions, NTP, NTI, MSP, ...
+                                MSI, LRP, LRI, MaxPValue, Verb, NPrint)
+
+      ## The predictor phase.
+      M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint);
+      f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
+
+      this.BinEdges  = M.BinEdges;
+      this.Intercept = M.Intercept;
+      reason = struct ('PredictorTrees', M.ReasonForTermination, ...
+                       'InteractionTrees', '');
+      pairs = zeros (0, 2);
+      pairValues = {};
+      pairShift = 0;
+
+      ## How many pairs were asked for.  A count or 'all' means search; an
+      ## explicit Nx2 matrix names the pairs outright and skips the test, as
+      ## MATLAB takes a matrix at its word.
+      wanted = -1;
+      if (ischar (Interactions))
+        wanted = Inf;
+      elseif (isscalar (Interactions) && ! isempty (Interactions))
+        wanted = Interactions;
+      elseif (! isempty (Interactions))
+        ## A matrix names the terms outright.  This class has always taken
+        ## that as a term matrix, one row per term and one column per
+        ## predictor, so it is converted to the pairs the engine works in
+        ## rather than being mistaken for a two-column list of indices.
+        pairs = interactionPairs (logical (Interactions));
+      endif
+
+      if (wanted > 0 && columns (X) > 1)
+        S = gamboostpairs (X, M.Residuals);
+        ## The F ratio becomes a probability through the package's own fcdf,
+        ## which is verified against MATLAB; the engine deliberately does not
+        ## carry a second incomplete beta of its own.
+        pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+        pval(S.DF1 <= 0) = 1;
+        [pval, ord] = sort (pval);
+        ranked = S.Pairs(ord, :);
+        keep = pval <= MaxPValue;
+        ranked = ranked(keep, :);
+        if (isfinite (wanted) && rows (ranked) > wanted)
+          ranked = ranked(1:wanted, :);
+        endif
+        pairs = ranked;
+        this.PairDetectionBinEdges = S.BinEdges;
+        if (isempty (pairs))
+          warning (strcat ("ClassificationGAM: model does not include", ...
+                           " interaction terms because all interaction", ...
+                           " terms have p-values greater than the", ...
+                           " 'MaxPValue' value, or the software was unable", ...
+                           " to improve the model fit."));
+        endif
+      endif
+
+      if (! isempty (pairs))
+        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI);
+        this.Intercept = this.Intercept + I.Intercept;
+        pairShift = I.Intercept;
+        this.PairDetectionBinEdges = I.PairBinEdges;
+        pairValues = I.PairValues;
+        reason.InteractionTrees = I.ReasonForTermination;
+      endif
+
+      this.Interactions = pairs;
+      this.ReasonForTermination = reason;
+      ## The constant the interaction surfaces gave up when they were
+      ## recentred is kept apart from the predictor phase's intercept.  The
+      ## Intercept property still reports their sum, as MATLAB's does, but
+      ## predicting without the interactions has to take this part back out
+      ## or it would answer with a constant the main effects never earned.
+      this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
+                               'PairValues', {pairValues}, ...
+                               'Pairs', pairs, ...
+                               'PairIntercept', pairShift);
+
+      ## MATLAB reports the request rather than the selection here, and the
+      ## selection through the Interactions property.  NumPrint and
+      ## VerbosityLevel are reported at their defaults: this engine keeps no
+      ## printed trace, so they are stated rather than accepted and ignored.
+      if (ischar (Interactions))
+        request = Interactions;
+      elseif (isempty (Interactions))
+        request = 0;
+      else
+        request = Interactions;
+      endif
+      this.ModelParameters = struct ( ...
+        'NumPrint', NPrint, ...
+        'MaxPValue', MaxPValue, ...
+        'InitialLearnRateForPredictors', LRP, ...
+        'InitialLearnRateForInteractions', LRI, ...
+        'NumTreesPerPredictor', NTP, ...
+        'NumTreesPerInteraction', NTI, ...
+        'MaxNumSplitsPerPredictor', MSP, ...
+        'MaxNumSplitsPerInteraction', MSI, ...
+        'VerbosityLevel', Verb, ...
+        'Interactions', request, ...
+        'Version', 1, ...
+        'Method', 'GAM', ...
+        'Type', 'classification');
+
+    endfunction
+
     ## addInteractions both arrive here with IntMatrix already decided and the
     ## predictors and response prepared as the fit wants them, so the two
     ## cannot drift: a model given its interactions after the fact is the
@@ -1945,7 +2502,6 @@ function scores = predict_val (params, XC, intercept)
   f = gampredict (params, XC, intercept, 0);
   scores = [-f, f];
 endfunction
-
 %!demo
 %! ## Train a GAM classifier for binary classification
 %! ## using specific data and plot the decision boundaries.
@@ -2694,3 +3250,132 @@ endfunction
 %! inds = ! strcmp (species, 'virginica');
 %! Mdl = fitcgam (meas(inds,:), species(inds));
 %! Mdl.Cost = ones (2);
+
+## The boosted-tree engine is reachable by name while the default is still
+## the spline engine, and it reports the surface MATLAB reports.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'boostedtrees');
+%! assert_equal (Mdl.FitMethod, 'boostedtrees');
+%! assert_equal (numel (Mdl.BinEdges), 4);
+%! assert_equal (numel (Mdl.BinEdges{1}), 27);
+%! assert_equal (numel (fieldnames (Mdl.ModelParameters)), 13);
+%! assert_equal (Mdl.ModelParameters.Type, 'classification');
+%! assert_equal (Mdl.ModelParameters.Method, 'GAM');
+
+## Its defaults are MATLAB's own, reported through ModelParameters.
+%!test
+%! Mdl = fitcgam ([1, 2; 2, 3; 3, 4; 4, 5; 5, 6; 6, 7], [0;0;0;1;1;1], ...
+%!                'FitMethod', 'boostedtrees');
+%! MP = Mdl.ModelParameters;
+%! assert_equal (MP.NumTreesPerPredictor, 300);
+%! assert_equal (MP.NumTreesPerInteraction, 100);
+%! assert_equal (MP.MaxNumSplitsPerPredictor, 1);
+%! assert_equal (MP.MaxNumSplitsPerInteraction, 4);
+%! assert_equal (MP.InitialLearnRateForPredictors, 1);
+%! assert_equal (MP.InitialLearnRateForInteractions, 1);
+%! assert_equal (MP.MaxPValue, 1);
+%! assert_equal (MP.NumPrint, 10);
+%! assert_equal (MP.VerbosityLevel, 0);
+
+## Each phase reports why it stopped; a phase that never ran reports nothing.
+%!test
+%! Mdl = fitcgam ([1, 2; 2, 3; 3, 4; 4, 5; 5, 6; 6, 7], [0;0;0;1;1;1], ...
+%!                'FitMethod', 'boostedtrees');
+%! assert_equal (isfield (Mdl.ReasonForTermination, 'PredictorTrees'), true);
+%! assert_equal (isfield (Mdl.ReasonForTermination, 'InteractionTrees'), true);
+%! assert_equal (Mdl.ReasonForTermination.InteractionTrees, '');
+
+## Interactions are detected, held on their own coarse grid, and the second
+## phase reports its own termination.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'boostedtrees', ...
+%!                'Interactions', 'all');
+%! assert_equal (rows (Mdl.Interactions), 6);
+%! assert_equal (columns (Mdl.Interactions), 2);
+%! assert_equal (numel (Mdl.PairDetectionBinEdges{1}), 7);
+%! assert_equal (! isempty (Mdl.ReasonForTermination.InteractionTrees), true);
+
+## A tree-fitted model predicts, and its scores are posteriors summing to one
+## under the default transform.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Mdl = fitcgam (X, species(inds), 'FitMethod', 'boostedtrees');
+%! [label, score] = predict (Mdl, X);
+%! assert_equal (numel (label), rows (X));
+%! assert_equal (sum (score, 2), ones (rows (X), 1), 1e-12);
+
+## compact carries the engine and every property it needs to predict alike.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Mdl = fitcgam (X, species(inds), 'FitMethod', 'boostedtrees');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.FitMethod, 'boostedtrees');
+%! assert_equal (CMdl.BinEdges, Mdl.BinEdges);
+%! assert_equal (predict (CMdl, X), predict (Mdl, X));
+
+## savemodel and loadmodel carry the tree fit, so a reloaded model predicts
+## identically rather than coming back with an empty engine.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! X = meas(inds,:);
+%! Mdl = fitcgam (X, species(inds), 'FitMethod', 'boostedtrees');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.FitMethod, 'boostedtrees');
+%! assert_equal (M2.TreeModel.ShapeValues, Mdl.TreeModel.ShapeValues);
+%! assert_equal (predict (M2, X), predict (Mdl, X));
+
+## The spline engine is unchanged and still reachable by name.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'splines');
+%! assert_equal (Mdl.FitMethod, 'splines');
+%! assert_equal (Mdl.BinEdges, {});
+%! assert_equal (isempty (Mdl.TreeModel), true);
+%! assert_equal (Mdl.Knots, [5, 5, 5, 5]);
+
+## An argument belonging to the other engine is refused, not ignored.
+%!error<ClassificationGAM: 'FitMethod' must be 'boostedtrees' or 'splines'.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'nonsense')
+%!error<ClassificationGAM: 'FitMethod' must be 'boostedtrees' or 'splines'.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 5)
+%!error<ClassificationGAM: 'knots' is a parameter of the spline engine and cannot be used with 'FitMethod' 'boostedtrees'.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', 'Knots', 4)
+%!error<ClassificationGAM: 'maxpvalue' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'splines', 'MaxPValue', 0.5)
+%!error<ClassificationGAM: 'NumTreesPerPredictor' must be a positive integer value.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', ...
+%!          'NumTreesPerPredictor', 0)
+%!error<ClassificationGAM: 'NumTreesPerInteraction' must be a positive integer value.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', ...
+%!          'NumTreesPerInteraction', 1.5)
+%!error<ClassificationGAM: 'MaxNumSplitsPerPredictor' must be a positive integer value.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', ...
+%!          'MaxNumSplitsPerPredictor', -1)
+%!error<ClassificationGAM: 'MaxNumSplitsPerInteraction' must be a positive integer value.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', ...
+%!          'MaxNumSplitsPerInteraction', 'a')
+%!error<ClassificationGAM: 'InitialLearnRateForPredictors' must be greater than 0 and at most 1.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', ...
+%!          'InitialLearnRateForPredictors', 0)
+%!error<ClassificationGAM: 'InitialLearnRateForInteractions' must be greater than 0 and at most 1.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', ...
+%!          'InitialLearnRateForInteractions', 2)
+%!error<ClassificationGAM: 'Verbose' must be a non-negative integer value.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', 'Verbose', -1)
+%!error<ClassificationGAM: 'NumPrint' must be a positive integer value.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', 'NumPrint', 0)
+%!error<ClassificationGAM: 'MaxPValue' must be between 0 and 1.> ...
+%! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', 'MaxPValue', 2)

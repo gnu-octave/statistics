@@ -132,7 +132,6 @@ function obj = fitrgam (X, Y, varargin)
   obj = RegressionGAM (X, Y, varargin{:});
 
 endfunction
-
 %!demo
 %! # Train a RegressionGAM Model for synthetic values
 %!

@@ -509,9 +509,18 @@ classdef ClassificationPartitionedModel
           ## Arguments to pass in fitcgam
           args = {};
           ## List of acceptable parameters for fitcdiscr
-          GAMparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                       'Cost', 'Formula', 'Knots', 'Order', ...
-                       'LearningRate', 'NumIterations'};
+          ## Which parameters a fold takes depends on which engine fitted
+          ## the parent: the two have disjoint argument surfaces and each
+          ## refuses the other's, so the fold is refitted with its own.
+          if (strcmp (Mdl.FitMethod, 'boostedtrees'))
+            GAMparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                         'Cost'};
+          else
+            GAMparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                         'Cost', 'Formula', 'Knots', 'Order', ...
+                         'LearningRate', 'NumIterations'};
+          endif
+          args = [args, {'FitMethod', Mdl.FitMethod}];
           ## Set parameters
           for i = 1:numel (GAMparams)
             paramName = GAMparams{i};
@@ -526,7 +535,18 @@ classdef ClassificationPartitionedModel
           ## reproduces the parent's terms exactly rather than re-selecting
           ## them.  A formula names its own terms and is passed instead, so
           ## this must not be passed alongside one.
-          if (isempty (Mdl.Formula) && ! isempty (Mdl.IntMatrix))
+          if (strcmp (Mdl.FitMethod, 'boostedtrees'))
+            ## The tree engine holds its interactions as predictor pairs and
+            ## takes them back as a term matrix, so the pairs are widened
+            ## into one before they are handed to the fold.
+            if (! isempty (Mdl.Interactions))
+              IM = false (rows (Mdl.Interactions), Mdl.NumPredictors);
+              for q = 1:rows (Mdl.Interactions)
+                IM(q, Mdl.Interactions(q,:)) = true;
+              endfor
+              args = [args, {'Interactions', IM}];
+            endif
+          elseif (isempty (Mdl.Formula) && ! isempty (Mdl.IntMatrix))
             args = [args, {'Interactions', Mdl.IntMatrix}];
           endif
 
@@ -1213,8 +1233,6 @@ classdef ClassificationPartitionedModel
   endmethods
 
 endclassdef
-
-
 %!demo
 %!
 %! load fisheriris
@@ -1905,3 +1923,51 @@ endclassdef
 %! load fisheriris
 %! Mdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
 %! Mdl.Cost = ones (3);
+
+## A fold is refitted with the argument set of the engine that fitted the
+## parent: the two surfaces are disjoint and each refuses the other's, so a
+## tree-fitted parent must not hand its folds Knots and Order.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'boostedtrees');
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (class (CVMdl), 'ClassificationPartitionedModel');
+%! assert_equal (numel (CVMdl.Trained), 3);
+%! assert_equal (CVMdl.Trained{1}.FitMethod, 'boostedtrees');
+%! assert_equal (isempty (CVMdl.Trained{1}.TreeModel), false);
+
+## The fold still carries no transform of its own, whatever engine fitted it:
+## the parent applies it once to the assembled score.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'boostedtrees');
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.ScoreTransform, 'logit');
+%! assert_equal (CVMdl.Trained{1}.ScoreTransform, 'none');
+%! [~, s] = kfoldPredict (CVMdl);
+%! assert_equal (sum (s, 2), ones (rows (s), 1), 1e-12);
+
+## A tree-fitted parent holds its interactions as predictor pairs where the
+## constructor takes a term matrix, so the pairs are widened before the fold
+## is refitted and every fold carries the same terms as the parent.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'boostedtrees', ...
+%!                'Interactions', 2);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (rows (Mdl.Interactions), 2);
+%! assert_equal (rows (CVMdl.Trained{1}.Interactions), 2);
+
+## A spline-fitted parent is unaffected: its folds still take the spline
+## parameters and report them.
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(inds,:), species(inds), 'FitMethod', 'splines', ...
+%!                'Knots', 4);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.Trained{1}.FitMethod, 'splines');
+%! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);

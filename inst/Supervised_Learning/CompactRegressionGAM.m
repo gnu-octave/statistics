@@ -234,6 +234,60 @@ classdef CompactRegressionGAM
     ## @end deftp
     IntMatrix             = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionGAM} {property} BinEdges
+    ##
+    ## Bin edges of the fitted shape functions, empty under the spline
+    ## engine.  This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionGAM} {property} PairDetectionBinEdges
+    ##
+    ## Coarse bin edges the interaction terms are held on, empty when the
+    ## model carries none.  This property is read-only.
+    ##
+    ## @end deftp
+    PairDetectionBinEdges = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionGAM} {property} ModelParameters
+    ##
+    ## The parameter structure the full model reports, carried over
+    ## unchanged.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionGAM} {property} ReasonForTermination
+    ##
+    ## Why each fitting phase stopped, as the full model reports it.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    ReasonForTermination = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionGAM} {property} FitMethod
+    ##
+    ## Which engine fitted the model, @qcode{'boostedtrees'} or
+    ## @qcode{'splines'}.  This property is read-only.
+    ##
+    ## @end deftp
+    FitMethod = 'splines';
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactRegressionGAM} {property} TreeModel
+    ##
+    ## The fitted shape functions and interaction surfaces, empty under the
+    ## spline engine.  This property is read-only.
+    ##
+    ## @end deftp
+    TreeModel = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -298,6 +352,12 @@ classdef CompactRegressionGAM
       this.ModelwInt              = Mdl.ModelwInt;
       this.IntMatrix              = Mdl.IntMatrix;
       this.RTfun                 = Mdl.RTfun;
+      this.FitMethod             = Mdl.FitMethod;
+      this.TreeModel             = Mdl.TreeModel;
+      this.BinEdges              = Mdl.BinEdges;
+      this.PairDetectionBinEdges = Mdl.PairDetectionBinEdges;
+      this.ModelParameters       = Mdl.ModelParameters;
+      this.ReasonForTermination  = Mdl.ReasonForTermination;
 
     endfunction
 
@@ -405,7 +465,11 @@ classdef CompactRegressionGAM
 
       ## Default values for Name-Value Pairs
       alpha = 0.05;
-      if (isempty (this.IntMatrix))
+      hasInt = ! isempty (this.IntMatrix);
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        hasInt = ! isempty (this.TreeModel.Pairs);
+      endif
+      if (! hasInt)
         incInt = false;
       else
         incInt = true;
@@ -422,7 +486,7 @@ classdef CompactRegressionGAM
                              " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
-            if (tmpInt && isempty (this.IntMatrix))
+            if (tmpInt && ! hasInt)
               error (strcat ("CompactRegressionGAM.predict: trained model", ...
                              " does not include any interactions."));
             endif
@@ -444,6 +508,31 @@ classdef CompactRegressionGAM
       endwhile
 
       ## Choose whether interactions must be included
+      ## The boosted-tree engine keeps its fit as step functions over bins, so
+      ## a term is a lookup rather than a spline evaluation.
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        ## Excluding the interactions means excluding the constant they
+        ## handed the intercept as well.
+        interc = this.Intercept;
+        if (! incInt && isfield (this.TreeModel, 'PairIntercept'))
+          interc = interc - this.TreeModel.PairIntercept;
+        endif
+        if (! incInt || isempty (this.TreeModel.Pairs))
+          yFit = gamboostpredict (this.BinEdges, ...
+                                  this.TreeModel.ShapeValues, Xfit, ...
+                                  interc);
+        else
+          yFit = gamboostpredict (this.BinEdges, ...
+                                  this.TreeModel.ShapeValues, Xfit, ...
+                                  interc, 0, ...
+                                  this.PairDetectionBinEdges, ...
+                                  this.TreeModel.PairValues, ...
+                                  this.TreeModel.Pairs);
+        endif
+        yFit = this.RTfun (yFit);
+        return;
+      endif
+
       if (incInt)
         ## Which construction path the model took: an interaction
         ## list appends its terms to the predictors, a formula
@@ -618,6 +707,12 @@ classdef CompactRegressionGAM
       ModelwInt              = this.ModelwInt;
       IntMatrix              = this.IntMatrix;
       RTfun                 = this.RTfun;
+      FitMethod             = this.FitMethod;
+      TreeModel             = this.TreeModel;
+      BinEdges              = this.BinEdges;
+      PairDetectionBinEdges = this.PairDetectionBinEdges;
+      ModelParameters       = this.ModelParameters;
+      ReasonForTermination  = this.ReasonForTermination;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
@@ -625,7 +720,9 @@ classdef CompactRegressionGAM
             'ExpandedPredictorNames', 'ResponseTransform', 'Intercept', ...
             'Formula', 'Interactions', 'Knots', 'Order', 'DoF', ...
             'IsStandardDeviationFit', 'BaseModel', 'ModelwInt', ...
-            'IntMatrix', 'RTfun');
+            'IntMatrix', 'RTfun', 'FitMethod', 'TreeModel', 'BinEdges', ...
+            'PairDetectionBinEdges', 'ModelParameters', ...
+            'ReasonForTermination');
     endfunction
 
   endmethods
@@ -713,7 +810,6 @@ function ypred = predict_val (params, X, intercept)
   ## intercept.
   ypred = gampredict (params, X, intercept);
 endfunction
-
 %!demo
 %! ## Take the compact version of a fitted model and predict with it
 %!
@@ -807,3 +903,13 @@ endfunction
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## A compacted tree-fitted model predicts as the full model does.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! CMdl = compact (fitrgam (X, meas(:,1), 'FitMethod', 'boostedtrees'));
+%! assert_equal (CMdl.FitMethod, 'boostedtrees');
+%! assert_equal (numel (CMdl.BinEdges), 3);
+%! assert_equal (numel (predict (CMdl, X)), rows (X));
+

@@ -324,8 +324,16 @@ classdef RegressionPartitionedModel
           ## the constructor accepts any two, recomputing the third, so only
           ## Knots and Order are passed on.
           args = {};
-          GAMparams = {'PredictorNames', 'ResponseName', 'Formula', ...
-                       'Knots', 'Order', 'Tol'};
+          ## Which parameters a fold takes depends on which engine fitted
+          ## the parent: the two have disjoint argument surfaces and each
+          ## refuses the other's, so the fold is refitted with its own.
+          if (strcmp (Mdl.FitMethod, 'boostedtrees'))
+            GAMparams = {'PredictorNames', 'ResponseName'};
+          else
+            GAMparams = {'PredictorNames', 'ResponseName', 'Formula', ...
+                         'Knots', 'Order', 'Tol'};
+          endif
+          args = [args, {'FitMethod', Mdl.FitMethod}];
           for i = 1:numel (GAMparams)
             paramName = GAMparams{i};
             paramValue = Mdl.(paramName);
@@ -876,3 +884,24 @@ endclassdef
 %!test
 %! assert_equal (any (strcmp (methods ("RegressionPartitionedModel"), ...
 %!                           "foldLoss_")), false);
+
+## A fold is refitted with the argument set of the engine that fitted the
+## parent, so a tree-fitted parent must not hand its folds Knots and Order.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,2:4), meas(:,1), 'FitMethod', 'boostedtrees');
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
+%! assert_equal (numel (CVMdl.Trained), 3);
+%! assert_equal (CVMdl.Trained{1}.FitMethod, 'boostedtrees');
+%! assert_equal (numel (kfoldPredict (CVMdl)), rows (meas));
+
+## A spline-fitted parent is unaffected: its folds still take the spline
+## parameters and report them.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(1:60,1:3), meas(1:60,4), 'FitMethod', 'splines', ...
+%!                'Knots', 4);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.Trained{1}.FitMethod, 'splines');
+%! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);

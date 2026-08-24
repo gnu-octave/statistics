@@ -411,6 +411,87 @@ classdef RegressionGAM
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} PairDetectionBinEdges
+    ##
+    ## Bin edges used to detect interactions
+    ##
+    ## A cell array with one row vector per predictor, holding the coarse cut
+    ## points the residuals of the predictor phase were laid on while pairs
+    ## were being tested.  The grid is eight equal-frequency bins whatever the
+    ## sample size, as MATLAB's is.  It is empty when the model carries no
+    ## interaction terms, and empty throughout under the spline engine, which
+    ## does not bin.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    PairDetectionBinEdges = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ModelParameters
+    ##
+    ## Parameters the model was fitted with
+    ##
+    ## A structure holding the fitting parameters.  Under the boosted-tree
+    ## engine it carries MATLAB's own fields, with @qcode{Type} reading
+    ## @qcode{'regression'}; under the spline engine it describes that scheme
+    ## instead, since none of the tree vocabulary applies to it.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} ReasonForTermination
+    ##
+    ## Why each fitting phase stopped
+    ##
+    ## A structure with the fields @qcode{PredictorTrees} and
+    ## @qcode{InteractionTrees}, each saying why that phase ended.  A phase
+    ## that never ran reports an empty character vector.  It is empty under
+    ## the spline engine, which has no tree budget to exhaust.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ReasonForTermination = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} FitMethod
+    ##
+    ## Which engine fitted the model
+    ##
+    ## A character vector, either @qcode{'boostedtrees'} or
+    ## @qcode{'splines'}.  The default is @qcode{'boostedtrees'}, the scheme
+    ## MATLAB's generalized additive model uses.  @qcode{'splines'} selects
+    ## the penalised-spline engine, an Octave extension with no MATLAB
+    ## counterpart and the scheme this class fitted before version 1.9.0.  The
+    ## two engines take different arguments and an argument meant for one is
+    ## refused by the other rather than ignored.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    FitMethod = 'splines';
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} TreeModel
+    ##
+    ## The fitted shape functions and interaction surfaces
+    ##
+    ## A structure with fields @qcode{ShapeValues}, @qcode{PairValues} and
+    ## @qcode{Pairs}, holding what the boosted-tree engine fitted.  MATLAB
+    ## exposes no equivalent, reporting its bin edges but never the values on
+    ## them, so this is an Octave extension.  It is empty under the spline
+    ## engine, whose fit lives in @code{BaseModel} and @code{ModelwInt}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    TreeModel = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -504,6 +585,24 @@ classdef RegressionGAM
       ResponseTransform = 'none';             # Name of the transform
       RTfun             = @(y) y;             # and the callable it names
 
+      ## Boosted-tree defaults, MATLAB's own.  They are reported through
+      ## ModelParameters, so they are part of the surface being matched and
+      ## are not ours to improve.
+      FitMethod                       = 'splines';
+      NumTreesPerPredictor            = 300;
+      NumTreesPerInteraction          = 100;
+      MaxNumSplitsPerPredictor        = 1;
+      MaxNumSplitsPerInteraction      = 4;
+      InitialLearnRateForPredictors   = 1;
+      InitialLearnRateForInteractions = 1;
+      MaxPValue                       = 1;
+      Verbose                         = 0;
+      NumPrint                        = 10;
+
+      ## Every name the caller asked for, so an argument meant for the other
+      ## engine is refused instead of quietly doing nothing.
+      namesGiven = {};
+
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
       ## Number of parameters for Formula, Interactions (maximum 1 allowed)
@@ -511,6 +610,7 @@ classdef RegressionGAM
 
       ## Parse extra parameters
       while (numel (varargin) > 0)
+        namesGiven{end+1} = tolower (varargin{1});
         switch (tolower (varargin {1}))
 
           case {'predictors', 'predictornames'}
@@ -612,6 +712,103 @@ classdef RegressionGAM
               error ("RegressionGAM: Tolerance must be a Positive scalar.");
             endif
 
+          case 'fitmethod'
+            FitMethod = varargin{2};
+            if (! (ischar (FitMethod) && isrow (FitMethod)) ||
+                ! any (strcmpi (FitMethod, {'boostedtrees', 'splines'})))
+              error (strcat ("RegressionGAM: 'FitMethod' must be", ...
+                             " 'boostedtrees' or 'splines'."));
+            endif
+            FitMethod = tolower (FitMethod);
+
+          case 'numtreesperpredictor'
+            NumTreesPerPredictor = varargin{2};
+            if (! isnumeric (NumTreesPerPredictor) ||
+                ! isscalar (NumTreesPerPredictor) ||
+                NumTreesPerPredictor < 1 ||
+                fix (NumTreesPerPredictor) != NumTreesPerPredictor)
+              error (strcat ("RegressionGAM: 'NumTreesPerPredictor'", ...
+                             " must be a positive integer value."));
+            endif
+
+          case 'numtreesperinteraction'
+            NumTreesPerInteraction = varargin{2};
+            if (! isnumeric (NumTreesPerInteraction) ||
+                ! isscalar (NumTreesPerInteraction) ||
+                NumTreesPerInteraction < 1 ||
+                fix (NumTreesPerInteraction) != NumTreesPerInteraction)
+              error (strcat ("RegressionGAM: 'NumTreesPerInteraction'", ...
+                             " must be a positive integer value."));
+            endif
+
+          case 'maxnumsplitsperpredictor'
+            MaxNumSplitsPerPredictor = varargin{2};
+            if (! isnumeric (MaxNumSplitsPerPredictor) ||
+                ! isscalar (MaxNumSplitsPerPredictor) ||
+                MaxNumSplitsPerPredictor < 1 ||
+                fix (MaxNumSplitsPerPredictor) != MaxNumSplitsPerPredictor)
+              error (strcat ("RegressionGAM:", ...
+                             " 'MaxNumSplitsPerPredictor' must be a", ...
+                             " positive integer value."));
+            endif
+
+          case 'maxnumsplitsperinteraction'
+            MaxNumSplitsPerInteraction = varargin{2};
+            if (! isnumeric (MaxNumSplitsPerInteraction) ||
+                ! isscalar (MaxNumSplitsPerInteraction) ||
+                MaxNumSplitsPerInteraction < 1 ||
+                fix (MaxNumSplitsPerInteraction) != MaxNumSplitsPerInteraction)
+              error (strcat ("RegressionGAM:", ...
+                             " 'MaxNumSplitsPerInteraction' must be a", ...
+                             " positive integer value."));
+            endif
+
+          case 'initiallearnrateforpredictors'
+            InitialLearnRateForPredictors = varargin{2};
+            if (! isnumeric (InitialLearnRateForPredictors) ||
+                ! isscalar (InitialLearnRateForPredictors) ||
+                InitialLearnRateForPredictors <= 0 ||
+                InitialLearnRateForPredictors > 1)
+              error (strcat ("RegressionGAM:", ...
+                             " 'InitialLearnRateForPredictors' must be", ...
+                             " greater than 0 and at most 1."));
+            endif
+
+          case 'initiallearnrateforinteractions'
+            InitialLearnRateForInteractions = varargin{2};
+            if (! isnumeric (InitialLearnRateForInteractions) ||
+                ! isscalar (InitialLearnRateForInteractions) ||
+                InitialLearnRateForInteractions <= 0 ||
+                InitialLearnRateForInteractions > 1)
+              error (strcat ("RegressionGAM:", ...
+                             " 'InitialLearnRateForInteractions' must be", ...
+                             " greater than 0 and at most 1."));
+            endif
+
+          case 'verbose'
+            Verbose = varargin{2};
+            if (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
+                || fix (Verbose) != Verbose)
+              error (strcat ("RegressionGAM: 'Verbose' must be a", ...
+                             " non-negative integer value."));
+            endif
+
+          case 'numprint'
+            NumPrint = varargin{2};
+            if (! isnumeric (NumPrint) || ! isscalar (NumPrint)
+                || NumPrint < 1 || fix (NumPrint) != NumPrint)
+              error (strcat ("RegressionGAM: 'NumPrint' must be a positive", ...
+                             " integer value."));
+            endif
+
+          case 'maxpvalue'
+            MaxPValue = varargin{2};
+            if (! isnumeric (MaxPValue) || ! isscalar (MaxPValue) ||
+                MaxPValue < 0 || MaxPValue > 1)
+              error (strcat ("RegressionGAM: 'MaxPValue' must be", ...
+                             " between 0 and 1."));
+            endif
+
           otherwise
             error (strcat ("RegressionGAM: invalid parameter name", ...
                            " in optional pair arguments."));
@@ -619,6 +816,30 @@ classdef RegressionGAM
         endswitch
         varargin(1:2) = [];
       endwhile
+
+      ## An argument belongs to one engine or the other, and asking for one
+      ## the chosen engine cannot honour is refused rather than ignored.
+      splineOnly = {'knots', 'order', 'dof', 'formula', 'tol'};
+      treeOnly = {'numtreesperpredictor', 'numtreesperinteraction', ...
+                  'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
+                  'initiallearnrateforpredictors', ...
+                  'initiallearnrateforinteractions', 'maxpvalue', ...
+                  'verbose', 'numprint'};
+      if (strcmp (FitMethod, 'boostedtrees'))
+        clash = intersect (namesGiven, splineOnly);
+        if (! isempty (clash))
+          error (strcat ("RegressionGAM: '", clash{1}, "' is a parameter", ...
+                         " of the spline engine and cannot be used with", ...
+                         " 'FitMethod' 'boostedtrees'."));
+        endif
+      else
+        clash = intersect (namesGiven, treeOnly);
+        if (! isempty (clash))
+          error (strcat ("RegressionGAM: '", clash{1}, "' is a parameter", ...
+                         " of the boosted-tree engine and cannot be used", ...
+                         " with 'FitMethod' 'splines'."));
+        endif
+      endif
 
       ## Assign original X and Y data to the RegressionGAM object
       this.X = X;
@@ -699,6 +920,26 @@ classdef RegressionGAM
       this.W = ones (this.NumObservations, 1) / this.NumObservations;
       this.IsStandardDeviationFit = false;
 
+      this.FitMethod = FitMethod;
+
+      if (strcmp (FitMethod, 'boostedtrees'))
+        ## The spline parameters describe a scheme that did not run, so they
+        ## are left empty rather than reporting numbers nothing used.
+        this.Knots = [];
+        this.Order = [];
+        this.DoF   = [];
+        this.Tol   = [];
+        this = this.fitBoosted (X, Y, Interactions, ...
+                                NumTreesPerPredictor, ...
+                                NumTreesPerInteraction, ...
+                                MaxNumSplitsPerPredictor, ...
+                                MaxNumSplitsPerInteraction, ...
+                                InitialLearnRateForPredictors, ...
+                                InitialLearnRateForInteractions, MaxPValue, ...
+                                Verbose, NumPrint);
+        return;
+      endif
+
       ## Fit the basic model
       Inter = mean (Y);
       [iter, param, res, RSS] = this.fitGAM (X, Y, Inter, Knots, Order);
@@ -720,6 +961,112 @@ classdef RegressionGAM
       ## main effects a formula names and any term above two predictors,
       ## neither of which has a two-column form.
       this.Interactions = interactionPairs (this.IntMatrix);
+
+      ## The spline scheme has no tree vocabulary to report, so its parameter
+      ## struct describes itself instead.
+      this.ModelParameters = struct ('Knots', this.Knots, ...
+                                     'Order', this.Order, ...
+                                     'DoF', this.DoF, ...
+                                     'Formula', this.Formula, ...
+                                     'Interactions', this.Interactions, ...
+                                     'Tol', this.Tol);
+
+    endfunction
+
+    ## Drive the boosted-tree engine: the predictor phase, then a search for
+    ## interactions worth adding, then the interaction phase over whichever
+    ## pairs survived.  The two phases share a running fit, so the second
+    ## continues from the prediction the first left rather than starting over.
+    function this = fitBoosted (this, X, Y, Interactions, NTP, NTI, MSP, ...
+                                MSI, LRP, LRI, MaxPValue, Verb, NPrint)
+
+      ## Method 2 boosts the squared error, which is what a regression fits.
+      M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint);
+      f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
+
+      this.BinEdges  = M.BinEdges;
+      this.Intercept = M.Intercept;
+      reason = struct ('PredictorTrees', M.ReasonForTermination, ...
+                       'InteractionTrees', '');
+      pairs = zeros (0, 2);
+      pairValues = {};
+      pairShift = 0;
+
+      wanted = -1;
+      if (ischar (Interactions))
+        wanted = Inf;
+      elseif (isscalar (Interactions) && ! isempty (Interactions))
+        wanted = Interactions;
+      elseif (! isempty (Interactions))
+        pairs = interactionPairs (logical (Interactions));
+      endif
+
+      if (wanted > 0 && columns (X) > 1)
+        S = gamboostpairs (X, M.Residuals);
+        ## The F ratio becomes a probability through the package's own fcdf,
+        ## which is verified against MATLAB; the engine deliberately does not
+        ## carry a second incomplete beta of its own.
+        pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+        pval(S.DF1 <= 0) = 1;
+        [pval, ord] = sort (pval);
+        ranked = S.Pairs(ord, :);
+        ranked = ranked(pval <= MaxPValue, :);
+        if (isfinite (wanted) && rows (ranked) > wanted)
+          ranked = ranked(1:wanted, :);
+        endif
+        pairs = ranked;
+        this.PairDetectionBinEdges = S.BinEdges;
+        if (isempty (pairs))
+          warning (strcat ("RegressionGAM: model does not include", ...
+                           " interaction terms because all interaction", ...
+                           " terms have p-values greater than the", ...
+                           " 'MaxPValue' value, or the software was unable", ...
+                           " to improve the model fit."));
+        endif
+      endif
+
+      if (! isempty (pairs))
+        I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI);
+        this.Intercept = this.Intercept + I.Intercept;
+        pairShift = I.Intercept;
+        this.PairDetectionBinEdges = I.PairBinEdges;
+        pairValues = I.PairValues;
+        reason.InteractionTrees = I.ReasonForTermination;
+      endif
+
+      this.Interactions = pairs;
+      this.ReasonForTermination = reason;
+      ## The constant the interaction surfaces gave up when they were
+      ## recentred is kept apart from the predictor phase's intercept.  The
+      ## Intercept property still reports their sum, as MATLAB's does, but
+      ## predicting without the interactions has to take this part back out
+      ## or it would answer with a constant the main effects never earned.
+      this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
+                               'PairValues', {pairValues}, ...
+                               'Pairs', pairs, ...
+                               'PairIntercept', pairShift);
+
+      if (ischar (Interactions))
+        request = Interactions;
+      elseif (isempty (Interactions))
+        request = 0;
+      else
+        request = Interactions;
+      endif
+      this.ModelParameters = struct ( ...
+        'NumPrint', NPrint, ...
+        'MaxPValue', MaxPValue, ...
+        'InitialLearnRateForPredictors', LRP, ...
+        'InitialLearnRateForInteractions', LRI, ...
+        'NumTreesPerPredictor', NTP, ...
+        'NumTreesPerInteraction', NTI, ...
+        'MaxNumSplitsPerPredictor', MSP, ...
+        'MaxNumSplitsPerInteraction', MSI, ...
+        'VerbosityLevel', Verb, ...
+        'Interactions', request, ...
+        'Version', 1, ...
+        'Method', 'GAM', ...
+        'Type', 'regression');
 
     endfunction
 
@@ -757,7 +1104,12 @@ classdef RegressionGAM
         print_usage ();
       endif
 
-      if (! isempty (this.IntMatrix))
+      ## Which store already holds interaction terms depends on the engine.
+      hasInt = ! isempty (this.IntMatrix);
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        hasInt = ! isempty (this.TreeModel.Pairs);
+      endif
+      if (hasInt)
         error (strcat ("RegressionGAM.addInteractions: adding interaction", ...
                        " terms to a model that already includes them is", ...
                        " not supported."));
@@ -769,6 +1121,66 @@ classdef RegressionGAM
              || (ischar (interactions) && strcmpi (interactions, 'all'))))
         error (strcat ("RegressionGAM.addInteractions: invalid", ...
                        " 'Interactions' parameter."));
+      endif
+
+      ## Under the boosted-tree engine the interaction phase simply runs now,
+      ## starting from the predictor phase the model already carries, so a
+      ## model with interactions added is the model the constructor would
+      ## have built had it been asked for them.
+      if (strcmp (this.FitMethod, 'boostedtrees'))
+        cobs = ! any (isnan (this.X), 2);
+        Xfit = this.X(cobs, :);
+        Yfit = this.Y(cobs);
+        MP = this.ModelParameters;
+        f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, ...
+                             Xfit, this.Intercept);
+        res = Yfit - f;
+
+        wanted = -1;
+        pairs = zeros (0, 2);
+        if (ischar (interactions))
+          wanted = Inf;
+        elseif (isscalar (interactions) && ! isempty (interactions))
+          wanted = interactions;
+        elseif (! isempty (interactions))
+          pairs = interactionPairs (logical (interactions));
+        endif
+
+        if (wanted > 0 && columns (Xfit) > 1)
+          S = gamboostpairs (Xfit, res);
+          pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+          pval(S.DF1 <= 0) = 1;
+          [pval, ord] = sort (pval);
+          ranked = S.Pairs(ord, :);
+          ranked = ranked(pval <= MP.MaxPValue, :);
+          if (isfinite (wanted) && rows (ranked) > wanted)
+            ranked = ranked(1:wanted, :);
+          endif
+          pairs = ranked;
+          this.PairDetectionBinEdges = S.BinEdges;
+        endif
+
+        reason = this.ReasonForTermination;
+        if (! isempty (pairs))
+          I = gamboostinter (Xfit, Yfit, f, 2, pairs, ...
+                             MP.NumTreesPerInteraction, ...
+                             MP.InitialLearnRateForInteractions, ...
+                             MP.MaxNumSplitsPerInteraction);
+          this.Intercept = this.Intercept + I.Intercept;
+          this.PairDetectionBinEdges = I.PairBinEdges;
+          this.TreeModel.PairValues = I.PairValues;
+          this.TreeModel.PairIntercept = I.Intercept;
+          reason.InteractionTrees = I.ReasonForTermination;
+        endif
+        this.TreeModel.Pairs = pairs;
+      if (isempty (pairs))
+        this.TreeModel.PairIntercept = 0;
+      endif
+        this.Interactions = pairs;
+        this.ReasonForTermination = reason;
+        MP.Interactions = interactions;
+        this.ModelParameters = MP;
+        return;
       endif
 
       ## parseInteractions reads the specification from the property, which
@@ -865,7 +1277,14 @@ classdef RegressionGAM
 
       ## Default values for Name-Value Pairs
       alpha = 0.05;
-      if (isempty (this.IntMatrix))
+      ## Which store holds the interaction terms depends on the engine: the
+      ## spline scheme keeps them as extra columns described by IntMatrix,
+      ## the boosted-tree scheme as surfaces over predictor pairs.
+      hasInt = ! isempty (this.IntMatrix);
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        hasInt = ! isempty (this.TreeModel.Pairs);
+      endif
+      if (! hasInt)
         incInt = false;
       else
         incInt = true;
@@ -882,7 +1301,7 @@ classdef RegressionGAM
                              " must be a logical value."));
             endif
             ## Check model for interactions
-            if (tmpInt && isempty (this.IntMatrix))
+            if (tmpInt && ! hasInt)
               error (strcat ("RegressionGAM.predict: trained model", ...
                              " does not include any interactions."));
             endif
@@ -908,6 +1327,37 @@ classdef RegressionGAM
       ## reshaped exactly the same way further down: a model built with
       ## interactions or with a formula has a term for every column of the
       ## matrix it was fitted on, and that is no longer the stored X.
+      ## The boosted-tree engine keeps its fit as step functions over bins, so
+      ## a term is a lookup rather than a spline evaluation and the whole
+      ## prediction is one call.  Everything after it is shared.
+      if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
+        ## Excluding the interactions means excluding the constant they
+        ## handed the intercept as well.
+        interc = this.Intercept;
+        if (! incInt && isfield (this.TreeModel, 'PairIntercept'))
+          interc = interc - this.TreeModel.PairIntercept;
+        endif
+        if (! incInt || isempty (this.TreeModel.Pairs))
+          yFit = gamboostpredict (this.BinEdges, ...
+                                  this.TreeModel.ShapeValues, Xfit, ...
+                                  interc);
+        else
+          yFit = gamboostpredict (this.BinEdges, ...
+                                  this.TreeModel.ShapeValues, Xfit, ...
+                                  interc, 0, ...
+                                  this.PairDetectionBinEdges, ...
+                                  this.TreeModel.PairValues, ...
+                                  this.TreeModel.Pairs);
+        endif
+        yFit = this.RTfun (yFit);
+        if (nargout > 1)
+          error (strcat ("RegressionGAM.predict: a standard deviation is", ...
+                         " only available from a model fitted with", ...
+                         " 'FitMethod' 'splines'."));
+        endif
+        return;
+      endif
+
       if (incInt)
         Xfit = gamTerms (Xfit, this.IntMatrix, isempty (this.Formula));
         ## Get parameters and intercept vectors from model with interactions
@@ -1259,6 +1709,11 @@ classdef RegressionGAM
       Intercept              = obj.Intercept;
       IsStandardDeviationFit = obj.IsStandardDeviationFit;
       RTfun                 = obj.RTfun;
+      FitMethod             = obj.FitMethod;
+      TreeModel             = obj.TreeModel;
+      PairDetectionBinEdges = obj.PairDetectionBinEdges;
+      ModelParameters       = obj.ModelParameters;
+      ReasonForTermination  = obj.ReasonForTermination;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
@@ -1267,7 +1722,9 @@ classdef RegressionGAM
             'Formula', 'Interactions', 'Knots', 'Order', 'DoF', 'Tol', ...
             'BaseModel', 'ModelwInt', 'IntMatrix', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'W', 'ResponseTransform', ...
-            'Intercept', 'IsStandardDeviationFit', 'RTfun');
+            'Intercept', 'IsStandardDeviationFit', 'RTfun', ...
+            'FitMethod', 'TreeModel', 'PairDetectionBinEdges', ...
+            'ModelParameters', 'ReasonForTermination');
     endfunction
 
   endmethods
@@ -1533,7 +1990,6 @@ function ypred = predict_val (params, X, intercept)
   ## intercept.
   ypred = gampredict (params, X, intercept);
 endfunction
-
 %!demo
 %! ## Train a RegressionGAM Model for synthetic values
 %! f1 = @(x) cos (3 * x);
@@ -2123,3 +2579,90 @@ endfunction
 %! [yB, ~] = predict (Mdl, X(1:3,:));
 %! assert_equal (yA, yB);
 %! assert_equal (yA, [0.255203457138; 0.210404303824; 0.162599243283], 1e-9);
+
+## The boosted-tree engine is reachable by name while the default is still the
+## spline engine, and it reports the surface MATLAB reports.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,2:4), meas(:,1), 'FitMethod', 'boostedtrees');
+%! assert_equal (Mdl.FitMethod, 'boostedtrees');
+%! assert_equal (numel (Mdl.BinEdges), 3);
+%! assert_equal (numel (fieldnames (Mdl.ModelParameters)), 13);
+%! assert_equal (Mdl.ModelParameters.Type, 'regression');
+
+## A regression intercept is the response mean and boosting leaves it there,
+## where a classifier's is fitted and moves.  The asymmetry is real and no
+## MATLAB-facing property reports it, so it is pinned here.
+%!test
+%! load fisheriris
+%! y = meas(:,1);
+%! Mdl = fitrgam (meas(:,2:4), y, 'FitMethod', 'boostedtrees');
+%! assert_equal (Mdl.Intercept, mean (y), 1e-12);
+
+## Interactions are detected and held on their own coarse grid.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,2:4), meas(:,1), 'FitMethod', 'boostedtrees', ...
+%!                'Interactions', 'all');
+%! assert_equal (rows (Mdl.Interactions), 3);
+%! assert_equal (numel (Mdl.PairDetectionBinEdges{1}), 7);
+
+## A tree-fitted model predicts, and compact and loadmodel predict alike.
+%!test
+%! load fisheriris
+%! X = meas(:,2:4);
+%! Mdl = fitrgam (X, meas(:,1), 'FitMethod', 'boostedtrees');
+%! CMdl = compact (Mdl);
+%! assert_equal (predict (CMdl, X), predict (Mdl, X));
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, X), predict (Mdl, X));
+
+## The spline engine is unchanged and still reachable by name.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,2:4), meas(:,1), 'FitMethod', 'splines');
+%! assert_equal (Mdl.FitMethod, 'splines');
+%! assert_equal (Mdl.BinEdges, {});
+%! assert_equal (Mdl.Knots, [5, 5, 5]);
+
+## A standard deviation is a spline-engine capability: the boosted-tree engine
+## fits no second model for it and says so rather than returning a wrong one.
+%!error<RegressionGAM.predict: a standard deviation is only available from a model fitted with 'FitMethod' 'splines'.> ...
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,2:4), meas(:,1), 'FitMethod', 'boostedtrees');
+%! [y, ySD] = predict (Mdl, meas(1:4,2:4));
+
+## An argument belonging to the other engine is refused, not ignored.
+%!error<RegressionGAM: 'FitMethod' must be 'boostedtrees' or 'splines'.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'nonsense')
+%!error<RegressionGAM: 'knots' is a parameter of the spline engine and cannot be used with 'FitMethod' 'boostedtrees'.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', 'Knots', 4)
+%!error<RegressionGAM: 'maxpvalue' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'splines', 'MaxPValue', 0.5)
+%!error<RegressionGAM: 'NumTreesPerPredictor' must be a positive integer value.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', ...
+%!         'NumTreesPerPredictor', 0)
+%!error<RegressionGAM: 'NumTreesPerInteraction' must be a positive integer value.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', ...
+%!         'NumTreesPerInteraction', 1.5)
+%!error<RegressionGAM: 'MaxNumSplitsPerPredictor' must be a positive integer value.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', ...
+%!         'MaxNumSplitsPerPredictor', -1)
+%!error<RegressionGAM: 'MaxNumSplitsPerInteraction' must be a positive integer value.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', ...
+%!         'MaxNumSplitsPerInteraction', 'a')
+%!error<RegressionGAM: 'InitialLearnRateForPredictors' must be greater than 0 and at most 1.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', ...
+%!         'InitialLearnRateForPredictors', 0)
+%!error<RegressionGAM: 'InitialLearnRateForInteractions' must be greater than 0 and at most 1.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', ...
+%!         'InitialLearnRateForInteractions', 2)
+%!error<RegressionGAM: 'Verbose' must be a non-negative integer value.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', 'Verbose', -1)
+%!error<RegressionGAM: 'NumPrint' must be a positive integer value.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', 'NumPrint', 0)
+%!error<RegressionGAM: 'MaxPValue' must be between 0 and 1.> ...
+%! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', 'MaxPValue', 2)
