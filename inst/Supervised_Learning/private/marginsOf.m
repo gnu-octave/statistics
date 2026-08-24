@@ -22,10 +22,10 @@
 ## Classification margin of every observation, over one or more score
 ## matrices.
 ##
-## @var{s} is @math{Nx2} when @var{L} is one and @math{Nx2xL} otherwise,
+## @var{s} is @math{NxK} when @var{L} is one and @math{NxKxL} otherwise,
 ## @var{gY} the index into the class names of each observation's true class.
-## @var{m} is @math{NxL}: the score of the true class less the score of the
-## other one.
+## @var{m} is @math{NxL}: the score of the true class less the best score
+## among the others, which for two classes is simply the other one.
 ##
 ## @end deftypefn
 
@@ -41,9 +41,11 @@ function m = marginsOf (s, gY, L)
     else
       sk = s(:,:,k);
     endif
-    strue = sk(sub2ind (size (sk), rowidx, gY));
-    sother = sk(sub2ind (size (sk), rowidx, 3 - gY));
-    m(:,k) = strue - sother;
+    idx = sub2ind (size (sk), rowidx, gY);
+    strue = sk(idx);
+    so = sk;
+    so(idx) = -Inf;
+    m(:,k) = strue - max (so, [], 2);
   endfor
 
 endfunction

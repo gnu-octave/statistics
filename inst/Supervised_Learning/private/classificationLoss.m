@@ -19,11 +19,14 @@
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} {@var{l} =} classificationLoss (@var{LossFun}, @var{s}, @var{gY}, @var{w}, @var{Cost})
 ##
-## One of MATLAB's classification losses, over an @math{Nx2} score matrix.
+## One of MATLAB's classification losses, over an @math{NxK} score matrix.
 ##
 ## @var{s} holds the scores after @qcode{ScoreTransform}, @var{gY} the index
 ## into the class names of each observation's true class, @var{w} weights
 ## summing to one, and @var{Cost} the misclassification cost matrix.
+##
+## The rival of the true class is the best of the others, which for two
+## classes is simply the other one, so a binary caller is unaffected.
 ##
 ## Every loss but the two cost-based ones is a function of the score the
 ## model gives the @emph{true} class, and not of the margin.  Measured on
@@ -41,7 +44,10 @@ function l = classificationLoss (LossFun, s, gY, w, Cost)
   n = rows (s);
   idx = sub2ind (size (s), (1:n)', gY);
   strue = s(idx);
-  sother = s(sub2ind (size (s), (1:n)', 3 - gY));
+  ## The best score among the classes that are not the true one
+  so = s;
+  so(idx) = -Inf;
+  [sother, kother] = max (so, [], 2);
 
   switch (LossFun)
 
@@ -69,9 +75,10 @@ function l = classificationLoss (LossFun, s, gY, w, Cost)
       l = sum (w .* Cost(sub2ind (size (Cost), gY, k)));
 
     case 'classifcost'
-      k = ones (n, 1);
-      k(sother > strue) = 3 - gY(sother > strue);
-      k(sother <= strue) = gY(sother <= strue);
+      ## The class the model would pick, the true one keeping a tie
+      k = gY;
+      worse = sother > strue;
+      k(worse) = kother(worse);
       l = sum (w .* Cost(sub2ind (size (Cost), gY, k)));
 
   endswitch
