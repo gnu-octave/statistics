@@ -150,6 +150,31 @@ classdef GammaDistribution < prob.ProbabilityDistribution
     ParameterValues
 
     ## -*- texinfo -*-
+    ## @deftp {prob.GammaDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
+    ## probability distribution. First element contains the lower boundary,
+    ## second element contains the upper boundary. This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
+    Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {prob.GammaDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not. This property is read-only.
+    ##
+    ## @end deftp
+    IsTruncated
+
+    ## -*- texinfo -*-
     ## @deftp {prob.GammaDistribution} {property} ParameterCovariance
     ##
     ## Covariance matrix of the parameter estimates
@@ -178,31 +203,6 @@ classdef GammaDistribution < prob.ProbabilityDistribution
     ##
     ## @end deftp
     ParameterIsFixed
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.GammaDistribution} {property} Truncation
-    ##
-    ## Truncation interval
-    ##
-    ## A @math{1*2} numeric vector specifying the truncation interval for the
-    ## probability distribution. First element contains the lower boundary,
-    ## second element contains the upper boundary. This property is read-only.
-    ## You can only truncate a probability distribution with the
-    ## @qcode{truncate} method.
-    ##
-    ## @end deftp
-    Truncation
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.GammaDistribution} {property} IsTruncated
-    ##
-    ## Flag for truncated probability distribution
-    ##
-    ## A logical scalar value specifying whether a probability distribution is
-    ## truncated or not. This property is read-only.
-    ##
-    ## @end deftp
-    IsTruncated
 
     ## -*- texinfo -*-
     ## @deftp {prob.GammaDistribution} {property} InputData

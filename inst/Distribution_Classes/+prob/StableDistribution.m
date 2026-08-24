@@ -181,6 +181,28 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ParameterValues
 
     ## -*- texinfo -*-
+    ## @deftp {prob.StableDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A two-element numeric vector with the truncation interval, if the
+    ## distribution is truncated.  This property is read-only.
+    ##
+    ## @end deftp
+    Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {prob.StableDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated distribution
+    ##
+    ## A logical scalar that is true when the distribution is truncated.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    IsTruncated
+
+    ## -*- texinfo -*-
     ## @deftp {prob.StableDistribution} {property} ParameterCovariance
     ##
     ## Covariance matrix of the parameter estimates
@@ -213,28 +235,6 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ##
     ## @end deftp
     ParameterIsFixed
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.StableDistribution} {property} Truncation
-    ##
-    ## Truncation interval
-    ##
-    ## A two-element numeric vector with the truncation interval, if the
-    ## distribution is truncated.  This property is read-only.
-    ##
-    ## @end deftp
-    Truncation
-
-    ## -*- texinfo -*-
-    ## @deftp {prob.StableDistribution} {property} IsTruncated
-    ##
-    ## Flag for truncated distribution
-    ##
-    ## A logical scalar that is true when the distribution is truncated.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    IsTruncated
 
     ## -*- texinfo -*-
     ## @deftp {prob.StableDistribution} {property} InputData
