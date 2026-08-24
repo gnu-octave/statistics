@@ -65,8 +65,8 @@ interaction phase's own budget, initial step and split limit.\n\
 surfaces are held on.  Interactions are binned coarser than main effects: a\n\
 tree limited to @var{MaxNumSplits} splits carves no more regions than that,\n\
 so a finer grid buys nothing and costs memory in every pair.\n\
-@item @qcode{PairValues}, a @math{1xM} cell of matrices, one value per cell of\n\
-the pair's grid.\n\
+@item @qcode{PairValues}, a @math{1xM} cell of matrices, one value per\n\
+cell of the pair's grid.\n\
 @item @qcode{Intercept}, the constant the recentred surfaces gave up.  Add it\n\
 to the intercept of the predictor phase.\n\
 @item @qcode{NumTrees}, @qcode{ReasonForTermination}, @qcode{Deviance} and\n\

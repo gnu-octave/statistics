@@ -534,9 +534,11 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
   // documentation says so rather than implying they agree.
   if (verbose > 0)
   {
-    octave_stdout << "|========================================================|\n"
-                  << "| Type | NumTrees |  Deviance  |   RelTol   | LearnRate  |\n"
-                  << "|========================================================|\n"
+    static const char *bar =
+      "|========================================================|\n";
+    static const char *hdr =
+      "| Type | NumTrees |  Deviance  |   RelTol   | LearnRate  |\n";
+    octave_stdout << bar << hdr << bar
                   << "|    1D|         0|" << std::setw (12) << dev
                   << "|      -     |      -     |\n";
   }
