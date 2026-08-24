@@ -129,6 +129,7 @@ Supervised Learning
  ClassificationKernel
  ClassificationKNN
  ClassificationLinear
+ ClassificationNaiveBayes
  ClassificationNeuralNetwork
  ClassificationPartitionedKernel
  ClassificationPartitionedLinear
@@ -136,6 +137,7 @@ Supervised Learning
  ClassificationSVM
  CompactClassificationDiscriminant
  CompactClassificationGAM
+ CompactClassificationNaiveBayes
  CompactClassificationNeuralNetwork
  CompactClassificationSVM
  CompactRegressionGAM
@@ -149,6 +151,7 @@ Supervised Learning
  fitckernel
  fitcknn
  fitclinear
+ fitcnb
  fitcnet
  fitcsvm
  fitrgam
