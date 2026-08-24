@@ -214,18 +214,6 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ParameterCovariance
 
     ## -*- texinfo -*-
-    ## @deftp {prob.StableDistribution} {property} ParameterCI
-    ##
-    ## Confidence intervals for the parameter estimates
-    ##
-    ## A @math{2*4} numeric matrix containing the lower and upper boundaries of
-    ## the confidence interval for each parameter, when the distribution has been
-    ## fitted to data.  This property is read-only.
-    ##
-    ## @end deftp
-    ParameterCI
-
-    ## -*- texinfo -*-
     ## @deftp {prob.StableDistribution} {property} ParameterIsFixed
     ##
     ## Flags for fixed parameters
@@ -247,6 +235,10 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ##
     ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
   endproperties
 
   methods (Hidden)
