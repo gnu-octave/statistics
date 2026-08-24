@@ -56,11 +56,19 @@
 ## @item @qcode{'RobustWgtFun'} @tab The name of a robust weight function
 ## (@qcode{'andrews'}, @qcode{'bisquare'}, @qcode{'cauchy'}, @qcode{'fair'},
 ## @qcode{'huber'}, @qcode{'logistic'}, @qcode{'talwar'}, or @qcode{'welsch'}),
-## enabling robust iteratively reweighted least squares.
+## enabling robust iteratively reweighted least squares.  MATLAB accepts this
+## name only inside an @qcode{'Options'} structure; taking it as a
+## @qcode{Name}/@qcode{Value} pair as well is an Octave extension.
 ## @item @qcode{'Tune'} @tab The tuning constant for the robust weight function.
 ## @item @qcode{'Options'} @tab A statset-style structure whose @qcode{MaxIter},
 ## @qcode{TolFun}, @qcode{TolX}, and @qcode{DerivStep} fields override the
-## corresponding defaults.
+## corresponding defaults, and whose @qcode{RobustWgtFun}, @qcode{Robust},
+## @qcode{WgtFun} and @qcode{Tune} fields select a robust fit.
+## @qcode{RobustWgtFun} names the weight function on its own and takes
+## precedence over the other two; the older @qcode{WgtFun} is read only when
+## @qcode{Robust} is @qcode{'on'}.  The structure @code{statset ('nlinfit')}
+## returns carries @qcode{WgtFun} @qcode{'bisquare'} beside @qcode{Robust}
+## @qcode{'off'}, and so leaves the fit unweighted.
 ## @end multitable
 ##
 ## The remaining outputs describe the converged fit: @var{R} is the vector of
@@ -139,10 +147,10 @@ function [beta, R, J, CovB, MSE, ErrorModelInfo] = nlinfit (X, y, modelfun, ...
   if (! isempty (opts.RobustWgtFun))
     ## Robust fit: MSE and CovB use the Street-Carroll-Ruppert robust scale
     ## (as in robustfit), CovB = MSE * inv (J' * J) at the robust solution.
-    [wgtfun, tune] = robust_weight_function (opts.RobustWgtFun, opts.Tune);
+    [wname, tune] = robust_weight_function (opts.RobustWgtFun, opts.Tune);
     [beta, R, J, ols_s, adj] = robust_fit (X, y, modelfun, beta0, w, ...
-                                           wgtfun, tune, opts);
-    [MSE, CovB] = robust_covariance (R, J, adj, ols_s, wgtfun, tune, n, p);
+                                           wname, tune, opts);
+    [MSE, CovB] = robust_covariance (R, J, adj, ols_s, wname, tune, n, p);
   else
     if (! strcmp (opts.ErrorModel, "constant"))
       [beta, R, J, extraw] = errormodel_fit (X, y, modelfun, beta0, w, opts);
@@ -282,7 +290,7 @@ endfunction
 ## leverage (from the ordinary fit) is held fixed.  Returns the ordinary-fit
 ## scale OLS_S and the leverage adjustment ADJ for the covariance step.
 function [beta, R, J, ols_s, adj] = robust_fit (X, y, modelfun, beta0, w, ...
-                                                wgtfun, tune, opts)
+                                                wname, tune, opts)
 
   if (isempty (w))
     w = ones (numel (y), 1);
@@ -303,7 +311,7 @@ function [beta, R, J, ols_s, adj] = robust_fit (X, y, modelfun, beta0, w, ...
     if (s == 0)
       break;
     endif
-    rw = max (wgtfun (R .* adj ./ (s * tune)), 0);
+    rw = max (robustwfun (R .* adj ./ (s * tune), wname), 0);
     [beta, R, J] = lm_fit (X, y, modelfun, beta, w .* rw, opts);
     if (all (abs (beta - betaprev) <= sqrt (eps) * max (abs (beta), ...
                                                         abs (betaprev))))
@@ -317,7 +325,7 @@ endfunction
 ## Street-Carroll-Ruppert robust coefficient covariance (matching robustfit).
 ## The scale blends the ordinary-fit scale with the robust scale, and
 ## CovB = s^2 * inv (J' * J) at the robust solution.
-function [MSE, CovB] = robust_covariance (R, J, adj, ols_s, wgtfun, tune, n, p)
+function [MSE, CovB] = robust_covariance (R, J, adj, ols_s, wname, tune, n, p)
 
   radj  = R .* adj;
   mad_s = madsigma (radj, p);
@@ -325,15 +333,10 @@ function [MSE, CovB] = robust_covariance (R, J, adj, ols_s, wgtfun, tune, n, p)
     mad_s = 1;
   endif
   z = radj ./ (mad_s * tune);
-  w = wgtfun (z);
+  [w, psi, psip] = robustwfun (z, wname);
   if (all (w == 1))
     robust_s = ols_s;
   else
-    ## psi = z .* w and its derivative (central difference, as robustfit does
-    ## for user weight functions).
-    psi  = z .* w;
-    d    = 1e-6;
-    psip = ((z + d) .* wgtfun (z + d) - (z - d) .* wgtfun (z - d)) / (2 * d);
     K    = 1 + (p / n) * var (psip) / mean (psip) ^ 2;
     robust_s = tune * mad_s * sqrt (mean (psi .^ 2)) / mean (psip) * K;
   endif
@@ -347,49 +350,22 @@ function [MSE, CovB] = robust_covariance (R, J, adj, ols_s, wgtfun, tune, n, p)
 endfunction
 
 ## ---------------------------------------------------------------------------
-## Robust scale from the median absolute deviation of the residuals, dropping
-## the P-1 smallest to account for the fitted parameters (matches robustfit).
-function s = madsigma (r, p)
+## Validate the robust weight function name and settle its tuning constant.
+## The weight function itself and the tuning constants live in the shared
+## private helpers robustwfun and robusttune, which robustfit also uses.
+function [wname, tune] = robust_weight_function (name, tune)
 
-  rs = sort (abs (r));
-  s = median (rs(max (1, p):end)) / 0.6745;
-
-endfunction
-
-## ---------------------------------------------------------------------------
-## Return the robust weight function handle and its default tuning constant.
-function [wgtfun, tune] = robust_weight_function (name, tune)
-
-  switch (lower (name))
-    case 'andrews'
-      deftune = 1.339;
-      wgtfun  = @(u) (abs (u) < pi) .* sin (u) ./ (u + (u == 0));
-    case 'bisquare'
-      deftune = 4.685;
-      wgtfun  = @(u) (abs (u) < 1) .* (1 - u .^ 2) .^ 2;
-    case 'cauchy'
-      deftune = 2.385;
-      wgtfun  = @(u) 1 ./ (1 + u .^ 2);
-    case 'fair'
-      deftune = 1.400;
-      wgtfun  = @(u) 1 ./ (1 + abs (u));
-    case 'huber'
-      deftune = 1.345;
-      wgtfun  = @(u) 1 ./ max (1, abs (u));
-    case 'logistic'
-      deftune = 1.205;
-      wgtfun  = @(u) tanh (u) ./ (u + (u == 0));
-    case 'talwar'
-      deftune = 2.795;
-      wgtfun  = @(u) 1 .* (abs (u) < 1);
-    case 'welsch'
-      deftune = 2.985;
-      wgtfun  = @(u) exp (- (u .^ 2));
-    otherwise
-      error ("nlinfit: unknown RobustWgtFun '%s'.", name);
-  endswitch
+  names = {"andrews", "bisquare", "cauchy", "fair", "huber", "logistic", ...
+           "talwar", "welsch"};
+  if (! ischar (name))
+    error ("nlinfit: RobustWgtFun must be a character vector.");
+  endif
+  if (! any (strcmp (lower (name), names)))
+    error ("nlinfit: unknown RobustWgtFun '%s'.", name);
+  endif
+  wname = lower (name);
   if (isempty (tune))
-    tune = deftune;
+    tune = robusttune (wname);
   endif
 
 endfunction
@@ -438,15 +414,15 @@ endfunction
 ## Parse an optional leading statset structure followed by Name/Value pairs.
 function opts = parse_options (args)
 
-  ## Defaults.
+  ## Defaults.  The statset-backed options come from statset ("nlinfit"); the
+  ## rest are nlinfit's own Name/Value arguments.
+  sopts = statset ("nlinfit");
   opts = struct ("Weights", [], "ErrorModel", "constant", ...
-                 "ErrorParameters", [], "RobustWgtFun", [], "Tune", [], ...
-                 "MaxIter", 200, "TolFun", 1e-8, "TolX", 1e-8, ...
-                 "DerivStep", eps ^ (1/3));
+                 "ErrorParameters", []);
 
   ## An options structure may lead the Name/Value pairs.
   if (! isempty (args) && isstruct (args{1}))
-    opts = merge_statset (opts, args{1});
+    sopts = merge_options (sopts, args{1});
     args = args(2:end);
   endif
 
@@ -468,11 +444,11 @@ function opts = parse_options (args)
       case 'errorparameters'
         opts.ErrorParameters = val;
       case 'robustwgtfun'
-        opts.RobustWgtFun = val;
+        sopts.RobustWgtFun = val;
       case 'tune'
-        opts.Tune = val;
+        sopts.Tune = val;
       case 'options'
-        opts = merge_statset (opts, val);
+        sopts = merge_options (sopts, val);
       otherwise
         error ("nlinfit: unknown parameter name '%s'.", name);
     endswitch
@@ -483,36 +459,36 @@ function opts = parse_options (args)
     error ("nlinfit: unknown ErrorModel '%s'.", opts.ErrorModel);
   endif
 
+  ## Resolve the robust weight function.  'RobustWgtFun' selects it on its own,
+  ## whatever 'Robust' says, and wins when both are given.  The legacy
+  ## 'WgtFun' applies only when 'Robust' is "on", so statset ("nlinfit") --
+  ## which carries WgtFun "bisquare" beside Robust "off" -- leaves the fit
+  ## unweighted.  All three measured against R2024a.
+  opts.RobustWgtFun = sopts.RobustWgtFun;
+  if (isempty (opts.RobustWgtFun) && ischar (sopts.Robust) ...
+      && strcmpi (sopts.Robust, "on"))
+    opts.RobustWgtFun = sopts.WgtFun;
+    if (isempty (opts.RobustWgtFun))
+      opts.RobustWgtFun = "bisquare";
+    endif
+  endif
+
+  opts.Tune      = sopts.Tune;
+  opts.MaxIter   = sopts.MaxIter;
+  opts.TolFun    = sopts.TolFun;
+  opts.TolX      = sopts.TolX;
+  opts.DerivStep = sopts.DerivStep;
+
 endfunction
 
 ## ---------------------------------------------------------------------------
-## Copy the recognised statset fields from S into OPTS.
-function opts = merge_statset (opts, s)
+## Merge a statset-style structure into the options, under nlinfit's own name.
+function sopts = merge_options (sopts, s)
 
-  if (! isstruct (s))
+  if (! (isstruct (s) && isscalar (s)))
     error ("nlinfit: OPTIONS must be a structure.");
   endif
-  fn = fieldnames (s);
-  for k = 1:numel (fn)
-    val = s.(fn{k});
-    if (isempty (val))
-      continue;
-    endif
-    switch (lower (fn{k}))
-      case 'maxiter'
-        opts.MaxIter = val;
-      case 'tolfun'
-        opts.TolFun = val;
-      case 'tolx'
-        opts.TolX = val;
-      case 'derivstep'
-        opts.DerivStep = val;
-      case {'robustwgtfun', 'wgtfun'}
-        opts.RobustWgtFun = val;
-      case 'tune'
-        opts.Tune = val;
-    endswitch
-  endfor
+  sopts = statset (sopts, s);
 
 endfunction
 
@@ -600,5 +576,36 @@ endfunction
 %! nlinfit ([1;2], [1;2], @(b, x) b(1) * ones (2, 1), 1, "foo", 1)
 %!error<nlinfit: unknown ErrorModel 'bad'.> ...
 %! nlinfit ([1;2], [1;2], @(b, x) b(1) * ones (2, 1), 1, "ErrorModel", "bad")
+## An options structure naming no robust weight function leaves the fit
+## unweighted: the legacy WgtFun acts only when Robust is "on" (R2024a)
+%!test
+%! x = (1:10)';
+%! y = [2.1; 3.9; 6.2; 7.8; 10.1; 12.2; 13.8; 16.1; 18.0; 100.0];
+%! modelfun = @(b, xx) b(1) + b(2) * xx;
+%! bols = nlinfit (x, y, modelfun, [0; 1]);
+%! bdef = nlinfit (x, y, modelfun, [0; 1], statset ("nlinfit"));
+%! boff = nlinfit (x, y, modelfun, [0; 1], statset (statset ("nlinfit"), ...
+%!                                                 "Robust", "off", ...
+%!                                                 "WgtFun", "huber"));
+%! assert_equal (bols, [-15.959999998553135; 6.359999999774407], 1e-8);
+%! assert_equal (bdef, bols, 1e-12);
+%! assert_equal (boff, bols, 1e-12);
+
+## Robust "on" activates WgtFun, and RobustWgtFun wins where both are given
+%!test
+%! x = (1:10)';
+%! y = [2.1; 3.9; 6.2; 7.8; 10.1; 12.2; 13.8; 16.1; 18.0; 100.0];
+%! modelfun = @(b, xx) b(1) + b(2) * xx;
+%! opts = statset ("nlinfit");
+%! bon = nlinfit (x, y, modelfun, [0; 1], statset (opts, "Robust", "on"));
+%! bhub = nlinfit (x, y, modelfun, [0; 1], statset (opts, "Robust", "on", ...
+%!                                                  "WgtFun", "huber"));
+%! bboth = nlinfit (x, y, modelfun, [0; 1], statset (opts, "Robust", "on", ...
+%!                                                   "WgtFun", "bisquare", ...
+%!                                                   "RobustWgtFun", "huber"));
+%! assert_equal (bon, [0.040259809225918; 1.996768212418451], 1e-7);
+%! assert_equal (bhub, [-0.032803877294096; 2.016488145372473], 1e-7);
+%! assert_equal (bboth, bhub, 1e-12);
+
 %!error<nlinfit: unknown RobustWgtFun 'bad'.> ...
 %! nlinfit ([1;2], [1;2], @(b, x) b(1) * ones (2, 1), 1, "RobustWgtFun", "bad")

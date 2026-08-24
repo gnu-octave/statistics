@@ -106,7 +106,7 @@ function [coeff, score, pcvar, mu, v, S] = ppca (Y, K, varargin)
   endif
 
   ## Defaults and Name/Value / Options parsing
-  opts = struct ("MaxIter", 1000, "TolFun", 1e-6, "TolX", 1e-6);
+  opts = statset ("ppca");
   W0 = [];
   args = varargin;
   if (mod (numel (args), 2) != 0)
@@ -122,7 +122,10 @@ function [coeff, score, pcvar, mu, v, S] = ppca (Y, K, varargin)
       case 'w0'
         W0 = val;
       case 'options'
-        opts = merge_statset (opts, val);
+        if (! isstruct (val))
+          error ("ppca: 'Options' must be a structure.");
+        endif
+        opts = statset (opts, val);
       otherwise
         error ("ppca: unknown parameter name '%s'.", name);
     endswitch
@@ -256,30 +259,6 @@ function [coeff, W, ex, mu, v, iter] = ppca_em (Y, K, W0, opts)
   ## Orthonormalize the loadings into principal component directions
   [Uw, ~, ~] = svd (W, 0);
   coeff = Uw(:,1:K);
-
-endfunction
-
-## Copy the recognised statset fields from S into OPTS.
-function opts = merge_statset (opts, s)
-
-  if (! isstruct (s))
-    error ("ppca: 'Options' must be a structure.");
-  endif
-  fn = fieldnames (s);
-  for k = 1:numel (fn)
-    val = s.(fn{k});
-    if (isempty (val))
-      continue;
-    endif
-    switch (lower (fn{k}))
-      case 'maxiter'
-        opts.MaxIter = val;
-      case 'tolfun'
-        opts.TolFun = val;
-      case 'tolx'
-        opts.TolX = val;
-    endswitch
-  endfor
 
 endfunction
 

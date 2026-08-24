@@ -121,7 +121,7 @@ function [idx, C, sumd, D, midx, info] = kmedoids (X, k, varargin)
   algorithm  = "pam";
   start      = "plus";
   replicates = [];
-  maxiter    = 100;
+  opts       = statset ("kmedoids");
 
   ## Parse Name-Value pairs
   if (mod (numel (varargin), 2) != 0)
@@ -143,10 +143,10 @@ function [idx, C, sumd, D, midx, info] = kmedoids (X, k, varargin)
       case "replicates"
         replicates = val;
       case "options"
-        if (isstruct (val) && isfield (val, "MaxIter")
-                           && ! isempty (val.MaxIter))
-          maxiter = val.MaxIter;
+        if (! isstruct (val))
+          error ("kmedoids: 'Options' must be a structure.");
         endif
+        opts = statset (opts, val);
       case "onlinephase"
         ## Accepted for compatibility; the medoid update is already exact.
       otherwise
@@ -154,6 +154,7 @@ function [idx, C, sumd, D, midx, info] = kmedoids (X, k, varargin)
     endswitch
     varargin(1:2) = [];
   endwhile
+  maxiter = statget (opts, "MaxIter", 100);
 
   ## Resolve the distance metric and map it onto a pdist2 metric
   metrics = {"sqeuclidean", "euclidean", "seuclidean", "cityblock", ...
@@ -459,3 +460,5 @@ endfunction
 %! kmedoids (ones (4,2), 2, "Start", [1 1 1; 2 2 2])
 %!error <kmedoids: REPLICATES must be a positive integer scalar.> ...
 %! kmedoids (ones (4,2), 2, "Replicates", 0)
+%!error <kmedoids: 'Options' must be a structure.> ...
+%! kmedoids (ones (4,2), 2, "Options", 5)

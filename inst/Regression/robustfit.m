@@ -85,7 +85,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
     error ("robustfit: WFUN must be a name or a function handle.");
   endif
   if (nargin < 4 || isempty (tune))
-    tune = default_tune (wfun);
+    tune = robusttune (wfun);
   elseif (! (isnumeric (tune) && isscalar (tune) && isreal (tune) && tune > 0))
     error ("robustfit: TUNE must be a positive scalar.");
   endif
@@ -127,7 +127,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
     if (s == 0)
       s = 1;
     endif
-    w = weightfun (radj / (s * tune), wfun);
+    w = robustwfun (radj / (s * tune), wfun);
     sw = sqrt (w);
     b(perm) = (X(:,perm) .* sw) \ (y .* sw);
     if (all (abs (b - bprev) <= sqrt (eps) * max (abs (b), abs (bprev))))
@@ -144,7 +144,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
   r = y - X * b;
   radj = r .* adj;
   mad_s = madsigma (radj, p);
-  [w, psi, psip] = weightfun (radj / (mad_s * tune), wfun);
+  [w, psi, psip] = robustwfun (radj / (mad_s * tune), wfun);
   if (all (w == 1))
     robust_s = ols_s;
   else
@@ -177,87 +177,6 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
   stats.h = unfilter (hlev, ok, n0);
   stats.resid = unfilter (r, ok, n0);
 
-endfunction
-
-## Default tuning constant (95% efficiency) for each named weight function.
-function t = default_tune (wfun)
-  if (is_function_handle (wfun))
-    t = 1;
-    return;
-  endif
-  switch (wfun)
-    case "andrews";      t = 1.339;
-    case "bisquare";     t = 4.685;
-    case "cauchy";       t = 2.385;
-    case "fair";         t = 1.400;
-    case "huber";        t = 1.345;
-    case "logistic";     t = 1.205;
-    case "ols";          t = 1;
-    case "talwar";       t = 2.795;
-    case "welsch";       t = 2.985;
-  endswitch
-endfunction
-
-## Robust scale from the median absolute deviation of the residuals, dropping
-## the P-1 smallest to account for the fitted parameters.
-function s = madsigma (r, p)
-  rs = sort (abs (r));
-  s = median (rs(max (1, p):end)) / 0.6745;
-endfunction
-
-## Weight W (and, when requested, PSI = z.*W and its derivative PSIP) of the
-## scaled residual Z for the given weight function.
-function [w, psi, psip] = weightfun (z, wfun)
-  if (is_function_handle (wfun))
-    w = wfun (z);
-    if (nargout > 1)
-      d = 1e-6;
-      psi = z .* w;
-      psip = ((z + d) .* wfun (z + d) - (z - d) .* wfun (z - d)) / (2 * d);
-    endif
-    return;
-  endif
-  a = abs (z);
-  switch (wfun)
-    case "andrews"
-      in = a < pi;
-      w = (sin (z) ./ (z + (z == 0))) .* in;
-      w(z == 0) = 1;
-      if (nargout > 1); psi = sin (z) .* in;  psip = cos (z) .* in;  endif
-    case "bisquare"
-      in = a < 1;
-      w = (1 - z .^ 2) .^ 2 .* in;
-      if (nargout > 1)
-        psi = z .* w;  psip = (1 - z .^ 2) .* (1 - 5 * z .^ 2) .* in;
-      endif
-    case "cauchy"
-      w = 1 ./ (1 + z .^ 2);
-      if (nargout > 1)
-        psi = z .* w;  psip = (1 - z .^ 2) ./ (1 + z .^ 2) .^ 2;
-      endif
-    case "fair"
-      w = 1 ./ (1 + a);
-      if (nargout > 1); psi = z .* w;  psip = 1 ./ (1 + a) .^ 2;  endif
-    case "huber"
-      w = 1 ./ max (1, a);
-      if (nargout > 1); psi = z .* w;  psip = double (a < 1);  endif
-    case "logistic"
-      th = tanh (z);
-      w = th ./ (z + (z == 0));
-      w(z == 0) = 1;
-      if (nargout > 1); psi = th;  psip = 1 - th .^ 2;  endif
-    case "ols"
-      w = ones (size (z));
-      if (nargout > 1); psi = z;  psip = ones (size (z));  endif
-    case "talwar"
-      in = a < 1;
-      w = double (in);
-      if (nargout > 1); psi = z .* in;  psip = double (in);  endif
-    case "welsch"
-      e = exp (- z .^ 2);
-      w = e;
-      if (nargout > 1); psi = z .* e;  psip = (1 - 2 * z .^ 2) .* e;  endif
-  endswitch
 endfunction
 
 ## Scatter a per-observation vector back to the original length, with NaN for
@@ -329,6 +248,19 @@ endfunction
 %! [b, st] = robustfit (X, y, "bisquare", 4.685, "off");
 %! assert_equal (b, 2.16460032959659, 1e-6);
 %! assert_equal (st.dfe, 9);
+
+%!test  # MATLAB parity: an exactly zero residual weighs 1, not 0
+%! ## andrews and logistic are w = sin (z) / z and tanh (z) / z, both 0/0 at
+%! ## the origin.  With no constant term the middle residual is exactly zero
+%! ## whatever the coefficient, so this reaches the limit every time.
+%! xz = [-1; 0; 1];
+%! yz = [-2; 0; 3];
+%! [bz, sz] = robustfit (xz, yz, "andrews", [], "off");
+%! assert_equal (sz.resid(2), 0);
+%! assert_equal (sz.w, [0.958241991423609; 1; 0.958241991423609], 1e-12);
+%! [bz, sz] = robustfit (xz, yz, "logistic", [], "off");
+%! assert_equal (sz.resid(2), 0);
+%! assert_equal (sz.w, [0.907175968590982; 1; 0.907175968590982], 1e-12);
 
 %!test  # a planted outlier is downweighted relative to OLS
 %! x = (1:20)';

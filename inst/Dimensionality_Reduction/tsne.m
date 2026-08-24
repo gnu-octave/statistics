@@ -106,7 +106,7 @@ function [Y, loss] = tsne (X, varargin)
   Exaggeration = 4;
   LearnRate = 500;
   InitialY = [];
-  opts = struct ("MaxIter", 1000, "TolFun", 1e-10);
+  opts = statset ("tsne");
   if (mod (numel (varargin), 2) != 0)
     error ("tsne: Name/Value arguments must come in pairs.");
   endif
@@ -133,7 +133,10 @@ function [Y, loss] = tsne (X, varargin)
       case 'initialy'
         InitialY = val;
       case 'options'
-        opts = merge_statset (opts, val);
+        if (! isstruct (val))
+          error ("tsne: 'Options' must be a structure.");
+        endif
+        opts = statset (opts, val);
       otherwise
         error ("tsne: unknown parameter name '%s'.", name);
     endswitch
@@ -298,29 +301,6 @@ function [Y, loss] = tsne_embedding (Y, P, exaggeration, learnrate, opts, N, ydi
   if (nargout > 1)
     loss = P(:)' * log (P(:)) - P(:)' * log (Q(:));
   endif
-
-endfunction
-
-## ---------------------------------------------------------------------------
-## Copy the recognised statset fields from S into OPTS.
-function opts = merge_statset (opts, s)
-
-  if (! isstruct (s))
-    error ("tsne: 'Options' must be a structure.");
-  endif
-  fn = fieldnames (s);
-  for k = 1:numel (fn)
-    val = s.(fn{k});
-    if (isempty (val))
-      continue;
-    endif
-    switch (lower (fn{k}))
-      case 'maxiter'
-        opts.MaxIter = val;
-      case 'tolfun'
-        opts.TolFun = val;
-    endswitch
-  endfor
 
 endfunction
 

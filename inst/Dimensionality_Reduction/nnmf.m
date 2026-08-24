@@ -92,7 +92,7 @@ function [W, H, D] = nnmf (A, K, varargin)
   W0 = [];
   H0 = [];
   Replicates = 1;
-  opts = struct ("MaxIter", 100, "TolFun", 1e-4, "TolX", 1e-4);
+  opts = statset ("nnmf");
   args = varargin;
   if (mod (numel (args), 2) != 0)
     error ("nnmf: Name/Value arguments must come in pairs.");
@@ -113,7 +113,10 @@ function [W, H, D] = nnmf (A, K, varargin)
       case 'replicates'
         Replicates = val;
       case 'options'
-        opts = merge_statset (opts, val);
+        if (! isstruct (val))
+          error ("nnmf: 'Options' must be a structure.");
+        endif
+        opts = statset (opts, val);
       otherwise
         error ("nnmf: unknown parameter name '%s'.", name);
     endswitch
@@ -203,31 +206,6 @@ function [W, H, dnorm] = factorize (A, W, H, algorithm, opts, n, m)
       endif
     endif
     dnorm0 = dnorm;
-  endfor
-
-endfunction
-
-## ---------------------------------------------------------------------------
-## Copy the recognised statset fields from S into OPTS.
-function opts = merge_statset (opts, s)
-
-  if (! isstruct (s))
-    error ("nnmf: 'Options' must be a structure.");
-  endif
-  fn = fieldnames (s);
-  for k = 1:numel (fn)
-    val = s.(fn{k});
-    if (isempty (val))
-      continue;
-    endif
-    switch (lower (fn{k}))
-      case 'maxiter'
-        opts.MaxIter = val;
-      case 'tolfun'
-        opts.TolFun = val;
-      case 'tolx'
-        opts.TolX = val;
-    endswitch
   endfor
 
 endfunction

@@ -173,8 +173,7 @@ function options = statset (varargin)
     error ("statset: arguments must occur in NAME/VALUE pairs.");
   endif
 
-  ## Apply the name/value pairs, remembering whether 'Tune' was given here.
-  tune_given = false;
+  ## Apply the name/value pairs.
   for i = 1:2:numel (args)
     name = args{i};
     if (! ischar (name) && ! isstring_scalar (name))
@@ -186,14 +185,13 @@ function options = statset (varargin)
     endif
     field = names{idx};
     options.(field) = check_value (field, args{i+1});
-    if (strcmp (field, 'Tune'))
-      tune_given = true;
-    endif
   endfor
 
-  ## A named weight function carries a default tuning constant, unless the
-  ## caller set 'Tune' explicitly in this same call.
-  if (! tune_given && ! isempty (options.RobustWgtFun) ...
+  ## A named weight function carries a default tuning constant, but only into
+  ## an empty 'Tune'.  A tuning constant already in the structure is never
+  ## re-derived, not even by a call that changes the weight function itself:
+  ## MATLAB keeps a Tune of 3 across statset (options, 'RobustWgtFun', 'huber').
+  if (isempty (options.Tune) && ! isempty (options.RobustWgtFun) ...
       && ischar (options.RobustWgtFun))
     options.Tune = default_tune (options.RobustWgtFun);
   endif
@@ -307,7 +305,12 @@ function value = check_string (field, value, valid)
   value = valid{idx};
 endfunction
 
-## The default tuning constant of each named robust weight function.
+## The default tuning constant of each named robust weight function.  This
+## repeats the table in inst/Regression/private/robusttune.m, which robustfit
+## and nlinfit share: a private resolves only for functions in its own
+## directory, so statset, sitting in inst/, cannot reach that one.  The two
+## differ at the tail -- an unknown name is [] here and 1 there -- so keep both
+## in step when a weight function is added.
 function t = default_tune (wgtfun)
   switch (lower (wgtfun))
     case 'andrews';     t = 1.339;
@@ -665,6 +668,23 @@ endfunction
 %!test
 %! options = statset ('RobustWgtFun', 'bisquare', 'Tune', 3);
 %! assert_equal (options.Tune, 3);
+
+## nor re-derived later, not even by a call that changes the weight function
+%!test
+%! options = statset ('RobustWgtFun', 'bisquare', 'Tune', 3);
+%! assert_equal (statset (options, 'MaxIter', 50).Tune, 3);
+%! assert_equal (statset (options, struct ('MaxIter', 50)).Tune, 3);
+%! assert_equal (statset (options, 'RobustWgtFun', 'huber').Tune, 3);
+%! assert_equal (statset (options, struct ('RobustWgtFun', 'huber')).Tune, 3);
+%! assert_equal (statset (options, 'RobustWgtFun', 'huber', 'Tune', 9).Tune, 9);
+
+%!test
+%! options = statset ('RobustWgtFun', 'andrews');
+%! assert_equal (statset (options, 'Display', 'off').Tune, 1.339);
+
+## A weight function given in a structure brings its tuning constant too
+%!test
+%! assert_equal (statset (struct ('RobustWgtFun', 'andrews')).Tune, 1.339);
 
 ## A function handle carries no default tuning constant
 %!test

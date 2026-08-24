@@ -144,7 +144,7 @@ function [Y, stress, disparities] = mdscale (D, p, varargin)
   Weights = [];
   Start = "cmdscale";
   Replicates = 1;
-  opts = struct ("MaxIter", 1000, "TolFun", 1e-6, "TolX", 1e-6);
+  opts = statset ("mdscale");
   args = varargin;
   if (mod (numel (args), 2) != 0)
     error ("mdscale: Name/Value arguments must come in pairs.");
@@ -165,7 +165,10 @@ function [Y, stress, disparities] = mdscale (D, p, varargin)
       case 'replicates'
         Replicates = val;
       case 'options'
-        opts = merge_statset (opts, val);
+        if (! isstruct (val))
+          error ("mdscale: 'Options' must be a structure.");
+        endif
+        opts = statset (opts, val);
       otherwise
         error ("mdscale: unknown parameter name '%s'.", name);
     endswitch
@@ -476,31 +479,6 @@ function [stress, disparities] = eval_stress (Y, critid, delta, w, n, p, P, nonm
     case 5
       stress = sqrt (sum (w .* (d.^2 - dd.^2) .^ 2) / sum (w .* d .^ 4));
   endswitch
-
-endfunction
-
-## ---------------------------------------------------------------------------
-## Copy the recognised statset fields from S into OPTS.
-function opts = merge_statset (opts, s)
-
-  if (! isstruct (s))
-    error ("mdscale: 'Options' must be a structure.");
-  endif
-  fn = fieldnames (s);
-  for k = 1:numel (fn)
-    val = s.(fn{k});
-    if (isempty (val))
-      continue;
-    endif
-    switch (lower (fn{k}))
-      case 'maxiter'
-        opts.MaxIter = val;
-      case 'tolfun'
-        opts.TolFun = val;
-      case 'tolx'
-        opts.TolX = val;
-    endswitch
-  endfor
 
 endfunction
 
