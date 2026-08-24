@@ -431,8 +431,8 @@ classdef ClassificationPartitionedModel
 
       ## Check for valid Classification object
       validTypes = {'ClassificationDiscriminant', 'ClassificationGAM', ...
-                    'ClassificationKNN', 'ClassificationNeuralNetwork', ...
-                    'ClassificationSVM'};
+                    'ClassificationKNN', 'ClassificationNaiveBayes', ...
+                    'ClassificationNeuralNetwork', 'ClassificationSVM'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
       endif
@@ -635,6 +635,50 @@ classdef ClassificationPartitionedModel
             endif
           endfor
           this.ModelParameters = params;
+
+        case 'NaiveBayes'
+          ## Arguments to pass in fitcnb.  ScoreTransform is deliberately
+          ## absent, as it is for the KNN above: the parent applies it to the
+          ## assembled scores, so a fold carrying it too would apply it twice.
+          args = {};
+          NBparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                      'Prior', 'Cost', 'DistributionNames'};
+          for i = 1:numel (NBparams)
+            paramName = NBparams{i};
+            paramValue = Mdl.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, paramValue}];
+            endif
+          endfor
+
+          ## The kernel settings are taken from the request the model records
+          ## rather than from the resolved properties: a fold is fitted the
+          ## way the model was asked for, and resolving them again per fold is
+          ## what lets each fold choose its own bandwidth, as it must.
+          MP = Mdl.ModelParameters;
+          if (! isempty (MP.Kernel))
+            args = [args, {'Kernel', MP.Kernel}];
+          endif
+          if (! isempty (MP.Support))
+            args = [args, {'Support', MP.Support}];
+          endif
+          if (! (isempty (MP.Width) || all (isnan (MP.Width(:)))))
+            args = [args, {'Width', MP.Width}];
+          endif
+
+          ## Train model according to partition object.  The fold is stored
+          ## compact, as MATLAB stores it: a naive Bayes fold is a set of
+          ## fitted densities and needs none of the observations it was fitted
+          ## on.  Measured on R2024a, where Trained{k} is a
+          ## CompactClassificationNaiveBayes.
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            tmp = fitcnb (this.X(idx, :), this.Y(idx,:), args{:});
+            this.Trained{k} = compact (tmp);
+          endfor
+
+          ## Store ModelParameters to ClassificationPartitionedModel object
+          this.ModelParameters = Mdl.ModelParameters;
 
         case 'NeuralNetwork'
           ## Arguments to pass in fitcnet
