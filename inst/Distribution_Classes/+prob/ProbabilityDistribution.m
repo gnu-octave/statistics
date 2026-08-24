@@ -861,3 +861,8 @@ function nll = like_free (pf, p0, freeidx, fname, pd)
     nll = Inf;
   endif
 endfunction
+
+%!test
+## A no-op test to avoid reporting this abstact class in the pkg test summary
+## as a file with no tests, since an abstract class is by definition uncallable
+## and thus untestable except through its consumers.
