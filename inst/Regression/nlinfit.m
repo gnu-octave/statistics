@@ -102,6 +102,11 @@
 ## solution as @math{s^2 = (p^2 * ols_s^2 + n * robust_s^2) / (n + p^2)}, taken
 ## to be at least @code{robust_s}.
 ##
+## The robust @code{MSE} and @code{CovB} differ from MATLAB's by up to a few
+## tenths of a percent, because the shared robust scale does; @code{robustfit}
+## documents that difference and why it is left in place.  The coefficients
+## themselves agree to about 1e-8.
+##
 ## @seealso{fitnlm, nlparci, nlpredci, NonLinearModel, robustfit}
 ## @end deftypefn
 
@@ -307,10 +312,7 @@ function [beta, R, J, ols_s, adj] = robust_fit (X, y, modelfun, beta0, w, ...
 
   for iter = 1:opts.MaxIter
     betaprev = beta;
-    s = madsigma (R .* adj, p);
-    if (s == 0)
-      break;
-    endif
+    s = madsigma (R .* adj, p, y);
     rw = max (robustwfun (R .* adj ./ (s * tune), wname), 0);
     [beta, R, J] = lm_fit (X, y, modelfun, beta, w .* rw, opts);
     if (all (abs (beta - betaprev) <= sqrt (eps) * max (abs (beta), ...

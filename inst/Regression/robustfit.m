@@ -48,8 +48,16 @@
 ## and @code{resid} match MATLAB.  The standard errors and quantities derived
 ## from them (@code{se}, @code{t}, @code{p}, @code{covb}) agree with MATLAB to
 ## within a small fraction of a percent; @code{robust_s} is the
-## Street-Carroll-Ruppert robust scale estimate, which may differ from MATLAB's
-## by a few percent (it has a negligible effect on the standard errors).
+## Street-Carroll-Ruppert robust scale estimate and differs from MATLAB's by
+## about 1.5%, measured, with a negligible effect on the standard errors.
+##
+## That difference is left in place deliberately.  The squared influence is
+## averaged here over @math{n}, where the estimator as it is usually published
+## averages over @math{n-p}; taking that published form moves the result
+## further from MATLAB rather than closer, so MATLAB implements neither, and
+## matching it would mean reproducing an undocumented variant.  The same scale
+## serves @code{nlinfit}, which is why its robust @code{MSE} and @code{CovB}
+## carry the same difference.
 ##
 ## @seealso{regress, fitlm}
 ## @end deftypefn
@@ -123,10 +131,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
   for iter = 1:50
     r = y - X * b;
     radj = r .* adj;
-    s = madsigma (radj, p);
-    if (s == 0)
-      s = 1;
-    endif
+    s = madsigma (radj, p, y);
     w = robustwfun (radj / (s * tune), wfun);
     sw = sqrt (w);
     b(perm) = (X(:,perm) .* sw) \ (y .* sw);
@@ -140,12 +145,17 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
     return;
   endif
 
-  ## Robust scale and coefficient covariance.
+  ## Robust scale and coefficient covariance.  The reported weights stay the
+  ## ones the last iteration actually used, which came from the floored
+  ## scale; the scale below is computed from the unfloored one, which is what
+  ## MATLAB reports as mad_s and what its robust_s is built from.  Recomputing
+  ## the weights here and reporting those instead graded them out of rounding
+  ## noise on a fit that is already exact.
   r = y - X * b;
   radj = r .* adj;
   mad_s = madsigma (radj, p);
-  [w, psi, psip] = robustwfun (radj / (mad_s * tune), wfun);
-  if (all (w == 1))
+  [wc, psi, psip] = robustwfun (radj / (mad_s * tune), wfun);
+  if (all (wc == 1))
     robust_s = ols_s;
   else
     K = 1 + (p / n) * var (psip) / mean (psip) ^ 2;
@@ -274,6 +284,33 @@ endfunction
 %! assert_equal (b, [1; 2], 1e-8);
 %! assert_equal (isnan (st.w(4)), true);
 %! assert_equal (st.dfe, 7);
+
+## A fit that is already exact keeps every weight at 1.  The scale that
+## weights an iteration is floored at 1e-6 * std (Y), so residuals that are
+## nothing but rounding noise cannot grade the weights out of it; R2024a
+## returns ones here and used to differ from us by 0.24 on the outermost.
+%!test
+%! xf = [-2; -1; 0; 1; 2];
+%! yf = 3 * xf;
+%! [bf, stats] = robustfit (xf, yf, 'andrews', [], 'off');
+%! assert_equal (bf, 3, 1e-12);
+%! assert_equal (stats.w, ones (5, 1), 1e-8);
+
+## Just below the floor the weights are graded, but only slightly, and these
+## are R2024a's own numbers.
+%!test
+%! xf = [-2; -1; 0; 1; 2];
+%! yf = 3 * xf + 1e-6 * [1; -1; 0; 1; -1];
+%! [bf, stats] = robustfit (xf, yf, 'andrews', [], 'off');
+%! assert_equal (stats.w', [0.997523, 0.993403, 1, 0.993403, 0.997523], 1e-6);
+
+## Well above the floor nothing is floored and the weights are the ordinary
+## ones, again R2024a's.
+%!test
+%! xf = [-2; -1; 0; 1; 2];
+%! yf = 3 * xf + 1e-3 * [1; -1; 0; 1; -1];
+%! [bf, stats] = robustfit (xf, yf, 'andrews', [], 'off');
+%! assert_equal (stats.w', [0.958242, 0.868203, 1, 0.868203, 0.958242], 1e-6);
 
 ## Test input validation
 %!error <Invalid call to robustfit> robustfit (1)
