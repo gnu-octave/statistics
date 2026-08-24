@@ -27,8 +27,12 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
   ##
   ## The Weibull distribution is a continuous probability distribution that
   ## models the time to failure of materials or the lifetime of mechanical
-  ## systems.  It is defined by scale parameter @var{lambda} and shape
-  ## parameter @var{k}.
+  ## systems.  It is defined by scale parameter @var{A} and shape
+  ## parameter @var{B}.
+  ##
+  ## @var{A} is the @math{lambda} of the usual mathematical notation and
+  ## @var{B} is its @math{k}.  The @code{wbl*} functions name the same two
+  ## quantities @var{lambda} and @var{k}; this class follows MATLAB.
   ##
   ## There are several ways to create a @code{prob.WeibullDistribution} object.
   ##
@@ -36,9 +40,9 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.WeibullDistribution (@var{lambda},
-  ## @var{k})} to create a Weibull distribution with fixed parameter
-  ## values @var{lambda} and @var{k}.
+  ## @item Use the constructor @qcode{prob.WeibullDistribution (@var{A},
+  ## @var{B})} to create a Weibull distribution with fixed parameter
+  ## values @var{A} and @var{B}.
   ## @item Use the static method @qcode{prob.WeibullDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq})} to fit a distribution to the
   ## data in @var{x} using the same input arguments as the @code{wblfit}
@@ -58,28 +62,28 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
 
   properties(Dependent = true)
     ## -*- texinfo -*-
-    ## @deftp {prob.WeibullDistribution} {property} lambda
+    ## @deftp {prob.WeibullDistribution} {property} A
     ##
     ## Scale parameter
     ##
     ## A positive scalar value characterizing the scale of the
-    ## Weibull distribution.  You can access the @qcode{lambda}
+    ## Weibull distribution.  You can access the @qcode{A}
     ## property using dot name assignment.
     ##
     ## @end deftp
-    lambda
+    A
 
     ## -*- texinfo -*-
-    ## @deftp {prob.WeibullDistribution} {property} k
+    ## @deftp {prob.WeibullDistribution} {property} B
     ##
     ## Shape parameter
     ##
     ## A positive scalar value characterizing the shape of the
-    ## Weibull distribution.  You can access the @qcode{k}
+    ## Weibull distribution.  You can access the @qcode{B}
     ## property using dot name assignment.
     ##
     ## @end deftp
-    k
+    B
   endproperties
 
   properties(GetAccess = public, Constant = true)
@@ -114,7 +118,7 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {'lambda', 'k'};
+    ParameterNames = {'A', 'B'};
 
     ## -*- texinfo -*-
     ## @deftp {prob.WeibullDistribution} {property} ParameterDescription
@@ -144,7 +148,7 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
     ##
     ## A @math{2*1} numeric vector containing the values of the distribution
     ## parameters.  This property is read-only. You can change the distribution
-    ## parameters by assigning new values to the @qcode{lambda} and @qcode{k}
+    ## parameters by assigning new values to the @qcode{A} and @qcode{B}
     ## properties.
     ##
     ## @end deftp
@@ -234,15 +238,15 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
-    function this = WeibullDistribution (lambda, k)
+    function this = WeibullDistribution (A, B)
       if (nargin == 0)
-        lambda = 1;
-        k = 1;
+        A = 1;
+        B = 1;
       endif
-      checkparams (lambda, k);
+      checkparams (A, B);
       this.InputData = [];
       this.IsTruncated = false;
-      this.ParameterValues = [lambda, k];
+      this.ParameterValues = [A, B];
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
@@ -256,28 +260,28 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
       __disp__ (this, 'Weibull distribution');
     endfunction
 
-    function this = set.lambda (this, lambda)
-      checkparams (lambda, this.k);
+    function this = set.A (this, A)
+      checkparams (A, this.B);
       this.InputData = [];
-      this.ParameterValues(1) = lambda;
+      this.ParameterValues(1) = A;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function lambda = get.lambda (this)
-        lambda = this.ParameterValues(1);
+    function A = get.A (this)
+        A = this.ParameterValues(1);
     endfunction
 
-    function this = set.k (this, k)
-      checkparams (this.lambda, k);
+    function this = set.B (this, B)
+      checkparams (this.A, B);
       this.InputData = [];
-      this.ParameterValues(2) = k;
+      this.ParameterValues(2) = B;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function k = get.k (this)
-      k = this.ParameterValues(2);
+    function B = get.B (this)
+      B = this.ParameterValues(2);
     endfunction
 
   endmethods
@@ -312,7 +316,7 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         utail = false;
       endif
       ## Do the computations
-      p = wblcdf (x, this.lambda, this.k);
+      p = wblcdf (x, this.A, this.B);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -320,8 +324,8 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= wblcdf (lx, this.lambda, this.k);
-        p(! (lb | ub)) /= diff (wblcdf ([lx, ux], this.lambda, this.k));
+        p(! (lb | ub)) -= wblcdf (lx, this.A, this.B);
+        p(! (lb | ub)) /= diff (wblcdf ([lx, ux], this.A, this.B));
       endif
       ## Apply uflag
       if (utail)
@@ -344,17 +348,17 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = wblcdf (this.Truncation(1), this.lambda, this.k);
-        up = wblcdf (this.Truncation(2), this.lambda, this.k);
+        lp = wblcdf (this.Truncation(1), this.A, this.B);
+        up = wblcdf (this.Truncation(2), this.A, this.B);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         is_nan = p < 0 | p > 1;
         p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
-        x = wblinv (np, this.lambda, this.k);
+        x = wblinv (np, this.A, this.B);
         x(x < this.Truncation(1)) = this.Truncation(1);
         x(x > this.Truncation(2)) = this.Truncation(2);
       else
-        x = wblinv (p, this.lambda, this.k);
+        x = wblinv (p, this.A, this.B);
       endif
     endfunction
 
@@ -391,7 +395,7 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = wblstat (this.lambda, this.k);
+        m = wblstat (this.A, this.B);
       endif
     endfunction
 
@@ -411,10 +415,10 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = wblcdf ([lx, ux], this.lambda, this.k);
-        m = wblinv (sum (Fa_b) / 2, this.lambda, this.k);
+        Fa_b = wblcdf ([lx, ux], this.A, this.B);
+        m = wblinv (sum (Fa_b) / 2, this.A, this.B);
       else
-        m = wblinv (0.5, this.lambda, this.k);
+        m = wblinv (0.5, this.A, this.B);
       endif
     endfunction
 
@@ -435,7 +439,7 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         nlogL = [];
         return
       endif
-      nlogL = wbllike ([this.lambda, this.k], this.InputData.data, ...
+      nlogL = wbllike ([this.A, this.B], this.InputData.data, ...
                          this.InputData.cens, this.InputData.freq);
     endfunction
 
@@ -495,14 +499,14 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = wblpdf (x, this.lambda, this.k);
+      y = wblpdf (x, this.A, this.B);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (wblcdf ([lx, ux], this.lambda, this.k));
+        y(! (lb | ub)) /= diff (wblcdf ([lx, ux], this.A, this.B));
       endif
     endfunction
 
@@ -598,8 +602,8 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
     ## value of @var{param}.  A fixed parameter keeps its own value.
     ##
     ## For the Weibull distribution, @qcode{@var{pnum} = 1} selects the
-    ## parameter @qcode{lambda} and @qcode{@var{pnum} = 2} selects the
-    ## parameter @qcode{k}.
+    ## parameter @qcode{A} and @qcode{@var{pnum} = 2} selects the
+    ## parameter @qcode{B}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -651,16 +655,16 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (wblcdf ([lx, ux], this.lambda, this.k));
+        ratio = 1 / diff (wblcdf ([lx, ux], this.A, this.B));
         nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
-        r = wblrnd (this.lambda, this.k, nsize, 1);
+        r = wblrnd (this.A, this.B, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
         idx = randperm (numel (r), ps);
         r = reshape (r(idx), sz);
       else
-        r = wblrnd (this.lambda, this.k, varargin{:});
+        r = wblrnd (this.A, this.B, varargin{:});
       endif
     endfunction
 
@@ -731,7 +735,7 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
         fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = wblstat (this.lambda, this.k);
+        [~, v] = wblstat (this.A, this.B);
       endif
     endfunction
 
@@ -773,9 +777,9 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
     endfunction
 
     function pd = makeFitted (phat, pci, acov, x, censor, freq)
-      lambda = phat(1);
-      k = phat(2);
-      pd = prob.WeibullDistribution (lambda, k);
+      A = phat(1);
+      B = phat(2);
+      pd = prob.WeibullDistribution (A, B);
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
@@ -786,28 +790,28 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
 
 endclassdef
 
-function checkparams (lambda, k)
-  if (! (isscalar (lambda) && isnumeric (lambda) && isreal (lambda)
-                           && isfinite (lambda) && lambda > 0 ))
+function checkparams (A, B)
+  if (! (isscalar (A) && isnumeric (A) && isreal (A)
+                           && isfinite (A) && A > 0 ))
     error ("WeibullDistribution: LAMBDA must be a positive real scalar.")
   endif
-  if (! (isscalar (k) && isnumeric (k) && isreal (k) && isfinite (k) && k > 0))
+  if (! (isscalar (B) && isnumeric (B) && isreal (B) && isfinite (B) && B > 0))
     error ("WeibullDistribution: K must be a positive real scalar.")
   endif
 endfunction
 
 %!demo
 %! ## Generate a data set of 5000 random samples from a Weibull distribution with
-%! ## parameters lambda = 1 and k = 2.  Fit a Weibull distribution to this data and plot
+%! ## parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of a data.
 %!
-%! pd_fixed = makedist ('Weibull', 'lambda', 1, 'k', 2)
+%! pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)
 %! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! pd_fitted = fitdist (data, 'Weibull')
 %! plot (pd_fitted)
-%! msg = 'Fitted Weibull distribution with lambda = %0.2f and k = %0.2f';
-%! title (sprintf (msg, pd_fitted.lambda, pd_fitted.k))
+%! msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
+%! title (sprintf (msg, pd_fitted.A, pd_fitted.B))
 
 ## Test output
 %!shared pd, t
@@ -905,12 +909,12 @@ endfunction
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
 %! paramci (prob.WeibullDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (prob.WeibullDistribution.fit (x), 'parameter', 'k', 'alpha', {0.05})
+%! paramci (prob.WeibullDistribution.fit (x), 'parameter', 'B', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (prob.WeibullDistribution.fit (x), 'parameter', {'lambda', 'k', 'param'})
+%! paramci (prob.WeibullDistribution.fit (x), 'parameter', {'A', 'B', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (prob.WeibullDistribution.fit (x), 'alpha', 0.01, ...
-%!          'parameter', {'lambda', 'k', 'param'})
+%!          'parameter', {'A', 'B', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
 %! paramci (prob.WeibullDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
@@ -920,7 +924,7 @@ endfunction
 %!error <paramci: invalid NAME for optional argument.> ...
 %! paramci (prob.WeibullDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (prob.WeibullDistribution.fit (x), 'alpha', 0.01, 'parameter', 'k', ...
+%! paramci (prob.WeibullDistribution.fit (x), 'alpha', 0.01, 'parameter', 'B', ...
 %!          'NAME', 'value')
 
 ## 'plot' method

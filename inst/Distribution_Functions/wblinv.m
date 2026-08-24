@@ -40,6 +40,9 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
+## The @code{prob.WeibullDistribution} class names these same two parameters
+## @qcode{A} and @qcode{B}, after MATLAB.  @var{lambda} is its @qcode{A} and
+## @var{k} is its @qcode{B}.
 ## @seealso{wblcdf, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 

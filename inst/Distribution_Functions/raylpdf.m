@@ -40,6 +40,9 @@
 ## @code{poisspdf} and for no other density, which is an inconsistency there rather
 ## than a convention: it returns @math{0} at @math{Inf} for every other
 ## distribution of the same support.
+##
+## The @code{prob.RayleighDistribution} class names this same parameter
+## @qcode{B}, after MATLAB.
 ## @seealso{raylcdf, raylinv, raylrnd, raylfit, rayllike, raylstat}
 ## @end deftypefn
 

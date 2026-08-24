@@ -29,7 +29,11 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
   ## nonnegative random variables.  It is often used to model the magnitude of
   ## a vector in two dimensions where the components are normally distributed
   ## with zero mean and equal variance.  It is defined by scale parameter
-  ## @var{sigma}.
+  ## @var{B}.
+  ##
+  ## @var{B} is the @math{sigma} of the usual mathematical notation.  The
+  ## @code{rayl*} functions name the same quantity @var{sigma}; this class
+  ## follows MATLAB.
   ##
   ## There are several ways to create a @code{prob.RayleighDistribution} object.
   ##
@@ -37,8 +41,8 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.RayleighDistribution (@var{sigma})}
-  ## to create a Rayleigh distribution with fixed parameter value @var{sigma}.
+  ## @item Use the constructor @qcode{prob.RayleighDistribution (@var{B})}
+  ## to create a Rayleigh distribution with fixed parameter value @var{B}.
   ## @item Use the static method @qcode{prob.RayleighDistribution.fit (@var{x},
   ## @var{censor}, @var{freq})} to fit a distribution to the data in @var{x}
   ## using the same input arguments as the @code{raylfit} function.
@@ -57,16 +61,16 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
 
   properties(Dependent = true)
     ## -*- texinfo -*-
-    ## @deftp {prob.RayleighDistribution} {property} sigma
+    ## @deftp {prob.RayleighDistribution} {property} B
     ##
     ## Scale parameter
     ##
     ## A positive scalar value characterizing the scale of the
-    ## Rayleigh distribution.  You can access the @qcode{sigma}
+    ## Rayleigh distribution.  You can access the @qcode{B}
     ## property using dot name assignment.
     ##
     ## @end deftp
-    sigma
+    B
   endproperties
 
   properties(GetAccess = public, Constant = true)
@@ -101,7 +105,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {'sigma'};
+    ParameterNames = {'B'};
 
     ## -*- texinfo -*-
     ## @deftp {prob.RayleighDistribution} {property} ParameterDescription
@@ -131,7 +135,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
     ##
     ## A numeric vector containing the values of the distribution
     ## parameters.  This property is read-only. You can change the distribution
-    ## parameters by assigning new values to the @qcode{sigma}
+    ## parameters by assigning new values to the @qcode{B}
     ## property.
     ##
     ## @end deftp
@@ -221,14 +225,14 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
-    function this = RayleighDistribution (sigma)
+    function this = RayleighDistribution (B)
       if (nargin == 0)
-        sigma = 1;
+        B = 1;
       endif
-      checkparams (sigma);
+      checkparams (B);
       this.InputData = [];
       this.IsTruncated = false;
-      this.ParameterValues = sigma;
+      this.ParameterValues = B;
       this.ParameterIsFixed = true;
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
@@ -242,16 +246,16 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
       __disp__ (this, 'Rayleigh distribution');
     endfunction
 
-    function this = set.sigma (this, sigma)
-      checkparams (sigma);
+    function this = set.B (this, B)
+      checkparams (B);
       this.InputData = [];
-      this.ParameterValues(1) = sigma;
+      this.ParameterValues(1) = B;
       this.ParameterIsFixed = true;
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function sigma = get.sigma (this)
-      sigma = this.ParameterValues(1);
+    function B = get.B (this)
+      B = this.ParameterValues(1);
     endfunction
 
   endmethods
@@ -286,7 +290,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         utail = false;
       endif
       ## Do the computations
-      p = raylcdf (x, this.sigma);
+      p = raylcdf (x, this.B);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -294,8 +298,8 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= raylcdf (lx, this.sigma);
-        p(! (lb | ub)) /= diff (raylcdf ([lx, ux], this.sigma));
+        p(! (lb | ub)) -= raylcdf (lx, this.B);
+        p(! (lb | ub)) /= diff (raylcdf ([lx, ux], this.B));
       endif
       ## Apply uflag
       if (utail)
@@ -318,17 +322,17 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = raylcdf (this.Truncation(1), this.sigma);
-        up = raylcdf (this.Truncation(2), this.sigma);
+        lp = raylcdf (this.Truncation(1), this.B);
+        up = raylcdf (this.Truncation(2), this.B);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         is_nan = p < 0 | p > 1;
         p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
-        x = raylinv (np, this.sigma);
+        x = raylinv (np, this.B);
         x(x < this.Truncation(1)) = this.Truncation(1);
         x(x > this.Truncation(2)) = this.Truncation(2);
       else
-        x = raylinv (p, this.sigma);
+        x = raylinv (p, this.B);
       endif
     endfunction
 
@@ -365,7 +369,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = raylstat (this.sigma);
+        m = raylstat (this.B);
       endif
     endfunction
 
@@ -385,10 +389,10 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = raylcdf ([lx, ux], this.sigma);
-        m = raylinv (sum (Fa_b) / 2, this.sigma);
+        Fa_b = raylcdf ([lx, ux], this.B);
+        m = raylinv (sum (Fa_b) / 2, this.B);
       else
-        m = this.sigma .* sqrt (2 * log (2));
+        m = this.B .* sqrt (2 * log (2));
       endif
     endfunction
 
@@ -409,7 +413,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         nlogL = [];
         return
       endif
-      nlogL = rayllike (this.sigma, this.InputData.data, ...
+      nlogL = rayllike (this.B, this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 
@@ -469,14 +473,14 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = raylpdf (x, this.sigma);
+      y = raylpdf (x, this.B);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (raylcdf ([lx, ux], this.sigma));
+        y(! (lb | ub)) /= diff (raylcdf ([lx, ux], this.B));
       endif
     endfunction
 
@@ -572,7 +576,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
     ## value of @var{param}.  A fixed parameter keeps its own value.
     ##
     ## For the Rayleigh distribution, @qcode{@var{pnum} = 1} selects
-    ## the parameter @qcode{sigma}.
+    ## the parameter @qcode{B}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -618,12 +622,12 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         error ("random: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = raylcdf (this.Truncation(1), this.sigma);
-        up = raylcdf (this.Truncation(2), this.sigma);
+        lp = raylcdf (this.Truncation(1), this.B);
+        up = raylcdf (this.Truncation(2), this.B);
         u = unifrnd (lp, up, varargin{:});
-        r = sqrt (-2 .* log (1 - u) .* this.sigma .^ 2);
+        r = sqrt (-2 .* log (1 - u) .* this.B .^ 2);
       else
-        r = raylrnd (this.sigma, varargin{:});
+        r = raylrnd (this.B, varargin{:});
       endif
     endfunction
 
@@ -696,7 +700,7 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
         fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = raylstat (this.sigma);
+        [~, v] = raylstat (this.B);
       endif
     endfunction
 
@@ -730,8 +734,8 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
     endfunction
 
     function pd = makeFitted (phat, pci, acov, x, censor, freq)
-      sigma = phat(1);
-      pd = prob.RayleighDistribution (sigma);
+      B = phat(1);
+      pd = prob.RayleighDistribution (B);
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = false;
       pd.ParameterCovariance = acov;
@@ -742,25 +746,25 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
 
 endclassdef
 
-function checkparams (sigma)
-  if (! (isscalar (sigma) && isnumeric (sigma) && isreal (sigma)
-                          && isfinite (sigma) && sigma > 0))
+function checkparams (B)
+  if (! (isscalar (B) && isnumeric (B) && isreal (B)
+                          && isfinite (B) && B > 0))
     error ("RayleighDistribution: SIGMA must be a positive real scalar.")
   endif
 endfunction
 
 %!demo
 %! ## Generate a data set of 5000 random samples from a Rayleigh distribution with
-%! ## parameter sigma = 2.  Fit a Rayleigh distribution to this data and plot
+%! ## parameter B = 2.  Fit a Rayleigh distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ('Rayleigh', 'sigma', 2)
+%! pd_fixed = makedist ('Rayleigh', 'B', 2)
 %! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! pd_fitted = fitdist (data, 'Rayleigh')
 %! plot (pd_fitted)
-%! msg = 'Fitted Rayleigh distribution with sigma = %0.2f';
-%! title (sprintf (msg, pd_fitted.sigma))
+%! msg = 'Fitted Rayleigh distribution with B = %0.2f';
+%! title (sprintf (msg, pd_fitted.B))
 
 ## Test output
 %!shared pd, t
@@ -844,12 +848,12 @@ endfunction
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
 %! paramci (prob.RayleighDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (prob.RayleighDistribution.fit (x), 'parameter', 'sigma', 'alpha', {0.05})
+%! paramci (prob.RayleighDistribution.fit (x), 'parameter', 'B', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (prob.RayleighDistribution.fit (x), 'parameter', {'sigma', 'param'})
+%! paramci (prob.RayleighDistribution.fit (x), 'parameter', {'B', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (prob.RayleighDistribution.fit (x), 'alpha', 0.01, ...
-%!          'parameter', {'sigma', 'param'})
+%!          'parameter', {'B', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
 %! paramci (prob.RayleighDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
@@ -860,7 +864,7 @@ endfunction
 %! paramci (prob.RayleighDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
 %! paramci (prob.RayleighDistribution.fit (x), 'alpha', 0.01, ...
-%!          'parameter', 'sigma', 'NAME', 'value')
+%!          'parameter', 'B', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...

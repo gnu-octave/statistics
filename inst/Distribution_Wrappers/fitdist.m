@@ -1214,17 +1214,17 @@ endfunction
 %! x = raylrnd (1, 100, 1);
 %! pd = fitdist (x, 'rayleigh');
 %! [phat, pci] = raylfit (x);
-%! assert_equal (pd.sigma, phat);
+%! assert_equal (pd.B, phat);
 %! assert_equal (paramci (pd), pci);
 %!test
 %! x1 = raylrnd (1, 100, 1);
 %! x2 = raylrnd (5, 100, 1);
 %! pd = fitdist ([x1; x2], 'rayleigh', 'By', [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = raylfit (x1);
-%! assert_equal (pd{1}.sigma, phat);
+%! assert_equal (pd{1}.B, phat);
 %! assert_equal (paramci (pd{1}), pci);
 %! [phat, pci] = raylfit (x2);
-%! assert_equal (pd{2}.sigma, phat);
+%! assert_equal (pd{2}.B, phat);
 %! assert_equal (paramci (pd{2}), pci);
 %!warning <fitdist: no data in group '2' to fit a 'rayleigh' distribution.> ...
 %! fitdist ([raylrnd(1, 100, 1); nan(100, 1)], 'rayleigh', ...
@@ -1280,16 +1280,16 @@ endfunction
 %! x = [1 2 3 4 5];
 %! pd = fitdist (x, 'weibull');
 %! [phat, pci] = wblfit (x);
-%! assert_equal ([pd.lambda, pd.k], phat);
+%! assert_equal ([pd.A, pd.B], phat);
 %! assert_equal (paramci (pd), pci);
 %!test
 %! x = [1 2 3 4 5 6 7 8 9 10];
 %! pd = fitdist (x, 'weibull', 'By', [1 1 1 1 1 2 2 2 2 2]);
 %! [phat, pci] = wblfit (x(1:5));
-%! assert_equal ([pd{1}.lambda, pd{1}.k], phat);
+%! assert_equal ([pd{1}.A, pd{1}.B], phat);
 %! assert_equal (paramci (pd{1}), pci);
 %! [phat, pci] = wblfit (x(6:10));
-%! assert_equal ([pd{2}.lambda, pd{2}.k], phat);
+%! assert_equal ([pd{2}.A, pd{2}.B], phat);
 %! assert_equal (paramci (pd{2}), pci);
 %!warning <fitdist: no data in group '2' to fit a 'weibull' distribution.> ...
 %! fitdist ([1 2 3 4 5 NaN NaN NaN NaN NaN], 'weibull', 'By', [1 1 1 1 1 2 2 2 2 2]);

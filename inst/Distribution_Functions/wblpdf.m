@@ -18,14 +18,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} wblinv (@var{x})
-## @deftypefnx {statistics} {@var{y} =} wblinv (@var{x}, @var{lambda})
-## @deftypefnx {statistics} {@var{y} =} wblinv (@var{x}, @var{lambda}, @var{k})
+## @deftypefn  {statistics} {@var{y} =} wblpdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} wblpdf (@var{x}, @var{lambda})
+## @deftypefnx {statistics} {@var{y} =} wblpdf (@var{x}, @var{lambda}, @var{k})
 ##
 ## Weibull probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the Weibull distribution with scale parameter @var{lambda} and shpe
+## of the Weibull distribution with scale parameter @var{lambda} and shape
 ## parameter @var{k}.  The size of @var{y} is the common size of @var{x},
 ## @var{lambda}, and @var{k}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
@@ -40,6 +40,9 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
+## The @code{prob.WeibullDistribution} class names these same two parameters
+## @qcode{A} and @qcode{B}, after MATLAB.  @var{lambda} is its @qcode{A} and
+## @var{k} is its @qcode{B}.
 ## @seealso{wblcdf, wblinv, wblrnd, wblfit, wbllike, wblstat, wblplot}
 ## @end deftypefn
 

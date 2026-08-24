@@ -34,6 +34,8 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
+## The @code{prob.RayleighDistribution} class names this same parameter
+## @qcode{B}, after MATLAB.
 ## @seealso{raylcdf, raylpdf, raylrnd, raylfit, rayllike, raylstat}
 ## @end deftypefn
 

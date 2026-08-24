@@ -938,10 +938,10 @@ endfunction
 %!test
 %! pd = makedist ('Rayleigh');
 %! assert_equal (class (pd), "prob.RayleighDistribution");
-%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.B, 1);
 %!test
 %! pd = makedist ('Rayleigh', 'sigma', 5);
-%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.B, 5);
 %!test
 %! pd = makedist ('Rician');
 %! assert_equal (class (pd), "prob.RicianDistribution");
@@ -1032,16 +1032,16 @@ endfunction
 %!test
 %! pd = makedist ('Weibull');
 %! assert_equal (class (pd), "prob.WeibullDistribution");
-%! assert_equal (pd.lambda, 1);
-%! assert_equal (pd.k, 1);
+%! assert_equal (pd.A, 1);
+%! assert_equal (pd.B, 1);
 %!test
 %! pd = makedist ('Weibull', 'lambda', 3);
-%! assert_equal (pd.lambda, 3);
-%! assert_equal (pd.k, 1);
+%! assert_equal (pd.A, 3);
+%! assert_equal (pd.B, 1);
 %!test
 %! pd = makedist ('Weibull', 'lambda', 3, 'k', 2);
-%! assert_equal (pd.lambda, 3);
-%! assert_equal (pd.k, 2);
+%! assert_equal (pd.A, 3);
+%! assert_equal (pd.B, 2);
 
 ## Test input validation
 %!error <makedist: DISTNAME must be a character vector.> makedist (1)

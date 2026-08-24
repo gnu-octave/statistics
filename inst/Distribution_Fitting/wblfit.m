@@ -65,6 +65,9 @@
 ## Further information about the Weibull distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
 ##
+## The @code{prob.WeibullDistribution} class names these same two parameters
+## @qcode{A} and @qcode{B}, after MATLAB.  @var{lambda} is its @qcode{A} and
+## @var{k} is its @qcode{B}.
 ## @seealso{wblcdf, wblinv, wblpdf, wblrnd, wbllike, wblstat}
 ## @end deftypefn
 

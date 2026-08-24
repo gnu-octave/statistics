@@ -39,6 +39,8 @@
 ## Further information about the Rayleigh distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
+## The @code{prob.RayleighDistribution} class names this same parameter
+## @qcode{B}, after MATLAB.
 ## @seealso{raylcdf, raylinv, raylpdf, raylfit, rayllike, raylstat}
 ## @end deftypefn
 
