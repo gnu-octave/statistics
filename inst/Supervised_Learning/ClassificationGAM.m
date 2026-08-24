@@ -910,10 +910,14 @@ classdef ClassificationGAM
         error ("ClassificationGAM: can only be used for binary classification.");
       endif
 
-      ## Force Y into numeric
-      if (! isnumeric (Y))
-        Y = gY - 1;
-      endif
+      ## Force Y into the 0/1 coding the fitter needs.  This used to be done
+      ## only for a response that was not already numeric, so a numeric one
+      ## reached the fitter as it was given: a response of 1 and 2 seeded the
+      ## model with log (mean (Y) / (1 - mean (Y))) at a mean of 1.5, whose
+      ## argument is negative, and the intercept came back NaN with every
+      ## score along with it.  gY indexes the sorted class names, so gY - 1 is
+      ## the coding for any binary response and reproduces a 0/1 one exactly.
+      Y = gY - 1;
 
       this.NumObservations = rows (this.X);
       ## RowsUsed is left empty when every observation was used, as in MATLAB
@@ -2317,6 +2321,34 @@ endfunction
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), 1)
 
 ## Test crossval method
+## A numeric response is coded 0/1 for the fitter whatever its own labels
+## are.  A response of 1 and 2 used to reach the fitter as it was given: the
+## seed is log (mean (Y) / (1 - mean (Y))), whose argument is negative at a
+## mean of 1.5, so the intercept came back NaN and took every score with it,
+## and predict answered class 1 for every row.
+%!test
+%! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! Mn = fitcgam (Xn, [1; 1; 2; 2]);
+%! assert_equal (Mn.BaseModel.Intercept, 0, 1e-12);
+%! [label, score] = predict (Mn, Xn);
+%! assert_equal (label, [1; 1; 2; 2]);
+%! assert_equal (all (isfinite (score(:))), true);
+
+## Labels nowhere near 0 and 1 fit the same way, the coding being the class
+## index rather than the label.
+%!test
+%! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! Mn = fitcgam (Xn, [5; 5; 9; 9]);
+%! assert_equal (Mn.BaseModel.Intercept, 0, 1e-12);
+%! assert_equal (predict (Mn, Xn), [5; 5; 9; 9]);
+
+## A response already coded 0 and 1 is unchanged by that coding.
+%!test
+%! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! M0 = fitcgam (Xn, [0; 0; 1; 1]);
+%! assert_equal (M0.BaseModel.Intercept, 0, 1e-12);
+%! assert_equal (predict (M0, Xn), [0; 0; 1; 1]);
+
 %!shared x, y, obj
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6];
 %! y = [0; 0; 1; 1; 0];
