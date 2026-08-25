@@ -3371,13 +3371,13 @@ endfunction
 %!error <ClassificationGAM.savemodel: FNAME must be a character vector.> ...
 %! savemodel (ClassificationGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
 
-## A ScoreTransform can be assigned, and is stored as a function handle.
+## A ScoreTransform is stored under its own name.  That it reaches the
+## scores is covered above, through predict.
 %!test
 %! Mdl = fitcgam ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]);
 %! Mdl.ScoreTransform = 'symmetric';
 %! assert_equal (class (Mdl.ScoreTransform), 'char');
 %! assert_equal (Mdl.ScoreTransform, 'symmetric');
-%! assert_equal (Mdl.STfun (0.25), -0.5);
 
 ## The new properties MATLAB reports are carried and saved.
 %!test
@@ -3486,7 +3486,6 @@ endfunction
 %! assert_equal (Mdl2.ModelwInt.Parameters(1).coefs, ...
 %!               Mdl.ModelwInt.Parameters(1).coefs);
 %! assert_equal (Mdl2.ScoreTransform, 'symmetric');
-%! assert_equal (Mdl2.STfun (0.25), -0.5);
 %! [label, score] = predict (Mdl, X);
 %! [label2, score2] = predict (Mdl2, X);
 %! assert_equal (label2, label);
@@ -3790,3 +3789,44 @@ endfunction
 %! b = ! strcmp (species, 'virginica');
 %! Mdl = fitcgam (meas(b,:), species(b));
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## Every documented score transform reaches the scores that are reported, and
+## none of them moves the label: a transform reshapes what is reported, not
+## what is decided.
+%!test
+%! load fisheriris
+%! Mdl = fitcgam (meas, strcmp (species, 'setosa'));
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = predict (Mdl, meas([1, 60, 120],:));
+%! T = {'identity', @(x) x; 'doublelogit', @(x) 1 ./ (1 + exp (-2 * x)); ...
+%!      'invlogit', @(x) log (x ./ (1 - x)); ...
+%!      'logit', @(x) 1 ./ (1 + exp (-x)); ...
+%!      'sign', @(x) sign (x); 'symmetric', @(x) 2 * x - 1; ...
+%!      'symmetriclogit', @(x) 2 ./ (1 + exp (-x)) - 1};
+%! for i = 1:rows (T)
+%!   Mdl.ScoreTransform = T{i,1};
+%!   [l, s] = predict (Mdl, meas([1, 60, 120],:));
+%!   assert_equal (s, T{i,2}(raw), 1e-12);
+%!   assert_equal (l, label);
+%! endfor
+%! ## ismax marks the largest score of each observation, ties to the first.
+%! [~, k] = max (raw, [], 2);
+%! e = zeros (size (raw));
+%! e(sub2ind (size (raw), (1:rows (raw))', k)) = 1;
+%! Mdl.ScoreTransform = 'ismax';
+%! [~, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, e);
+%! Mdl.ScoreTransform = 'symmetricismax';
+%! [~, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, 2 * e - 1);
+
+## A function handle is taken as given and applied to the scores.
+%!test
+%! load fisheriris
+%! Mdl = fitcgam (meas, strcmp (species, 'setosa'));
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = predict (Mdl, meas([1, 60, 120],:));
+%! Mdl.ScoreTransform = @(x) x .^ 2;
+%! [l, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, raw .^ 2, 1e-12);
+%! assert_equal (l, label);

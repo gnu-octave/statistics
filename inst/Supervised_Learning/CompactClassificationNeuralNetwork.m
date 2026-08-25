@@ -1026,7 +1026,9 @@ endclassdef
 %! CMdl2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (CMdl2.ScoreTransform, 'symmetric');
-%! assert_equal (CMdl2.STfun (0.25), -0.5);
+%! [~, s1] = predict (CMdl2, [1, 2; 4, 5]);
+%! [~, s2] = predict (compact (Mdl), [1, 2; 4, 5]);
+%! assert_equal (s1, s2);
 
 %!error <CompactClassificationNeuralNetwork.savemodel: too few input arguments.> ...
 %! savemodel (CompactClassificationNeuralNetwork ())
@@ -1068,3 +1070,44 @@ endclassdef
 %! load fisheriris
 %! Mdl = compact (fitcnet (meas, species));
 %! Mdl.Cost = ones (3);
+
+## Every documented score transform reaches the scores that are reported, and
+## none of them moves the label: a transform reshapes what is reported, not
+## what is decided.
+%!test
+%! load fisheriris
+%! Mdl = compact (fitcnet (meas, species));
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = predict (Mdl, meas([1, 60, 120],:));
+%! T = {'identity', @(x) x; 'doublelogit', @(x) 1 ./ (1 + exp (-2 * x)); ...
+%!      'invlogit', @(x) log (x ./ (1 - x)); ...
+%!      'logit', @(x) 1 ./ (1 + exp (-x)); ...
+%!      'sign', @(x) sign (x); 'symmetric', @(x) 2 * x - 1; ...
+%!      'symmetriclogit', @(x) 2 ./ (1 + exp (-x)) - 1};
+%! for i = 1:rows (T)
+%!   Mdl.ScoreTransform = T{i,1};
+%!   [l, s] = predict (Mdl, meas([1, 60, 120],:));
+%!   assert_equal (s, T{i,2}(raw), 1e-12);
+%!   assert_equal (l, label);
+%! endfor
+%! ## ismax marks the largest score of each observation, ties to the first.
+%! [~, k] = max (raw, [], 2);
+%! e = zeros (size (raw));
+%! e(sub2ind (size (raw), (1:rows (raw))', k)) = 1;
+%! Mdl.ScoreTransform = 'ismax';
+%! [~, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, e);
+%! Mdl.ScoreTransform = 'symmetricismax';
+%! [~, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, 2 * e - 1);
+
+## A function handle is taken as given and applied to the scores.
+%!test
+%! load fisheriris
+%! Mdl = compact (fitcnet (meas, species));
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = predict (Mdl, meas([1, 60, 120],:));
+%! Mdl.ScoreTransform = @(x) x .^ 2;
+%! [l, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, raw .^ 2, 1e-12);
+%! assert_equal (l, label);

@@ -1430,6 +1430,12 @@ classdef ClassificationDiscriminant
       [~, minIdx] = min (cost, [], 2);
       label = this.ClassNames(minIdx,:);
 
+      ## Apply ScoreTransform once to the whole matrix, after the label and
+      ## the cost have been taken from the untransformed posteriors: a
+      ## transform reshapes what predict reports and must not move what it
+      ## decides.
+      score = this.STfun (score);
+
     endfunction
 
     ## -*- texinfo -*-
@@ -3152,7 +3158,6 @@ endclassdef
 %! Mdl.ScoreTransform = 'symmetric';
 %! assert_equal (class (Mdl.ScoreTransform), 'char');
 %! assert_equal (Mdl.ScoreTransform, 'symmetric');
-%! assert_equal (Mdl.STfun (0.25), -0.5);
 
 ## RowsUsed is empty when every observation was used.
 %!test
@@ -4011,3 +4016,44 @@ endclassdef
 %! load fisheriris
 %! CMdl = compact (fitcdiscr (meas, species));
 %! assert_equal (isprop (CMdl, 'ModelParameters'), false);
+
+## Every documented score transform reaches the scores that are reported, and
+## none of them moves the label: a transform reshapes what is reported, not
+## what is decided.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = predict (Mdl, meas([1, 60, 120],:));
+%! T = {'identity', @(x) x; 'doublelogit', @(x) 1 ./ (1 + exp (-2 * x)); ...
+%!      'invlogit', @(x) log (x ./ (1 - x)); ...
+%!      'logit', @(x) 1 ./ (1 + exp (-x)); ...
+%!      'sign', @(x) sign (x); 'symmetric', @(x) 2 * x - 1; ...
+%!      'symmetriclogit', @(x) 2 ./ (1 + exp (-x)) - 1};
+%! for i = 1:rows (T)
+%!   Mdl.ScoreTransform = T{i,1};
+%!   [l, s] = predict (Mdl, meas([1, 60, 120],:));
+%!   assert_equal (s, T{i,2}(raw), 1e-12);
+%!   assert_equal (l, label);
+%! endfor
+%! ## ismax marks the largest score of each observation, ties to the first.
+%! [~, k] = max (raw, [], 2);
+%! e = zeros (size (raw));
+%! e(sub2ind (size (raw), (1:rows (raw))', k)) = 1;
+%! Mdl.ScoreTransform = 'ismax';
+%! [~, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, e);
+%! Mdl.ScoreTransform = 'symmetricismax';
+%! [~, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, 2 * e - 1);
+
+## A function handle is taken as given and applied to the scores.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = predict (Mdl, meas([1, 60, 120],:));
+%! Mdl.ScoreTransform = @(x) x .^ 2;
+%! [l, s] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (s, raw .^ 2, 1e-12);
+%! assert_equal (l, label);

@@ -611,3 +611,26 @@ endclassdef
 %!error<RegressionPartitionedLinear.kfoldLoss: 'Mode' must be either 'average' or 'individual'.> ...
 %! kfoldLoss (RegressionPartitionedLinear (ones (10, 2), ones (10, 1), ...
 %!                     'KFold', 2), 'Mode', 'each')
+
+## Every documented response transform reaches the response that is reported.
+%!test
+%! load fisheriris
+%! Mdl = fitrlinear (meas(:,2:4), meas(:,1), 'KFold', 3);
+%! Mdl.ResponseTransform = 'none';
+%! raw = kfoldPredict (Mdl);
+%! T = {'identity', @(x) x; 'exp', @(x) exp (x); 'log', @(x) log (x)};
+%! for i = 1:rows (T)
+%!   Mdl.ResponseTransform = T{i,1};
+%!   yhat = kfoldPredict (Mdl);
+%!   assert_equal (yhat, T{i,2}(raw), 1e-12);
+%! endfor
+
+## A function handle is taken as given and applied to the response.
+%!test
+%! load fisheriris
+%! Mdl = fitrlinear (meas(:,2:4), meas(:,1), 'KFold', 3);
+%! Mdl.ResponseTransform = 'none';
+%! raw = kfoldPredict (Mdl);
+%! Mdl.ResponseTransform = @(x) x .^ 2;
+%! yhat = kfoldPredict (Mdl);
+%! assert_equal (yhat, raw .^ 2, 1e-12);

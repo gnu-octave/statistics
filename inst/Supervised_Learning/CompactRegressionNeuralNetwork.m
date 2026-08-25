@@ -717,3 +717,26 @@ endclassdef
 %! assert_equal (M2.PredictorNames, Mdl.PredictorNames);
 %! assert_equal (class (M2.ResponseTransform), class (Mdl.ResponseTransform));
 %! assert_equal (predict (M2, X(1:5,:)), predict (Mdl, X(1:5,:)), 1e-12);
+
+## Every documented response transform reaches the response that is reported.
+%!test
+%! load fisheriris
+%! Mdl = compact (fitrnet (meas(:,2:4), meas(:,1)));
+%! Mdl.ResponseTransform = 'none';
+%! raw = predict (Mdl, meas([1, 60, 120],2:4));
+%! T = {'identity', @(x) x; 'exp', @(x) exp (x); 'log', @(x) log (x)};
+%! for i = 1:rows (T)
+%!   Mdl.ResponseTransform = T{i,1};
+%!   yhat = predict (Mdl, meas([1, 60, 120],2:4));
+%!   assert_equal (yhat, T{i,2}(raw), 1e-12);
+%! endfor
+
+## A function handle is taken as given and applied to the response.
+%!test
+%! load fisheriris
+%! Mdl = compact (fitrnet (meas(:,2:4), meas(:,1)));
+%! Mdl.ResponseTransform = 'none';
+%! raw = predict (Mdl, meas([1, 60, 120],2:4));
+%! Mdl.ResponseTransform = @(x) x .^ 2;
+%! yhat = predict (Mdl, meas([1, 60, 120],2:4));
+%! assert_equal (yhat, raw .^ 2, 1e-12);

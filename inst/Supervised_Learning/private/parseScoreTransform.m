@@ -74,14 +74,19 @@ function [f, st] = parseScoreTransform (ScoreTransform, classname)
 endfunction
 
 ## Helper functions for ScoreTransform
+## The largest score *of each observation*, so the maximum is taken across
+## the classes and not down the column.  A bare max () ran over the
+## observations instead, which is right only for a single row and silently
+## wrong for every other.  A tie goes to the first class, which is what max
+## returns and what MATLAB does.
 function out = ismax (score)
-  out = score;
-  out(score == max (score)) = 1;
-  out(score != max (score)) = 0;
+  out = zeros (size (score), class (score));
+  [~, k] = max (score, [], 2);
+  out(sub2ind (size (score), (1:rows (score))', k)) = 1;
 endfunction
 
 function out = symmetricismax (score)
-  out = score;
-  out(score == max (score)) = 1;
-  out(score != max (score)) = -1;
+  out = - ones (size (score), class (score));
+  [~, k] = max (score, [], 2);
+  out(sub2ind (size (score), (1:rows (score))', k)) = 1;
 endfunction

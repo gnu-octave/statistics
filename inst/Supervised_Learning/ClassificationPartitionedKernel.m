@@ -773,3 +773,44 @@ endclassdef
 %! assert_equal (MP.NLearn, 3);
 %! assert_equal (MP.Learner, 'svm');
 %! assert_equal (MP.BlockSize, 4000);
+
+## Every documented score transform reaches the scores that are reported, and
+## none of them moves the label: a transform reshapes what is reported, not
+## what is decided.
+%!test
+%! load fisheriris
+%! Mdl = fitckernel (meas, strcmp (species, 'setosa'), 'KFold', 3);
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = kfoldPredict (Mdl);
+%! T = {'identity', @(x) x; 'doublelogit', @(x) 1 ./ (1 + exp (-2 * x)); ...
+%!      'invlogit', @(x) log (x ./ (1 - x)); ...
+%!      'logit', @(x) 1 ./ (1 + exp (-x)); ...
+%!      'sign', @(x) sign (x); 'symmetric', @(x) 2 * x - 1; ...
+%!      'symmetriclogit', @(x) 2 ./ (1 + exp (-x)) - 1};
+%! for i = 1:rows (T)
+%!   Mdl.ScoreTransform = T{i,1};
+%!   [l, s] = kfoldPredict (Mdl);
+%!   assert_equal (s, T{i,2}(raw), 1e-12);
+%!   assert_equal (l, label);
+%! endfor
+%! ## ismax marks the largest score of each observation, ties to the first.
+%! [~, k] = max (raw, [], 2);
+%! e = zeros (size (raw));
+%! e(sub2ind (size (raw), (1:rows (raw))', k)) = 1;
+%! Mdl.ScoreTransform = 'ismax';
+%! [~, s] = kfoldPredict (Mdl);
+%! assert_equal (s, e);
+%! Mdl.ScoreTransform = 'symmetricismax';
+%! [~, s] = kfoldPredict (Mdl);
+%! assert_equal (s, 2 * e - 1);
+
+## A function handle is taken as given and applied to the scores.
+%!test
+%! load fisheriris
+%! Mdl = fitckernel (meas, strcmp (species, 'setosa'), 'KFold', 3);
+%! Mdl.ScoreTransform = 'none';
+%! [label, raw] = kfoldPredict (Mdl);
+%! Mdl.ScoreTransform = @(x) x .^ 2;
+%! [l, s] = kfoldPredict (Mdl);
+%! assert_equal (s, raw .^ 2, 1e-12);
+%! assert_equal (l, label);
