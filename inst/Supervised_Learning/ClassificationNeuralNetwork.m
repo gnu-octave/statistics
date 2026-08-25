@@ -1083,26 +1083,9 @@ classdef ClassificationNeuralNetwork
       this.IterationLimit = IterationLimit;
       this.DisplayInfo = DisplayInfo;
 
-      ## Encode activations for fcnntrain (expand if needed)
-      nlayers = numel (LayerSizes);
-      if (ischar (Activations))
-        ActivationCodes = ones (1, nlayers) * activationCode (Activations);
-      elseif (nlayers != numel (Activations))
-        error (strcat ("ClassificationNeuralNetwork: 'Activations'", ...
-                       " vector does not match the number of layers."));
-      else
-        ActivationCodes = [];
-        for i = 1:nlayers
-          code = activationCode (Activations{i});
-          ActivationCodes = [ActivationCodes, code];
-        endfor
-      endif
-      code = activationCode (OutputLayerActivation);
-      ActivationCodes = [ActivationCodes, code];
 
       ## Start the training process
       NumThreads = nproc ();
-      Alpha = 0.01;  # used for ReLU and ELU activation layers
       cnn_timer_ = tic;
       ## A softmax output reports a probability over the classes, and the
       ## loss that belongs with it is cross entropy: paired that way the two
@@ -1113,8 +1096,16 @@ classdef ClassificationNeuralNetwork
                               'GradientTolerance', GradientTolerance, ...
                               'LossTolerance', LossTolerance, ...
                               'StepTolerance', StepTolerance);
-      Mdl = fcnntrain (X, gY, LayerSizes, ActivationCodes, NumThreads, ...
-                       Alpha, LearningRate, IterationLimit, DisplayInfo, ...
+      ## The engine names the layers itself; this check stays here so the
+      ## count is reported under the class rather than under fcnntrain.
+      if (! ischar (Activations) && numel (LayerSizes) != numel (Activations))
+        error (strcat ("ClassificationNeuralNetwork: 'Activations'", ...
+                       " vector does not match the number of layers."));
+      endif
+
+      Mdl = fcnntrain (X, gY, LayerSizes, Activations, ...
+                       OutputLayerActivation, NumThreads, ...
+                       LearningRate, IterationLimit, DisplayInfo, ...
                        LossFunction, SolverOptions);
 
       ## The solver records a value per iteration.  The series belongs to the
@@ -1217,7 +1208,10 @@ classdef ClassificationNeuralNetwork
 
       ## Predict labels from new data
       NumThreads = nproc ();
-      [labels, scores] = fcnnpredict (this.ModelParameters, XC, NumThreads);
+      [labels, scores] = fcnnpredict (this.LayerWeights, this.LayerBiases, ...
+                                      this.Activations, ...
+                                      this.OutputLayerActivation, ...
+                                      XC, NumThreads);
 
       # Get class labels
       labels = labelsFromIndex (this.ClassNames, labels);
@@ -1264,7 +1258,10 @@ classdef ClassificationNeuralNetwork
 
       ## Predict labels from existing data
       NumThreads = nproc ();
-      [labels, scores] = fcnnpredict (this.ModelParameters, X, NumThreads);
+      [labels, scores] = fcnnpredict (this.LayerWeights, this.LayerBiases, ...
+                                      this.Activations, ...
+                                      this.OutputLayerActivation, ...
+                                      X, NumThreads);
 
       # Get class labels
       labels = labelsFromIndex (this.ClassNames, labels);
@@ -1950,32 +1947,6 @@ function mdl = restoreOlderModel (mdl)
   mdl.ConvergenceInfo = convergenceStruct (series, ci.Time, criterion);
 endfunction
 
-function numCode = activationCode (strCode)
-  switch (strCode)
-    ## 'none' is MATLAB's name for the identity, which fitcnet has always
-    ## documented as available; 'linear' is this package's older spelling of
-    ## the same map.
-    case {'linear', 'none'}
-      numCode = 0;
-    case 'sigmoid'
-      numCode = 1;
-    case 'relu'
-      numCode = 2;
-    case 'tanh'
-      numCode = 3;
-    case 'softmax'
-      numCode = 4;
-    case {'lrelu', 'prelu'}
-      numCode = 5;
-    case 'elu'
-      numCode = 6;
-    case 'gelu'
-      numCode = 7;
-    otherwise
-      error (strcat ("ClassificationNeuralNetwork: misspelling or unsupported", ...
-                     " 'Activation' function: '%s'."), strCode);
-  endswitch
-endfunction
 
 ## Test input validation for constructor
 ## The full-batch solver is selected by name and says so.

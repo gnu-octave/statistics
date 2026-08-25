@@ -130,78 +130,6 @@ classdef CompactRegressionNeuralNetwork
     OutputLayerActivation = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} LearningRate
-    ##
-    ## Learning rate used to train the network
-    ##
-    ## A positive scalar value.  This property is read-only.
-    ##
-    ## @end deftp
-    LearningRate          = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} IterationLimit
-    ##
-    ## Maximum number of training iterations
-    ##
-    ## A positive integer scalar.  This property is read-only.
-    ##
-    ## @end deftp
-    IterationLimit        = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} ModelParameters
-    ##
-    ## Parameters of the trained network
-    ##
-    ## A structure as returned by @code{fcnntrain} and consumed by
-    ## @code{fcnnpredict}.  This property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters       = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} ConvergenceInfo
-    ##
-    ## Information recorded during training
-    ##
-    ## A structure with the fields @code{Time} and @code{TrainingLoss}, carried
-    ## over from the model this one was compacted from.  This property is
-    ## read-only.
-    ##
-    ##
-    ## Under @qcode{'lbfgs'} the structure carries @code{Gradient} and
-    ## @code{Step}, the two quantities the solver measured to decide it had
-    ## converged, and @code{ConvergenceCriterion}, naming the test that
-    ## stopped it.  It carries no @code{Accuracy}: MATLAB reports none, and
-    ## measuring it would cost a pass over the whole training set at every
-    ## iteration.
-    ## @end deftp
-    ConvergenceInfo       = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} DisplayInfo
-    ##
-    ## Whether training printed its progress
-    ##
-    ## A logical scalar.  This property is read-only.
-    ##
-    ## @end deftp
-    DisplayInfo           = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionNeuralNetwork} {property} Solver
-    ##
-    ## Solver used to train the network
-    ##
-    ## A character vector, either @qcode{'Gradient Descent'} for the
-    ## stochastic solver or @qcode{'LBFGS'} for the full-batch one.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Solver                = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactRegressionNeuralNetwork} {property} LayerWeights
     ##
     ## Weights the network learned
@@ -292,37 +220,23 @@ classdef CompactRegressionNeuralNetwork
       ## weights, the rows used, the observation count and the training
       ## history are deliberately left behind: they describe the fit, not the
       ## model, and keeping them is what "compact" exists to avoid.
-      this.NumPredictors         = Mdl.NumPredictors;
-      this.PredictorNames        = Mdl.PredictorNames;
-      this.ResponseName          = Mdl.ResponseName;
+      this.NumPredictors          = Mdl.NumPredictors;
+      this.PredictorNames         = Mdl.PredictorNames;
+      this.ResponseName           = Mdl.ResponseName;
 
-      this.ResponseTransform     = Mdl.ResponseTransform;
-      this.RTfun                = Mdl.RTfun;
+      this.ResponseTransform      = Mdl.ResponseTransform;
+      this.RTfun                  = Mdl.RTfun;
 
-      this.Sigma                 = Mdl.Sigma;
-      this.Mu                    = Mdl.Mu;
+      this.Sigma                  = Mdl.Sigma;
+      this.Mu                     = Mdl.Mu;
 
-      this.LayerSizes            = Mdl.LayerSizes;
-      this.Activations           = Mdl.Activations;
-      this.OutputLayerActivation = Mdl.OutputLayerActivation;
-      this.LearningRate          = Mdl.LearningRate;
-      this.IterationLimit        = Mdl.IterationLimit;
+      this.LayerSizes             = Mdl.LayerSizes;
+      this.Activations            = Mdl.Activations;
+      this.OutputLayerActivation  = Mdl.OutputLayerActivation;
 
-      this.ModelParameters       = Mdl.ModelParameters;
-      ## The compact model drops the training history, so it drops the copy
-      ## of it that ConvergenceInfo carries; the scalars the fit ended at
-      ## stay, and are what a compact model can still answer about.
-      ci = Mdl.ConvergenceInfo;
-      if (isfield (ci, 'History'))
-        ci = rmfield (ci, 'History');
-      endif
-      this.ConvergenceInfo       = ci;
-      this.DisplayInfo           = Mdl.DisplayInfo;
-      this.Solver                = Mdl.Solver;
-
-      this.LayerWeights          = Mdl.LayerWeights;
-      this.LayerBiases           = Mdl.LayerBiases;
-      this.CategoricalPredictors = Mdl.CategoricalPredictors;
+      this.LayerWeights           = Mdl.LayerWeights;
+      this.LayerBiases            = Mdl.LayerBiases;
+      this.CategoricalPredictors  = Mdl.CategoricalPredictors;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
@@ -357,7 +271,6 @@ classdef CompactRegressionNeuralNetwork
       fprintf ("%+25s: '%s'\n", 'OutputLayerActivation', ...
                this.OutputLayerActivation);
       fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
-      fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
     endfunction
 
   endmethods
@@ -409,7 +322,9 @@ classdef CompactRegressionNeuralNetwork
       ## The network's output is the second return value; the first is an
       ## index of the largest output, constant for a single regression unit.
       NumThreads = nproc ();
-      [~, yFit] = fcnnpredict (this.ModelParameters, XC, NumThreads);
+      [~, yFit] = fcnnpredict (this.LayerWeights, this.LayerBiases, ...
+                               this.Activations, this.OutputLayerActivation, ...
+                               XC, NumThreads);
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -545,12 +460,6 @@ classdef CompactRegressionNeuralNetwork
       LayerSizes              = this.LayerSizes;
       Activations             = this.Activations;
       OutputLayerActivation   = this.OutputLayerActivation;
-      LearningRate            = this.LearningRate;
-      IterationLimit          = this.IterationLimit;
-      ModelParameters         = this.ModelParameters;
-      ConvergenceInfo         = this.ConvergenceInfo;
-      DisplayInfo             = this.DisplayInfo;
-      Solver                  = this.Solver;
       LayerWeights            = this.LayerWeights;
       LayerBiases             = this.LayerBiases;
       CategoricalPredictors   = this.CategoricalPredictors;
@@ -561,9 +470,9 @@ classdef CompactRegressionNeuralNetwork
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
             'Sigma', 'Mu', 'LayerSizes', ...
-            'Activations', 'OutputLayerActivation', 'LearningRate', ...
-            'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
-            'DisplayInfo', 'Solver', 'LayerWeights', 'LayerBiases', ...
+            'Activations', 'OutputLayerActivation', ...
+            ...
+            'LayerWeights', 'LayerBiases', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
     endfunction
 

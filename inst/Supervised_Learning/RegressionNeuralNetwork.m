@@ -821,34 +821,25 @@ classdef RegressionNeuralNetwork
       this.IterationLimit = IterationLimit;
       this.DisplayInfo = DisplayInfo;
 
-      ## Encode activations for fcnntrain (expand if needed)
-      nlayers = numel (LayerSizes);
-      if (ischar (Activations))
-        ActivationCodes = ones (1, nlayers) * activationCode_ (Activations);
-      elseif (nlayers != numel (Activations))
-        error (strcat ("RegressionNeuralNetwork: 'Activations'", ...
-                       " vector does not match the number of layers."));
-      else
-        ActivationCodes = [];
-        for i = 1:nlayers
-          code = activationCode_ (Activations{i});
-          ActivationCodes = [ActivationCodes, code];
-        endfor
-      endif
-      code = activationCode_ (OutputLayerActivation);
-      ActivationCodes = [ActivationCodes, code];
 
       ## Start the training process.  LossFunction 2 is the mean squared error
       ## over a continuous response, which is what regression trains against.
       NumThreads = nproc ();
-      Alpha = 0.01;  # used for ReLU and ELU activation layers
       rnn_timer_ = tic;
       SolverOptions = struct ('Solver', Solver, ...
                               'GradientTolerance', GradientTolerance, ...
                               'LossTolerance', LossTolerance, ...
                               'StepTolerance', StepTolerance);
-      Mdl = fcnntrain (X, Y(:), LayerSizes, ActivationCodes, NumThreads, ...
-                       Alpha, LearningRate, IterationLimit, DisplayInfo, 2, ...
+      ## The engine names the layers itself; this check stays here so the
+      ## count is reported under the class rather than under fcnntrain.
+      if (! ischar (Activations) && numel (LayerSizes) != numel (Activations))
+        error (strcat ("RegressionNeuralNetwork: 'Activations'", ...
+                       " vector does not match the number of layers."));
+      endif
+
+      Mdl = fcnntrain (X, Y(:), LayerSizes, Activations, ...
+                       OutputLayerActivation, NumThreads, ...
+                       LearningRate, IterationLimit, DisplayInfo, 2, ...
                        SolverOptions);
 
       ## The solver records a value per iteration.  The series belongs to the
@@ -937,7 +928,10 @@ classdef RegressionNeuralNetwork
       ## index of the largest output, which a single regression unit makes
       ## constant and meaningless.
       NumThreads = nproc ();
-      [~, yFit] = fcnnpredict (this.ModelParameters, XC, NumThreads);
+      [~, yFit] = fcnnpredict (this.LayerWeights, this.LayerBiases, ...
+                               this.Activations, ...
+                                      this.OutputLayerActivation, ...
+                               XC, NumThreads);
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -973,7 +967,10 @@ classdef RegressionNeuralNetwork
       endif
 
       NumThreads = nproc ();
-      [~, yFit] = fcnnpredict (this.ModelParameters, XC, NumThreads);
+      [~, yFit] = fcnnpredict (this.LayerWeights, this.LayerBiases, ...
+                               this.Activations, ...
+                                      this.OutputLayerActivation, ...
+                               XC, NumThreads);
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -1474,27 +1471,6 @@ function mdl = restoreOlderModel_ (mdl)
   mdl.ConvergenceInfo = convergenceStruct_ (series, ci.Time, criterion);
 endfunction
 
-function numCode = activationCode_ (strCode)
-  switch (strCode)
-    case {'linear', 'none'}
-      numCode = 0;
-    case 'sigmoid'
-      numCode = 1;
-    case 'relu'
-      numCode = 2;
-    case 'tanh'
-      numCode = 3;
-    case {'lrelu', 'prelu'}
-      numCode = 5;
-    case 'elu'
-      numCode = 6;
-    case 'gelu'
-      numCode = 7;
-    otherwise
-      error (strcat ("RegressionNeuralNetwork: misspelling or unsupported", ...
-                     " 'Activation' function: '%s'."), strCode);
-  endswitch
-endfunction
 
 
 ## A fitted model carries the defaults MATLAB documents for fitrnet.

@@ -83,6 +83,13 @@ double accuracy (vector<int> predictions, vector<int> labels)
 
 // Class definitions
 
+// Negative-side parameters of the leaky family.  MathWorks uses the same two
+// values, leakyReluLayer defaulting to a scale of 0.01 and eluLayer to an
+// alpha of 1, the latter being what makes an ELU saturate at -alpha.  Neither
+// is a fitted quantity and neither is reachable from the m-code.
+static const double LRELU_ALPHA = 0.01;
+static const double ELU_ALPHA = 1.0;
+
 // Half-width of the uniform range a layer's weights are drawn from.  A
 // constant range ignores how many inputs each neuron sums, so the variance of
 // a pre-activation grows with the width of the layer feeding it: deep networks
@@ -396,11 +403,132 @@ void DenseLayer::pack_grad (double *p) const
   }
 }
 
+// The activation functions a layer can carry, and the names the m-code spells
+// them with.  The mapping lives here because this is the only place the codes
+// mean anything: nothing outside the engine needs to know the numbers.
+enum activation_kind
+{
+  ACT_LINEAR  = 0,
+  ACT_SIGMOID = 1,
+  ACT_RELU    = 2,
+  ACT_TANH    = 3,
+  ACT_SOFTMAX = 4,
+  ACT_LRELU   = 5,
+  ACT_ELU     = 6,
+  ACT_GELU    = 7
+};
+
+struct activation_entry
+{
+  const char *name;
+  int code;
+};
+
+// 'none' is MATLAB's name for the identity, which fitcnet has always
+// documented as available; 'linear' is this package's older spelling of the
+// same map.  'prelu' and 'lrelu' are one function here, the negative slope
+// being a constant rather than a fitted parameter.
+static const activation_entry ACTIVATION_TABLE[] =
+{
+  { "linear",  ACT_LINEAR  },
+  { "none",    ACT_LINEAR  },
+  { "sigmoid", ACT_SIGMOID },
+  { "relu",    ACT_RELU    },
+  { "tanh",    ACT_TANH    },
+  { "softmax", ACT_SOFTMAX },
+  { "lrelu",   ACT_LRELU   },
+  { "prelu",   ACT_LRELU   },
+  { "elu",     ACT_ELU     },
+  { "gelu",    ACT_GELU    }
+};
+
+// The code for NAME, matched without regard to case, or -1 if there is none.
+static int
+activation_code (const string& name)
+{
+  string key = name;
+  for (size_t i = 0; i < key.size (); i++)
+  {
+    key[i] = tolower (key[i]);
+  }
+  const int n = sizeof (ACTIVATION_TABLE) / sizeof (ACTIVATION_TABLE[0]);
+  for (int i = 0; i < n; i++)
+  {
+    if (key == ACTIVATION_TABLE[i].name)
+    {
+      return ACTIVATION_TABLE[i].code;
+    }
+  }
+  return -1;
+}
+
+// One code per layer, the output layer last.  ACTS names the hidden layers,
+// either as one character vector applying to all NLAYERS of them or as a
+// cellstring naming them one by one; OUT_ACT names the output layer.  CALLER
+// prefixes every message, so each front end reports under its own name.
+static RowVector
+activation_codes (const octave_value& acts, const octave_value& out_act,
+                  int nlayers, const string& caller)
+{
+  RowVector codes (nlayers + 1);
+  if (acts.is_string () && acts.rows () == 1)
+  {
+    int code = activation_code (acts.string_value ());
+    if (code < 0)
+    {
+      error ("%s: unsupported 'Activations' function: '%s'.",
+             caller.c_str (), acts.string_value ().c_str ());
+    }
+    for (int i = 0; i < nlayers; i++)
+    {
+      codes(i) = code;
+    }
+  }
+  else if (acts.iscellstr ())
+  {
+    Cell c = acts.cell_value ();
+    if (c.numel () != nlayers)
+    {
+      error ("%s: 'Activations' does not match the number of layers.",
+             caller.c_str ());
+    }
+    for (int i = 0; i < nlayers; i++)
+    {
+      int code = activation_code (c.elem(i).string_value ());
+      if (code < 0)
+      {
+        error ("%s: unsupported 'Activations' function: '%s'.",
+               caller.c_str (), c.elem(i).string_value ().c_str ());
+      }
+      codes(i) = code;
+    }
+  }
+  else
+  {
+    error ("%s: 'Activations' must be a character vector or a cellstring.",
+           caller.c_str ());
+  }
+
+  if (! (out_act.is_string () && out_act.rows () == 1))
+  {
+    error ("%s: 'OutputLayerActivation' must be a character vector.",
+           caller.c_str ());
+  }
+  int code = activation_code (out_act.string_value ());
+  if (code < 0)
+  {
+    error ("%s: unsupported 'OutputLayerActivation' function: '%s'.",
+           caller.c_str (), out_act.string_value ().c_str ());
+  }
+  codes(nlayers) = code;
+  return codes;
+}
+
 class ActivationLayer
 {
 public:
   // constructor
-  ActivationLayer (int activation, int n_threads, double alpha);
+  ActivationLayer (int activation, int n_threads);
   // destructor
   ~ActivationLayer ();
 
@@ -416,14 +544,12 @@ public:
 private:
   int activation;
   int n_threads;
-  double alpha;
 };
 
-ActivationLayer::ActivationLayer (int activation, int n_threads, double alpha)
+ActivationLayer::ActivationLayer (int activation, int n_threads)
 {
   this->activation = activation;
   this->n_threads = n_threads;
-  this->alpha = alpha;
 }
 ActivationLayer::~ActivationLayer () {}
 
@@ -500,7 +626,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
       #pragma omp parallel for
       for (int i = 0; i < layer_size; i++)
       {
-        outputs[i] = inputs[i] >= 0 ? inputs[i] : inputs[i] * this->alpha;
+        outputs[i] = inputs[i] >= 0 ? inputs[i] : inputs[i] * LRELU_ALPHA;
       }
     }
   }
@@ -513,7 +639,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
       for (int i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] >= 0 ? inputs[i] : (exp (inputs[i]) - 1)
-                                                  * this->alpha;
+                                                  * ELU_ALPHA;
       }
     }
   }
@@ -609,7 +735,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
       for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] :
-                                                   chain_grad[i] * this->alpha;
+                                                   chain_grad[i] * LRELU_ALPHA;
       }
     }
   }
@@ -622,7 +748,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
       for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] : chain_grad[i]
-                                      * exp (this->last_input[i]) * this->alpha;
+                                      * exp (this->last_input[i]) * ELU_ALPHA;
       }
     }
   }

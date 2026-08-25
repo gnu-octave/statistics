@@ -170,8 +170,8 @@ private:
 DEFUN_DLD(fcnntrain, args, nargout,
           "-*- texinfo -*-\n\
  @deftypefn  {statistics} {@var{Mdl} =} fcnntrain (@var{X}, @var{Y}, @\
- @var{LayerSizes}, @var{Activations}, @var{NumThreads}, @var{Alpha}, @\
- @var{LearningRate}, @var{Epochs}, @var{DisplayInfo})\n\
+ @var{LayerSizes}, @var{Activations}, @var{OutputLayerActivation}, @\
+ @var{NumThreads}, @var{LearningRate}, @var{Epochs}, @var{DisplayInfo})\n\
  @deftypefnx  {statistics} {@var{Mdl} =} fcnntrain (@dots{}, @\
  @var{LossFunction})\n\
 \n\
@@ -200,28 +200,30 @@ size of the hidden layers of the network.  Input and output layers are \
 automatically determined by the training data and their labels. \
 \n\
 \n\
-@item @var{Activations} : A numeric row vector of integer values defining the \
-activation functions to be used at each layer including the output layer.  The \
-corresponding codes to activation functions is: \n\
+@item @var{Activations} : The activation function of the hidden layers, named \
+as a character vector applying to all of them or as a cellstring naming them \
+one by one, in which case it must have one name per hidden layer.  The \
+supported names are: \n\
 @itemize \n\
-@item @code{0} : @qcode{'Linear'} \n\
-@item @code{1} : @qcode{'Sigmoid'} \n\
-@item @code{2} : @qcode{'Rectified Linear Unit (ReLU)'} \n\
-@item @code{3} : @qcode{'Hyperbolic tangent (tanh)'} \n\
-@item @code{4} : @qcode{'Softmax'} \n\
-@item @code{5} : @qcode{'Parametric or Leaky ReLU'} \n\
-@item @code{6} : @qcode{'Exponential Linear Unit (ELU)'} \n\
-@item @code{7} : @qcode{'Gaussian Error Linear Unit (GELU)'} \n\
+@item @qcode{'linear'} or @qcode{'none'} : the identity \n\
+@item @qcode{'sigmoid'} \n\
+@item @qcode{'relu'} : rectified linear unit \n\
+@item @qcode{'tanh'} : hyperbolic tangent \n\
+@item @qcode{'softmax'} \n\
+@item @qcode{'lrelu'} or @qcode{'prelu'} : leaky rectified linear unit, whose \
+negative slope is a constant 0.01 \n\
+@item @qcode{'elu'} : exponential linear unit, saturating at @math{-1} \n\
+@item @qcode{'gelu'} : Gaussian error linear unit \n\
 @end itemize \n\
+\n\
+\n\
+@item @var{OutputLayerActivation} : The activation function of the output \
+layer, named as a character vector from the same list. \
 \n\
 \n\
 @item @var{NumThreads} : A positive scalar integer value defining the number \
 of threads used for computing the activation layers.  For layers with less \
 than 1000 neurons, @var{NumThreads} always defaults to 1. \
-\n\
-\n\
-@item @var{Alpha} : A positive scalar value defining the parameter \
-@qcode{alpha} used in @qcode{ReLU} and @qcode{ELU} activation layers. \
 \n\
 \n\
 @item @var{LearningRate} : A positive scalar value defining the learning rate \
@@ -269,10 +271,6 @@ neural network model's training process.  Absent under regression. \
 \n\
 @item @code{Loss} : The loss value recorded at each iteration during the \
 neural network model's training process. \
-\n\
-\n\
-@item @code{Alpha} : The value of the Alpha parameter used in @qcode{ReLU} and \
-@qcode{ELU} activation layers. \
 \n\
 \n\
 @end itemize \
@@ -401,29 +399,14 @@ package:\n\n\
   {
     error ("fcnntrain: 'LayerSizes' must be a row vector of integer values.");
   }
-  if (! args(3).isnumeric () || args(3).iscomplex () || args(3).isempty () ||
-        args(3).rows () != 1 || args(3).columns () < 2)
-  {
-    error ("fcnntrain: 'Activations' must be a row vector of integer values.");
-  }
-  if (args(2).numel () != args(3).numel () - 1)
-  {
-    error ("fcnntrain: 'Activations' do not match LayerSizes.");
-  }
 
-  // Check NumThreads and Alpha input arguments
-  if (! args(4).is_scalar_type () || ! args(4).isnumeric () ||
-        args(4).scalar_value () < 1 || args(4).iscomplex ())
+  // Check the NumThreads input argument
+  if (! args(5).is_scalar_type () || ! args(5).isnumeric () ||
+        args(5).scalar_value () < 1 || args(5).iscomplex ())
   {
     error ("fcnntrain: 'NumThreads' must be a positive integer scalar value.");
   }
-  int NumThreads = args(4).scalar_value ();
-  if (! args(5).is_scalar_type () || ! args(5).isnumeric () ||
-        args(5).scalar_value () <= 0 || args(5).iscomplex ())
-  {
-    error ("fcnntrain: 'Alpha' must be a positive scalar value.");
-  }
-  double Alpha = args(5).scalar_value ();
+  int NumThreads = args(5).scalar_value ();
 
   // Create a vector of layers sized appropriately.  The initial weights are
   // drawn from Octave's generator, so rand ('seed', s) reproduces a fit.
@@ -431,7 +414,8 @@ package:\n\n\
   vector<DenseLayer> WeightBias;
   vector<ActivationLayer> Activation;
   RowVector LayerSizes = args(2).row_vector_value ();
-  RowVector ActiveCode = args(3).row_vector_value ();
+  RowVector ActiveCode = activation_codes (args(3), args(4), args(2).numel (),
+                                          "fcnntrain");
   int numlayers = args(2).numel () + 1;
   int input_size = d;
   for (int i = 0; i < args(2).numel (); i++)
@@ -442,12 +426,8 @@ package:\n\n\
       error ("fcnntrain: cannot have a layer of zero size.");
     }
     int code = ActiveCode(i);
-    if (code < 0 || code > 7)
-    {
-      error ("fcnntrain: invalid 'Activations' code.");
-    }
     DenseLayer DL = DenseLayer (input_size, output_size, code);
-    ActivationLayer AL = ActivationLayer (code, NumThreads, Alpha);
+    ActivationLayer AL = ActivationLayer (code, NumThreads);
     WeightBias.push_back (DL);
     Activation.push_back (AL);
     input_size = output_size;
@@ -458,7 +438,7 @@ package:\n\n\
   int last_AC = args(2).numel ();
   DenseLayer DL = DenseLayer (input_size, output_size,
                               (int) ActiveCode(last_AC));
-  ActivationLayer AL = ActivationLayer (ActiveCode(last_AC), NumThreads, Alpha);
+  ActivationLayer AL = ActivationLayer (ActiveCode(last_AC), NumThreads);
   WeightBias.push_back (DL);
   Activation.push_back (AL);
 
@@ -828,7 +808,6 @@ package:\n\n\
     }
     fcnn_model.assign ("Loss", L);
   }
-  fcnn_model.assign ("Alpha", Alpha);
   octave_value_list retval (1);
   retval(0) = fcnn_model;
   return retval;
@@ -842,69 +821,69 @@ package:\n\n\
 %!error <fcnntrain: too few input arguments.> ...
 %! model = fcnntrain (X, Y);
 %!error <fcnntrain: too many output arguments.> ...
-%! [Q, W] = fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! [Q, W] = fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: X must be a real numeric matrix.> ...
-%! fcnntrain (complex (X), Y, 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (complex (X), Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: X must be a real numeric matrix.> ...
-%! fcnntrain ({X}, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain ({X}, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: X cannot be empty.> ...
-%! fcnntrain ([], Y, 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain ([], Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: Y must be a real numeric matrix.> ...
-%! fcnntrain (X, complex (Y), 10, 1, 0.01, [1, 1], 0.025, 50, false);
+%! fcnntrain (X, complex (Y), 10, "sigmoid", "sigmoid", 0.01, 0.025, 50, false);
 %!error <fcnntrain: Y must be a real numeric matrix.> ...
-%! fcnntrain (X, {Y}, 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, {Y}, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: Y cannot be empty.> ...
-%! fcnntrain (X, [], 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, [], 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: X and Y must have the same number of rows.> ...
-%! fcnntrain (X, Y([1:50]), 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y([1:50]), 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: labels in Y must be positive integers.> ...
-%! fcnntrain (X, Y - 1, 10, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y - 1, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: 'LayerSizes' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, [10; 5], [1, 1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y, [10; 5], "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: 'LayerSizes' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, "10", [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y, "10", "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: 'LayerSizes' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, {10}, [1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y, {10}, "sigmoid", "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: 'LayerSizes' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, complex (10), [1, 1], 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: 'Activations' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, 10, [1; 1], 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: 'Activations' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, 10, {1, 1}, 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: 'Activations' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, 10, "1", 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: 'Activations' must be a row vector of integer values.> ...
-%! fcnntrain (X, Y, 10, complex ([1, 1]), 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: 'Activations' do not match LayerSizes.> ...
-%! fcnntrain (X, Y, 10, [1, 1, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y, complex (10), "sigmoid", "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: 'Activations' must be a character vector or a cellstring.> ...
+%! fcnntrain (X, Y, 10, [1; 1], "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: 'Activations' must be a character vector or a cellstring.> ...
+%! fcnntrain (X, Y, 10, {1, 1}, "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: 'Activations' must be a character vector or a cellstring.> ...
+%! fcnntrain (X, Y, 10, complex ([1, 1]), "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: 'Activations' does not match the number of layers.> ...
+%! fcnntrain (X, Y, 10, {"sigmoid", "relu"}, "sigmoid", 1, 0.025, 50, false);
 %!error <fcnntrain: cannot have a layer of zero size.> ...
-%! fcnntrain (X, Y, [10, 0, 5], [1, 1, 1, 1], 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: invalid 'Activations' code.> ...
-%! fcnntrain (X, Y, 10, [-1, 1], 1, 0.01, 0.025, 50, false);
-%!error <fcnntrain: invalid 'Activations' code.> ...
-%! fcnntrain (X, Y, 10, [8, 1], 1, 0.01, 0.025, 50, false);
+%! fcnntrain (X, Y, [10, 0, 5], "sigmoid", "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: unsupported 'Activations' function: 'sgmoid'.> ...
+%! fcnntrain (X, Y, 10, "sgmoid", "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: unsupported 'Activations' function: 'bogus'.> ...
+%! fcnntrain (X, Y, 10, {"bogus"}, "sigmoid", 1, 0.025, 50, false);
+%!error <fcnntrain: 'OutputLayerActivation' must be a character vector.> ...
+%! fcnntrain (X, Y, 10, "sigmoid", 4, 1, 0.025, 50, false);
+%!error <fcnntrain: unsupported 'OutputLayerActivation' function: 'softmx'.> ...
+%! fcnntrain (X, Y, 10, "sigmoid", "softmx", 1, 0.025, 50, false);
 %!error <fcnntrain: 'NumThreads' must be a positive integer scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 0, 0.01, 0.025, 50, false);
-%!error <fcnntrain: 'Alpha' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, -0.01, 0.025, 50, false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 0, 0.025, 50, false);
 %!error <fcnntrain: 'LearningRate' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, -0.025, 50, false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, -0.025, 50, false);
 %!error <fcnntrain: 'LearningRate' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0, 50, false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0, 50, false);
 %!error <fcnntrain: 'LearningRate' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, [0.025, 0.001], 50, false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, [0.025, 0.001], 50, false);
 %!error <fcnntrain: 'LearningRate' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, {0.025}, 50, false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, {0.025}, 50, false);
 %!error <fcnntrain: 'Epochs' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 0, false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 0, false);
 %!error <fcnntrain: 'Epochs' must be a positive scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, [50, 25], false);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, [50, 25], false);
 %!error <fcnntrain: 'DisplayInfo' must be a boolean scalar.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, 0);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, 0);
 %!error <fcnntrain: 'DisplayInfo' must be a boolean scalar.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, 1);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, 1);
 %!error <fcnntrain: 'DisplayInfo' must be a boolean scalar.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, [false, false]);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, [false, false]);
 ## The reported training history has one entry per epoch and holds the values
 ## actually recorded, not the zeros a pre-sized vector would leave in front of
 ## them.
@@ -913,7 +892,7 @@ package:\n\n\
 %! randn ('seed', 42);
 %! Xs = [randn(30,2)*0.4 + 2; randn(30,2)*0.4 - 2];
 %! Ys = [ones(30,1); 2*ones(30,1)];
-%! M = fcnntrain (Xs, Ys, 8, [2, 4], 1, 0.01, 0.05, 60, false, 1);
+%! M = fcnntrain (Xs, Ys, 8, "relu", "softmax", 1, 0.05, 60, false, 1);
 %! assert_equal (numel (M.Loss), 60);
 %! assert_equal (numel (M.Accuracy), 60);
 %! assert_equal (any (M.Loss != 0), true);
@@ -921,20 +900,20 @@ package:\n\n\
 %! assert_equal (M.Accuracy(end) >= M.Accuracy(1), true);
 
 %!error <fcnntrain: too many input arguments.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, struct (), 0);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, struct (), 0);
 %!error <fcnntrain: 'SolverOptions' must be a scalar struct.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, 0);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, 0);
 %!error <fcnntrain: 'Solver' must be 'sgd' or 'lbfgs'.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 0, ...
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, ...
 %!            struct ("Solver", "bogus"));
 %!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 'ce');
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 'ce');
 %!error <fcnntrain: 'LossFunction' must be a numeric scalar value.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, [0, 1]);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, [0, 1]);
 %!error <fcnntrain: invalid 'LossFunction' code.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, 3);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 3);
 %!error <fcnntrain: invalid 'LossFunction' code.> ...
-%! fcnntrain (X, Y, 10, [1, 1], 1, 0.01, 0.025, 50, false, -1);
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, -1);
 
 ## Loss function 2 is regression: Y holds the response, the output layer is
 ## sized to its columns, and no Accuracy is reported because there are no
@@ -944,8 +923,8 @@ package:\n\n\
 %! randn ('seed', 42);
 %! Xr = linspace (-2, 2, 60)';
 %! Yr = 3 * Xr - 1;
-%! M = fcnntrain (Xr, Yr, [8, 8], [2, 2, 0], 1, 0.01, 0.005, 300, false, 2);
-%! assert_equal (fieldnames (M), {'LayerWeights'; 'Activations'; 'Loss'; 'Alpha'});
+%! M = fcnntrain (Xr, Yr, [8, 8], "relu", "linear", 1, 0.005, 300, false, 2);
+%! assert_equal (fieldnames (M), {'LayerWeights'; 'Activations'; 'Loss'});
 %! assert_equal (rows (M.LayerWeights{end}), 1);
 %! assert_equal (M.Loss(end) < M.Loss(1), true);
 
@@ -954,18 +933,22 @@ package:\n\n\
 %! rand ('seed', 42);
 %! Xr = linspace (0, 1, 40)';
 %! Yr = 5 * Xr + 2;
-%! M = fcnntrain (Xr, Yr, 10, [2, 0], 1, 0.01, 0.005, 200, false, 2);
-%! [~, yFit] = fcnnpredict (M, Xr);
+%! M = fcnntrain (Xr, Yr, 10, "relu", "linear", 1, 0.005, 200, false, 2);
+%! Wm = cellfun (@(m) m(:,1:end-1), M.LayerWeights, "UniformOutput", false);
+%! Bm = cellfun (@(m) m(:,end), M.LayerWeights, "UniformOutput", false);
+%! [~, yFit] = fcnnpredict (Wm, Bm, "relu", "linear", Xr);
 %! assert_equal (M.Loss(end), mean ((Yr - yFit) .^ 2), 1e-12);
 
 ## A response of several columns gets one output unit per column.
 %!test
 %! rand ('seed', 42);
 %! Xr = linspace (0, 1, 30)';
-%! M = fcnntrain (Xr, [Xr, 2 * Xr, 3 * Xr], 6, [2, 0], 1, 0.01, 0.005, 50, ...
-%!                false, 2);
+%! M = fcnntrain (Xr, [Xr, 2 * Xr, 3 * Xr], 6, "relu", "linear", 1, 0.005, ...
+%!                50, false, 2);
 %! assert_equal (rows (M.LayerWeights{end}), 3);
-%! [~, yFit] = fcnnpredict (M, Xr);
+%! Wm = cellfun (@(m) m(:,1:end-1), M.LayerWeights, "UniformOutput", false);
+%! Bm = cellfun (@(m) m(:,end), M.LayerWeights, "UniformOutput", false);
+%! [~, yFit] = fcnnpredict (Wm, Bm, "relu", "linear", Xr);
 %! assert_equal (columns (yFit), 3);
 
 ## Regression takes a response the classification path would refuse.
@@ -973,13 +956,13 @@ package:\n\n\
 %! rand ('seed', 42);
 %! Xr = linspace (0, 1, 20)';
 %! Yr = linspace (-3.5, 2.25, 20)';
-%! M = fcnntrain (Xr, Yr, 6, [2, 0], 1, 0.01, 0.005, 50, false, 2);
+%! M = fcnntrain (Xr, Yr, 6, "relu", "linear", 1, 0.005, 50, false, 2);
 %! assert_equal (all (isfinite (M.Loss)), true);
 
 %!error <fcnntrain: Y must be finite.> ...
-%! fcnntrain ([1; 2; 3], [1; Inf; 3], 4, [2, 0], 1, 0.01, 0.01, 10, false, 2);
+%! fcnntrain ([1; 2; 3], [1; Inf; 3], 4, "relu", "linear", 1, 0.01, 10, false, 2);
 %!error <fcnntrain: Y must be finite.> ...
-%! fcnntrain ([1; 2; 3], [1; NaN; 3], 4, [2, 0], 1, 0.01, 0.01, 10, false, 2);
+%! fcnntrain ([1; 2; 3], [1; NaN; 3], 4, "relu", "linear", 1, 0.01, 10, false, 2);
 
 ## The full-batch solver drives the loss down and reports what it measured to
 ## decide it had stopped.  Accuracy is not among them: MATLAB does not report
@@ -987,10 +970,10 @@ package:\n\n\
 ## iteration.
 %!test
 %! so = struct ("Solver", "lbfgs");
-%! M = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 100, false, 1, so);
+%! M = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 100, false, 1, so);
 %! assert_equal (fieldnames (M), ...
 %!               {'LayerWeights'; 'Activations'; 'Loss'; 'Gradient'; ...
-%!                'Step'; 'Criterion'; 'Alpha'});
+%!                'Step'; 'Criterion'});
 %! assert_equal (M.Loss(end) < M.Loss(1), true);
 %! assert_equal (numel (M.Gradient), numel (M.Loss));
 %! assert_equal (numel (M.Step), numel (M.Loss));
@@ -999,20 +982,20 @@ package:\n\n\
 ## over the data, which is the whole reason for offering it.
 %!test
 %! rand ("state", 3); randn ("state", 3);
-%! Ms = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 200, false, 1);
+%! Ms = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 200, false, 1);
 %! rand ("state", 3); randn ("state", 3);
 %! so = struct ("Solver", "lbfgs");
-%! Ml = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 200, false, 1, so);
+%! Ml = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 200, false, 1, so);
 %! assert_equal (Ml.Loss(end) < Ms.Loss(end), true);
 %! assert_equal (numel (Ml.Loss) < numel (Ms.Loss), true);
 
 ## An explicit 'sgd' is the epoch loop, unchanged.
 %!test
 %! rand ("state", 5); randn ("state", 5);
-%! Ma = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 30, false, 1);
+%! Ma = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 30, false, 1);
 %! rand ("state", 5); randn ("state", 5);
 %! so = struct ("Solver", "sgd");
-%! Mb = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 30, false, 1, so);
+%! Mb = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 30, false, 1, so);
 %! assert_equal (Mb.Loss, Ma.Loss);
 %! assert_equal (Mb.LayerWeights, Ma.LayerWeights);
 
@@ -1021,10 +1004,10 @@ package:\n\n\
 %!test
 %! rand ("state", 9); randn ("state", 9);
 %! so = struct ("Solver", "lbfgs", "GradientTolerance", 1e3);
-%! Ma = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 100, false, 1, so);
+%! Ma = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 100, false, 1, so);
 %! rand ("state", 9); randn ("state", 9);
 %! so = struct ("Solver", "lbfgs", "GradientTolerance", 1e-8);
-%! Mb = fcnntrain (X, Y, 10, [2, 4], 1, 0.01, 0.005, 100, false, 1, so);
+%! Mb = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 100, false, 1, so);
 %! assert_equal (Ma.Criterion, "Relative gradient tolerance reached.");
 %! assert_equal (numel (Ma.Loss) < numel (Mb.Loss), true);
 */
