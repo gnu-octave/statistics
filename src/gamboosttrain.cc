@@ -29,6 +29,9 @@ DEFUN_DLD(gamboosttrain, args, ,
           "-*- texinfo -*-\n\
 @deftypefn  {statistics} {@var{Mdl} =} gamboosttrain (@var{X}, @var{Y}, @\n\
 @var{Method}, @var{NumTrees}, @var{LearnRate}, @var{MaxNumSplits})\n\
+@deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@var{X}, @var{Y}, @\n\
+@var{Method}, @var{NumTrees}, @var{LearnRate}, @var{MaxNumSplits}, @\n\
+@var{Verbose}, @var{NumPrint}, @var{F0})\n\
 @deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@dots{}, @var{Verbose}, @\n\
 @var{NumPrint})\n\
 \n\
@@ -94,7 +97,7 @@ many trees produced it.\n\
 @end deftypefn")
 {
   octave_idx_type nargin = args.length ();
-  if (nargin != 6 && nargin != 8)
+  if (nargin != 6 && nargin != 8 && nargin != 9)
   {
     print_usage ();
   }
@@ -198,8 +201,24 @@ many trees produced it.\n\
     }
   }
 
+  // A ninth argument continues a fit that has already run: it is the
+  // prediction that fit reached over these same rows, and what comes back is
+  // the increment to add to the shape values and the intercept already held.
+  ColumnVector F0;
+  bool resuming = false;
+  if (nargin == 9)
+  {
+    if (! args(8).isnumeric () || args(8).iscomplex ()
+        || args(8).columns () != 1 || args(8).rows () != X.rows ())
+    {
+      error ("gamboosttrain: F0 must be a numeric column vector with one element per row of X.");
+    }
+    F0 = args(8).column_vector_value ();
+    resuming = true;
+  }
+
   GamBoostFit F = gamb_boost (X, Y, method, maxtrees, lrate, maxsplits,
-                              verbose, numprint);
+                              verbose, numprint, resuming ? &F0 : nullptr);
 
   Cell edges (1, d);
   Cell values (1, d);

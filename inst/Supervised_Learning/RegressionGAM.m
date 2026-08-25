@@ -1753,6 +1753,112 @@ classdef RegressionGAM
             'ModelParameters', 'ReasonForTermination');
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {RegressionGAM} {@var{Mdl} =} resume (@var{obj}, @var{numTrees})
+    ##
+    ## Resume training a generalized additive model.
+    ##
+    ## @code{@var{Mdl} = resume (@var{obj}, @var{numTrees})} adds
+    ## @var{numTrees} more trees to @var{obj} and returns the result.  The
+    ## original model is not modified.
+    ##
+    ## Training continues in the phase that ran last, which is what MATLAB
+    ## does: a model carrying interaction terms gains interaction trees and
+    ## its predictor shape functions are left alone, while a model without
+    ## them gains predictor trees.  A round starts at its initial learning
+    ## rate whatever its number, so the model this returns is the model a
+    ## single fit of the combined budget would have produced.
+    ##
+    ## @var{numTrees} must be a positive integer scalar.  Resuming raises
+    ## where there is nothing left to gain, rather than returning the model
+    ## unchanged, and it is not available under
+    ## @qcode{'FitMethod', 'splines'}: a backfit that has converged to its
+    ## tolerance has no budget to extend.
+    ##
+    ## @seealso{RegressionGAM, fitrgam, addInteractions}
+    ## @end deftypefn
+    function Mdl = resume (this, numTrees)
+
+      if (nargin < 2)
+        error ("RegressionGAM.resume: Not enough input arguments.");
+      endif
+      if (! strcmp (this.FitMethod, 'boostedtrees'))
+        error (strcat ("RegressionGAM.resume: resuming is available", ...
+                       " only under 'FitMethod', 'boostedtrees'; a spline", ...
+                       " backfit stops at its tolerance and has no budget", ...
+                       " to extend."));
+      endif
+      if (! (isnumeric (numTrees) && isscalar (numTrees) && isreal (numTrees)
+             && numTrees > 0 && fix (numTrees) == numTrees))
+        error (strcat ("RegressionGAM.resume: NUMTREES must be a", ...
+                       " positive integer scalar."));
+      endif
+
+      ## The rows the fit saw.
+      cobs = ! any (isnan (this.X), 2);
+      X = this.X(cobs, :);
+      Y = this.Y(cobs);
+
+      Mdl = this;
+      MP = this.ModelParameters;
+      reason = this.ReasonForTermination;
+
+      if (isempty (this.TreeModel.Pairs))
+        ## No interaction phase ever ran, so the predictor phase is the one
+        ## still open.  The engine is handed the prediction reached so far and
+        ## returns the increment to add to it.
+        f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
+                             this.Intercept);
+        M = gamboosttrain (X, Y, 2, numTrees, ...
+                           MP.InitialLearnRateForPredictors, ...
+                           MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, f(:));
+        if (M.NumTrees == 0)
+          error (strcat ("RegressionGAM.resume: unable to resume", ...
+                         " training because the software was unable to", ...
+                         " improve the model fit."));
+        endif
+        sv = this.TreeModel.ShapeValues;
+        for j = 1:numel (sv)
+          sv{j} = sv{j} + M.ShapeValues{j};
+        endfor
+        Mdl.TreeModel.ShapeValues = sv;
+        Mdl.Intercept = this.Intercept + M.Intercept;
+        MP.NumTreesPerPredictor = MP.NumTreesPerPredictor + M.NumTrees;
+        reason.PredictorTrees = M.ReasonForTermination;
+      else
+        ## The interaction phase ran last, so it is the one extended.  The
+        ## running prediction includes the surfaces already fitted, and the
+        ## new ones are added to them.
+        f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
+                             this.Intercept, 0, ...
+                             this.PairDetectionBinEdges, ...
+                             this.TreeModel.PairValues, ...
+                             this.TreeModel.Pairs);
+        I = gamboostinter (X, Y, f(:), 2, this.TreeModel.Pairs, numTrees, ...
+                           MP.InitialLearnRateForInteractions, ...
+                           MP.MaxNumSplitsPerInteraction);
+        if (I.NumTrees == 0)
+          error (strcat ("RegressionGAM.resume: unable to resume", ...
+                         " training because the software was unable to", ...
+                         " improve the model fit."));
+        endif
+        pv = this.TreeModel.PairValues;
+        for k = 1:numel (pv)
+          pv{k} = pv{k} + I.PairValues{k};
+        endfor
+        Mdl.TreeModel.PairValues = pv;
+        Mdl.TreeModel.PairIntercept = this.TreeModel.PairIntercept ...
+                                      + I.Intercept;
+        Mdl.Intercept = this.Intercept + I.Intercept;
+        MP.NumTreesPerInteraction = MP.NumTreesPerInteraction + I.NumTrees;
+        reason.InteractionTrees = I.ReasonForTermination;
+      endif
+
+      Mdl.ModelParameters = MP;
+      Mdl.ReasonForTermination = reason;
+
+    endfunction
+
   endmethods
 
   ## Helper functions
@@ -2215,6 +2321,78 @@ endfunction
 ## A model that already carries interaction terms is not extended, and a
 ## model fitted from a formula names every term it has, interactions among
 ## them, so it is refused for the same reason.  R2024a refuses both.
+## resume continues the phase that ran last, and a model with no interactions
+## has only the predictor phase open.  Resuming reproduces the model a single
+## fit of the combined budget would have produced, which is the oracle every
+## test here uses.
+%!test
+%! load fisheriris
+%! X = meas;
+%! Y = meas(:,1) + 0.3 * meas(:,3);
+%! A = fitrgam (X, Y, 'NumTreesPerPredictor', 5);
+%! B = resume (A, 10);
+%! C = fitrgam (X, Y, 'NumTreesPerPredictor', 15);
+%! assert_equal (B.ModelParameters.NumTreesPerPredictor, 15);
+%! assert_equal (predict (B, X), predict (C, X), 1e-10);
+
+%!test
+%! ## A model carrying interactions gains interaction trees, and its predictor
+%! ## shape functions are left where they were.
+%! load fisheriris
+%! X = meas;
+%! Y = meas(:,1) + 0.3 * meas(:,3);
+%! A = fitrgam (X, Y, 'NumTreesPerPredictor', 5, 'Interactions', 3, ...
+%!              'NumTreesPerInteraction', 4);
+%! B = resume (A, 10);
+%! assert_equal (B.ModelParameters.NumTreesPerPredictor, 5);
+%! assert_equal (B.ModelParameters.NumTreesPerInteraction, 14);
+%! assert_equal (B.TreeModel.ShapeValues, A.TreeModel.ShapeValues);
+%! C = fitrgam (X, Y, 'NumTreesPerPredictor', 5, 'Interactions', 3, ...
+%!              'NumTreesPerInteraction', 14);
+%! assert_equal (predict (B, X), predict (C, X), 1e-10);
+
+%!test
+%! ## The selected pairs survive, and resuming twice accumulates.
+%! load fisheriris
+%! X = meas;
+%! Y = meas(:,1) + 0.3 * meas(:,3);
+%! A = fitrgam (X, Y, 'NumTreesPerPredictor', 5, 'Interactions', 3, ...
+%!              'NumTreesPerInteraction', 4);
+%! B = resume (resume (A, 10), 6);
+%! assert_equal (B.Interactions, A.Interactions);
+%! assert_equal (B.ModelParameters.NumTreesPerInteraction, 20);
+%! assert_equal (B.ModelParameters.NumTreesPerPredictor, 5);
+
+%!test
+%! ## The model handed in is not modified.
+%! load fisheriris
+%! X = meas;
+%! Y = meas(:,1) + 0.3 * meas(:,3);
+%! A = fitrgam (X, Y, 'NumTreesPerPredictor', 5);
+%! B = resume (A, 10);
+%! assert_equal (A.ModelParameters.NumTreesPerPredictor, 5);
+%! assert_equal (B.ModelParameters.NumTreesPerPredictor, 15);
+
+%!error<RegressionGAM.resume: Not enough input arguments.> ...
+%! load fisheriris; ...
+%! resume (fitrgam (meas, meas(:,1), 'NumTreesPerPredictor', 5))
+%!error<RegressionGAM.resume: resuming is available only under 'FitMethod', 'boostedtrees'; a spline backfit stops at its tolerance and has no budget to extend.> ...
+%! load fisheriris; ...
+%! resume (fitrgam (meas, meas(:,1), 'FitMethod', 'splines'), 5)
+%!error<RegressionGAM.resume: NUMTREES must be a positive integer scalar.> ...
+%! load fisheriris; ...
+%! resume (fitrgam (meas, meas(:,1), 'NumTreesPerPredictor', 5), 0)
+%!error<RegressionGAM.resume: NUMTREES must be a positive integer scalar.> ...
+%! load fisheriris; ...
+%! resume (fitrgam (meas, meas(:,1), 'NumTreesPerPredictor', 5), 2.5)
+%!error<RegressionGAM.resume: NUMTREES must be a positive integer scalar.> ...
+%! load fisheriris; ...
+%! resume (fitrgam (meas, meas(:,1), 'NumTreesPerPredictor', 5), [1, 2])
+
+%!error<RegressionGAM.resume: unable to resume training because the software was unable to improve the model fit.> ...
+%! X = [ones(20,1)*[1, 2]; ones(20,1)*[3, 4]]; ...
+%! resume (fitrgam (X, ones (40, 1), 'NumTreesPerPredictor', 5), 5)
+
 %!error<RegressionGAM.addInteractions: adding interaction terms to a model that already includes them is not supported.> ...
 %! load fisheriris
 %! bai = ! strcmp (species, "setosa");

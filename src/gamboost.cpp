@@ -465,7 +465,8 @@ gamb_deviance (const ColumnVector& Y, const ColumnVector& f, int method)
 static GamBoostFit
 gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
             octave_idx_type maxtrees, double lrate, octave_idx_type maxsplits,
-            int verbose, octave_idx_type numprint)
+            int verbose, octave_idx_type numprint,
+            const ColumnVector *F0 = nullptr)
 {
   octave_idx_type n = X.rows ();
   octave_idx_type d = X.columns ();
@@ -495,36 +496,53 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
   // recentring hands it the constants the shape functions give up, and leaves
   // the second where it is, because a squared-error residual already has mean
   // zero and there is nothing to hand over.
-  double ybar = 0.0;
-  for (octave_idx_type i = 0; i < n; i++)
-  {
-    ybar += Y(i);
-  }
-  ybar /= (double) n;
+  //
+  // Given F0 there is no seed to find: the caller is continuing a fit and
+  // hands over the prediction it reached.  What comes back is then the
+  // increment, shape values to add to the ones already held and an intercept
+  // to add to the one already there, which is the contract gamb_boost_inter
+  // works to as well.  A round starts at LRATE whatever its number, so the
+  // trees this adds are the trees a longer run would have added.
+  ColumnVector f (n);
 
-  if (method == 1)
+  if (F0 != nullptr)
   {
-    if (ybar <= 0.0 || ybar >= 1.0)
-    {
-      // A single-class response has an infinite log-odds and no gradient to
-      // follow; the fit is the constant and every shape function stays flat.
-      F.intercept = (ybar <= 0.0)
-                    ? -octave::numeric_limits<double>::Inf ()
-                    : octave::numeric_limits<double>::Inf ();
-      F.ntrees = 0;
-      F.reason = "Unable to improve the model fit.";
-      F.deviance = 0.0;
-      F.residuals = ColumnVector (n, 0.0);
-      return F;
-    }
-    F.intercept = std::log (ybar / (1.0 - ybar));
+    F.intercept = 0.0;
+    f = *F0;
   }
   else
   {
-    F.intercept = ybar;
-  }
+    double ybar = 0.0;
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      ybar += Y(i);
+    }
+    ybar /= (double) n;
 
-  ColumnVector f (n, F.intercept);
+    if (method == 1)
+    {
+      if (ybar <= 0.0 || ybar >= 1.0)
+      {
+        // A single-class response has an infinite log-odds and no gradient to
+        // follow; the fit is the constant and every shape function stays flat.
+        F.intercept = (ybar <= 0.0)
+                      ? -octave::numeric_limits<double>::Inf ()
+                      : octave::numeric_limits<double>::Inf ();
+        F.ntrees = 0;
+        F.reason = "Unable to improve the model fit.";
+        F.deviance = 0.0;
+        F.residuals = ColumnVector (n, 0.0);
+        return F;
+      }
+      F.intercept = std::log (ybar / (1.0 - ybar));
+    }
+    else
+    {
+      F.intercept = ybar;
+    }
+
+    f = ColumnVector (n, F.intercept);
+  }
   double dev = gamb_deviance (Y, f, method);
 
   // The printed trace, in the columns MATLAB prints.  RelTol here is the
