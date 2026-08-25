@@ -199,6 +199,13 @@
 ## @math{1/distance}; @qcode{'squaredinverse'}, which corresponds to a weight
 ## equal to @math{1/distance^2}.
 ##
+## @item @qcode{'CacheSize'} @tab A positive scalar, the cache size in
+## megabytes, 1000 by default.  It is stored and reported for compatibility
+## and @strong{does not affect the fit or any prediction}: a nearest-neighbour
+## model keeps no Gram matrix to cache, holding its training data and
+## computing each distance when asked.  MATLAB hides the same property from
+## @code{properties}, where this package reports it.
+##
 ## @item @qcode{'IncludeTies'} @tab A boolean flag to indicate if the
 ## returned values should contain the indices that have same distance as the
 ## @math{K^th} neighbor.  When @qcode{false}, @code{knnsearch} chooses the

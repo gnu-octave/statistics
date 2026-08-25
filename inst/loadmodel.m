@@ -159,6 +159,7 @@ endfunction
 %! assert_equal (m2.NSMethod, m.NSMethod);
 %! assert_equal (m2.IncludeTies, m.IncludeTies);
 %! assert_equal (m2.BucketSize, m.BucketSize);
+%! assert_equal (m2.CacheSize, m.CacheSize);
 %! assert_equal (m2.Cost, m.Cost);
 %! assert_equal (m2.Prior, m.Prior);
 %! assert_equal (m2.ScoreTransform, m.ScoreTransform);

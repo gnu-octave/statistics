@@ -536,6 +536,29 @@ classdef ClassificationKNN
     ## @end deftp
     ScoreTransform  = 'none';
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} CacheSize
+    ##
+    ## Size of the Gram matrix cache
+    ##
+    ## A positive scalar giving the cache size in megabytes, 1000 by default.
+    ## Change the @qcode{CacheSize} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.CacheSize = @var{newCacheSize}}
+    ## @end itemize
+    ##
+    ## This property is stored and reported for compatibility and
+    ## @strong{does not affect the fit or any prediction}.  A nearest-neighbour
+    ## model keeps no Gram matrix to cache: it holds the training data and
+    ## computes each distance when asked.  Assigning it changes nothing but
+    ## the value read back.
+    ##
+    ## MATLAB carries the same property and hides it from @code{properties},
+    ## where this package reports it, so that a value a user may set is a
+    ## value a user can find.
+    ## @end deftp
+    CacheSize       = 1000;
+
   endproperties
 
   ## Readable by the counterpart class, which copies it, and kept out of
@@ -708,6 +731,15 @@ classdef ClassificationKNN
         endswitch
       endif
       this.DistParameter = val;
+    endfunction
+
+    function this = set.CacheSize (this, val)
+      if (! (isnumeric (val) && isscalar (val) && isreal (val)
+             && isfinite (val) && val > 0))
+        error (strcat ("ClassificationKNN: 'CacheSize' must be a", ...
+                       " positive finite scalar."));
+      endif
+      this.CacheSize = val;
     endfunction
 
     function this = set.ScoreTransform (this, val)
@@ -917,6 +949,7 @@ classdef ClassificationKNN
       NSMethod        = [];
       IncludeTies     = false;
       BucketSize      = 50;
+      CacheSize       = 1000;
 
       ## Number of parameters for Standardize, Scale, Cov (maximum 1 allowed)
       SSC = 0;
@@ -1101,6 +1134,15 @@ classdef ClassificationKNN
             if (! any (strcmpi (NSM, NSMethod)))
               error (strcat ("ClassificationKNN: 'NSMethod' must", ...
                              " be either 'kdtree' or 'exhaustive'."));
+            endif
+
+          case 'cachesize'
+            CacheSize = varargin{2};
+            if (! (isnumeric (CacheSize) && isscalar (CacheSize)
+                   && isreal (CacheSize) && isfinite (CacheSize)
+                   && CacheSize > 0))
+              error (strcat ("ClassificationKNN: 'CacheSize' must be a", ...
+                             " positive finite scalar."));
             endif
 
           case 'includeties'
@@ -1315,9 +1357,10 @@ classdef ClassificationKNN
         endif
       endif
 
-      ## Assign IncludeTies and BucketSize properties
+      ## Assign IncludeTies, BucketSize and CacheSize properties
       this.IncludeTies = IncludeTies;
       this.BucketSize = BucketSize;
+      this.CacheSize = CacheSize;
       this.Fitted = true;
 
     endfunction
@@ -2460,6 +2503,7 @@ classdef ClassificationKNN
       NSMethod        = this.NSMethod;
       IncludeTies     = this.IncludeTies;
       BucketSize      = this.BucketSize;
+      CacheSize       = this.CacheSize;
       STfun          = this.STfun;
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
@@ -2472,7 +2516,7 @@ classdef ClassificationKNN
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
             'DistanceWeight', 'DWfun', 'DistParameter', 'NSMethod', ...
             'IncludeTies', ...
-            'BucketSize', 'CategoricalPredictors', ...
+            'BucketSize', 'CacheSize', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'STfun');
     endfunction
 
@@ -2908,6 +2952,44 @@ endfunction
 %! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
 %! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
 %! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
+
+%!test
+%! ## CacheSize defaults to 1000 and is reported, where MATLAB hides it.
+%! X = [1, 2; 3, 4; 5, 6; 7, 8; 2, 2];
+%! Mdl = fitcknn (X, [1; 1; 2; 2; 1]);
+%! assert_equal (Mdl.CacheSize, 1000);
+%! assert_equal (any (strcmp (properties (Mdl), 'CacheSize')), true);
+
+%!test
+%! ## It is settable after fitting and through fitcknn alike.
+%! X = [1, 2; 3, 4; 5, 6; 7, 8; 2, 2];
+%! Mdl = fitcknn (X, [1; 1; 2; 2; 1]);
+%! Mdl.CacheSize = 5000;
+%! assert_equal (Mdl.CacheSize, 5000);
+%! Mdl2 = fitcknn (X, [1; 1; 2; 2; 1], "CacheSize", 250);
+%! assert_equal (Mdl2.CacheSize, 250);
+
+%!test
+%! ## It changes nothing: the model keeps no cache to size.
+%! X = [1, 2; 3, 4; 5, 6; 7, 8; 2, 2];
+%! y = [1; 1; 2; 2; 1];
+%! Mdl = fitcknn (X, y, "CacheSize", 1);
+%! Mdl2 = fitcknn (X, y, "CacheSize", 1e6);
+%! [l1, s1] = predict (Mdl, X);
+%! [l2, s2] = predict (Mdl2, X);
+%! assert_equal (l1, l2);
+%! assert_equal (s1, s2);
+
+%!error<ClassificationKNN: 'CacheSize' must be a positive finite scalar.> ...
+%! fitcknn (ones (5, 2), [1; 1; 1; 2; 2], "CacheSize", 0)
+%!error<ClassificationKNN: 'CacheSize' must be a positive finite scalar.> ...
+%! fitcknn (ones (5, 2), [1; 1; 1; 2; 2], "CacheSize", [1, 2])
+%!error<ClassificationKNN: 'CacheSize' must be a positive finite scalar.> ...
+%! fitcknn (ones (5, 2), [1; 1; 1; 2; 2], "CacheSize", Inf)
+%!test
+%! Mdl = fitcknn (ones (5, 2), [1; 1; 1; 2; 2]);
+%! fail ("Mdl.CacheSize = -1", ...
+%!       "ClassificationKNN: 'CacheSize' must be a positive finite scalar.");
 
 %!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
 %!error<ClassificationKNN: too few input arguments.> ...
