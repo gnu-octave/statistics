@@ -342,7 +342,25 @@ classdef RegressionGP
     ## A structure holding the options the fit was performed under.  MATLAB
     ## returns an object of its own class here; a structure carries the same
     ## information and is what every other learner in this package returns.
-    ## This property is read-only.
+    ##
+    ## @qcode{Beta}, @qcode{Sigma} and @qcode{KernelParameters} are the
+    ## @strong{starting values} the fit was given, empty or zero where it was
+    ## given none, as they are in MATLAB.  What the fit found is reported by
+    ## the @qcode{Beta} and @qcode{Sigma} properties and by
+    ## @qcode{KernelInformation}.  @qcode{Beta} defaults to a zero for every
+    ## column the basis contributes, so a @qcode{'linear'} basis over three
+    ## predictors starts at four zeros.
+    ##
+    ## @qcode{SigmaLowerBound} is the exception and is reported as it was
+    ## resolved.  MATLAB publishes no top-level field of that name, keeping
+    ## it inside an @qcode{Options} structure this class does not carry.
+    ##
+    ## The fields MATLAB reports for its approximate fitting methods
+    ## (@qcode{ActiveSet}, @qcode{Options}, @qcode{OptimizerOptions},
+    ## @qcode{ConstantKernelParameters}, @qcode{InitialStepSize},
+    ## @qcode{InitialSigmaLowerBoundTolerance}, @qcode{Verbose} and
+    ## @qcode{CacheSize}) are absent, this class implementing exact fitting
+    ## alone.  This property is read-only.
     ##
     ## @end deftp
     ModelParameters       = [];
@@ -752,6 +770,17 @@ classdef RegressionGP
       ## response makes zero, and the logarithm of zero is not a starting
       ## point.  A unit spread is used instead: the fit is degenerate either
       ## way, but it returns a model rather than a NaN.
+      ## The record of the fit keeps what the caller gave, which the lines
+      ## below are about to replace with resolved defaults.  What the fit
+      ## used is reported by the Sigma property and by KernelInformation.
+      SigmaGiven = SigmaIn;
+      KernelParametersGiven = KernelParameters;
+      if (isempty (BetaIn))
+        BetaGiven = zeros (columns (gpBasis (XS(1,:), BasisFunction)), 1);
+      else
+        BetaGiven = BetaIn;
+      endif
+
       sy = std (Y);
       if (sy == 0)
         sy = 1;
@@ -789,17 +818,32 @@ classdef RegressionGP
       this.ActiveSetVectors = XS;
       this.ActiveSetSize = n;
       this.IsActiveSetVector = true (n, 1);
-      this.ModelParameters = struct ('FitMethod', properName (FitMethod), ...
-                                     'PredictMethod', ...
-                                     properName (PredictMethod), ...
+      ## The fit as it was asked for, in MATLAB's field order.  Beta, Sigma
+      ## and KernelParameters are the starting values the caller gave, not
+      ## what the fit found; SigmaLowerBound is the exception and is reported
+      ## as it was resolved, MATLAB publishing no top-level field of that
+      ## name and the fold refitting reading this one.
+      this.ModelParameters = struct ('KernelFunction', ...
+                                     properName (KernelFunction), ...
+                                     'KernelParameters', ...
+                                     KernelParametersGiven, ...
                                      'BasisFunction', ...
                                      properName (BasisFunction), ...
-                                     'KernelFunction', ...
-                                     properName (KernelFunction), ...
-                                     'Standardize', Standardize, ...
-                                     'ConstantSigma', ConstantSigma, ...
+                                     'Beta', BetaGiven, ...
+                                     'Sigma', SigmaGiven, ...
+                                     'FitMethod', properName (FitMethod), ...
+                                     'PredictMethod', ...
+                                     properName (PredictMethod), ...
+                                     'ActiveSetSize', this.ActiveSetSize, ...
+                                     'ActiveSetMethod', ...
+                                     this.ActiveSetMethod, ...
+                                     'Standardize', logical (Standardize), ...
+                                     'Optimizer', Optimizer, ...
+                                     'ConstantSigma', ...
+                                     logical (ConstantSigma), ...
                                      'SigmaLowerBound', SigmaLowerBound, ...
-                                     'Optimizer', Optimizer);
+                                     'Version', 1, 'Method', 'GP', ...
+                                     'Type', 'regression');
 
       ## The prediction weights
       K = gpCovariance (XS, XS, KernelFunction, theta);
@@ -2103,3 +2147,54 @@ endfunction
 %! load fisheriris
 %! Mdl = fitrgp (meas(:,1:3), meas(:,4));
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters records the fit as it was asked for.  The field list and
+## its order are MATLAB's, less the approximate-fitting machinery this class
+## does not implement.
+%!test
+%! load fisheriris
+%! Mdl = fitrgp (meas(:,2:4), meas(:,1));
+%! assert_equal (fieldnames (Mdl.ModelParameters)', {'KernelFunction', ...
+%! 'KernelParameters', 'BasisFunction', 'Beta', 'Sigma', 'FitMethod', ...
+%! 'PredictMethod', 'ActiveSetSize', 'ActiveSetMethod', 'Standardize', ...
+%! 'Optimizer', 'ConstantSigma', 'SigmaLowerBound', 'Version', 'Method', ...
+%! 'Type'});
+
+%!test
+%! load fisheriris
+%! MP = fitrgp (meas(:,2:4), meas(:,1)).ModelParameters;
+%! assert_equal (MP.Beta, 0);
+%! assert_equal (isempty (MP.Sigma), true);
+%! assert_equal (isempty (MP.KernelParameters), true);
+%! assert_equal (MP.ActiveSetSize, 150);
+%! assert_equal (MP.ActiveSetMethod, 'Random');
+
+## The three starting values are what the caller gave, not what the fit
+## found, which the Beta and Sigma properties carry instead.
+%!test
+%! load fisheriris
+%! Mdl = fitrgp (meas(:,2:4), meas(:,1), 'Beta', 3, 'Sigma', 0.7, ...
+%!               'KernelParameters', [2; 0.5]);
+%! assert_equal (Mdl.ModelParameters.Beta, 3);
+%! assert_equal (Mdl.ModelParameters.Sigma, 0.7);
+%! assert_equal (Mdl.ModelParameters.KernelParameters, [2; 0.5]);
+%! assert_equal (abs (Mdl.Beta - 3) > 1, true);
+%! assert_equal (abs (Mdl.Sigma - 0.7) > 0.1, true);
+
+## Beta starts at a zero for every column the basis contributes, so a linear
+## basis over three predictors starts at four of them.
+%!test
+%! load fisheriris
+%! MP = fitrgp (meas(:,2:4), meas(:,1), ...
+%!              'BasisFunction', 'linear').ModelParameters;
+%! assert_equal (MP.Beta, zeros (4, 1));
+
+## SigmaLowerBound is the one field reported as resolved rather than as
+## given, MATLAB keeping it inside an Options structure this class has not.
+%!test
+%! load fisheriris
+%! MP = fitrgp (meas(:,2:4), meas(:,1)).ModelParameters;
+%! assert_equal (MP.SigmaLowerBound > 0, true);
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.Method, 'GP');
+%! assert_equal (MP.Type, 'regression');
