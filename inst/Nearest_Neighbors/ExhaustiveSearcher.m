@@ -554,6 +554,16 @@ classdef ExhaustiveSearcher
       endif
 
       ## Process Y in blocks
+      ## Where the metric is one the compiled search knows and no ties are
+      ## wanted, the whole search runs there and no block of the distance
+      ## matrix is formed at all.
+      if (! IncludeTies && ischar (Distance)
+          && any (strcmpi (Distance, {'euclidean', 'cityblock', ...
+                                      'chebychev', 'minkowski'})))
+        [idx, D] = __knnbrute__ (obj.X, Y, K, lower (Distance), DistParameter);
+        return;
+      endif
+
       for blk_start = 1:BlockSize:M
         blk_end = min (blk_start + BlockSize - 1, M);
         Y_blk = Y(blk_start:blk_end, :);

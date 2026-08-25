@@ -178,6 +178,12 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
         SI = varargin{2};
       case 'distance'
         Distance = varargin{2};
+        ## 'manhattan' is this package's documented alias of 'cityblock' and
+        ## is resolved here, so every search path takes it.  MATLAB has no
+        ## such name and refuses it.
+        if (ischar (Distance) && strcmpi (Distance, 'manhattan'))
+          Distance = 'cityblock';
+        endif
       case 'nsmethod'
         NSMethod = varargin{2};
       otherwise

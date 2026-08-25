@@ -188,6 +188,12 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         SI = varargin{2};
       case 'distance'
         Distance = varargin{2};
+        ## 'manhattan' is this package's documented alias of 'cityblock' and
+        ## is resolved here, so every search path takes it.  MATLAB has no
+        ## such name and refuses it.
+        if (ischar (Distance) && strcmpi (Distance, 'manhattan'))
+          Distance = 'cityblock';
+        endif
       case 'nsmethod'
         NSMethod = varargin{2};
       case 'includeties'
@@ -319,12 +325,24 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     endif
   else
 
+    ## Where the metric is one the compiled search knows, the whole search
+    ## runs there: each distance is compared against a running list of the K
+    ## best and discarded, so the M-by-N matrix is never formed.  That matrix
+    ## is what puts a ceiling on N, being 128 MB at four thousand points
+    ## against four thousand, and forming it cost about half of this branch.
+    ## Every other metric keeps the older route, pdist2 followed by a partial
+    ## selection.
+    if (! InclTies && ischar (Distance)
+        && any (strcmpi (Distance, {'euclidean', 'cityblock', ...
+                                    'chebychev', 'minkowski'})))
+      [idx, dist] = __knnbrute__ (X, Y, K, lower (Distance), DistParameter);
+
     ## Calculate all distances.  The single-neighbour shortcut applies only
     ## when ties are not wanted: taking the minimum returns one neighbour
     ## whatever else sits at the same distance, so asking for K = 1 with
     ## 'IncludeTies' used to get the flag silently ignored, and a double where
     ## a cell was promised.
-    if (K == 1 && ! InclTies)
+    elseif (K == 1 && ! InclTies)
       D = pdist2 (X, Y, Distance, DistParameter);
       D = reshape (D', size (Y, 1), size (X, 1));
       [dist, idx] = min (D, [], 2);

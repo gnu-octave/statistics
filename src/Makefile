@@ -5,7 +5,7 @@ OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            svmtrain.oct fcnntrain.oct fcnnpredict.oct \
            gamtrain.oct gampredict.oct gamboosttrain.oct gamboostpredict.oct \
            gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct \
-           __knnselect__.oct
+           __knnselect__.oct __knnbrute__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -68,6 +68,10 @@ __bhtsne__.oct: __bhtsne__.cc
 # The partial selection the nearest-neighbour searches take their K from.
 __knnselect__.oct: __knnselect__.cc
 	$(MKOCTFILE) __knnselect__.cc
+
+# The exhaustive search that never forms the distance matrix.
+__knnbrute__.oct: __knnbrute__.cc
+	$(MKOCTFILE) __knnbrute__.cc
 
 # Clean target
 clean:
