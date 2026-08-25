@@ -347,7 +347,7 @@ classdef KDTreeSearcher
       obj.BucketSize = BucketSize;
 
       ## Build KDTree
-      obj.KDTree = build_kdtree (1:size (X,1), 0, X, BucketSize);
+      obj.KDTree = __build_kdtree__ (1:size (X,1), 0, X, BucketSize);
     endfunction
 
     ## -*- texinfo -*-
@@ -494,11 +494,11 @@ classdef KDTreeSearcher
         idx = cell (rows (Y), 1);
         D = cell (rows (Y), 1);
         for i = 1:rows (Y)
-          [temp_idx, temp_D] = search_kdtree (obj.KDTree, Y(i,:), K, obj.X, ...
+          [temp_idx, temp_D] = __search_kdtree__ (obj.KDTree, Y(i,:), K, obj.X, ...
                                               Distance, DistParameter, ...
                                               false);
           r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
-          [idx{i}, D{i}] = search_kdtree (obj.KDTree, Y(i,:), Inf, obj.X, ...
+          [idx{i}, D{i}] = __search_kdtree__ (obj.KDTree, Y(i,:), Inf, obj.X, ...
                                           Distance, DistParameter, ...
                                           true, r);
           if (SortIndices)
@@ -515,7 +515,7 @@ classdef KDTreeSearcher
         idx = zeros (rows (Y), K);
         D = zeros (rows (Y), K, cls);
         for i = 1:rows (Y)
-          [temp_idx, temp_D] = search_kdtree (obj.KDTree, Y(i,:), K, obj.X, ...
+          [temp_idx, temp_D] = __search_kdtree__ (obj.KDTree, Y(i,:), K, obj.X, ...
                                               Distance, DistParameter, ...
                                               false);
           if (SortIndices)
@@ -645,7 +645,7 @@ classdef KDTreeSearcher
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        [idx{i}, D{i}] = search_kdtree (obj.KDTree, Y(i,:), Inf, obj.X, ...
+        [idx{i}, D{i}] = __search_kdtree__ (obj.KDTree, Y(i,:), Inf, obj.X, ...
                                         Distance, DistParameter, ...
                                         true, r);
         if (SortIndices)
@@ -666,132 +666,7 @@ endclassdef
 
 ## Private functions:
 
-## Function to Build KD-tree
-function node = build_kdtree (indices, depth, X, bucket_size)
-  if (length (indices) <= bucket_size)
-    node = struct ('indices', indices);
-  else
-    k = size (X, 2);
-    axis = mod (depth, k) + 1;
-    values = X(indices, axis);
-    [sorted_values, sort_idx] = sort (values);
-    sorted_indices = indices(sort_idx);
-    median_idx = floor ((length (indices) + 1) / 2);
-    split_value = sorted_values(median_idx);
-    left_indices = indices(values <= split_value);
-    right_indices = indices(values > split_value);
-    left_node = build_kdtree (left_indices, depth + 1, X, bucket_size);
-    right_node = build_kdtree (right_indices, depth + 1, X, bucket_size);
-    node = struct ('axis', axis, 'split_value', split_value, ...
-                   'left', left_node, 'right', right_node);
-  endif
-endfunction
 
-## Function Search KD-tree
-function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
-                                               distparam, is_range, r)
-  if (nargin < 8)
-    r = Inf;
-  endif
-  if (strcmpi (dist, 'minkowski'))
-    if (! (isscalar (distparam) && isnumeric (distparam) ...
-                                && distparam > 0 && isfinite (distparam)))
-      error (strcat ("search_kdtree: distparam must be a positive finite", ...
-                    " scalar for minkowski."));
-    endif
-  else
-    if (! isempty (distparam))
-      error (strcat ("search_kdtree: distparam must be empty for", ...
-                    " non-minkowski metrics."));
-    endif
-  endif
-  indices = [];
-  distances = [];
-
-  ## Precompute distance function based on metric
-  dist_lower = lower (dist);
-  switch (dist_lower)
-    case 'euclidean'
-      compute_dists = @(leaf_X) sqrt (sum ((leaf_X - query) .^ 2, 2));
-    case 'cityblock'
-      compute_dists = @(leaf_X) sum (abs (leaf_X - query), 2);
-    case 'chebychev'
-      compute_dists = @(leaf_X) max (abs (leaf_X - query), [], 2);
-    case 'minkowski'
-      p = distparam;
-      compute_dists = @(leaf_X) sum (abs (leaf_X - query) .^ p, 2) .^ (1/p);
-    otherwise
-      error ("search_kdtree: unsupported distance metric.");
-  endswitch
-
-  search (node, 0);
-
-  function search (node, depth)
-    if (isempty (node))
-      return;
-    endif
-
-    if (isfield (node, 'indices'))
-      leaf_indices = node.indices;
-      dists = compute_dists(X(leaf_indices,:));
-      if (is_range)
-        mask = dists <= r;
-        indices = [indices; leaf_indices(mask)'];
-        distances = [distances; dists(mask)];
-      else
-        ## Early rejection: only add candidates that could enter top-K
-        if (length (distances) >= k)
-          max_dist = distances(end);
-          mask = dists < max_dist;
-          if (any (mask))
-            indices = [indices; leaf_indices(mask)'];
-            distances = [distances; dists(mask)];
-            [distances, sort_idx] = sort (distances);
-            indices = indices(sort_idx);
-            distances = distances(1:k);
-            indices = indices(1:k);
-          endif
-        else
-          indices = [indices; leaf_indices'];
-          distances = [distances; dists];
-          if (length (distances) > k)
-            [distances, sort_idx] = sort (distances);
-            indices = indices(sort_idx);
-            distances = distances(1:k);
-            indices = indices(1:k);
-          elseif (length (distances) == k)
-            [distances, sort_idx] = sort (distances);
-            indices = indices(sort_idx);
-          endif
-        endif
-      endif
-    else
-      axis = node.axis;
-      split_value = node.split_value;
-      if (query(axis) <= split_value)
-        nearer = node.left;
-        further = node.right;
-      else
-        nearer = node.right;
-        further = node.left;
-      endif
-
-      search (nearer, depth + 1);
-
-      plane_dist = abs (query(axis) - split_value);
-      if (is_range)
-        max_dist = r;
-        if (plane_dist <= max_dist)
-          search (further, depth + 1);
-        endif
-      else
-        if (length (distances) < k || plane_dist < distances(end))
-          search (further, depth + 1);
-        endif
-      endif
-    endif
-  endfunction
-endfunction
 
 ## Demo Examples
 
