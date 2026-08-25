@@ -260,6 +260,16 @@ many trees produced it.\n\
 %! assert_equal (M.BinEdges{1}, [1.5, 2.5, 3.5], 1e-12);
 
 %!test
+%! ## Fewer than ten observations cannot be split at all: a leaf holds at
+%! ## least five.  R2024a does the same, on fitcgam and fitrgam alike.
+%! x = (1:9)';
+%! y = [zeros(5, 1); ones(4, 1)];
+%! M = gamboosttrain (x, y, 1, 50, 1, 1);
+%! assert_equal (M.NumTrees, 0);
+%! M10 = gamboosttrain ((1:10)', [zeros(5, 1); ones(5, 1)], 1, 50, 1, 1);
+%! assert_equal (M10.NumTrees > 0, true);
+
+%!test
 %! ## A constant predictor admits no split: one bin and no cut points.
 %! x = [2; 2; 2; 2];
 %! y = [0; 1; 0; 1];
@@ -269,32 +279,37 @@ many trees produced it.\n\
 
 %!test
 %! ## A regression intercept is the response mean and boosting leaves it there.
-%! x = [1; 2; 3; 4; 5; 6; 7; 8];
-%! y = [2; 4; 5; 4; 6; 8; 9; 10];
+%! x = (1:16)';
+%! y = [2; 4; 5; 4; 6; 8; 9; 10; 11; 13; 12; 15; 16; 18; 17; 20];
 %! M = gamboosttrain (x, y, 2, 40, 1, 1);
+%! assert_equal (M.NumTrees > 0, true);
 %! assert_equal (M.Intercept, mean (y), 1e-12);
 
 %!test
 %! ## A classifier intercept is seeded with the log-odds of the response mean
 %! ## and moves away from it, so a balanced response does not stay at zero.
-%! x = [1; 2; 3; 4; 5; 6; 7; 8];
-%! y = [0; 0; 0; 0; 1; 1; 1; 1];
+%! ## Sixteen observations, not eight: a leaf holds at least five, so a fit
+%! ## with fewer than ten cannot split at all and its intercept never moves.
+%! x = (1:16)';
+%! y = [zeros(8, 1); ones(8, 1)];
 %! M = gamboosttrain (x, y, 1, 60, 1, 1);
+%! assert_equal (M.NumTrees > 0, true);
 %! assert_equal (M.Intercept != 0, true);
 
 %!test
 %! ## The tree budget is a budget: a fit that converges reports so and stops
 %! ## short of it.
-%! x = [1; 2; 3; 4; 5; 6; 7; 8];
-%! y = [0; 0; 0; 0; 1; 1; 1; 1];
+%! x = (1:16)';
+%! y = [zeros(8, 1); ones(8, 1)];
 %! M = gamboosttrain (x, y, 1, 5000, 1, 1);
 %! assert_equal (M.ReasonForTermination, 'Unable to improve the model fit.');
+%! assert_equal (M.NumTrees > 0, true);
 %! assert_equal (M.NumTrees < 5000, true);
 
 %!test
 %! ## A budget too small to converge in reports the other reason.
-%! x = [1; 2; 3; 4; 5; 6; 7; 8];
-%! y = [0; 0; 0; 0; 1; 1; 1; 1];
+%! x = (1:16)';
+%! y = [zeros(8, 1); ones(8, 1)];
 %! M = gamboosttrain (x, y, 1, 2, 1, 1);
 %! assert_equal (M.ReasonForTermination, ...
 %!               'Terminated after training the requested number of trees.');
@@ -310,17 +325,19 @@ many trees produced it.\n\
 
 %!test
 %! ## A missing predictor value costs the observation that term, not the fit.
-%! x = [1; 2; NaN; 4; 5; 6];
-%! y = [0; 0; 0; 1; 1; 1];
+%! x = [1; 2; NaN; 4; 5; 6; 7; 8; 9; 10; 11; 12];
+%! y = [0; 0; 0; 0; 0; 0; 1; 1; 1; 1; 1; 1];
 %! M = gamboosttrain (x, y, 1, 20, 1, 1);
+%! assert_equal (M.NumTrees > 0, true);
 %! assert_equal (isfinite (M.Intercept), true);
 %! assert_equal (any (isnan (M.ShapeValues{1})), false);
 
 %!test
 %! ## More splits per tree reach a lower deviance on a shape one split cannot
-%! ## follow.
-%! x = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
-%! y = [0; 0; 1; 1; 1; 1; 1; 1; 0; 0];
+%! ## follow.  Thirty observations, not ten: three splits make four leaves and
+%! ## a leaf holds at least five, so ten could never use the larger budget.
+%! x = (1:30)';
+%! y = [zeros(8, 1); ones(14, 1); zeros(8, 1)];
 %! M1 = gamboosttrain (x, y, 1, 30, 1, 1);
 %! M2 = gamboosttrain (x, y, 1, 30, 1, 3);
 %! assert_equal (M2.Deviance < M1.Deviance, true);
@@ -385,8 +402,8 @@ many trees produced it.\n\
 %!test
 %! ## NumPrint controls how often a round is reported: the first, then every
 %! ## NumPrint after it.
-%! x = [1; 2; 3; 4; 5; 6; 7; 8];
-%! y = [0; 0; 0; 0; 1; 1; 1; 1];
+%! x = (1:16)';
+%! y = [zeros(8, 1); ones(8, 1)];
 %! V5 = evalc ('gamboosttrain (x, y, 1, 20, 1, 1, 1, 5);');
 %! V1 = evalc ('gamboosttrain (x, y, 1, 20, 1, 1, 1, 1);');
 %! assert_equal (numel (strfind (V1, '|    1D|')) > ...

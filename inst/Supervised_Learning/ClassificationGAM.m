@@ -2942,18 +2942,31 @@ endfunction
 
 ## The boosted-tree engine names the same terms from the same specifications,
 ## but a count takes the pairs the interaction search ranked highest rather
-## than the first in index order, so the two engines select differently and
-## both selections are pinned exactly.
+## than the first in index order, so the two engines select differently.
+##
+## Only the top of the ranking is pinned, and deliberately.  On this fixture
+## one pair carries an interaction and the other two do not: (2,3) scores
+## F 3.25 at p 5.5e-06, while (1,2) and (1,3) score F 0.5599 and F 0.4331,
+## both below one, meaning their cells explain less than the noise within
+## them.  Their p values sit at 0.974 and 0.998, so which of the two the
+## search ranks second is decided by 2% of the scale at the very top of it
+## and turns over on any change that moves the predictor-phase residuals at
+## all.  Pinning that order pins nothing about the search, and it broke when
+## the tree learner gained its minimum leaf size.  What is worth holding is
+## that the pair with signal comes first, that a count does not simply take
+## the first pair in index order, and that 'all' names every pair.
 %!test
 %! load fisheriris
 %! bai = ! strcmp (species, "setosa");
 %! Xai = meas(bai,2:4); Yai = species(bai);
 %! Aai = addInteractions (fitcgam (Xai, Yai), 2);
-%! assert_equal (Aai.Interactions, [2, 3; 1, 3]);
+%! assert_equal (rows (Aai.Interactions), 2);
+%! assert_equal (Aai.Interactions(1,:), [2, 3]);
 %! Lai = addInteractions (fitcgam (Xai, Yai), logical ([1 1 0; 0 1 1]));
 %! assert_equal (Lai.Interactions, [1, 2; 2, 3]);
 %! All = addInteractions (fitcgam (Xai, Yai), "all");
-%! assert_equal (All.Interactions, [2, 3; 1, 3; 1, 2]);
+%! assert_equal (All.Interactions(1,:), [2, 3]);
+%! assert_equal (sortrows (All.Interactions), [1, 2; 1, 3; 2, 3]);
 
 ## A model that already carries interaction terms is not extended, and a
 ## model fitted from a formula names every term it has, interactions among
@@ -3168,12 +3181,36 @@ endfunction
 
 ## The coding of a numeric response is a property of the class, not of either
 ## engine: the boosted-tree engine reads labels of 1 and 2, or 5 and 9, the
-## same way and returns them unchanged.
+## same way and returns them in their own values.
+##
+## Four observations cannot be split at all under the tree learner's minimum
+## leaf size, so the boosted fit here is a constant and every row comes back
+## as the first class.  R2024a answers exactly the same, [1 1 1 1], [5 5 5 5]
+## and [0 0 0 0], and takes its first split at ten observations as this does.
+## What the test pins is therefore the coding and not the separation: a
+## response of 5 and 9 comes back as 5 rather than as a 0/1 index.  The
+## spline engine above, which does not fit trees, still separates these four.
 %!test
 %! Xn = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! assert_equal (predict (fitcgam (Xn, [1; 1; 2; 2]), Xn), [1; 1; 2; 2]);
-%! assert_equal (predict (fitcgam (Xn, [5; 5; 9; 9]), Xn), [5; 5; 9; 9]);
-%! assert_equal (predict (fitcgam (Xn, [0; 0; 1; 1]), Xn), [0; 0; 1; 1]);
+%! assert_equal (predict (fitcgam (Xn, [1; 1; 2; 2]), Xn), [1; 1; 1; 1]);
+%! assert_equal (predict (fitcgam (Xn, [5; 5; 9; 9]), Xn), [5; 5; 5; 5]);
+%! assert_equal (predict (fitcgam (Xn, [0; 0; 1; 1]), Xn), [0; 0; 0; 0]);
+
+## Ten observations is where a boosted fit first splits, two leaves of the
+## minimum five.  Measured against R2024a, which does the same.
+%!test
+%! Y9 = repmat ({'a'}, 9, 1); Y9(6:9) = {'b'};
+%! M9 = fitcgam ((1:9)', Y9, 'NumTreesPerPredictor', 1, ...
+%!               'MaxNumSplitsPerPredictor', 1, 'Interactions', 0);
+%! M9.ScoreTransform = 'none';
+%! [~, s9] = predict (M9, (1:9)');
+%! assert_equal (max (s9(:,2)) - min (s9(:,2)), 0, 1e-12);
+%! Y10 = repmat ({'a'}, 10, 1); Y10(6:10) = {'b'};
+%! M10 = fitcgam ((1:10)', Y10, 'NumTreesPerPredictor', 1, ...
+%!                'MaxNumSplitsPerPredictor', 1, 'Interactions', 0);
+%! M10.ScoreTransform = 'none';
+%! [~, s10] = predict (M10, (1:10)');
+%! assert_equal (max (s10(:,2)) - min (s10(:,2)) > 1, true);
 
 %!shared x, y, obj
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6];

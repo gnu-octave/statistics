@@ -68,6 +68,15 @@ static const double GAMB_REL_TOL = 1e-6;
 // recoverable from anything it reports.
 static const int GAMB_MAX_HALVINGS = 3;
 
+// The fewest observations a predictor tree's leaf may hold.  Measured against
+// R2024a on 2026-08-25: over a fixture whose only useful split isolates the
+// top K points, MATLAB splits there for K of 5 and above and falls back to the
+// cut leaving 5 for every K below it, on fitcgam and fitrgam alike, with bin
+// edges identical to ours.  It is fitrtree's own default, which is the tree a
+// GAM fits internally.  The interaction fitter is not measured and does not
+// apply this.
+static const octave_idx_type GAMB_MIN_LEAF = 5;
+
 // One predictor reduced to bin indices, with the cut points that produced
 // them.  A missing value gets bin -1 and takes no part in any split.
 struct BinnedPredictor
@@ -242,21 +251,35 @@ gamb_gain (double GL, double HL, double GR, double HR)
   return GL * GL / HL + GR * GR / HR - (GL + GR) * (GL + GR) / (HL + HR);
 }
 
-// Find the best cut inside a region, given the prefix sums of the gradient and
-// the Hessian over bins.  Returns the gain and sets CUT to the last bin of the
-// left side; a region that cannot be split usefully returns a gain of -1.
+// Find the best cut inside a region, given the prefix sums of the gradient, the
+// Hessian and the observation count over bins.  Returns the gain and sets CUT
+// to the last bin of the left side; a region that cannot be split usefully
+// returns a gain of -1.
+//
+// A cut leaving fewer than GAMB_MIN_LEAF observations on either side is not
+// considered, whatever it gains.  The Hessian guard in gamb_gain cannot stand
+// in for this: a logistic Hessian is p*(1-p) and says nothing about how many
+// observations produced it, so a single well separated point can carry enough
+// curvature to look like a leaf worth having.
 static double
 gamb_best_cut (const std::vector<double>& G, const std::vector<double>& H,
-               octave_idx_type lo, octave_idx_type hi, octave_idx_type& cut)
+               const std::vector<double>& C, octave_idx_type lo,
+               octave_idx_type hi, octave_idx_type& cut)
 {
   double best = -1.0;
   cut = -1;
 
   double Gtot = G[hi + 1] - G[lo];
   double Htot = H[hi + 1] - H[lo];
+  double Ctot = C[hi + 1] - C[lo];
 
   for (octave_idx_type b = lo; b < hi; b++)
   {
+    double CL = C[b + 1] - C[lo];
+    if (CL < GAMB_MIN_LEAF || Ctot - CL < GAMB_MIN_LEAF)
+    {
+      continue;
+    }
     double GL = G[b + 1] - G[lo];
     double HL = H[b + 1] - H[lo];
     double g = gamb_gain (GL, HL, Gtot - GL, Htot - HL);
@@ -287,6 +310,7 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
   // region's totals are one subtraction.
   std::vector<double> G (nb + 1, 0.0);
   std::vector<double> H (nb + 1, 0.0);
+  std::vector<double> C (nb + 1, 0.0);
   for (octave_idx_type i = 0; i < n; i++)
   {
     octave_idx_type b = B.bin(i);
@@ -296,18 +320,20 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
     }
     G[b + 1] += grad(i);
     H[b + 1] += hess(i);
+    C[b + 1] += 1.0;
   }
   for (octave_idx_type b = 0; b < nb; b++)
   {
     G[b + 1] += G[b];
     H[b + 1] += H[b];
+    C[b + 1] += C[b];
   }
 
   std::vector<BinRegion> leaves;
   BinRegion root;
   root.lo = 0;
   root.hi = nb - 1;
-  root.gain = gamb_best_cut (G, H, root.lo, root.hi, root.cut);
+  root.gain = gamb_best_cut (G, H, C, root.lo, root.hi, root.cut);
   leaves.push_back (root);
 
   for (octave_idx_type s = 0; s < maxsplits; s++)
@@ -333,8 +359,8 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
     left.hi = leaves[pick].cut;
     right.lo = leaves[pick].cut + 1;
     right.hi = leaves[pick].hi;
-    left.gain = gamb_best_cut (G, H, left.lo, left.hi, left.cut);
-    right.gain = gamb_best_cut (G, H, right.lo, right.hi, right.cut);
+    left.gain = gamb_best_cut (G, H, C, left.lo, left.hi, left.cut);
+    right.gain = gamb_best_cut (G, H, C, right.lo, right.hi, right.cut);
 
     leaves[pick] = left;
     leaves.push_back (right);
