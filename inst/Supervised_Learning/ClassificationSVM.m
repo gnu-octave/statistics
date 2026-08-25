@@ -2720,9 +2720,17 @@ endclassdef
 %! ## the margin was formed from the response as given, so a 1/2 coding
 %! ## scaled that class by four instead of negating it, and the model looked
 %! ## as though it misclassified every observation of it.
-%! expected_margin = [2.0000;  0.8579;  1.6690;  3.4141;  3.4552; ...
-%!                    2.6605;  3.5251;  2.0000;  3.1705;  3.2256; ...
-%!                    1.5266;  3.7527;  0.8350;  2.8113;  3.6820];
+%! ##
+%! ## The values themselves are this engine's own and have no oracle: the
+%! ## partition comes from a seeded rand and the fit from LIBSVM, neither of
+%! ## which MATLAB can reproduce.  They moved in the third decimal when the
+%! ## folds began inheriting the model's prior, an 85-row training split of
+%! ## a balanced 100 not being exactly even; what the block asserts is
+%! ## unchanged.
+%! expected_margin = [2.000000;  0.856067;  1.666246;  3.419288; ...
+%!                    3.461257;  2.664258;  3.529112;  2.000000; ...
+%!                    3.168674;  3.223841;  1.528738;  3.744702; ...
+%!                    0.836534;  2.810381;  3.673740];
 %! computed_margin = margin (obj, x(testInds,:), y(testInds,:));
 %! assert_equal (computed_margin, expected_margin, 1e-4);
 %! assert (all (computed_margin > 0));
@@ -2768,7 +2776,9 @@ endclassdef
 %! assert_equal (L3, 0.3135, 1e-4);
 %! assert_equal (L4, 0.1037, 1e-4);
 %! assert_equal (L5, 0.2652, 1e-4);
-%! assert_equal (L6, 0.3218, 1e-4);
+%! ## L6 moved from 0.3218 when the folds began inheriting the model's
+%! ## prior; the other five stayed inside their tolerance.
+%! assert_equal (L6, 0.3215, 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
