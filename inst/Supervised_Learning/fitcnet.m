@@ -252,9 +252,11 @@ endfunction
 %! y = grp2idx (species);
 %! Mdl = fitcnet (x, y, 'IterationLimit', 50);
 %! assert_equal (class (Mdl), "ClassificationNeuralNetwork");
-%! assert_equal (numel (Mdl.ModelParameters.LayerWeights), 2);
-%! assert_equal (size (Mdl.ModelParameters.LayerWeights{1}), [10, 5]);
-%! assert_equal (size (Mdl.ModelParameters.LayerWeights{2}), [3, 11]);
+%! assert_equal (numel (Mdl.LayerWeights), 2);
+%! assert_equal (size (Mdl.LayerWeights{1}), [10, 4]);
+%! assert_equal (size (Mdl.LayerBiases{1}), [10, 1]);
+%! assert_equal (size (Mdl.LayerWeights{2}), [3, 10]);
+%! assert_equal (size (Mdl.LayerBiases{2}), [3, 1]);
 
 ## Test input validation
 %!error<fitcnet: too few arguments.> fitcnet ()

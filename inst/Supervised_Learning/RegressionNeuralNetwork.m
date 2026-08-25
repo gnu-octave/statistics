@@ -307,14 +307,30 @@ classdef RegressionNeuralNetwork
     ##
     ## Parameters of the trained network
     ##
-    ## A structure as returned by @code{fcnntrain}, holding the layer weights
-    ## and the activation codes, and consumed by @code{fcnnpredict}.
+    ## A structure holding the fit as it was asked for: @qcode{LayerSizes},
+    ## @qcode{Activations}, @qcode{OutputLayerActivation},
+    ## @qcode{LayerWeightsInitializers}, @qcode{Solver},
+    ## @qcode{LearningRate}, @qcode{IterationLimit},
+    ## @qcode{GradientTolerance}, @qcode{LossTolerance},
+    ## @qcode{StepTolerance}, @qcode{DisplayInfo}, @qcode{StandardizeData},
+    ## and the @qcode{Version}, @qcode{Method} and @qcode{Type} tags.
+    ##
+    ## What came out of the fit is elsewhere: the @qcode{LayerWeights} and
+    ## @qcode{LayerBiases} properties hold the network, @qcode{TrainingHistory}
+    ## the series and @qcode{ConvergenceInfo} where it stopped.
     ##
     ## @qcode{LayerWeightsInitializers} names the scheme each layer's weights
     ## were drawn with, the output layer last: @qcode{'he'} for a rectifying
     ## activation and @qcode{'glorot'} for a symmetric one.  It is a report,
     ## not a setting, the engine choosing per layer from the activation and
-    ## offering no way to override it.  This property is read-only.
+    ## offering no way to override it.
+    ##
+    ## @qcode{OutputLayerActivation}, @qcode{Solver} and @qcode{LearningRate}
+    ## are this package's own; MATLAB has no counterpart for them.  The fields
+    ## it reports that this class does not accept as arguments
+    ## (@qcode{Lambda}, the validation set and its patience and frequency,
+    ## @qcode{InitialStepSize} and the two initializer settings) are absent.
+    ## This property is read-only.
     ##
     ## @end deftp
     ModelParameters       = [];
@@ -860,13 +876,6 @@ classdef RegressionNeuralNetwork
                        LearningRate, IterationLimit, DisplayInfo, 2, ...
                        SolverOptions);
 
-      ## The weight initializer of each layer is decided by that layer's
-      ## activation inside the engine and cannot be chosen, so it is recorded
-      ## here rather than being taken from an argument.
-      Mdl.LayerWeightsInitializers = fcnnInitializers (Activations, ...
-                                       numel (LayerSizes), ...
-                                       OutputLayerActivation);
-
       ## The solver records a value per iteration.  The series belongs to the
       ## history and ConvergenceInfo reports where the fit ended up, as
       ## MATLAB divides them; SERIES carries the columns to both.
@@ -886,8 +895,29 @@ classdef RegressionNeuralNetwork
       ConvergenceInfo = convergenceStruct_ (series, toc (rnn_timer_), ...
                                             criterion);
 
-      ## Save ModelParameters and ConvergenceInfo
-      this.ModelParameters = Mdl;
+      ## The fit as it was asked for.  What came out of it is the
+      ## LayerWeights and LayerBiases properties, TrainingHistory and
+      ## ConvergenceInfo; this structure holds what went in.  The weight
+      ## initializer of each layer is decided by that layer's activation
+      ## inside the engine and cannot be chosen, so it is recorded rather
+      ## than taken from an argument.
+      initz = fcnnInitializers (this.Activations, numel (this.LayerSizes), ...
+                                this.OutputLayerActivation);
+      this.ModelParameters = struct ( ...
+        'LayerSizes', this.LayerSizes, ...
+        'Activations', {this.Activations}, ...
+        'OutputLayerActivation', this.OutputLayerActivation, ...
+        'LayerWeightsInitializers', {initz}, ...
+        'Solver', this.Solver, ...
+        'LearningRate', this.LearningRate, ...
+        'IterationLimit', this.IterationLimit, ...
+        'GradientTolerance', GradientTolerance, ...
+        'LossTolerance', LossTolerance, ...
+        'StepTolerance', StepTolerance, ...
+        'DisplayInfo', logical (this.DisplayInfo), ...
+        'StandardizeData', logical (Standardize), ...
+        'Version', 1, 'Method', 'NeuralNetwork', ...
+        'Type', 'regression');
       this.ConvergenceInfo = ConvergenceInfo;
 
       ## fcnntrain packs each neuron as [weights, bias] in one row, so the
@@ -1615,18 +1645,20 @@ endfunction
 %! assert_equal (size (Mdl.LayerWeights{1}), [4, 1]);
 %! assert_equal (size (Mdl.LayerWeights{2}), [6, 4]);
 %! assert_equal (size (Mdl.LayerWeights{3}), [1, 6]);
-%! assert_equal (Mdl.ModelParameters.Activations, [3, 1, 0]);
+%! assert_equal (Mdl.ModelParameters.Activations, {'tanh', 'sigmoid'});
+%! assert_equal (Mdl.ModelParameters.OutputLayerActivation, 'none');
 
-## 'none' and 'linear' name the same identity output.
+## 'none' and 'linear' name the same identity output, which the two models
+## predicting alike from the same seed is what the claim actually means.
 %!test
-%! rand ('seed', 42);
 %! X = linspace (0, 1, 20)';
+%! rand ('seed', 42);
 %! M1 = RegressionNeuralNetwork (X, 2 * X, 'OutputLayerActivation', 'none', ...
 %!                               'IterationLimit', 10);
+%! rand ('seed', 42);
 %! M2 = RegressionNeuralNetwork (X, 2 * X, 'OutputLayerActivation', ...
 %!                               'linear', 'IterationLimit', 10);
-%! assert_equal (M1.ModelParameters.Activations(end), 0);
-%! assert_equal (M2.ModelParameters.Activations(end), 0);
+%! assert_equal (predict (M1, X), predict (M2, X));
 
 ## Rows carrying a missing value are dropped from both X and Y.
 %!test
@@ -2042,6 +2074,37 @@ endfunction
 %! load fisheriris
 %! Mdl = fitrnet (meas(:,1:3), meas(:,4), 'IterationLimit', 20);
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters records the fit as it was asked for, not the network that
+## came out of it.
+%!test
+%! load fisheriris
+%! Mdl = fitrnet (meas(:,2:4), meas(:,1));
+%! assert_equal (fieldnames (Mdl.ModelParameters)', {'LayerSizes', ...
+%! 'Activations', 'OutputLayerActivation', 'LayerWeightsInitializers', ...
+%! 'Solver', 'LearningRate', 'IterationLimit', 'GradientTolerance', ...
+%! 'LossTolerance', 'StepTolerance', 'DisplayInfo', 'StandardizeData', ...
+%! 'Version', 'Method', 'Type'});
+
+%!test
+%! load fisheriris
+%! MP = fitrnet (meas(:,2:4), meas(:,1)).ModelParameters;
+%! assert_equal (MP.LayerSizes, 10);
+%! assert_equal (MP.Activations, 'relu');
+%! assert_equal (MP.OutputLayerActivation, 'none');
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.Method, 'NeuralNetwork');
+%! assert_equal (MP.Type, 'regression');
+
+## A per-layer Activations stays a cellstr rather than splitting the
+## structure into an array.
+%!test
+%! load fisheriris
+%! MP = fitrnet (meas(:,2:4), meas(:,1), 'LayerSizes', [4, 4], ...
+%!               'Activations', {'gelu', 'sigmoid'}).ModelParameters;
+%! assert_equal (size (MP), [1, 1]);
+%! assert_equal (MP.Activations, {'gelu', 'sigmoid'});
+%! assert_equal (MP.LayerWeightsInitializers, {'he', 'glorot', 'glorot'});
 
 ## ModelParameters reports the weight initializer each layer was built with,
 ## the output layer last.  The engine picks it from the activation and it

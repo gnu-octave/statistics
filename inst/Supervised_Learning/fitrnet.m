@@ -224,9 +224,11 @@ endfunction
 %! Y = 2 * X + 0.5;
 %! Mdl = fitrnet (X, Y, 'IterationLimit', 50);
 %! assert_equal (class (Mdl), 'RegressionNeuralNetwork');
-%! assert_equal (numel (Mdl.ModelParameters.LayerWeights), 2);
-%! assert_equal (size (Mdl.ModelParameters.LayerWeights{1}), [10, 2]);
-%! assert_equal (size (Mdl.ModelParameters.LayerWeights{2}), [1, 11]);
+%! assert_equal (numel (Mdl.LayerWeights), 2);
+%! assert_equal (size (Mdl.LayerWeights{1}), [10, 1]);
+%! assert_equal (size (Mdl.LayerBiases{1}), [10, 1]);
+%! assert_equal (size (Mdl.LayerWeights{2}), [1, 10]);
+%! assert_equal (size (Mdl.LayerBiases{2}), [1, 1]);
 
 ## The driver passes its Name-Value pairs straight through
 %!test
