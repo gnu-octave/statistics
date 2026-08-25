@@ -128,17 +128,6 @@ classdef CompactRegressionGP
     Sigma                 = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactRegressionGP} {property} ModelParameters
-    ##
-    ## Parameters used to train the model
-    ##
-    ## A structure holding the options the fit was performed under.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters       = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactRegressionGP} {property} KernelFunction
     ##
     ## Form of the covariance function
@@ -281,7 +270,6 @@ classdef CompactRegressionGP
       this.BasisFunction = Mdl.BasisFunction;
       this.Beta = Mdl.Beta;
       this.Sigma = Mdl.Sigma;
-      this.ModelParameters = Mdl.ModelParameters;
       this.KernelFunction = Mdl.KernelFunction;
       this.KernelInformation = Mdl.KernelInformation;
       this.PredictMethod = Mdl.PredictMethod;
@@ -469,7 +457,6 @@ classdef CompactRegressionGP
       BasisFunction = obj.BasisFunction;
       Beta = obj.Beta;
       Sigma = obj.Sigma;
-      ModelParameters = obj.ModelParameters;
       KernelFunction = obj.KernelFunction;
       KernelInformation = obj.KernelInformation;
       PredictMethod = obj.PredictMethod;
@@ -484,7 +471,7 @@ classdef CompactRegressionGP
       save ('-binary', fname, 'classdef_name', 'PredictorNames', ...
             'ExpandedPredictorNames', 'ResponseName', ...
             'CategoricalPredictors', 'FitMethod', 'BasisFunction', 'Beta', ...
-            'Sigma', 'ModelParameters', 'KernelFunction', ...
+            'Sigma', 'KernelFunction', ...
             'KernelInformation', 'PredictMethod', 'Alpha', ...
             'ActiveSetVectors', 'ActiveSetMethod', 'ActiveSetSize', ...
             'PredictorLocation', 'PredictorScale', 'ResponseTransform');
