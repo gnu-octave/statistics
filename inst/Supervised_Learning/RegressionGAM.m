@@ -2723,15 +2723,14 @@ endfunction
 %! assert_equal (crossval (Mdl, 'CVPartition', cvp).KFold, 4);
 
 ## The fold models are refitted with the spline parameterisation of the model
-## they came from, DoF following from Knots and Order.
+## they came from.  The compact fold does not report the parameters themselves.
 %!test
 %! load fisheriris
 %! Mdl = fitrgam (meas(1:20,1:3), meas(1:20,4), 'FitMethod', 'splines', ...
 %!                'Knots', 6, 'Order', 3);
 %! CVMdl = crossval (Mdl, 'KFold', 3);
-%! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);
-%! assert_equal (CVMdl.Trained{1}.Order, Mdl.Order);
-%! assert_equal (CVMdl.Trained{1}.DoF, Mdl.DoF);
+%! assert_equal (CVMdl.Trained{1}.FitMethod, 'splines');
+%! assert_equal (isfield (CVMdl.Trained{1}.BaseModel, 'Intercept'), true);
 
 ## Held-out error exceeds the resubstitution error of the same fit.
 %!test

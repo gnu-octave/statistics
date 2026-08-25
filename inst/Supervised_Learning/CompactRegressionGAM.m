@@ -36,11 +36,10 @@ classdef CompactRegressionGAM
   ## The engine that fitted the model is carried over in @code{FitMethod},
   ## and the compact model predicts by the same scheme the full one did.
   ## Under @qcode{'boostedtrees'}, the default, the fit is described by
-  ## @code{TreeModel}, @code{BinEdges}, @code{PairDetectionBinEdges},
-  ## @code{ModelParameters} and @code{ReasonForTermination}.  Under
-  ## @qcode{'splines'} it is described by @code{Knots}, @code{Order},
-  ## @code{DoF}, @code{Formula}, @code{BaseModel}, @code{ModelwInt} and
-  ## @code{IntMatrix}, which MATLAB's compact model does not carry.
+  ## @code{TreeModel}, @code{BinEdges} and @code{PairDetectionBinEdges}.
+  ## Under @qcode{'splines'} it is described by @code{Formula},
+  ## @code{BaseModel}, @code{ModelwInt} and @code{IntMatrix}, which MATLAB's
+  ## compact model does not carry.
   ## Whichever fitted the model, the other set is empty.  A standard
   ## deviation is available from the spline engine alone.
   ##
@@ -148,40 +147,6 @@ classdef CompactRegressionGAM
     Interactions          = zeros (0, 2);
 
     ## -*- texinfo -*-
-    ## @deftp {CompactRegressionGAM} {property} Knots
-    ##
-    ## Knots of the spline fitting
-    ##
-    ## A numeric vector with one entry per predictor, the number of breaks
-    ## the spline of that predictor is fitted over.  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    Knots                 = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionGAM} {property} Order
-    ##
-    ## Order of the spline fitting
-    ##
-    ## A numeric vector with one entry per predictor, the polynomial order of
-    ## the spline of that predictor.  This property is read-only.
-    ##
-    ## @end deftp
-    Order                 = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionGAM} {property} DoF
-    ##
-    ## Degrees of freedom of the spline fitting
-    ##
-    ## A numeric vector with one entry per predictor, the sum of its number
-    ## of knots and its order.  This property is read-only.
-    ##
-    ## @end deftp
-    DoF                   = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} IsStandardDeviationFit
     ##
     ## Flag for a fitted standard deviation model
@@ -253,24 +218,6 @@ classdef CompactRegressionGAM
     ##
     ## @end deftp
     PairDetectionBinEdges = {};
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionGAM} {property} ModelParameters
-    ##
-    ## The parameter structure the full model reports, carried over
-    ## unchanged.  This property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactRegressionGAM} {property} ReasonForTermination
-    ##
-    ## Why each fitting phase stopped, as the full model reports it.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    ReasonForTermination = [];
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} FitMethod
@@ -350,9 +297,6 @@ classdef CompactRegressionGAM
       this.Intercept              = Mdl.Intercept;
       this.Formula                = Mdl.Formula;
       this.Interactions           = Mdl.Interactions;
-      this.Knots                  = Mdl.Knots;
-      this.Order                  = Mdl.Order;
-      this.DoF                    = Mdl.DoF;
       this.IsStandardDeviationFit = Mdl.IsStandardDeviationFit;
       this.BaseModel              = Mdl.BaseModel;
       this.ModelwInt              = Mdl.ModelwInt;
@@ -362,8 +306,6 @@ classdef CompactRegressionGAM
       this.TreeModel             = Mdl.TreeModel;
       this.BinEdges              = Mdl.BinEdges;
       this.PairDetectionBinEdges = Mdl.PairDetectionBinEdges;
-      this.ModelParameters       = Mdl.ModelParameters;
-      this.ReasonForTermination  = Mdl.ReasonForTermination;
       this.NumTrainedTrees = Mdl.NumTrainedTrees;
 
     endfunction
@@ -385,12 +327,6 @@ classdef CompactRegressionGAM
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'ResponseTransform', this.ResponseTransform);
       fprintf ("%+25s: %g\n", 'Intercept', this.Intercept);
-      str = repmat ({'%d'}, 1, numel (this.Knots));
-      str = strcat ('[', strjoin (str, ' '), ']');
-      fprintf ("%+25s: %s\n", 'Knots', sprintf (str, this.Knots));
-      str = repmat ({'%d'}, 1, numel (this.Order));
-      str = strcat ('[', strjoin (str, ' '), ']');
-      fprintf ("%+25s: %s\n", 'Order', sprintf (str, this.Order));
     endfunction
 
   endmethods
@@ -574,16 +510,11 @@ classdef CompactRegressionGAM
         ## Get parameters and intercept vectors from model with interactions
         params = this.ModelwInt.Parameters;
         Interc = this.ModelwInt.Intercept;
-        ## Update length of DoF vector
-        DoF = ones (1, columns (Xfit)) * this.DoF(1);
       else
         ## Get parameters and intercept vectors from base model
         params = this.BaseModel.Parameters;
         Interc = this.BaseModel.Intercept;
-        ## Get DoF from model
-        DoF = this.DoF;
       endif
-
 
       ## Predict values from testing data
       yFit = predict_val (params, Xfit, Interc);
@@ -706,9 +637,6 @@ classdef CompactRegressionGAM
       Intercept              = this.Intercept;
       Formula                = this.Formula;
       Interactions           = this.Interactions;
-      Knots                  = this.Knots;
-      Order                  = this.Order;
-      DoF                    = this.DoF;
       IsStandardDeviationFit = this.IsStandardDeviationFit;
       BaseModel              = this.BaseModel;
       ModelwInt              = this.ModelwInt;
@@ -718,18 +646,14 @@ classdef CompactRegressionGAM
       TreeModel             = this.TreeModel;
       BinEdges              = this.BinEdges;
       PairDetectionBinEdges = this.PairDetectionBinEdges;
-      ModelParameters       = this.ModelParameters;
-      ReasonForTermination  = this.ReasonForTermination;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'ResponseTransform', 'Intercept', ...
-            'Formula', 'Interactions', 'Knots', 'Order', 'DoF', ...
-            'IsStandardDeviationFit', 'BaseModel', 'ModelwInt', ...
-            'IntMatrix', 'RTfun', 'FitMethod', 'TreeModel', 'BinEdges', ...
-            'PairDetectionBinEdges', 'ModelParameters', ...
-            'ReasonForTermination');
+            'Formula', 'Interactions', 'IsStandardDeviationFit', ...
+            'BaseModel', 'ModelwInt', 'IntMatrix', 'RTfun', 'FitMethod', ...
+            'TreeModel', 'BinEdges', 'PairDetectionBinEdges');
     endfunction
 
   endmethods
@@ -865,7 +789,6 @@ endfunction
 %! delete (fname);
 %! assert_equal (class (CMdl2), 'CompactRegressionGAM');
 %! assert_equal (CMdl2.Intercept, CMdl.Intercept);
-%! assert_equal (CMdl2.Knots, CMdl.Knots);
 %! assert_equal (predict (CMdl2, X), predict (CMdl, X));
 
 ## An assigned ResponseTransform reaches the predicted response.
