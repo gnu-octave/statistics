@@ -698,6 +698,16 @@ classdef ClassificationDiscriminant
       this.Gamma = Ge;
       this.Sigma = Sg;
       this.LogDetSigma = Ld;
+
+      ## The delta at which a predictor drops out is read off the linear
+      ## coefficients, and regularizing the covariance moves them, so this
+      ## follows Gamma.  It does NOT follow Delta, which is a threshold
+      ## applied to those coefficients rather than a change to them.
+      if (strcmp (fam, 'linear'))
+        [~, ~, this.DeltaPredictor] = discrimlinear (this.Mu, Sg, ...
+                                        this.Prior, this.DiscrimType, 0);
+      endif
+
       if (! isempty (this.Coeffs))
         this.Coeffs = discrimcoeffs (this.Mu, Sg, Ld, this.Prior, ...
                                      this.DiscrimType, this.Delta, ...
@@ -2252,6 +2262,162 @@ classdef ClassificationDiscriminant
             'CategoricalPredictors', 'ExpandedPredictorNames', 'STfun');
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{err} =} cvshrink (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {[@var{err}, @var{gamma}] =} cvshrink (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {[@var{err}, @var{gamma}, @var{delta}] =} cvshrink (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {[@var{err}, @var{gamma}, @var{delta}, @var{numpred}] =} cvshrink (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {[@dots{}] =} cvshrink (@dots{}, @var{Name}, @var{Value})
+    ##
+    ## Cross validate the regularization of a discriminant.
+    ##
+    ## @code{@var{err} = cvshrink (@var{obj})} cross validates @var{obj} over a
+    ## grid of @qcode{Gamma} values and returns the misclassification rate at
+    ## each of them, so that a regularization can be chosen by what it costs
+    ## on held-out data rather than on the data it was fitted to.
+    ##
+    ## @code{[@var{err}, @var{gamma}, @var{delta}, @var{numpred}] = cvshrink
+    ## (@var{obj})} also returns the grid itself and the number of predictors
+    ## surviving at each point of it.  @var{gamma} is a column with one entry
+    ## per @qcode{Gamma}; @var{err}, @var{delta} and @var{numpred} carry one
+    ## row per @qcode{Gamma} and one column per @qcode{Delta}.
+    ##
+    ## @multitable @columnfractions 0.28 0.72
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'NumGamma'} @tab The number of @qcode{Gamma} intervals, a
+    ## positive integer, 10 by default, giving @qcode{NumGamma + 1} values
+    ## evenly spaced from 0 to 1.
+    ##
+    ## @item @qcode{'NumDelta'} @tab The number of @qcode{Delta} intervals, a
+    ## non-negative integer, 0 by default.  For each @qcode{Gamma} the
+    ## @qcode{Delta} values run from 0 to the point at which every predictor
+    ## has been eliminated, so the grid is not the same in every row.
+    ##
+    ## @item @qcode{'Gamma'} @tab The @qcode{Gamma} values to try, given
+    ## explicitly as a vector, in place of @qcode{'NumGamma'}.
+    ##
+    ## @item @qcode{'Delta'} @tab The @qcode{Delta} values to try, given
+    ## explicitly, in place of @qcode{'NumDelta'}: a vector used for every
+    ## @qcode{Gamma}, or a matrix with one row per @qcode{Gamma}.
+    ## @end multitable
+    ##
+    ## Every point of the grid is cross validated against the same partition,
+    ## so the errors differ by the regularization and not by the split.  The
+    ## partition is drawn at random, so @var{err} is not reproducible across
+    ## runs and does not match MATLAB's; @var{gamma}, @var{delta} and
+    ## @var{numpred} are deterministic and do.
+    ##
+    ## @seealso{ClassificationDiscriminant, fitcdiscr, nLinearCoeffs}
+    ## @end deftypefn
+
+    function [err, gamma, delta, numpred] = cvshrink (this, varargin)
+
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationDiscriminant.cvshrink: Name/Value", ...
+                       " arguments must be given in pairs."));
+      endif
+
+      NumGamma = 10;
+      NumDelta = 0;
+      Gamma = [];
+      Delta = [];
+      for k = 1:2:numel (varargin)
+        switch (lower (varargin{k}))
+          case 'numgamma'
+            NumGamma = varargin{k+1};
+            if (! (isnumeric (NumGamma) && isscalar (NumGamma)
+                   && NumGamma >= 1 && fix (NumGamma) == NumGamma))
+              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
+                             " 'NumGamma' must be a positive integer."));
+            endif
+          case 'numdelta'
+            NumDelta = varargin{k+1};
+            if (! (isnumeric (NumDelta) && isscalar (NumDelta)
+                   && NumDelta >= 0 && fix (NumDelta) == NumDelta))
+              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
+                             " 'NumDelta' must be a non-negative integer."));
+            endif
+          case 'gamma'
+            Gamma = varargin{k+1};
+            if (! (isnumeric (Gamma) && isvector (Gamma) && ! isempty (Gamma)
+                   && all (Gamma >= 0) && all (Gamma <= 1)))
+              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
+                             " 'Gamma' must be a vector of values between", ...
+                             " 0 and 1."));
+            endif
+          case 'delta'
+            Delta = varargin{k+1};
+            if (! (isnumeric (Delta) && ! isempty (Delta) && all (Delta(:) >= 0)))
+              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
+                             " 'Delta' must be non-negative."));
+            endif
+          otherwise
+            error (strcat ("ClassificationDiscriminant.cvshrink: unknown", ...
+                           " parameter name '%s'."), varargin{k});
+        endswitch
+      endfor
+
+      if (isempty (Gamma))
+        gamma = linspace (0, 1, NumGamma + 1)';
+      else
+        gamma = Gamma(:);
+      endif
+      ng = numel (gamma);
+
+      if (isempty (Delta))
+        nd = NumDelta + 1;
+      elseif (isvector (Delta))
+        nd = numel (Delta);
+      else
+        if (rows (Delta) != ng)
+          error (strcat ("ClassificationDiscriminant.cvshrink: a matrix", ...
+                         " 'Delta' must have one row per Gamma value, %d", ...
+                         " here, not %d."), ng, rows (Delta));
+        endif
+        nd = columns (Delta);
+      endif
+
+      err = zeros (ng, nd);
+      delta = zeros (ng, nd);
+      numpred = zeros (ng, nd);
+
+      ## One partition for the whole grid: comparing points cross validated
+      ## against different splits would measure the split as much as the
+      ## regularization.
+      part = cvpartition (this.Y, "KFold", 10);
+
+      for i = 1:ng
+        m = this;
+        m.Gamma = gamma(i);
+
+        if (isempty (Delta))
+          ## Up to the point where the last predictor has gone, which moves
+          ## with Gamma because regularizing the covariance moves the
+          ## coefficients the threshold is applied to.
+          dmax = max (m.DeltaPredictor);
+          if (nd == 1)
+            delta(i,:) = 0;
+          else
+            delta(i,:) = linspace (0, dmax, nd);
+          endif
+        elseif (isvector (Delta))
+          delta(i,:) = Delta(:)';
+        else
+          delta(i,:) = Delta(i,:);
+        endif
+
+        for j = 1:nd
+          mj = m;
+          mj.Delta = delta(i,j);
+          err(i,j) = kfoldLoss (crossval (mj, "CVPartition", part));
+          numpred(i,j) = nLinearCoeffs (mj, delta(i,j));
+        endfor
+      endfor
+
+    endfunction
+
+
   endmethods
 
   methods(Static, Hidden)
@@ -3657,3 +3823,83 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! logp (Mdl, {1, 2, 3, 4})
+
+%!test
+%! ## DeltaPredictor follows Gamma: regularizing the covariance moves the
+%! ## coefficients, and the delta at which a predictor drops out with them.
+%! ## Measured against R2024a at four points of the grid.
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! got = zeros (1, 4);
+%! g = [0, 1/3, 2/3, 1];
+%! for k = 1:4
+%!   m = Mdl;
+%!   m.Gamma = g(k);
+%!   got(k) = max (m.DeltaPredictor);
+%! endfor
+%! assert_equal (got, [7.2926, 5.2537, 4.8816, 5.3354], 1e-4);
+
+%!test
+%! ## cvshrink returns a column per output over the default grid of eleven
+%! ## Gamma values.
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! [err, gamma, delta, numpred] = cvshrink (Mdl);
+%! assert_equal (size (err), [11, 1]);
+%! assert_equal (size (gamma), [11, 1]);
+%! assert_equal (size (delta), [11, 1]);
+%! assert_equal (size (numpred), [11, 1]);
+%! assert_equal (gamma, (0:0.1:1)', 1e-12);
+%! assert_equal (delta, zeros (11, 1));
+%! assert_equal (numpred, repmat (4, 11, 1));
+%! assert_equal (all (err >= 0 & err <= 1), true);
+
+%!test
+%! ## NumGamma sets the number of intervals, so one more value than that.
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! [err, gamma] = cvshrink (Mdl, "NumGamma", 4);
+%! assert_equal (size (err), [5, 1]);
+%! assert_equal (gamma, [0; 0.25; 0.5; 0.75; 1], 1e-12);
+
+%!test
+%! ## The Delta grid runs to the point where the last predictor is gone, and
+%! ## that point moves with Gamma.  Measured against R2024a.
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! [err, gamma, delta, numpred] = cvshrink (Mdl, "NumGamma", 3, "NumDelta", 2);
+%! assert_equal (size (err), [4, 3]);
+%! assert_equal (size (delta), [4, 3]);
+%! assert_equal (delta, [0, 3.6463, 7.2926; 0, 2.6269, 5.2537; ...
+%!                       0, 2.4408, 4.8816; 0, 2.6677, 5.3354], 1e-4);
+%! ## every predictor is in at Delta of zero, and they leave as it grows
+%! assert_equal (numpred(:,1), repmat (4, 4, 1));
+%! assert_equal (all (numpred(:,3) < numpred(:,1)), true);
+
+%!test
+%! ## An explicit Gamma is used as given.
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! [err, gamma] = cvshrink (Mdl, "Gamma", [0, 0.5, 1]);
+%! assert_equal (size (err), [3, 1]);
+%! assert_equal (gamma, [0; 0.5; 1], 1e-12);
+
+%!test
+%! ## An explicit Delta vector is used for every Gamma.
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! [err, gamma, delta] = cvshrink (Mdl, "Gamma", [0, 1], "Delta", [0, 2]);
+%! assert_equal (size (delta), [2, 2]);
+%! assert_equal (delta, [0, 2; 0, 2]);
+
+%!error<ClassificationDiscriminant.cvshrink: Name/Value arguments must be given in pairs.> ...
+%! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "NumGamma")
+%!error<ClassificationDiscriminant.cvshrink: 'NumGamma' must be a positive integer.> ...
+%! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "NumGamma", 0)
+%!error<ClassificationDiscriminant.cvshrink: 'NumDelta' must be a non-negative integer.> ...
+%! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "NumDelta", -1)
+%!error<ClassificationDiscriminant.cvshrink: 'Gamma' must be a vector of values between 0 and 1.> ...
+%! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "Gamma", 2)
+%!error<ClassificationDiscriminant.cvshrink: unknown parameter name 'bogus'.> ...
+%! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "bogus", 1)
+
