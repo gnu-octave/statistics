@@ -308,8 +308,13 @@ classdef RegressionNeuralNetwork
     ## Parameters of the trained network
     ##
     ## A structure as returned by @code{fcnntrain}, holding the layer weights
-    ## and the activation codes, and consumed by @code{fcnnpredict}.  This
-    ## property is read-only.
+    ## and the activation codes, and consumed by @code{fcnnpredict}.
+    ##
+    ## @qcode{LayerWeightsInitializers} names the scheme each layer's weights
+    ## were drawn with, the output layer last: @qcode{'he'} for a rectifying
+    ## activation and @qcode{'glorot'} for a symmetric one.  It is a report,
+    ## not a setting, the engine choosing per layer from the activation and
+    ## offering no way to override it.  This property is read-only.
     ##
     ## @end deftp
     ModelParameters       = [];
@@ -854,6 +859,13 @@ classdef RegressionNeuralNetwork
                        OutputLayerActivation, NumThreads, ...
                        LearningRate, IterationLimit, DisplayInfo, 2, ...
                        SolverOptions);
+
+      ## The weight initializer of each layer is decided by that layer's
+      ## activation inside the engine and cannot be chosen, so it is recorded
+      ## here rather than being taken from an argument.
+      Mdl.LayerWeightsInitializers = fcnnInitializers (Activations, ...
+                                       numel (LayerSizes), ...
+                                       OutputLayerActivation);
 
       ## The solver records a value per iteration.  The series belongs to the
       ## history and ConvergenceInfo reports where the fit ended up, as
@@ -2030,3 +2042,20 @@ endfunction
 %! load fisheriris
 %! Mdl = fitrnet (meas(:,1:3), meas(:,4), 'IterationLimit', 20);
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters reports the weight initializer each layer was built with,
+## the output layer last.  The engine picks it from the activation and it
+## cannot be chosen, so the report is the only way to see it.
+%!test
+%! load fisheriris
+%! MP = fitrnet (meas(:,2:4), meas(:,1)).ModelParameters;
+%! assert_equal (MP.LayerWeightsInitializers, {'he', 'glorot'});
+
+## The output layer defaults to 'none' here, which is symmetric and takes
+## Glorot however many rectifying layers precede it.
+%!test
+%! load fisheriris
+%! Mdl = fitrnet (meas(:,2:4), meas(:,1), 'LayerSizes', [4, 4, 4], ...
+%!                'Activations', 'gelu');
+%! assert_equal (Mdl.ModelParameters.LayerWeightsInitializers, ...
+%! {'he', 'he', 'he', 'glorot'});

@@ -123,6 +123,19 @@
 ## print information during training.  Default is @qcode{false}.
 ## @end multitable
 ##
+##
+## The weights of each layer are drawn from a uniform range whose half-width
+## is set by that layer's activation, and the scheme cannot be chosen: a
+## rectifying activation (@qcode{'relu'}, @qcode{'lrelu'}, @qcode{'prelu'},
+## @qcode{'elu'}, @qcode{'gelu'}) takes the He range
+## @math{sqrt (6 / fan_in)}, because it passes only half of its input, and
+## the remaining activations take the Glorot range
+## @math{sqrt (6 / (fan_in + fan_out))}, which accounts for the backward pass
+## as well.  A network whose layers do not share an activation is therefore
+## built with both schemes.  What each layer was given is reported by the
+## @qcode{LayerWeightsInitializers} field of the fitted model's
+## @qcode{ModelParameters}.
+##
 ## @seealso{RegressionNeuralNetwork, fitcnet, fcnntrain, fcnnpredict}
 ## @end deftypefn
 
