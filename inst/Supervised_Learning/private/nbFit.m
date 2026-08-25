@@ -75,9 +75,10 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
     [Kname, Sname, Wgiven] = nbKernelArgs (Kernel, Support, Width, k, p, ...
                                            classname);
     W = zeros (k, p);
-  elseif (any (strcmp (D, 'mvmn')))
-    ## A categorical predictor has no bandwidth, and MATLAB reports the
-    ## absence as a matrix of NaN rather than as an empty one.
+  else
+    ## A predictor that is not kernel smoothed has no bandwidth, and MATLAB
+    ## reports the absence as a matrix of NaN rather than as an empty one.
+    ## It declares the matrix at its full size whatever the distributions.
     W = NaN (k, p);
   endif
 

@@ -217,7 +217,7 @@ classdef CompactRegressionGAM
     ## model carries none.  This property is read-only.
     ##
     ## @end deftp
-    PairDetectionBinEdges = {};
+    PairDetectionBinEdges = [];
 
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} FitMethod

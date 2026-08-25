@@ -241,7 +241,7 @@ classdef CompactClassificationGAM
     ## model carries no interaction terms.  This property is read-only.
     ##
     ## @end deftp
-    PairDetectionBinEdges = {};
+    PairDetectionBinEdges = [];
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} FitMethod

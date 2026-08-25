@@ -1327,14 +1327,14 @@ endclassdef
 ## Mu and Sigma are the standardization parameters and stay empty, where the
 ## class conditional ones live in DistributionParameters.  BinEdges is a cell
 ## rather than an empty matrix, as code reaching into it with cellfun needs.
-%!test  # MATLAB parity: the properties that are deliberately empty
+%!test  # MATLAB parity: the properties a normal-distribution fit leaves unset
 %! load fisheriris
 %! Mdl = fitcnb (meas, species);
 %! assert_equal (Mdl.Mu, []);
 %! assert_equal (Mdl.Sigma, []);
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
-%! assert_equal (Mdl.Width, []);
+%! assert_equal (Mdl.Width, NaN (3, 4));
 %! assert_equal (Mdl.CategoricalLevels, cell (1, 4));
 
 %!test  # MATLAB parity: the fitted normal parameters and the weights

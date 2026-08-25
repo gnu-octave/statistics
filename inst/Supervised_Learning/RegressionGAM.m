@@ -452,7 +452,7 @@ classdef RegressionGAM
     ## This property is read-only.
     ##
     ## @end deftp
-    PairDetectionBinEdges = {};
+    PairDetectionBinEdges = [];
 
     ## -*- texinfo -*-
     ## @deftp {RegressionGAM} {property} ModelParameters
@@ -1105,7 +1105,7 @@ classdef RegressionGAM
             ranked = ranked(1:wanted, :);
           endif
           pairs = ranked;
-          this.PairDetectionBinEdges = S.BinEdges;
+          this.PairDetectionBinEdges = S.BinEdges(:);
         endif
 
         reason = this.ReasonForTermination;
@@ -1116,7 +1116,7 @@ classdef RegressionGAM
                              MP.InitialLearnRateForInteractions, ...
                              MP.MaxNumSplitsPerInteraction);
           this.Intercept = this.Intercept + I.Intercept;
-          this.PairDetectionBinEdges = I.PairBinEdges;
+          this.PairDetectionBinEdges = I.PairBinEdges(:);
           this.TreeModel.PairValues = I.PairValues;
           this.TreeModel.PairIntercept = I.Intercept;
           reason.InteractionTrees = I.ReasonForTermination;
@@ -1850,7 +1850,7 @@ classdef RegressionGAM
       M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
-      this.BinEdges  = M.BinEdges;
+      this.BinEdges  = M.BinEdges(:);   ## a column cell, as MATLAB reports it
       this.Intercept = M.Intercept;
       reason = struct ('PredictorTrees', M.ReasonForTermination, ...
                        'InteractionTrees', '');
@@ -1883,7 +1883,7 @@ classdef RegressionGAM
           ranked = ranked(1:wanted, :);
         endif
         pairs = ranked;
-        this.PairDetectionBinEdges = S.BinEdges;
+        this.PairDetectionBinEdges = S.BinEdges(:);
         if (isempty (pairs))
           warning (strcat ("RegressionGAM: model does not include", ...
                            " interaction terms because all interaction", ...
@@ -1897,7 +1897,7 @@ classdef RegressionGAM
         I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI);
         this.Intercept = this.Intercept + I.Intercept;
         pairShift = I.Intercept;
-        this.PairDetectionBinEdges = I.PairBinEdges;
+        this.PairDetectionBinEdges = I.PairBinEdges(:);
         pairValues = I.PairValues;
         reason.InteractionTrees = I.ReasonForTermination;
         ntrees.InteractionTrees = I.NumTrees;
