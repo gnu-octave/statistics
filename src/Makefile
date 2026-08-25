@@ -4,7 +4,7 @@
 OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            svmtrain.oct fcnntrain.oct fcnnpredict.oct \
            gamtrain.oct gampredict.oct gamboosttrain.oct gamboostpredict.oct \
-           gamboostpairs.oct gamboostinter.oct __lbfgs__.oct
+           gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -59,6 +59,10 @@ gampredict.oct: gampredict.cc gam.cpp
 # an edit to it must rebuild the oct-file.
 __lbfgs__.oct: __lbfgs__.cc lbfgs.h
 	$(MKOCTFILE) __lbfgs__.cc
+
+# The Barnes-Hut summation behind tsne's 'barneshut' algorithm.
+__bhtsne__.oct: __bhtsne__.cc
+	$(MKOCTFILE) __bhtsne__.cc
 
 # Clean target
 clean:

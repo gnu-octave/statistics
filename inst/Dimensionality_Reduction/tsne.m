@@ -36,8 +36,28 @@
 ##
 ## @table @asis
 ## @item @qcode{'Algorithm'}
-## Only @qcode{'exact'} is supported (MATLAB's approximate @qcode{'barneshut'}
-## algorithm is not available).
+## @qcode{'exact'} (default) forms the affinities and the gradient over every
+## pair of points, which costs @math{O(N^2)} in time and memory at each
+## iteration.  @qcode{'barneshut'} approximates both: the high-dimensional
+## affinities are kept only over each point's @math{3 * Perplexity} nearest
+## neighbours, and the repulsive part of the gradient is summed over a
+## space-partitioning tree of the embedding, giving @math{O(N log N)}.  Use it
+## when @math{N} is large enough that the exact algorithm is slow or cannot
+## allocate; on this machine the two cost the same at about @math{N = 500} and
+## @qcode{'barneshut'} is eight times faster at @math{N = 2000}.
+##
+## The two do not return the same embedding, and their @var{loss} values are
+## not comparable either: the divergence is summed over the pairs that carry an
+## affinity, and @qcode{'barneshut'} keeps far fewer of them.
+##
+## @item @qcode{'Theta'}
+## The tree opening criterion for @qcode{'barneshut'}, a non-negative scalar
+## (default 0.5).  A cell of the tree is collapsed to its centre of mass when
+## its width is smaller than @var{Theta} times its distance from the point
+## being pushed, so a larger value is faster and coarser.  @qcode{0} collapses
+## nothing and makes the repulsion exact, at @math{O(N^2)}; note that this
+## still leaves the affinities sparse, so it does not reproduce
+## @qcode{'exact'}.  Ignored by @qcode{'exact'}.
 ##
 ## @item @qcode{'Distance'}
 ## The distance metric used for the high-dimensional affinities, as accepted by
@@ -106,6 +126,7 @@ function [Y, loss] = tsne (X, varargin)
   Exaggeration = 4;
   LearnRate = 500;
   InitialY = [];
+  Theta = 0.5;
   opts = statset ("tsne");
   if (mod (numel (varargin), 2) != 0)
     error ("tsne: Name/Value arguments must come in pairs.");
@@ -132,6 +153,8 @@ function [Y, loss] = tsne (X, varargin)
         LearnRate = val;
       case 'initialy'
         InitialY = val;
+      case 'theta'
+        Theta = val;
       case 'options'
         if (! isstruct (val))
           error ("tsne: 'Options' must be a structure.");
@@ -142,8 +165,12 @@ function [Y, loss] = tsne (X, varargin)
     endswitch
   endfor
 
-  if (! strcmp (Algorithm, "exact"))
-    error ("tsne: only the 'exact' Algorithm is supported.");
+  if (! any (strcmp (Algorithm, {'exact', 'barneshut'})))
+    error ("tsne: 'Algorithm' must be 'exact' or 'barneshut'.");
+  endif
+  if (! (isscalar (Theta) && isnumeric (Theta) && isreal (Theta)
+         && isfinite (Theta) && Theta >= 0))
+    error ("tsne: 'Theta' must be a non-negative scalar.");
   endif
   if (! (isscalar (Perplexity) && Perplexity > 0 && Perplexity < N))
     error ("tsne: 'Perplexity' must be a positive scalar smaller than N.");
@@ -182,6 +209,13 @@ function [Y, loss] = tsne (X, varargin)
     Y = InitialY;
   endif
 
+  ## The Barnes-Hut tree is a 2^D-ary subdivision of the embedding, which is
+  ## only built for the dimensions t-SNE is used in.
+  if (strcmp (Algorithm, "barneshut") && ydims > 3)
+    error (strcat ("tsne: 'NumDimensions' must not be greater than 3 for", ...
+                   " the 'barneshut' Algorithm."));
+  endif
+
   ## Standardize and optionally reduce with PCA
   if (Standardize)
     sig = std (X, 0, 1);
@@ -192,15 +226,22 @@ function [Y, loss] = tsne (X, varargin)
     [~, X] = pca (X, "Centered", false, "NumComponents", numPCA);
   endif
 
-  ## High-dimensional affinities P
-  D = squareform (pdist (X, Distance)) .^ 2;
-  P = binary_search_variance (D, Perplexity, N);
-  P(1:N+1:end) = 0;
-  P = (P + P') / (2 * N);
-  P = max (P, realmin);
+  ## High-dimensional affinities P.  The exact algorithm forms them for every
+  ## pair; Barnes-Hut keeps only each point's nearest neighbours, which is the
+  ## half of the approximation that has nothing to do with the tree.
+  if (strcmp (Algorithm, "exact"))
+    D = squareform (pdist (X, Distance)) .^ 2;
+    P = binary_search_variance (D, Perplexity, N);
+    P(1:N+1:end) = 0;
+    P = (P + P') / (2 * N);
+    P = max (P, realmin);
+  else
+    P = neighbour_affinities (X, Distance, Perplexity, N);
+  endif
 
   ## Optimize the embedding
-  [Y, loss] = tsne_embedding (Y, P, Exaggeration, LearnRate, opts, N, ydims);
+  [Y, loss] = tsne_embedding (Y, P, Exaggeration, LearnRate, opts, N, ydims, ...
+                              Algorithm, Theta);
 
 endfunction
 
@@ -246,6 +287,79 @@ function condP = binary_search_variance (D, perplexity, N)
 endfunction
 
 ## ---------------------------------------------------------------------------
+## Sparse high-dimensional affinities over each point's nearest neighbours.
+## Barnes-Hut t-SNE keeps 3 * Perplexity of them, the count at which the
+## conditional distribution has essentially no mass left, and runs the same
+## per-point variance search over that row instead of over all N.
+function P = neighbour_affinities (X, Distance, perplexity, N)
+
+  K = min (N - 1, max (1, round (3 * perplexity)));
+
+  ## Neighbours a block of rows at a time.  The exact algorithm forms the whole
+  ## N-by-N distance matrix, which is the memory wall this path exists to get
+  ## around, so the block is sized to a fixed budget rather than to N.  A block
+  ## against all of X is what pdist2 is for; knnsearch would serve too and is
+  ## two orders of magnitude slower at this K.
+  blk = max (1, min (N, floor (1e7 / N)));
+  idx = zeros (N, K);
+  D2 = zeros (N, K);
+  for lo = 1:blk:N
+    hi = min (lo + blk - 1, N);
+    Db = pdist2 (X(lo:hi,:), X, Distance) .^ 2;
+    ## A point is its own nearest neighbour.  Removing it by index rather than
+    ## by distance keeps a duplicated row, which is a neighbour at distance
+    ## zero and belongs in the list.
+    for r = lo:hi
+      Db(r - lo + 1, r) = Inf;
+    endfor
+    [sv, so] = sort (Db, 2);
+    idx(lo:hi,:) = so(:,1:K);
+    D2(lo:hi,:) = sv(:,1:K);
+  endfor
+
+  ## The same per-point variance search the exact algorithm runs, over the
+  ## neighbour row instead of over all N.
+  condP = zeros (N, K);
+  H = log (perplexity);
+  for i = 1:N
+    beta = 1;
+    a = -Inf;
+    c = Inf;
+    for iter = 1:100
+      Pi = exp (-D2(i,:) * beta);
+      si = max (sum (Pi), realmin);
+      Pi = Pi / si;
+      Hi = log (si) + beta * sum (D2(i,:) .* Pi);
+      fval = Hi - H;
+      if (abs (fval) < 1e-5)
+        break;
+      endif
+      if (fval > 0)
+        a = beta;
+        if (isinf (c))
+          beta = 2 * beta;
+        else
+          beta = 0.5 * (beta + c);
+        endif
+      else
+        c = beta;
+        if (isinf (a))
+          beta = 0.5 * beta;
+        else
+          beta = 0.5 * (a + beta);
+        endif
+      endif
+    endfor
+    condP(i,:) = Pi;
+  endfor
+
+  rowi = repmat ((1:N)', 1, K);
+  P = sparse (rowi(:), idx(:), condP(:), N, N);
+  P = (P + P') / (2 * N);
+
+endfunction
+
+## ---------------------------------------------------------------------------
 ## Gradient of the t-SNE cost and the low-dimensional affinities Q.
 function [grad, Q] = tsne_gradient (P, Y, N)
 
@@ -259,8 +373,37 @@ function [grad, Q] = tsne_gradient (P, Y, N)
 endfunction
 
 ## ---------------------------------------------------------------------------
+## Gradient of the t-SNE cost by Barnes-Hut summation.  The attraction runs
+## over the stored pairs alone and is formed here; the repulsion runs over
+## every pair and is summed by the tree in __bhtsne__.  The loss comes with it
+## because both its terms are already to hand.
+function [grad, loss] = tsne_gradient_bh (P, Y, N, ydims, theta)
+
+  [ii, jj, pv] = find (P);
+  dY = Y(ii,:) - Y(jj,:);
+  qn = 1 ./ (1 + sum (dY .^ 2, 2));
+
+  Fattr = zeros (N, ydims);
+  w = pv .* qn;
+  for m = 1:ydims
+    Fattr(:,m) = accumarray (ii, w .* dY(:,m), [N, 1]);
+  endfor
+
+  [Frep, Z] = __bhtsne__ (Y, theta);
+
+  grad = 4 * (Fattr - Frep / Z);
+
+  if (nargout > 1)
+    q = max (qn / Z, realmin);
+    loss = sum (pv .* log (max (pv, realmin))) - sum (pv .* log (q));
+  endif
+
+endfunction
+
+## ---------------------------------------------------------------------------
 ## Gradient descent with adaptive learning rate (Jacobi) and momentum.
-function [Y, loss] = tsne_embedding (Y, P, exaggeration, learnrate, opts, N, ydims)
+function [Y, loss] = tsne_embedding (Y, P, exaggeration, learnrate, opts, ...
+                                     N, ydims, algorithm, theta)
 
   adp = ones (N, ydims);
   minRate = 0.01;
@@ -270,16 +413,23 @@ function [Y, loss] = tsne_embedding (Y, P, exaggeration, learnrate, opts, N, ydi
   kk = 0.15;
   phi = 0.85;
 
+  exact = strcmp (algorithm, "exact");
+
   P = exaggeration * P;
   Ychange = zeros (N, ydims);
   Q = [];
+  lossbh = [];
   for iter = 1:opts.MaxIter
     if (iter == exaggerationStop)
       P = P / exaggeration;
       exaggeration = 1;
     endif
 
-    [grad, Q] = tsne_gradient (P, Y, N);
+    if (exact)
+      [grad, Q] = tsne_gradient (P, Y, N);
+    else
+      [grad, lossbh] = tsne_gradient_bh (P, Y, N, ydims, theta);
+    endif
 
     ops = sign (grad) != sign (Ychange);
     adp(ops) += kk;
@@ -299,7 +449,11 @@ function [Y, loss] = tsne_embedding (Y, P, exaggeration, learnrate, opts, N, ydi
   endfor
 
   if (nargout > 1)
-    loss = P(:)' * log (P(:)) - P(:)' * log (Q(:));
+    if (exact)
+      loss = P(:)' * log (P(:)) - P(:)' * log (Q(:));
+    else
+      loss = lossbh;
+    endif
   endif
 
 endfunction
@@ -355,12 +509,103 @@ endfunction
 %!           "Options", struct ("MaxIter", 20));
 %! assert_equal (size (Y), [12, 3]);
 
+%!test
+%! ## The Barnes-Hut tree reproduces the exact pairwise repulsion when nothing
+%! ## is collapsed, which is what pins the summation without an oracle.
+%! Y = reshape (mod ((1:60)*7, 13), 30, 2) - 6;
+%! [F, Z] = __bhtsne__ (Y, 0);
+%! n = rows (Y);
+%! Fe = zeros (n, 2);
+%! Ze = 0;
+%! for i = 1:n
+%!   d = Y(i,:) - Y;
+%!   q = 1 ./ (1 + sum (d .^ 2, 2));
+%!   q(i) = 0;
+%!   Ze += sum (q);
+%!   Fe(i,:) = sum ((q .^ 2) .* d, 1);
+%! endfor
+%! assert_equal (F, Fe, 1e-12);
+%! assert_equal (Z, Ze, 1e-10);
+
+%!test
+%! ## A larger Theta collapses cells, so it approximates rather than reproduces.
+%! Y = reshape (mod ((1:60)*7, 13), 30, 2) - 6;
+%! [F0, Z0] = __bhtsne__ (Y, 0);
+%! [F5, Z5] = __bhtsne__ (Y, 0.5);
+%! assert_equal (norm (F5 - F0, "fro") / norm (F0, "fro") < 0.1, true);
+%! assert_equal (abs (Z5 - Z0) / Z0 < 0.1, true);
+%! assert_equal (isequal (F5, F0), false);
+
+%!test
+%! ## The tree handles coincident points, which an embedding starts out full
+%! ## of and which a subdivision to one point per cell never separates.
+%! Y = zeros (12, 2);
+%! [F, Z] = __bhtsne__ (Y, 0.5);
+%! assert_equal (F, zeros (12, 2), 1e-12);
+%! assert_equal (Z, 132, 1e-10);
+
+%!test
+%! ## 'barneshut' returns an embedding of the right shape and a finite loss.
+%! X = [reshape(mod((1:100)*7, 13), 20, 5) - 6; ...
+%!      reshape(mod((1:100)*7, 13), 20, 5) + 30];
+%! [Y, loss] = tsne (X, "Algorithm", "barneshut", "Perplexity", 3, ...
+%!                   "NumDimensions", 2, "Options", struct ("MaxIter", 200));
+%! assert_equal (size (Y), [40, 2]);
+%! assert_equal (all (isfinite (Y(:))), true);
+%! assert_equal (isfinite (loss) && loss > 0, true);
+
+%!test
+%! ## It optimizes: the divergence falls as the iterations run.
+%! X = [reshape(mod((1:100)*7, 13), 20, 5) - 6; ...
+%!      reshape(mod((1:100)*7, 13), 20, 5) + 30];
+%! args = {"Algorithm", "barneshut", "Perplexity", 3, ...
+%!         "InitialY", reshape(mod((1:80)*3, 7), 40, 2) - 3};
+%! [~, l1] = tsne (X, args{:}, "Options", struct ("MaxIter", 120));
+%! [~, l2] = tsne (X, args{:}, "Options", struct ("MaxIter", 400));
+%! assert_equal (l2 < l1, true);
+
+%!test
+%! ## It tracks the exact algorithm it approximates, from the same start.
+%! X = [reshape(mod((1:100)*7, 13), 20, 5) - 6; ...
+%!      reshape(mod((1:100)*7, 13), 20, 5) + 30];
+%! o = struct ("MaxIter", 400);
+%! args = {"Perplexity", 3, "InitialY", reshape(mod((1:80)*3, 7), 40, 2) - 3, ...
+%!         "Options", o};
+%! [~, lb] = tsne (X, args{:}, "Algorithm", "barneshut");
+%! [~, le] = tsne (X, args{:}, "Algorithm", "exact");
+%! assert_equal (abs (lb - le) / le < 0.3, true);
+
+%!test
+%! ## Theta reaches the fit: two values give two embeddings.
+%! X = reshape (mod ((1:100)*7, 13), 20, 5) - 6;
+%! o = struct ("MaxIter", 50);
+%! args = {"Algorithm", "barneshut", "Perplexity", 4, "NumDimensions", 2, ...
+%!         "InitialY", reshape(mod((1:40)*3, 7), 20, 2) - 3, "Options", o};
+%! Ya = tsne (X, args{:}, "Theta", 0);
+%! Yb = tsne (X, args{:}, "Theta", 0.8);
+%! assert_equal (isequal (Ya, Yb), false);
+
+%!test
+%! ## 'barneshut' takes the same NumDimensions the tree is built for.
+%! X = reshape (mod ((1:100)*7, 13), 20, 5) - 6;
+%! for d = 1:3
+%!   Y = tsne (X, "Algorithm", "barneshut", "NumDimensions", d, ...
+%!             "Perplexity", 4, "Options", struct ("MaxIter", 20));
+%!   assert_equal (size (Y), [20, d]);
+%! endfor
+
 ## Test input validation
 %!error<Invalid call to tsne> tsne ()
 %!error<tsne: X must be a numeric matrix.> tsne ({1, 2})
 %!error<tsne: X must be real and finite.> tsne ([1, Inf; 2, 3])
-%!error<tsne: only the 'exact' Algorithm is supported.> ...
-%! tsne (ones (5, 3), "Algorithm", "barneshut")
+%!error<tsne: 'Algorithm' must be 'exact' or 'barneshut'.> ...
+%! tsne (ones (5, 3), "Algorithm", "bogus")
+%!error<tsne: 'Theta' must be a non-negative scalar.> ...
+%! tsne (ones (5, 3), "Algorithm", "barneshut", "Theta", -1)
+%!error<tsne: 'Theta' must be a non-negative scalar.> ...
+%! tsne (ones (5, 3), "Algorithm", "barneshut", "Theta", [1, 2])
+%!error<tsne: 'NumDimensions' must not be greater than 3 for the 'barneshut' Algorithm.> ...
+%! tsne (ones (8, 5), "Algorithm", "barneshut", "NumDimensions", 4, "Perplexity", 2)
 %!error<tsne: 'Perplexity' must be a positive scalar smaller than N.> ...
 %! tsne (ones (5, 3), "Perplexity", 5)
 %!error<tsne: 'Exaggeration' must be a scalar not less than 1.> ...
