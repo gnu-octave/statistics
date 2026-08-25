@@ -483,6 +483,19 @@ classdef RegressionGP
     ## @end deftp
     PredictorScale        = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGP} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   properties (GetAccess = public, SetAccess = public)
@@ -1187,6 +1200,7 @@ classdef RegressionGP
       PredictorScale = obj.PredictorScale;
       ResponseTransform = obj.ResponseTransform;
 
+      HyperparameterOptimizationResults = obj.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'W', 'PredictorNames', 'ExpandedPredictorNames', ...
             'ResponseName', 'CategoricalPredictors', 'BinEdges', ...
@@ -1195,7 +1209,8 @@ classdef RegressionGP
             'PredictMethod', 'Alpha', 'ActiveSetVectors', ...
             'ActiveSetMethod', 'ActiveSetSize', 'IsActiveSetVector', ...
             'ActiveSetHistory', 'BCDInformation', ...
-            'PredictorLocation', 'PredictorScale', 'ResponseTransform');
+            'PredictorLocation', 'PredictorScale', 'ResponseTransform', ...
+            'HyperparameterOptimizationResults');
 
     endfunction
 
@@ -2081,3 +2096,10 @@ endfunction
 %!           'Holdout', 0.2)
 %!error<RegressionGP.crossval: invalid parameter name in optional paired arguments.> ...
 %! crossval (RegressionGP (ones (10, 2), ones (10, 1)), 'bogus', 1)
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitrgp (meas(:,1:3), meas(:,4));
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

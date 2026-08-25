@@ -426,6 +426,19 @@ classdef ClassificationNeuralNetwork
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1765,6 +1778,7 @@ classdef ClassificationNeuralNetwork
       ## the warning that says so is expected and is not shown.
       ws_ = warning ('off', 'Octave:save:classdef:unsupported');
       unwind_protect
+        HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
         save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
               'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
               'ResponseName', ...
@@ -1774,7 +1788,8 @@ classdef ClassificationNeuralNetwork
               'ConvergenceInfo', 'TrainingHistory', 'DisplayInfo', ...
               'LayerWeights', 'LayerBiases', ...
               'Cost', 'Prior', 'W', 'CategoricalPredictors', ...
-              'ExpandedPredictorNames', 'STfun');
+              'ExpandedPredictorNames', 'STfun', ...
+              'HyperparameterOptimizationResults');
       unwind_protect_cleanup
         warning (ws_);
       end_unwind_protect
@@ -2624,3 +2639,10 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcnet (meas, species);
 %! Mdl.Cost = ones (3);
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, 'IterationLimit', 20);
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

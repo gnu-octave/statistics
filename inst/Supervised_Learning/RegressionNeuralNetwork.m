@@ -446,6 +446,19 @@ classdef RegressionNeuralNetwork
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {RegressionNeuralNetwork} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1291,6 +1304,7 @@ classdef RegressionNeuralNetwork
       ## the warning that says so is expected and is not shown.
       ws_ = warning ('off', 'Octave:save:classdef:unsupported');
       unwind_protect
+        HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
         save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
               'RowsUsed', 'BinEdges', 'NumPredictors', 'PredictorNames', ...
               'ResponseName', ...
@@ -1299,7 +1313,8 @@ classdef RegressionNeuralNetwork
               'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
               'ConvergenceInfo', 'TrainingHistory', 'DisplayInfo', ...
               'LayerWeights', 'LayerBiases', ...
-              'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
+              'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun', ...
+              'HyperparameterOptimizationResults');
       unwind_protect_cleanup
         warning (ws_);
       end_unwind_protect
@@ -2008,3 +2023,10 @@ endfunction
 %! Mdl = fitrnet (meas(:,1:3), meas(:,4), 'IterationLimit', 10);
 %! assert_equal (class (Mdl.BinEdges), 'cell');
 %! assert_equal (Mdl.BinEdges, {});
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitrnet (meas(:,1:3), meas(:,4), 'IterationLimit', 20);
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

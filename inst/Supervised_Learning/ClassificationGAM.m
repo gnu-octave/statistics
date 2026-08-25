@@ -499,6 +499,19 @@ classdef ClassificationGAM
     ## @end deftp
     TreeModel = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -2090,6 +2103,7 @@ classdef ClassificationGAM
       LearningRate    = this.LearningRate;
       NumIterations   = this.NumIterations;
 
+      HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
             'ResponseName', ...
@@ -2099,7 +2113,8 @@ classdef ClassificationGAM
             'Intercept', 'W', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'STfun', 'FitMethod', ...
             'TreeModel', 'ModelParameters', 'ReasonForTermination', ...
-            'PairDetectionBinEdges');
+            'PairDetectionBinEdges', ...
+            'HyperparameterOptimizationResults');
     endfunction
 
     ## -*- texinfo -*-
@@ -3639,3 +3654,11 @@ endfunction
 %! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', 'NumPrint', 0)
 %!error<ClassificationGAM: 'MaxPValue' must be between 0 and 1.> ...
 %! fitcgam ([1;2;3;4], [0;0;1;1], 'FitMethod', 'boostedtrees', 'MaxPValue', 2)
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! b = ! strcmp (species, 'virginica');
+%! Mdl = fitcgam (meas(b,:), species(b));
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

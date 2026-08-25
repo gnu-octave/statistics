@@ -423,6 +423,19 @@ classdef ClassificationSVM
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## The LIBSVM structure the engine works in.  It is ours alone, with no
@@ -1979,6 +1992,7 @@ classdef ClassificationSVM
       ## Save classdef name and all model properties as individual variables
       STfun          = this.STfun;
 
+      HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
             'ResponseName', ...
@@ -1987,7 +2001,8 @@ classdef ClassificationSVM
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
             'W', 'Prior', 'Cost', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'KernelParameters', ...
-            'BoxConstraints', 'OutlierFraction', 'Nu', 'STfun');
+            'BoxConstraints', 'OutlierFraction', 'Nu', 'STfun', ...
+            'HyperparameterOptimizationResults');
     endfunction
 
   endmethods
@@ -3028,3 +3043,11 @@ endclassdef
 %! delete (fname);
 %! assert_equal (M2.KernelParameters, Mdl.KernelParameters);
 %! assert_equal (M2.BoxConstraints, Mdl.BoxConstraints);
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! b = ! strcmp (species, 'virginica');
+%! Mdl = fitcsvm (meas(b,:), species(b));
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

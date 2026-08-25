@@ -371,6 +371,19 @@ classdef ClassificationDiscriminant
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is fitted.  Each one is
@@ -2252,6 +2265,7 @@ classdef ClassificationDiscriminant
       STfun          = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
+      HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'W', 'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
             'ResponseName', ...
@@ -2259,7 +2273,8 @@ classdef ClassificationDiscriminant
             'BaseSigma', 'Mu', ...
             'Coeffs', 'Delta', 'DiscrimType', 'Gamma', 'MinGamma', ...
             'LogDetSigma', 'XCentered', 'BetweenSigma', ...
-            'CategoricalPredictors', 'ExpandedPredictorNames', 'STfun');
+            'CategoricalPredictors', 'ExpandedPredictorNames', 'STfun', ...
+            'HyperparameterOptimizationResults');
     endfunction
 
     ## -*- texinfo -*-
@@ -3903,3 +3918,9 @@ endclassdef
 %!error<ClassificationDiscriminant.cvshrink: unknown parameter name 'bogus'.> ...
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "bogus", 1)
 
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

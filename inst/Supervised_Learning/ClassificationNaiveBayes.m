@@ -209,6 +209,19 @@ classdef ClassificationNaiveBayes
     ## @end deftp
     ClassNames = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNaiveBayes} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is fitted.  Each one is
@@ -1235,13 +1248,15 @@ classdef ClassificationNaiveBayes
       STfun                  = this.STfun;
 
       ## Save classdef name and all model properties as individual variables
+      HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'RowsUsed', 'W', ...
             'ModelParameters', 'NumObservations', 'BinEdges', ...
             'PredictorNames', 'CategoricalPredictors', 'ResponseName', ...
             'ExpandedPredictorNames', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'DistributionNames', 'Mu', 'Sigma', ...
             'DistributionParameters', 'CategoricalLevels', 'Kernel', ...
-            'Support', 'Width', 'STfun');
+            'Support', 'Width', 'STfun', ...
+            'HyperparameterOptimizationResults');
 
     endfunction
 
@@ -1931,3 +1946,10 @@ endclassdef
 %!         'PredictorNames', {'height', 'weight'})
 %!error<ClassificationNaiveBayes: a normal distribution cannot be fit for the combination of class 1 and predictor x1. The data has zero variance.> ...
 %! fitcnb ([5, 2; 5, 3; 5, 4; 10, 20; 11, 25], [1; 1; 1; 2; 2])
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitcnb (meas, species);
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

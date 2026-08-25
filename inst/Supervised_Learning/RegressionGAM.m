@@ -518,6 +518,19 @@ classdef RegressionGAM
     ## @end deftp
     TreeModel = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGAM} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -1654,6 +1667,7 @@ classdef RegressionGAM
       ReasonForTermination  = obj.ReasonForTermination;
 
       ## Save classdef name and all model properties as individual variables
+      HyperparameterOptimizationResults = obj.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'BinEdges', 'NumPredictors', 'PredictorNames', ...
             'ResponseName', ...
@@ -1662,7 +1676,8 @@ classdef RegressionGAM
             'ExpandedPredictorNames', 'W', 'ResponseTransform', ...
             'Intercept', 'IsStandardDeviationFit', 'RTfun', ...
             'FitMethod', 'TreeModel', 'PairDetectionBinEdges', ...
-            'ModelParameters', 'ReasonForTermination');
+            'ModelParameters', 'ReasonForTermination', ...
+            'HyperparameterOptimizationResults');
     endfunction
 
     ## -*- texinfo -*-
@@ -2921,3 +2936,10 @@ endfunction
 %! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', 'NumPrint', 0)
 %!error<RegressionGAM: 'MaxPValue' must be between 0 and 1.> ...
 %! fitrgam ([1;2;3;4], [1;2;3;4], 'FitMethod', 'boostedtrees', 'MaxPValue', 2)
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitrgam (meas(:,1:3), meas(:,4));
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

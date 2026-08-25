@@ -380,6 +380,19 @@ classdef RegressionSVM
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {RegressionSVM} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## The LIBSVM structure the engine works in.  It is ours alone, with no
@@ -1210,6 +1223,7 @@ classdef RegressionSVM
       RTfun                  = this.RTfun;
 
       ## Save classdef name and all model properties as individual variables
+      HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', ...
             'NumObservations', 'RowsUsed', 'BinEdges', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
@@ -1217,7 +1231,8 @@ classdef RegressionSVM
             'Model', 'Alpha', 'Beta', 'Bias', 'IsSupportVector', ...
             'SupportVectors', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'KernelParameters', ...
-            'BoxConstraints', 'W', 'RTfun');
+            'BoxConstraints', 'W', 'RTfun', ...
+            'HyperparameterOptimizationResults');
     endfunction
 
   endmethods
@@ -1809,3 +1824,10 @@ endclassdef
 %! delete (fname);
 %! assert_equal (M2.KernelParameters, Mdl.KernelParameters);
 %! assert_equal (M2.BoxConstraints, Mdl.BoxConstraints);
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4));
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);

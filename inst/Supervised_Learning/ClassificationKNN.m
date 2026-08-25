@@ -270,6 +270,19 @@ classdef ClassificationKNN
     ## @end deftp
     BinEdges        = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} HyperparameterOptimizationResults
+    ##
+    ## Results of the hyperparameter optimization
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it holds what an automatic search over the hyperparameters found.  This
+    ## class fits the parameters it is given and runs no such search, so there
+    ## is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    HyperparameterOptimizationResults = [];
+
   endproperties
 
   ## Properties a user may set after the model is built.  Each one is
@@ -2509,6 +2522,7 @@ classdef ClassificationKNN
       ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
+      HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'W', 'RowsUsed', 'Sigma', 'Mu', 'NumPredictors', ...
             'PredictorNames', 'BinEdges', 'ResponseName', 'ClassNames', ...
@@ -2517,7 +2531,8 @@ classdef ClassificationKNN
             'DistanceWeight', 'DWfun', 'DistParameter', 'NSMethod', ...
             'IncludeTies', ...
             'BucketSize', 'CacheSize', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STfun');
+            'ExpandedPredictorNames', 'STfun', ...
+            'HyperparameterOptimizationResults');
     endfunction
 
   endmethods
@@ -4128,3 +4143,10 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcknn (meas, species);
 %! Mdl.Cost = ones (3);
+
+## HyperparameterOptimizationResults is declared for MATLAB compatibility and
+## stays empty, this class running no search over its hyperparameters.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
