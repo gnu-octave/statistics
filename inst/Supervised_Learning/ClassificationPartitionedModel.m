@@ -879,12 +879,11 @@ classdef ClassificationPartitionedModel
     function [label, Score, Cost] = kfoldPredict (this)
 
       ## Input validation
-      ## Models whose compact form reports no cost.  CompactClassificationGAM
-      ## returns a label and a score only, so asking it for a third output
-      ## raised and kfoldPredict could not run on a cross-validated GAM.
-      no_cost_models = {'GAM', 'NeuralNetwork', 'SVM'};
-      no_cost = any (strcmp (this.CrossValidatedModel, no_cost_models));
-      if (no_cost && nargout > 2)
+      ## A cross-validated GAM reports no cost in MATLAB either: predict
+      ## refuses a third output on the full and the compact class alike, and
+      ## so does kfoldPredict.  Measured on R2024a.
+      refuse_cost = {'GAM', 'SVM'};
+      if (any (strcmp (this.CrossValidatedModel, refuse_cost)) && nargout > 2)
         error (strcat ("ClassificationPartitionedModel.kfoldPredict:", ...
                        " 'Cost' output is not supported for %s cross", ...
                        " validated models."), this.CrossValidatedModel);
@@ -915,9 +914,16 @@ classdef ClassificationPartitionedModel
         testIdx = test (this.Partition, k);
         model = this.Trained{k};
 
-        ## Train
-        if (no_cost)
+        ## Train.  A fold whose predict returns two outputs still carries a
+        ## posterior in its score, so the expected cost is formed here rather
+        ## than asked of the fold.  MATLAB reports one for a network backing
+        ## although its own network predict refuses the output.
+        no_cost_models = {'GAM', 'NeuralNetwork', 'SVM'};
+        if (any (strcmp (this.CrossValidatedModel, no_cost_models)))
           [predictedLabel, score] = predict (model, this.X(testIdx, :));
+          if (nargout > 2)
+            cost = score * this.Cost;
+          endif
         else
           [predictedLabel, score, cost] = predict (model, this.X(testIdx, :));
         endif
@@ -1659,8 +1665,6 @@ endclassdef
 ## Test input validation for kfoldPredict
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for SVM cross validated models.> ...
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
-%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for NeuralNetwork cross validated models.> ...
-%! [label, score, cost] = kfoldPredict (crossval (ClassificationNeuralNetwork (ones (40,2), randi ([1, 2], 40, 1))))
 
 ## The partition, the stored data and NumObservations all describe the same
 ## set of observations.  A row dropped for a missing value is outside all
@@ -2301,3 +2305,25 @@ endclassdef
 %!                'KFold', 3).ModelParameters;
 %! assert_equal (MP.Exponent, 2);
 %! assert_equal (MP.Method, 'PartitionedModel');
+
+## A network fold's score is a posterior, so the expected cost is formed from
+## it here.  MATLAB reports the same for a network backing, although its own
+## network predict refuses a third output as ours does.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcnet (meas, strcmp (species, 'setosa'), ...
+%!                            'Cost', [0, 2; 5, 0]), 'KFold', 3);
+%! [label, score, cost] = kfoldPredict (CVMdl);
+%! assert_equal (size (cost), [150, 2]);
+%! assert_equal (cost, score * [0, 2; 5, 0], 1e-12);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcnet (meas, species), 'KFold', 3);
+%! [~, score, cost] = kfoldPredict (CVMdl);
+%! assert_equal (cost, 1 - score, 1e-12);
+
+## A cross-validated GAM reports no cost, MATLAB's refusing it as well.
+%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for GAM cross validated models.> ...
+%! load fisheriris; ...
+%! [l, s, c] = kfoldPredict (crossval (fitcgam (meas, strcmp (species, 'setosa')), 'KFold', 3))
