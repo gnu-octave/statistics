@@ -1183,6 +1183,74 @@ classdef ClassificationPartitionedModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationPartitionedModel} {@var{vals} =} kfoldfun (@var{obj}, @var{fun})
+    ##
+    ## Apply a function to each fold of a cross-validated model.
+    ##
+    ## @code{@var{vals} = kfoldfun (@var{obj}, @var{fun})} calls @var{fun} once
+    ## per fold and returns a @math{K*M} numeric matrix whose row @math{k} is
+    ## what @var{fun} returned for fold @math{k}.
+    ##
+    ## @var{fun} is a function handle taking seven inputs and returning a
+    ## numeric vector of the same length every time it is called:
+    ##
+    ## @example
+    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @var{Wtrain}, @dots{}
+    ##                @var{Xtest}, @var{Ytest}, @var{Wtest})
+    ## @end example
+    ##
+    ## @var{M} is the model the fold was fitted with, taken from
+    ## @code{@var{obj}.Trained@{k@}}; @var{Xtrain}, @var{Ytrain} and
+    ## @var{Wtrain} are the predictors, response and weights of the
+    ## observations that fold was trained on, and @var{Xtest}, @var{Ytest} and
+    ## @var{Wtest} those of the observations it held out.
+    ##
+    ## @seealso{ClassificationPartitionedModel, kfoldPredict, kfoldLoss, kfoldMargin, kfoldEdge}
+    ## @end deftypefn
+
+    function vals = kfoldfun (this, fun)
+
+      if (nargin < 2)
+        error ("ClassificationPartitionedModel.kfoldfun: too few input arguments.");
+      endif
+      if (! is_function_handle (fun))
+        error ("ClassificationPartitionedModel.kfoldfun: FUN must be a function handle.");
+      endif
+
+      vals = [];
+      for k = 1:this.KFold
+
+        trIdx = training (this.Partition, k);
+        teIdx = test (this.Partition, k);
+
+        tv = fun (this.Trained{k}, this.X(trIdx,:), this.Y(trIdx,:), ...
+                  this.W(trIdx), this.X(teIdx,:), this.Y(teIdx,:), ...
+                  this.W(teIdx));
+
+        ## The returned values become one row, so they have to be numeric and
+        ## of one length: a fold answering with a different width could not be
+        ## stacked with the others, and finding that out at the concatenation
+        ## would name neither the fold nor the reason.
+        if (! ((isnumeric (tv) || islogical (tv)) && isvector (tv)))
+          error (strcat ("ClassificationPartitionedModel.kfoldfun: FUN must", ...
+                         " return a numeric vector; fold %d returned a %s."), ...
+                 k, class (tv));
+        endif
+        tv = tv(:)';
+        if (! isempty (vals) && numel (tv) != columns (vals))
+          error (strcat ("ClassificationPartitionedModel.kfoldfun: FUN must", ...
+                         " return the same number of values for every fold;", ...
+                         " fold %d returned %d where the first returned", ...
+                         " %d."), k, numel (tv), columns (vals));
+        endif
+        vals = [vals; tv];
+
+      endfor
+
+    endfunction
+
+
   endmethods
 
   methods (Access = private)
@@ -2027,3 +2095,57 @@ endclassdef
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (CVMdl.Trained{1}.FitMethod, 'splines');
 %! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);
+
+%!test
+%! ## kfoldfun hands the fold's model, its training data and its held-out
+%! ## data to the function, seven arguments in that order.
+%! load fisheriris
+%! CV = crossval (fitcknn (meas, species), "KFold", 3);
+%! seen = kfoldfun (CV, @(M, Xtr, Ytr, Wtr, Xte, Yte, Wte) ...
+%!                      [rows(Xtr), rows(Ytr), rows(Wtr), ...
+%!                       rows(Xte), rows(Yte), rows(Wte)]);
+%! assert_equal (size (seen), [3, 6]);
+%! ## the three training counts agree with each other, as do the three test
+%! ## counts, and each row accounts for every observation
+%! assert_equal (seen(:,1), seen(:,2));
+%! assert_equal (seen(:,1), seen(:,3));
+%! assert_equal (seen(:,4), seen(:,5));
+%! assert_equal (seen(:,4), seen(:,6));
+%! assert_equal (seen(:,1) + seen(:,4), repmat (150, 3, 1));
+
+%!test
+%! ## The result is one row per fold, whatever the width.
+%! load fisheriris
+%! CV = crossval (fitcknn (meas, species), "KFold", 4);
+%! assert_equal (size (kfoldfun (CV, @(varargin) 1)), [4, 1]);
+%! assert_equal (size (kfoldfun (CV, @(varargin) [1, 2, 3])), [4, 3]);
+
+%!test
+%! ## The use it exists for: a count of errors on each held-out fold.
+%! load fisheriris
+%! CV = crossval (fitcknn (meas, species), "KFold", 3);
+%! f = @(M, Xtr, Ytr, Wtr, Xte, Yte, Wte) sum (! strcmp (predict (M, Xte), Yte));
+%! n = kfoldfun (CV, f);
+%! assert_equal (size (n), [3, 1]);
+%! assert_equal (all (n >= 0 & n <= 150), true);
+
+%!test
+%! ## The model handed over is the one the fold was fitted with.
+%! load fisheriris
+%! CV = crossval (fitcknn (meas, species), "KFold", 3);
+%! same = kfoldfun (CV, @(M, varargin) isequal (M, CV.Trained{1}));
+%! assert_equal (same(1), 1);
+
+%!error<ClassificationPartitionedModel.kfoldfun: too few input arguments.> ...
+%! kfoldfun (crossval (fitcknn (ones (6, 2), [1;1;1;2;2;2]), "KFold", 2))
+%!error<ClassificationPartitionedModel.kfoldfun: FUN must be a function handle.> ...
+%! kfoldfun (crossval (fitcknn (ones (6, 2), [1;1;1;2;2;2]), "KFold", 2), 42)
+%!error<ClassificationPartitionedModel.kfoldfun: FUN must return a numeric vector; fold 1 returned a char.> ...
+%! kfoldfun (crossval (fitcknn (ones (6, 2), [1;1;1;2;2;2]), "KFold", 2), ...
+%!           @(varargin) "x")
+%!test
+%! load fisheriris
+%! CV = crossval (fitcknn (meas, species), "KFold", 3);
+%! g = @(M, Xtr, varargin) ones (1, rows (Xtr));
+%! fail ("kfoldfun (CV, g)", ...
+%!       "must return the same number of values for every fold");

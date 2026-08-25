@@ -600,6 +600,74 @@ classdef RegressionPartitionedModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {RegressionPartitionedModel} {@var{vals} =} kfoldfun (@var{obj}, @var{fun})
+    ##
+    ## Apply a function to each fold of a cross-validated model.
+    ##
+    ## @code{@var{vals} = kfoldfun (@var{obj}, @var{fun})} calls @var{fun} once
+    ## per fold and returns a @math{K*M} numeric matrix whose row @math{k} is
+    ## what @var{fun} returned for fold @math{k}.
+    ##
+    ## @var{fun} is a function handle taking seven inputs and returning a
+    ## numeric vector of the same length every time it is called:
+    ##
+    ## @example
+    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @var{Wtrain}, @dots{}
+    ##                @var{Xtest}, @var{Ytest}, @var{Wtest})
+    ## @end example
+    ##
+    ## @var{M} is the model the fold was fitted with, taken from
+    ## @code{@var{obj}.Trained@{k@}}; @var{Xtrain}, @var{Ytrain} and
+    ## @var{Wtrain} are the predictors, response and weights of the
+    ## observations that fold was trained on, and @var{Xtest}, @var{Ytest} and
+    ## @var{Wtest} those of the observations it held out.
+    ##
+    ## @seealso{RegressionPartitionedModel, kfoldPredict, kfoldLoss}
+    ## @end deftypefn
+
+    function vals = kfoldfun (this, fun)
+
+      if (nargin < 2)
+        error ("RegressionPartitionedModel.kfoldfun: too few input arguments.");
+      endif
+      if (! is_function_handle (fun))
+        error ("RegressionPartitionedModel.kfoldfun: FUN must be a function handle.");
+      endif
+
+      vals = [];
+      for k = 1:this.KFold
+
+        trIdx = training (this.Partition, k);
+        teIdx = test (this.Partition, k);
+
+        tv = fun (this.Trained{k}, this.X(trIdx,:), this.Y(trIdx,:), ...
+                  this.W(trIdx), this.X(teIdx,:), this.Y(teIdx,:), ...
+                  this.W(teIdx));
+
+        ## The returned values become one row, so they have to be numeric and
+        ## of one length: a fold answering with a different width could not be
+        ## stacked with the others, and finding that out at the concatenation
+        ## would name neither the fold nor the reason.
+        if (! ((isnumeric (tv) || islogical (tv)) && isvector (tv)))
+          error (strcat ("RegressionPartitionedModel.kfoldfun: FUN must", ...
+                         " return a numeric vector; fold %d returned a %s."), ...
+                 k, class (tv));
+        endif
+        tv = tv(:)';
+        if (! isempty (vals) && numel (tv) != columns (vals))
+          error (strcat ("RegressionPartitionedModel.kfoldfun: FUN must", ...
+                         " return the same number of values for every fold;", ...
+                         " fold %d returned %d where the first returned", ...
+                         " %d."), k, numel (tv), columns (vals));
+        endif
+        vals = [vals; tv];
+
+      endfor
+
+    endfunction
+
+
   endmethods
 
   methods (Access = private)
@@ -911,3 +979,27 @@ endclassdef
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (CVMdl.Trained{1}.FitMethod, 'splines');
 %! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);
+
+%!test
+%! ## kfoldfun hands over seven arguments, the fold's model first.
+%! load fisheriris
+%! CV = crossval (fitrgam (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! seen = kfoldfun (CV, @(M, Xtr, Ytr, Wtr, Xte, Yte, Wte) ...
+%!                      [rows(Xtr), rows(Yte), columns(Xtr)]);
+%! assert_equal (size (seen), [3, 3]);
+%! assert_equal (seen(:,1) + seen(:,2), repmat (150, 3, 1));
+%! assert_equal (seen(:,3), repmat (3, 3, 1));
+
+%!test
+%! ## The use it exists for: a held-out mean squared error per fold.
+%! load fisheriris
+%! CV = crossval (fitrgam (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! f = @(M, Xtr, Ytr, Wtr, Xte, Yte, Wte) mean ((predict (M, Xte) - Yte) .^ 2);
+%! mse = kfoldfun (CV, f);
+%! assert_equal (size (mse), [3, 1]);
+%! assert_equal (all (mse > 0), true);
+
+%!error<RegressionPartitionedModel.kfoldfun: too few input arguments.> ...
+%! kfoldfun (crossval (fitrgam (ones (8, 2), (1:8)'), "KFold", 2))
+%!error<RegressionPartitionedModel.kfoldfun: FUN must be a function handle.> ...
+%! kfoldfun (crossval (fitrgam (ones (8, 2), (1:8)'), "KFold", 2), "nope")
