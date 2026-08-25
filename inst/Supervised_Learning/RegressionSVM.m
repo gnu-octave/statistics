@@ -238,8 +238,17 @@ classdef RegressionSVM
     ## Parameters the model was fitted with
     ##
     ## A structure holding the SVM formulation, the kernel and its parameters,
-    ## the box constraint, @code{Epsilon} and the solver settings.  This
-    ## property is read-only.
+    ## the box constraint, @code{Epsilon} and the solver settings.  The engine
+    ## is LIBSVM and the record is LIBSVM's, so @qcode{SVMtype} names its
+    ## formulation and @qcode{Tolerance} and @qcode{Shrinking} are its own
+    ## controls; the parameters MathWorks reports for its SMO and ISDA solvers
+    ## are absent, this class running neither.
+    ##
+    ## @qcode{KernelPolynomialOrder} belongs to the polynomial kernel alone
+    ## and is empty under every other, as it is in MATLAB.  @qcode{Nu} is
+    ## reported here where MATLAB leaves it empty on a regression model, this
+    ## class offering @qcode{'nu_svr'} through @qcode{SVMtype} and the value
+    ## being a real one.  This property is read-only.
     ##
     ## @end deftp
     ModelParameters       = [];
@@ -795,16 +804,27 @@ classdef RegressionSVM
                                                PolynomialOrder);
       this.BoxConstraints = BoxConstraint * ones (this.NumObservations, 1);
 
-      ## Populate ModelParameters structure
+      ## Populate ModelParameters structure.  The polynomial order belongs to
+      ## the polynomial kernel alone and is reported under no other, as
+      ## MATLAB reports it.
+      if (strcmpi (KernelFunction, 'polynomial'))
+        KPOrder = PolynomialOrder;
+      else
+        KPOrder = [];
+      endif
       this.ModelParameters = struct ('SVMtype', SVMtype, 'BoxConstraint', ...
                                      BoxConstraint, 'CacheSize', CacheSize, ...
                                      'KernelScale', KernelScale, ...
                                      'KernelOffset', KernelOffset, ...
                                      'KernelFunction', KernelFunction, ...
-                                     'PolynomialOrder', PolynomialOrder, ...
+                                     'KernelPolynomialOrder', KPOrder, ...
                                      'Epsilon', Epsilon, 'Nu', Nu, ...
                                      'Tolerance', Tolerance, ...
-                                     'Shrinking', Shrinking);
+                                     'Shrinking', Shrinking, ...
+                                     'StandardizeData', ...
+                                     logical (Standardize), ...
+                                     'Version', 1, 'Method', 'SVM', ...
+                                     'Type', 'regression');
 
     endfunction
 
@@ -1327,7 +1347,7 @@ endclassdef
 %! assert_equal (Mdl.ModelParameters.SVMtype, 'eps_svr');
 %! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
 %! assert_equal (Mdl.ModelParameters.KernelScale, 1);
-%! assert_equal (Mdl.ModelParameters.PolynomialOrder, 3);
+%! assert_equal (isempty (Mdl.ModelParameters.KernelPolynomialOrder), true);
 %! assert_equal (isempty (Mdl.Mu), true);
 %! assert_equal (Mdl.NumObservations, 40);
 %! assert_equal (Mdl.NumPredictors, 2);
@@ -1831,3 +1851,32 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitrsvm (meas(:,1:3), meas(:,4));
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters records what LIBSVM was given.  The field list and its
+## order are ours, MATLAB's SMO and ISDA parameters having no counterpart
+## here.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,2:4), meas(:,1));
+%! assert_equal (fieldnames (Mdl.ModelParameters)', {'SVMtype', ...
+%! 'BoxConstraint', 'CacheSize', 'KernelScale', 'KernelOffset', ...
+%! 'KernelFunction', 'KernelPolynomialOrder', 'Epsilon', 'Nu', ...
+%! 'Tolerance', 'Shrinking', 'StandardizeData', 'Version', 'Method', ...
+%! 'Type'});
+
+%!test
+%! load fisheriris
+%! MP = fitrsvm (meas(:,2:4), meas(:,1), 'Standardize', true).ModelParameters;
+%! assert_equal (MP.StandardizeData, true);
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.Method, 'SVM');
+%! assert_equal (MP.Type, 'regression');
+
+## Epsilon is reported as the fit resolved it, and Nu is reported where
+## MATLAB leaves it empty on a regression model, this class offering
+## 'nu_svr' and the value being a real one.
+%!test
+%! load fisheriris
+%! MP = fitrsvm (meas(:,2:4), meas(:,1)).ModelParameters;
+%! assert_equal (MP.Epsilon, 0.0963676797627873, 1e-15);
+%! assert_equal (MP.Nu, 0.5);

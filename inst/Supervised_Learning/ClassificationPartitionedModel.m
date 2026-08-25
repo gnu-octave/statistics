@@ -749,6 +749,13 @@ classdef ClassificationPartitionedModel
           ## Get ModelParameters structure from ClassificationSVM object
           params = Mdl.ModelParameters;
 
+          ## The polynomial order is recorded for the polynomial kernel
+          ## alone, so it is passed only when the parent carries one.
+          korder = {};
+          if (! isempty (params.KernelPolynomialOrder))
+            korder = {'PolynomialOrder', params.KernelPolynomialOrder};
+          endif
+
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
@@ -760,7 +767,7 @@ classdef ClassificationPartitionedModel
                            'ClassNames', Mdl.ClassNames, ...
                            'SVMtype', params.SVMtype, ...
                            'KernelFunction', params.KernelFunction, ...
-                           'PolynomialOrder', params.PolynomialOrder, ...
+                           korder{:}, ...
                            'KernelScale', params.KernelScale, ...
                            'KernelOffset', params.KernelOffset, ...
                            'BoxConstraint', params.BoxConstraint, ...
@@ -2256,3 +2263,13 @@ endclassdef
 %! Mdl = fitcgam (meas(1:30,2:4), b(1:30), "FitMethod", "splines");
 %! CVMdl = crossval (Mdl, "KFold", 3);
 %! assert_equal (isempty (CVMdl.NumTrainedPerFold), true);
+
+## A polynomial-kernel SVM refits its folds through the recorded order, which
+## the parent carries only under that kernel.
+%!test
+%! load fisheriris
+%! Mdl = fitcsvm (meas, strcmp (species, 'setosa'), ...
+%!                'KernelFunction', 'polynomial', 'PolynomialOrder', 2);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.ModelParameters.KernelPolynomialOrder, 2);
+%! assert_equal (numel (CVMdl.Trained), 3);

@@ -449,9 +449,15 @@ classdef RegressionPartitionedModel
         case 'SVM'
           p = Mdl.ModelParameters;
           stdz = ! isempty (Mdl.Mu);
+          ## The polynomial order is recorded for the polynomial kernel
+          ## alone, so it is passed only when the parent carries one.
+          korder = {};
+          if (! isempty (p.KernelPolynomialOrder))
+            korder = {'PolynomialOrder', p.KernelPolynomialOrder};
+          endif
           args = {'SVMtype', p.SVMtype, ...
                   'KernelFunction', p.KernelFunction, ...
-                  'PolynomialOrder', p.PolynomialOrder, ...
+                  korder{:}, ...
                   'KernelScale', p.KernelScale, ...
                   'KernelOffset', p.KernelOffset, ...
                   'BoxConstraint', p.BoxConstraint, ...
@@ -1293,3 +1299,13 @@ endclassdef
 %! load fisheriris
 %! CVMdl = crossval (fitrsvm (meas(:,2:4), meas(:,1)), "KFold", 3);
 %! assert_equal (isempty (CVMdl.NumTrainedPerFold), true);
+
+## A polynomial-kernel SVM refits its folds through the recorded order, which
+## the parent carries only under that kernel.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,2:4), meas(:,1), 'KernelFunction', 'polynomial', ...
+%!                'PolynomialOrder', 2);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.ModelParameters.KernelPolynomialOrder, 2);
+%! assert_equal (numel (CVMdl.Trained), 3);

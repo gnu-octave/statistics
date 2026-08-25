@@ -183,6 +183,15 @@ classdef ClassificationSVM
     ##
     ## SVM training parameters
     ##
+    ## A structure holding the parameters the fit was given.  The engine is
+    ## LIBSVM and the record is LIBSVM's, so @qcode{SVMtype} names its
+    ## formulation and @qcode{Tolerance} and @qcode{Shrinking} are its own
+    ## controls; the parameters MathWorks reports for its SMO and ISDA
+    ## solvers are absent, this class running neither.
+    ##
+    ## @qcode{KernelPolynomialOrder} belongs to the polynomial kernel alone
+    ## and is empty under every other, as it is in MATLAB.
+    ##
     ## A structure containing the parameters used to train the SVM model with
     ## the following fields: @code{SVMtype}, @code{BoxConstraint},
     ## @code{CacheSize}, @code{KernelScale}, @code{KernelOffset},
@@ -1159,13 +1168,24 @@ classdef ClassificationSVM
         this.Nu = Nu;
       endif
 
-      ## Populate ModelParameters structure
+      ## Populate ModelParameters structure.  The polynomial order belongs to
+      ## the polynomial kernel alone and is reported under no other, as
+      ## MATLAB reports it.
+      if (strcmpi (KernelFunction, 'polynomial'))
+        KPOrder = PolynomialOrder;
+      else
+        KPOrder = [];
+      endif
       params = struct ('SVMtype', SVMtype, 'BoxConstraint', BoxConstraint, ...
                        'CacheSize', CacheSize, 'KernelScale', KernelScale, ...
                        'KernelOffset', KernelOffset, 'KernelFunction', ...
-                        KernelFunction, 'PolynomialOrder', PolynomialOrder, ...
-                       'Nu', Nu, 'Tolerance',Tolerance, ...
-                       'Shrinking', Shrinking);
+                        KernelFunction, 'KernelPolynomialOrder', KPOrder, ...
+                       'Nu', Nu, 'Tolerance', Tolerance, ...
+                       'Shrinking', Shrinking, ...
+                       'OutlierFraction', OutlierFraction, ...
+                       'StandardizeData', logical (Standardize), ...
+                       'Version', 1, 'Method', 'SVM', ...
+                       'Type', 'classification');
       this.ModelParameters = params;
 
     endfunction
@@ -2155,7 +2175,7 @@ endclassdef
 %! 'PolynomialOrder', 3);
 %! assert_equal (class (a), "ClassificationSVM");
 %! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
-%! assert_equal (a.ModelParameters.PolynomialOrder, 3)
+%! assert_equal (a.ModelParameters.KernelPolynomialOrder, 3)
 
 ## RowsUsed is the logical mask its documentation describes, so the documented
 ## use of it works.  It was a double, for which a 0 is not a subscript at all.
@@ -3051,3 +3071,41 @@ endclassdef
 %! b = ! strcmp (species, 'virginica');
 %! Mdl = fitcsvm (meas(b,:), species(b));
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters records what LIBSVM was given.  The field list and its
+## order are ours, MATLAB's SMO and ISDA parameters having no counterpart
+## here.
+%!test
+%! load fisheriris
+%! Mdl = fitcsvm (meas, strcmp (species, 'setosa'));
+%! assert_equal (fieldnames (Mdl.ModelParameters)', {'SVMtype', ...
+%! 'BoxConstraint', 'CacheSize', 'KernelScale', 'KernelOffset', ...
+%! 'KernelFunction', 'KernelPolynomialOrder', 'Nu', 'Tolerance', ...
+%! 'Shrinking', 'OutlierFraction', 'StandardizeData', 'Version', ...
+%! 'Method', 'Type'});
+
+%!test
+%! load fisheriris
+%! MP = fitcsvm (meas, strcmp (species, 'setosa')).ModelParameters;
+%! assert_equal (MP.OutlierFraction, 0);
+%! assert_equal (MP.StandardizeData, false);
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.Method, 'SVM');
+%! assert_equal (MP.Type, 'classification');
+
+## The polynomial order belongs to the polynomial kernel alone, as it does in
+## MATLAB, and carries its default there rather than staying empty.
+%!test
+%! load fisheriris
+%! b = strcmp (species, 'setosa');
+%! assert_equal (isempty (fitcsvm (meas, b).ModelParameters. ...
+%!               KernelPolynomialOrder), true);
+%! assert_equal (fitcsvm (meas, b, 'KernelFunction', ...
+%!               'polynomial').ModelParameters.KernelPolynomialOrder, 3);
+
+%!test
+%! load fisheriris
+%! MP = fitcsvm (meas, strcmp (species, 'setosa'), 'Standardize', true, ...
+%!               'OutlierFraction', 0.05).ModelParameters;
+%! assert_equal (MP.StandardizeData, true);
+%! assert_equal (MP.OutlierFraction, 0.05);
