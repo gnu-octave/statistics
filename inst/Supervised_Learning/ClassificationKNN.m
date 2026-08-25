@@ -677,7 +677,11 @@ classdef ClassificationKNN
     endfunction
 
     function this = set.Distance (this, val)
-      kdt = {'euclidean', 'cityblock', 'chebychev', 'minkowski'};
+      ## The same five the constructor builds a kd-tree for.  'manhattan' is
+      ## a synonym of 'cityblock' and was missing here, so a kd-tree model
+      ## fitted with it could be neither reassigned nor reloaded.
+      kdt = {'euclidean', 'cityblock', 'manhattan', 'chebychev', ...
+             'minkowski'};
       all = [kdt, {'seuclidean', 'mahalanobis', 'manhattan', 'cosine', ...
                    'correlation', 'spearman', 'hamming', 'jaccard'}];
       ## A kd-tree can only be searched with the metrics it was built for, and
@@ -686,7 +690,7 @@ classdef ClassificationKNN
         if (! (ischar (val) && any (strcmpi (kdt, val))))
           error (strcat ("ClassificationKNN: 'Distance' for a kd-tree", ...
                          " model can only be 'euclidean', 'cityblock',", ...
-                         " 'chebychev', or 'minkowski'."));
+                         " 'manhattan', 'chebychev', or 'minkowski'."));
         endif
       elseif (! (is_function_handle (val)
                  || (ischar (val) && any (strcmpi (all, val)))))
@@ -2610,12 +2614,17 @@ classdef ClassificationKNN
       ## load failed.  Assignment is legal here because this is a method of
       ## the class itself.
       names = fieldnames (data);
+      ## set.Distance validates the metric against NSMethod, which the model
+      ## built above still holds at its default of 'kdtree', so a saved model
+      ## searched exhaustively with a metric no kd-tree can take was refused
+      ## by its own loader until NSMethod is in place first.
+      early = ismember (names, {'NSMethod'});
       ## The set methods for these read other properties, and one of them
       ## rebuilds Coeffs, so they are assigned once everything else is in
       ## place rather than in the order the file happens to list them.
       late = ismember (names, {'Cost', 'Prior', 'ScoreTransform', ...
                                'ResponseTransform'});
-      names = [names(! late); names(late)];
+      names = [names(early); names(! early & ! late); names(late)];
       for i = 1:numel (names)
         try
           mdl.(names{i}) = data.(names{i});
@@ -4078,7 +4087,7 @@ endfunction
 %! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.IncludeTies = 2;
 %!error<ClassificationKNN: 'DistanceWeight' must be 'equal', 'inverse', 'squaredinverse', or a function handle.> ...
 %! Mdl = fitcknn (ones (5, 2), [1;1;1;2;2]); Mdl.DistanceWeight = 'bogus';
-%!error<ClassificationKNN: 'Distance' for a kd-tree model can only be 'euclidean', 'cityblock', 'chebychev', or 'minkowski'.> ...
+%!error<ClassificationKNN: 'Distance' for a kd-tree model can only be 'euclidean', 'cityblock', 'manhattan', 'chebychev', or 'minkowski'.> ...
 %! load fisheriris; Mdl = fitcknn (meas, species); ...
 %! Mdl.Distance = 'mahalanobis';
 %!error<ClassificationKNN: 'DistParameter' can only be provided when 'Distance' is 'minkowski', 'mahalanobis', or 'seuclidean'.> ...
@@ -4317,3 +4326,43 @@ endfunction
 %! assert_equal (MP.DistanceWeight, 'inverse');
 %! assert_equal (MP.BreakTies, 'nearest');
 %! assert_equal (MP.IncludeTies, true);
+
+## A model searched exhaustively with a metric no kd-tree can take survives
+## the round trip.  Its loader used to refuse it: the metric was assigned
+## while NSMethod still held the default the empty model is built with.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'Distance', 'seuclidean', ...
+%!                'NSMethod', 'exhaustive');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.NSMethod, 'exhaustive');
+%! assert_equal (M2.Distance, 'seuclidean');
+%! assert_equal (M2.DistParameter, Mdl.DistParameter);
+%! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'Distance', 'mahalanobis');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.Distance, 'mahalanobis');
+%! assert_equal (M2.DistParameter, Mdl.DistParameter);
+%! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## 'manhattan' names the same metric as 'cityblock' and a kd-tree is built
+## for it, so it may be assigned to one and a model fitted with it reloads.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'Distance', 'manhattan');
+%! assert_equal (Mdl.NSMethod, 'kdtree');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.Distance, 'manhattan');
+%! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
