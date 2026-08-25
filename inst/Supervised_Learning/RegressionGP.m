@@ -436,6 +436,32 @@ classdef RegressionGP
     IsActiveSetVector     = [];
 
     ## -*- texinfo -*-
+    ## @deftp {RegressionGP} {property} ActiveSetHistory
+    ##
+    ## History of the active set selection
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it records the active set chosen at each iteration by a fit method that
+    ## builds one.  This class implements the exact method alone, which uses
+    ## the whole of the training data and selects nothing, so there is no
+    ## history to record.  This property is read-only.
+    ##
+    ## @end deftp
+    ActiveSetHistory      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionGP} {property} BCDInformation
+    ##
+    ## Block coordinate descent information
+    ##
+    ## @strong{Always empty.}  It is declared for MATLAB compatibility, where
+    ## it records a block coordinate descent.  This class does not use that
+    ## method, so there is nothing to report.  This property is read-only.
+    ##
+    ## @end deftp
+    BCDInformation        = [];
+
+    ## -*- texinfo -*-
     ## @deftp {RegressionGP} {property} PredictorLocation
     ##
     ## Means the predictors were centred by
@@ -1155,6 +1181,8 @@ classdef RegressionGP
       ActiveSetMethod = obj.ActiveSetMethod;
       ActiveSetSize = obj.ActiveSetSize;
       IsActiveSetVector = obj.IsActiveSetVector;
+      ActiveSetHistory = obj.ActiveSetHistory;
+      BCDInformation = obj.BCDInformation;
       PredictorLocation = obj.PredictorLocation;
       PredictorScale = obj.PredictorScale;
       ResponseTransform = obj.ResponseTransform;
@@ -1166,6 +1194,7 @@ classdef RegressionGP
             'ModelParameters', 'KernelFunction', 'KernelInformation', ...
             'PredictMethod', 'Alpha', 'ActiveSetVectors', ...
             'ActiveSetMethod', 'ActiveSetSize', 'IsActiveSetVector', ...
+            'ActiveSetHistory', 'BCDInformation', ...
             'PredictorLocation', 'PredictorScale', 'ResponseTransform');
 
     endfunction
@@ -2018,6 +2047,25 @@ endfunction
 %!error<RegressionGP.loss: invalid NAME in optional pairs of arguments.> ...
 %! loss (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), ...
 %!       ones (3, 1), 'bogus', 1)
+
+## The two MATLAB-compatibility properties are declared and stay empty, the
+## exact method selecting no active set and using no block coordinate descent.
+%!test
+%! load fisheriris
+%! Mdl = fitrgp (meas(:,1:3), meas(:,4));
+%! assert_equal (isempty (Mdl.ActiveSetHistory), true);
+%! assert_equal (isempty (Mdl.BCDInformation), true);
+%! fname = tempname ();
+%! unwind_protect
+%!   savemodel (Mdl, fname);
+%!   M2 = loadmodel (fname);
+%!   assert_equal (isempty (M2.ActiveSetHistory), true);
+%!   assert_equal (isempty (M2.BCDInformation), true);
+%! unwind_protect_cleanup
+%!   if (exist (fname, 'file'))
+%!     delete (fname);
+%!   endif
+%! end_unwind_protect
 
 ## Test input validation for the crossval method
 %!error<RegressionGP.crossval: 'KFold' must be an integer value greater than 1.> ...
