@@ -186,6 +186,35 @@
 ## agree with any formula-based @var{InitialModel}.
 ## @end multitable
 ##
+## @subsubheading The @code{Steps} property
+##
+## The returned model's @code{Steps} property records the trace, as a
+## structure with seven fields.  @code{Start}, @code{Lower}, and @code{Upper}
+## are @code{LinearFormula} objects for the starting model and the two bounds;
+## @code{Criterion} is the criterion as it was asked for; @code{PEnter} and
+## @code{PRemove} are the thresholds it ran under; and @code{History} is a
+## table with one row per step.
+##
+## @code{History} always carries @code{Action} (@qcode{'Start'},
+## @qcode{'Add'}, or @qcode{'Remove'}), @code{TermName}, @code{Terms} (the
+## terms matrix after the step, over the model's variables), @code{DF} (the
+## coefficient count after the step), and @code{delDF} (the change in it,
+## @emph{negative} for a removal).  The remaining columns follow the
+## criterion, which is why a history is read by name and not by position:
+##
+## @multitable @columnfractions 0.25 0.7
+## @headitem Criterion @tab Further columns
+## @item @qcode{'SSE'} @tab @code{FStat} and @code{pValue}.
+## @item @qcode{'AIC'}, @qcode{'BIC'}, @qcode{'Rsquared'},
+## @qcode{'AdjRsquared'} @tab one column named for the criterion, holding its
+## value after the step, the starting model included.
+## @end multitable
+##
+## The first row is the starting model, named by its right-hand side.
+## @code{step} appends to the history it inherits rather than beginning a new
+## one, and inherits @code{Criterion}, @code{Lower}, @code{PEnter}, and
+## @code{PRemove} from it; @code{Steps.Start} is then the model stepped from.
+##
 ## @subheading Algorithm
 ##
 ## At each step, @code{stepwiselm} examines every term not currently in the
@@ -229,6 +258,9 @@ function mdl = stepwiselm (varargin)
   is_sw   = @(s) (ischar (s) || isstring (s)) && any (strcmpi (char (s), sw_keys));
 
   criterion = 'sse';
+  ## Steps.Criterion reports the criterion as it was asked for; unasked, it
+  ## reports MATLAB's own spelling of the default.
+  crit_label = 'SSE';
   penter    = [];
   premove   = [];
   nsteps    = Inf;
@@ -254,7 +286,8 @@ function mdl = stepwiselm (varargin)
             " 'Criterion' argument.  Valid values are: 'AIC', 'BIC'," ...
             " 'Rsquared', 'AdjRsquared', 'SSE'."]);
         endif
-        criterion = lower (char (val));
+        criterion  = lower (char (val));
+        crit_label = char (val);
       elseif (strcmp (key, 'penter'))
         penter = double (val);
       elseif (strcmp (key, 'premove'))
@@ -329,6 +362,7 @@ function mdl = stepwiselm (varargin)
   T_upper_raw = sw_resolve_bound (upper_sp,  info.pred_names, cat_mask, info);
 
   terms_cur   = sw_raw_terms_to_encoded (T_init_raw,  info.pred_names, info.cat_info, info.enc_names);
+  T_start_enc = terms_cur;
   T_lower_enc = sw_raw_terms_to_encoded (T_lower_raw, info.pred_names, info.cat_info, info.enc_names);
   T_upper_enc = sw_raw_terms_to_encoded (T_upper_raw, info.pred_names, info.cat_info, info.enc_names);
 
@@ -337,6 +371,12 @@ function mdl = stepwiselm (varargin)
 
   cur_hi  = any (all (terms_cur(:,1:end-1) == 0, 2));
   cur_fit = LinearModel.lm_fit (build_design (terms_cur, info.X_enc), info.y, info.w, false);
+
+  ## The trace reported as Steps.History.  Its first row is the starting
+  ## model, named by its right-hand side and carrying no test.
+  hist = sw_hist_row ('Start', sw_terms_rhs (terms_cur, info), terms_cur, ...
+                      rows (terms_cur), NaN, ...
+                      sw_start_stat (criterion, cur_fit, cur_hi), NaN, info);
 
   step_no  = 0;
   any_step = false;
@@ -372,9 +412,14 @@ function mdl = stepwiselm (varargin)
     endif
 
     if (! isempty (best_add) && sw_threshold_ok (criterion, 'add', best_add_score, penter))
+      prev_df   = rows (terms_cur);
       terms_cur = [terms_cur; best_add.term_rows];
       cur_fit   = best_add.fit;
       cur_hi    = best_add.hi;
+      [hs, hp]  = sw_hist_stat (criterion, 'add', best_add_score);
+      hist(end+1) = sw_hist_row ('Add', best_add.name, terms_cur, ...
+                                 rows (terms_cur), ...
+                                 rows (terms_cur) - prev_df, hs, hp, info);
       step_no  += 1;
       any_step  = true;
       if (verbose >= 1)
@@ -407,9 +452,13 @@ function mdl = stepwiselm (varargin)
     if (! isempty (redundant_g))
       keep = true (rows (terms_cur), 1);
       keep (redundant_g.idx) = false;
+      prev_df   = rows (terms_cur);
       terms_cur = terms_cur (keep, :);
       cur_fit   = redundant_g.fit;
       cur_hi    = redundant_g.hi;
+      hist(end+1) = sw_hist_row ('Remove', redundant_g.name, terms_cur, ...
+                                 rows (terms_cur), ...
+                                 rows (terms_cur) - prev_df, Inf, NaN, info);
       step_no  += 1;
       any_step  = true;
       if (verbose >= 1)
@@ -446,9 +495,14 @@ function mdl = stepwiselm (varargin)
     if (! isempty (best_rem) && sw_threshold_ok (criterion, 'remove', best_rem_score, premove))
       keep = true (rows (terms_cur), 1);
       keep (best_rem.idx) = false;
+      prev_df   = rows (terms_cur);
       terms_cur = terms_cur (keep, :);
       cur_fit   = best_rem.fit;
       cur_hi    = best_rem.hi;
+      [hs, hp]  = sw_hist_stat (criterion, 'remove', best_rem_score);
+      hist(end+1) = sw_hist_row ('Remove', best_rem.name, terms_cur, ...
+                                 rows (terms_cur), ...
+                                 rows (terms_cur) - prev_df, hs, hp, info);
       step_no  += 1;
       any_step  = true;
       if (verbose >= 1)
@@ -503,7 +557,208 @@ function mdl = stepwiselm (varargin)
   endif
 
   mdl = fitlm (info.variables, info.response_name, terms_cur, nv_list{:});
+  mdl = setSteps (mdl, sw_steps_struct (hist, crit_label, penter, premove, ...
+                                        T_start_enc, T_lower_enc, ...
+                                        T_upper_enc, criterion, info));
 
+endfunction
+
+## ========================================================================== ##
+## Stepwise history
+## ========================================================================== ##
+
+## One row of Steps.History.  DF is the coefficient count after the step and
+## TERMS the model's terms matrix over its variables, both as MATLAB reports
+## them; a grouped categorical therefore counts once in TERMS and once per
+## indicator in DF.
+function h = sw_hist_row (action, name, terms_enc, ncoef, ddf, stat, pval, info)
+  h = struct ('Action', action, 'TermName', name, ...
+              'Terms', sw_history_terms (terms_enc, info), 'DF', ncoef, ...
+              'delDF', ddf, 'Stat', stat, 'PValue', pval);
+endfunction
+
+## The statistic a step reports.  Under 'sse' it is the F test that drove the
+## move; under an information criterion it is the criterion's own value after
+## the move, which is the model kept -- the trial model for an addition and
+## the reduced model for a removal.
+function [stat, pval] = sw_hist_stat (criterion, mode, score)
+  if (strcmp (criterion, 'sse'))
+    stat = score.Fstat;
+    pval = score.pvalue;
+  elseif (strcmp (mode, 'add'))
+    stat = score.abs_with;
+    pval = NaN;
+  else
+    stat = score.abs_without;
+    pval = NaN;
+  endif
+endfunction
+
+## The starting model has no test to report, but an information criterion has
+## a value for it.
+function stat = sw_start_stat (criterion, fit, hi)
+  if (strcmp (criterion, 'sse'))
+    stat = NaN;
+    return;
+  endif
+  c = LinearModel.lm_criteria (fit, hi);
+  switch (criterion)
+    case 'aic'
+      stat = c.AIC;
+    case 'bic'
+      stat = c.BIC;
+    case 'rsquared'
+      stat = c.Rsquared;
+    case 'adjrsquared'
+      stat = c.AdjRsquared;
+  endswitch
+endfunction
+
+## Fold a terms matrix over the encoded columns onto one over the model's
+## variables, in the order the model itself lists its terms.
+function T = sw_history_terms (terms_enc, info)
+  groups = sw_group_encoded_terms (terms_enc, info.pred_names, ...
+                                   info.cat_info, info.enc_names);
+  raws   = sw_group_raws (groups);
+  T      = sw_order_terms (sw_raws_to_variables (raws, info), ...
+                           sw_response_column (info));
+endfunction
+
+## Spread a matrix of per-predictor exponents over the model's variables,
+## which include the response and any predictor the model never used.
+function T = sw_raws_to_variables (raws, info)
+  var_names = info.variables.Properties.VariableNames;
+  T = zeros (rows (raws), numel (var_names));
+  for j = 1:numel (info.pred_names)
+    c = find (strcmp (var_names, info.pred_names{j}), 1);
+    if (! isempty (c))
+      T(:, c) = raws(:, j);
+    endif
+  endfor
+endfunction
+
+function c = sw_response_column (info)
+  c = find (strcmp (info.variables.Properties.VariableNames, ...
+                    info.response_name), 1);
+endfunction
+
+## Order terms as the fitted model orders its coefficients: the intercept,
+## then the linear terms, then the interactions, then the powers, each group
+## by predictor index.
+function T = sw_order_terms (T, resp_col)
+  cols = true (1, columns (T));
+  if (! isempty (resp_col))
+    cols(resp_col) = false;
+  endif
+  body_cols = T(:, cols);
+  int_mask  = all (body_cols == 0, 2);
+  body      = body_cols(! int_mask, :);
+  n_nonzero = sum (body != 0, 2);
+  degree    = sum (body, 2);
+  tier      = zeros (rows (body), 1);
+  tier(n_nonzero == 1 & degree == 1) = 1;
+  tier(n_nonzero == 2)               = 2;
+  tier(n_nonzero == 1 & degree > 1)  = 3;
+  bitmask = zeros (rows (body), 1);
+  for i = 1:rows (body)
+    bitmask(i) = sum (2 .^ (find (body(i, :)) - 1));
+  endfor
+  [~, order] = sortrows ([tier, bitmask]);
+  rest = find (! int_mask);
+  T    = T([find(int_mask); rest(order)], :);
+endfunction
+
+## Right-hand side of a model, used to name the Start row.
+function rhs = sw_terms_rhs (terms_enc, info)
+  T      = sw_history_terms (terms_enc, info);
+  cols   = true (1, columns (T));
+  rc     = sw_response_column (info);
+  if (! isempty (rc))
+    cols(rc) = false;
+  endif
+  names  = info.variables.Properties.VariableNames(cols);
+  body   = T(:, cols);
+  parts  = {};
+  has_int = false;
+  for i = 1:rows (body)
+    if (all (body(i, :) == 0))
+      has_int = true;
+    else
+      parts{end+1} = sw_term_name (body(i, :), names);
+    endif
+  endfor
+  if (has_int)
+    parts = [{'1'}, parts];
+  elseif (isempty (parts))
+    parts = {'1'};
+  endif
+  rhs = strjoin (parts, ' + ');
+endfunction
+
+## Assemble the Steps structure attached to the returned model.
+function steps = sw_steps_struct (hist, crit_label, penter, premove, ...
+                                  T_start, T_lower, T_upper, criterion, info)
+  var_names = info.variables.Properties.VariableNames;
+  resp_col  = sw_response_column (info);
+  steps = struct ();
+  steps.Start = LinearFormula (sw_order_terms (sw_raws_to_variables ( ...
+                  sw_group_raws (sw_group_encoded_terms (T_start, ...
+                    info.pred_names, info.cat_info, info.enc_names)), info), ...
+                  resp_col), var_names, 'ResponseName', info.response_name);
+  steps.Lower = LinearFormula (sw_order_terms (sw_raws_to_variables ( ...
+                  sw_group_raws (sw_group_encoded_terms (T_lower, ...
+                    info.pred_names, info.cat_info, info.enc_names)), info), ...
+                  resp_col), var_names, 'ResponseName', info.response_name);
+  steps.Upper = LinearFormula (sw_order_terms (sw_raws_to_variables ( ...
+                  sw_group_raws (sw_group_encoded_terms (T_upper, ...
+                    info.pred_names, info.cat_info, info.enc_names)), info), ...
+                  resp_col), var_names, 'ResponseName', info.response_name);
+  steps.Criterion = crit_label;
+  steps.PEnter    = penter;
+  steps.PRemove   = premove;
+  steps.History   = sw_history_table (hist, criterion);
+endfunction
+
+## Build Steps.History.  Which columns it carries is decided by the criterion:
+## 'sse' reports the F test that drove each step, while an information
+## criterion reports its own value after the step and has no test to report.
+function tbl = sw_history_table (hist, criterion)
+  m        = numel (hist);
+  Action   = cell (m, 1);
+  TermName = cell (m, 1);
+  Terms    = cell (m, 1);
+  DF       = zeros (m, 1);
+  delDF    = zeros (m, 1);
+  Stat     = zeros (m, 1);
+  pValue   = zeros (m, 1);
+  for i = 1:m
+    Action{i}   = hist(i).Action;
+    TermName{i} = hist(i).TermName;
+    Terms{i}    = hist(i).Terms;
+    DF(i)       = hist(i).DF;
+    delDF(i)    = hist(i).delDF;
+    Stat(i)     = hist(i).Stat;
+    pValue(i)   = hist(i).PValue;
+  endfor
+  if (strcmp (criterion, 'sse'))
+    tbl = table (Action, TermName, Terms, DF, delDF, Stat, pValue, ...
+                 'VariableNames', {'Action', 'TermName', 'Terms', 'DF', ...
+                 'delDF', 'FStat', 'pValue'});
+  else
+    switch (criterion)
+      case 'aic'
+        cname = 'AIC';
+      case 'bic'
+        cname = 'BIC';
+      case 'rsquared'
+        cname = 'Rsquared';
+      case 'adjrsquared'
+        cname = 'AdjRsquared';
+    endswitch
+    tbl = table (Action, TermName, Terms, DF, delDF, Stat, ...
+                 'VariableNames', {'Action', 'TermName', 'Terms', 'DF', ...
+                 'delDF', cname});
+  endif
 endfunction
 
 function [positional, first_nv] = sw_split_positional (fit_args)
@@ -665,6 +920,15 @@ function sw_predictorvars_matrix_conflict (fit_args)
     vars_in_formula = {};
     for t = 1:numel (result.model)
       vars_in_formula = [vars_in_formula, result.model{t}];
+    endfor
+    ## A factor carries its exponent, as in 'x1^2', where 'PredictorVars'
+    ## names variables, so compare the variable and not the power of it.
+    ## Otherwise stepping any model holding a power term reads as a conflict.
+    for k = 1:numel (vars_in_formula)
+      hat = index (vars_in_formula{k}, '^');
+      if (hat > 0)
+        vars_in_formula{k} = vars_in_formula{k}(1:hat-1);
+      endif
     endfor
     vars_in_formula = unique (vars_in_formula);
     if (! all (ismember (vars_in_formula, pv_value)))
@@ -867,6 +1131,21 @@ function groups = sw_group_encoded_terms (terms_enc, pred_names, cat_info, enc_n
         if (! isempty (col))
           row_raw(j) = terms_enc (r, col);
         endif
+        ## A design built from a formula names a power with its own column,
+        ## 'x1^2' beside 'x1', rather than carrying the exponent in the 'x1'
+        ## column.  Read it off the name: otherwise the term folds onto the
+        ## all-zero row and is silently lost as a duplicate intercept.
+        for c = 1:numel (enc_names)
+          nm  = enc_names{c};
+          hat = index (nm, '^');
+          if (hat > 1 && strcmp (nm(1:hat-1), pred_names{j}) ...
+              && terms_enc (r, c) != 0)
+            e = str2double (nm(hat+1:end));
+            if (! isnan (e))
+              row_raw(j) = max (row_raw(j), terms_enc (r, c) * e);
+            endif
+          endif
+        endfor
       else
         levels_j = cat_info.levels{ci};
         present  = false;
@@ -1966,6 +2245,166 @@ endfunction
 %! assert_equal (mdl.Coefficients.pValue, ...
 %!   [3.09620365929824e-21; 3.59135935529609e-10; 6.98703068441474e-13; 1.01407825601795e-08], 1e-8);
 %! assert_equal (mdl.PredictorNames, {'x1';'x2';'x3'});
+
+%!test
+%! ## Steps carries MATLAB's seven fields, in its order.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'quadratic', ...
+%!                   'Verbose', 0);
+%! assert_equal (fieldnames (mdl.Steps), {'Start'; 'Lower'; 'Upper'; ...
+%!                                        'Criterion'; 'PEnter'; ...
+%!                                        'PRemove'; 'History'});
+
+%!test
+%! ## The history records every step, and matches MATLAB R2024a throughout.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'quadratic', ...
+%!                   'Verbose', 0);
+%! assert_equal (mdl.Steps.History.TermName, ...
+%!               {'1'; 'x1'; 'x1^2'; 'x2'; 'x2^2'; 'x3'; 'x2:x3'; 'x1:x2'; ...
+%!                'x1:x3'});
+%! assert_equal (mdl.Steps.History.DF, (1:9)');
+%! assert_equal (mdl.Steps.History.FStat, ...
+%!               [NaN; 685.736350968728; 12.6370657930220; ...
+%!                1231.00720701963; 124.872101651316; 13.4519287960430; ...
+%!                107.087846311142; 34.9838482569170; 420.274658550522], 1e-8);
+
+%!test
+%! ## The default criterion is reported as MATLAB spells it, with the
+%! ## thresholds it resolved.
+%! s1 = ((1:48)' - 24.5)/12;
+%! sy = 4 + 2.5*s1 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm (s1, sy, 'constant', 'Upper', 'linear', 'Verbose', 0);
+%! assert_equal (mdl.Steps.Criterion, 'SSE');
+%! assert_equal (mdl.Steps.PEnter, 0.05);
+%! assert_equal (mdl.Steps.PRemove, 0.10);
+
+%!test
+%! ## A criterion asked for is reported as it was asked for, not canonicalised.
+%! s1 = ((1:48)' - 24.5)/12;
+%! sy = 4 + 2.5*s1 + 0.2*sin ((1:48)'/3);
+%! m1 = stepwiselm (s1, sy, 'constant', 'Upper', 'linear', 'Criterion', ...
+%!                  'aic', 'Verbose', 0);
+%! m2 = stepwiselm (s1, sy, 'constant', 'Upper', 'linear', 'Criterion', ...
+%!                  'AIC', 'Verbose', 0);
+%! assert_equal (m1.Steps.Criterion, 'aic');
+%! assert_equal (m2.Steps.Criterion, 'AIC');
+
+%!test
+%! ## An information criterion has no test to report, so the history carries
+%! ## its value after each step, the starting model included.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'quadratic', ...
+%!                   'Criterion', 'aic', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Properties.VariableNames, ...
+%!               {'Action', 'TermName', 'Terms', 'DF', 'delDF', 'AIC'});
+%! assert_equal (mdl.Steps.History.AIC(1), 243.691352606191, 1e-9);
+%! assert_equal (mdl.Steps.History.AIC(end), -339.898392996306, 1e-9);
+
+%!test
+%! ## A removal takes degrees of freedom away, so its delDF is negative.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'quadratic', ...
+%!                   'Criterion', 'aic', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Action{end}, 'Remove');
+%! assert_equal (mdl.Steps.History.TermName{end}, 'x2^2');
+%! assert_equal (mdl.Steps.History.delDF(end), -1);
+%! assert_equal (mdl.Steps.History.DF(end), 9);
+
+%!test
+%! ## Under 'rsquared' the column is named for the criterion too.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'quadratic', ...
+%!                   'Criterion', 'rsquared', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Properties.VariableNames, ...
+%!               {'Action', 'TermName', 'Terms', 'DF', 'delDF', 'Rsquared'});
+%! assert_equal (mdl.Steps.History.Rsquared, [0; 0.937135827762142], 1e-12);
+
+%!test
+%! ## A categorical predictor is one step worth L-1 degrees of freedom, named
+%! ## for the predictor rather than for its indicators.
+%! w = 1400 + (1:45)'*9;
+%! g = {'A','B','C'}(mod ((0:44), 3) + 1)';
+%! m = 55 - 0.005*w + [0 5 -3](mod ((0:44), 3) + 1)' + 0.3*sin ((1:45)'/6);
+%! t = table (w, g, m, 'VariableNames', {'Weight','Group','MPG'});
+%! mdl = stepwiselm (t, 'MPG ~ 1', 'Upper', 'MPG ~ Weight + Group', ...
+%!                   'Verbose', 0);
+%! assert_equal (mdl.Steps.History.TermName, {'1'; 'Group'; 'Weight'});
+%! assert_equal (mdl.Steps.History.DF, [1; 3; 4]);
+%! assert_equal (mdl.Steps.History.delDF, [NaN; 2; 1]);
+%! assert_equal (mdl.Steps.History.FStat, ...
+%!               [NaN; 493.133397072530; 464.280082409591], 1e-8);
+
+%!test
+%! ## The Terms of the last row are the terms of the model returned.
+%! w = 1400 + (1:45)'*9;
+%! g = {'A','B','C'}(mod ((0:44), 3) + 1)';
+%! m = 55 - 0.005*w + [0 5 -3](mod ((0:44), 3) + 1)' + 0.3*sin ((1:45)'/6);
+%! t = table (w, g, m, 'VariableNames', {'Weight','Group','MPG'});
+%! mdl = stepwiselm (t, 'MPG ~ 1', 'Upper', 'MPG ~ Weight + Group', ...
+%!                   'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Terms{end}, mdl.Formula.Terms);
+%! assert_equal (mdl.Steps.History.Terms{end}, [0, 0, 0; 1, 0, 0; 0, 1, 0]);
+
+%!test
+%! ## The Start row names the starting model, not the constant.
+%! w = 1400 + (1:45)'*9;
+%! g = {'A','B','C'}(mod ((0:44), 3) + 1)';
+%! m = 55 - 0.005*w + [0 5 -3](mod ((0:44), 3) + 1)' + 0.3*sin ((1:45)'/6);
+%! t = table (w, g, m, 'VariableNames', {'Weight','Group','MPG'});
+%! mdl = stepwiselm (t, 'MPG ~ Weight + Group', 'Lower', 'MPG ~ Weight', ...
+%!                   'Upper', 'MPG ~ Weight + Group', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.TermName, {'1 + Weight + Group'});
+%! assert_equal (mdl.Steps.History.DF, 4);
+
+%!test
+%! ## Start, Lower, and Upper are formula objects over the model's variables.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2], sy, 'constant', 'Upper', 'linear', ...
+%!                   'Verbose', 0);
+%! assert_equal (class (mdl.Steps.Start), 'LinearFormula');
+%! assert_equal (char (mdl.Steps.Start), 'y ~ 1');
+%! assert_equal (char (mdl.Steps.Upper), 'y ~ 1 + x1 + x2');
+%! assert_equal (mdl.Steps.Start.VariableNames, {'x1', 'x2', 'y'});
+
+%!test
+%! ## A power term in a starting formula survives.  Folding it onto the
+%! ## all-zero row once discarded it as a duplicate intercept, so
+%! ## 'y ~ x1 + x1^2' fitted '1 + x1'.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm ([s1, s2], sy, 'y ~ x1 + x1^2', 'Upper', 'quadratic', ...
+%!                   'NSteps', 0, 'Verbose', 0);
+%! assert_equal (mdl.Formula.LinearPredictor, '1 + x1 + x1^2');
+%! assert_equal (mdl.Steps.History.TermName, {'1 + x1 + x1^2'});
+%! assert_equal (mdl.Steps.History.DF, 3);
+
+%!test
+%! ## Capping the search at no steps leaves the history with its Start row.
+%! s1 = ((1:48)' - 24.5)/12;
+%! sy = 4 + 2.5*s1 + 0.2*sin ((1:48)'/3);
+%! mdl = stepwiselm (s1, sy, 'constant', 'Upper', 'linear', 'NSteps', 0, ...
+%!                   'Verbose', 0);
+%! assert_equal (size (mdl.Steps.History, 1), 1);
+%! assert_equal (mdl.Steps.History.Action{1}, 'Start');
 
 %!error <stepwiselm: Not enough input arguments.> stepwiselm ()
 %!error <stepwiselm: Name-Value arguments must be in pairs.> stepwiselm (X, y, 'Verbose')

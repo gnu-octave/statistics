@@ -531,18 +531,38 @@ classdef LinearModel
     ##
     ## Stepwise fitting information
     ##
-    ## In MATLAB, this is a structure with seven fields (@code{Start},
-    ## @code{Lower}, @code{Upper}, @code{Criterion}, @code{PEnter},
-    ## @code{PRemove}, and @code{History}, the last being a table with one
-    ## row per step and columns @code{Action}, @code{TermName}, @code{Terms},
-    ## @code{DF}, @code{delDF}, @code{FStat}, @code{PValue}), populated
-    ## whenever the model was fit using stepwise regression, and empty
-    ## otherwise.
+    ## A structure recording the term-selection trace, populated whenever the
+    ## model was fit by @code{stepwiselm} or improved by @code{step}, and
+    ## @code{[]} otherwise.  It has seven fields:
     ##
-    ## This implementation always returns @code{[]}, regardless of whether
-    ## the model was fit with @code{stepwiselm} or @code{step}; the per-step
-    ## history is not yet tracked.  This is a known deviation from MATLAB and
-    ## not a deliberate design choice.  This property is read-only.
+    ## @multitable @columnfractions 0.15 0.8
+    ## @headitem Field @tab Contents
+    ## @item @code{Start} @tab a @code{LinearFormula} for the model the search
+    ## started from.
+    ## @item @code{Lower} @tab a @code{LinearFormula} for the smallest model
+    ## considered; its terms are never removed.
+    ## @item @code{Upper} @tab a @code{LinearFormula} for the largest model
+    ## considered.
+    ## @item @code{Criterion} @tab the selection criterion, such as
+    ## @qcode{'SSE'}.
+    ## @item @code{PEnter} @tab the threshold a term must beat to enter.
+    ## @item @code{PRemove} @tab the threshold above which a term leaves.
+    ## @item @code{History} @tab a table with one row per step.
+    ## @end multitable
+    ##
+    ## @code{History} carries the columns @code{Action} (@qcode{'Start'},
+    ## @qcode{'Add'}, or @qcode{'Remove'}), @code{TermName}, @code{Terms} (the
+    ## terms matrix after the step, over the model's variables), @code{DF} (the
+    ## coefficient count after the step), and @code{delDF} (the change in it,
+    ## negative for a removal).  The remaining columns follow the criterion:
+    ## @code{FStat} and @code{pValue} under @qcode{'SSE'}, and otherwise a
+    ## single column named for the criterion (@code{AIC}, @code{BIC},
+    ## @code{Rsquared}, or @code{AdjRsquared}) holding its value after the
+    ## step.
+    ##
+    ## The first row is the starting model, named by its right-hand side, and
+    ## @code{step} appends to the history it inherits rather than starting a
+    ## new one.  This property is read-only.
     ##
     ## @end deftp
     Steps = [];
@@ -839,6 +859,13 @@ classdef LinearModel
         out = subsref (out, chain_s);
       endif
       varargout{1} = out;
+    endfunction
+
+    ## Attach a stepwise-selection history structure.  Used by
+    ## @code{stepwiselm} and by the @code{step} method to record the
+    ## term-selection trace on the returned object; not intended for direct use.
+    function this = setSteps (this, steps)
+      this.Steps = steps;
     endfunction
 
   endmethods
@@ -4626,6 +4653,22 @@ classdef LinearModel
         extra = [extra, {'NSteps', 1}];
       endif
 
+      ## A model already fitted stepwise carries the settings the earlier
+      ## search ran under, and 'step' continues that search rather than
+      ## starting a fresh one, so anything not named again is inherited.
+      ## 'Upper' is not: it bounds this call alone.
+      if (! isempty (mdl.Steps))
+        for nm = {'Criterion', 'Lower', 'PEnter', 'PRemove'}
+          if (! sw_named (extra, nm{1}) && ! isempty (mdl.Steps.(nm{1})))
+            v = mdl.Steps.(nm{1});
+            if (isa (v, 'LinearFormula'))
+              v = char (v);
+            endif
+            extra = [extra, {nm{1}, v}];
+          endif
+        endfor
+      endif
+
       cat_vars = {};
       if (! isempty (mdl.CatLevelInfo) && isfield (mdl.CatLevelInfo, 'names'))
         cat_vars = mdl.CatLevelInfo.names;
@@ -4651,6 +4694,24 @@ classdef LinearModel
       endif
 
       NewMdl = stepwiselm (mdl.Variables, formula_str, nv_list{:}, extra{:});
+
+      ## Steps.Start is the model stepped from, and the history is appended to
+      ## whatever the model already carried rather than begun again; where it
+      ## carried none, the thresholds are left unreported, as MATLAB leaves
+      ## them.
+      steps       = NewMdl.Steps;
+      steps.Start = mdl.Formula;
+      if (isempty (mdl.Steps))
+        if (! sw_named (extra, 'PEnter'))
+          steps.PEnter = [];
+        endif
+        if (! sw_named (extra, 'PRemove'))
+          steps.PRemove = [];
+        endif
+      else
+        steps.History = [mdl.Steps.History; steps.History(2:end, :)];
+      endif
+      NewMdl = setSteps (NewMdl, steps);
     endfunction
 
   endmethods
@@ -4878,6 +4939,18 @@ classdef LinearModel
   endmethods
 
 endclassdef
+
+## True if NAME appears as a parameter name in the Name-Value list ARGS.
+function tf = sw_named (args, name)
+  tf = false;
+  for k = 1:2:numel (args) - 1
+    if ((ischar (args{k}) || isstring (args{k})) ...
+        && strcmpi (char (args{k}), name))
+      tf = true;
+      return;
+    endif
+  endfor
+endfunction
 
 function opts = lm_parse_nv (nv_args)
 
@@ -9190,6 +9263,83 @@ endfunction
 %! assert_equal (m.CoefficientNames, {'(Intercept)','x1','x2'});
 %! assert_equal (m.Coefficients.Estimate, [0.13263; 2.3566; -0.97211], 1e-4);
 %! assert_equal (m.Formula.LinearPredictor, '1 + x1 + x2');
+
+%!test
+%! ## 'step' continues the history it inherits rather than beginning a new
+%! ## one, and reports the model it stepped from as the start.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! m1 = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'linear', ...
+%!                  'Verbose', 0);
+%! m2 = step (m1, 'Upper', 'quadratic', 'NSteps', 1, 'Verbose', 0);
+%! assert_equal (size (m1.Steps.History, 1), 4);
+%! assert_equal (size (m2.Steps.History, 1), 5);
+%! assert_equal (m2.Steps.History.TermName, ...
+%!               {'1'; 'x1'; 'x2'; 'x3'; 'x1:x3'});
+%! assert_equal (m2.Steps.History.DF, (1:5)');
+%! assert_equal (char (m2.Steps.Start), 'y ~ 1 + x1 + x2 + x3');
+
+%!test
+%! ## Stepping a model that was not fitted stepwise starts the history at
+%! ## that model, and leaves the thresholds unreported.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! m0 = fitlm ([s1, s2, s3], sy);
+%! m1 = step (m0, 'Upper', 'linear', 'NSteps', 1, 'Verbose', 0);
+%! assert_equal (isempty (m0.Steps), true);
+%! assert_equal (size (m1.Steps.History, 1), 1);
+%! assert_equal (m1.Steps.History.TermName{1}, '1 + x1 + x2 + x3');
+%! assert_equal (m1.Steps.History.DF, 4);
+%! assert_equal (isempty (m1.Steps.PEnter), true);
+%! assert_equal (isempty (m1.Steps.PRemove), true);
+
+%!test
+%! ## An unasked-for criterion is inherited from the search being continued,
+%! ## and the appended step is scored by it.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! m1 = stepwiselm ([s1, s2, s3], sy, 'constant', 'Upper', 'linear', ...
+%!                  'Criterion', 'bic', 'Verbose', 0);
+%! m2 = step (m1, 'Upper', 'quadratic', 'NSteps', 1, 'Verbose', 0);
+%! assert_equal (m2.Steps.Criterion, 'bic');
+%! assert_equal (m2.Steps.History.Properties.VariableNames, ...
+%!               {'Action', 'TermName', 'Terms', 'DF', 'delDF', 'BIC'});
+%! assert_equal (m2.Steps.History.TermName, ...
+%!               {'1'; 'x1'; 'x2'; 'x3'; 'x1:x3'});
+%! assert_equal (m2.Steps.History.BIC, ...
+%!               [245.562553617099; 116.628368564602; 109.023785194728; ...
+%!                -6.28640176660815; -83.7225948440224], 1e-9);
+
+%!test
+%! ## Stepping a model that holds a power term is not a 'PredictorVars'
+%! ## conflict: the factor 'x1^2' names the variable 'x1'.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! m1 = stepwiselm ([s1, s2], sy, 'y ~ x1 + x1^2', 'Upper', 'quadratic', ...
+%!                  'NSteps', 0, 'Verbose', 0);
+%! m2 = step (m1, 'Upper', 'quadratic', 'NSteps', 1, 'Verbose', 0);
+%! assert_equal (any (strcmp (m2.CoefficientNames, 'x1^2')), true);
+
+%!test
+%! ## So is the lower bound, which would otherwise silently widen to the
+%! ## constant model and let a protected term be dropped.
+%! s1 = ((1:48)' - 24.5)/12;
+%! s2 = sin ((1:48)'/5);
+%! s3 = cos ((1:48)'/7);
+%! sy = 4 + 2.5*s1 - 1.1*s2 + 0.6*s1.^2 + 0.2*sin ((1:48)'/3);
+%! m1 = stepwiselm ([s1, s2, s3], sy, 'y ~ x1 + x2', 'Lower', 'y ~ x2', ...
+%!                  'Upper', 'quadratic', 'NSteps', 1, 'Verbose', 0);
+%! m2 = step (m1, 'Upper', 'quadratic', 'NSteps', 1, 'Verbose', 0);
+%! assert_equal (char (m1.Steps.Lower), 'y ~ 1 + x2');
+%! assert_equal (char (m2.Steps.Lower), 'y ~ 1 + x2');
+%! assert_equal (m2.Steps.History.TermName, {'1 + x1 + x2'; 'x1^2'; 'x2^2'});
 
 %!test
 %! mdl0 = fitlm (X, y, 'Intercept', false);
