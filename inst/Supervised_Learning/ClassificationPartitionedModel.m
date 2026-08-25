@@ -103,10 +103,12 @@ classdef ClassificationPartitionedModel
     ## classes in @qcode{ClassNames}.
     ##
     ## It may be assigned only on a cross-validated
-    ## @code{ClassificationDiscriminant}, the one learner that re-derives its
-    ## coefficients from the priors it is given; every other learner consumes
-    ## them while it fits and cannot revisit them afterwards.  Assigning it
-    ## rebuilds the priors on every fold in @qcode{Trained}.
+    ## @code{ClassificationDiscriminant} or @code{ClassificationNaiveBayes},
+    ## the two learners that score from the priors they are given rather than
+    ## consuming them while they fit: the discriminant re-derives its
+    ## coefficients from them and the naive Bayes weights its class densities
+    ## by them.  Every other learner cannot revisit them afterwards.
+    ## Assigning it rebuilds the priors on every fold in @qcode{Trained}.
     ##
     ## @end deftp
     Prior                        = [];
@@ -384,15 +386,19 @@ classdef ClassificationPartitionedModel
       this = pushToFolds (this, 'Cost', this.Cost);
     endfunction
 
-    ## The discriminant is the only learner that re-derives its coefficients
-    ## from the priors it holds, so it is the only one whose folds can honour
-    ## a prior assigned after the fit.  MATLAB draws the same line.
+    ## A generative learner scores from the priors it holds, so its folds can
+    ## honour a prior assigned after the fit: the discriminant re-derives its
+    ## coefficients from them and the naive Bayes weights its class densities
+    ## by them.  The discriminative learners fitted them in and cannot.
+    ## MATLAB draws the same line, refusing the KNN, the network, the GAM and
+    ## the SVM.
     function this = set.Prior (this, val)
-      if (this.Fitted && ! strcmp (this.CrossValidatedModel, ...
-                                   'Discriminant'))
+      takes_prior = {'Discriminant', 'NaiveBayes'};
+      if (this.Fitted && ! any (strcmp (this.CrossValidatedModel, takes_prior)))
         error (strcat ("ClassificationPartitionedModel: 'Prior' can only", ...
                        " be assigned on a cross-validated", ...
-                       " ClassificationDiscriminant."));
+                       " ClassificationDiscriminant or", ...
+                       " ClassificationNaiveBayes."));
       endif
       if (! this.Fitted)
         this.Prior = val;
@@ -1828,14 +1834,34 @@ endclassdef
 %! CVMdl.Cost = C;
 %! assert_equal (CVMdl.Trained{2}.Cost, C);
 
-## The discriminant is the only learner whose priors may be assigned after
-## the fit, and they reach the folds too.
+## The two generative learners take a prior after the fit, and it reaches the
+## folds too.
 %!test
 %! load fisheriris
 %! CVMdl = crossval (fitcdiscr (meas, species), 'KFold', 3);
 %! CVMdl.Prior = [0.6, 0.2, 0.2];
 %! assert_equal (CVMdl.Prior, [0.6, 0.2, 0.2], 1e-15);
 %! assert_equal (CVMdl.Trained{1}.Prior, [0.6, 0.2, 0.2], 1e-15);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcnb (meas, species), 'KFold', 3);
+%! CVMdl.Prior = [0.6, 0.2, 0.2];
+%! assert_equal (CVMdl.Prior, [0.6, 0.2, 0.2], 1e-15);
+%! assert_equal (CVMdl.Trained{1}.Prior, [0.6, 0.2, 0.2], 1e-15);
+
+## The folds do not merely store the prior, they score by it.  Iris is too
+## well separated to show it, its posteriors sitting at 0 and 1, so the two
+## overlapping species on their two weakest predictors are used instead.
+%!test
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! Y = species(51:150);
+%! CVMdl = crossval (fitcnb (X, Y), 'KFold', 5);
+%! before = kfoldPredict (CVMdl);
+%! CVMdl.Prior = [0.9, 0.1];
+%! after = kfoldPredict (CVMdl);
+%! assert_equal (sum (! strcmp (before, after)) > 0, true);
 
 ## Priors are normalized, as they are on the learner itself.
 %!test
@@ -1857,11 +1883,11 @@ endclassdef
 %! b = ismember (species, {'setosa', 'versicolor'}); ...
 %! CVMdl = crossval (fitcsvm (meas(b,:), species(b)), 'KFold', 3); ...
 %! CVMdl.Cost = [0, 4; 1, 0];
-%!error<ClassificationPartitionedModel: 'Prior' can only be assigned on a cross-validated ClassificationDiscriminant.> ...
+%!error<ClassificationPartitionedModel: 'Prior' can only be assigned on a cross-validated ClassificationDiscriminant or ClassificationNaiveBayes.> ...
 %! load fisheriris; ...
 %! CVMdl = crossval (fitcknn (meas, species), 'KFold', 3); ...
 %! CVMdl.Prior = [0.6, 0.2, 0.2];
-%!error<ClassificationPartitionedModel: 'Prior' can only be assigned on a cross-validated ClassificationDiscriminant.> ...
+%!error<ClassificationPartitionedModel: 'Prior' can only be assigned on a cross-validated ClassificationDiscriminant or ClassificationNaiveBayes.> ...
 %! load fisheriris; ...
 %! CVMdl = crossval (fitcnet (meas, species), 'KFold', 3); ...
 %! CVMdl.Prior = [0.6, 0.2, 0.2];
