@@ -2622,6 +2622,25 @@ classdef LinearModel
       endfor
       [~, order] = sortrows ([tier, bitmask]);
       remaining  = [remaining(int_mask, :); body(order, :)];
+
+      ## Back into the variable space the refit works in.  The request was
+      ## mapped down to the model's own columns to be compared with its terms,
+      ## and those are only as wide as the predictors the formula uses, while
+      ## lm_refit refits against the whole variable table.  A model fitted from
+      ## a matrix has no gap between the two, which is why this only ever
+      ## showed on a table model whose formula names a subset.
+      if (nc != nv)
+        R = zeros (rows (remaining), nv);
+        for j = 1:n_pred
+          ecols = orig_to_enc{j};
+          for k = 1:numel (ecols)
+            R(:,j) = max (R(:,j), remaining(:,ecols(k)));
+          endfor
+        endfor
+        R(:,end) = remaining(:,end);
+        remaining = R;
+      endif
+
       NewMdl     = lm_refit (mdl, remaining);
 
     endfunction
@@ -9786,3 +9805,54 @@ endfunction
 %! m = fitlm (t, 'resp ~ 1 + u + g');
 %! assert_equal (class (m.VariableInfo.Range{2}), 'categorical');
 %! assert_equal (cellstr (m.VariableInfo.Range{2}), {'hi', 'lo'});
+
+%!test
+%! ## removeTerms names a term on a table model whose formula uses only some
+%! ## of the table's variables.  The model's own terms are only as wide as the
+%! ## predictors it uses, while the refit runs against the whole table, and the
+%! ## two spaces have to be reconciled.  Measured on R2024a: y ~ 1 + x1.
+%! x1 = [1; 2; 3; 4; 5; 6; 7; 8];
+%! x2 = [2; 1; 4; 3; 6; 5; 8; 7];
+%! x3 = [1; 1; 2; 2; 3; 3; 4; 4];
+%! x4 = [8; 7; 6; 5; 4; 3; 2; 1];
+%! y = 3 * x1 - 2 * x4;
+%! T = table (x1, x2, x3, x4, y);
+%! mdl = fitlm (T, "y ~ x1 + x4");
+%! assert_equal (removeTerms (mdl, "x4").Formula.LinearPredictor, "1 + x1");
+%! assert_equal (removeTerms (mdl, "x1").Formula.LinearPredictor, "1 + x4");
+
+%!test
+%! ## The intercept goes by name on such a model too.
+%! x1 = [1; 2; 3; 4; 5; 6; 7; 8];
+%! x2 = [2; 1; 4; 3; 6; 5; 8; 7];
+%! x4 = [8; 7; 6; 5; 4; 3; 2; 1];
+%! y = 3 * x1 - 2 * x4;
+%! T = table (x1, x2, x4, y);
+%! mdl = fitlm (T, "y ~ x1 + x4");
+%! assert_equal (removeTerms (mdl, "1").Formula.LinearPredictor, "x1 + x4");
+
+%!test
+%! ## Adding a variable the formula left out and removing it again returns
+%! ## the model to where it started.
+%! x1 = [1; 2; 3; 4; 5; 6; 7; 8];
+%! x2 = [2; 1; 4; 3; 6; 5; 8; 7];
+%! x4 = [8; 7; 6; 5; 4; 3; 2; 1];
+%! y = 3 * x1 - 2 * x4;
+%! T = table (x1, x2, x4, y);
+%! mdl = fitlm (T, "y ~ x1");
+%! grown = addTerms (mdl, "x4");
+%! assert_equal (grown.Formula.LinearPredictor, "1 + x1 + x4");
+%! assert_equal (removeTerms (grown, "x4").Formula.LinearPredictor, "1 + x1");
+
+%!test
+%! ## step reaches a variable the current model does not use, which is what
+%! ## R2024a does: a model at y ~ 1 + x1 gains x4 with no Upper given.
+%! x1 = [1; 2; 3; 4; 5; 6; 7; 8];
+%! x2 = [2; 1; 4; 3; 6; 5; 8; 7];
+%! x4 = [8; 7; 6; 5; 4; 3; 2; 1] + [0; 0.3; -0.2; 0.1; 0.4; -0.1; 0.2; 0];
+%! y = 3 * x1 - 2 * x4;
+%! T = table (x1, x2, x4, y);
+%! mdl = fitlm (T, "y ~ x1");
+%! grown = step (mdl, "Verbose", 0);
+%! assert_equal (any (strcmp (grown.PredictorNames, "x4")), true);
+
