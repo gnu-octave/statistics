@@ -37,70 +37,6 @@ classdef ClassificationPartitionedModel
   properties (GetAccess = public, SetAccess = protected)
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} W
-    ##
-    ## Observation weights
-    ##
-    ## A numeric column vector with one entry per observation, carried over
-    ## from the model that was cross validated.  This property is read-only.
-    ##
-    ## @end deftp
-    W                            = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} BinEdges
-    ##
-    ## Bin edges
-    ##
-    ## A cell array with one entry per predictor, holding that predictor's
-    ## bin edges where the learner discretized it before fitting.  It is
-    ## carried over from the model that was cross validated, and is empty
-    ## whenever that model did no binning, which is every learner this package
-    ## implements: MATLAB fills it only for its GAM, which bins because it is
-    ## built from boosted trees where ours is built from splines.
-    ##
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    BinEdges                     = {};
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} CategoricalPredictors
-    ##
-    ## Indices of categorical predictors
-    ##
-    ## A vector of positive integers specifying the indices of categorical
-    ## predictors.  This property is read-only.
-    ##
-    ## @end deftp
-    CategoricalPredictors        = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} X
-    ##
-    ## Predictor data
-    ##
-    ## A numeric matrix containing the unstandardized predictor data.  Each
-    ## column of @var{X} represents one predictor (variable), and each row
-    ## represents one observation.  This property is read-only.
-    ##
-    ## @end deftp
-    X                            = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} Y
-    ##
-    ## Class labels
-    ##
-    ## Specified as a logical or numeric column vector, or as a character array
-    ## or a cell array of character vectors with the same number of rows as the
-    ## predictor data.  Each row in @var{Y} is the observed class label for
-    ## the corresponding row in @var{X}.  This property is read-only.
-    ##
-    ## @end deftp
-    Y                            = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedModel} {property} ClassNames
     ##
     ## Names of classes in the response variable
@@ -118,107 +54,8 @@ classdef ClassificationPartitionedModel
     ##
     ## @end deftp
     ClassNames                   = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} CrossValidatedModel
-    ##
-    ## Cross-validated model class
-    ##
-    ## A character vector holding the short name of the learner that was
-    ## cross validated, as MATLAB reports it: @qcode{'Discriminant'},
-    ## @qcode{'GAM'}, @qcode{'KNN'}, @qcode{'NeuralNetwork'} or
-    ## @qcode{'SVM'}.  It is not the class name of that learner, and the
-    ## regression side uses the same names.  This property is read-only.
-    ##
-    ## @end deftp
-    CrossValidatedModel          = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} KFold
-    ##
-    ## Number of cross-validated folds
-    ##
-    ## A positive integer value specifying the number of cross-validated folds.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    KFold                        = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} ModelParameters
-    ##
-    ## Model parameters
-    ##
-    ## A structure containing the model parameters used during training.
-    ## This includes any model-specific parameters that were configured prior
-    ## to training.  This property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters              = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} NumObservations
-    ##
-    ## Number of observations
-    ##
-    ## A positive integer value specifying the number of observations in the
-    ## training dataset used for training the cross-validated model.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    NumObservations              = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} Partition
-    ##
-    ## Partition configuration
-    ##
-    ## A @code{cvpartition} object specifying the partition configuration used
-    ## for cross-validation.  This field stores the cvpartition instance that
-    ## describes how the data was split into training and validation sets.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Partition                    = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} PredictorNames
-    ##
-    ## Names of predictor variables
-    ##
-    ## A cell array of character vectors specifying the names of the predictor
-    ## variables.  The names are in the order in which they appear in the
-    ## training dataset.  This property is read-only.
-    ##
-    ## @end deftp
-    PredictorNames               = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} ResponseName
-    ##
-    ## Response variable name
-    ##
-    ## A character vector specifying the name of the response variable @var{Y}.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    ResponseName                 = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property} Trained
-    ##
-    ## Models trained on each fold
-    ##
-    ## A cell array of models trained on each fold.  Each cell contains a model
-    ## trained on the minus-one fold of the data (all but one fold used for
-    ## training and the remaining fold used for validation).  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    Trained                      = [];
   endproperties
 
-  ## Properties a user may set.  Each one is validated by its set method.
   properties (GetAccess = public, SetAccess = public)
 
     ## -*- texinfo -*-
@@ -284,7 +121,171 @@ classdef ClassificationPartitionedModel
     ##
     ## @end deftp
     ScoreTransform               = [];
+  endproperties
 
+  properties (GetAccess = public, SetAccess = protected)
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} CrossValidatedModel
+    ##
+    ## Cross-validated model class
+    ##
+    ## A character vector holding the short name of the learner that was
+    ## cross validated, as MATLAB reports it: @qcode{'Discriminant'},
+    ## @qcode{'GAM'}, @qcode{'KNN'}, @qcode{'NeuralNetwork'} or
+    ## @qcode{'SVM'}.  It is not the class name of that learner, and the
+    ## regression side uses the same names.  This property is read-only.
+    ##
+    ## @end deftp
+    CrossValidatedModel          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which they appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} CategoricalPredictors
+    ##
+    ## Indices of categorical predictors
+    ##
+    ## A vector of positive integers specifying the indices of categorical
+    ## predictors.  This property is read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the cross-validated model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumObservations              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
+    X                            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
+    Y                            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation, carried over
+    ## from the model that was cross validated.  This property is read-only.
+    ##
+    ## @end deftp
+    W                            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ModelParameters
+    ##
+    ## Model parameters
+    ##
+    ## A structure containing the model parameters used during training.
+    ## This includes any model-specific parameters that were configured prior
+    ## to training.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Trained
+    ##
+    ## Models trained on each fold
+    ##
+    ## A cell array of models trained on each fold.  Each cell contains a model
+    ## trained on the minus-one fold of the data (all but one fold used for
+    ## training and the remaining fold used for validation).  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Trained                      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} KFold
+    ##
+    ## Number of cross-validated folds
+    ##
+    ## A positive integer value specifying the number of cross-validated folds.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    KFold                        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Partition
+    ##
+    ## Partition configuration
+    ##
+    ## A @code{cvpartition} object specifying the partition configuration used
+    ## for cross-validation.  This field stores the cvpartition instance that
+    ## describes how the data was split into training and validation sets.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Partition                    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} BinEdges
+    ##
+    ## Bin edges
+    ##
+    ## A cell array with one entry per predictor, holding that predictor's
+    ## bin edges where the learner discretized it before fitting.  It is
+    ## carried over from the model that was cross validated, and is empty
+    ## whenever that model did no binning, which is every learner this package
+    ## implements: MATLAB fills it only for its GAM, which bins because it is
+    ## built from boosted trees where ours is built from splines.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BinEdges                     = {};
   endproperties
 
   ## Copied from the parent model and kept out of the documented surface.
@@ -557,17 +558,11 @@ classdef ClassificationPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-          ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct ();
-          paramList = {'Formula', 'Interactions', 'Knots', 'Order', 'DoF', ...
-                       'LearningRate', 'NumIterations'};
-          for i = 1:numel (paramList)
-            paramName = paramList{i};
-            if (isprop (Mdl, paramName))
-              params.(paramName) = Mdl.(paramName);
-            endif
-          endfor
-          this.ModelParameters = params;
+          ## The model's own, not a list restated here.  The names this
+          ## branch used to gather were the spline engine's, and the fit has
+          ## been boosted trees by default since 2026-08-24, so the struct it
+          ## built described a scheme the folds were no longer fitted under.
+          this.ModelParameters = Mdl.ModelParameters;
 
         case 'KNN'
           ## Arguments to pass in fitcknn
@@ -717,17 +712,8 @@ classdef ClassificationPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-          ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct ();
-          paramList = {'LayerSizes', 'Activations', 'OutputLayerActivation', ...
-                       'LearningRate', 'IterationLimit', 'Solver'};
-          for i = 1:numel (paramList)
-            paramName = paramList{i};
-            if (isprop (Mdl, paramName))
-              params.(paramName) = Mdl.(paramName);
-            endif
-          endfor
-          this.ModelParameters = params;
+          ## The model's own, rather than a list of names restated here.
+          this.ModelParameters = Mdl.ModelParameters;
 
         case 'SVM'
           ## Get ModelParameters structure from ClassificationSVM object
@@ -755,8 +741,9 @@ classdef ClassificationPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-          ## Store ModelParameters to ClassificationPartitionedModel object
-          this.ModelParameters = params;
+          ## The model's own, rather than the argument struct this branch
+          ## assembled to refit the folds with.
+          this.ModelParameters = Mdl.ModelParameters;
 
       endswitch
 
@@ -2149,3 +2136,16 @@ endclassdef
 %! g = @(M, Xtr, varargin) ones (1, rows (Xtr));
 %! fail ("kfoldfun (CV, g)", ...
 %!       "must return the same number of values for every fold");
+
+%!test
+%! ## The property order is MATLAB's, measured on R2024a.  It is one list per
+%! ## class there and does not vary with the backing, so one fixture pins it.
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), "KFold", 3);
+%! assert_equal (sort (properties (CVMdl)), ...
+%!               sort ({'ClassNames'; 'Cost'; 'Prior'; 'ScoreTransform'; ...
+%!                      'CrossValidatedModel'; 'PredictorNames'; ...
+%!                      'CategoricalPredictors'; 'ResponseName'; ...
+%!                      'NumObservations'; 'X'; 'Y'; 'W'; ...
+%!                      'ModelParameters'; 'Trained'; 'KFold'; 'Partition'; ...
+%!                      'BinEdges'}));

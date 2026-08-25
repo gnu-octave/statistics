@@ -47,57 +47,21 @@
 
 classdef RegressionPartitionedModel
 
+  properties (GetAccess = public, SetAccess = public)
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} ResponseTransform
+    ##
+    ## Transformation applied to the predicted response
+    ##
+    ## A function handle, carried over from the model that was cross
+    ## validated.  This property is read-only.
+    ##
+    ## @end deftp
+    ResponseTransform     = 'none';
+  endproperties
+
   properties (GetAccess = public, SetAccess = protected)
-    ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} X
-    ##
-    ## Predictor data
-    ##
-    ## A numeric matrix holding the observations the model was trained on,
-    ## the rows carrying missing values already removed.  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    X                     = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} Y
-    ##
-    ## Response data
-    ##
-    ## A numeric column vector with one entry per row of @code{X}.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    Y                     = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} W
-    ##
-    ## Observation weights
-    ##
-    ## A numeric column vector with one entry per observation.  This property
-    ## is read-only.
-    ##
-    ## @end deftp
-    W                     = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} BinEdges
-    ##
-    ## Bin edges of the predictors
-    ##
-    ## A cell array with one entry per predictor, holding that predictor's bin
-    ## edges where the learner discretized it before fitting.  It is carried
-    ## over from the model that was cross validated, and is empty whenever that
-    ## model did no binning, which is every learner this package implements:
-    ## MATLAB fills it only for its generalized additive model, which bins
-    ## because it is built from boosted trees where ours is built from splines.
-    ##
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    BinEdges              = {};
 
     ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} CrossValidatedModel
@@ -155,6 +119,40 @@ classdef RegressionPartitionedModel
     NumObservations       = [];
 
     ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix holding the observations the model was trained on,
+    ## the rows carrying missing values already removed.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    X                     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} Y
+    ##
+    ## Response data
+    ##
+    ## A numeric column vector with one entry per row of @code{X}.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    Y                     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} W
+    ##
+    ## Observation weights
+    ##
+    ## A numeric column vector with one entry per observation.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    W                     = [];
+
+    ## -*- texinfo -*-
     ## @deftp {RegressionPartitionedModel} {property} ModelParameters
     ##
     ## Parameters the folds were fitted with
@@ -197,20 +195,46 @@ classdef RegressionPartitionedModel
     ## @end deftp
     Partition             = [];
 
-  endproperties
-
-  ## Properties a user may set.  Each one is validated by its set method.
-  properties (GetAccess = public, SetAccess = public)
     ## -*- texinfo -*-
-    ## @deftp {RegressionPartitionedModel} {property} ResponseTransform
+    ## @deftp {RegressionPartitionedModel} {property} BinEdges
     ##
-    ## Transformation applied to the predicted response
+    ## Bin edges of the predictors
     ##
-    ## A function handle, carried over from the model that was cross
-    ## validated.  This property is read-only.
+    ## A cell array with one entry per predictor, holding that predictor's bin
+    ## edges where the learner discretized it before fitting.  It is carried
+    ## over from the model that was cross validated, and is empty whenever that
+    ## model did no binning, which is every learner this package implements:
+    ## MATLAB fills it only for its generalized additive model, which bins
+    ## because it is built from boosted trees where ours is built from splines.
+    ##
+    ## This property is read-only.
     ##
     ## @end deftp
-    ResponseTransform     = 'none';
+    BinEdges              = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} IsStandardDeviationFit
+    ##
+    ## Whether the folds fitted a standard deviation model
+    ##
+    ## A logical scalar for a generalized additive model backing, taken from
+    ## the model that was cross validated, and empty for every other backing.
+    ##
+    ## MATLAB carries this on @code{RegressionPartitionedGAM}, one of five
+    ## per-learner partitioned classes this package deliberately does not have
+    ## (see @code{crossval}).  With one class serving every backing the
+    ## property has to be declared for all of them, so it is empty where it
+    ## does not apply.  It is placed last rather than first, where MATLAB's
+    ## subclass shows it, because that subclass also moves
+    ## @qcode{ResponseTransform} to the end and no single order can match both
+    ## of MATLAB's classes; matching the general one and appending is the only
+    ## coherent choice.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    IsStandardDeviationFit = [];
+
   endproperties
 
   ## Copied from the parent model and kept out of the documented surface.
@@ -310,10 +334,9 @@ classdef RegressionPartitionedModel
       this.CrossValidatedModel = strrep (class (Mdl), 'Regression', '');
       this.ResponseTransform = Mdl.ResponseTransform;
       this.RTfun = Mdl.RTfun;
-      ## A GAM carries no fitting parameter struct, so the property keeps its
-      ## default rather than being read off a model that does not declare it.
-      if (! strcmp (this.CrossValidatedModel, 'GAM'))
-        this.ModelParameters = Mdl.ModelParameters;
+      this.ModelParameters = Mdl.ModelParameters;
+      if (any (strcmp (properties (Mdl), 'IsStandardDeviationFit')))
+        this.IsStandardDeviationFit = Mdl.IsStandardDeviationFit;
       endif
 
       ## Switch Regression object types
@@ -736,7 +759,11 @@ endclassdef
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
 %! assert_equal (CVMdl.CrossValidatedModel, 'GAM');
 %! assert_equal (CVMdl.NumObservations, 20);
-%! assert_equal (CVMdl.ModelParameters, []);
+%! ## A GAM carries the same thirteen-field ModelParameters MATLAB reports,
+%! ## and the cross-validated model reads it off like every other backing.
+%! assert_equal (isstruct (CVMdl.ModelParameters), true);
+%! assert_equal (numfields (CVMdl.ModelParameters), 13);
+%! assert_equal (isfield (CVMdl.ModelParameters, 'NumTreesPerPredictor'), true);
 
 %!error<RegressionPartitionedModel: unsupported model type.> ...
 %! RegressionPartitionedModel (1, cvpartition (10, 'KFold', 2))
@@ -1003,3 +1030,25 @@ endclassdef
 %! kfoldfun (crossval (fitrgam (ones (8, 2), (1:8)'), "KFold", 2))
 %!error<RegressionPartitionedModel.kfoldfun: FUN must be a function handle.> ...
 %! kfoldfun (crossval (fitrgam (ones (8, 2), (1:8)'), "KFold", 2), "nope")
+
+%!test
+%! ## The property order is MATLAB's, measured on R2024a.
+%! load fisheriris
+%! CVMdl = crossval (fitrsvm (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! assert_equal (sort (properties (CVMdl)), ...
+%!               sort ({'ResponseTransform'; 'CrossValidatedModel'; ...
+%!                      'PredictorNames'; 'CategoricalPredictors'; ...
+%!                      'ResponseName'; 'NumObservations'; 'X'; 'Y'; 'W'; ...
+%!                      'ModelParameters'; 'Trained'; 'KFold'; 'Partition'; ...
+%!                      'BinEdges'; 'IsStandardDeviationFit'}));
+
+%!test
+%! ## IsStandardDeviationFit comes from the model for a GAM backing and is
+%! ## empty for every other, one class serving all of them.
+%! load fisheriris
+%! CVg = crossval (fitrgam (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! assert_equal (islogical (CVg.IsStandardDeviationFit), true);
+%! assert_equal (CVg.IsStandardDeviationFit, false);
+%! CVs = crossval (fitrsvm (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! assert_equal (isempty (CVs.IsStandardDeviationFit), true);
+
