@@ -71,8 +71,7 @@ classdef CompactClassificationSVM
     ## A structure with fields @qcode{Function} and @qcode{Scale}, and
     ## @qcode{Order} for a polynomial kernel.  @qcode{Function} names the
     ## kernel as MATLAB names it, so a radial basis kernel reports
-    ## @qcode{'gaussian'} whichever spelling was given; the kernel the fit was
-    ## handed is unchanged in @qcode{ModelParameters}.  This property is
+    ## @qcode{'gaussian'} whichever spelling was given.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -179,20 +178,6 @@ classdef CompactClassificationSVM
     ##
     ## @end deftp
     Mu                  = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} ModelParameters
-    ##
-    ## SVM training parameters
-    ##
-    ## A structure containing the parameters used to train the SVM model with
-    ## the following fields: @code{SVMtype}, @code{BoxConstraint},
-    ## @code{CacheSize}, @code{KernelScale}, @code{KernelOffset},
-    ## @code{KernelFunction}, @code{PolynomialOrder}, @code{Nu},
-    ## @code{Tolerance}, and @code{Shrinking}.  This property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters     = [];
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} Alpha
@@ -374,7 +359,6 @@ classdef CompactClassificationSVM
       this.Sigma                 = Mdl.Sigma;
       this.Mu                    = Mdl.Mu;
 
-      this.ModelParameters       = Mdl.ModelParameters;
       this.KernelParameters      = Mdl.KernelParameters;
       this.Model                 = Mdl.Model;
 
@@ -422,7 +406,7 @@ classdef CompactClassificationSVM
       endif
       fprintf ("%+25s: %f\n", 'Bias', this.Bias);
       fprintf ("%+25s: '%s'\n", 'KernelFunction', ...
-               this.ModelParameters.KernelFunction);
+               this.KernelParameters.Function);
       fprintf ("%+25s: [%dx%d double]\n", 'SupportVectors', ...
                rows (this.SupportVectors), columns (this.SupportVectors));
     endfunction
@@ -455,7 +439,7 @@ classdef CompactClassificationSVM
         print_usage ();
       endif
 
-      if (! strcmpi (this.ModelParameters.KernelFunction, 'linear'))
+      if (! strcmpi (this.KernelParameters.Function, 'linear'))
         error (strcat ("CompactClassificationSVM.discardSupportVectors:", ...
                        " you cannot discard support vectors for a", ...
                        " non-linear kernel."));
@@ -877,7 +861,6 @@ classdef CompactClassificationSVM
       ScoreTransform      = this.ScoreTransform;
       Sigma               = this.Sigma;
       Mu                  = this.Mu;
-      ModelParameters     = this.ModelParameters;
       KernelParameters    = this.KernelParameters;
       Model               = this.Model;
       Alpha               = this.Alpha;
@@ -894,7 +877,7 @@ classdef CompactClassificationSVM
             'PredictorNames', 'ResponseName', 'ClassNames', ...
             'Prior', 'Cost', ...
             'ScoreTransform', 'Sigma', 'Mu', ...
-            'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
+            'Model', 'Alpha', 'Beta', 'Bias', ...
             'SupportVectorLabels', 'SupportVectors', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', ...
             'KernelParameters', 'STfun');
@@ -1066,7 +1049,7 @@ endclassdef
 %! load fisheriris
 %! Yb = strcmp (species, 'setosa');
 %! CMdl2 = compact (fitcsvm (meas, Yb));
-%! assert_equal (CMdl2.ModelParameters.KernelFunction, 'linear');
+%! assert_equal (CMdl2.KernelParameters.Function, 'linear');
 %! CMdl2.ScoreTransform = 'logit';
 %! [~, s1] = predict (CMdl2, meas(1:3,:));
 %! CMdl2.ScoreTransform = @(x) 1 ./ (1 + exp (-x));

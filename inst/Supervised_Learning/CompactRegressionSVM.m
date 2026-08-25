@@ -106,18 +106,6 @@ classdef CompactRegressionSVM
     Mu                    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactRegressionSVM} {property} ModelParameters
-    ##
-    ## Parameters the model was fitted with
-    ##
-    ## A structure holding the SVM formulation, the kernel and its parameters,
-    ## the box constraint, @code{Epsilon} and the solver settings.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters       = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactRegressionSVM} {property} Alpha
     ##
     ## Dual coefficients of the support vectors
@@ -170,8 +158,7 @@ classdef CompactRegressionSVM
     ## A structure with fields @qcode{Function} and @qcode{Scale}, and
     ## @qcode{Order} for a polynomial kernel.  @qcode{Function} names the
     ## kernel as MATLAB names it, so a radial basis kernel reports
-    ## @qcode{'gaussian'} whichever spelling was given; the kernel the fit was
-    ## handed is unchanged in @qcode{ModelParameters}.  This property is
+    ## @qcode{'gaussian'} whichever spelling was given.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -274,7 +261,6 @@ classdef CompactRegressionSVM
       this.Sigma                 = Mdl.Sigma;
       this.Mu                    = Mdl.Mu;
 
-      this.ModelParameters       = Mdl.ModelParameters;
       this.KernelParameters      = Mdl.KernelParameters;
       this.Model                 = Mdl.Model;
 
@@ -310,7 +296,7 @@ classdef CompactRegressionSVM
       endif
       fprintf ("%+25s: %f\n", 'Bias', this.Bias);
       fprintf ("%+25s: '%s'\n", 'KernelFunction', ...
-               this.ModelParameters.KernelFunction);
+               this.KernelParameters.Function);
       fprintf ("%+25s: [%dx%d double]\n", 'SupportVectors', ...
                rows (this.SupportVectors), columns (this.SupportVectors));
     endfunction
@@ -342,7 +328,7 @@ classdef CompactRegressionSVM
         print_usage ();
       endif
 
-      if (! strcmpi (this.ModelParameters.KernelFunction, 'linear'))
+      if (! strcmpi (this.KernelParameters.Function, 'linear'))
         error (strcat ("CompactRegressionSVM.discardSupportVectors: you", ...
                        " cannot discard support vectors for a non-linear", ...
                        " kernel."));
@@ -532,7 +518,6 @@ classdef CompactRegressionSVM
       Epsilon                 = this.Epsilon;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
-      ModelParameters         = this.ModelParameters;
       KernelParameters        = this.KernelParameters;
       Model                   = this.Model;
       Alpha                   = this.Alpha;
@@ -546,7 +531,7 @@ classdef CompactRegressionSVM
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
-            'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
+            'Epsilon', 'Sigma', 'Mu', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'SupportVectors', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', ...
             'KernelParameters', 'RTfun');
