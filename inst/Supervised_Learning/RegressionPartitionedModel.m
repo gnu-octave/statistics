@@ -509,7 +509,9 @@ classdef RegressionPartitionedModel
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {RegressionPartitionedModel} {@var{yFit} =} kfoldPredict (@var{obj})
+    ## @deftypefn  {RegressionPartitionedModel} {@var{yFit} =} kfoldPredict (@var{obj})
+    ## @deftypefnx {RegressionPartitionedModel} {[@var{yFit}, @var{ySD}, @var{yInt}] =} kfoldPredict (@var{obj})
+    ## @deftypefnx {RegressionPartitionedModel} {[@dots{}] =} kfoldPredict (@dots{}, @qcode{'Alpha'}, @var{alpha})
     ##
     ## Predict the response of every observation from the fold that held it
     ## out.
@@ -524,18 +526,89 @@ classdef RegressionPartitionedModel
     ## @var{obj} must be a @qcode{RegressionPartitionedModel} class object.
     ## @end itemize
     ##
+    ## @code{[@var{yFit}, @var{ySD}, @var{yInt}] = kfoldPredict (@var{obj})}
+    ## also returns the standard deviation @var{ySD} of each predicted
+    ## response and the two-column matrix @var{yInt} of prediction intervals,
+    ## each answered for by the fold that held the observation out.  A
+    ## @qcode{RegressionGP} backing is the only one that fits the uncertainty
+    ## its predictions carry, so any other raises here.  An untested
+    ## observation is @code{NaN} in all three.
+    ##
+    ## @code{[@dots{}] = kfoldPredict (@dots{}, @qcode{'Alpha'}, @var{alpha})}
+    ## sets the significance level of the prediction intervals, which default
+    ## to 95 per cent at an @var{alpha} of 0.05.
+    ##
+    ## @var{ySD} does not follow @qcode{ResponseTransform} and the other two
+    ## outputs do, the same rule @code{RegressionGP.predict} applies: a
+    ## predicted response and an interval endpoint are on the response scale
+    ## and a standard deviation is not.
+    ##
     ## @seealso{RegressionPartitionedModel, kfoldLoss}
     ## @end deftypefn
-    function yFit = kfoldPredict (this)
+    function [yFit, ySD, yInt] = kfoldPredict (this, varargin)
+
+      ## Only the GP fits the uncertainty around its predictions, so it is the
+      ## only backing whose folds can be asked for one.  MATLAB refuses the
+      ## network and the SVM outright and refuses the GAM unless it was fitted
+      ## with 'FitStandardDeviation', an option this package does not offer, so
+      ## every backing but the GP is refused here under one message.
+      is_gp = strcmp (this.CrossValidatedModel, 'GP');
+      if (nargout > 1 && ! is_gp)
+        error (strcat ("RegressionPartitionedModel.kfoldPredict: a", ...
+                       " standard deviation and a prediction interval are", ...
+                       " only available for a cross-validated",  ...
+                       " RegressionGP."));
+      endif
+
+      ## Validated here rather than in the fold's predict, so the message
+      ## names the method the user called.
+      if (numel (varargin) > 0 && ! is_gp)
+        error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
+                       " optional arguments are only accepted for a", ...
+                       " cross-validated RegressionGP."));
+      endif
+      CIAlpha = 0.05;
+      while (numel (varargin) > 0)
+        if (numel (varargin) < 2)
+          error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
+                         " optional arguments must be given in Name-Value", ...
+                         " pairs."));
+        endif
+        switch (lower (varargin{1}))
+          case 'alpha'
+            CIAlpha = varargin{2};
+            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+                   CIAlpha >= 0 && CIAlpha <= 1))
+              error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
+                             " 'Alpha' must be a scalar between 0 and 1."));
+            endif
+          otherwise
+            error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
+                           " invalid NAME in optional pairs of arguments."));
+        endswitch
+        varargin(1:2) = [];
+      endwhile
 
       yFit = nan (this.NumObservations, 1);
+      if (nargout > 1)
+        ySD = nan (this.NumObservations, 1);
+        yInt = nan (this.NumObservations, 2);
+      endif
 
       for k = 1:this.KFold
         testIdx = test (this.Partition, k);
         if (! any (testIdx))
           continue;
         endif
-        yFit(testIdx) = predict (this.Trained{k}, this.X(testIdx, :));
+        if (nargout > 2)
+          [yFit(testIdx), ySD(testIdx), yInt(testIdx,:)] = ...
+                predict (this.Trained{k}, this.X(testIdx, :), 'Alpha', CIAlpha);
+        elseif (nargout > 1)
+          [yFit(testIdx), ySD(testIdx)] = ...
+                predict (this.Trained{k}, this.X(testIdx, :));
+        else
+          yFit(testIdx) = predict (this.Trained{k}, this.X(testIdx, :));
+        endif
       endfor
 
       ## As on the classification side, the folds never carry the transform and
@@ -544,6 +617,9 @@ classdef RegressionPartitionedModel
       ## response values and documents assigning it by dot notation, so this is
       ## what the property is for; it used to be stored and never read.
       yFit = this.RTfun (yFit);
+      if (nargout > 2)
+        yInt = this.RTfun (yInt);
+      endif
 
     endfunction
 
@@ -923,6 +999,105 @@ endclassdef
 %! assert_equal (CVMdl.NumObservations, 21);
 %! assert_equal (rows (CVMdl.X), 21);
 %! assert_equal (numel (kfoldPredict (CVMdl)), 21);
+
+## A GP backing answers for the uncertainty of its out-of-fold predictions.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 5);
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%! assert_equal (size (yFit), [150, 1]);
+%! assert_equal (size (ySD), [150, 1]);
+%! assert_equal (size (yInt), [150, 2]);
+%! assert_equal (all (ySD > 0), true);
+%! assert_equal (yFit, kfoldPredict (CVMdl), 1e-12);
+
+## The interval is the prediction plus and minus a normal quantile of the
+## standard deviation, and 'Alpha' sets which quantile.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 5);
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%! z = norminv (0.975);
+%! assert_equal (yInt, [yFit - z * ySD, yFit + z * ySD], 1e-12);
+%! [~, ~, yInt90] = kfoldPredict (CVMdl, 'Alpha', 0.10);
+%! z90 = norminv (0.95);
+%! assert_equal (yInt90, [yFit - z90 * ySD, yFit + z90 * ySD], 1e-12);
+%! assert_equal (all (diff (yInt90, 1, 2) < diff (yInt, 1, 2)), true);
+
+## Each observation is answered for by the fold that held it out, in all three
+## outputs, and one no fold tests is NaN in all three.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 5);
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%! idx = test (CVMdl.Partition, 2);
+%! [p, s, i] = predict (CVMdl.Trained{2}, meas(idx,1:3));
+%! assert_equal (p, yFit(idx), 1e-12);
+%! assert_equal (s, ySD(idx), 1e-12);
+%! assert_equal (i, yInt(idx,:), 1e-12);
+
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'Holdout', 0.3);
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%! untested = isnan (yFit);
+%! assert_equal (any (untested), true);
+%! assert_equal (isnan (ySD), untested);
+%! assert_equal (isnan (yInt), [untested, untested]);
+
+## ResponseTransform reaches the two outputs on the response scale and not the
+## standard deviation, the rule RegressionGP.predict applies.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 5);
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%! CVMdl.ResponseTransform = @(x) 2 * x;
+%! [yFit2, ySD2, yInt2] = kfoldPredict (CVMdl);
+%! assert_equal (yFit2, 2 * yFit, 1e-12);
+%! assert_equal (ySD2, ySD, 1e-12);
+%! assert_equal (yInt2, 2 * yInt, 1e-12);
+
+## Measured against R2024a over the same folds, an explicit CustomPartition
+## naming them in both engines so the assembled values are comparable at all.
+%!test
+%! load fisheriris
+%! cvp = cvpartition ('CustomPartition', repmat ((1:5)', 30, 1));
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'CVPartition', cvp);
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%! assert_equal (yFit(1), 0.21819014717001, 1e-9);
+%! assert_equal (ySD(1), 0.17986522125163, 1e-9);
+%! assert_equal (yInt(1,:), [-0.13433920855451, 0.57071950289454], 1e-9);
+%! assert_equal (sum (abs (yFit)), 179.61497470708, 1e-6);
+%! assert_equal (sum (abs (ySD)), 27.747043040728, 1e-6);
+%! [~, ~, yInt90] = kfoldPredict (CVMdl, 'Alpha', 0.10);
+%! assert_equal (yInt90(1,:), [-0.077661814368161, 0.51404210870819], 1e-9);
+
+## No other backing fits the uncertainty around its predictions, so none of
+## them may be asked for it.
+%!error<RegressionPartitionedModel.kfoldPredict: a standard deviation and a prediction interval are only available for a cross-validated RegressionGP.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
+%! [yFit, ySD] = kfoldPredict (CVMdl);
+%!error<RegressionPartitionedModel.kfoldPredict: a standard deviation and a prediction interval are only available for a cross-validated RegressionGP.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitrgam (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
+%! [yFit, ySD, yInt] = kfoldPredict (CVMdl);
+%!error<RegressionPartitionedModel.kfoldPredict: optional arguments are only accepted for a cross-validated RegressionGP.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitrsvm (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
+%! kfoldPredict (CVMdl, 'Alpha', 0.1);
+%!error<RegressionPartitionedModel.kfoldPredict: optional arguments must be given in Name-Value pairs.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
+%! kfoldPredict (CVMdl, 'Alpha');
+%!error<RegressionPartitionedModel.kfoldPredict: 'Alpha' must be a scalar between 0 and 1.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
+%! kfoldPredict (CVMdl, 'Alpha', 2);
+%!error<RegressionPartitionedModel.kfoldPredict: invalid NAME in optional pairs of arguments.> ...
+%! load fisheriris; ...
+%! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
+%! kfoldPredict (CVMdl, 'Bogus', 1);
 
 ## Test input validation for the constructor
 %!error<RegressionPartitionedModel: too few input arguments.> ...
