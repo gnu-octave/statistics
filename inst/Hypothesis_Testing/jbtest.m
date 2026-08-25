@@ -74,8 +74,8 @@
 ## Monte-Carlo simulation, so it is itself an estimate of the true null
 ## quantiles.  MATLAB's table is likewise a Monte-Carlo estimate but from a
 ## different simulation, so the two tables agree only to about two decimal
-## places.  As a result the reported p-value and critical value, and — in a
-## narrow band of statistic values around the critical value — the test decision
+## places.  As a result the reported p-value and critical value, and (in a
+## narrow band of statistic values around the critical value) the test decision
 ## @var{h}, can differ slightly from MATLAB in edge cases.  These differences are
 ## an unavoidable consequence of the Monte-Carlo origin of both tables, not a
 ## difference in method.  Supply @var{mctol} for a direct Monte-Carlo p-value.

@@ -53,8 +53,8 @@
 ## @qcode{false}).
 ##
 ## @item @qcode{'ContrastFcn'}
-## The sparsity contrast.  Only @qcode{'logcosh'} — that is
-## @math{0.5 \log (\cosh (2 z))} — is supported.
+## The sparsity contrast.  Only @qcode{'logcosh'}, that is
+## @math{0.5 * log (cosh (2 * z))}, is supported.
 ##
 ## @item @qcode{'InitialTransformWeights'}
 ## A @math{P * @var{Q}} initial value for the weights.  The default is random.

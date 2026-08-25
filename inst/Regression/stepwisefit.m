@@ -50,11 +50,11 @@
 ## @var{y} is an @var{n}-by-1 numeric response vector.
 ##
 ## @item
-## Optional Name–Value pairs may be supplied to control the stepwise
+## Optional Name-Value pairs may be supplied to control the stepwise
 ## selection procedure.
 ## @end itemize
 ##
-## @subheading Name–Value Arguments
+## @subheading Name-Value Arguments
 ##
 ## @table @asis
 ## @item @qcode{'InModel'}
@@ -150,7 +150,7 @@ if (rows (X) != rows (y))
   error ("stepwisefit: X must be a matrix and y a vector");
 endif
 
-  ## Parse Name–Value pairs
+  ## Parse Name-Value pairs
   InModel  = [];
   Display  = 'on';
   ## MATLAB-compatible defaults

@@ -27,8 +27,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
 ## criterion.
 ##
 ## The Davies-Bouldin criterion is based on the ratio between the distances
-## between clusters and within clusters — distances between centroids and
-## distances between each datapoint and its centroid.
+## between clusters and within clusters, that is between centroids and
+## between each datapoint and its centroid.
 ##
 ## The best solution according to the Davies-Bouldin criterion is the one
 ## that produces the lowest Davies-Bouldin value.
