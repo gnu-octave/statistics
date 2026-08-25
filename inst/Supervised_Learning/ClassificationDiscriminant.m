@@ -372,6 +372,23 @@ classdef ClassificationDiscriminant
     BinEdges        = {};
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} ModelParameters
+    ##
+    ## Fitting options, as they were given
+    ##
+    ## A structure holding the parameters of the fit: @qcode{DiscrimType},
+    ## @qcode{Gamma}, @qcode{Delta}, @qcode{FillCoeffs}, and the
+    ## @qcode{Version}, @qcode{Method} and @qcode{Type} tags.
+    ##
+    ## MATLAB reports a @qcode{SaveMemory} field beside these.  This class
+    ## has no such option and always stores the full covariance, so there is
+    ## no setting to report and the field is absent rather than answering for
+    ## a knob that does not exist.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters = [];
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} HyperparameterOptimizationResults
     ##
     ## Results of the hyperparameter optimization
@@ -1246,6 +1263,20 @@ classdef ClassificationDiscriminant
                                      this.Prior, this.DiscrimType, ...
                                      this.Delta, this.ClassNames);
       endif
+
+      ## The fit as it was asked for: Gamma and Delta are the values given,
+      ## which the properties of the same name do not always keep, this class
+      ## forcing Gamma to 0 for a pseudo type and to 1 for a diagonal one.
+      ## MATLAB reports the given value here.  FillCoeffs is taken on and off
+      ## and reported as the flag it is.
+      this.ModelParameters = struct ( ...
+        'DiscrimType', this.DiscrimType, ...
+        'Gamma', Gamma, ...
+        'Delta', Delta, ...
+        'FillCoeffs', strcmpi (FillCoeffs, 'on'), ...
+        'Version', 1, ...
+        'Method', 'Discriminant', ...
+        'Type', 'classification');
 
     endfunction
 
@@ -2260,6 +2291,7 @@ classdef ClassificationDiscriminant
       LogDetSigma     = this.LogDetSigma;
       XCentered       = this.XCentered;
       BetweenSigma    = this.BetweenSigma;
+      ModelParameters = this.ModelParameters;
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
       STfun          = this.STfun;
@@ -2272,7 +2304,7 @@ classdef ClassificationDiscriminant
             'ClassNames', 'ScoreTransform', 'Prior', 'Cost', 'Sigma', ...
             'BaseSigma', 'Mu', ...
             'Coeffs', 'Delta', 'DiscrimType', 'Gamma', 'MinGamma', ...
-            'LogDetSigma', 'XCentered', 'BetweenSigma', ...
+            'LogDetSigma', 'XCentered', 'BetweenSigma', 'ModelParameters', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', 'STfun', ...
             'HyperparameterOptimizationResults');
     endfunction
@@ -3924,3 +3956,58 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters records the fit as it was asked for.  The field list and
+## its order are MATLAB's, measured on R2024a, less SaveMemory, which this
+## class does not offer.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (fieldnames (Mdl.ModelParameters)', {'DiscrimType', ...
+%! 'Gamma', 'Delta', 'FillCoeffs', 'Version', 'Method', 'Type'});
+
+%!test
+%! load fisheriris
+%! MP = fitcdiscr (meas, species).ModelParameters;
+%! assert_equal (MP.DiscrimType, 'linear');
+%! assert_equal (MP.Gamma, 0);
+%! assert_equal (MP.Delta, 0);
+%! assert_equal (MP.FillCoeffs, true);
+
+%!test
+%! load fisheriris
+%! MP = fitcdiscr (meas, species).ModelParameters;
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.Method, 'Discriminant');
+%! assert_equal (MP.Type, 'classification');
+
+## FillCoeffs is reported as the flag it is, not as the 'on'/'off' it is
+## given as.
+%!test
+%! load fisheriris
+%! MP = fitcdiscr (meas, species, 'FillCoeffs', 'off').ModelParameters;
+%! assert_equal (MP.FillCoeffs, false);
+%! assert_equal (class (MP.FillCoeffs), 'logical');
+
+%!test
+%! load fisheriris
+%! MP = fitcdiscr (meas, species, 'DiscrimType', 'pseudoLinear', ...
+%!                'Gamma', 0.3, 'Delta', 0.1).ModelParameters;
+%! assert_equal (MP.DiscrimType, 'pseudoLinear');
+%! assert_equal (MP.Gamma, 0.3);
+%! assert_equal (MP.Delta, 0.1);
+
+## The Gamma property is forced by the type, 0 for a pseudo type and 1 for a
+## diagonal one, but the fit was asked for 0.3 and that is what is recorded.
+%!test
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, 'DiscrimType', 'diagLinear', 'Gamma', 0.3);
+%! assert_equal (Mdl.ModelParameters.Gamma, 0.3);
+%! assert_equal (Mdl.Gamma, 1);
+
+## A compact model keeps what predict needs and drops the record of the fit,
+## as MATLAB's does.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcdiscr (meas, species));
+%! assert_equal (isprop (CMdl, 'ModelParameters'), false);

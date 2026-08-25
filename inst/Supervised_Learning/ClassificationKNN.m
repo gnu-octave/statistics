@@ -271,6 +271,31 @@ classdef ClassificationKNN
     BinEdges        = {};
 
     ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} ModelParameters
+    ##
+    ## Fitting options, as they were given
+    ##
+    ## A structure holding the parameters of the fit: @qcode{NumNeighbors},
+    ## @qcode{NSMethod}, @qcode{Distance}, @qcode{BucketSize},
+    ## @qcode{IncludeTies}, @qcode{DistanceWeight}, @qcode{BreakTies},
+    ## @qcode{Exponent}, @qcode{Cov}, @qcode{Scale}, @qcode{StandardizeData},
+    ## and the @qcode{Version}, @qcode{Method} and @qcode{Type} tags.
+    ##
+    ## Each of the three distance parameters belongs to one metric and is
+    ## empty under the others: @qcode{Exponent} to @qcode{'minkowski'},
+    ## @qcode{Cov} to @qcode{'mahalanobis'} and @qcode{Scale} to
+    ## @qcode{'seuclidean'}.  @qcode{Cov} and @qcode{Scale} hold what was
+    ## passed and stay empty otherwise, while @qcode{Exponent} carries its
+    ## default of 2 for a @qcode{'minkowski'} fit that did not name one.
+    ## What the fit used in every case is the @qcode{DistParameter} property.
+    ## @qcode{BucketSize} is likewise empty unless the search is
+    ## @qcode{'kdtree'}, the only method that reads it.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    ModelParameters = [];
+
+    ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} HyperparameterOptimizationResults
     ##
     ## Results of the hyperparameter optimization
@@ -1374,6 +1399,39 @@ classdef ClassificationKNN
       this.IncludeTies = IncludeTies;
       this.BucketSize = BucketSize;
       this.CacheSize = CacheSize;
+
+      ## The fit as it was asked for, not as it was resolved: Exponent, Cov
+      ## and Scale hold what was passed and nothing else, DistParameter
+      ## holding what was used, and BucketSize applies to the kd-tree alone.
+      if (strcmpi (this.NSMethod, 'kdtree'))
+        BucketSizeIn = this.BucketSize;
+      else
+        BucketSizeIn = [];
+      endif
+      ## Exponent is the exception among the three: MATLAB fills its default
+      ## of 2 for a 'minkowski' fit, where Cov and Scale stay empty until
+      ## they are passed.  Measured on R2024a.
+      if (strcmpi (this.Distance, 'minkowski'))
+        ExponentIn = this.DistParameter;
+      else
+        ExponentIn = [];
+      endif
+      this.ModelParameters = struct ( ...
+        'NumNeighbors', this.NumNeighbors, ...
+        'NSMethod', this.NSMethod, ...
+        'Distance', this.Distance, ...
+        'BucketSize', BucketSizeIn, ...
+        'IncludeTies', this.IncludeTies, ...
+        'DistanceWeight', this.DistanceWeight, ...
+        'BreakTies', this.BreakTies, ...
+        'Exponent', ExponentIn, ...
+        'Cov', Cov, ...
+        'Scale', Scale, ...
+        'StandardizeData', logical (Standardize), ...
+        'Version', 1, ...
+        'Method', 'KNN', ...
+        'Type', 'classification');
+
       this.Fitted = true;
 
     endfunction
@@ -2517,6 +2575,7 @@ classdef ClassificationKNN
       IncludeTies     = this.IncludeTies;
       BucketSize      = this.BucketSize;
       CacheSize       = this.CacheSize;
+      ModelParameters = this.ModelParameters;
       STfun          = this.STfun;
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
@@ -2530,7 +2589,8 @@ classdef ClassificationKNN
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
             'DistanceWeight', 'DWfun', 'DistParameter', 'NSMethod', ...
             'IncludeTies', ...
-            'BucketSize', 'CacheSize', 'CategoricalPredictors', ...
+            'BucketSize', 'CacheSize', 'ModelParameters', ...
+            'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'STfun', ...
             'HyperparameterOptimizationResults');
     endfunction
@@ -4150,3 +4210,110 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcknn (meas, species);
 %! assert_equal (isempty (Mdl.HyperparameterOptimizationResults), true);
+
+## ModelParameters records the fit as it was asked for.  The field list and
+## its order are MATLAB's, measured on R2024a.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (fieldnames (Mdl.ModelParameters)', {'NumNeighbors', ...
+%! 'NSMethod', 'Distance', 'BucketSize', 'IncludeTies', 'DistanceWeight', ...
+%! 'BreakTies', 'Exponent', 'Cov', 'Scale', 'StandardizeData', 'Version', ...
+%! 'Method', 'Type'});
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species).ModelParameters;
+%! assert_equal (MP.NumNeighbors, 1);
+%! assert_equal (MP.NSMethod, 'kdtree');
+%! assert_equal (MP.Distance, 'euclidean');
+%! assert_equal (MP.BucketSize, 50);
+%! assert_equal (MP.IncludeTies, false);
+%! assert_equal (MP.DistanceWeight, 'equal');
+%! assert_equal (MP.BreakTies, 'smallest');
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species).ModelParameters;
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.Method, 'KNN');
+%! assert_equal (MP.Type, 'classification');
+
+## BucketSize belongs to the kd-tree alone, so an exhaustive search reports
+## none, as MATLAB does.
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'NSMethod', 'exhaustive').ModelParameters;
+%! assert_equal (isempty (MP.BucketSize), true);
+
+## The three distance parameters hold what was passed, never what was
+## computed: a mahalanobis fit given no Cov reports none, while
+## DistParameter carries the covariance the fit used.
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'Distance', 'mahalanobis');
+%! assert_equal (isempty (Mdl.ModelParameters.Cov), true);
+%! assert_equal (size (Mdl.DistParameter), [4, 4]);
+
+%!test
+%! load fisheriris
+%! C = cov (meas);
+%! MP = fitcknn (meas, species, 'Distance', 'mahalanobis', ...
+%!               'Cov', C).ModelParameters;
+%! assert_equal (MP.Cov, C);
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'Distance', 'minkowski', ...
+%!               'Exponent', 3).ModelParameters;
+%! assert_equal (MP.Exponent, 3);
+%! assert_equal (isempty (MP.Cov), true);
+
+## Exponent is the one of the three that carries a default: a 'minkowski'
+## fit that names none reports 2, where Cov and Scale would stay empty.
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'Distance', 'minkowski').ModelParameters;
+%! assert_equal (MP.Exponent, 2);
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'Distance', 'seuclidean').ModelParameters;
+%! assert_equal (isempty (MP.Scale), true);
+
+## An explicit BucketSize is still not reported when the search cannot use
+## it, as MATLAB does.
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'NSMethod', 'exhaustive', ...
+%!               'BucketSize', 30).ModelParameters;
+%! assert_equal (isempty (MP.BucketSize), true);
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'NSMethod', 'kdtree', ...
+%!               'BucketSize', 30).ModelParameters;
+%! assert_equal (MP.BucketSize, 30);
+
+%!test
+%! load fisheriris
+%! S = std (meas);
+%! MP = fitcknn (meas, species, 'Distance', 'seuclidean', ...
+%!               'Scale', S).ModelParameters;
+%! assert_equal (MP.Scale, S);
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'Standardize', true).ModelParameters;
+%! assert_equal (MP.StandardizeData, true);
+%! assert_equal (class (MP.StandardizeData), 'logical');
+
+%!test
+%! load fisheriris
+%! MP = fitcknn (meas, species, 'NumNeighbors', 10, ...
+%!               'DistanceWeight', 'inverse', ...
+%!               'BreakTies', 'nearest', 'IncludeTies', true).ModelParameters;
+%! assert_equal (MP.NumNeighbors, 10);
+%! assert_equal (MP.DistanceWeight, 'inverse');
+%! assert_equal (MP.BreakTies, 'nearest');
+%! assert_equal (MP.IncludeTies, true);
