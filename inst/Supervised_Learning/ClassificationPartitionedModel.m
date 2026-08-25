@@ -756,6 +756,7 @@ classdef ClassificationPartitionedModel
                            'PredictorNames', Mdl.PredictorNames, ...
                            'ResponseName', Mdl.ResponseName, ...
                            'ClassNames', Mdl.ClassNames, ...
+                           'Cost', Mdl.Cost, ...
                            'SVMtype', params.SVMtype, ...
                            'KernelFunction', params.KernelFunction, ...
                            korder{:}, ...
@@ -882,7 +883,7 @@ classdef ClassificationPartitionedModel
       ## A cross-validated GAM reports no cost in MATLAB either: predict
       ## refuses a third output on the full and the compact class alike, and
       ## so does kfoldPredict.  Measured on R2024a.
-      refuse_cost = {'GAM', 'SVM'};
+      refuse_cost = {'GAM'};
       if (any (strcmp (this.CrossValidatedModel, refuse_cost)) && nargout > 2)
         error (strcat ("ClassificationPartitionedModel.kfoldPredict:", ...
                        " 'Cost' output is not supported for %s cross", ...
@@ -918,7 +919,7 @@ classdef ClassificationPartitionedModel
         ## posterior in its score, so the expected cost is formed here rather
         ## than asked of the fold.  MATLAB reports one for a network backing
         ## although its own network predict refuses the output.
-        no_cost_models = {'GAM', 'NeuralNetwork', 'SVM'};
+        no_cost_models = {'GAM', 'NeuralNetwork'};   # two-output predict
         if (any (strcmp (this.CrossValidatedModel, no_cost_models)))
           [predictedLabel, score] = predict (model, this.X(testIdx, :));
           if (nargout > 2)
@@ -1663,8 +1664,6 @@ endclassdef
 %!          0.3333, 0.6667], 1e-4);
 
 ## Test input validation for kfoldPredict
-%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for SVM cross validated models.> ...
-%! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
 
 ## The partition, the stored data and NumObservations all describe the same
 ## set of observations.  A row dropped for a missing value is outside all
@@ -2327,3 +2326,12 @@ endclassdef
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for GAM cross validated models.> ...
 %! load fisheriris; ...
 %! [l, s, c] = kfoldPredict (crossval (fitcgam (meas, strcmp (species, 'setosa')), 'KFold', 3))
+
+## An SVM backing reports its expected cost, the fold models carrying one.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcsvm (meas, strcmp (species, 'setosa'), ...
+%!                            'Cost', [0, 2; 5, 0]), 'KFold', 3);
+%! [~, ~, cost] = kfoldPredict (CVMdl);
+%! assert_equal (size (cost), [150, 2]);
+%! assert_equal (unique (cost, 'rows'), [0, 2; 5, 0]);

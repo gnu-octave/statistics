@@ -1233,6 +1233,7 @@ classdef ClassificationSVM
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
     ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{score}, @var{cost}] =} predict (@var{obj}, @var{XC})
     ##
     ## Classify new data points into categories using the Support Vector Machine
     ## classification model from a ClassificationSVM object.
@@ -1260,8 +1261,20 @@ classdef ClassificationSVM
     ## does not compute yet.
     ##
     ## @seealso{ClassificationSVM, fitcsvm}
+        ##
+    ## @strong{Deviation from MATLAB.}  @var{cost} is the expected cost of
+    ## each assignment, @math{sum_j P(j) Cost(j,k)}.  An SVM score is a
+    ## signed distance to the boundary and not a posterior, so the only
+    ## distribution available is the one concentrated on the predicted class
+    ## and @var{cost} is the row of @qcode{Cost} belonging to it.  MATLAB
+    ## returns the @strong{column} instead, which is the same matrix read the
+    ## wrong way and contradicts its own @code{ClassificationKNN},
+    ## @code{ClassificationDiscriminant} and @code{ClassificationNaiveBayes}
+    ## on any asymmetric cost matrix; the two agree wherever @qcode{Cost} is
+    ## symmetric, the default included.  Measured on R2024a.
+    ##
     ## @end deftypefn
-    function [labels, scores] = predict (this, XC)
+    function [labels, scores, cost] = predict (this, XC)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
@@ -1297,6 +1310,17 @@ classdef ClassificationSVM
       idx = 2 - (out == 1);
       labels = labelsFromIndex (this.ClassNames, idx);
 
+      ## The expected cost of each assignment, sum_j P(j) * Cost(j,k).  An
+      ## SVM score is a signed distance and not a posterior, so the only
+      ## honest distribution is the one concentrated on the predicted class,
+      ## which leaves the row of Cost belonging to it.
+      ##
+      ## MATLAB returns the *column* here, Cost(:,k)', which is the same
+      ## matrix read the wrong way and disagrees with its own KNN,
+      ## discriminant and naive Bayes on any asymmetric cost matrix.  Both
+      ## agree when Cost is symmetric, the default included.
+      cost = this.Cost(idx, :);
+
       ## Apply ScoreTransform
       scores = this.STfun (scores);
 
@@ -1305,6 +1329,7 @@ classdef ClassificationSVM
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{label} =} resubPredict (@var{obj})
     ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{score}] =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{score}, @var{cost}] =} resubPredict (@var{obj})
     ##
     ## Classify the training data using the trained Support Vector Machine
     ## classification object.
@@ -1328,8 +1353,20 @@ classdef ClassificationSVM
     ## does not compute yet.
     ##
     ## @seealso{fitcsvm}
+        ##
+    ## @strong{Deviation from MATLAB.}  @var{cost} is the expected cost of
+    ## each assignment, @math{sum_j P(j) Cost(j,k)}.  An SVM score is a
+    ## signed distance to the boundary and not a posterior, so the only
+    ## distribution available is the one concentrated on the predicted class
+    ## and @var{cost} is the row of @qcode{Cost} belonging to it.  MATLAB
+    ## returns the @strong{column} instead, which is the same matrix read the
+    ## wrong way and contradicts its own @code{ClassificationKNN},
+    ## @code{ClassificationDiscriminant} and @code{ClassificationNaiveBayes}
+    ## on any asymmetric cost matrix; the two agree wherever @qcode{Cost} is
+    ## symmetric, the default included.  Measured on R2024a.
+    ##
     ## @end deftypefn
-    function [labels, scores] = resubPredict (this)
+    function [labels, scores, cost] = resubPredict (this)
 
       ## X and Y hold exactly the observations the model retained
       X = this.X;
@@ -1364,6 +1401,13 @@ classdef ClassificationSVM
         labels(out==1) = this.ClassNames(1);
         labels(out!=1) = this.ClassNames(2);
       endif
+
+      ## The expected cost of each assignment, as in predict above: an SVM
+      ## score is a signed distance and not a posterior, so the row of Cost
+      ## belonging to the predicted class is the whole of it.  MATLAB returns
+      ## the column instead, which its own KNN, discriminant and naive Bayes
+      ## contradict on any asymmetric cost matrix.
+      cost = this.Cost(2 - (out == 1), :);
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -3109,3 +3153,29 @@ endclassdef
 %!               'OutlierFraction', 0.05).ModelParameters;
 %! assert_equal (MP.StandardizeData, true);
 %! assert_equal (MP.OutlierFraction, 0.05);
+
+## The third output is the expected cost of each assignment.  An SVM has no
+## posterior, so it is the row of Cost belonging to the predicted class;
+## MATLAB returns the column, which only an asymmetric matrix reveals.
+%!test
+%! load fisheriris
+%! b = strcmp (species, 'setosa');
+%! Mdl = fitcsvm (meas, b, 'Cost', [0, 2; 5, 0]);
+%! [label, ~, cost] = predict (Mdl, meas([1, 51],:));
+%! assert_equal (label, [true; false]);
+%! assert_equal (cost, [5, 0; 0, 2]);
+
+%!test
+%! load fisheriris
+%! b = strcmp (species, 'setosa');
+%! Mdl = fitcsvm (meas, b);
+%! [~, ~, cost] = predict (Mdl, meas([1, 51],:));
+%! assert_equal (cost, [1, 0; 0, 1]);
+
+%!test
+%! load fisheriris
+%! b = strcmp (species, 'setosa');
+%! Mdl = fitcsvm (meas, b, 'Cost', [0, 2; 5, 0]);
+%! [~, ~, cost] = resubPredict (Mdl);
+%! assert_equal (size (cost), [150, 2]);
+%! assert_equal (cost([1, 51],:), [5, 0; 0, 2]);

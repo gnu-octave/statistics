@@ -458,6 +458,7 @@ classdef CompactClassificationSVM
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
     ## @deftypefnx {CompactClassificationSVM} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {CompactClassificationSVM} {[@var{label}, @var{score}, @var{cost}] =} predict (@var{obj}, @var{XC})
     ##
     ## Classify new data points into categories using the Support Vector Machine
     ## classification model from a CompactClassificationSVM object.
@@ -484,9 +485,21 @@ classdef CompactClassificationSVM
     ## does not compute yet.
     ##
     ## @seealso{CompactClassificationSVM, ClassificationSVM}
+        ##
+    ## @strong{Deviation from MATLAB.}  @var{cost} is the expected cost of
+    ## each assignment, @math{sum_j P(j) Cost(j,k)}.  An SVM score is a
+    ## signed distance to the boundary and not a posterior, so the only
+    ## distribution available is the one concentrated on the predicted class
+    ## and @var{cost} is the row of @qcode{Cost} belonging to it.  MATLAB
+    ## returns the @strong{column} instead, which is the same matrix read the
+    ## wrong way and contradicts its own @code{ClassificationKNN},
+    ## @code{ClassificationDiscriminant} and @code{ClassificationNaiveBayes}
+    ## on any asymmetric cost matrix; the two agree wherever @qcode{Cost} is
+    ## symmetric, the default included.  Measured on R2024a.
+    ##
     ## @end deftypefn
 
-    function [labels, scores] = predict (this, XC)
+    function [labels, scores, cost] = predict (this, XC)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
@@ -521,6 +534,17 @@ classdef CompactClassificationSVM
       ## character matrix holds a name per row and not per element.
       idx = 2 - (out == 1);
       labels = labelsFromIndex (this.ClassNames, idx);
+
+      ## The expected cost of each assignment, sum_j P(j) * Cost(j,k).  An
+      ## SVM score is a signed distance and not a posterior, so the only
+      ## honest distribution is the one concentrated on the predicted class,
+      ## which leaves the row of Cost belonging to it.
+      ##
+      ## MATLAB returns the *column* here, Cost(:,k)', which is the same
+      ## matrix read the wrong way and disagrees with its own KNN,
+      ## discriminant and naive Bayes on any asymmetric cost matrix.  Both
+      ## agree when Cost is symmetric, the default included.
+      cost = this.Cost(idx, :);
 
       if (nargout > 1)
         ## Apply ScoreTransform
@@ -1224,3 +1248,11 @@ endclassdef
 %! CMdl = compact (Mdl);
 %! assert_equal (CMdl.KernelParameters, Mdl.KernelParameters);
 %! assert_equal (CMdl.KernelParameters.Function, 'gaussian');
+
+## A compact model answers exactly as the model it was compacted from.
+%!test
+%! load fisheriris
+%! b = strcmp (species, 'setosa');
+%! Mdl = fitcsvm (meas, b, 'Cost', [0, 2; 5, 0]);
+%! [~, ~, cost] = predict (compact (Mdl), meas([1, 51],:));
+%! assert_equal (cost, [5, 0; 0, 2]);
