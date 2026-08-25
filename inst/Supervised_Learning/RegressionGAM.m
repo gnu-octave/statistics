@@ -1005,107 +1005,6 @@ classdef RegressionGAM
 
     endfunction
 
-    ## Drive the boosted-tree engine: the predictor phase, then a search for
-    ## interactions worth adding, then the interaction phase over whichever
-    ## pairs survived.  The two phases share a running fit, so the second
-    ## continues from the prediction the first left rather than starting over.
-    function this = fitBoosted (this, X, Y, Interactions, NTP, NTI, MSP, ...
-                                MSI, LRP, LRI, MaxPValue, Verb, NPrint)
-
-      ## Method 2 boosts the squared error, which is what a regression fits.
-      M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint);
-      f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
-
-      this.BinEdges  = M.BinEdges;
-      this.Intercept = M.Intercept;
-      reason = struct ('PredictorTrees', M.ReasonForTermination, ...
-                       'InteractionTrees', '');
-      ntrees = struct ('PredictorTrees', M.NumTrees, ...
-                       'InteractionTrees', 0);
-      pairs = zeros (0, 2);
-      pairValues = {};
-      pairShift = 0;
-
-      wanted = -1;
-      if (ischar (Interactions))
-        wanted = Inf;
-      elseif (isscalar (Interactions) && ! isempty (Interactions))
-        wanted = Interactions;
-      elseif (! isempty (Interactions))
-        pairs = interactionPairs (logical (Interactions));
-      endif
-
-      if (wanted > 0 && columns (X) > 1)
-        S = gamboostpairs (X, M.Residuals);
-        ## The F ratio becomes a probability through the package's own fcdf,
-        ## which is verified against MATLAB; the engine deliberately does not
-        ## carry a second incomplete beta of its own.
-        pval = 1 - fcdf (S.F, S.DF1, S.DF2);
-        pval(S.DF1 <= 0) = 1;
-        [pval, ord] = sort (pval);
-        ranked = S.Pairs(ord, :);
-        ranked = ranked(pval <= MaxPValue, :);
-        if (isfinite (wanted) && rows (ranked) > wanted)
-          ranked = ranked(1:wanted, :);
-        endif
-        pairs = ranked;
-        this.PairDetectionBinEdges = S.BinEdges;
-        if (isempty (pairs))
-          warning (strcat ("RegressionGAM: model does not include", ...
-                           " interaction terms because all interaction", ...
-                           " terms have p-values greater than the", ...
-                           " 'MaxPValue' value, or the software was unable", ...
-                           " to improve the model fit."));
-        endif
-      endif
-
-      if (! isempty (pairs))
-        I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI);
-        this.Intercept = this.Intercept + I.Intercept;
-        pairShift = I.Intercept;
-        this.PairDetectionBinEdges = I.PairBinEdges;
-        pairValues = I.PairValues;
-        reason.InteractionTrees = I.ReasonForTermination;
-        ntrees.InteractionTrees = I.NumTrees;
-      endif
-
-      this.Interactions = pairs;
-      this.ReasonForTermination = reason;
-      this.NumTrainedTrees = ntrees;
-      ## The constant the interaction surfaces gave up when they were
-      ## recentred is kept apart from the predictor phase's intercept.  The
-      ## Intercept property still reports their sum, as MATLAB's does, but
-      ## predicting without the interactions has to take this part back out
-      ## or it would answer with a constant the main effects never earned.
-      this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
-                               'PairValues', {pairValues}, ...
-                               'Pairs', pairs, ...
-                               'PairIntercept', pairShift);
-
-      if (ischar (Interactions))
-        request = Interactions;
-      elseif (isempty (Interactions))
-        request = 0;
-      else
-        request = Interactions;
-      endif
-      this.ModelParameters = struct ( ...
-        'NumPrint', NPrint, ...
-        'MaxPValue', MaxPValue, ...
-        'InitialLearnRateForPredictors', LRP, ...
-        'InitialLearnRateForInteractions', LRI, ...
-        'NumTreesPerPredictor', NTP, ...
-        'NumTreesPerInteraction', NTI, ...
-        'MaxNumSplitsPerPredictor', MSP, ...
-        'MaxNumSplitsPerInteraction', MSI, ...
-        'VerbosityLevel', Verb, ...
-        'Interactions', request, ...
-        'Version', 1, ...
-        'Method', 'GAM', ...
-        'Type', 'regression');
-
-    endfunction
-
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionGAM} {@var{obj} =} addInteractions (@var{obj}, @var{interactions})
     ##
@@ -1922,6 +1821,107 @@ classdef RegressionGAM
                          " optional paired arguments."), caller);
         endif
       endfor
+
+    endfunction
+
+    ## Drive the boosted-tree engine: the predictor phase, then a search for
+    ## interactions worth adding, then the interaction phase over whichever
+    ## pairs survived.  The two phases share a running fit, so the second
+    ## continues from the prediction the first left rather than starting over.
+    function this = fitBoosted (this, X, Y, Interactions, NTP, NTI, MSP, ...
+                                MSI, LRP, LRI, MaxPValue, Verb, NPrint)
+
+      ## Method 2 boosts the squared error, which is what a regression fits.
+      M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint);
+      f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
+
+      this.BinEdges  = M.BinEdges;
+      this.Intercept = M.Intercept;
+      reason = struct ('PredictorTrees', M.ReasonForTermination, ...
+                       'InteractionTrees', '');
+      ntrees = struct ('PredictorTrees', M.NumTrees, ...
+                       'InteractionTrees', 0);
+      pairs = zeros (0, 2);
+      pairValues = {};
+      pairShift = 0;
+
+      wanted = -1;
+      if (ischar (Interactions))
+        wanted = Inf;
+      elseif (isscalar (Interactions) && ! isempty (Interactions))
+        wanted = Interactions;
+      elseif (! isempty (Interactions))
+        pairs = interactionPairs (logical (Interactions));
+      endif
+
+      if (wanted > 0 && columns (X) > 1)
+        S = gamboostpairs (X, M.Residuals);
+        ## The F ratio becomes a probability through the package's own fcdf,
+        ## which is verified against MATLAB; the engine deliberately does not
+        ## carry a second incomplete beta of its own.
+        pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+        pval(S.DF1 <= 0) = 1;
+        [pval, ord] = sort (pval);
+        ranked = S.Pairs(ord, :);
+        ranked = ranked(pval <= MaxPValue, :);
+        if (isfinite (wanted) && rows (ranked) > wanted)
+          ranked = ranked(1:wanted, :);
+        endif
+        pairs = ranked;
+        this.PairDetectionBinEdges = S.BinEdges;
+        if (isempty (pairs))
+          warning (strcat ("RegressionGAM: model does not include", ...
+                           " interaction terms because all interaction", ...
+                           " terms have p-values greater than the", ...
+                           " 'MaxPValue' value, or the software was unable", ...
+                           " to improve the model fit."));
+        endif
+      endif
+
+      if (! isempty (pairs))
+        I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI);
+        this.Intercept = this.Intercept + I.Intercept;
+        pairShift = I.Intercept;
+        this.PairDetectionBinEdges = I.PairBinEdges;
+        pairValues = I.PairValues;
+        reason.InteractionTrees = I.ReasonForTermination;
+        ntrees.InteractionTrees = I.NumTrees;
+      endif
+
+      this.Interactions = pairs;
+      this.ReasonForTermination = reason;
+      this.NumTrainedTrees = ntrees;
+      ## The constant the interaction surfaces gave up when they were
+      ## recentred is kept apart from the predictor phase's intercept.  The
+      ## Intercept property still reports their sum, as MATLAB's does, but
+      ## predicting without the interactions has to take this part back out
+      ## or it would answer with a constant the main effects never earned.
+      this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
+                               'PairValues', {pairValues}, ...
+                               'Pairs', pairs, ...
+                               'PairIntercept', pairShift);
+
+      if (ischar (Interactions))
+        request = Interactions;
+      elseif (isempty (Interactions))
+        request = 0;
+      else
+        request = Interactions;
+      endif
+      this.ModelParameters = struct ( ...
+        'NumPrint', NPrint, ...
+        'MaxPValue', MaxPValue, ...
+        'InitialLearnRateForPredictors', LRP, ...
+        'InitialLearnRateForInteractions', LRI, ...
+        'NumTreesPerPredictor', NTP, ...
+        'NumTreesPerInteraction', NTI, ...
+        'MaxNumSplitsPerPredictor', MSP, ...
+        'MaxNumSplitsPerInteraction', MSI, ...
+        'VerbosityLevel', Verb, ...
+        'Interactions', request, ...
+        'Version', 1, ...
+        'Method', 'GAM', ...
+        'Type', 'regression');
 
     endfunction
 
