@@ -315,6 +315,10 @@ classdef CompactRegressionGAM
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+
+    ## Carried from the fitted model so a fold, which is stored
+    ## compact, can still say how many trees it fitted.
+    NumTrainedTrees = [];
     RTfun = @(y) y;
   endproperties
 
@@ -360,6 +364,7 @@ classdef CompactRegressionGAM
       this.PairDetectionBinEdges = Mdl.PairDetectionBinEdges;
       this.ModelParameters       = Mdl.ModelParameters;
       this.ReasonForTermination  = Mdl.ReasonForTermination;
+      this.NumTrainedTrees = Mdl.NumTrainedTrees;
 
     endfunction
 

@@ -1220,12 +1220,13 @@ classdef ClassificationSVM
     ## @end itemize
     ##
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
-    ## returns @var{score}, which contains the decision values for each each
-    ## prediction.  Alternatively, @var{score} can contain the posterior
-    ## probabilities if the ScoreTransform has been previously set using the
-    ## @code{fitPosterior} method.
+    ## returns @var{score}, which contains the decision values for each
+    ## prediction.  A @qcode{ScoreTransform} assigned to @var{obj} is applied
+    ## to them, so @var{score} holds whatever that transform returns.  Posterior
+    ## probabilities need a transform fitted to the model, which this package
+    ## does not compute yet.
     ##
-    ## @seealso{ClassificationSVM, fitcsvm, ClassificationSVM.fitPosterior}
+    ## @seealso{ClassificationSVM, fitcsvm}
     ## @end deftypefn
     function [labels, scores] = predict (this, XC)
 
@@ -1287,12 +1288,13 @@ classdef ClassificationSVM
     ## @end itemize
     ##
     ## @code{[@var{label}, @var{scores}] = resubPredict (@var{obj}} also
-    ## returns @var{scores}, which contains the decision values for each each
-    ## prediction.   Alternatively, @var{scores} can contain the posterior
-    ## probabilities if the ScoreTransform has been previously set using the
-    ## @code{fitPosterior} method.
+    ## returns @var{scores}, which contains the decision values for each
+    ## prediction.  A @qcode{ScoreTransform} assigned to @var{obj} is applied
+    ## to them, so @var{scores} holds whatever that transform returns.  Posterior
+    ## probabilities need a transform fitted to the model, which this package
+    ## does not compute yet.
     ##
-    ## @seealso{fitcsvm, ClassificationSVM.fitPosterior}
+    ## @seealso{fitcsvm}
     ## @end deftypefn
     function [labels, scores] = resubPredict (this)
 

@@ -434,6 +434,10 @@ classdef CompactClassificationGAM
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+
+    ## Carried from the fitted model so a fold, which is stored
+    ## compact, can still say how many trees it fitted.
+    NumTrainedTrees = [];
     STfun = @(x) 1 ./ (1 + exp (-x));
   endproperties
 
@@ -499,6 +503,7 @@ classdef CompactClassificationGAM
       this.PairDetectionBinEdges = Mdl.PairDetectionBinEdges;
       this.ModelParameters       = Mdl.ModelParameters;
       this.ReasonForTermination  = Mdl.ReasonForTermination;
+      this.NumTrainedTrees = Mdl.NumTrainedTrees;
       this.CategoricalPredictors  = Mdl.CategoricalPredictors;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 

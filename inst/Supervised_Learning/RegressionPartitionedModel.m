@@ -235,6 +235,30 @@ classdef RegressionPartitionedModel
     ## @end deftp
     IsStandardDeviationFit = [];
 
+
+    ## -*- texinfo -*-
+    ## @deftp {RegressionPartitionedModel} {property} NumTrainedPerFold
+    ##
+    ## How many trees each fold fitted
+    ##
+    ## A scalar structure with fields @qcode{PredictorTrees} and
+    ## @qcode{InteractionTrees}, each a row with one entry per fold, for a
+    ## generalized additive model backing, and empty for every other.
+    ##
+    ## It reports what each fold actually fitted, which the budget in
+    ## @qcode{ModelParameters} does not: a phase stops early when it can no
+    ## longer improve the fit, and the folds need not stop at the same place.
+    ##
+    ## MATLAB carries this on its per-learner partitioned GAM classes, which
+    ## this package deliberately does not have (see @code{crossval}), so like
+    ## @qcode{IsStandardDeviationFit} it is declared here for every backing
+    ## and left empty where it does not apply.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumTrainedPerFold = [];
+
   endproperties
 
   ## Copied from the parent model and kept out of the documented surface.
@@ -338,6 +362,7 @@ classdef RegressionPartitionedModel
       if (any (strcmp (properties (Mdl), 'IsStandardDeviationFit')))
         this.IsStandardDeviationFit = Mdl.IsStandardDeviationFit;
       endif
+
 
       ## Switch Regression object types
       switch (this.CrossValidatedModel)
@@ -444,6 +469,29 @@ classdef RegressionPartitionedModel
           endfor
 
       endswitch
+
+      ## Gathered across the folds, which is the shape MATLAB reports: one
+      ## structure carrying a row per phase rather than a structure per fold.
+      if (strcmp (this.CrossValidatedModel, 'GAM'))
+        pt = zeros (1, this.KFold);
+        it = zeros (1, this.KFold);
+        boosted = true;
+        for k = 1:this.KFold
+          nt = this.Trained{k}.NumTrainedTrees;
+          ## A spline fit counts no trees, so there is nothing to report and
+          ## the property stays empty rather than claiming zero of them.
+          if (isempty (nt))
+            boosted = false;
+            break;
+          endif
+          pt(k) = nt.PredictorTrees;
+          it(k) = nt.InteractionTrees;
+        endfor
+        if (boosted)
+          this.NumTrainedPerFold = struct ('PredictorTrees', pt, ...
+                                           'InteractionTrees', it);
+        endif
+      endif
 
       ## No fold carries the transform: the parent applies it once to the
       ## assembled prediction.  Cleared here rather than at each fit call so
@@ -1040,7 +1088,8 @@ endclassdef
 %!                      'PredictorNames'; 'CategoricalPredictors'; ...
 %!                      'ResponseName'; 'NumObservations'; 'X'; 'Y'; 'W'; ...
 %!                      'ModelParameters'; 'Trained'; 'KFold'; 'Partition'; ...
-%!                      'BinEdges'; 'IsStandardDeviationFit'}));
+%!                      'BinEdges'; 'IsStandardDeviationFit'; ...
+%!                      'NumTrainedPerFold'}));
 
 %!test
 %! ## IsStandardDeviationFit comes from the model for a GAM backing and is
@@ -1052,3 +1101,19 @@ endclassdef
 %! CVs = crossval (fitrsvm (meas(:,2:4), meas(:,1)), "KFold", 3);
 %! assert_equal (isempty (CVs.IsStandardDeviationFit), true);
 
+%!test
+%! ## NumTrainedPerFold reports what each fold actually fitted.  On this
+%! ## fixture every fold uses its whole budget, which is what R2024a reports
+%! ## for it as well.
+%! load fisheriris
+%! CVMdl = crossval (fitrgam (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! n = CVMdl.NumTrainedPerFold;
+%! assert_equal (sort (fieldnames (n)), {"InteractionTrees"; "PredictorTrees"});
+%! assert_equal (n.PredictorTrees, [300, 300, 300]);
+%! assert_equal (n.InteractionTrees, [0, 0, 0]);
+
+%!test
+%! ## Empty for a backing that fits no trees.
+%! load fisheriris
+%! CVMdl = crossval (fitrsvm (meas(:,2:4), meas(:,1)), "KFold", 3);
+%! assert_equal (isempty (CVMdl.NumTrainedPerFold), true);

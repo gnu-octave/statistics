@@ -286,6 +286,30 @@ classdef ClassificationPartitionedModel
     ##
     ## @end deftp
     BinEdges                     = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} NumTrainedPerFold
+    ##
+    ## How many trees each fold fitted
+    ##
+    ## A scalar structure with fields @qcode{PredictorTrees} and
+    ## @qcode{InteractionTrees}, each a row with one entry per fold, for a
+    ## generalized additive model backing, and empty for every other.
+    ##
+    ## It reports what each fold actually fitted, which the budget in
+    ## @qcode{ModelParameters} does not: a phase stops early when it can no
+    ## longer improve the fit, and the folds need not stop at the same place.
+    ##
+    ## MATLAB carries this on its per-learner partitioned GAM classes, which
+    ## this package deliberately does not have (see @code{crossval}), so like
+    ## @qcode{IsStandardDeviationFit} it is declared here for every backing
+    ## and left empty where it does not apply.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumTrainedPerFold = [];
+
   endproperties
 
   ## Copied from the parent model and kept out of the documented surface.
@@ -760,6 +784,30 @@ classdef ClassificationPartitionedModel
       ## installs a sigmoid it has estimated, so if that is ever implemented
       ## through crossval it must not be cleared here.
       this = pushToFolds (this, 'ScoreTransform', 'none');
+
+
+      ## Gathered across the folds, which is the shape MATLAB reports: one
+      ## structure carrying a row per phase rather than a structure per fold.
+      if (strcmp (this.CrossValidatedModel, 'GAM'))
+        pt = zeros (1, this.KFold);
+        it = zeros (1, this.KFold);
+        boosted = true;
+        for k = 1:this.KFold
+          nt = this.Trained{k}.NumTrainedTrees;
+          ## A spline fit counts no trees, so there is nothing to report and
+          ## the property stays empty rather than claiming zero of them.
+          if (isempty (nt))
+            boosted = false;
+            break;
+          endif
+          pt(k) = nt.PredictorTrees;
+          it(k) = nt.InteractionTrees;
+        endfor
+        if (boosted)
+          this.NumTrainedPerFold = struct ('PredictorTrees', pt, ...
+                                           'InteractionTrees', it);
+        endif
+      endif
 
       this.Fitted = true;
 
@@ -2148,4 +2196,36 @@ endclassdef
 %!                      'CategoricalPredictors'; 'ResponseName'; ...
 %!                      'NumObservations'; 'X'; 'Y'; 'W'; ...
 %!                      'ModelParameters'; 'Trained'; 'KFold'; 'Partition'; ...
-%!                      'BinEdges'}));
+%!                      'BinEdges'; 'NumTrainedPerFold'}));
+
+%!test
+%! ## NumTrainedPerFold reports what each fold actually fitted, which the
+%! ## budget in ModelParameters does not: boosting stops early and the folds
+%! ## need not stop together.  Structure and semantics follow R2024a; the
+%! ## counts do not and are not expected to, the engine being this package's.
+%! load fisheriris
+%! b = strcmp (species, "setosa");
+%! CVMdl = crossval (fitcgam (meas(:,2:4), b), "KFold", 3);
+%! n = CVMdl.NumTrainedPerFold;
+%! assert_equal (isstruct (n), true);
+%! assert_equal (sort (fieldnames (n)), {"InteractionTrees"; "PredictorTrees"});
+%! assert_equal (size (n.PredictorTrees), [1, 3]);
+%! assert_equal (size (n.InteractionTrees), [1, 3]);
+%! ## early stopping, so under the budget rather than at it
+%! assert_equal (all (n.PredictorTrees < CVMdl.ModelParameters.NumTreesPerPredictor), true);
+%! ## no interactions were asked for, so none were fitted
+%! assert_equal (n.InteractionTrees, [0, 0, 0]);
+
+%!test
+%! ## A backing that fits no trees reports nothing rather than zero of them.
+%! load fisheriris
+%! CVMdl = crossval (fitcknn (meas, species), "KFold", 3);
+%! assert_equal (isempty (CVMdl.NumTrainedPerFold), true);
+
+%!test
+%! ## Nor does a GAM fitted by splines, which counts no trees either.
+%! load fisheriris
+%! b = strcmp (species, "setosa");
+%! Mdl = fitcgam (meas(1:30,2:4), b(1:30), "FitMethod", "splines");
+%! CVMdl = crossval (Mdl, "KFold", 3);
+%! assert_equal (isempty (CVMdl.NumTrainedPerFold), true);

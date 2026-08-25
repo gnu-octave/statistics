@@ -542,6 +542,12 @@ classdef RegressionGAM
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
     RTfun = @(y) y;
+
+    ## How many trees each boosting phase actually fitted, which the budget
+    ## in ModelParameters does not say: a phase may stop early.  Hidden
+    ## because MATLAB reports it on the partitioned classes and not on the
+    ## model, and that is where this is read from.
+    NumTrainedTrees = [];
   endproperties
 
   ## Set methods for the properties a user may assign.
@@ -1014,6 +1020,8 @@ classdef RegressionGAM
       this.Intercept = M.Intercept;
       reason = struct ('PredictorTrees', M.ReasonForTermination, ...
                        'InteractionTrees', '');
+      ntrees = struct ('PredictorTrees', M.NumTrees, ...
+                       'InteractionTrees', 0);
       pairs = zeros (0, 2);
       pairValues = {};
       pairShift = 0;
@@ -1058,10 +1066,12 @@ classdef RegressionGAM
         this.PairDetectionBinEdges = I.PairBinEdges;
         pairValues = I.PairValues;
         reason.InteractionTrees = I.ReasonForTermination;
+        ntrees.InteractionTrees = I.NumTrees;
       endif
 
       this.Interactions = pairs;
       this.ReasonForTermination = reason;
+      this.NumTrainedTrees = ntrees;
       ## The constant the interaction surfaces gave up when they were
       ## recentred is kept apart from the predictor phase's intercept.  The
       ## Intercept property still reports their sum, as MATLAB's does, but
@@ -1187,6 +1197,7 @@ classdef RegressionGAM
         endif
 
         reason = this.ReasonForTermination;
+        ntrees = this.NumTrainedTrees;
         if (! isempty (pairs))
           I = gamboostinter (Xfit, Yfit, f, 2, pairs, ...
                              MP.NumTreesPerInteraction, ...
@@ -1197,6 +1208,7 @@ classdef RegressionGAM
           this.TreeModel.PairValues = I.PairValues;
           this.TreeModel.PairIntercept = I.Intercept;
           reason.InteractionTrees = I.ReasonForTermination;
+          ntrees.InteractionTrees = I.NumTrees;
         endif
         this.TreeModel.Pairs = pairs;
       if (isempty (pairs))
@@ -1204,6 +1216,7 @@ classdef RegressionGAM
       endif
         this.Interactions = pairs;
         this.ReasonForTermination = reason;
+        this.NumTrainedTrees = ntrees;
         MP.Interactions = interactions;
         this.ModelParameters = MP;
         return;
@@ -1802,6 +1815,7 @@ classdef RegressionGAM
       Mdl = this;
       MP = this.ModelParameters;
       reason = this.ReasonForTermination;
+      ntrees = this.NumTrainedTrees;
 
       if (isempty (this.TreeModel.Pairs))
         ## No interaction phase ever ran, so the predictor phase is the one
@@ -1825,6 +1839,7 @@ classdef RegressionGAM
         Mdl.Intercept = this.Intercept + M.Intercept;
         MP.NumTreesPerPredictor = MP.NumTreesPerPredictor + M.NumTrees;
         reason.PredictorTrees = M.ReasonForTermination;
+        ntrees.PredictorTrees = ntrees.PredictorTrees + M.NumTrees;
       else
         ## The interaction phase ran last, so it is the one extended.  The
         ## running prediction includes the surfaces already fitted, and the
@@ -1852,10 +1867,12 @@ classdef RegressionGAM
         Mdl.Intercept = this.Intercept + I.Intercept;
         MP.NumTreesPerInteraction = MP.NumTreesPerInteraction + I.NumTrees;
         reason.InteractionTrees = I.ReasonForTermination;
+        ntrees.InteractionTrees = ntrees.InteractionTrees + I.NumTrees;
       endif
 
       Mdl.ModelParameters = MP;
       Mdl.ReasonForTermination = reason;
+      Mdl.NumTrainedTrees = ntrees;
 
     endfunction
 
