@@ -261,13 +261,19 @@ many trees produced it.\n\
 
 %!test
 %! ## Fewer than ten observations cannot be split at all: a leaf holds at
-%! ## least five.  R2024a does the same, on fitcgam and fitrgam alike.
+%! ## least five.  R2024a does the same, on fitcgam and fitrgam alike.  The
+%! ## rounds still run and still count, because with no shape function to fit
+%! ## they reweight the intercept alone, and it converges on the log-odds of
+%! ## the response mean rather than being seeded there.  R2024a reports
+%! ## exactly log (4/5) and a flat score on this fixture.
 %! x = (1:9)';
 %! y = [zeros(5, 1); ones(4, 1)];
 %! M = gamboosttrain (x, y, 1, 50, 1, 1);
-%! assert_equal (M.NumTrees, 0);
+%! assert_equal (max (M.ShapeValues{1}) - min (M.ShapeValues{1}), 0, 1e-12);
+%! assert_equal (M.Intercept, log (4/5), 1e-10);
+%! assert_equal (M.ReasonForTermination, 'Unable to improve the model fit.');
 %! M10 = gamboosttrain ((1:10)', [zeros(5, 1); ones(5, 1)], 1, 50, 1, 1);
-%! assert_equal (M10.NumTrees > 0, true);
+%! assert_equal (max (M10.ShapeValues{1}) - min (M10.ShapeValues{1}) > 1, true);
 
 %!test
 %! ## A constant predictor admits no split: one bin and no cut points.
@@ -286,8 +292,8 @@ many trees produced it.\n\
 %! assert_equal (M.Intercept, mean (y), 1e-12);
 
 %!test
-%! ## A classifier intercept is seeded with the log-odds of the response mean
-%! ## and moves away from it, so a balanced response does not stay at zero.
+%! ## A classifier intercept is seeded at zero, an even chance, and boosting
+%! ## moves it, so a balanced response does not stay there.
 %! ## Sixteen observations, not eight: a leaf holds at least five, so a fit
 %! ## with fewer than ten cannot split at all and its intercept never moves.
 %! x = (1:16)';

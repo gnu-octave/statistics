@@ -405,7 +405,7 @@ classdef ClassificationGAM
     ## This property is read-only.
     ##
     ## @end deftp
-    PairDetectionBinEdges = {};
+    PairDetectionBinEdges = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} ModelParameters
@@ -2349,7 +2349,7 @@ classdef ClassificationGAM
           ranked = ranked(1:wanted, :);
         endif
         pairs = ranked;
-        this.PairDetectionBinEdges = S.BinEdges;
+        this.PairDetectionBinEdges = S.BinEdges(:);
         if (isempty (pairs))
           warning (strcat ("ClassificationGAM: model does not include", ...
                            " interaction terms because all interaction", ...
@@ -2364,7 +2364,7 @@ classdef ClassificationGAM
       if (! isempty (pairs))
         I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI);
         this.Intercept = this.Intercept + I.Intercept;
-        this.PairDetectionBinEdges = I.PairBinEdges;
+        this.PairDetectionBinEdges = I.PairBinEdges(:);
         this.TreeModel.PairValues = I.PairValues;
         this.TreeModel.PairIntercept = I.Intercept;
         reason.InteractionTrees = I.ReasonForTermination;
@@ -2402,7 +2402,7 @@ classdef ClassificationGAM
       M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
-      this.BinEdges  = M.BinEdges;
+      this.BinEdges  = M.BinEdges(:);   ## a column cell, as MATLAB reports it
       this.Intercept = M.Intercept;
       reason = struct ('PredictorTrees', M.ReasonForTermination, ...
                        'InteractionTrees', '');
@@ -2443,7 +2443,7 @@ classdef ClassificationGAM
           ranked = ranked(1:wanted, :);
         endif
         pairs = ranked;
-        this.PairDetectionBinEdges = S.BinEdges;
+        this.PairDetectionBinEdges = S.BinEdges(:);
         if (isempty (pairs))
           warning (strcat ("ClassificationGAM: model does not include", ...
                            " interaction terms because all interaction", ...
@@ -2457,7 +2457,7 @@ classdef ClassificationGAM
         I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI);
         this.Intercept = this.Intercept + I.Intercept;
         pairShift = I.Intercept;
-        this.PairDetectionBinEdges = I.PairBinEdges;
+        this.PairDetectionBinEdges = I.PairBinEdges(:);
         pairValues = I.PairValues;
         reason.InteractionTrees = I.ReasonForTermination;
         ntrees.InteractionTrees = I.NumTrees;
@@ -3178,6 +3178,97 @@ endfunction
 %! M0 = fitcgam (Xn, [0; 0; 1; 1], 'FitMethod', 'splines');
 %! assert_equal (M0.BaseModel.Intercept, 0, 1e-12);
 %! assert_equal (predict (M0, Xn), [0; 0; 1; 1]);
+
+## The boosted engine fits its predictors by local scoring: the working
+## response and the weights are formed once per cycle and held fixed across
+## it, so the first predictor sees the residual it would see fitted alone and
+## each one after sees what the earlier ones took out.  Measured against
+## R2024a over two predictors at one tree each, on the two overlapping species
+## with every third label flipped.
+%!test
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! Y = species(51:150);
+%! f = 1:3:100;
+%! t = Y(f);
+%! t(strcmp (t, 'versicolor')) = {'ZZ'};
+%! t(strcmp (t, 'virginica')) = {'versicolor'};
+%! t(strcmp (t, 'ZZ')) = {'virginica'};
+%! Y(f) = t;
+%! o = {'NumTreesPerPredictor', 1, 'MaxNumSplitsPerPredictor', 1, ...
+%!      'Interactions', 0};
+%! g1 = (4.8:0.1:8.0)';
+%! g2 = (1.9:0.1:3.9)';
+%! M = fitcgam (X, Y, o{:});
+%! M.ScoreTransform = 'none';
+%! [~, s0] = predict (M, [4.8, 1.9]);
+%! [~, sA] = predict (M, [g1, repmat(1.9, numel (g1), 1)]);
+%! [~, sB] = predict (M, [repmat(4.8, numel (g2), 1), g2]);
+%! ## the first predictor is what it is fitted alone, the second is not
+%! assert_equal (max (sA(:,2)) - s0(1,2), 1.19047619047619, 1e-12);
+%! assert_equal (max (sB(:,2)) - s0(1,2), 1.04232804232804, 1e-12);
+%! A1 = fitcgam (X(:,1), Y, o{:});
+%! A1.ScoreTransform = 'none';
+%! [~, a0] = predict (A1, 4.8);
+%! [~, aA] = predict (A1, g1);
+%! assert_equal (max (aA(:,2)) - a0(1,2), 1.19047619047619, 1e-12);
+%! A2 = fitcgam (X(:,2), Y, o{:});
+%! A2.ScoreTransform = 'none';
+%! [~, b0] = predict (A2, 1.9);
+%! [~, bB] = predict (A2, g2);
+%! assert_equal (max (bB(:,2)) - b0(1,2), 1.33333333333333, 1e-12);
+
+## Swapping the predictors swaps which of them is fitted first, so both shape
+## functions change.  R2024a again.
+%!test
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! Y = species(51:150);
+%! f = 1:3:100;
+%! t = Y(f);
+%! t(strcmp (t, 'versicolor')) = {'ZZ'};
+%! t(strcmp (t, 'virginica')) = {'versicolor'};
+%! t(strcmp (t, 'ZZ')) = {'virginica'};
+%! Y(f) = t;
+%! o = {'NumTreesPerPredictor', 1, 'MaxNumSplitsPerPredictor', 1, ...
+%!      'Interactions', 0};
+%! S = fitcgam (X(:,[2, 1]), Y, o{:});
+%! S.ScoreTransform = 'none';
+%! g1 = (4.8:0.1:8.0)';
+%! g2 = (1.9:0.1:3.9)';
+%! [~, t0] = predict (S, [1.9, 4.8]);
+%! [~, tA] = predict (S, [repmat(1.9, numel (g1), 1), g1]);
+%! [~, tB] = predict (S, [g2, repmat(4.8, numel (g2), 1)]);
+%! assert_equal (max (tB(:,2)) - t0(1,2), 1.33333333333333, 1e-12);
+%! assert_equal (max (tA(:,2)) - t0(1,2), 1.04497354497354, 1e-12);
+
+## The intercept is the working response's own weighted mean and not the base
+## log-odds of the response.  A balanced fixture cannot tell them apart, both
+## being zero, so this one is unbalanced: 42 against 28, whose log-odds is
+## -0.40546510810816 and whose first-cycle intercept R2024a reports as exactly
+## -0.4.  Two and three cycles are pinned too, the weights being refreshed at
+## the start of each.
+%!test
+%! load fisheriris
+%! ii = [51:100, 101:120]';
+%! X = meas(ii,1:2);
+%! Y = species(ii);
+%! f = 1:4:numel (ii);
+%! t = Y(f);
+%! t(strcmp (t, 'versicolor')) = {'ZZ'};
+%! t(strcmp (t, 'virginica')) = {'versicolor'};
+%! t(strcmp (t, 'ZZ')) = {'virginica'};
+%! Y(f) = t;
+%! assert_equal (sum (strcmp (Y, 'virginica')), 28);
+%! M1 = fitcgam (X, Y, 'NumTreesPerPredictor', 1, ...
+%!               'MaxNumSplitsPerPredictor', 1, 'Interactions', 0);
+%! assert_equal (M1.Intercept, -0.4, 1e-12);
+%! M2 = fitcgam (X, Y, 'NumTreesPerPredictor', 2, ...
+%!               'MaxNumSplitsPerPredictor', 1, 'Interactions', 0);
+%! assert_equal (M2.Intercept, -0.43634347574616, 1e-11);
+%! M3 = fitcgam (X, Y, 'NumTreesPerPredictor', 3, ...
+%!               'MaxNumSplitsPerPredictor', 1, 'Interactions', 0);
+%! assert_equal (M3.Intercept, -0.4460203997322, 1e-11);
 
 ## The coding of a numeric response is a property of the class, not of either
 ## engine: the boosted-tree engine reads labels of 1 and 2, or 5 and 9, the

@@ -517,11 +517,18 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
     F.value[j] = ColumnVector (B[j].nbins, 0.0);
   }
 
-  // The seed.  A classifier starts at the log-odds of the response mean and a
-  // regression at the response mean itself; boosting moves the first, because
-  // recentring hands it the constants the shape functions give up, and leaves
-  // the second where it is, because a squared-error residual already has mean
-  // zero and there is nothing to hand over.
+  // The seed.  A classifier starts at zero, an even chance, and a regression at
+  // the response mean; boosting moves the first, because recentring hands it
+  // the constants the shape functions give up, and leaves the second where it
+  // is, because a squared-error residual already has mean zero and there is
+  // nothing to hand over.
+  //
+  // Zero and not the log-odds of the response mean, which is what a classifier
+  // seeded here until 2026-08-25.  Measured against R2024a on a response with
+  // a mean of 0.4, MATLAB's fitted intercept is exactly -0.4, which is the
+  // mean of the working response the first cycle forms from p = 1/2, and not
+  // the -0.40546510810816 a log-odds seed gives.  A balanced response hides
+  // the difference, both being zero there.
   //
   // Given F0 there is no seed to find: the caller is continuing a fit and
   // hands over the prediction it reached.  What comes back is then the
@@ -560,7 +567,7 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
         F.residuals = ColumnVector (n, 0.0);
         return F;
       }
-      F.intercept = std::log (ybar / (1.0 - ybar));
+      F.intercept = 0.0;
     }
     else
     {
@@ -608,30 +615,69 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
       ColumnVector fnew = f;
       double shift = 0.0;
 
+      // Local scoring.  The working response and the weights are formed ONCE
+      // from the fit the round starts at and then held fixed across the whole
+      // cycle, which is what MATLAB does:
+      //
+      //   w = p * (1 - p)          the curvature at the current fit
+      //   z = f + (Y - p) / w      the response a weighted least squares sees
+      //
+      // and each predictor is then fitted to what is left of Z, under those
+      // frozen weights.  Passing W * (Z - FNEW) as the gradient and W as the
+      // Hessian makes the tree's own SUM(G)/SUM(H) the weighted mean of the
+      // partial residual, so the fitter needs no special case.
+      //
+      // Z is never formed.  Written out,
+      //
+      //   W * (Z - FNEW) = (Y - p) - W * (FNEW - F)
+      //
+      // which is the same number with no division by W at all.  That matters
+      // once the fit separates the classes: W goes to zero, Z to infinity, and
+      // a floor under W to keep the quotient finite caps the step and stalls
+      // the tail.  The product is finite whatever W does.
+      //
+      // Recomputing W after every predictor, which is what this did until
+      // 2026-08-25, is a defensible algorithm and not what MATLAB has.  It
+      // takes a full Newton step per predictor and so counts the curvature the
+      // earlier predictors of the same cycle already spent, which overshoots:
+      // on the two-predictor fixture the second tree's step came out 1.1625
+      // against MATLAB's 1.0423, and the fit was consistently the worse of the
+      // two at equal budget.  At one predictor there is no cycle and the two
+      // rules agree exactly, which is why this went unseen until the boosted
+      // engine became the default and several predictors could be compared.
+      //
+      // For squared error the two are the same rule written twice: Z is Y and
+      // W is one, so W * (Z - FNEW) is the recomputed gradient.  The regression
+      // fit is unchanged by any of this, and was measured against R2024a to be
+      // exact before and after.
+      ColumnVector r0 (n), ww (n);
+      for (octave_idx_type i = 0; i < n; i++)
+      {
+        if (method == 1)
+        {
+          double p = 1.0 / (1.0 + std::exp (-f(i)));
+          ww(i) = p * (1.0 - p);
+          r0(i) = Y(i) - p;
+        }
+        else
+        {
+          ww(i) = 1.0;
+          r0(i) = Y(i) - f(i);
+        }
+      }
+
       // The predictors are fitted in sequence and not in parallel: each tree
-      // sees the residual the ones before it have already reduced.  Fitting
-      // them all to the same gradient and adding them would overshoot by a
-      // factor of the predictor count, and it would also drag the intercept
-      // off the response mean in a regression, where MATLAB holds it there.
+      // sees what the ones before it have already taken out of the working
+      // response.  Fitting them all to the same residual and adding them would
+      // overshoot by a factor of the predictor count, and it would also drag
+      // the intercept off the response mean in a regression, where MATLAB
+      // holds it there.
       for (octave_idx_type j = 0; j < d; j++)
       {
         for (octave_idx_type i = 0; i < n; i++)
         {
-          if (method == 1)
-          {
-            double p = 1.0 / (1.0 + std::exp (-fnew(i)));
-            grad(i) = Y(i) - p;
-            hess(i) = p * (1.0 - p);
-            if (hess(i) < 1e-12)
-            {
-              hess(i) = 1e-12;
-            }
-          }
-          else
-          {
-            grad(i) = Y(i) - fnew(i);
-            hess(i) = 1.0;
-          }
+          grad(i) = r0(i) - ww(i) * (fnew(i) - f(i));
+          hess(i) = ww(i);
         }
 
         trial[j] = ColumnVector (B[j].nbins, 0.0);
@@ -653,19 +699,27 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
         // stays at the response mean while a classifier's walks away from its
         // seed: a squared-error residual keeps mean zero from round to round
         // and hands over nothing, a logistic one does not.
-        double m = 0.0;
-        octave_idx_type cnt = 0;
+        //
+        // The mean is taken under the cycle's own weights, which is the mean a
+        // weighted least squares holds to zero.  A plain observation mean is
+        // the same thing on the first cycle, where every weight is 1/4, and
+        // parts from it on every cycle after: it left the intercept 0.003 out
+        // at two cycles and 0.0006 at three, against R2024a, with every shape
+        // function already exact.  Only the split between the intercept and
+        // the shape functions moves, never the prediction.
+        double sw = 0.0;
+        double sv = 0.0;
         for (octave_idx_type i = 0; i < n; i++)
         {
           if (B[j].bin(i) >= 0)
           {
-            m += trial[j](B[j].bin(i));
-            cnt++;
+            sw += ww(i);
+            sv += ww(i) * trial[j](B[j].bin(i));
           }
         }
-        if (cnt > 0)
+        if (sw > 0.0)
         {
-          m /= (double) cnt;
+          double m = sv / sw;
           for (octave_idx_type b = 0; b < B[j].nbins; b++)
           {
             trial[j](b) -= m;
