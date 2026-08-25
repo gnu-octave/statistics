@@ -265,6 +265,11 @@ function [D, I] = pdist2 (X, Y, varargin)
 
       ## Cosine distance = 1 - dot_product (normalized vectors)
       D = 1 - (X * Y');
+      ## A similarity a rounding step above one would give a negative
+      ## distance, which MATLAB never returns.  Only the sign is corrected:
+      ## parallel rows still land a rounding step above zero in both
+      ## engines.  A NaN compares false and is left alone.
+      D(D < 0) = 0;
 
     else
       ## Create indexing grid
@@ -347,6 +352,7 @@ function [D, I] = pdist2 (X, Y, varargin)
           xx = sqrt (sum ((X(ix(:),:) - mX) .* (X(ix(:),:) - mX), 2));
           yy = sqrt (sum ((Y(iy(:),:) - mY) .* (Y(iy(:),:) - mY), 2));
           D = 1 - (xy ./ (xx .* yy));
+          D(D < 0) = 0;
 
         case 'hamming'
           D = mean (abs (X(ix(:),:) != Y(iy(:),:)), 2);
@@ -367,6 +373,7 @@ function [D, I] = pdist2 (X, Y, varargin)
           xx = sqrt (sum ((rX(ix(:),:) - rM) .* (rX(ix(:),:) - rM), 2));
           yy = sqrt (sum ((rY(iy(:),:) - rM) .* (rY(iy(:),:) - rM), 2));
           D = 1 - (xy ./ (xx .* yy));
+          D(D < 0) = 0;
       endswitch
 
       ## From vector to matrix
@@ -487,7 +494,9 @@ function [D, I] = pdist2 (X, Y, varargin)
 
       case 'cosine'
         for i = 1:M
-          D(i,:) = (1 - sum (X(i,:) .* Y, 2) .* sx(i) .* sy)';
+          d = (1 - sum (X(i,:) .* Y, 2) .* sx(i) .* sy)';
+          d(d < 0) = 0;
+          D(i,:) = d;
         endfor
 
       case 'correlation'
@@ -497,7 +506,9 @@ function [D, I] = pdist2 (X, Y, varargin)
           xy = sum ((X(i,:) - mXi) .* (Y - mY), 2);
           xx = sqrt (sum ((X(i,:) - mXi) .^ 2));
           yy = sqrt (sum ((Y - mY) .^ 2, 2));
-          D(i,:) = (1 - (xy ./ (xx .* yy)))';
+          d = (1 - (xy ./ (xx .* yy)))';
+          d(d < 0) = 0;
+          D(i,:) = d;
         endfor
 
       case 'hamming'
@@ -516,7 +527,9 @@ function [D, I] = pdist2 (X, Y, varargin)
           xy = sum ((rX(i,:) - rM) .* (rY - rM), 2);
           xx = sqrt (sum ((rX(i,:) - rM) .^ 2));
           yy = sqrt (sum ((rY - rM) .^ 2, 2));
-          D(i,:) = (1 - (xy ./ (xx .* yy)))';
+          d = (1 - (xy ./ (xx .* yy)))';
+          d(d < 0) = 0;
+          D(i,:) = d;
         endfor
     endswitch
   endif
@@ -621,6 +634,31 @@ endfunction
 %! pdist2 (xx, xx, 'mahalanobis');
 
 ## Test input validation
+%!test
+%! ## A row is never at a negative distance from itself.  For identical rows
+%! ## the similarity can round a step above one, and one minus it is then
+%! ## below zero, which no distance may be.  A distance a rounding step above
+%! ## zero is kept, MATLAB returning one there too.
+%! X = [-3, -3; -3, -3];
+%! assert_equal (pdist2 (X, X, "cosine"), zeros (2));
+
+%!test
+%! ## Neither do the other two metrics built as one minus a similarity.
+%! Y = [1, 2, 4; 2, 4, 8; -1, -2, -4];
+%! for m = {"cosine", "correlation", "spearman"}
+%!   D = pdist2 (Y, Y, m{1});
+%!   assert_equal (any (D(:) < 0), false);
+%! endfor
+
+%!test
+%! ## The clamp corrects the sign and leaves a NaN alone: a zero row has no
+%! ## direction, so its cosine distance is undefined rather than zero, and
+%! ## stays undefined.
+%! Z = [0, 0; 1, 1];
+%! D = pdist2 (Z, Z, "cosine");
+%! assert_equal (isnan (D), [true, true; true, false]);
+%! assert_equal (D(2,2) >= 0, true);
+
 %!error<pdist2: too few input arguments.> pdist2 (1)
 %!error<pdist2: X and Y must have equal number of columns.> ...
 %! pdist2 (ones (4, 5), ones (4))

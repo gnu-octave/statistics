@@ -262,6 +262,11 @@ function D = pdist (X, varargin)
       case 'cosine'
         sx = sum (X .^ 2, 2) .^ (-1 / 2);
         D = (1 - sum (X(ix,:) .* X(iy,:), 2) .* sx(ix) .* sx(iy))';
+        ## A similarity a rounding step above one would give a negative
+        ## distance, which MATLAB never returns.  Only the sign is corrected:
+        ## parallel rows still land a rounding step above zero in both
+        ## engines.  A NaN compares false and is left alone.
+        D(D < 0) = 0;
 
       case 'correlation'
         mX = mean (X(ix,:), 2);
@@ -270,6 +275,7 @@ function D = pdist (X, varargin)
         xx = sqrt (sum ((X(ix,:) - mX) .^ 2, 2));
         yy = sqrt (sum ((X(iy,:) - mY) .^ 2, 2));
         D = (1 - xy ./ (xx .* yy))';
+        D(D < 0) = 0;
 
       case 'hamming'
         D = mean (X(ix,:) != X(iy,:), 2)';
@@ -288,6 +294,7 @@ function D = pdist (X, varargin)
         xx = sqrt (sum ((rX(ix,:) - rM) .^ 2, 2));
         yy = sqrt (sum ((rX(iy,:) - rM) .^ 2, 2));
         D = (1 - xy ./ (xx .* yy))';
+        D(D < 0) = 0;
     endswitch
 
   ## For large N: use blocked row-by-row computation (O(N) memory)
@@ -424,6 +431,9 @@ function D = pdist (X, varargin)
           for j = (i+1):N
             idx += 1;
             D(idx) = 1 - sum (Xi .* X(j,:)) * sx_i * sx(j);
+            if (D(idx) < 0)
+              D(idx) = 0;
+            endif
           endfor
         endfor
 
@@ -442,6 +452,9 @@ function D = pdist (X, varargin)
             xx = sqrt (sum (Xi_c .^ 2));
             yy = sqrt (sum (Xj_c .^ 2));
             D(idx) = 1 - xy / (xx * yy);
+            if (D(idx) < 0)
+              D(idx) = 0;
+            endif
           endfor
         endfor
 
@@ -483,6 +496,9 @@ function D = pdist (X, varargin)
             xx = sqrt (sum (rXi .^ 2));
             yy = sqrt (sum (rXj .^ 2));
             D(idx) = 1 - xy / (xx * yy);
+            if (D(idx) < 0)
+              D(idx) = 0;
+            endif
           endfor
         endfor
     endswitch
@@ -532,3 +548,18 @@ endfunction
 %!assert_equal (pdist (x, 'hamming'), [1, 1, 2/3, 1, 1, 1]);
 %!assert_equal (pdist (x, 'jaccard'), [1, 1, 2/3, 1, 1, 1]);
 %!assert_equal (pdist (x, 'chebychev'), [3, 6, 2, 3, 5, 8]);
+
+%!test
+%! ## A row is never at a negative distance from itself, the similarity of
+%! ## identical rows being able to round a step above one.
+%! X = [-3, -3; -3, -3];
+%! assert_equal (pdist (X, "cosine") >= 0, true);
+
+%!test
+%! ## Neither do the other two metrics built as one minus a similarity, on
+%! ## either the vectorised path or the blocked one taken for large N.
+%! Y = [1, 2, 4; 2, 4, 8; -1, -2, -4; 3, 6, 12];
+%! for m = {"cosine", "correlation", "spearman"}
+%!   assert_equal (any (pdist (Y, m{1}) < 0), false);
+%!   assert_equal (any (pdist (repmat (Y, 300, 1), m{1}) < 0), false);
+%! endfor
