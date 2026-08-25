@@ -688,7 +688,7 @@ classdef ClassificationPartitionedModel
           NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
                       'LayerSizes', ...
                       'Activations', 'OutputLayerActivation', ...
-                      'LearningRate', 'IterationLimit', 'DisplayInfo'};
+                      'IterationLimit', 'DisplayInfo'};
           ## Set parameters
           for i = 1:numel (NNparams)
             paramName = NNparams{i};
@@ -697,6 +697,15 @@ classdef ClassificationPartitionedModel
               args = [args, {paramName, paramValue}];
             endif
           endfor
+          ## The folds must be trained by the solver the parent was trained
+          ## by, and the solver decides which of the remaining options are
+          ## legal: a learning rate belongs to the epoch loop alone.  Solver
+          ## reports a display name, so it is mapped back to the option.
+          if (strcmp (Mdl.Solver, 'LBFGS'))
+            args = [args, {'Solver', 'lbfgs'}];
+          else
+            args = [args, {'Solver', 'sgd', 'LearningRate', Mdl.LearningRate}];
+          endif
           stdz = ! isempty (Mdl.Mu);
           args = [args, {'Standardize', stdz}];
 

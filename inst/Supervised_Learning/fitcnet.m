@@ -76,14 +76,15 @@
 ## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
 ##
 ## @item @qcode{'Solver'} @tab A character vector naming the solver that
-## trains the network, either @qcode{'sgd'} or @qcode{'lbfgs'}.  The
-## default is @qcode{'sgd'}, which visits the samples one at a time and
-## steps down the gradient of each, running for @qcode{'IterationLimit'}
-## epochs.  @qcode{'lbfgs'} minimizes the loss over the whole training
-## set at once by limited-memory BFGS, which is the solver MATLAB uses.
-## It takes no learning rate, stops on the three tolerances below, and
-## reaches a lower training loss in fewer passes over the data, though
-## each of its iterations costs several passes where an epoch costs one.
+## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
+## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
+## training set at once by limited-memory BFGS, as MATLAB does.  It takes
+## no learning rate, stops on the three tolerances below, and reaches a
+## lower training loss in fewer passes over the data, though each of its
+## iterations costs several passes where an epoch costs one.
+## @qcode{'sgd'} visits the samples one at a time and steps down the
+## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
+## the default before version 1.9.0.
 ##
 ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
 ## stops once the gradient's infinity norm falls to or below it, which is
@@ -184,11 +185,13 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcnet (meas, species, 'IterationLimit', 400);
 %!
-%! ## TrainingHistory records the loss and the accuracy at every iteration
+%! ## TrainingHistory records what the solver converges on.  The default
+%! ## solver is lbfgs, so that is the loss and the gradient norm; under
+%! ## 'sgd' it is the loss and the accuracy instead.
 %! h = Mdl.TrainingHistory;
-%! plotyy (h.Iteration, h.TrainingLoss, h.Iteration, h.TrainingAccuracy);
+%! plotyy (h.Iteration, h.TrainingLoss, h.Iteration, h.Gradient);
 %! xlabel ('Iteration');
-%! title ('Training loss, left, and accuracy, right');
+%! title ('Training loss, left, and gradient norm, right');
 
 %!demo
 %! ## 3. Rectified hidden layers train faster than sigmoid ones

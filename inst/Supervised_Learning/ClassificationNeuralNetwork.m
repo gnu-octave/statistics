@@ -660,14 +660,15 @@ classdef ClassificationNeuralNetwork
     ## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
     ##
     ## @item @qcode{'Solver'} @tab A character vector naming the solver that
-    ## trains the network, either @qcode{'sgd'} or @qcode{'lbfgs'}.  The
-    ## default is @qcode{'sgd'}, which visits the samples one at a time and
-    ## steps down the gradient of each, running for @qcode{'IterationLimit'}
-    ## epochs.  @qcode{'lbfgs'} minimizes the loss over the whole training
-    ## set at once by limited-memory BFGS, which is the solver MATLAB uses.
-    ## It takes no learning rate, stops on the three tolerances below, and
-    ## reaches a lower training loss in fewer passes over the data, though
-    ## each of its iterations costs several passes where an epoch costs one.
+    ## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
+    ## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
+    ## training set at once by limited-memory BFGS, as MATLAB does.  It takes
+    ## no learning rate, stops on the three tolerances below, and reaches a
+    ## lower training loss in fewer passes over the data, though each of its
+    ## iterations costs several passes where an epoch costs one.
+    ## @qcode{'sgd'} visits the samples one at a time and steps down the
+    ## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
+    ## the default before version 1.9.0.
     ##
     ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
     ## stops once the gradient's infinity norm falls to or below it, which is
@@ -726,7 +727,7 @@ classdef ClassificationNeuralNetwork
       LearningRate            = 0.003;
       IterationLimit          = 1000;
       DisplayInfo             = false;
-      Solver                  = 'sgd';
+      Solver                  = 'lbfgs';
       GradientTolerance       = 1e-6;
       LossTolerance           = 1e-6;
       StepTolerance           = 1e-6;
@@ -1920,20 +1921,33 @@ endfunction
 %! assert_equal (isfield (ci, "ConvergenceCriterion"), true);
 %! assert_equal (isfield (ci, "Accuracy"), false);
 
-## The default solver is unchanged and still reports accuracy.
+## The stochastic solver still reports accuracy, and is still reached by name.
 %!test
 %! load fisheriris
-%! Mdl = fitcnet (meas, species, "IterationLimit", 20);
+%! Mdl = fitcnet (meas, species, "Solver", "sgd", "IterationLimit", 20);
 %! assert_equal (Mdl.Solver, "Gradient Descent");
 %! assert_equal (isfield (Mdl.ConvergenceInfo, "Accuracy"), true);
 %! assert_equal (columns (Mdl.TrainingHistory), 3);
+
+## The default solver is lbfgs, which reports the quantities it converges on
+## rather than an accuracy.
+%!test
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, "IterationLimit", 20);
+%! assert_equal (Mdl.Solver, "LBFGS");
+%! assert_equal (isfield (Mdl.ConvergenceInfo, "Accuracy"), false);
+%! assert_equal (fieldnames (Mdl.ConvergenceInfo), ...
+%!               {"Time"; "TrainingLoss"; "Gradient"; "Step"; ...
+%!                "ConvergenceCriterion"});
+%! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
 
 ## From the same starting weights it reaches a lower training loss in fewer
 ## passes over the data, which is the reason for offering it.
 %!test
 %! load fisheriris
 %! rand ("state", 3); randn ("state", 3);
-%! Ms = fitcnet (meas, species, "IterationLimit", 200);
+%! Ms = fitcnet (meas, species, "IterationLimit", 200, "Solver", "sgd");
 %! rand ("state", 3); randn ("state", 3);
 %! Ml = fitcnet (meas, species, "IterationLimit", 200, "Solver", "lbfgs");
 %! ls = Ms.ConvergenceInfo.TrainingLoss(end);
@@ -2046,11 +2060,13 @@ endfunction
 %! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
 
 %!error<ClassificationNeuralNetwork: 'GradientTolerance' applies only when 'Solver' is 'lbfgs'.> ...
-%! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "GradientTolerance", 1e-8)
+%! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "Solver", "sgd", ...
+%!          "GradientTolerance", 1e-8)
 %!error<ClassificationNeuralNetwork: 'LossTolerance' applies only when 'Solver' is 'lbfgs'.> ...
 %! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "Solver", "sgd", "LossTolerance", 1)
 %!error<ClassificationNeuralNetwork: 'StepTolerance' applies only when 'Solver' is 'lbfgs'.> ...
-%! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "StepTolerance", 1e-8)
+%! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "Solver", "sgd", ...
+%!          "StepTolerance", 1e-8)
 %!error<ClassificationNeuralNetwork: 'LearningRate' applies only when 'Solver' is 'sgd'.> ...
 %! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "Solver", "lbfgs", "LearningRate", 0.1)
 %!error<ClassificationNeuralNetwork: 'Solver' must be either 'sgd' or 'lbfgs'.> ...
@@ -2239,7 +2255,8 @@ endfunction
 ## TrainingHistory comes back a table, rebuilt from ConvergenceInfo because
 ## Octave cannot write a classdef object to a binary file.
 %!test
-%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 25);
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
+%!                'Solver', 'sgd', 'IterationLimit', 25);
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
 %! Mdl2 = loadmodel (fname);
@@ -2307,7 +2324,7 @@ endfunction
 %! randn ('seed', 42);
 %! X = [randn(30, 2) * 0.4 + 2; randn(30, 2) * 0.4 - 2];
 %! Y = [ones(30, 1); 2 * ones(30, 1)];
-%! Mdl = fitcnet (X, Y, 'IterationLimit', 100);
+%! Mdl = fitcnet (X, Y, 'Solver', 'sgd', 'IterationLimit', 100);
 %! loss = Mdl.ConvergenceInfo.TrainingLoss;
 %! acc = Mdl.ConvergenceInfo.Accuracy;
 %! assert_equal (numel (loss), 100);
@@ -2355,7 +2372,8 @@ endfunction
 
 ## TrainingHistory holds one row per iteration.
 %!test
-%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'IterationLimit', 25);
+%! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
+%!                'Solver', 'sgd', 'IterationLimit', 25);
 %! assert_equal (istable (Mdl.TrainingHistory), true);
 %! assert_equal (height (Mdl.TrainingHistory), 25);
 %! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...

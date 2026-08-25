@@ -75,14 +75,15 @@
 ## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
 ##
 ## @item @qcode{'Solver'} @tab A character vector naming the solver that
-## trains the network, either @qcode{'sgd'} or @qcode{'lbfgs'}.  The
-## default is @qcode{'sgd'}, which visits the samples one at a time and
-## steps down the gradient of each, running for @qcode{'IterationLimit'}
-## epochs.  @qcode{'lbfgs'} minimizes the loss over the whole training
-## set at once by limited-memory BFGS, which is the solver MATLAB uses.
-## It takes no learning rate, stops on the three tolerances below, and
-## reaches a lower training loss in fewer passes over the data, though
-## each of its iterations costs several passes where an epoch costs one.
+## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
+## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
+## training set at once by limited-memory BFGS, as MATLAB does.  It takes
+## no learning rate, stops on the three tolerances below, and reaches a
+## lower training loss in fewer passes over the data, though each of its
+## iterations costs several passes where an epoch costs one.
+## @qcode{'sgd'} visits the samples one at a time and steps down the
+## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
+## the default before version 1.9.0.
 ##
 ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
 ## stops once the gradient's infinity norm falls to or below it, which is
@@ -218,8 +219,9 @@ endfunction
 %!test
 %! rand ('seed', 42);
 %! X = linspace (0, 1, 30)';
-%! Mdl = fitrnet (X, 3 * X, 'LayerSizes', [5, 5], 'LearningRate', 0.01, ...
-%!                'IterationLimit', 40, 'ResponseName', 'speed');
+%! Mdl = fitrnet (X, 3 * X, 'LayerSizes', [5, 5], 'Solver', 'sgd', ...
+%!                'LearningRate', 0.01, 'IterationLimit', 40, ...
+%!                'ResponseName', 'speed');
 %! assert_equal (Mdl.LayerSizes, [5, 5]);
 %! assert_equal (Mdl.LearningRate, 0.01);
 %! assert_equal (Mdl.IterationLimit, 40);

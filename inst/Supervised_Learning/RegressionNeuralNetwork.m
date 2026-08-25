@@ -88,14 +88,15 @@
 ## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
 ##
 ## @item @qcode{'Solver'} @tab A character vector naming the solver that
-## trains the network, either @qcode{'sgd'} or @qcode{'lbfgs'}.  The
-## default is @qcode{'sgd'}, which visits the samples one at a time and
-## steps down the gradient of each, running for @qcode{'IterationLimit'}
-## epochs.  @qcode{'lbfgs'} minimizes the loss over the whole training
-## set at once by limited-memory BFGS, which is the solver MATLAB uses.
-## It takes no learning rate, stops on the three tolerances below, and
-## reaches a lower training loss in fewer passes over the data, though
-## each of its iterations costs several passes where an epoch costs one.
+## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
+## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
+## training set at once by limited-memory BFGS, as MATLAB does.  It takes
+## no learning rate, stops on the three tolerances below, and reaches a
+## lower training loss in fewer passes over the data, though each of its
+## iterations costs several passes where an epoch costs one.
+## @qcode{'sgd'} visits the samples one at a time and steps down the
+## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
+## the default before version 1.9.0.
 ##
 ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
 ## stops once the gradient's infinity norm falls to or below it, which is
@@ -565,7 +566,7 @@ classdef RegressionNeuralNetwork
       LearningRate            = 0.003;
       IterationLimit          = 1000;
       DisplayInfo             = false;
-      Solver                  = 'sgd';
+      Solver                  = 'lbfgs';
       GradientTolerance       = 1e-6;
       LossTolerance           = 1e-6;
       StepTolerance           = 1e-6;
@@ -1435,7 +1436,7 @@ endfunction
 %! assert_equal (Mdl.LearningRate, 0.003);
 %! assert_equal (Mdl.IterationLimit, 50);
 %! assert_equal (isempty (Mdl.Mu), true);
-%! assert_equal (Mdl.Solver, 'Gradient Descent');
+%! assert_equal (Mdl.Solver, 'LBFGS');
 %! assert_equal (Mdl.NumObservations, 40);
 %! assert_equal (Mdl.NumPredictors, 1);
 %! assert_equal (Mdl.ResponseName, 'Y');
@@ -1467,7 +1468,8 @@ endfunction
 %! rand ('seed', 42); randn ('seed', 42);
 %! X = linspace (0, 1, 50)';
 %! Y = 4 * X - 2;
-%! Mdl = RegressionNeuralNetwork (X, Y, 'IterationLimit', 200);
+%! Mdl = RegressionNeuralNetwork (X, Y, 'IterationLimit', 200, ...
+%!                                 'Solver', 'sgd');
 %! h = Mdl.TrainingHistory;
 %! assert_equal (class (h), 'table');
 %! assert_equal (h.Properties.VariableNames, {'Iteration', 'TrainingLoss'});
@@ -1480,7 +1482,8 @@ endfunction
 %!test
 %! rand ('seed', 42);
 %! X = linspace (0, 1, 30)';
-%! Mdl = RegressionNeuralNetwork (X, 2 * X, 'IterationLimit', 25);
+%! Mdl = RegressionNeuralNetwork (X, 2 * X, 'Solver', 'sgd', ...
+%!                                 'IterationLimit', 25);
 %! assert_equal (fieldnames (Mdl.ConvergenceInfo), {'Time'; 'TrainingLoss'});
 %! assert_equal (numel (Mdl.ConvergenceInfo.TrainingLoss), 25);
 %! assert_equal (Mdl.ConvergenceInfo.Time > 0, true);
@@ -1629,7 +1632,7 @@ endfunction
 %! X = linspace (0, 1, 30)';
 %! Y = 4 * X - 1;
 %! Mdl = RegressionNeuralNetwork (X, Y, 'LayerSizes', [6, 4], ...
-%!                                'IterationLimit', 60);
+%!                                'Solver', 'sgd', 'IterationLimit', 60);
 %! fname = tempname ();
 %! savemodel (Mdl, fname);
 %! M2 = loadmodel (fname);
@@ -1688,12 +1691,20 @@ endfunction
 %! assert_equal (isfield (ci, "Step"), true);
 %! assert_equal (isfield (ci, "ConvergenceCriterion"), true);
 
-## The default solver is unchanged.
+## The stochastic solver is still reached by name, with its own two columns.
+%!test
+%! x = linspace (0, 1, 40)';
+%! Mdl = fitrnet (x, sin (2*pi*x), "Solver", "sgd", "IterationLimit", 20);
+%! assert_equal (Mdl.Solver, "Gradient Descent");
+%! assert_equal (columns (Mdl.TrainingHistory), 2);
+
+## The default solver is lbfgs, and its history carries the four columns.
 %!test
 %! x = linspace (0, 1, 40)';
 %! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 20);
-%! assert_equal (Mdl.Solver, "Gradient Descent");
-%! assert_equal (columns (Mdl.TrainingHistory), 2);
+%! assert_equal (Mdl.Solver, "LBFGS");
+%! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
 
 ## A model trained by lbfgs comes back off disk with its own four columns.
 %!test
@@ -1708,7 +1719,8 @@ endfunction
 
 ## An option that cannot act is refused rather than ignored.
 %!error<RegressionNeuralNetwork: 'GradientTolerance' applies only when 'Solver' is 'lbfgs'.> ...
-%! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "GradientTolerance", 1e-8)
+%! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "Solver", "sgd", ...
+%!          "GradientTolerance", 1e-8)
 %!error<RegressionNeuralNetwork: 'LearningRate' applies only when 'Solver' is 'sgd'.> ...
 %! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "Solver", "lbfgs", "LearningRate", 0.1)
 %!error<RegressionNeuralNetwork: 'Solver' must be either 'sgd' or 'lbfgs'.> ...
