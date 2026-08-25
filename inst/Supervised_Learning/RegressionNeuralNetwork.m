@@ -851,19 +851,24 @@ classdef RegressionNeuralNetwork
                        Alpha, LearningRate, IterationLimit, DisplayInfo, 2, ...
                        SolverOptions);
 
-      ## Store training time and Loss
-      ConvergenceInfo.Time = toc (rnn_timer_);
-      ConvergenceInfo.TrainingLoss = Mdl.Loss;
+      ## The solver records a value per iteration.  The series belongs to the
+      ## history and ConvergenceInfo reports where the fit ended up, as
+      ## MATLAB divides them; SERIES carries the columns to both.
+      series = struct ('TrainingLoss', Mdl.Loss(:));
       Mdl = rmfield (Mdl, 'Loss');
 
       ## The lbfgs solver also reports the gradient and step it measured to
       ## decide it had stopped, and which test stopped it, as MATLAB does.
+      criterion = '';
       if (strcmp (Solver, 'lbfgs'))
-        ConvergenceInfo.Gradient = Mdl.Gradient;
-        ConvergenceInfo.Step = Mdl.Step;
-        ConvergenceInfo.ConvergenceCriterion = Mdl.Criterion;
+        series.Gradient = Mdl.Gradient(:);
+        series.Step = Mdl.Step(:);
+        criterion = Mdl.Criterion;
         Mdl = rmfield (Mdl, {'Gradient', 'Step', 'Criterion'});
       endif
+
+      ConvergenceInfo = convergenceStruct_ (series, toc (rnn_timer_), ...
+                                            criterion);
 
       ## Save ModelParameters and ConvergenceInfo
       this.ModelParameters = Mdl;
@@ -881,7 +886,7 @@ classdef RegressionNeuralNetwork
       endfor
 
       ## Iteration by iteration record of the fit
-      this.TrainingHistory = trainingTable_ (ConvergenceInfo);
+      this.TrainingHistory = trainingTable_ (series);
 
     endfunction
 
@@ -1269,6 +1274,7 @@ classdef RegressionNeuralNetwork
       IterationLimit          = this.IterationLimit;
       ModelParameters         = this.ModelParameters;
       ConvergenceInfo         = this.ConvergenceInfo;
+      TrainingHistory         = this.TrainingHistory;
       DisplayInfo             = this.DisplayInfo;
       Solver                  = this.Solver;
       LayerWeights            = this.LayerWeights;
@@ -1283,14 +1289,23 @@ classdef RegressionNeuralNetwork
       ## ConvergenceInfo, which holds the same numbers as a plain vector.
 
       ## Save classdef name and all model properties as individual variables
-      save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'RowsUsed', 'BinEdges', 'NumPredictors', 'PredictorNames', ...
-            'ResponseName', ...
-            'ResponseTransform', 'Sigma', 'Mu', ...
-            'LayerSizes', 'Activations', 'OutputLayerActivation', ...
-            'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
-            'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...
-            'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
+      ## The history is a table and ConvergenceInfo holds another; both lose
+      ## their class on the way to the file and load_model rebuilds them, so
+      ## the warning that says so is expected and is not shown.
+      ws_ = warning ('off', 'Octave:save:classdef:unsupported');
+      unwind_protect
+        save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
+              'RowsUsed', 'BinEdges', 'NumPredictors', 'PredictorNames', ...
+              'ResponseName', ...
+              'ResponseTransform', 'Sigma', 'Mu', ...
+              'LayerSizes', 'Activations', 'OutputLayerActivation', ...
+              'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
+              'ConvergenceInfo', 'TrainingHistory', 'DisplayInfo', ...
+              'LayerWeights', 'LayerBiases', ...
+              'W', 'CategoricalPredictors', 'ExpandedPredictorNames', 'RTfun');
+      unwind_protect_cleanup
+        warning (ws_);
+      end_unwind_protect
     endfunction
 
   endmethods
@@ -1367,7 +1382,7 @@ classdef RegressionNeuralNetwork
       for i = 1:numel (names)
         ## Check fieldnames in DATA match properties in RegressionNeuralNetwork
         try
-          mdl.(names{i}) = data.(names{i});
+          mdl.(names{i}) = restore_tables (data.(names{i}));
         catch
           error (strcat ("RegressionNeuralNetwork.load_model:", ...
                          " invalid model in '%s'."), filename)
@@ -1375,7 +1390,12 @@ classdef RegressionNeuralNetwork
       endfor
 
       ## Rebuild the TrainingHistory table, which savemodel cannot write out
-      mdl.TrainingHistory = trainingTable_ (mdl.ConvergenceInfo);
+      ## A model saved before the history was written out carries the series
+      ## as vectors in ConvergenceInfo instead; rebuild from those, so that an
+      ## older file still loads and loads as the current shape.
+      if (isempty (mdl.TrainingHistory) && ! isempty (mdl.ConvergenceInfo))
+        mdl = restoreOlderModel_ (mdl);
+      endif
     endfunction
 
   endmethods
@@ -1387,17 +1407,71 @@ endclassdef
 ## The recorded history, whose columns follow the solver that produced it.
 ## Building it in one place keeps the fit and the model reloaded from disk
 ## from drifting apart.
-function T = trainingTable_ (ConvergenceInfo)
-  iter = (1:numel (ConvergenceInfo.TrainingLoss))';
-  if (isfield (ConvergenceInfo, 'Gradient'))
-    T = table (iter, ConvergenceInfo.TrainingLoss(:), ...
-               ConvergenceInfo.Gradient(:), ConvergenceInfo.Step(:), ...
-               'VariableNames', ...
-               {'Iteration', 'TrainingLoss', 'Gradient', 'Step'});
+function T = trainingTable_ (series)
+  iter = (1:numel (series.TrainingLoss))';
+  ## Time is NaN because neither solver records a per-iteration figure; the
+  ## total the fit took is ConvergenceInfo.Time.  The validation pair is NaN
+  ## because no validation set can be given, which is what MATLAB reports
+  ## when none is.  Both are present so the columns are MATLAB's.
+  pad = NaN (numel (iter), 1);
+  if (isfield (series, 'Gradient'))
+    T = table (iter, series.TrainingLoss(:), series.Gradient(:), ...
+               series.Step(:), pad, pad, pad, 'VariableNames', ...
+               {'Iteration', 'TrainingLoss', 'Gradient', 'Step', 'Time', ...
+                'ValidationLoss', 'ValidationChecks'});
   else
-    T = table (iter, ConvergenceInfo.TrainingLoss(:), 'VariableNames', ...
-               {'Iteration', 'TrainingLoss'});
+    T = table (iter, series.TrainingLoss(:), pad, pad, pad, ...
+               'VariableNames', {'Iteration', 'TrainingLoss', 'Time', ...
+                                 'ValidationLoss', 'ValidationChecks'});
   endif
+endfunction
+
+## ConvergenceInfo reports where the fit ended: the last value of each series
+## as a scalar, beside the whole series as History.  MATLAB divides the two
+## the same way, and a vector here would repeat what History already holds.
+function ci = convergenceStruct_ (series, elapsed, criterion)
+  ## The fields are assigned in MATLAB's own order, which fieldnames reports.
+  ci.Iterations = numel (series.TrainingLoss);
+  ci.TrainingLoss = lastValue_ (series.TrainingLoss);
+  if (isfield (series, 'Gradient'))
+    ci.Gradient = lastValue_ (series.Gradient);
+    ci.Step = lastValue_ (series.Step);
+  endif
+  ci.Time = elapsed;
+  ci.ValidationLoss = NaN;
+  ci.ValidationChecks = NaN;
+  if (isfield (series, 'Gradient'))
+    ci.ConvergenceCriterion = criterion;
+  endif
+  ci.History = trainingTable_ (series);
+endfunction
+
+## Where the fit ended.  A fit that took no iteration recorded nothing, so
+## the value it ended at is empty rather than an error.
+function v = lastValue_ (x)
+  if (isempty (x))
+    v = [];
+  else
+    v = x(end);
+  endif
+endfunction
+
+## The series as it was persisted, or, from a model saved before the series
+## became a property of its own, rebuilt from the vectors ConvergenceInfo
+## used to carry.
+## Read a model written before ConvergenceInfo reported where the fit ended
+## rather than the whole series: the vectors it carries are the history.
+function mdl = restoreOlderModel_ (mdl)
+  ci = mdl.ConvergenceInfo;
+  series = struct ('TrainingLoss', ci.TrainingLoss(:));
+  criterion = '';
+  if (isfield (ci, 'Gradient'))
+    series.Gradient = ci.Gradient(:);
+    series.Step = ci.Step(:);
+    criterion = ci.ConvergenceCriterion;
+  endif
+  mdl.TrainingHistory = trainingTable_ (series);
+  mdl.ConvergenceInfo = convergenceStruct_ (series, ci.Time, criterion);
 endfunction
 
 function numCode = activationCode_ (strCode)
@@ -1472,7 +1546,9 @@ endfunction
 %!                                 'Solver', 'sgd');
 %! h = Mdl.TrainingHistory;
 %! assert_equal (class (h), 'table');
-%! assert_equal (h.Properties.VariableNames, {'Iteration', 'TrainingLoss'});
+%! assert_equal (h.Properties.VariableNames, ...
+%!               {'Iteration', 'TrainingLoss', 'Time', 'ValidationLoss', ...
+%!                'ValidationChecks'});
 %! assert_equal (rows (h), 200);
 %! assert_equal (h.Iteration', 1:200);
 %! assert_equal (h.TrainingLoss(end) < h.TrainingLoss(1), true);
@@ -1484,8 +1560,13 @@ endfunction
 %! X = linspace (0, 1, 30)';
 %! Mdl = RegressionNeuralNetwork (X, 2 * X, 'Solver', 'sgd', ...
 %!                                 'IterationLimit', 25);
-%! assert_equal (fieldnames (Mdl.ConvergenceInfo), {'Time'; 'TrainingLoss'});
-%! assert_equal (numel (Mdl.ConvergenceInfo.TrainingLoss), 25);
+%! assert_equal (fieldnames (Mdl.ConvergenceInfo), ...
+%!               {'Iterations'; 'TrainingLoss'; 'Time'; ...
+%!                'ValidationLoss'; 'ValidationChecks'; 'History'});
+%! assert_equal (numel (Mdl.ConvergenceInfo.TrainingLoss), 1);
+%! assert_equal (rows (Mdl.ConvergenceInfo.History), 25);
+%! assert_equal (Mdl.ConvergenceInfo.TrainingLoss, ...
+%!               Mdl.ConvergenceInfo.History.TrainingLoss(end));
 %! assert_equal (Mdl.ConvergenceInfo.Time > 0, true);
 
 ## predict on the training rows is resubPredict.
@@ -1680,7 +1761,8 @@ endfunction
 %! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 50, "Solver", "lbfgs");
 %! assert_equal (Mdl.Solver, "LBFGS");
 %! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
-%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step", ...
+%!                "Time", "ValidationLoss", "ValidationChecks"});
 
 ## It records what it measured to decide it had stopped.
 %!test
@@ -1696,7 +1778,7 @@ endfunction
 %! x = linspace (0, 1, 40)';
 %! Mdl = fitrnet (x, sin (2*pi*x), "Solver", "sgd", "IterationLimit", 20);
 %! assert_equal (Mdl.Solver, "Gradient Descent");
-%! assert_equal (columns (Mdl.TrainingHistory), 2);
+%! assert_equal (columns (Mdl.TrainingHistory), 5);
 
 ## The default solver is lbfgs, and its history carries the four columns.
 %!test
@@ -1704,7 +1786,8 @@ endfunction
 %! Mdl = fitrnet (x, sin (2*pi*x), "IterationLimit", 20);
 %! assert_equal (Mdl.Solver, "LBFGS");
 %! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
-%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step", ...
+%!                "Time", "ValidationLoss", "ValidationChecks"});
 
 ## A model trained by lbfgs comes back off disk with its own four columns.
 %!test

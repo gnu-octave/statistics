@@ -1117,9 +1117,10 @@ classdef ClassificationNeuralNetwork
                        Alpha, LearningRate, IterationLimit, DisplayInfo, ...
                        LossFunction, SolverOptions);
 
-      ## Store training time, Iterations, and Loss
-      ConvergenceInfo.Time = toc (cnn_timer_);
-      ConvergenceInfo.TrainingLoss = Mdl.Loss;
+      ## The solver records a value per iteration.  The series belongs to the
+      ## history and ConvergenceInfo reports where the fit ended up, as
+      ## MATLAB divides them; SERIES carries the columns to both.
+      series = struct ('TrainingLoss', Mdl.Loss(:));
       Mdl = rmfield (Mdl, 'Loss');
 
       ## What the fit recorded depends on which solver ran.  The epoch loop
@@ -1127,14 +1128,18 @@ classdef ClassificationNeuralNetwork
       ## reports the gradient and step it measured to decide it had stopped,
       ## and which test stopped it, as MATLAB does.
       if (strcmp (Solver, 'lbfgs'))
-        ConvergenceInfo.Gradient = Mdl.Gradient;
-        ConvergenceInfo.Step = Mdl.Step;
-        ConvergenceInfo.ConvergenceCriterion = Mdl.Criterion;
+        series.Gradient = Mdl.Gradient(:);
+        series.Step = Mdl.Step(:);
+        criterion = Mdl.Criterion;
         Mdl = rmfield (Mdl, {'Gradient', 'Step', 'Criterion'});
       else
-        ConvergenceInfo.Accuracy = Mdl.Accuracy;
+        series.Accuracy = Mdl.Accuracy(:);
+        criterion = '';
         Mdl = rmfield (Mdl, 'Accuracy');
       endif
+
+      ConvergenceInfo = convergenceStruct (series, toc (cnn_timer_), ...
+                                           criterion);
 
       ## Save ModelParameters and ConvergenceInfo
       this.ModelParameters = Mdl;
@@ -1152,7 +1157,7 @@ classdef ClassificationNeuralNetwork
       endfor
 
       ## Iteration by iteration record of the fit
-      this.TrainingHistory = trainingTable (ConvergenceInfo);
+      this.TrainingHistory = trainingTable (series);
 
     endfunction
 
@@ -1755,20 +1760,27 @@ classdef ClassificationNeuralNetwork
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       STfun                  = this.STfun;
 
-      ## TrainingHistory is a table, and Octave cannot save a classdef object
-      ## to a binary file, so it is left out here and rebuilt on loading from
-      ## ConvergenceInfo, which holds the same numbers as plain vectors.
+      TrainingHistory         = this.TrainingHistory;
 
       ## Save classdef name and all model properties as individual variables
-      save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
-            'ResponseName', ...
-            'ClassNames', 'ScoreTransform', 'Sigma', 'Mu', ...
-            'LayerSizes', 'Activations', 'OutputLayerActivation', ...
-            'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
-            'ConvergenceInfo', 'DisplayInfo', 'LayerWeights', 'LayerBiases', ...
-            'Cost', 'Prior', 'W', 'CategoricalPredictors', ...
-            'ExpandedPredictorNames', 'STfun');
+      ## The history is a table and ConvergenceInfo holds another; both lose
+      ## their class on the way to the file and load_model rebuilds them, so
+      ## the warning that says so is expected and is not shown.
+      ws_ = warning ('off', 'Octave:save:classdef:unsupported');
+      unwind_protect
+        save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
+              'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
+              'ResponseName', ...
+              'ClassNames', 'ScoreTransform', 'Sigma', 'Mu', ...
+              'LayerSizes', 'Activations', 'OutputLayerActivation', ...
+              'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
+              'ConvergenceInfo', 'TrainingHistory', 'DisplayInfo', ...
+              'LayerWeights', 'LayerBiases', ...
+              'Cost', 'Prior', 'W', 'CategoricalPredictors', ...
+              'ExpandedPredictorNames', 'STfun');
+      unwind_protect_cleanup
+        warning (ws_);
+      end_unwind_protect
     endfunction
 
   endmethods
@@ -1838,19 +1850,25 @@ classdef ClassificationNeuralNetwork
                                'ResponseTransform'});
       names = [names(! late); names(late)];
 
-      ## Copy data into object
+      ## Copy data into object.  A table loses its class on the way to a
+      ## binary file and comes back a structure, so it is rebuilt before the
+      ## property it belongs to is assigned.
       for i = 1:numel (names)
         ## Check fieldnames in DATA match properties in ClassificationNeuralNetwork
         try
-          mdl.(names{i}) = data.(names{i});
+          mdl.(names{i}) = restore_tables (data.(names{i}));
         catch
           error (strcat ("ClassificationNeuralNetwork.load_model:", ...
                          " invalid model in '%s'."), filename)
         end_try_catch
       endfor
 
-      ## Rebuild the TrainingHistory table, which savemodel cannot write out
-      mdl.TrainingHistory = trainingTable (mdl.ConvergenceInfo);
+      ## A model saved before the history was written out carries the series
+      ## as vectors in ConvergenceInfo instead; rebuild from those, so that an
+      ## older file still loads and loads as the current shape.
+      if (isempty (mdl.TrainingHistory) && ! isempty (mdl.ConvergenceInfo))
+        mdl = restoreOlderModel (mdl);
+      endif
     endfunction
 
   endmethods
@@ -1860,18 +1878,76 @@ endclassdef
 ## The recorded history, whose columns follow the solver that produced it.
 ## Building it in one place keeps the fit and the model reloaded from disk
 ## from drifting apart.
-function T = trainingTable (ConvergenceInfo)
-  iter = (1:numel (ConvergenceInfo.TrainingLoss))';
-  if (isfield (ConvergenceInfo, 'Gradient'))
-    T = table (iter, ConvergenceInfo.TrainingLoss(:), ...
-               ConvergenceInfo.Gradient(:), ConvergenceInfo.Step(:), ...
-               'VariableNames', ...
-               {'Iteration', 'TrainingLoss', 'Gradient', 'Step'});
+function T = trainingTable (series)
+  iter = (1:numel (series.TrainingLoss))';
+  ## Time is NaN because neither solver records a per-iteration figure; the
+  ## total the fit took is ConvergenceInfo.Time.  The validation pair is NaN
+  ## because no validation set can be given, which is what MATLAB reports
+  ## when none is.  Both are present so the columns are MATLAB's.
+  pad = NaN (numel (iter), 1);
+  if (isfield (series, 'Gradient'))
+    T = table (iter, series.TrainingLoss(:), series.Gradient(:), ...
+               series.Step(:), pad, pad, pad, 'VariableNames', ...
+               {'Iteration', 'TrainingLoss', 'Gradient', 'Step', 'Time', ...
+                'ValidationLoss', 'ValidationChecks'});
   else
-    T = table (iter, ConvergenceInfo.TrainingLoss(:), ...
-               ConvergenceInfo.Accuracy(:), 'VariableNames', ...
-               {'Iteration', 'TrainingLoss', 'TrainingAccuracy'});
+    T = table (iter, series.TrainingLoss(:), series.Accuracy(:), ...
+               pad, pad, pad, 'VariableNames', ...
+               {'Iteration', 'TrainingLoss', 'TrainingAccuracy', 'Time', ...
+                'ValidationLoss', 'ValidationChecks'});
   endif
+endfunction
+
+## ConvergenceInfo reports where the fit ended: the last value of each series
+## as a scalar, beside the whole series as History.  MATLAB divides the two
+## the same way, and a vector here would repeat what History already holds.
+function ci = convergenceStruct (series, elapsed, criterion)
+  ## The fields are assigned in MATLAB's own order, which fieldnames reports.
+  ci.Iterations = numel (series.TrainingLoss);
+  ci.TrainingLoss = lastValue (series.TrainingLoss);
+  if (isfield (series, 'Gradient'))
+    ci.Gradient = lastValue (series.Gradient);
+    ci.Step = lastValue (series.Step);
+  else
+    ci.Accuracy = lastValue (series.Accuracy);
+  endif
+  ci.Time = elapsed;
+  ci.ValidationLoss = NaN;
+  ci.ValidationChecks = NaN;
+  if (isfield (series, 'Gradient'))
+    ci.ConvergenceCriterion = criterion;
+  endif
+  ci.History = trainingTable (series);
+endfunction
+
+## Where the fit ended.  A fit that took no iteration recorded nothing, so
+## the value it ended at is empty rather than an error.
+function v = lastValue (x)
+  if (isempty (x))
+    v = [];
+  else
+    v = x(end);
+  endif
+endfunction
+
+## The series as it was persisted, or, from a model saved before the series
+## became a property of its own, rebuilt from the vectors ConvergenceInfo
+## used to carry.
+## Read a model written before ConvergenceInfo reported where the fit ended
+## rather than the whole series: the vectors it carries are the history.
+function mdl = restoreOlderModel (mdl)
+  ci = mdl.ConvergenceInfo;
+  series = struct ('TrainingLoss', ci.TrainingLoss(:));
+  if (isfield (ci, 'Gradient'))
+    series.Gradient = ci.Gradient(:);
+    series.Step = ci.Step(:);
+    criterion = ci.ConvergenceCriterion;
+  else
+    series.Accuracy = ci.Accuracy(:);
+    criterion = '';
+  endif
+  mdl.TrainingHistory = trainingTable (series);
+  mdl.ConvergenceInfo = convergenceStruct (series, ci.Time, criterion);
 endfunction
 
 function numCode = activationCode (strCode)
@@ -1907,9 +1983,10 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcnet (meas, species, "IterationLimit", 50, "Solver", "lbfgs");
 %! assert_equal (Mdl.Solver, "LBFGS");
-%! assert_equal (columns (Mdl.TrainingHistory), 4);
+%! assert_equal (columns (Mdl.TrainingHistory), 7);
 %! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
-%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step", ...
+%!                "Time", "ValidationLoss", "ValidationChecks"});
 
 ## It records what it measured to decide it had stopped, and no accuracy.
 %!test
@@ -1927,7 +2004,7 @@ endfunction
 %! Mdl = fitcnet (meas, species, "Solver", "sgd", "IterationLimit", 20);
 %! assert_equal (Mdl.Solver, "Gradient Descent");
 %! assert_equal (isfield (Mdl.ConvergenceInfo, "Accuracy"), true);
-%! assert_equal (columns (Mdl.TrainingHistory), 3);
+%! assert_equal (columns (Mdl.TrainingHistory), 6);
 
 ## The default solver is lbfgs, which reports the quantities it converges on
 ## rather than an accuracy.
@@ -1937,10 +2014,13 @@ endfunction
 %! assert_equal (Mdl.Solver, "LBFGS");
 %! assert_equal (isfield (Mdl.ConvergenceInfo, "Accuracy"), false);
 %! assert_equal (fieldnames (Mdl.ConvergenceInfo), ...
-%!               {"Time"; "TrainingLoss"; "Gradient"; "Step"; ...
-%!                "ConvergenceCriterion"});
+%!               {"Iterations"; "TrainingLoss"; "Gradient"; "Step"; ...
+%!                "Time"; "ValidationLoss"; "ValidationChecks"; ...
+%!                "ConvergenceCriterion"; "History"});
 %! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
-%!               {"Iteration", "TrainingLoss", "Gradient", "Step"});
+%!               {"Iteration", "TrainingLoss", "Gradient", "Step", ...
+%!                "Time", "ValidationLoss", "ValidationChecks"});
+%! assert_equal (Mdl.ConvergenceInfo.Iterations, rows (Mdl.TrainingHistory));
 
 ## From the same starting weights it reaches a lower training loss in fewer
 ## passes over the data, which is the reason for offering it.
@@ -2325,12 +2405,15 @@ endfunction
 %! X = [randn(30, 2) * 0.4 + 2; randn(30, 2) * 0.4 - 2];
 %! Y = [ones(30, 1); 2 * ones(30, 1)];
 %! Mdl = fitcnet (X, Y, 'Solver', 'sgd', 'IterationLimit', 100);
-%! loss = Mdl.ConvergenceInfo.TrainingLoss;
-%! acc = Mdl.ConvergenceInfo.Accuracy;
+%! loss = Mdl.ConvergenceInfo.History.TrainingLoss;
+%! acc = Mdl.ConvergenceInfo.History.TrainingAccuracy;
 %! assert_equal (numel (loss), 100);
 %! assert_equal (numel (acc), 100);
 %! assert_equal (any (loss != 0), true);
 %! assert_equal (loss(end) < loss(1), true);
+%! ## ConvergenceInfo itself reports where the fit ended.
+%! assert_equal (Mdl.ConvergenceInfo.TrainingLoss, loss(end));
+%! assert_equal (Mdl.ConvergenceInfo.Accuracy, acc(end));
 %! assert_equal (mean (predict (Mdl, X) == Y) > 0.95, true);
 
 ## Every activation trains to a usable posterior on separable data.
@@ -2377,7 +2460,8 @@ endfunction
 %! assert_equal (istable (Mdl.TrainingHistory), true);
 %! assert_equal (height (Mdl.TrainingHistory), 25);
 %! assert_equal (Mdl.TrainingHistory.Properties.VariableNames, ...
-%!               {'Iteration', 'TrainingLoss', 'TrainingAccuracy'});
+%!               {'Iteration', 'TrainingLoss', 'TrainingAccuracy', ...
+%!                'Time', 'ValidationLoss', 'ValidationChecks'});
 %! assert_equal (Mdl.TrainingHistory.Iteration', 1:25);
 
 ## A margin is positive wherever the model is right, and edge averages it.

@@ -309,7 +309,14 @@ classdef CompactRegressionNeuralNetwork
       this.IterationLimit        = Mdl.IterationLimit;
 
       this.ModelParameters       = Mdl.ModelParameters;
-      this.ConvergenceInfo       = Mdl.ConvergenceInfo;
+      ## The compact model drops the training history, so it drops the copy
+      ## of it that ConvergenceInfo carries; the scalars the fit ended at
+      ## stay, and are what a compact model can still answer about.
+      ci = Mdl.ConvergenceInfo;
+      if (isfield (ci, 'History'))
+        ci = rmfield (ci, 'History');
+      endif
+      this.ConvergenceInfo       = ci;
       this.DisplayInfo           = Mdl.DisplayInfo;
       this.Solver                = Mdl.Solver;
 
