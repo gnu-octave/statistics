@@ -117,8 +117,8 @@ classdef ReconstructionICA
         endswitch
       endfor
 
-      if (! strcmp (opts.ContrastFcn, "logcosh"))
-        error ("rica: only the 'logcosh' ContrastFcn is supported.");
+      if (! any (strcmp (opts.ContrastFcn, {'logcosh', 'exp', 'sqrt'})))
+        error ("rica: 'ContrastFcn' must be 'logcosh', 'exp', or 'sqrt'.");
       endif
 
       ## Standardize (center and scale) the data if requested
@@ -142,7 +142,7 @@ classdef ReconstructionICA
 
       ## Minimize the RICA objective
       lambda = opts.Lambda;
-      ofun = @(wv) __rica_objective__ (wv, X, p, Q, lambda);
+      ofun = @(wv) __rica_objective__ (wv, X, p, Q, lambda, opts.ContrastFcn);
       if (strcmpi (opts.Solver, 'lbfgs'))
         ## LossTolerance is switched off because MATLAB has no such option
         ## here: the fit stops on the gradient or the step, never on the
@@ -213,17 +213,39 @@ classdef ReconstructionICA
 endclassdef
 
 ## RICA objective and gradient with respect to the raw (un-normalized) weights.
-function [f, g] = __rica_objective__ (wv, X, p, Q, lambda)
+## SQRT_EPS smooths abs (z) at the origin for the 'sqrt' contrast; the value is
+## MATLAB's own, measured on R2024a against a fixture carrying a zero, which is
+## the only place it is visible.
+function [f, g] = __rica_objective__ (wv, X, p, Q, lambda, contrast)
+
+  SQRT_EPS = 1e-8;
 
   W = reshape (wv, p, Q);
   nrm = sqrt (sum (W .^ 2, 1));
   Wn = W ./ nrm;
   Z = X * Wn;
   E = X * (Wn * Wn') - X;
-  f = lambda * sum (E(:) .^ 2) + sum (sum (0.5 * log (cosh (2 * Z))));
+
+  switch (contrast)
+    case 'logcosh'
+      C = 0.5 * log (cosh (2 * Z));
+    case 'exp'
+      C = -exp (-Z .^ 2 / 2);
+    case 'sqrt'
+      C = sqrt (Z .^ 2 + SQRT_EPS);
+  endswitch
+  f = lambda * sum (E(:) .^ 2) + sum (C(:));
 
   if (nargout > 1)
-    gWn = lambda * 2 * (X' * E * Wn + E' * X * Wn) + X' * tanh (2 * Z);
+    switch (contrast)
+      case 'logcosh'
+        dC = tanh (2 * Z);
+      case 'exp'
+        dC = Z .* exp (-Z .^ 2 / 2);
+      case 'sqrt'
+        dC = Z ./ sqrt (Z .^ 2 + SQRT_EPS);
+    endswitch
+    gWn = lambda * 2 * (X' * E * Wn + E' * X * Wn) + X' * dC;
     g = zeros (p, Q);
     for j = 1:Q
       wnj = Wn(:,j);
@@ -278,7 +300,7 @@ endfunction
 %! Mdl = ReconstructionICA ();
 %! assert_equal (isempty (Mdl.TransformWeights), true);
 
-%!error<rica: only the 'logcosh' ContrastFcn is supported.> ...
-%! ReconstructionICA (ones (6, 5), 2, "ContrastFcn", "exp")
+%!error<rica: 'ContrastFcn' must be 'logcosh', 'exp', or 'sqrt'.> ...
+%! ReconstructionICA (ones (6, 5), 2, "ContrastFcn", "bogus")
 %!error<rica: unknown parameter name 'bogus'.> ...
 %! ReconstructionICA (ones (6, 5), 2, "bogus", 1)

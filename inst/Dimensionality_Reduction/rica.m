@@ -32,12 +32,13 @@
 ##
 ## @example
 ## @var{Lambda} * ||@var{X} * @var{W} * @var{W}' - @var{X}||_F^2
-##       + sum (sum (0.5 * log (cosh (2 * @var{X} * @var{W}))))
+##       + sum (sum (@var{g} (@var{X} * @var{W})))
 ## @end example
 ##
 ## @noindent
 ## over the transformation weights @var{W}, combining a reconstruction cost with
-## a @qcode{'logcosh'} sparsity contrast.
+## a sparsity contrast @var{g} applied elementwise and selected by
+## @qcode{'ContrastFcn'}.
 ##
 ## Name/Value pairs:
 ##
@@ -53,8 +54,11 @@
 ## @qcode{false}).
 ##
 ## @item @qcode{'ContrastFcn'}
-## The sparsity contrast.  Only @qcode{'logcosh'}, that is
-## @math{0.5 * log (cosh (2 * z))}, is supported.
+## The sparsity contrast @var{g} applied to each element @math{z} of
+## @math{@var{X} * @var{W}}: @qcode{'logcosh'} (default), which is
+## @math{0.5 * log (cosh (2 * z))}; @qcode{'exp'}, which is
+## @math{-exp (-z^2 / 2)}; or @qcode{'sqrt'}, which is
+## @math{sqrt (z^2 + 1e-8)}, a smooth stand-in for @math{abs (z)}.
 ##
 ## @item @qcode{'InitialTransformWeights'}
 ## A @math{P * @var{Q}} initial value for the weights.  The default is random.
@@ -159,6 +163,45 @@ endfunction
 %! assert_equal (Mdl.FitInfo.Objective(end), f, 1e-6);
 
 %!test
+%! ## The 'exp' contrast objective matches a direct evaluation.
+%! Mdl = rica (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!             "Standardize", false, "IterationLimit", 200, ...
+%!             "ContrastFcn", "exp");
+%! W = Mdl.TransformWeights;
+%! Z = X * W;
+%! f = sum (sumsq (X * (W * W') - X)) + sum (sum (-exp (-Z .^ 2 / 2)));
+%! assert_equal (Mdl.FitInfo.Objective(end), f, 1e-6);
+
+%!test
+%! ## The 'sqrt' contrast objective matches a direct evaluation, the smoothing
+%! ## constant included.
+%! Mdl = rica (X, 3, "InitialTransformWeights", W0, "Lambda", 1, ...
+%!             "Standardize", false, "IterationLimit", 200, ...
+%!             "ContrastFcn", "sqrt");
+%! W = Mdl.TransformWeights;
+%! Z = X * W;
+%! f = sum (sumsq (X * (W * W') - X)) + sum (sum (sqrt (Z .^ 2 + 1e-8)));
+%! assert_equal (Mdl.FitInfo.Objective(end), f, 1e-6);
+
+%!test
+%! ## The smoothing constant is visible only where a projection is zero, so it
+%! ## is pinned there: one column of X projected onto a weight orthogonal to it.
+%! Xz = [1 0; -2 0; 3 0; 0 0];
+%! Wz = [0; 1];
+%! M = rica (Xz, 1, "InitialTransformWeights", Wz, "IterationLimit", 0, ...
+%!           "Standardize", false, "ContrastFcn", "sqrt");
+%! assert_equal (M.FitInfo.Objective(1), 14 + 4 * sqrt (1e-8), 1e-12);
+
+%!test
+%! ## Each contrast gives its own objective; they are not interchangeable.
+%! args = {"InitialTransformWeights", W0, "Standardize", false, ...
+%!         "IterationLimit", 0};
+%! f1 = rica (X, 3, args{:}, "ContrastFcn", "logcosh").FitInfo.Objective(1);
+%! f2 = rica (X, 3, args{:}, "ContrastFcn", "exp").FitInfo.Objective(1);
+%! f3 = rica (X, 3, args{:}, "ContrastFcn", "sqrt").FitInfo.Objective(1);
+%! assert_equal (f1 != f2 && f2 != f3 && f1 != f3, true);
+
+%!test
 %! ## Standardize centers and scales the data before transforming.
 %! Mdl = rica (X, 2, "Standardize", true, "IterationLimit", 100, ...
 %!             "InitialTransformWeights", W0(:,1:2));
@@ -225,7 +268,7 @@ endfunction
 %!error<rica: Q must be a positive integer.> rica (ones (5, 3), 1.5)
 %!error<rica: 'InitialTransformWeights' must be a 5-by-2 matrix.> ...
 %! rica (ones (4, 5), 2, "InitialTransformWeights", ones (3, 3))
-%!error<rica: only the 'logcosh' ContrastFcn is supported.> ...
-%! rica (ones (4, 5), 2, "ContrastFcn", "exp", "InitialTransformWeights", ones (5, 2))
+%!error<rica: 'ContrastFcn' must be 'logcosh', 'exp', or 'sqrt'.> ...
+%! rica (ones (4, 5), 2, "ContrastFcn", "bogus", "InitialTransformWeights", ones (5, 2))
 %!error<rica: unknown parameter name 'bogus'.> ...
 %! rica (ones (4, 5), 2, "bogus", 1)
