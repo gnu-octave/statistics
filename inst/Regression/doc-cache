@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 37
+# columns: 38
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1571,6 +1571,62 @@ Predict values for a generalized linear model.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 7
+invpred
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1789
+ -- statistics: X0 = invpred (X, Y, Y0)
+ -- statistics: [X0, DXLO, DXUP] = invpred (X, Y, Y0)
+ -- statistics: [...] = invpred (..., NAME, VALUE)
+
+     Inverse prediction from a simple linear regression.
+
+     ‘X0 = invpred (X, Y, Y0)’ fits the simple linear regression of Y on X and
+     returns, for each element of Y0, the value of the predictor at which the
+     fitted line takes that response.  X and Y must be vectors of real values of
+     the same length; Y0 may be of any size and X0 is returned with the same
+     size.  Observations where either X or Y is ‘NaN’ are dropped in pairs
+     before the fit.
+
+     ‘[X0, DXLO, DXUP] = invpred (...)’ also returns the width of a confidence
+     interval on either side of X0, so that the interval is ‘[X0 - DXLO, X0 +
+     DXUP]’.  The bounds follow Fieller's theorem and are therefore not
+     symmetric about X0.  They are not simultaneous over the elements of Y0, and
+     they need not be finite: when the slope is not significantly different from
+     zero at the requested level the interval is unbounded, and DXLO and DXUP
+     are both ‘Inf’.
+
+     ‘[...] = invpred (..., NAME, VALUE)’ accepts the following name-value
+     pairs:
+
+        • "alpha" is the significance level of the interval, a scalar strictly
+          between 0 and 1, so that the interval has confidence 100 * (1 -
+          ALPHA)%.  The default is 0.05.
+
+        • "predopt" selects what the interval covers.  With "observation", the
+          default, it covers a new observation whose response is Y0.  With
+          "curve", it covers the point at which the true regression line takes
+          the value Y0, and is narrower because it carries no new-observation
+          variance.
+
+     See also: regress, fitlm, polyfit.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Inverse prediction from a simple linear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 5
 lasso
 
@@ -2176,7 +2232,7 @@ nlinfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4146
+# length: 5069
  -- statistics: BETA = nlinfit (X, Y, MODELFUN, BETA0)
  -- statistics: BETA = nlinfit (..., OPTIONS)
  -- statistics: BETA = nlinfit (..., NAME, VALUE)
@@ -2212,10 +2268,18 @@ nlinfit
      'RobustWgtFun'   The name of a robust weight function ('andrews', 'bisquare',
                       'cauchy', 'fair', 'huber', 'logistic', 'talwar', or
                       'welsch'), enabling robust iteratively reweighted least
-                      squares.
+                      squares.  MATLAB accepts this name only inside an 'Options'
+                      structure; taking it as a Name/Value pair as well is an
+                      Octave extension.
      'Tune'           The tuning constant for the robust weight function.
      'Options'        A statset-style structure whose MaxIter, TolFun, TolX, and
-                      DerivStep fields override the corresponding defaults.
+                      DerivStep fields override the corresponding defaults, and
+                      whose RobustWgtFun, Robust, WgtFun and Tune fields select a
+                      robust fit.  RobustWgtFun names the weight function on its
+                      own and takes precedence over the other two; the older
+                      WgtFun is read only when Robust is 'on'.  The structure
+                      ‘statset ('nlinfit')’ returns carries WgtFun 'bisquare'
+                      beside Robust 'off', and so leaves the fit unweighted.
 
      The remaining outputs describe the converged fit: R is the vector of raw
      residuals ‘Y - MODELFUN (BETA, X)’, J is the Jacobian of MODELFUN with
@@ -2245,6 +2309,11 @@ nlinfit
      where the scale ‘s’ blends the ordinary-fit scale ‘ols_s’ with the robust
      scale ‘robust_s’ at the solution as s^2 = (p^2 * ols_s^2 + n * robust_s^2)
      / (n + p^2), taken to be at least ‘robust_s’.
+
+     The robust ‘MSE’ and ‘CovB’ differ from MATLAB's by up to a few tenths of a
+     percent, because the shared robust scale does; ‘robustfit’ documents that
+     difference and why it is left in place.  The coefficients themselves agree
+     to about 1e-8.
 
      See also: fitnlm, nlparci, nlpredci, NonLinearModel, robustfit.
 
@@ -2544,7 +2613,7 @@ regress_gp
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2393
+# length: 3699
  -- statistics: [YFIT, YINT, M, K] = regress_gp (X, Y, XFIT)
  -- statistics: [YFIT, YINT, M, K] = regress_gp (X, Y, XFIT, 'linear')
  -- statistics: [YFIT, YINT, YSD] = regress_gp (X, Y, XFIT, 'rbf')
@@ -2569,22 +2638,46 @@ regress_gp
      SP, which must be a P+1*P+1 positive definite matrix.  The model is
      evaluated for input XFIT, which must have the same columns as X, and the
      estimates are returned in YFIT along with the estimated variation in YINT.
-     YINT(:,1) contains the upper boundary estimate and YINT(:,1) contains the
-     upper boundary estimate with respect to YFIT.
+     YINT(:,1) contains the lower boundary and YINT(:,2) the upper boundary of
+     the interval about YFIT, at the confidence level 1 - ALPHA.
 
-     ‘[YFIT, YINT, YSD, K] = regress_gp (X, Y, XFIT, 'rbf')’ will estimate a
+     ‘[YFIT, YINT, YSD] = regress_gp (X, Y, XFIT, 'rbf')’ will estimate a
      Gaussian Process model with a Radial Basis Function (RBF) kernel with
-     default parameters THETA = 5, which corresponds to the characteristic
-     lengthscale, and G = 0.01, which corresponds to the nugget effect, and
-     ALPHA = 0.05 which defines the confidence level for the estimated intervals
-     returned in YINT.  The function also returns the predictive covariance
-     matrix in YSD.  For multidimensional predictors X the function will
-     automatically normalize each column to a zero mean and a standard deviation
-     to one.
+     default parameters THETA = 5 and G = 0.01, which corresponds to the nugget
+     effect, and ALPHA = 0.05 which defines the confidence level for the
+     estimated intervals returned in YINT.  The function also returns the
+     predictive covariance matrix in YSD.  For multidimensional predictors X the
+     function will automatically normalize each column to a zero mean and a
+     standard deviation to one.
+
+     Four things about the RBF kernel are worth stating, because they decide
+     what the numbers mean.
+
+        • THETA is not the characteristic lengthscale.  The kernel is ‘exp (-d^2
+          / THETA)’ with d the distance between two points, so THETA is twice
+          the square of a lengthscale l, and ‘THETA = 2 * l^2’.
+
+        • The intervals in YINT are prediction intervals for a _new
+          observation_, not confidence intervals on the mean: the nugget is
+          carried in the predictive variance, so the noise of an observation is
+          included.
+
+        • The predictors are centred and scaled only when there is more than one
+          of them, so THETA is measured in the units of X for a single predictor
+          and in standard deviations for several.
+
+        • A nugget of zero is accepted and gives an interpolating process, one
+          that reproduces Y at the training points and reports almost no
+          uncertainty there.  It also leaves the kernel matrix rank deficient
+          whenever two inputs are close, so in that case the covariance is
+          applied through its pseudoinverse and the fit is the minimum-norm
+          solution.  This is a genuine answer rather than a refusal, but a small
+          nugget is the better way to ask for a smooth fit.
 
      Run ‘demo regress_gp’ to see examples.
 
-     See also: regress, regression_ftest, regression_ttest.
+     See also: fitrgp, RegressionGP, regress, regression_ftest,
+     regression_ttest.
 
 
 # name: <cell-element>
@@ -2654,7 +2747,7 @@ robustfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1898
+# length: 2380
  -- statistics: B = robustfit (X, Y)
  -- statistics: B = robustfit (X, Y, WFUN)
  -- statistics: B = robustfit (X, Y, WFUN, TUNE)
@@ -2683,9 +2776,16 @@ robustfit
      ‘ols_s’, ‘mad_s’, ‘dfe’, ‘h’, ‘w’, and ‘resid’ match MATLAB. The standard
      errors and quantities derived from them (‘se’, ‘t’, ‘p’, ‘covb’) agree with
      MATLAB to within a small fraction of a percent; ‘robust_s’ is the
-     Street-Carroll-Ruppert robust scale estimate, which may differ from
-     MATLAB's by a few percent (it has a negligible effect on the standard
-     errors).
+     Street-Carroll-Ruppert robust scale estimate and differs from MATLAB's by
+     about 1.5%, measured, with a negligible effect on the standard errors.
+
+     That difference is left in place deliberately.  The squared influence is
+     averaged here over n, where the estimator as it is usually published
+     averages over n-p; taking that published form moves the result further from
+     MATLAB rather than closer, so MATLAB implements neither, and matching it
+     would mean reproducing an undocumented variant.  The same scale serves
+     ‘nlinfit’, which is why its robust ‘MSE’ and ‘CovB’ carry the same
+     difference.
 
      See also: regress, fitlm.
 
@@ -2708,7 +2808,7 @@ stepwisefit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3652
+# length: 3648
  -- statistics: stepwisefit (X, Y)
  -- statistics: B = stepwisefit (X, Y)
  -- statistics: B, SE, PVAL, FINALMODEL, STATS, NEXTSTEP, HISTORY = stepwisefit
@@ -2739,10 +2839,10 @@ stepwisefit
 
         • Y is an N-by-1 numeric response vector.
 
-        • Optional Name–Value pairs may be supplied to control the stepwise
+        • Optional Name-Value pairs may be supplied to control the stepwise
           selection procedure.
 
-     Name–Value Arguments
+     Name-Value Arguments
      --------------------
 
      'InModel'
@@ -2821,7 +2921,7 @@ stepwiseglm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3326
+# length: 5738
  -- statistics: MDL = stepwiseglm (X, Y)
  -- statistics: MDL = stepwiseglm (X, Y, MODELSPEC)
  -- statistics: MDL = stepwiseglm (TBL)
@@ -2875,10 +2975,53 @@ stepwiseglm
      as the proportion.
 
      All NAME/VALUE pairs accepted by ‘fitglm’ (such as 'Distribution', 'Link',
-     'Weights', 'Offset', 'BinomialSize', 'Intercept', 'DispersionFlag', and
-     'Exclude') are also accepted and forwarded to the fit.  Categorical
-     predictors are not supported by the stepwise search; use ‘fitglm’ for a
-     fixed model with categorical predictors.
+     'Weights', 'Offset', 'BinomialSize', 'Intercept', 'DispersionFlag',
+     'CategoricalVars', and 'Exclude') are also accepted and forwarded to the
+     fit.
+
+     The ‘Steps’ property
+     ....................
+
+     The returned model's ‘Steps’ property records the trace, as a structure
+     with seven fields.  ‘Start’, ‘Lower’, and ‘Upper’ are ‘LinearFormula’
+     objects for the starting model and the two bounds; ‘Criterion’ is the
+     criterion as it was asked for; ‘PEnter’ and ‘PRemove’ are the thresholds it
+     ran under; and ‘History’ is a table with one row per step.
+
+     ‘History’ always carries ‘Action’ ('Start', 'Add', or 'Remove'),
+     ‘TermName’, ‘Terms’ (the terms matrix after the step, over the model's
+     variables), ‘DF’ (the coefficient count after the step), and ‘delDF’ (the
+     change in it, _negative_ for a removal).  The remaining columns follow the
+     criterion, which is why a history is read by name and not by position:
+
+     Criterion            Further columns
+     ------------------------------------------------------------------------------
+     'Deviance'           ‘Deviance’, then ‘Chi2Stat’ or ‘FStat’ as the
+                          dispersion is fixed or estimated, then ‘PValue’.
+     'sse'                ‘FStat’ and ‘pValue’.
+     'aic', 'bic'         one column, ‘AIC’ or ‘BIC’, holding the criterion's
+                          value after the step, the starting model included.
+
+     The first row is the starting model, named by its right-hand side.
+
+     Categorical predictors
+     ......................
+
+     A categorical predictor with L levels contributes L - 1 indicator columns,
+     the first level being the omitted reference, and the search treats that
+     whole group as a _single term_: it is added or removed in one step, worth L
+     - 1 degrees of freedom, and never one indicator at a time.  An interaction
+     naming a categorical predictor behaves the same way, contributing one
+     column per indicator and entering as one term.  ‘Steps.History’ names such
+     a term by the predictor ('g', or 'x1:g' for the interaction) rather than by
+     its indicators, while ‘CoefficientNames’ names the indicators ('g_B',
+     'x1:g_C').
+
+     In a table, every column that groups its observations is taken as
+     categorical: a cell array of character vectors, a ‘categorical’ array, a
+     string array, or a logical column.  'CategoricalVars' adds to these, and is
+     the only way to mark a column of a predictor _matrix_; it takes predictor
+     names, column indices, or a logical vector.
 
      See also: GeneralizedLinearModel, fitglm, stepwisefit, glmfit, glmval.
 
@@ -2901,7 +3044,7 @@ stepwiselm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10680
+# length: 12207
  -- statistics: MDL = stepwiselm (TBL)
  -- statistics: MDL = stepwiselm (TBL, RESPONSEVARNAME)
  -- statistics: MDL = stepwiselm (TBL, Y)
@@ -3061,6 +3204,33 @@ stepwiselm
                     variables in TBL other than the response are used.  May not be
                     combined with a terms-matrix INITIALMODEL, and must agree with
                     any formula-based INITIALMODEL.
+
+     The ‘Steps’ property
+     ....................
+
+     The returned model's ‘Steps’ property records the trace, as a structure
+     with seven fields.  ‘Start’, ‘Lower’, and ‘Upper’ are ‘LinearFormula’
+     objects for the starting model and the two bounds; ‘Criterion’ is the
+     criterion as it was asked for; ‘PEnter’ and ‘PRemove’ are the thresholds it
+     ran under; and ‘History’ is a table with one row per step.
+
+     ‘History’ always carries ‘Action’ ('Start', 'Add', or 'Remove'),
+     ‘TermName’, ‘Terms’ (the terms matrix after the step, over the model's
+     variables), ‘DF’ (the coefficient count after the step), and ‘delDF’ (the
+     change in it, _negative_ for a removal).  The remaining columns follow the
+     criterion, which is why a history is read by name and not by position:
+
+     Criterion            Further columns
+     ------------------------------------------------------------------------------
+     'SSE'                ‘FStat’ and ‘pValue’.
+     'AIC', 'BIC',        one column named for the criterion, holding its value
+     'Rsquared',          after the step, the starting model included.
+     'AdjRsquared'
+
+     The first row is the starting model, named by its right-hand side.  ‘step’
+     appends to the history it inherits rather than beginning a new one, and
+     inherits ‘Criterion’, ‘Lower’, ‘PEnter’, and ‘PRemove’ from it;
+     ‘Steps.Start’ is then the model stepped from.
 
      Algorithm
      ---------

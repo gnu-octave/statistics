@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 17
+# columns: 43
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13,14 +13,14 @@ ClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 776
+# length: 1592
  -- statistics: ClassificationDiscriminant
 
      Discriminant analysis classification
 
-     The ‘ClassificationDiscriminant’ class implements a linear discriminant
-     analysis classifier object, which can predict responses for new data using
-     the ‘predict’ method.
+     The ‘ClassificationDiscriminant’ class implements a discriminant analysis
+     classifier object, which can predict responses for new data using the
+     ‘predict’ method.
 
      Discriminant analysis classification is a statistical method used to
      classify observations into predefined groups based on their
@@ -30,6 +30,19 @@ ClassificationDiscriminant
 
      Create a ‘ClassificationDiscriminant’ object by using the ‘fitcdiscr’
      function or the class constructor.
+
+     Six discriminant types are available, in two families.  The linear family,
+     'linear', 'diagLinear' and 'pseudoLinear', pools one covariance across the
+     classes and separates them with a hyperplane.  The quadratic family,
+     'quadratic', 'diagQuadratic' and 'pseudoQuadratic', estimates a covariance
+     per class and separates them with a quadric.  A 'diag' type keeps only the
+     variances, which is the same model as a Gamma of 1, and a 'pseudo' type
+     inverts a singular covariance rather than refusing it.
+
+     DiscrimType may be assigned after fitting, but _only within its own
+     family_: the family is fixed when the model is fitted, because it decides
+     which covariances the fit has to estimate.  Assigning it, or Gamma,
+     re-derives Sigma, LogDetSigma and Coeffs without refitting.
 
      See also: fitcdiscr.
 
@@ -52,15 +65,14 @@ ClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 828
+# length: 2287
  -- statistics: ClassificationGAM
 
      Generalized additive model classification
 
      The ‘ClassificationGAM’ class implements a gradient boosting algorithm for
-     classification, using spline fitting as the weak learner.  This approach
-     allows the model to capture non-linear relationships between predictors and
-     the binary response variable.
+     classification.  This approach allows the model to capture non-linear
+     relationships between predictors and the binary response variable.
 
      Generalized additive model classification is a statistical method that
      extends linear models by allowing non-linear relationships between each
@@ -70,6 +82,33 @@ ClassificationGAM
 
      Create a ‘ClassificationGAM’ object by using the ‘fitcgam’ function or the
      class constructor.
+
+     Two weak learners are available, selected by ‘FitMethod’.
+
+     'boostedtrees', the default, boosts one shallow decision tree per predictor
+     in each round, which is the scheme MATLAB's generalized additive model
+     uses.  A second phase then boosts trees over pairs of predictors, where
+     interactions are asked for.
+
+     'splines' boosts a smoothing spline per predictor over ‘NumIterations’
+     passes.  It has no MATLAB counterpart and is an Octave extension, kept
+     because a smooth additive fit is a genuinely different and often better
+     answer than a staircase of stumps.
+
+     The two take different arguments, and an argument meant for one is refused
+     by the other rather than ignored.
+
+     The choice is visible in the properties.  ‘Knots’, ‘Order’, ‘DoF’,
+     ‘Formula’, ‘LearningRate’, ‘NumIterations’, ‘BaseModel’, ‘ModelwInt’ and
+     ‘IntMatrix’ describe a spline fit and are empty under the boosted-tree
+     engine, while ‘ModelParameters’, ‘ReasonForTermination’, ‘BinEdges’,
+     ‘PairDetectionBinEdges’ and ‘TreeModel’ describe a tree fit and are empty
+     under the spline engine.
+
+     Fitted values are not expected to equal MATLAB's even under 'boostedtrees'.
+     The stopping rule and the step-reduction limit are not recoverable from
+     anything MATLAB reports, so this engine documents its own; what the two
+     share is the estimator and the reported surface, not the arithmetic.
 
      See also: fitcgam.
 
@@ -125,6 +164,145 @@ K-nearest neighbors classification
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 20
+ClassificationKernel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1422
+ -- statistics: ClassificationKernel
+
+     Gaussian kernel binary classifier for large data.
+
+     A ClassificationKernel object maps the predictors into a randomized feature
+     space whose inner product approximates a Gaussian kernel, and then fits a
+     linear model there.  A kernel classifier is therefore as nonlinear as a
+     support vector machine with a Gaussian kernel, while costing what a linear
+     fit costs: nothing of size NxN is ever formed.
+
+     The expansion is the random Fourier basis of Rahimi and Recht, drawn once
+     when the model is fitted and kept with it, so ‘predict’ maps new data
+     through the same basis.  MATLAB approximates the same kernel by the
+     Fastfood construction, which reaches the same distribution more cheaply;
+     the two are interchangeable in distribution but not draw by draw, and the
+     draws come from different generators in any case, so the scores of a model
+     fitted here and one fitted in MATLAB differ even from the same seed.  What
+     does not differ is what they estimate.
+
+     Like ClassificationLinear the object holds no copy of the training data.
+     It does hold the basis and the coefficients, so it is bounded by the number
+     of expansion dimensions rather than by the number of observations.
+
+     Create a ClassificationKernel object with ‘fitckernel’.
+
+     See also: fitckernel, ClassificationLinear, ClassificationSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Gaussian kernel binary classifier for large data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+ClassificationLinear
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1197
+ -- statistics: ClassificationLinear
+
+     Linear binary classifier for high dimensional data.
+
+     A ClassificationLinear object fits a linear model, ‘X * Beta + Bias’, to a
+     two class problem by minimizing a regularized average loss.  The loss is
+     the hinge loss for a support vector machine and the deviance for a logistic
+     regression, and the penalty is either a ridge or a lasso one.
+
+     Unlike the other classifiers of this package the object holds no copy of
+     the training data: the coefficients, the intercept and the fitting options
+     are the whole model.  That is what makes it suited to data with more
+     predictors than an in memory kernel matrix could carry, and it is why the
+     class has no ‘compact’ method and no resubstitution methods.
+
+     A vector of regularization strengths fits one model per value in a single
+     object.  Beta is then a PxL matrix and Bias a 1xL row, every method returns
+     one column per strength, and ‘selectModels’ narrows the object down to the
+     strengths worth keeping.
+
+     Create a ClassificationLinear object with ‘fitclinear’.
+
+     See also: fitclinear, ClassificationKernel, ClassificationSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Linear binary classifier for high dimensional data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+ClassificationNaiveBayes
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1355
+ -- statistics: ClassificationNaiveBayes
+
+     Naive Bayes classification
+
+     The ‘ClassificationNaiveBayes’ class implements a naive Bayes classifier
+     object, which can predict responses for new data using the ‘predict’
+     method.
+
+     A naive Bayes classifier estimates one univariate density per class and per
+     predictor, and treats the predictors as conditionally independent given the
+     class.  The joint likelihood of an observation is therefore the product of
+     its per-predictor densities, and the posterior follows from the class prior
+     by Bayes' rule.  The independence assumption is rarely true, but it costs
+     only one density per predictor rather than one joint density over all of
+     them, which is what makes the model usable when the predictors are many and
+     the observations few.
+
+     Create a ‘ClassificationNaiveBayes’ object by using the ‘fitcnb’ function
+     or the class constructor.
+
+     Each predictor carries its own distribution, named in DistributionNames,
+     and the fitted parameters of class k and predictor j are held in
+     ‘DistributionParameters{k,j}’.  A 'normal' predictor stores a two element
+     column vector, the class conditional mean and standard deviation; a
+     'kernel' predictor stores a ‘prob.KernelDistribution’ object.
+
+     See also: fitcnb.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Naive Bayes classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 27
 ClassificationNeuralNetwork
 
@@ -157,6 +335,92 @@ ClassificationNeuralNetwork
 # elements: 1
 # length: 29
 Neural network classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ClassificationPartitionedKernel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1025
+ -- statistics: ClassificationPartitionedKernel
+
+     Cross-validated Gaussian kernel binary classifier.
+
+     A ClassificationPartitionedKernel object holds one ClassificationKernel per
+     fold of a partition, each fitted to the observations the fold trains on.
+     Every ‘kfold’ method predicts each observation with the fold that held it
+     _out_, so the estimate it returns is an out-of-sample one.
+
+     A ClassificationKernel stores no copy of its training data and so has no
+     resubstitution methods and no ‘compact’ form.  This class is what takes
+     their place: cross-validation is the way a linear model is asked how it
+     would do on data it has not seen.
+
+     When the fold models carry a whole regularization path, every method
+     returns one column per strength, in the order of the 'Lambda' that was
+     asked for.
+
+     Create one with ‘fitclinear’ and a cross-validation option, or directly.
+
+     See also: fitclinear, ClassificationKernel,
+     ClassificationPartitionedKernel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Cross-validated Gaussian kernel binary classifier.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ClassificationPartitionedLinear
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1016
+ -- statistics: ClassificationPartitionedLinear
+
+     Cross-validated linear binary classifier.
+
+     A ClassificationPartitionedLinear object holds one ClassificationLinear per
+     fold of a partition, each fitted to the observations the fold trains on.
+     Every ‘kfold’ method predicts each observation with the fold that held it
+     _out_, so the estimate it returns is an out-of-sample one.
+
+     A ClassificationLinear stores no copy of its training data and so has no
+     resubstitution methods and no ‘compact’ form.  This class is what takes
+     their place: cross-validation is the way a linear model is asked how it
+     would do on data it has not seen.
+
+     When the fold models carry a whole regularization path, every method
+     returns one column per strength, in the order of the 'Lambda' that was
+     asked for.
+
+     Create one with ‘fitclinear’ and a cross-validation option, or directly.
+
+     See also: fitclinear, ClassificationLinear,
+     ClassificationPartitionedKernel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Cross-validated linear binary classifier.
 
 
 
@@ -243,7 +507,7 @@ CompactClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1025
+# length: 1848
  -- statistics: CompactClassificationDiscriminant
 
      Compact discriminant analysis classification
@@ -262,6 +526,19 @@ CompactClassificationDiscriminant
 
      Create a ‘CompactClassificationDiscriminant’ object by using the ‘compact’
      method of a ‘ClassificationDiscriminant’ object.
+
+     Six discriminant types are available, in two families.  The linear family,
+     'linear', 'diagLinear' and 'pseudoLinear', pools one covariance across the
+     classes and separates them with a hyperplane.  The quadratic family,
+     'quadratic', 'diagQuadratic' and 'pseudoQuadratic', estimates a covariance
+     per class and separates them with a quadric.  A 'diag' type keeps only the
+     variances, which is the same model as a Gamma of 1, and a 'pseudo' type
+     inverts a singular covariance rather than refusing it.
+
+     DiscrimType may be assigned after fitting, but _only within its own
+     family_: the family is fixed when the model is fitted, because it decides
+     which covariances the fit has to estimate.  Assigning it, or Gamma,
+     re-derives Sigma, LogDetSigma and Coeffs without refitting.
 
      See also: fitcdiscr, ClassificationDiscriminant.
 
@@ -284,7 +561,7 @@ CompactClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 618
+# length: 1114
  -- statistics: CompactClassificationGAM
 
      Compact generalized additive model classification
@@ -298,6 +575,13 @@ CompactClassificationGAM
      A ‘CompactClassificationGAM’ object can only be created from a
      ‘ClassificationGAM’ model by using the ‘compact’ method.
 
+     The engine that fitted the model is carried over in ‘FitMethod’, and the
+     compact model predicts by the same scheme the full one did.  Under
+     'boostedtrees', the default, the fit is described by ‘TreeModel’,
+     ‘BinEdges’ and ‘PairDetectionBinEdges’.  Under 'splines' it is described by
+     ‘Formula’, ‘BaseModel’, ‘ModelwInt’ and ‘IntMatrix’, which MATLAB's compact
+     model does not carry.  Whichever fitted the model, the other set is empty.
+
      See also: ClassificationGAM, fitcgam.
 
 
@@ -306,6 +590,42 @@ CompactClassificationGAM
 # elements: 1
 # length: 49
 Compact generalized additive model classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+CompactClassificationNaiveBayes
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 668
+ -- statistics: CompactClassificationNaiveBayes
+
+     Compact naive Bayes classification
+
+     A ‘CompactClassificationNaiveBayes’ object carries the fitted densities of
+     a ‘ClassificationNaiveBayes’ model and everything ‘predict’ needs, but not
+     the observations the model was fitted on.  It classifies new data
+     identically to the model it came from, and is far smaller to keep or to
+     ship.
+
+     Create one with the ‘compact’ method of a ‘ClassificationNaiveBayes’
+     object.  Because it holds no training data, it has no ‘resub’ methods and
+     cannot be cross-validated.
+
+     See also: ClassificationNaiveBayes, fitcnb.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Compact naive Bayes classification
 
 
 
@@ -388,6 +708,177 @@ Compact Support Vector Machine classification
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 20
+CompactRegressionGAM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1286
+ -- statistics: CompactRegressionGAM
+
+     Compact generalized additive model regression
+
+     The ‘CompactRegressionGAM’ class implements a compact version of the
+     generalized additive model regression object, which predicts responses for
+     new data with the ‘predict’ method but does not store the training data.
+
+     A compact model consumes less memory than the full ‘RegressionGAM’ model,
+     but cannot perform tasks that need the training data, such as computing a
+     resubstitution loss or the standard deviation of a prediction.
+
+     Create a ‘CompactRegressionGAM’ object by using the ‘compact’ method on a
+     ‘RegressionGAM’ object.
+
+     The engine that fitted the model is carried over in ‘FitMethod’, and the
+     compact model predicts by the same scheme the full one did.  Under
+     'boostedtrees', the default, the fit is described by ‘TreeModel’,
+     ‘BinEdges’ and ‘PairDetectionBinEdges’.  Under 'splines' it is described by
+     ‘Formula’, ‘BaseModel’, ‘ModelwInt’ and ‘IntMatrix’, which MATLAB's compact
+     model does not carry.  Whichever fitted the model, the other set is empty.
+     A standard deviation is available from the spline engine alone.
+
+     See also: RegressionGAM, fitrgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Compact generalized additive model regression
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+CompactRegressionGP
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1200
+ -- statistics: CMDL = CompactRegressionGP (MDL)
+
+     Create a CompactRegressionGP object containing a Gaussian process
+     regression model without its training data.
+
+     ‘CMDL = CompactRegressionGP (MDL)’ returns the compact form of the
+     RegressionGP model MDL, keeping what is needed to predict and dropping the
+     rest.  It is what ‘compact’ returns, and it is not usually constructed
+     directly.
+
+     A compact model keeps the active set it predicts from, the prediction
+     weights, the covariance function and its parameters, the explicit basis and
+     its coefficients, the noise standard deviation and the standardizing
+     location and scale.  It drops the response, the observation weights, the
+     rows used, the count of observations and the maximized log likelihood, so
+     it can predict but cannot be cross validated, refitted, or asked for its
+     resubstitution loss or its post-fit statistics.
+
+     The standard deviation and the prediction intervals remain available,
+     because the active set of an exactly fitted model is the whole of the
+     training predictors and the factorization can be rebuilt from it.
+
+     See also: RegressionGP, fitrgp.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a CompactRegressionGP object containing a Gaussian process regression
+...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionNeuralNetwork
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1040
+ -- statistics: OBJ = CompactRegressionNeuralNetwork (MDL)
+
+     Create a CompactRegressionNeuralNetwork object, a neural network regression
+     model that has dropped its training data.
+
+     ‘OBJ = CompactRegressionNeuralNetwork (MDL)’ returns the compact form of
+     the RegressionNeuralNetwork object MDL.  It is normally reached through
+     ‘compact (MDL)’ rather than called directly.
+
+     The compact model keeps what is needed to answer about new data, the layer
+     weights and biases, the activations, the standardization and the response
+     transform, and drops what only describes the fit: the predictor and
+     response data, the observation weights, the rows used, the number of
+     observations and the iteration by iteration training history.  ‘predict’
+     and ‘loss’ therefore agree with the full model to the last digit, while
+     ‘resubPredict’ and ‘resubLoss’ do not exist here, there being no training
+     data left to resubstitute.
+
+     See also: RegressionNeuralNetwork, fitrnet.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a CompactRegressionNeuralNetwork object, a neural network regression
+m...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+CompactRegressionSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1009
+ -- statistics: OBJ = CompactRegressionSVM (MDL)
+
+     Create a CompactRegressionSVM object, a support vector regression model
+     that has dropped its training data.
+
+     ‘OBJ = CompactRegressionSVM (MDL)’ returns the compact form of the
+     RegressionSVM object MDL.  It is normally reached through ‘compact (MDL)’
+     rather than called directly.
+
+     The compact model keeps what is needed to answer about new data, the
+     support vectors and their coefficients, the intercept, the kernel, the
+     standardization and the response transform, and drops what only describes
+     the fit: the predictor and response data, the observation weights, the rows
+     used, the observation count, and which training rows became support
+     vectors.  ‘predict’ and ‘loss’ therefore agree with the full model to the
+     last digit, while ‘resubPredict’ and ‘resubLoss’ do not exist here, there
+     being no training data left to resubstitute.
+
+     See also: RegressionSVM, fitrsvm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a CompactRegressionSVM object, a support vector regression model that ...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 13
 RegressionGAM
 
@@ -395,7 +886,7 @@ RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6285
+# length: 8299
  -- statistics: OBJ = RegressionGAM (X, Y)
  -- statistics: OBJ = RegressionGAM (..., NAME, VALUE)
 
@@ -432,14 +923,14 @@ RegressionGAM
      'responsename'   Response Variable Name, specified as a string.  If
                       omitted, the default value is 'Y'.
                       
-     'formula'        a model specification given as a string in the form 'Y ~
-                      terms' where Y represents the response variable and terms
-                      the predictor variables.  The formula can be used to
-                      specify a subset of variables for training model.  For
-                      example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies
-                      four linear terms for the first four columns of for
-                      predictor data, and x1:x2 and x2:x3 specify the two
-                      interaction terms for 1st-2nd and 3rd-4th columns
+     'formula'        (spline option) a model specification given as a string in
+                      the form 'Y ~ terms' where Y represents the response
+                      variable and terms the predictor variables.  The formula
+                      can be used to specify a subset of variables for training
+                      model.  For example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 +
+                      x2:x3' specifies four linear terms for the first four
+                      columns of for predictor data, and x1:x2 and x2:x3 specify
+                      the two interaction terms for 1st-2nd and 3rd-4th columns
                       respectively.  Only these terms will be used for training
                       the model, but X must have at least as many columns as
                       referenced in the formula.  If Predictor Variable names
@@ -464,37 +955,73 @@ RegressionGAM
                       the interaction terms appended to X are referenced in the
                       IntMatrix field of the OBJ class object.
                       
-     'knots'          a scalar or a row vector with the same columns as X.  It
-                      defines the knots for fitting a polynomial when training
-                      the GAM. As a scalar, it is expanded to a row vector.  The
-                      default value is 5, hence expanded to ones (1, columns
-                      (X)) * 5.  You can parse a row vector with different
-                      number of knots for each predictor variable to be fitted
-                      with, although not recommended.
+     'knots'          (spline option) a scalar or a row vector with the same
+                      columns as X.  It defines the knots for fitting a
+                      polynomial when training the GAM. As a scalar, it is
+                      expanded to a row vector.  The default value is 5, hence
+                      expanded to ones (1, columns (X)) * 5.  You can parse a
+                      row vector with different number of knots for each
+                      predictor variable to be fitted with, although not
+                      recommended.
                       
-     'order'          a scalar or a row vector with the same columns as X.  It
-                      defines the order of the polynomial when training the GAM.
-                      As a scalar, it is expanded to a row vector.  The default
-                      values is 3, hence expanded to ones (1, columns (X)) * 3.
-                      You can parse a row vector with different number of
-                      polynomial order for each predictor variable to be fitted
-                      with, although not recommended.
-                      
-     'dof'            a scalar or a row vector with the same columns as X.  It
-                      defines the degrees of freedom for fitting a polynomial
-                      when training the GAM. As a scalar, it is expanded to a
-                      row vector.  The default value is 8, hence expanded to
-                      ones (1, columns (X)) * 8.  You can parse a row vector
-                      with different degrees of freedom for each predictor
+     'order'          (spline option) a scalar or a row vector with the same
+                      columns as X.  It defines the order of the polynomial when
+                      training the GAM. As a scalar, it is expanded to a row
+                      vector.  The default values is 3, hence expanded to ones
+                      (1, columns (X)) * 3.  You can parse a row vector with
+                      different number of polynomial order for each predictor
                       variable to be fitted with, although not recommended.
                       
-     'tol'            a positive scalar to set the tolerance for convergence
-                      during training.  By default, it is set to 1e-3.
+     'dof'            (spline option) a scalar or a row vector with the same
+                      columns as X.  It defines the degrees of freedom for
+                      fitting a polynomial when training the GAM. As a scalar,
+                      it is expanded to a row vector.  The default value is 8,
+                      hence expanded to ones (1, columns (X)) * 8.  You can
+                      parse a row vector with different degrees of freedom for
+                      each predictor variable to be fitted with, although not
+                      recommended.
+                      
+     'tol'            (spline option) a positive scalar to set the tolerance for
+                      convergence during training.  By default, it is set to
+                      1e-3.
+
+     A row marked (spline option) belongs to the spline engine and requires
+     'FitMethod', 'splines'; passing one under the default boosted-tree engine
+     is an error rather than being ignored.  The boosted-tree engine's own
+     options are documented under ‘fitrgam’.
 
      You can parse either a 'formula' or an 'interactions' optional parameter.
      Parsing both parameters will result an error.  Accordingly, you can only
      pass up to two parameters among 'knots', 'order', and 'dof' to define the
      required polynomial for training the GAM model.
+
+     Two weak learners are available, selected by ‘FitMethod’.
+
+     'boostedtrees', the default, boosts one shallow decision tree per predictor
+     in each round, which is the scheme MATLAB's generalized additive model
+     uses.  A second phase then boosts trees over pairs of predictors, where
+     interactions are asked for.
+
+     'splines' boosts a smoothing spline per predictor until the residual sum of
+     squares changes by less than 'Tol'.  It has no MATLAB counterpart and is an
+     Octave extension, kept because a smooth additive fit is a genuinely
+     different and often better answer than a staircase of stumps.  A standard
+     deviation and a prediction interval are available from it alone.
+
+     The two take different arguments, and an argument meant for one is refused
+     by the other rather than ignored.
+
+     The choice is visible in the properties.  ‘Knots’, ‘Order’, ‘DoF’,
+     ‘Formula’, ‘Tol’, ‘BaseModel’, ‘ModelwInt’ and ‘IntMatrix’ describe a
+     spline fit and are empty under the boosted-tree engine, while
+     ‘ModelParameters’, ‘ReasonForTermination’, ‘BinEdges’,
+     ‘PairDetectionBinEdges’ and ‘TreeModel’ describe a tree fit and are empty
+     under the spline engine.
+
+     Fitted values are not expected to equal MATLAB's even under 'boostedtrees'.
+     The stopping rule and the step-reduction limit are not recoverable from
+     anything MATLAB reports, so this engine documents its own; what the two
+     share is the estimator and the reported surface, not the arithmetic.
 
      See also: fitrgam, regress, regress_gp.
 
@@ -511,6 +1038,631 @@ Create a RegressionGAM class object containing a Generalized Additive Model
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 12
+RegressionGP
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7859
+ -- statistics: OBJ = RegressionGP (X, Y)
+ -- statistics: OBJ = RegressionGP (..., NAME, VALUE)
+
+     Create a RegressionGP object containing a Gaussian process regression
+     model.
+
+     ‘OBJ = RegressionGP (X, Y)’ returns a Gaussian process regression model,
+     OBJ, with X being the predictor data and Y the continuous response of the
+     observations in X.
+
+        • X must be an NxP numeric matrix of predictor data, where rows
+          correspond to observations and columns to features.
+        • Y must be an Nx1 numeric vector holding the response of the
+          corresponding predictor data in X.  Y must have the same number of
+          rows as X.
+
+     A Gaussian process places a prior over functions, given by the covariance
+     function, and conditions it on the observations.  The response is modelled
+     as H*Beta plus a draw from that process plus independent noise of standard
+     deviation Sigma, where H is the explicit basis.  The covariance parameters
+     and Sigma are estimated by maximizing the log marginal likelihood, and Beta
+     follows from them in closed form as the generalized least squares estimate.
+
+     ‘OBJ = RegressionGP (..., NAME, VALUE)’ returns a model with additional
+     options specified by Name-Value pair arguments listed below.
+
+     NAME                       VALUE
+                                
+     ----------------------------------------------------------------------------------
+     'KernelFunction'           A character vector naming the covariance function,
+                                or a function handle taking two matrices of points
+                                and a parameter vector.  The default is
+                                'squaredexponential'.  The supported names are
+                                listed below.
+                                
+     'KernelParameters'         A numeric vector of initial values for the
+                                covariance parameters.  Its length depends on the
+                                covariance function.  These are starting values for
+                                the optimization, not fixed values.
+                                
+     'BasisFunction'            A character vector naming the explicit basis, one of
+                                'none', 'constant', 'linear' or 'pureQuadratic', or
+                                a function handle taking X and returning the basis
+                                matrix.  The default is 'constant'.
+                                
+     'Beta'                     A numeric vector of basis coefficients.  These are
+                                used as known values only when 'FitMethod' is
+                                'none'.
+                                
+     'Sigma'                    A positive scalar, the initial value of the noise
+                                standard deviation.  The default is ‘std (Y) / sqrt
+                                (2)’.
+                                
+     'ConstantSigma'            A logical scalar.  When true the noise standard
+                                deviation is held at its initial value instead of
+                                being estimated.  The default is false.
+                                
+     'SigmaLowerBound'          A positive scalar bounding the noise standard
+                                deviation from below.  The default is ‘1e-2 * std
+                                (Y)’.
+                                
+     'FitMethod'                A character vector, either 'exact' to estimate the
+                                parameters or 'none' to keep them at their initial
+                                values.  The default is 'exact'.
+                                
+     'PredictMethod'            A character vector.  Only 'exact' is implemented,
+                                which is also the only method under which a standard
+                                deviation and a prediction interval are available.
+                                
+     'Optimizer'                A character vector naming the optimizer used to
+                                maximize the log marginal likelihood.  'quasinewton'
+                                and 'fminunc' name the same dense solver and are the
+                                default, 'lbfgs' selects limited-memory BFGS, which
+                                holds a fixed number of curvature pairs rather than
+                                a full inverse Hessian and is the cheaper choice
+                                when the kernel carries many parameters, and
+                                'fminsearch' is derivative-free.
+                                
+     'Standardize'              A logical scalar specifying whether the predictor
+                                data should be centred and scaled before training.
+                                The same transformation is applied by ‘predict’.
+                                The default is false.
+                                
+     'Weights'                  An Nx1 numeric vector of non-negative observation
+                                weights.  The default is a vector of ones.
+                                
+     'PredictorNames'           A cell array of character vectors naming the
+                                predictors, in the order they appear in X.
+                                
+     'ResponseName'             A character vector naming the response.  The default
+                                is 'Y'.
+                                
+     'ResponseTransform'        A character vector or a function handle applied to
+                                the response the model predicts.  The default is
+                                'none'.
+
+     The supported values for 'KernelFunction' are:
+
+     VALUE                            PARAMETERS
+     ----------------------------------------------------------------------------------
+     'exponential'                    [SigmaL; SigmaF]
+     'squaredexponential'             [SigmaL; SigmaF]
+     'matern32'                       [SigmaL; SigmaF]
+     'matern52'                       [SigmaL; SigmaF]
+     'rationalquadratic'              [SigmaL; AlphaRQ; SigmaF]
+     'ardexponential'                 [LengthScale1; ...; SigmaF]
+     'ardsquaredexponential'          [LengthScale1; ...; SigmaF]
+     'ardmatern32'                    [LengthScale1; ...; SigmaF]
+     'ardmatern52'                    [LengthScale1; ...; SigmaF]
+     'ardrationalquadratic'           [LengthScale1; ...; AlphaRQ; SigmaF]
+
+     The automatic relevance determination kernels carry one length scale per
+     predictor, so a predictor the response does not depend on is given a large
+     length scale and stops contributing.
+
+     The supported values for 'ResponseTransform' are:
+
+     VALUE                    DESCRIPTION
+     ----------------------------------------------------------------------------------
+     'none'                   x (no transformation)
+     'identity'               x (no transformation)
+     'exp'                    exp (x)
+     'log'                    log (x)
+
+     Two deviations from MATLAB are deliberate and documented.  The distance
+     between points is accumulated one predictor at a time instead of by the
+     expanded form MATLAB uses by default, because the expanded form does not
+     return exactly zero for a point against itself and the rough kernels
+     amplify that residue through their square root.  The approximate fitting
+     and prediction methods, 'sd', 'sr', 'fic' and 'bcd', together with the
+     active set options that serve them, are not implemented and are refused
+     rather than silently ignored.
+
+     See also: fitrgp, CompactRegressionGP, RegressionSVM, RegressionGAM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 76
+Create a RegressionGP object containing a Gaussian process regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+RegressionKernel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1402
+ -- statistics: RegressionKernel
+
+     Gaussian kernel regression model for large data.
+
+     A RegressionKernel object maps the predictors into a randomized feature
+     space whose inner product approximates a Gaussian kernel, and then fits a
+     linear model there.  A kernel regression is therefore as nonlinear as a
+     support vector machine with a Gaussian kernel, while costing what a linear
+     fit costs: nothing of size NxN is ever formed.
+
+     The expansion is the random Fourier basis of Rahimi and Recht, drawn once
+     when the model is fitted and kept with it, so ‘predict’ maps new data
+     through the same basis.  MATLAB approximates the same kernel by the
+     Fastfood construction, which reaches the same distribution more cheaply;
+     the two are interchangeable in distribution but not draw by draw, and the
+     draws come from different generators in any case, so the predictions of a
+     model fitted here and one fitted in MATLAB differ even from the same seed.
+     What does not differ is what they estimate.
+
+     Like RegressionLinear the object holds no copy of the training data.  It
+     does hold the basis and the coefficients, so it is bounded by the number of
+     expansion dimensions rather than by the number of observations.
+
+     Create a RegressionKernel object with ‘fitrkernel’.
+
+     See also: fitrkernel, RegressionLinear, RegressionSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+Gaussian kernel regression model for large data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+RegressionLinear
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1195
+ -- statistics: RegressionLinear
+
+     Linear regression model for high dimensional data.
+
+     A RegressionLinear object fits a linear model, ‘X * Beta + Bias’, to a
+     continuous response by minimizing a regularized average loss.  The loss is
+     the epsilon-insensitive loss for a support vector machine and the squared
+     error for a least squares fit, and the penalty is either a ridge or a lasso
+     one.
+
+     Unlike the other regression models of this package the object holds no copy
+     of the training data: the coefficients, the intercept and the fitting
+     options are the whole model.  That is what makes it suited to data with
+     more predictors than a kernel matrix could carry, and it is why the class
+     has no ‘compact’ method and no resubstitution methods.
+
+     A vector of regularization strengths fits one model per value in a single
+     object.  Beta is then a PxL matrix and Bias a 1xL row, every method returns
+     one column per strength, and ‘selectModels’ narrows the object down to the
+     strengths worth keeping.
+
+     Create a RegressionLinear object with ‘fitrlinear’.
+
+     See also: fitrlinear, RegressionKernel, RegressionSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Linear regression model for high dimensional data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionNeuralNetwork
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7116
+ -- statistics: OBJ = RegressionNeuralNetwork (X, Y)
+ -- statistics: OBJ = RegressionNeuralNetwork (..., NAME, VALUE)
+
+     Create a RegressionNeuralNetwork object containing a neural network
+     regression model.
+
+     ‘OBJ = RegressionNeuralNetwork (X, Y)’ returns a neural network regression
+     model, OBJ, with X being the predictor data and Y the continuous response
+     of the observations in X.
+
+        • X must be an NxP numeric matrix of predictor data, where rows
+          correspond to observations and columns to features.
+        • Y must be an Nx1 numeric vector holding the response of the
+          corresponding predictor data in X.  Y must have the same number of
+          rows as X.
+
+     The network is trained against the mean squared error, and its output layer
+     applies the identity, so a prediction is an unrestricted real number rather
+     than a score over classes.  This is the only difference in the engine
+     between this class and ‘ClassificationNeuralNetwork’; everything else, the
+     layer sizes, the activations, the learning rate and the initialisation,
+     behaves identically.
+
+     ‘OBJ = RegressionNeuralNetwork (..., NAME, VALUE)’ returns a model with
+     additional options specified by Name-Value pair arguments listed below.
+
+     NAME                       VALUE
+                                
+     ----------------------------------------------------------------------------------
+     'Standardize'              A logical scalar specifying whether the predictor
+                                data should be centred and scaled before training.
+                                The same transformation is applied by ‘predict’.
+                                The default is false.
+                                
+     'PredictorNames'           A cell array of character vectors naming the
+                                predictors, in the order they appear in X.
+                                
+     'ResponseName'             A character vector naming the response.  The default
+                                is 'Y'.
+                                
+     'ResponseTransform'        A character vector naming one of the supported
+                                transformations, or a function handle, applied to
+                                the predicted response by ‘predict’ and
+                                ‘resubPredict’.  The default is 'none'.
+                                
+     'LayerSizes'               A positive integer vector specifying the number of
+                                units in each fully connected hidden layer.  The
+                                default is 10, one hidden layer of ten units.
+                                
+     'Activations'              A character vector or cell array of character
+                                vectors specifying the activation of the hidden
+                                layers.  The supported functions are 'linear',
+                                'sigmoid', 'relu', 'tanh', 'lrelu', 'prelu', 'elu',
+                                'gelu' and 'none'.  The default is 'relu'.
+                                
+     'OutputLayerActivation'    A character vector specifying the activation of the
+                                output layer.  The default is 'none', the identity,
+                                which is what a regression output calls for.  The
+                                supported values are the same as for 'Activations'.
+                                
+     'LearningRate'             A positive scalar specifying the learning rate for
+                                gradient descent.  The default is 0.003.  A larger
+                                rate can drive every unit of a hidden layer
+                                negative, after which a rectifier passes no gradient
+                                and the network stops training.  Applies only when
+                                'Solver' is 'sgd'.
+                                
+     'Solver'                   A character vector naming the solver that trains the
+                                network, either 'lbfgs' or 'sgd'.  The default is
+                                'lbfgs', which minimizes the loss over the whole
+                                training set at once by limited-memory BFGS, as
+                                MATLAB does.  It takes no learning rate, stops on
+                                the three tolerances below, and reaches a lower
+                                training loss in fewer passes over the data, though
+                                each of its iterations costs several passes where an
+                                epoch costs one.  'sgd' visits the samples one at a
+                                time and steps down the gradient of each, running
+                                for 'IterationLimit' epochs; it was the default
+                                before version 1.9.0.
+                                
+     'GradientTolerance'        A nonnegative scalar.  Training stops once the
+                                gradient's infinity norm falls to or below it, which
+                                is the quantity MATLAB tests too.  The default is
+                                1e-6.  Applies only when 'Solver' is 'lbfgs'.
+                                
+     'StepTolerance'            A nonnegative scalar.  Training stops once the
+                                step's infinity norm falls to or below it, which is
+                                the quantity MATLAB tests too.  The default is 1e-6.
+                                Applies only when 'Solver' is 'lbfgs'.
+                                
+     'LossTolerance'            A real scalar.  Training stops once the training
+                                loss falls to or below it.  The test is on the loss
+                                itself and not on its change, matching MATLAB; pass
+                                ‘-Inf’ to switch it off.  The default is 1e-6.
+                                Applies only when 'Solver' is 'lbfgs'.
+                                
+     'IterationLimit'           A positive integer specifying the maximum number of
+                                training iterations.  The default is 1000.  Under
+                                'sgd' this counts epochs, under 'lbfgs' solver
+                                iterations.
+                                
+     'DisplayInfo'              A logical scalar specifying whether to print
+                                information during training.  The default is false.
+
+     The supported values for 'ResponseTransform' are:
+
+     VALUE                    DESCRIPTION
+     ----------------------------------------------------------------------------------
+     'none'                   x (no transformation)
+     'identity'               x (no transformation)
+     'exp'                    exp (x)
+     'log'                    log (x)
+
+     See also: fitrnet, ClassificationNeuralNetwork, fcnntrain, fcnnpredict.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a RegressionNeuralNetwork object containing a neural network regressio...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RegressionPartitionedKernel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1124
+ -- statistics: RegressionPartitionedKernel
+
+     Cross-validated Gaussian kernel regression model.
+
+     A RegressionPartitionedKernel object holds one RegressionKernel per fold of
+     a partition, each fitted to the observations the fold trains on.
+     ‘kfoldPredict’ predicts each observation with the fold that held it _out_,
+     so what it returns is an out-of-sample prediction.
+
+     A RegressionKernel stores no copy of its training data and so has no
+     resubstitution methods and no ‘compact’ form.  This class is what takes
+     their place: cross-validation is the way a kernel model is asked how it
+     would do on data it has not seen.
+
+     Every fold draws its own random basis, as it must, being its own fit.  Two
+     folds therefore approximate the same kernel through different expansions,
+     which is a source of variation between folds over and above the data they
+     were given.  A larger 'NumExpansionDimensions' narrows it.
+
+     Create one with ‘fitrlinear’ and a cross-validation option, or directly.
+
+     See also: fitrlinear, RegressionKernel, RegressionPartitionedKernel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Cross-validated Gaussian kernel regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RegressionPartitionedLinear
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 973
+ -- statistics: RegressionPartitionedLinear
+
+     Cross-validated linear regression model.
+
+     A RegressionPartitionedLinear object holds one RegressionLinear per fold of
+     a partition, each fitted to the observations the fold trains on.
+     ‘kfoldPredict’ predicts each observation with the fold that held it _out_,
+     so what it returns is an out-of-sample prediction.
+
+     A RegressionLinear stores no copy of its training data and so has no
+     resubstitution methods and no ‘compact’ form.  This class is what takes
+     their place: cross-validation is the way a linear model is asked how it
+     would do on data it has not seen.
+
+     When the fold models carry a whole regularization path, both methods return
+     one column per strength, in the order of the 'Lambda' that was asked for.
+
+     Create one with ‘fitrlinear’ and a cross-validation option, or directly.
+
+     See also: fitrlinear, RegressionLinear, RegressionPartitionedKernel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Cross-validated linear regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+RegressionPartitionedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1116
+ -- statistics: OBJ = RegressionPartitionedModel (MDL, PARTITION)
+
+     Create a RegressionPartitionedModel object, a regression model cross
+     validated over a partition of its training data.
+
+     ‘OBJ = RegressionPartitionedModel (MDL, PARTITION)’ refits MDL once per
+     fold of PARTITION, each time on the observations that fold holds out of its
+     test set, and stores the compact form of every fit in ‘Trained’.  It is
+     normally reached through ‘crossval (MDL)’ rather than called directly.
+
+        • MDL must be a RegressionGAM, a RegressionNeuralNetwork, or a
+          RegressionSVM object.
+        • PARTITION must be a cvpartition object over as many observations as
+          MDL was trained on.
+
+     Every observation is held out by exactly one fold under k-fold or
+     leave-one-out partitioning, so ‘kfoldPredict’ can answer for it with a
+     model that never saw it.  Under a holdout partition only the test set is
+     answered for, and the rest come back ‘NaN’.
+
+     See also: crossval, cvpartition, RegressionGAM, RegressionNeuralNetwork,
+     RegressionSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a RegressionPartitionedModel object, a regression model cross validate...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+RegressionSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5248
+ -- statistics: OBJ = RegressionSVM (X, Y)
+ -- statistics: OBJ = RegressionSVM (..., NAME, VALUE)
+
+     Create a RegressionSVM object containing a support vector machine
+     regression model.
+
+     ‘OBJ = RegressionSVM (X, Y)’ returns a support vector regression model,
+     OBJ, with X being the predictor data and Y the continuous response of the
+     observations in X.
+
+        • X must be an NxP numeric matrix of predictor data, where rows
+          correspond to observations and columns to features.
+        • Y must be an Nx1 numeric vector holding the response of the
+          corresponding predictor data in X.  Y must have the same number of
+          rows as X.
+
+     The model is fitted by epsilon-insensitive regression: errors smaller than
+     Epsilon cost nothing, so only the observations outside that tube become
+     support vectors.  Epsilon defaults to ‘iqr (Y) / 13.49’, a robust estimate
+     of a tenth of the response's standard deviation, which is what MATLAB uses.
+
+     ‘OBJ = RegressionSVM (..., NAME, VALUE)’ returns a model with additional
+     options specified by Name-Value pair arguments listed below.
+
+     NAME                       VALUE
+                                
+     ----------------------------------------------------------------------------------
+     'Standardize'              A logical scalar specifying whether the predictor
+                                data should be centred and scaled before training.
+                                The same transformation is applied by ‘predict’.
+                                The default is false.
+                                
+     'PredictorNames'           A cell array of character vectors naming the
+                                predictors, in the order they appear in X.
+                                
+     'ResponseName'             A character vector naming the response.  The default
+                                is 'Y'.
+                                
+     'ResponseTransform'        A character vector naming one of the supported
+                                transformations, or a function handle, applied to
+                                the predicted response by ‘predict’ and
+                                ‘resubPredict’.  The default is 'none'.
+                                
+     'Epsilon'                  A non-negative scalar, the half-width of the
+                                insensitive tube.  The default is ‘iqr (Y) / 13.49’,
+                                or 0.1 where that is zero.
+                                
+     'BoxConstraint'            A positive scalar bounding the dual coefficients,
+                                the cost of an error outside the tube.  The default
+                                is 1.
+                                
+     'KernelFunction'           A character vector naming the kernel, one of
+                                'linear', the default, 'rbf', 'gaussian',
+                                'polynomial' or 'sigmoid'.
+                                
+     'PolynomialOrder'          A positive integer, the order of the polynomial
+                                kernel.  The default is 3.  It is ignored by every
+                                other kernel.
+                                
+     'KernelScale'              A positive scalar dividing the predictors before the
+                                kernel is applied.  The default is 1.
+                                
+     'KernelOffset'             A non-negative scalar added to the kernel value.
+                                The default is 0.
+                                
+     'SVMtype'                  A character vector selecting the formulation, either
+                                'eps_svr', the default, or 'nu_svr'.  MATLAB fits
+                                only the epsilon form; 'nu_svr' is an Octave
+                                extension, in which Nu bounds the fraction of
+                                support vectors and Epsilon is determined by the fit
+                                rather than given.
+                                
+     'Nu'                       A scalar in (0, 1] used by 'nu_svr'.  The default is
+                                0.5.
+                                
+     'CacheSize'                A positive scalar, the kernel cache in megabytes.
+                                The default is 1000.
+                                
+     'Tolerance'                A non-negative scalar, the tolerance of the
+                                termination criterion.  The default is 1e-6.
+                                
+     'Shrinking'                Either 0 or 1, whether to use the shrinking
+                                heuristic.  The default is 1.
+
+     The supported values for 'ResponseTransform' are:
+
+     VALUE                    DESCRIPTION
+     ----------------------------------------------------------------------------------
+     'none'                   x (no transformation)
+     'identity'               x (no transformation)
+     'exp'                    exp (x)
+     'log'                    log (x)
+
+     See also: fitrsvm, ClassificationSVM, RegressionNeuralNetwork.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a RegressionSVM object containing a support vector machine regression
+...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 9
 fitcdiscr
 
@@ -518,7 +1670,7 @@ fitcdiscr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3684
+# length: 4209
  -- statistics: MDL = fitcdiscr (X, Y)
  -- statistics: MDL = fitcdiscr (..., NAME, VALUE)
 
@@ -570,9 +1722,15 @@ fitcdiscr
                     cost matrix can be altered use ‘MDL.COST = somecost’.  default
                     value COST = ones(rows(X),numel(unique(Y))).
                     
-     'DiscrimType'  A character vector or string scalar specifying the type of
-                    discriminant analysis to perform.  The only supported value is
-                    'linear'.
+     'DiscrimType'  A character vector naming the type of discriminant analysis to
+                    perform, one of 'linear' (default), 'quadratic', 'diagLinear',
+                    'diagQuadratic', 'pseudoLinear' or 'pseudoQuadratic'.  A
+                    linear type pools one covariance across the classes and a
+                    quadratic type estimates one per class; a 'diag' type keeps
+                    only the variances, and a 'pseudo' type inverts a singular
+                    covariance rather than refusing it.  The property may be
+                    reassigned after fitting, but only within its own family,
+                    since the family decides which covariances the fit estimates.
                     
      'FillCoeffs'   A character vector or string scalar with values 'on' or 'off'
                     specifying whether to fill the coefficients after fitting.  If
@@ -608,7 +1766,7 @@ fitcgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6198
+# length: 9119
  -- statistics: MDL = fitcgam (X, Y)
  -- statistics: MDL = fitcgam (..., NAME, VALUE)
 
@@ -633,6 +1791,15 @@ fitcgam
      NAME           VALUE
                     
      --------------------------------------------------------------------------------
+     'FitMethod'    A character vector selecting the weak learner, either
+                    'boostedtrees' or 'splines'.  The default is 'boostedtrees',
+                    which boosts one shallow decision tree per predictor and is
+                    the scheme MATLAB uses.  'splines' boosts a smoothing spline
+                    per predictor instead and is an Octave extension.  The two
+                    take different options and an option meant for one is refused
+                    by the other rather than ignored, so the rows below say which
+                    engine each belongs to.
+                    
      'PredictorNames'A cell array of character vectors specifying the names of the
                     predictors.  The length of this array must match the number of
                     columns in X.
@@ -651,22 +1818,22 @@ fitcgam
                     cost matrix can be altered use ‘MDL.COST = somecost’.  default
                     value COST = ones(rows(X),numel(unique(Y))).
                     
-     'Formula'      A model specification given as a string in the form 'Y ~
-                    terms' where Y represents the response variable and terms the
-                    predictor variables.  The formula can be used to specify a
-                    subset of variables for training model.  For example: 'Y ~ x1
-                    + x2 + x3 + x4 + x1:x2 + x2:x3' specifies four linear terms
-                    for the first four columns of for predictor data, and x1:x2
-                    and x2:x3 specify the two interaction terms for 1st-2nd and
-                    3rd-4th columns respectively.  Only these terms will be used
-                    for training the model, but X must have at least as many
-                    columns as referenced in the formula.  If Predictor Variable
-                    names have been defined, then the terms in the formula must
-                    reference to those.  When 'formula' is specified, all terms
-                    used for training the model are referenced in the IntMatrix
-                    field of the OBJ class object as a matrix containing the
-                    column indexes for each term including both the predictors and
-                    the interactions used.
+     'Formula'      (spline option) A model specification given as a string in the
+                    form 'Y ~ terms' where Y represents the response variable and
+                    terms the predictor variables.  The formula can be used to
+                    specify a subset of variables for training model.  For
+                    example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies
+                    four linear terms for the first four columns of for predictor
+                    data, and x1:x2 and x2:x3 specify the two interaction terms
+                    for 1st-2nd and 3rd-4th columns respectively.  Only these
+                    terms will be used for training the model, but X must have at
+                    least as many columns as referenced in the formula.  If
+                    Predictor Variable names have been defined, then the terms in
+                    the formula must reference to those.  When 'formula' is
+                    specified, all terms used for training the model are
+                    referenced in the IntMatrix field of the OBJ class object as a
+                    matrix containing the column indexes for each term including
+                    both the predictors and the interactions used.
                     
      'Interactions' A logical matrix, a positive integer scalar, or the string
                     'all' for defining the interactions between predictor
@@ -681,29 +1848,70 @@ fitcgam
                     is specified, only the interaction terms appended to X are
                     referenced in the IntMatrix field of the OBJ class object.
                     
-     'Knots'        A scalar or a row vector with the same columns as X.  It
-                    defines the knots for fitting a polynomial when training the
-                    GAM. As a scalar, it is expanded to a row vector.  The default
-                    value is 5, hence expanded to ones (1, columns (X)) * 5.  You
-                    can parse a row vector with different number of knots for each
-                    predictor variable to be fitted with, although not
-                    recommended.
-                    
-     'Order'        A scalar or a row vector with the same columns as X.  It
-                    defines the order of the polynomial when training the GAM. As
-                    a scalar, it is expanded to a row vector.  The default values
-                    is 3, hence expanded to ones (1, columns (X)) * 3.  You can
-                    parse a row vector with different number of polynomial order
-                    for each predictor variable to be fitted with, although not
-                    recommended.
-                    
-     'DoF'          A scalar or a row vector with the same columns as X.  It
-                    defines the degrees of freedom for fitting a polynomial when
+     'Knots'        (spline option) A scalar or a row vector with the same columns
+                    as X.  It defines the knots for fitting a polynomial when
                     training the GAM. As a scalar, it is expanded to a row vector.
-                    The default value is 8, hence expanded to ones (1, columns
-                    (X)) * 8.  You can parse a row vector with different degrees
-                    of freedom for each predictor variable to be fitted with,
-                    although not recommended.
+                    The default value is 5, hence expanded to ones (1, columns
+                    (X)) * 5.  You can parse a row vector with different number of
+                    knots for each predictor variable to be fitted with, although
+                    not recommended.
+                    
+     'Order'        (spline option) A scalar or a row vector with the same columns
+                    as X.  It defines the order of the polynomial when training
+                    the GAM. As a scalar, it is expanded to a row vector.  The
+                    default values is 3, hence expanded to ones (1, columns (X)) *
+                    3.  You can parse a row vector with different number of
+                    polynomial order for each predictor variable to be fitted
+                    with, although not recommended.
+                    
+     'DoF'          (spline option) A scalar or a row vector with the same columns
+                    as X.  It defines the degrees of freedom for fitting a
+                    polynomial when training the GAM. As a scalar, it is expanded
+                    to a row vector.  The default value is 8, hence expanded to
+                    ones (1, columns (X)) * 8.  You can parse a row vector with
+                    different degrees of freedom for each predictor variable to be
+                    fitted with, although not recommended.
+                    
+
+     The rows above marked as spline options require 'FitMethod', 'splines'.
+     The remaining options belong to the boosted-tree engine and require
+     'FitMethod', 'boostedtrees', which is the default.
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'NumTreesPerPredictor'A positive integer, the number of boosting rounds of the
+                    predictor phase.  It is a budget rather than a count: a fit
+                    that stops improving ends earlier and reports so.  The default
+                    is 300.
+                    
+     'NumTreesPerInteraction'A positive integer, the same budget for the interaction phase.
+                    The default is 100.
+                    
+     'MaxNumSplitsPerPredictor'A positive integer, the largest number of splits any one
+                    predictor tree may make.  The default is 1, which makes each
+                    tree a stump.
+                    
+     'MaxNumSplitsPerInteraction'The same limit for a tree over a pair of predictors.  The
+                    default is 4.
+                    
+     'InitialLearnRateForPredictors'A value greater than 0 and at most 1, the step a round of the
+                    predictor phase starts at.  A round that fails to improve the
+                    fit is retried at half the step, so this is an initial value
+                    rather than a fixed one.  The default is 1.
+                    
+     'InitialLearnRateForInteractions'The same for the interaction phase.  The default is 1.
+                    
+     'MaxPValue'    A value between 0 and 1.  A candidate pair of predictors is
+                    kept only if its interaction test gives a p-value no larger
+                    than this.  The default is 1, which keeps every pair asked
+                    for.
+                    
+     'Verbose'      A non-negative integer.  Greater than zero prints a trace of
+                    the fit.  The default is 0.
+                    
+     'NumPrint'     A positive integer, how often the trace reports: the first
+                    round and then every NUMPRINT rounds.  The default is 10.
                     
      You can parse either a 'Formula' or an 'Interactions' optional parameter.
      Parsing both parameters will result an error.  Accordingly, you can only
@@ -724,6 +1932,52 @@ Fit a Generalized Additive Model (GAM) for binary classification.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 10
+fitckernel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1248
+ -- statistics: MDL = fitckernel (X, Y)
+ -- statistics: MDL = fitckernel (..., NAME, VALUE)
+ -- statistics: [MDL, FITINFO] = fitckernel (...)
+
+     Fit a Gaussian kernel binary classifier.
+
+     ‘MDL = fitckernel (X, Y)’ returns a ClassificationKernel object fitted to
+     the predictor data X and the two class response Y, where X is an NxP
+     numeric matrix and Y has as many rows as X.
+
+     ‘MDL = fitckernel (..., NAME, VALUE)’ passes the given Name-Value pairs to
+     the model.  They are documented under ‘ClassificationKernel’, and the ones
+     most often wanted are 'Learner', 'NumExpansionDimensions', 'KernelScale',
+     'Lambda', 'BoxConstraint' and 'Standardize'.
+
+     ‘[MDL, FITINFO] = fitckernel (...)’ also returns a structure describing the
+     optimization: the objective it reached, the gradient it left, and the
+     tolerances it was given.
+
+     ‘MDL = fitckernel (..., CVOPT, VALUE)’ returns a
+     ‘ClassificationPartitionedKernel’ instead when one of 'CrossVal', 'KFold',
+     'Holdout', 'Leaveout' and 'CVPartition' is given.  A cross-validated model
+     describes no single fit, so FITINFO is not available beside it.
+
+     See also: ClassificationKernel, ClassificationLinear, fitclinear.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Fit a Gaussian kernel binary classifier.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 7
 fitcknn
 
@@ -731,7 +1985,7 @@ fitcknn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 14692
+# length: 15220
  -- statistics: MDL = fitcknn (X, Y)
  -- statistics: MDL = fitcknn (..., NAME, VALUE)
 
@@ -905,6 +2159,14 @@ fitcknn
                     weight equal to 1/distance; 'squaredinverse', which
                     corresponds to a weight equal to 1/distance^2.
                     
+     'CacheSize'    A positive scalar, the cache size in megabytes, 1000 by
+                    default.  It is stored and reported for compatibility and
+                    *does not affect the fit or any prediction*: a
+                    nearest-neighbour model keeps no Gram matrix to cache, holding
+                    its training data and computing each distance when asked.
+                    MATLAB hides the same property from ‘properties’, where this
+                    package reports it.
+                    
      'IncludeTies'  A boolean flag to indicate if the returned values should
                     contain the indices that have same distance as the K^th
                     neighbor.  When false, ‘knnsearch’ chooses the observation
@@ -993,6 +2255,159 @@ Fit a k-Nearest Neighbor classification model.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 10
+fitclinear
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1324
+ -- statistics: MDL = fitclinear (X, Y)
+ -- statistics: MDL = fitclinear (..., NAME, VALUE)
+ -- statistics: [MDL, FITINFO] = fitclinear (...)
+
+     Fit a linear binary classifier.
+
+     ‘MDL = fitclinear (X, Y)’ returns a ClassificationLinear object fitted to
+     the predictor data X and the two class response Y, where X is an NxP
+     numeric matrix and Y has as many rows as X.
+
+     ‘MDL = fitclinear (..., NAME, VALUE)’ passes the given Name-Value pairs to
+     the model.  They are documented under ‘ClassificationLinear’, and the ones
+     most often wanted are 'Learner', 'Regularization', 'Lambda', 'Solver' and
+     'ObservationsIn'.
+
+     ‘[MDL, FITINFO] = fitclinear (...)’ also returns a structure describing the
+     optimization: what it converged to, how far it got, and which tolerance
+     stopped it.  Its fields follow the solver, so a dual fit reports the dual
+     variables and a mini-batch fit the batch it stopped on.
+
+     ‘MDL = fitclinear (..., CVOPT, VALUE)’ returns a
+     ‘ClassificationPartitionedLinear’ instead when one of 'CrossVal', 'KFold',
+     'Holdout', 'Leaveout' and 'CVPartition' is given.  A cross-validated model
+     describes no single fit, so FITINFO is not available beside it.
+
+     See also: ClassificationLinear, ClassificationKernel, fitckernel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Fit a linear binary classifier.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitcnb
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4628
+ -- statistics: MDL = fitcnb (X, Y)
+ -- statistics: MDL = fitcnb (..., NAME, VALUE)
+
+     Fit a naive Bayes classification model.
+
+     ‘MDL = fitcnb (X, Y)’ returns a naive Bayes classification model, MDL, with
+     X being the predictor data and Y the class labels of the observations in X.
+
+        • X must be a N*P numeric matrix of predictor data where rows correspond
+          to observations and columns correspond to features or variables.
+        • Y is an N*1 matrix or cell matrix containing the class labels of the
+          corresponding predictor data in X.  Y can be numeric, logical, a
+          character array or a cell array of character vectors.  Y must have the
+          same number of rows as X.
+
+     A naive Bayes model fits one univariate density to each predictor within
+     each class, and treats the predictors as conditionally independent given
+     the class.  An observation's likelihood under a class is therefore the
+     product of its per-predictor densities, and its posterior follows by Bayes'
+     rule from the class prior.
+
+     ‘MDL = fitcnb (..., NAME, VALUE)’ returns a naive Bayes model with
+     additional options specified by Name-Value pair arguments listed below.
+
+     Model Parameters
+     ----------------
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'PredictorNames'A cell array of character vectors specifying the names of the
+                    predictors.  The length of this array must match the number of
+                    columns in X.
+                    
+     'ResponseName' A character vector specifying the name of the response
+                    variable.
+                    
+     'ClassNames'   Names of the classes in the class labels, Y, used for fitting
+                    the model.  ClassNames are of the same type as the class
+                    labels in Y.  Naming a subset of the classes keeps only the
+                    observations belonging to them.
+                    
+     'Prior'        A numeric vector specifying the prior probability of each
+                    class, in the order of ClassNames, or the character vector
+                    'empirical' (default) to take the class frequencies, or
+                    'uniform' to give every class the same probability.
+                    
+     'Cost'         A square numeric matrix of misclassification costs, where
+                    ‘Cost(i,j)’ is the cost of classifying an observation of class
+                    i into class j.  The default is one off the diagonal and zero
+                    on it.
+                    
+     'ScoreTransform'A character vector naming a transform applied to the posterior
+                    returned by ‘predict’, or a function handle taking and
+                    returning a matrix of the same size.  The default is 'none'.
+                    
+     'DistributionNames'A character vector naming the distribution fitted to every
+                    predictor, or a cell array of character vectors naming one per
+                    predictor.  Supported are 'normal' (default), 'kernel', 'mvmn'
+                    for a categorical predictor, and 'mn' for token counts.  'mn'
+                    describes the whole predictor vector at once and so cannot be
+                    named for only some predictors.
+                    
+     'Kernel'       The smoothing kernel of the predictors fitted with a kernel
+                    density, one of 'normal' (default), 'box', 'epanechnikov' or
+                    'triangle', given once for every predictor or once per
+                    predictor.
+                    
+     'Support'      The support of the kernel densities, either 'unbounded'
+                    (default), 'positive', or a two element numeric vector giving
+                    finite bounds.
+                    
+     'Width'        The bandwidth of the kernel densities, given as a scalar, as
+                    one value per predictor, as one per class, or as a matrix of
+                    one per class and predictor.  By default each density chooses
+                    its own.
+                    
+
+     A predictor that takes one value throughout a class has no normal density
+     to fit, and that combination of class and predictor is refused rather than
+     answered.  Only the combination is refused, not the model: giving that
+     predictor a 'kernel' or a 'mvmn' distribution fits the same data, and
+     leaves the other predictors normal.
+
+     See also: ClassificationNaiveBayes.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Fit a naive Bayes classification model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 7
 fitcnet
 
@@ -1000,7 +2415,7 @@ fitcnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5520
+# length: 8912
  -- statistics: MDL = fitcnet (X, Y)
  -- statistics: MDL = fitcnet (..., NAME, VALUE)
 
@@ -1052,21 +2467,55 @@ fitcnet
                                 model.  The default value is 10.
                                 
      'LearningRate'             A positive scalar value that defines the learning rate during
-                                the gradient descent.  Default value is 0.01.
+                                the gradient descent.  Default value is 0.003.  A larger rate
+                                can drive every unit of a hidden layer negative, after which a
+                                rectifier passes no gradient and the network stops training.
+                                Applies only when 'Solver' is 'sgd'.
+                                
+     'Solver'                   A character vector naming the solver that trains the network,
+                                either 'lbfgs' or 'sgd'.  The default is 'lbfgs', which
+                                minimizes the loss over the whole training set at once by
+                                limited-memory BFGS, as MATLAB does.  It takes no learning
+                                rate, stops on the three tolerances below, and reaches a lower
+                                training loss in fewer passes over the data, though each of
+                                its iterations costs several passes where an epoch costs one.
+                                'sgd' visits the samples one at a time and steps down the
+                                gradient of each, running for 'IterationLimit' epochs; it was
+                                the default before version 1.9.0.
+                                
+     'GradientTolerance'        A nonnegative scalar.  Training stops once the gradient's
+                                infinity norm falls to or below it, which is the quantity
+                                MATLAB tests too.  The default is 1e-6.  Applies only when
+                                'Solver' is 'lbfgs'.
+                                
+     'StepTolerance'            A nonnegative scalar.  Training stops once the step's infinity
+                                norm falls to or below it, which is the quantity MATLAB tests
+                                too.  The default is 1e-6.  Applies only when 'Solver' is
+                                'lbfgs'.
+                                
+     'LossTolerance'            A real scalar.  Training stops once the training loss falls to
+                                or below it.  The test is on the loss itself and not on its
+                                change, matching MATLAB; pass ‘-Inf’ to switch it off.  The
+                                default is 1e-6.  Applies only when 'Solver' is 'lbfgs'.
                                 
      'Activations'              A character vector or a cellstr vector specifying the
                                 activation functions for the hidden layers of the neural
                                 network (excluding the output layer).  The available
-                                activation functions are 'linear', 'sigmoid', 'tanh',
-                                'sigmoid', and 'none'.  The default value is 'sigmoid'.
+                                activation functions are 'linear', 'sigmoid', 'relu', 'tanh',
+                                'softmax', 'lrelu', 'prelu', 'elu', 'gelu', and 'none'.  The
+                                default value is 'relu'.
                                 
      'OutputLayerActivation'    A character vector specifying the activation function for the
                                 output layer of the neural network.  The available activation
-                                functions are 'linear', 'sigmoid', 'tanh', 'sigmoid', and
-                                'none'.  The default value is 'sigmoid'.
+                                functions are the same as for 'Activations'.  The default
+                                value is 'softmax', which makes the returned scores a
+                                probability over the classes and trains the network against
+                                cross entropy; any other value trains it against the mean
+                                squared error.
                                 
      'IterationLimit'           A positive integer scalar that specifies the maximum number of
-                                training iterations.  The default value is 1000.
+                                training iterations.  The default value is 1000.  Under 'sgd'
+                                this counts epochs, under 'lbfgs' solver iterations.
                                 
      'DisplayInfo'              A boolean flag indicating whether to print information during
                                 training.  Default is false.
@@ -1090,6 +2539,16 @@ fitcnet
      'symmetricismax'         Sets the score for the class with the largest score to 1,
                               and sets the scores for all other classes to -1
      'symmetriclogit'         2 ./ (1 + exp (-x)) - 1
+
+     The weights of each layer are drawn from a uniform range whose half-width
+     is set by that layer's activation, and the scheme cannot be chosen: a
+     rectifying activation ('relu', 'lrelu', 'prelu', 'elu', 'gelu') takes the
+     He range sqrt (6 / fan_in), because it passes only half of its input, and
+     the remaining activations take the Glorot range sqrt (6 / (fan_in +
+     fan_out)), which accounts for the backward pass as well.  A network whose
+     layers do not share an activation is therefore built with both schemes.
+     What each layer was given is reported by the LayerWeightsInitializers field
+     of the fitted model's ModelParameters.
 
      See also: ClassificationNeuralNetwork.
 
@@ -1312,7 +2771,7 @@ fitrgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5996
+# length: 9018
  -- statistics: OBJ = fitrgam (X, Y)
  -- statistics: OBJ = fitrgam (X, Y, NAME, VALUE)
 
@@ -1336,6 +2795,15 @@ fitrgam
      NAME             VALUE
                       
      ------------------------------------------------------------------------------
+     'FitMethod'      A character vector selecting the weak learner, either
+                      'boostedtrees' or 'splines'.  The default is
+                      'boostedtrees', which boosts one shallow decision tree per
+                      predictor and is the scheme MATLAB uses.  'splines' boosts
+                      a smoothing spline per predictor instead and is an Octave
+                      extension.  The two take different options and an option
+                      meant for one is refused by the other rather than ignored,
+                      so the rows below say which engine each belongs to.
+                      
      'predictors'     Predictor Variable names, specified as a row vector cell
                       of strings with the same length as the columns in X.  If
                       omitted, the program will generate default variable names
@@ -1344,14 +2812,14 @@ fitrgam
      'responsename'   Response Variable Name, specified as a string.  If
                       omitted, the default value is 'Y'.
                       
-     'formula'        a model specification given as a string in the form 'Y ~
-                      terms' where Y represents the response variable and terms
-                      the predictor variables.  The formula can be used to
-                      specify a subset of variables for training model.  For
-                      example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies
-                      four linear terms for the first four columns of for
-                      predictor data, and x1:x2 and x2:x3 specify the two
-                      interaction terms for 1st-2nd and 3rd-4th columns
+     'formula'        (spline option) a model specification given as a string in
+                      the form 'Y ~ terms' where Y represents the response
+                      variable and terms the predictor variables.  The formula
+                      can be used to specify a subset of variables for training
+                      model.  For example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 +
+                      x2:x3' specifies four linear terms for the first four
+                      columns of for predictor data, and x1:x2 and x2:x3 specify
+                      the two interaction terms for 1st-2nd and 3rd-4th columns
                       respectively.  Only these terms will be used for training
                       the model, but X must have at least as many columns as
                       referenced in the formula.  If Predictor Variable names
@@ -1376,32 +2844,76 @@ fitrgam
                       the interaction terms appended to X are referenced in the
                       IntMatrix field of the OBJ class object.
                       
-     'knots'          a scalar or a row vector with the same columns as X.  It
-                      defines the knots for fitting a polynomial when training
-                      the GAM. As a scalar, it is expanded to a row vector.  The
-                      default value is 5, hence expanded to ones (1, columns
-                      (X)) * 5.  You can parse a row vector with different
-                      number of knots for each predictor variable to be fitted
-                      with, although not recommended.
+     'knots'          (spline option) a scalar or a row vector with the same
+                      columns as X.  It defines the knots for fitting a
+                      polynomial when training the GAM. As a scalar, it is
+                      expanded to a row vector.  The default value is 5, hence
+                      expanded to ones (1, columns (X)) * 5.  You can parse a
+                      row vector with different number of knots for each
+                      predictor variable to be fitted with, although not
+                      recommended.
                       
-     'order'          a scalar or a row vector with the same columns as X.  It
-                      defines the order of the polynomial when training the GAM.
-                      As a scalar, it is expanded to a row vector.  The default
-                      values is 3, hence expanded to ones (1, columns (X)) * 3.
-                      You can parse a row vector with different number of
-                      polynomial order for each predictor variable to be fitted
-                      with, although not recommended.
-                      
-     'dof'            a scalar or a row vector with the same columns as X.  It
-                      defines the degrees of freedom for fitting a polynomial
-                      when training the GAM. As a scalar, it is expanded to a
-                      row vector.  The default value is 8, hence expanded to
-                      ones (1, columns (X)) * 8.  You can parse a row vector
-                      with different degrees of freedom for each predictor
+     'order'          (spline option) a scalar or a row vector with the same
+                      columns as X.  It defines the order of the polynomial when
+                      training the GAM. As a scalar, it is expanded to a row
+                      vector.  The default values is 3, hence expanded to ones
+                      (1, columns (X)) * 3.  You can parse a row vector with
+                      different number of polynomial order for each predictor
                       variable to be fitted with, although not recommended.
                       
-     'tol'            a positive scalar to set the tolerance for convergence
-                      during training.  By default, it is set to 1e-3.
+     'dof'            (spline option) a scalar or a row vector with the same
+                      columns as X.  It defines the degrees of freedom for
+                      fitting a polynomial when training the GAM. As a scalar,
+                      it is expanded to a row vector.  The default value is 8,
+                      hence expanded to ones (1, columns (X)) * 8.  You can
+                      parse a row vector with different degrees of freedom for
+                      each predictor variable to be fitted with, although not
+                      recommended.
+                      
+     'tol'            (spline option) a positive scalar to set the tolerance for
+                      convergence during training.  By default, it is set to
+                      1e-3.
+
+     The rows above marked as spline options require 'FitMethod', 'splines'.
+     The remaining options belong to the boosted-tree engine and require
+     'FitMethod', 'boostedtrees', which is the default.
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'NumTreesPerPredictor'A positive integer, the number of boosting rounds of the
+                    predictor phase.  It is a budget rather than a count: a fit
+                    that stops improving ends earlier and reports so.  The default
+                    is 300.
+                    
+     'NumTreesPerInteraction'A positive integer, the same budget for the interaction phase.
+                    The default is 100.
+                    
+     'MaxNumSplitsPerPredictor'A positive integer, the largest number of splits any one
+                    predictor tree may make.  The default is 1, which makes each
+                    tree a stump.
+                    
+     'MaxNumSplitsPerInteraction'The same limit for a tree over a pair of predictors.  The
+                    default is 4.
+                    
+     'InitialLearnRateForPredictors'A value greater than 0 and at most 1, the step a round of the
+                    predictor phase starts at.  A round that fails to improve the
+                    fit is retried at half the step, so this is an initial value
+                    rather than a fixed one.  The default is 1.
+                    
+     'InitialLearnRateForInteractions'The same for the interaction phase.  The default is 1.
+                    
+     'MaxPValue'    A value between 0 and 1.  A candidate pair of predictors is
+                    kept only if its interaction test gives a p-value no larger
+                    than this.  The default is 1, which keeps every pair asked
+                    for.
+                    
+     'Verbose'      A non-negative integer.  Greater than zero prints a trace of
+                    the fit.  The default is 0.
+                    
+     'NumPrint'     A positive integer, how often the trace reports: the first
+                    round and then every NUMPRINT rounds.  The default is 10.
+                    
 
      You can parse either a 'formula' or an 'interactions' optional parameter.
      Parsing both parameters will result an error.  Accordingly, you can only
@@ -1416,6 +2928,390 @@ fitrgam
 # elements: 1
 # length: 54
 Fit a Generalized Additive Model (GAM) for regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitrgp
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 910
+ -- statistics: MDL = fitrgp (X, Y)
+ -- statistics: MDL = fitrgp (..., NAME, VALUE)
+
+     Fit a Gaussian process regression model.
+
+     ‘MDL = fitrgp (X, Y)’ returns a RegressionGP object fitted to the predictor
+     data X and the continuous response Y, where X is an NxP numeric matrix and
+     Y an Nx1 numeric vector with as many rows as X.
+
+     ‘MDL = fitrgp (..., NAME, VALUE)’ passes the given Name-Value pairs to the
+     model.  They are documented under ‘RegressionGP’, and the ones most often
+     wanted are 'KernelFunction', 'BasisFunction', 'Standardize', 'Sigma' and
+     'FitMethod'.
+
+     When any of 'CrossVal', 'KFold', 'Holdout', 'Leaveout' or 'CVPartition' is
+     given, a cross validated model is returned instead, as a
+     RegressionPartitionedModel.  Only one of them may be given at a time.
+
+     See also: RegressionGP, CompactRegressionGP, RegressionPartitionedModel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Fit a Gaussian process regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+fitrkernel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1247
+ -- statistics: MDL = fitrkernel (X, Y)
+ -- statistics: MDL = fitrkernel (..., NAME, VALUE)
+ -- statistics: [MDL, FITINFO] = fitrkernel (...)
+
+     Fit a Gaussian kernel regression model.
+
+     ‘MDL = fitrkernel (X, Y)’ returns a RegressionKernel object fitted to the
+     predictor data X and the continuous response Y, where X is an NxP numeric
+     matrix and Y an Nx1 numeric vector with as many rows as X.
+
+     ‘MDL = fitrkernel (..., NAME, VALUE)’ passes the given Name-Value pairs to
+     the model.  They are documented under ‘RegressionKernel’, and the ones most
+     often wanted are 'Learner', 'Epsilon', 'NumExpansionDimensions',
+     'KernelScale', 'Lambda' and 'BoxConstraint'.
+
+     ‘[MDL, FITINFO] = fitrkernel (...)’ also returns a structure describing the
+     optimization: the objective it reached, the gradient it left, and the
+     tolerances it was given.
+
+     ‘MDL = fitrkernel (..., CVOPT, VALUE)’ returns a
+     ‘RegressionPartitionedKernel’ instead when one of 'CrossVal', 'KFold',
+     'Holdout', 'Leaveout' and 'CVPartition' is given.  A cross-validated model
+     describes no single fit, so FITINFO is not available beside it.
+
+     See also: RegressionKernel, RegressionLinear, fitrlinear.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Fit a Gaussian kernel regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+fitrlinear
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1320
+ -- statistics: MDL = fitrlinear (X, Y)
+ -- statistics: MDL = fitrlinear (..., NAME, VALUE)
+ -- statistics: [MDL, FITINFO] = fitrlinear (...)
+
+     Fit a linear regression model.
+
+     ‘MDL = fitrlinear (X, Y)’ returns a RegressionLinear object fitted to the
+     predictor data X and the continuous response Y, where X is an NxP numeric
+     matrix and Y an Nx1 numeric vector with as many rows as X.
+
+     ‘MDL = fitrlinear (..., NAME, VALUE)’ passes the given Name-Value pairs to
+     the model.  They are documented under ‘RegressionLinear’, and the ones most
+     often wanted are 'Learner', 'Epsilon', 'Regularization', 'Lambda' and
+     'Solver'.
+
+     ‘[MDL, FITINFO] = fitrlinear (...)’ also returns a structure describing the
+     optimization: what it converged to, how far it got, and which tolerance
+     stopped it.  Its fields follow the solver, so a dual fit reports the dual
+     variables and a mini-batch fit the batch it stopped on.
+
+     ‘MDL = fitrlinear (..., CVOPT, VALUE)’ returns a
+     ‘RegressionPartitionedLinear’ instead when one of 'CrossVal', 'KFold',
+     'Holdout', 'Leaveout' and 'CVPartition' is given.  A cross-validated model
+     describes no single fit, so FITINFO is not available beside it.
+
+     See also: RegressionLinear, RegressionKernel, fitrkernel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Fit a linear regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitrnet
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7632
+ -- statistics: MDL = fitrnet (X, Y)
+ -- statistics: MDL = fitrnet (..., NAME, VALUE)
+
+     Fit a neural network regression model.
+
+     ‘MDL = fitrnet (X, Y)’ returns a neural network regression model, MDL, with
+     X being the predictor data and Y the continuous response of the
+     observations in X.
+
+        • X must be an NxP numeric matrix of predictor data, where rows
+          correspond to observations and columns to features or variables.
+        • Y must be an Nx1 numeric vector holding the response of the
+          corresponding predictor data in X.  Y must have the same number of
+          rows as X.
+
+     The network is trained against the mean squared error and its output layer
+     applies the identity, so a prediction is an unrestricted real number.  Use
+     ‘fitcnet’ where the response names a class rather than a quantity.
+
+     ‘MDL = fitrnet (..., NAME, VALUE)’ returns a neural network regression
+     model with additional options specified by Name-Value pair arguments listed
+     below.
+
+     Model Parameters
+     ----------------
+
+     NAME                       VALUE
+                                
+     ----------------------------------------------------------------------------------
+     'Standardize'              A logical scalar indicating whether the data in X
+                                should be centred and scaled before training.  The
+                                same transformation is applied by ‘predict’.  The
+                                default is false.
+                                
+     'PredictorNames'           A cell array of character vectors specifying the
+                                predictor variable names, in the order they appear
+                                in X.
+                                
+     'ResponseName'             A character vector specifying the name of the
+                                response variable.  The default is 'Y'.
+                                
+     'ResponseTransform'        A character vector naming one of 'none', 'identity',
+                                'exp' or 'log', or a function handle of one
+                                argument, applied to the predicted response by
+                                ‘predict’ and ‘resubPredict’.  The default is
+                                'none'.
+                                
+     'LayerSizes'               A vector of positive integers defining the number of
+                                units in each fully connected hidden layer.  The
+                                default value is 10, a single hidden layer of ten
+                                units.
+                                
+     'LearningRate'             A positive scalar value that defines the learning
+                                rate during the gradient descent.  Default value is
+                                0.003.  A larger rate can drive every unit of a
+                                hidden layer negative, after which a rectifier
+                                passes no gradient and the network stops training.
+                                Applies only when 'Solver' is 'sgd'.
+                                
+     'Solver'                   A character vector naming the solver that trains the
+                                network, either 'lbfgs' or 'sgd'.  The default is
+                                'lbfgs', which minimizes the loss over the whole
+                                training set at once by limited-memory BFGS, as
+                                MATLAB does.  It takes no learning rate, stops on
+                                the three tolerances below, and reaches a lower
+                                training loss in fewer passes over the data, though
+                                each of its iterations costs several passes where an
+                                epoch costs one.  'sgd' visits the samples one at a
+                                time and steps down the gradient of each, running
+                                for 'IterationLimit' epochs; it was the default
+                                before version 1.9.0.
+                                
+     'GradientTolerance'        A nonnegative scalar.  Training stops once the
+                                gradient's infinity norm falls to or below it, which
+                                is the quantity MATLAB tests too.  The default is
+                                1e-6.  Applies only when 'Solver' is 'lbfgs'.
+                                
+     'StepTolerance'            A nonnegative scalar.  Training stops once the
+                                step's infinity norm falls to or below it, which is
+                                the quantity MATLAB tests too.  The default is 1e-6.
+                                Applies only when 'Solver' is 'lbfgs'.
+                                
+     'LossTolerance'            A real scalar.  Training stops once the training
+                                loss falls to or below it.  The test is on the loss
+                                itself and not on its change, matching MATLAB; pass
+                                ‘-Inf’ to switch it off.  The default is 1e-6.
+                                Applies only when 'Solver' is 'lbfgs'.
+                                
+     'Activations'              A character vector or a cellstr vector specifying
+                                the activation functions for the hidden layers of
+                                the neural network, excluding the output layer.  The
+                                available activation functions are 'linear', 'none',
+                                'sigmoid', 'relu', 'tanh', 'lrelu', 'prelu', 'elu'
+                                and 'gelu'.  The default value is 'relu'.
+                                
+     'OutputLayerActivation'    A character vector specifying the activation
+                                function for the output layer.  The available
+                                functions are the same as for 'Activations'.  The
+                                default value is 'none', the identity, which is what
+                                a regression output calls for; anything else bounds
+                                the prediction to that function's range.
+                                
+     'IterationLimit'           A positive integer scalar specifying the maximum
+                                number of training iterations.  The default value is
+                                1000.  Under 'sgd' this counts epochs, under 'lbfgs'
+                                solver iterations.
+                                
+     'DisplayInfo'              A logical scalar indicating whether to print
+                                information during training.  Default is false.
+
+     The weights of each layer are drawn from a uniform range whose half-width
+     is set by that layer's activation, and the scheme cannot be chosen: a
+     rectifying activation ('relu', 'lrelu', 'prelu', 'elu', 'gelu') takes the
+     He range sqrt (6 / fan_in), because it passes only half of its input, and
+     the remaining activations take the Glorot range sqrt (6 / (fan_in +
+     fan_out)), which accounts for the backward pass as well.  A network whose
+     layers do not share an activation is therefore built with both schemes.
+     What each layer was given is reported by the LayerWeightsInitializers field
+     of the fitted model's ModelParameters.
+
+     See also: RegressionNeuralNetwork, fitcnet, fcnntrain, fcnnpredict.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Fit a neural network regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitrsvm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4912
+ -- statistics: MDL = fitrsvm (X, Y)
+ -- statistics: MDL = fitrsvm (..., NAME, VALUE)
+
+     Fit a support vector machine regression model.
+
+     ‘MDL = fitrsvm (X, Y)’ returns a support vector regression model, MDL, with
+     X being the predictor data and Y the continuous response of the
+     observations in X.
+
+        • X must be an NxP numeric matrix of predictor data, where rows
+          correspond to observations and columns to features or variables.
+        • Y must be an Nx1 numeric vector holding the response of the
+          corresponding predictor data in X.  Y must have the same number of
+          rows as X.
+
+     The model is fitted by epsilon-insensitive regression: an error smaller
+     than Epsilon costs nothing, so only the observations outside that tube
+     become support vectors.  Use ‘fitcsvm’ where the response names a class
+     rather than a quantity.
+
+     ‘MDL = fitrsvm (..., NAME, VALUE)’ returns a model with additional options
+     specified by Name-Value pair arguments listed below.
+
+     Model Parameters
+     ----------------
+
+     NAME                       VALUE
+                                
+     ----------------------------------------------------------------------------------
+     'Standardize'              A logical scalar indicating whether the data in X
+                                should be centred and scaled before training.  The
+                                same transformation is applied by ‘predict’.  The
+                                default is false.
+                                
+     'PredictorNames'           A cell array of character vectors specifying the
+                                predictor variable names, in the order they appear
+                                in X.
+                                
+     'ResponseName'             A character vector specifying the name of the
+                                response variable.  The default is 'Y'.
+                                
+     'ResponseTransform'        A character vector naming one of 'none', 'identity',
+                                'exp' or 'log', or a function handle of one
+                                argument, applied to the predicted response.  The
+                                default is 'none'.
+                                
+     'Epsilon'                  A non-negative scalar, the half-width of the
+                                insensitive tube.  The default is ‘iqr (Y) / 13.49’,
+                                a robust estimate of a tenth of the response's
+                                standard deviation, which is what MATLAB uses; where
+                                that is zero it falls back to 0.1.
+                                
+     'BoxConstraint'            A positive scalar bounding the dual coefficients,
+                                the cost of an error outside the tube.  The default
+                                is 1.
+                                
+     'KernelFunction'           A character vector naming the kernel, one of
+                                'linear', the default, 'rbf', 'gaussian',
+                                'polynomial' or 'sigmoid'.
+                                
+     'PolynomialOrder'          A positive integer, the order of the polynomial
+                                kernel.  The default is 3.  It is ignored by every
+                                other kernel.
+                                
+     'KernelScale'              A positive scalar dividing the predictors before the
+                                kernel is applied.  The default is 1.
+                                
+     'KernelOffset'             A non-negative scalar added to the kernel value.
+                                The default is 0.
+                                
+     'SVMtype'                  A character vector selecting the formulation, either
+                                'eps_svr', the default, or 'nu_svr'.  MATLAB fits
+                                only the epsilon form; 'nu_svr' is an Octave
+                                extension.
+                                
+     'Nu'                       A scalar in (0, 1] used by 'nu_svr', bounding the
+                                fraction of support vectors.  The default is 0.5.
+                                
+     'CacheSize'                A positive scalar, the kernel cache in megabytes.
+                                The default is 1000.
+                                
+     'Tolerance'                A non-negative scalar, the tolerance of the
+                                termination criterion.  The default is 1e-6.
+                                
+     'Shrinking'                Either 0 or 1, whether to use the shrinking
+                                heuristic.  The default is 1.
+
+     See also: RegressionSVM, fitcsvm, fitrnet, svmtrain, svmpredict.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Fit a support vector machine regression model.
 
 
 

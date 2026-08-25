@@ -13,7 +13,7 @@ ReconstructionICA
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1800
+# length: 1865
  -- statistics: ReconstructionICA
 
      Reconstruction independent component analysis (RICA) feature-extraction
@@ -25,27 +25,28 @@ ReconstructionICA
 
      An object of this class has the following properties:
 
-        • TransformWeights — the P * Q matrix of learned transformation weights
+        • TransformWeights: the P * Q matrix of learned transformation weights
           (unit-length columns).
-        • Mu, Sigma — the per-predictor mean and standard deviation used when
+        • Mu, Sigma: the per-predictor mean and standard deviation used when
           'Standardize' is true (empty otherwise), each a column vector with one
           entry per predictor.
-        • FitInfo — a structure with the Iteration indices of the fit and the
+        • FitInfo: a structure with the Iteration indices of the fit and the
           Objective value at each of them, both column vectors of the same
           length.  Iteration counts from zero and Objective(1) is the objective
           at the starting weights, so the last entry of each is the solution the
           fit returned.
 
-          The values along that trajectory are this implementation's own: the
-          minimisation runs through Octave's ‘fminunc’, where MATLAB uses a
-          limited-memory BFGS solver, and the two take different steps from the
-          same starting weights.  The length of the history and the iteration
-          counts differ accordingly.  The fitted TransformWeights are
-          unaffected, both solvers reaching the same optimum.
-        • ModelParameters — a structure of the options used for the fit.
-        • NumPredictors, NumLearnedFeatures — the input dimension P and the
+          The values along that trajectory are this implementation's own.  Under
+          the default 'quasinewton' solver the minimisation runs through
+          Octave's ‘fminunc’; 'Solver', 'lbfgs' selects the limited-memory BFGS
+          solver MATLAB uses.  Either way the steps taken from the same starting
+          weights differ from MATLAB's, so the length of the history and the
+          iteration counts differ, and on an objective this far from convex the
+          optimum reached need not be MATLAB's either.
+        • ModelParameters: a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures: the input dimension P and the
           number of learned features Q.
-        • InitialTransformWeights — the starting weights used by the fit.
+        • InitialTransformWeights: the starting weights used by the fit.
 
      See also: rica, sparsefilt.
 
@@ -68,7 +69,7 @@ SparseFiltering
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1735
+# length: 1800
  -- statistics: SparseFiltering
 
      Sparse filtering feature-extraction model.
@@ -79,26 +80,27 @@ SparseFiltering
 
      An object of this class has the following properties:
 
-        • TransformWeights — the P * Q matrix of learned transformation weights.
-        • Mu, Sigma — the per-predictor mean and standard deviation used when
+        • TransformWeights: the P * Q matrix of learned transformation weights.
+        • Mu, Sigma: the per-predictor mean and standard deviation used when
           'Standardize' is true (empty otherwise), each a column vector with one
           entry per predictor.
-        • FitInfo — a structure with the Iteration indices of the fit and the
+        • FitInfo: a structure with the Iteration indices of the fit and the
           Objective value at each of them, both column vectors of the same
           length.  Iteration counts from zero and Objective(1) is the objective
           at the starting weights, so the last entry of each is the solution the
           fit returned.
 
-          The values along that trajectory are this implementation's own: the
-          minimisation runs through Octave's ‘fminunc’, where MATLAB uses a
-          limited-memory BFGS solver, and the two take different steps from the
-          same starting weights.  The length of the history and the iteration
-          counts differ accordingly.  The fitted TransformWeights are
-          unaffected, both solvers reaching the same optimum.
-        • ModelParameters — a structure of the options used for the fit.
-        • NumPredictors, NumLearnedFeatures — the input dimension P and the
+          The values along that trajectory are this implementation's own.  Under
+          the default 'quasinewton' solver the minimisation runs through
+          Octave's ‘fminunc’; 'Solver', 'lbfgs' selects the limited-memory BFGS
+          solver MATLAB uses.  Either way the steps taken from the same starting
+          weights differ from MATLAB's, so the length of the history and the
+          iteration counts differ, and on an objective this far from convex the
+          optimum reached need not be MATLAB's either.
+        • ModelParameters: a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures: the input dimension P and the
           number of learned features Q.
-        • InitialTransformWeights — the starting weights used by the fit.
+        • InitialTransformWeights: the starting weights used by the fit.
 
      See also: sparsefilt, rica.
 
@@ -953,7 +955,7 @@ rica
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2087
+# length: 2845
  -- statistics: MDL = rica (X, Q)
  -- statistics: MDL = rica (X, Q, NAME, VALUE)
 
@@ -968,10 +970,10 @@ rica
      The P * Q weight matrix (with unit-length columns) minimizes the objective
 
           LAMBDA * ||X * W * W' - X||_F^2
-                + sum (sum (0.5 * log (cosh (2 * X * W))))
+                + sum (sum (G (X * W)))
 
      over the transformation weights W, combining a reconstruction cost with a
-     'logcosh' sparsity contrast.
+     sparsity contrast G applied elementwise and selected by 'ContrastFcn'.
 
      Name/Value pairs:
 
@@ -986,16 +988,27 @@ rica
           false).
 
      'ContrastFcn'
-          The sparsity contrast.  Only 'logcosh' — that is 0.5 \log (\cosh (2
-          z)) — is supported.
+          The sparsity contrast G applied to each element z of X * W: 'logcosh'
+          (default), which is 0.5 * log (cosh (2 * z)); 'exp', which is -exp
+          (-z^2 / 2); or 'sqrt', which is sqrt (z^2 + 1e-8), a smooth stand-in
+          for abs (z).
 
      'InitialTransformWeights'
           A P * Q initial value for the weights.  The default is random.
 
      'GradientTolerance', 'StepTolerance'
-          Accepted for MATLAB compatibility and recorded in ModelParameters; the
-          built-in solver iterates up to 'IterationLimit' with tight internal
-          tolerances.
+          Stop once the gradient's or the step's infinity norm falls to or below
+          the given value (default 1e-6 each).  They govern the fit only under
+          'Solver', 'lbfgs'; the 'quasinewton' solver runs to its own tighter
+          internal tolerances and records these without acting on them.
+
+     'Solver'
+          'quasinewton' (default) minimizes through Octave's ‘fminunc’, which
+          carries a full inverse Hessian.  'lbfgs' selects the limited-memory
+          BFGS solver MATLAB uses, holding as many curvature pairs as the
+          transform has parameters, and is several times faster here.  It stops
+          where 'GradientTolerance' and 'StepTolerance' say to, so a value
+          tighter than the default carries it further.
 
      Note on reproducibility
      -----------------------
@@ -1134,7 +1147,7 @@ sparsefilt
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1915
+# length: 2503
  -- statistics: MDL = sparsefilt (X, Q)
  -- statistics: MDL = sparsefilt (X, Q, NAME, VALUE)
 
@@ -1167,9 +1180,18 @@ sparsefilt
           A P * Q initial value for the weights.  The default is random.
 
      'GradientTolerance', 'StepTolerance'
-          Accepted for MATLAB compatibility and recorded in ModelParameters; the
-          built-in solver iterates up to 'IterationLimit' with tight internal
-          tolerances.
+          Stop once the gradient's or the step's infinity norm falls to or below
+          the given value (default 1e-6 each).  They govern the fit only under
+          'Solver', 'lbfgs'; the 'quasinewton' solver runs to its own tighter
+          internal tolerances and records these without acting on them.
+
+     'Solver'
+          'quasinewton' (default) minimizes through Octave's ‘fminunc’, which
+          carries a full inverse Hessian.  'lbfgs' selects the limited-memory
+          BFGS solver MATLAB uses, holding as many curvature pairs as the
+          transform has parameters, and is several times faster here.  It stops
+          where 'GradientTolerance' and 'StepTolerance' say to, so a value
+          tighter than the default carries it further.
 
      Note on reproducibility
      -----------------------
@@ -1202,7 +1224,7 @@ tsne
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2101
+# length: 3400
  -- statistics: Y = tsne (X)
  -- statistics: [Y, LOSS] = tsne (X)
  -- statistics: [...] = tsne (..., NAME, VALUE)
@@ -1220,8 +1242,28 @@ tsne
      Name/Value pairs:
 
      'Algorithm'
-          Only 'exact' is supported (MATLAB's approximate 'barneshut' algorithm
-          is not available).
+          'exact' (default) forms the affinities and the gradient over every
+          pair of points, which costs O(N^2) in time and memory at each
+          iteration.  'barneshut' approximates both: the high-dimensional
+          affinities are kept only over each point's 3 * Perplexity nearest
+          neighbours, and the repulsive part of the gradient is summed over a
+          space-partitioning tree of the embedding, giving O(N log N). Use it
+          when N is large enough that the exact algorithm is slow or cannot
+          allocate; on this machine the two cost the same at about N = 500 and
+          'barneshut' is eight times faster at N = 2000.
+
+          The two do not return the same embedding, and their LOSS values are
+          not comparable either: the divergence is summed over the pairs that
+          carry an affinity, and 'barneshut' keeps far fewer of them.
+
+     'Theta'
+          The tree opening criterion for 'barneshut', a non-negative scalar
+          (default 0.5).  A cell of the tree is collapsed to its centre of mass
+          when its width is smaller than THETA times its distance from the point
+          being pushed, so a larger value is faster and coarser.  0 collapses
+          nothing and makes the repulsion exact, at O(N^2); note that this still
+          leaves the affinities sparse, so it does not reproduce 'exact'.
+          Ignored by 'exact'.
 
      'Distance'
           The distance metric used for the high-dimensional affinities, as

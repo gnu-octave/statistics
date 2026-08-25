@@ -6535,7 +6535,7 @@ raylcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1089
+# length: 1185
  -- statistics: P = raylcdf (X, SIGMA)
  -- statistics: P = raylcdf (X, SIGMA, 'upper')
 
@@ -6556,6 +6556,9 @@ raylcdf
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
+
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
 
      See also: raylinv, raylpdf, raylrnd, raylfit, rayllike, raylstat.
 
@@ -6578,7 +6581,7 @@ raylinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 896
+# length: 992
  -- statistics: X = raylinv (P, SIGMA)
 
      Inverse of the Rayleigh cumulative distribution function (iCDF).
@@ -6595,6 +6598,9 @@ raylinv
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
+
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
 
      See also: raylcdf, raylpdf, raylrnd, raylfit, rayllike, raylstat.
 
@@ -6617,7 +6623,7 @@ raylpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1193
+# length: 1289
  -- statistics: Y = raylpdf (X, SIGMA)
 
      Rayleigh probability density function (PDF).
@@ -6640,6 +6646,9 @@ raylpdf
      other density, which is an inconsistency there rather than a convention: it
      returns 0 at Inf for every other distribution of the same support.
 
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
+
      See also: raylcdf, raylinv, raylrnd, raylfit, rayllike, raylstat.
 
 
@@ -6661,7 +6670,7 @@ raylrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1167
+# length: 1263
  -- statistics: R = raylrnd (SIGMA)
  -- statistics: R = raylrnd (SIGMA, ROWS)
  -- statistics: R = raylrnd (SIGMA, ROWS, COLS, ...)
@@ -6683,6 +6692,9 @@ raylrnd
 
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
 
      See also: raylcdf, raylinv, raylpdf, raylfit, rayllike, raylstat.
 
@@ -8164,7 +8176,7 @@ wblcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1847
+# length: 1986
  -- statistics: P = wblcdf (X)
  -- statistics: P = wblcdf (X, LAMBDA)
  -- statistics: P = wblcdf (X, LAMBDA, K)
@@ -8201,6 +8213,9 @@ wblcdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
+
      See also: wblinv, wblpdf, wblrnd, wblstat, wblplot.
 
 
@@ -8222,7 +8237,7 @@ wblinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1022
+# length: 1161
  -- statistics: X = wblinv (P)
  -- statistics: X = wblinv (P, LAMBDA)
  -- statistics: X = wblinv (P, LAMBDA, K)
@@ -8243,6 +8258,9 @@ wblinv
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
+
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
 
      See also: wblcdf, wblpdf, wblrnd, wblstat, wblplot.
 
@@ -8265,15 +8283,15 @@ wblpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1019
- -- statistics: Y = wblinv (X)
- -- statistics: Y = wblinv (X, LAMBDA)
- -- statistics: Y = wblinv (X, LAMBDA, K)
+# length: 1159
+ -- statistics: Y = wblpdf (X)
+ -- statistics: Y = wblpdf (X, LAMBDA)
+ -- statistics: Y = wblpdf (X, LAMBDA, K)
 
      Weibull probability density function (PDF).
 
      For each element of X, compute the probability density function (PDF) of
-     the Weibull distribution with scale parameter LAMBDA and shpe parameter K.
+     the Weibull distribution with scale parameter LAMBDA and shape parameter K.
      The size of Y is the common size of X, LAMBDA, and K.  A scalar input
      functions as a constant matrix of the same size as the other inputs.
 
@@ -8286,6 +8304,9 @@ wblpdf
      arrays are rejected.  MATLAB accepts a character array and evaluates it at
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
+
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
 
      See also: wblcdf, wblinv, wblrnd, wblfit, wbllike, wblstat, wblplot.
 
@@ -8308,7 +8329,7 @@ wblrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1178
+# length: 1317
  -- statistics: R = wblrnd (LAMBDA, K)
  -- statistics: R = wblrnd (LAMBDA, K, ROWS)
  -- statistics: R = wblrnd (LAMBDA, K, ROWS, COLS, ...)
@@ -8330,6 +8351,9 @@ wblrnd
 
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
+
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
 
      See also: wblcdf, wblinv, wblpdf, wblfit, wbllike, wblstat, wblplot.
 

@@ -2303,7 +2303,7 @@ normfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3747
+# length: 3745
  -- statistics: MUHAT = normfit (X)
  -- statistics: [MUHAT, SIGMAHAT] = normfit (X)
  -- statistics: [MUHAT, SIGMAHAT, MUCI] = normfit (X)
@@ -2330,7 +2330,7 @@ normfit
           is a vector.
 
         • ALPHA is a scalar value in the range (0,1) specifying the confidence
-          level for the confidence intervals calculated as 100*(1 – alpha)%.  By
+          level for the confidence intervals calculated as 100*(1 - alpha)%.  By
           default, the optional argument ALPHA is 0.05 corresponding to 95%
           confidence intervals.  Pass in [] for ALPHA to use the default values.
 
@@ -2532,7 +2532,7 @@ raylfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1708
+# length: 1804
  -- statistics: SIGMAA = raylfit (X)
  -- statistics: [SIGMAA, SIGMACI] = raylfit (X)
  -- statistics: [SIGMAA, SIGMACI] = raylfit (X, ALPHA)
@@ -2566,6 +2566,9 @@ raylfit
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
 
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
+
      See also: raylcdf, raylinv, raylpdf, raylrnd, rayllike, raylstat.
 
 
@@ -2587,7 +2590,7 @@ rayllike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1165
+# length: 1261
  -- statistics: NLOGL = rayllike (SIGMA, X)
  -- statistics: [NLOGL, ACOV] = rayllike (SIGMA, X)
  -- statistics: [...] = rayllike (SIGMA, X, FREQ)
@@ -2609,6 +2612,9 @@ rayllike
 
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
 
      See also: raylcdf, raylinv, raylpdf, raylrnd, raylfit, raylstat.
 
@@ -3100,7 +3106,7 @@ wblfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2193
+# length: 2332
  -- statistics: PARAMHAT = wblfit (X)
  -- statistics: [PARAMHAT, PARAMCI] = wblfit (X)
  -- statistics: [PARAMHAT, PARAMCI] = wblfit (X, ALPHA)
@@ -3143,6 +3149,9 @@ wblfit
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
 
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
+
      See also: wblcdf, wblinv, wblpdf, wblrnd, wbllike, wblstat.
 
 
@@ -3164,7 +3173,7 @@ wbllike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1683
+# length: 1822
  -- statistics: NLOGL = wbllike (PARAMS, X)
  -- statistics: [NLOGL, ACOV] = wbllike (PARAMS, X)
  -- statistics: [...] = wbllike (PARAMS, X, ALPHA, CENSOR)
@@ -3195,6 +3204,9 @@ wbllike
 
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
+
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
 
      See also: wblcdf, wblinv, wblpdf, wblrnd, wblfit, wblstat.
 

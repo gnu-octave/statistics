@@ -116,7 +116,7 @@ anova
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 862
+# length: 842
  -- statistics: anova
 
      Object-oriented interface for analysis of variance.
@@ -133,7 +133,7 @@ anova
      internally when necessary, so users may construct an object and immediately
      call inspection or post-hoc methods.
 
-     See also: anova1, anova2, anovan, multcompare, fitlm, LinearModel.
+     See also: anova1, anova2, anovan, multcompare.
 
 
 # name: <cell-element>
@@ -154,7 +154,7 @@ anova1
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3519
+# length: 4262
  -- statistics: P = anova1 (X)
  -- statistics: P = anova1 (X, GROUP)
  -- statistics: P = anova1 (X, GROUP, DISPLAYOPT)
@@ -211,6 +211,18 @@ anova1
         • STATS is a structure containing statistics useful for performing a
           multiple comparison of means with the MULTCOMPARE function.
 
+     A categorical GROUP may declare levels that no observation uses.  Such a
+     level takes no part in the analysis and is dropped from every field of
+     STATS, so ‘n’, ‘means’ and ‘gnames’ always describe the same groups, in the
+     same order, and can be indexed together.
+
+     This is a deliberate deviation from MATLAB, which drops an unused level
+     from ‘gnames’ but keeps it in ‘n’ and ‘means’ as a count of zero and a mean
+     of ‘NaN’.  Those fields then disagree in length and the group indices run
+     past ‘gnames’, so MATLAB's own ‘multcompare’ reports comparisons against a
+     group holding no observations and labels them with indices that its
+     ‘gnames’ cannot resolve.
+
      If anova1 is called without any output arguments, then it prints the
      results in a one-way ANOVA table to the standard output.  It is also
      printed when DISPLAYOPT is 'on'.
@@ -248,7 +260,7 @@ anova2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2465
+# length: 2611
  -- statistics: P = anova2 (X, REPS)
  -- statistics: P = anova2 (X, REPS, DISPLAYOPT)
  -- statistics: P = anova2 (X, REPS, DISPLAYOPT, MODEL)
@@ -262,7 +274,8 @@ anova2
      anova2 requires two input arguments with an optional third and fourth:
 
         • X contains the data and it must be a matrix of at least two columns
-          and two rows.
+          and two rows.  ‘NaN’ values are not accepted, since ‘anova2’ requires
+          a balanced design; use ‘anovan’ for data with missing observations.
 
         • REPS is the number of replicates for each combination of factor
           groups.
@@ -330,7 +343,7 @@ anovan
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8513
+# length: 12187
  -- statistics: P = anovan (Y, GROUP)
  -- statistics: P = anovan (Y, GROUP, NAME, VALUE)
  -- statistics: [P, ATAB] = anovan (...)
@@ -368,14 +381,30 @@ anovan
 
         • RANDOM is a vector of indices indicating which of the columns (i.e.
           factors) in GROUP should be treated as random effects rather than
-          fixed effects.  Octave ‘anovan’ provides only basic support for random
-          effects.  Specifically, since all F-statistics in ‘anovan’ are
-          calculated using the mean-squared error (MSE), any interaction terms
-          containing a random effect are dropped from the model term definitions
-          and their associated variance is pooled with the residual, unexplained
-          variance making up the MSE. In effect, the model then fitted equates
-          to a linear mixed model with random intercept(s).  Variable names for
-          random factors are appended with a ' symbol.
+          fixed effects.
+
+          In the table ‘anovan’ prints, the name of a random factor is followed
+          by a ' so that it can be told apart at a glance.  That mark is a
+          convention of the printed output only: the names returned in ATAB, in
+          STATS.varnames, and inside the expected-mean-square and denominator
+          expressions carry no mark, so that they read as MATLAB's do.  Which
+          terms are random is reported in the "Type" column of ATAB instead.
+
+          Every interaction involving a random factor stays in the model, and
+          each F ratio is taken against the denominator its expected mean square
+          calls for rather than against the mean squared error.  The expected
+          mean square of a term names the variance each component contributes to
+          it, written ‘Q(...)’ for a fixed term and ‘V(...)’ for a random one;
+          the denominator is the combination of mean squares whose expectation
+          matches the term's with the term itself removed.  Often that is a
+          single mean square, in which case the F ratio carries its degrees of
+          freedom.  When no single mean square will do, one is synthesised from
+          several and carries Satterthwaite degrees of freedom, which are
+          generally not whole numbers.
+
+          The variance component of every random term is estimated from the same
+          system, and reported with confidence bounds.  A component estimated as
+          negative has no interval, as it lies outside the parameter space.
 
      ‘[...] = anovan (Y, GROUP, "model", MODELTYPE)’
 
@@ -392,10 +421,19 @@ anovan
              • a scalar integer : representing the maximum interaction order
 
              • a matrix of term definitions : each row is a term and each column
-               is a factor
+               is a factor.  Entries are nonnegative integer exponents.
+               Exponents greater than one are valid only for factors selected by
+               "continuous".
 
                -- Example:
                A two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
+
+     ‘[...] = anovan (Y, GROUP, "nested", NESTED)’
+
+        • NESTED is an N-by-N logical matrix, where N is the number of factors.
+          A true entry ‘NESTED(i,j)’ specifies that factor i is nested in factor
+          j.  A factor may be nested in more than one parent.  Nested factors
+          must be categorical and use the default contrasts.
 
      ‘[...] = anovan (Y, GROUP, "sstype", SSTYPE)’
 
@@ -403,8 +441,14 @@ anovan
 
              • 1 : Type I sequential sums-of-squares.
 
-             • 2 or "h" : Type II partially sequential (or hierarchical)
-               sums-of-squares
+             • 2 : Type II partially sequential sums-of-squares.  Each term is
+               adjusted for every other term that does not contain it.
+
+             • "h" : hierarchical sums-of-squares.  Each term is adjusted only
+               for the terms below it in the hierarchy, so for a model whose
+               terms are all of first order it agrees with Type II, while a
+               polynomial term is adjusted for its lower powers but not for its
+               higher ones.
 
              • 3 (default) : Type III partial, constrained or marginal
                sums-of-squares
@@ -484,6 +528,33 @@ anovan
      ‘P = anovan (...)’ returns a vector of p-values, one for each term.
 
      ‘[P, ATAB] = anovan (...)’ returns a cell array containing the ANOVA table.
+     Its first row holds the column names, and the columns are, in order, the
+     term name, its sum-of-squares, its degrees of freedom, a singularity flag,
+     its mean square, the F statistic, the p-value, and then two effect sizes:
+     eta squared and partial eta squared.  The first seven follow MATLAB's
+     layout, so a caller reading them by position gets the same quantity in
+     either language; the two effect sizes are an Octave extension and are
+     appended after them.
+
+     A model naming any factor as random reports eight further columns after the
+     p-value, as MATLAB does, with the two effect sizes still last: the term's
+     type, its expected mean square, the mean square and degrees of freedom of
+     the denominator its F ratio was taken against, the definition of that
+     denominator, and the variance component of a random term with its
+     confidence bounds.  A denominator that no single mean square provides is
+     synthesised from several and carries Satterthwaite degrees of freedom,
+     which are generally not whole numbers.
+
+     The singularity flag is 1 when a term is aliased with the rest of the
+     model, which happens when the design is not of full rank, most often
+     because a combination of factor levels holds no observations.  The degrees
+     of freedom reported for such a term are the ones that can be estimated,
+     which may be fewer than the term's design block has columns and may be
+     zero.  Whether a term is aliased depends on the model it is adjusted for,
+     and therefore on "sstype": a term that is estimable in a sequential fit may
+     not be estimable in a marginal one.  A flagged term's sum-of-squares is not
+     uniquely attributable to it, so the corresponding F and p-value should not
+     be read as a test of that term.
 
      ‘[P, ATAB, STATS] = anovan (...)’ returns a structure containing additional
      statistics, including degrees of freedom and effect sizes for each term in
@@ -1308,7 +1379,7 @@ jbtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3184
+# length: 3178
  -- statistics: H = jbtest (X)
  -- statistics: H = jbtest (X, ALPHA)
  -- statistics: H = jbtest (X, ALPHA, MCTOL)
@@ -1356,8 +1427,8 @@ jbtest
      here by Monte-Carlo simulation, so it is itself an estimate of the true
      null quantiles.  MATLAB's table is likewise a Monte-Carlo estimate but from
      a different simulation, so the two tables agree only to about two decimal
-     places.  As a result the reported p-value and critical value, and — in a
-     narrow band of statistic values around the critical value — the test
+     places.  As a result the reported p-value and critical value, and (in a
+     narrow band of statistic values around the critical value) the test
      decision H, can differ slightly from MATLAB in edge cases.  These
      differences are an unavoidable consequence of the Monte-Carlo origin of
      both tables, not a difference in method.  Supply MCTOL for a direct

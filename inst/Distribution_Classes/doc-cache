@@ -1238,7 +1238,7 @@ prob.RayleighDistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1610
+# length: 1744
  -- statistics: prob.RayleighDistribution
 
      Rayleigh probability distribution object.
@@ -1249,15 +1249,18 @@ prob.RayleighDistribution
      The Rayleigh distribution is a continuous probability distribution for
      nonnegative random variables.  It is often used to model the magnitude of a
      vector in two dimensions where the components are normally distributed with
-     zero mean and equal variance.  It is defined by scale parameter SIGMA.
+     zero mean and equal variance.  It is defined by scale parameter B.
+
+     B is the sigma of the usual mathematical notation.  The ‘rayl*’ functions
+     name the same quantity SIGMA; this class follows MATLAB.
 
      There are several ways to create a ‘prob.RayleighDistribution’ object.
 
         • Fit a distribution to data using the ‘fitdist’ function.
         • Create a distribution with fixed parameter values using the ‘makedist’
           function.
-        • Use the constructor prob.RayleighDistribution (SIGMA) to create a
-          Rayleigh distribution with fixed parameter value SIGMA.
+        • Use the constructor prob.RayleighDistribution (B) to create a Rayleigh
+          distribution with fixed parameter value B.
         • Use the static method prob.RayleighDistribution.fit (X, CENSOR, FREQ)
           to fit a distribution to the data in X using the same input arguments
           as the ‘raylfit’ function.
@@ -1502,7 +1505,7 @@ prob.WeibullDistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1526
+# length: 1690
  -- statistics: prob.WeibullDistribution
 
      Weibull probability distribution object.
@@ -1512,15 +1515,19 @@ prob.WeibullDistribution
 
      The Weibull distribution is a continuous probability distribution that
      models the time to failure of materials or the lifetime of mechanical
-     systems.  It is defined by scale parameter LAMBDA and shape parameter K.
+     systems.  It is defined by scale parameter A and shape parameter B.
+
+     A is the lambda of the usual mathematical notation and B is its k.  The
+     ‘wbl*’ functions name the same two quantities LAMBDA and K; this class
+     follows MATLAB.
 
      There are several ways to create a ‘prob.WeibullDistribution’ object.
 
         • Fit a distribution to data using the ‘fitdist’ function.
         • Create a distribution with fixed parameter values using the ‘makedist’
           function.
-        • Use the constructor prob.WeibullDistribution (LAMBDA, K) to create a
-          Weibull distribution with fixed parameter values LAMBDA and K.
+        • Use the constructor prob.WeibullDistribution (A, B) to create a
+          Weibull distribution with fixed parameter values A and B.
         • Use the static method prob.WeibullDistribution.fit (X, ALPHA, CENSOR,
           FREQ) to fit a distribution to the data in X using the same input
           arguments as the ‘wblfit’ function.

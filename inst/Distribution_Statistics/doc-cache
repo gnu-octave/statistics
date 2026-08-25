@@ -1132,7 +1132,7 @@ raylstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 519
+# length: 615
  -- statistics: [M, V] = raylstat (SIGMA)
 
      Compute statistics of the Rayleigh distribution.
@@ -1145,6 +1145,9 @@ raylstat
 
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     The ‘prob.RayleighDistribution’ class names this same parameter B, after
+     MATLAB.
 
      See also: raylcdf, raylinv, raylpdf, raylrnd, raylfit, rayllike.
 
@@ -1395,7 +1398,7 @@ wblstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 640
+# length: 779
  -- statistics: [M, V] = wblstat (LAMBDA, K)
 
      Compute statistics of the Weibull distribution.
@@ -1409,6 +1412,9 @@ wblstat
 
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
+
+     The ‘prob.WeibullDistribution’ class names these same two parameters A and
+     B, after MATLAB. LAMBDA is its A and K is its B.
 
      See also: wblcdf, wblinv, wblpdf, wblrnd, wblfit, wbllike, wblplot.
 

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 7
+# columns: 12
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -102,58 +102,6 @@ Compute the edit (Levenshtein) distance between strings or documents.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 11
-fcnnpredict
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1616
- -- statistics: PRED_Y = fcnnpredict (MDL, XC)
- -- statistics: PRED_Y = fcnnpredict  (MDL, XC, NUMTHREADS)
- -- statistics: [PRED_Y, SCORES] = fcnnpredict (...)
-
-     Make predictions from a fully connected Neural Network.
-
-     ‘PRED_Y = fcnnpredict (MDL, XC)’ requires the following input arguments.
-
-        • MDL : A structure containing the trained model parameters as generated
-          by the ‘fcnntrain’ function.
-
-        • XC : An NxM matrix containing the data set to be predicted upon.  Rows
-          N correspond to individual samples and columns M correspond to
-          features (dimensions).  Type of XC must be double and the number of
-          features must correspond to those of the trained model.
-     ‘fcnnpredict’ can also be called with a third input argument, in which
-     case, NUMTHREADS, a positive scalar integer value, defines the number of
-     threads to be used when computing the activation layers.  For layers with
-     less than 1000 neurons, NUMTHREADS always defaults to 1.  ‘fcnnpredict’
-     returns the predicted labels, PRED_Y, and if a second output argument is
-     requested, it also returns the corresponding values of the neural networks
-     output in SCORES.
-
-     Installation Note: in order to support parallel processing on MacOS, users
-     have to manually add support for OpenMP by adding the following flags to
-     CFLAGS and CXXFLAGS prior to installing the statistics package:
-
-     ‘setenv ("CPPFLAGS", "-I/opt/homebrew/opt/libomp/include -Xclang
-     -fopenmp")’
-
-     See also: fcnntrain, fitcnet, ClassificationNeuralNetwork.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 55
-Make predictions from a fully connected Neural Network.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
 # length: 9
 fcnntrain
 
@@ -161,9 +109,10 @@ fcnntrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3540
- -- statistics: MDL = fcnntrain (X, Y,  LAYERSIZES, ACTIVATIONS, NUMTHREADS,
-          ALPHA,  LEARNINGRATE, EPOCHS, DISPLAYINFO)
+# length: 4717
+ -- statistics: MDL = fcnntrain (X, Y,  LAYERSIZES, ACTIVATIONS,
+          OUTPUTLAYERACTIVATION,  NUMTHREADS, LEARNINGRATE, EPOCHS, DISPLAYINFO)
+ -- statistics: MDL = fcnntrain (...,  LOSSFUNCTION)
 
      Train a fully connected Neural Network.
 
@@ -176,30 +125,35 @@ fcnntrain
         • Y : An Nx1 column vector containing the labels of the training
           dataset.  The labels must be natural numbers (positive integers)
           starting from 1 up to the number of classes, similarly as returned by
-          the 'grp2idx' function.  Type of Y must be double.
+          the 'grp2idx' function.  Type of Y must be double.  Under regression,
+          selected by LOSSFUNCTION 2, Y is instead an NxR matrix of response
+          values, which may take any finite value, and the output layer is sized
+          to its R columns rather than to a number of classes.
 
         • LAYERSIZES : A numeric row vector of integer values defining the size
           of the hidden layers of the network.  Input and output layers are
           automatically determined by the training data and their labels.
 
-        • ACTIVATIONS : A numeric row vector of integer values defining the
-          activation functions to be used at each layer including the output
-          layer.  The corresponding codes to activation functions is:
-             • ‘0’ : 'Linear'
-             • ‘1’ : 'Sigmoid'
-             • ‘2’ : 'Rectified Linear Unit (ReLU)'
-             • ‘3’ : 'Hyperbolic tangent (tanh)'
-             • ‘4’ : 'Softmax'
-             • ‘5’ : 'Parametric or Leaky ReLU'
-             • ‘6’ : 'Exponential Linear Unit (ELU)'
-             • ‘7’ : 'Gaussian Error Linear Unit (GELU)'
+        • ACTIVATIONS : The activation function of the hidden layers, named as a
+          character vector applying to all of them or as a cellstring naming
+          them one by one, in which case it must have one name per hidden layer.
+          The supported names are:
+             • 'linear' or 'none' : the identity
+             • 'sigmoid'
+             • 'relu' : rectified linear unit
+             • 'tanh' : hyperbolic tangent
+             • 'softmax'
+             • 'lrelu' or 'prelu' : leaky rectified linear unit, whose negative
+               slope is a constant 0.01
+             • 'elu' : exponential linear unit, saturating at -1
+             • 'gelu' : Gaussian error linear unit
+
+        • OUTPUTLAYERACTIVATION : The activation function of the output layer,
+          named as a character vector from the same list.
 
         • NUMTHREADS : A positive scalar integer value defining the number of
           threads used for computing the activation layers.  For layers with
           less than 1000 neurons, NUMTHREADS always defaults to 1.
-
-        • ALPHA : A positive scalar value defining the parameter alpha used in
-          ReLU and ELU activation layers.
 
         • LEARNINGRATE : A positive scalar value defining the learning rate used
           by the gradient descend algorithm during training.
@@ -209,6 +163,18 @@ fcnntrain
 
         • DISPLAYINFO : A boolean scalar indicating whether to print information
           during training.
+
+     ‘MDL = fcnntrain (..., LOSSFUNCTION)’ also selects the loss the network is
+     trained against.  LOSSFUNCTION is a scalar: 0 for mean squared error over a
+     one-hot target, which is the default, 1 for cross entropy, and 2 for mean
+     squared error over a continuous response.  Cross entropy expects the output
+     layer to report a probability over the classes, so it belongs with a
+     softmax output; paired that way the two gradients compose to y - t.  Its
+     loss is undefined where the predicted probability of the true class is
+     zero, so both the logarithm and its derivative are floored.  Code 2 is
+     regression: Y holds response values rather than labels, the output layer
+     belongs with the identity activation, and the returned model carries no
+     ‘Accuracy’ field, there being no labels to count.
 
      ‘fcnntrain’ returns the trained model, MDL, as a structure containing the
      following fields:
@@ -221,13 +187,10 @@ fcnntrain
           layer.
 
         • ‘Accuracy’ : The prediction accuracy at each iteration during the
-          neural network model's training process.
+          neural network model's training process.  Absent under regression.
 
         • ‘Loss’ : The loss value recorded at each iteration during the neural
           network model's training process.
-
-        • ‘Alpha’ : The value of the Alpha parameter used in ReLU and ELU
-          activation layers.
 
      Installation Note: in order to support parallel processing on MacOS, users
      have to manually add support for OpenMP by adding the following flags to
@@ -244,6 +207,373 @@ fcnntrain
 # elements: 1
 # length: 39
 Train a fully connected Neural Network.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+gamboostinter
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1925
+ -- statistics: MDL = gamboostinter (X, Y, F0, METHOD, PAIRS, NUMTREES,
+          LEARNRATE, MAXNUMSPLITS)
+
+     Boost trees over selected pairs of predictors.
+
+     ‘MDL = gamboostinter (...)’ fits the interaction phase of a generalized
+     additive model, continuing from the additive prediction the predictor phase
+     left rather than refitting it.  It is used by ‘ClassificationGAM’ and
+     ‘RegressionGAM’, and it is not meant to be called directly.
+
+        • X is an NxP numeric matrix of predictors and Y the Nx1 response, as
+          ‘gamboosttrain’ takes them.
+
+        • F0 is the Nx1 additive prediction of the predictor phase.  The
+          interaction phase starts from it, so its deviance is where this phase
+          begins.
+
+        • METHOD selects what is boosted, 1 the logistic deviance and 2 the
+          squared error.
+
+        • PAIRS is an Mx2 matrix of predictor index pairs, one-based and within
+          range.  Choosing them is the caller's business; see ‘gamboostpairs’.
+
+        • NUMTREES, LEARNRATE and MAXNUMSPLITS are the interaction phase's own
+          budget, initial step and split limit.
+
+     MDL is a structure with the following fields.
+
+        • PairBinEdges, a 1xP cell of the coarse cut points the surfaces are
+          held on.  Interactions are binned coarser than main effects: a tree
+          limited to MAXNUMSPLITS splits carves no more regions than that, so a
+          finer grid buys nothing and costs memory in every pair.
+        • PairValues, a 1xM cell of matrices, one value per cell of the pair's
+          grid.
+        • Intercept, the constant the recentred surfaces gave up.  Add it to the
+          intercept of the predictor phase.
+        • NumTrees, ReasonForTermination, Deviance and Residuals, as
+          ‘gamboosttrain’ reports them.
+
+     See also: gamboosttrain, gamboostpairs, gamboostpredict.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Boost trees over selected pairs of predictors.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+gamboostpairs
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1706
+ -- statistics: S = gamboostpairs (X, R)
+
+     Score every pair of predictors for an interaction.
+
+     ‘S = gamboostpairs (X, R)’ lays the residuals R of a fitted additive model
+     on the coarse grid of each pair of columns of X and returns the two-way
+     analysis of variance F ratio testing what only the cells explain.  It is
+     used to rank candidate interactions for ‘ClassificationGAM’ and
+     ‘RegressionGAM’, and it is not meant to be called directly.
+
+     The p-values are deliberately not computed here.  Turning F into a
+     probability needs ‘fcdf’, which the package already ships and which is
+     verified against MATLAB, so the caller applies it rather than a second
+     implementation being carried in the compiled engine.  Which pairs to keep
+     is policy and belongs beside that.
+
+        • X is an NxP numeric matrix of predictors, and P must be at least 2 for
+          any pair to exist.
+
+        • R is the Nx1 residual vector of the additive fit.
+
+     S is a structure with the following fields, one row per pair, ordered as
+     ‘nchoosek’ orders them.
+
+        • Pairs, the Mx2 matrix of predictor index pairs.
+        • F, the Mx1 vector of F ratios.  A pair with too few observations, no
+          spare degrees of freedom or no within-cell scatter scores 0.
+        • DF1 and DF2, the Mx1 numerator and denominator degrees of freedom.
+        • BinEdges, a 1xP cell of the coarse cut points each predictor was laid
+          on.  The grid is fixed at eight equal-frequency bins, which is what
+          MATLAB reports for pair detection at every sample size.
+
+     See also: gamboosttrain, gamboostpredict, fcdf, ClassificationGAM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Score every pair of predictors for an interaction.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+gamboostpredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1850
+ -- statistics: Y = gamboostpredict (BINEDGES, SHAPEVALUES, X, INTERCEPT)
+ -- statistics: Y = gamboostpredict (..., LINK)
+ -- statistics: Y = gamboostpredict (..., LINK, PAIRBINEDGES, PAIRVALUES, PAIRS)
+
+     Predict from a generalized additive model of boosted trees.
+
+        • BINEDGES is a 1xP cell of row vectors and SHAPEVALUES a 1xP cell of
+          column vectors, as ‘gamboosttrain’ returns them in the fields of the
+          same names.  Each shape function is a step function over its
+          predictor's bins, so a term is evaluated by a lookup.
+
+        • X is an NxP numeric matrix with one column per additive term, and a
+          count that does not match is an error.  A missing value contributes
+          nothing from that term rather than making the whole prediction NaN,
+          which is what a tree does with a value it cannot place.  A value
+          outside the range the term was fitted over falls in the nearest bin,
+          so a shape function is constant beyond its data rather than
+          extrapolated.
+
+        • INTERCEPT is the model's constant term.
+
+        • LINK, if given, selects what the additive prediction is mapped
+          through: 0 returns it as it stands and 1 takes it as a log-odds,
+          returning the Nx2 matrix of class probabilities whose second column is
+          the logistic function of it.  The default is 0.
+
+        • PAIRBINEDGES, PAIRVALUES and PAIRS carry the interaction terms, as
+          ‘gamboostinter’ returns the first two and as it was given the third.
+          Each pair contributes the value of the cell its two predictors fall
+          in, and a pair with either predictor missing contributes nothing.  All
+          three must be given together or none of them.
+
+     See also: gamboosttrain, gampredict, ClassificationGAM, RegressionGAM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Predict from a generalized additive model of boosted trees.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+gamboosttrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3126
+ -- statistics: MDL = gamboosttrain (X, Y, METHOD, NUMTREES, LEARNRATE,
+          MAXNUMSPLITS)
+ -- statistics: MDL = gamboosttrain (X, Y, METHOD, NUMTREES, LEARNRATE,
+          MAXNUMSPLITS, VERBOSE, NUMPRINT, F0)
+ -- statistics: MDL = gamboosttrain (..., VERBOSE, NUMPRINT)
+
+     Fit a generalized additive model of boosted trees.
+
+     ‘MDL = gamboosttrain (X, Y, METHOD,  NUMTREES, LEARNRATE, MAXNUMSPLITS)’
+     boosts one tree per column of X in each round and returns the additive
+     model as a structure.  It is the fitting engine shared by
+     ‘ClassificationGAM’ and ‘RegressionGAM’, and it is not meant to be called
+     directly.
+
+        • X is an NxP numeric matrix of predictors.  A missing value is not an
+          error: the observation takes no part in the affected predictor's trees
+          and that term contributes nothing to its prediction.
+
+        • Y is an Nx1 numeric vector of responses.  For METHOD 1 it must hold
+          zeros and ones.
+
+        • METHOD selects what is boosted: 1 the logistic deviance, as a
+          classifier is fitted, and 2 the squared error, as a regression is
+          fitted.
+
+        • NUMTREES is the number of rounds, each fitting one tree per predictor.
+          It is a budget rather than a count: a fit that stops improving ends
+          earlier and says so.
+
+        • LEARNRATE is the step a round starts at.  A round that fails to earn
+          its place is retried at half the step, so this is an initial value and
+          not a fixed one.
+
+        • MAXNUMSPLITS is the largest number of splits any one tree may make.  1
+          is a stump.
+
+        • VERBOSE, if greater than zero, prints a trace of the fit, and NUMPRINT
+          how often: the first round and then every NUMPRINT rounds.  The RelTol
+          column is the relative improvement the round bought, which is what the
+          stopping rule reads.  MATLAB prints a column under the same heading
+          holding a quantity of its own that cannot be derived from anything
+          else it reports, so the two are not comparable.
+
+     MDL is a structure with the following fields.
+
+        • Intercept, the constant term the additive terms are added to.  For a
+          classifier it is fitted rather than fixed: it is seeded with the
+          log-odds of the response mean and then collects the constant each
+          shape function gives up when it is recentred.  For a regression it is
+          the response mean and stays there.
+        • BinEdges, a 1xP cell of row vectors, the cut points each predictor was
+          binned at.
+        • ShapeValues, a 1xP cell of column vectors, one value per bin.  A shape
+          function is a step function, so this is the whole of it however many
+          trees produced it.
+        • NumTrees, the number of rounds actually performed.
+        • ReasonForTermination, why fitting stopped.
+        • Deviance, the deviance at the last round.
+        • Residuals, the Nx1 residual vector at the last round.
+
+     See also: gamboostpredict, gamtrain, ClassificationGAM, RegressionGAM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Fit a generalized additive model of boosted trees.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+gampredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1537
+ -- statistics: YFIT = gampredict (PARAMETERS, X, INTERCEPT)
+ -- statistics: SCORE = gampredict (PARAMETERS, X, INTERCEPT, LINK)
+
+     Evaluate a generalized additive model on new data.
+
+     ‘YFIT = gampredict (PARAMETERS, X, INTERCEPT)’ adds the intercept to the
+     sum of the additive terms evaluated at each row of X and returns the Nx1
+     result.  It is the prediction engine shared by ‘ClassificationGAM’ and
+     ‘RegressionGAM’, and it is not meant to be called directly.
+
+        • PARAMETERS is a 1xP structure array of piecewise polynomials, as
+          returned by ‘gamtrain’ in the field of the same name.
+
+        • X is an NxP numeric matrix with one column per additive term, and a
+          count that does not match is an error.  A model carrying interaction
+          terms must therefore be given the augmented matrix, not the predictors
+          alone.  A missing value predicts NaN, since no term of the model is
+          defined at it.  A value outside the range the term was fitted over is
+          extrapolated from the nearest piece, as ‘ppval’ extrapolates.
+
+        • INTERCEPT is the model's constant term.
+
+        • LINK, if given, selects what the additive prediction is mapped
+          through: 0 returns it as it stands and 1 takes it as a log-odds,
+          returning the Nx2 matrix of class probabilities whose second column is
+          the logistic function of it.  The default is 0.
+
+     See also: gamtrain, ClassificationGAM, RegressionGAM, fitcgam, fitrgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Evaluate a generalized additive model on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+gamtrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2466
+ -- statistics: MDL = gamtrain (X, Y, KNOTS, ORDER, METHOD, INTER, P1, P2)
+
+     Fit a generalized additive model of smoothing splines.
+
+     ‘MDL = gamtrain (X, Y, KNOTS, ORDER,  METHOD, INTER, P1, P2)’ fits one
+     univariate spline per column of X and returns the additive model as a
+     structure.  It is the fitting engine shared by ‘ClassificationGAM’ and
+     ‘RegressionGAM’, and it is not meant to be called directly.
+
+        • X is an NxP numeric matrix of predictors.  A missing value is not an
+          error: the observation is left out of the affected predictor's spline
+          and its prediction from that term is NaN.
+
+        • Y is an Nx1 numeric vector of responses.  For METHOD 1 it must hold
+          zeros and ones.
+
+        • KNOTS is a 1xP vector giving the number of spline pieces for each
+          predictor, and ORDER a 1xP vector giving the degree of the polynomial
+          on each piece.  A spline of K pieces and degree D spans a space of K +
+          D dimensions.
+
+        • METHOD selects the fitting scheme: 1 boosts the log-odds by gradient
+          descent, as a classifier is fitted, and 2 backfits the partial
+          residuals, as a regression is fitted.
+
+        • INTER is the intercept the fit starts from: a proportion for METHOD 1,
+          which is stored as its log-odds, and the response mean for METHOD 2.
+          A proportion of zero or one is not an error: its log-odds is infinite,
+          the gradient is zero throughout and every additive term stays at zero,
+          which is the fit a single-class response has.
+
+        • P1 and P2 are the scheme's two parameters.  For METHOD 1 they are the
+          learning rate and the number of boosting iterations; for METHOD 2 the
+          convergence tolerance and the maximum number of backfitting cycles.
+
+     MDL is a structure with the following fields.
+
+        • Intercept, the constant term the additive terms are added to.
+        • Parameters, a 1xP structure array of piecewise polynomials in the form
+          ‘ppval’ consumes, one per predictor.
+        • Iterations, the number of iterations performed.
+        • Residuals, the Nx1 residual vector at the last iteration.
+        • RSS, the scalar residual sum of squares for METHOD 1 and the 1xP
+          per-term criterion the backfitting stops on for METHOD 2.
+
+     See also: gampredict, ClassificationGAM, RegressionGAM, fitcgam, fitrgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Fit a generalized additive model of smoothing splines.
 
 
 

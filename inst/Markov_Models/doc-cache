@@ -301,7 +301,7 @@ hmmtrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4188
+# length: 5127
  -- statistics: [ESTTR, ESTOUT] = hmmtrain (SEQUENCE, TRANSGUESS, OUTGUESS)
  -- statistics: [...] = hmmtrain (..., "algorithm", ALGORITHM)
  -- statistics: [...] = hmmtrain (..., "symbols", SYMBOLS)
@@ -381,6 +381,22 @@ hmmtrain
           transguess = [0.6, 0.4; 0.5, 0.5];
           outguess = [0.3, 0.3, 0.4; 0.5, 0.3, 0.2];
           [esttr, estout] = hmmtrain (sequence, transguess, outguess);
+
+     Two results of Viterbi training differ from MATLAB's, deliberately.
+
+     Given several sequences, the counts of every sequence are pooled and
+     normalized once, so a sequence contributes in proportion to its length.
+     MATLAB normalizes each sequence separately and averages the results, which
+     weights an eight-symbol sequence as heavily as a twenty-four-symbol one and
+     is not the maximum likelihood estimate.  Its own Baum-Welch pools expected
+     counts, as both algorithms do here.
+
+     Given ‘"pseudotransitions"’ or ‘"pseudoemissions"’, the pseudo-counts are
+     added to the counted transitions and outputs, once per iteration, before
+     the row is normalized.  MATLAB does the same on its first iteration; from
+     its second it adds them to an estimate that has already been normalized, so
+     its iterate mixes counts with probabilities and is no longer a count matrix
+     of any state path.
 
      References
      ----------
