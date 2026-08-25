@@ -76,6 +76,12 @@ function obj = loadmodel (filename)
     case 'ClassificationLinear'
       obj = ClassificationLinear.load_model (filename, data);
 
+    case 'ClassificationNaiveBayes'
+      obj = ClassificationNaiveBayes.load_model (filename, data);
+
+    case 'CompactClassificationNaiveBayes'
+      obj = CompactClassificationNaiveBayes.load_model (filename, data);
+
     case 'ClassificationNeuralNetwork'
       obj = ClassificationNeuralNetwork.load_model (filename, data);
 

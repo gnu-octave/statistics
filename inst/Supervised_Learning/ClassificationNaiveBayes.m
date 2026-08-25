@@ -1175,6 +1175,118 @@ classdef ClassificationNaiveBayes
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNaiveBayes} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a ClassificationNaiveBayes object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## ClassificationNaiveBayes object into an Octave binary file, the name of
+    ## which is specified in @var{filename}, along with an extra variable, which
+    ## defines the type classification object these variables constitute.  Use
+    ## @code{loadmodel} in order to load a classification object into Octave's
+    ## workspace.
+    ##
+    ## @seealso{loadmodel, fitcnb, ClassificationNaiveBayes}
+    ## @end deftypefn
+    function savemodel (this, fname)
+
+      if (nargin < 2)
+        error (strcat ("ClassificationNaiveBayes.savemodel:", ...
+                       " too few input arguments."));
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error (strcat ("ClassificationNaiveBayes.savemodel:", ...
+                       " FNAME must be a character vector."));
+      endif
+
+      ## Generate variable for class name
+      classdef_name = 'ClassificationNaiveBayes';
+
+      ## Create variables from model properties
+      X                      = this.X;
+      Y                      = this.Y;
+      RowsUsed               = this.RowsUsed;
+      W                      = this.W;
+      ModelParameters        = this.ModelParameters;
+      NumObservations        = this.NumObservations;
+      BinEdges               = this.BinEdges;
+      PredictorNames         = this.PredictorNames;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ResponseName           = this.ResponseName;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
+      ClassNames             = this.ClassNames;
+      Prior                  = this.Prior;
+      Cost                   = this.Cost;
+      ScoreTransform         = this.ScoreTransform;
+      DistributionNames      = this.DistributionNames;
+      Mu                     = this.Mu;
+      Sigma                  = this.Sigma;
+      CategoricalLevels      = this.CategoricalLevels;
+
+      ## A kernel predictor's density is a classdef object, which Octave's
+      ## save cannot serialize, so it goes out as the sample it was fitted to
+      ## and load_model rebuilds it from that and the recorded bandwidth.
+      DistributionParameters = nbKernelPack (this.DistributionParameters, ...
+                                             this.DistributionNames);
+      Kernel                 = this.Kernel;
+      Support                = this.Support;
+      Width                  = this.Width;
+      STfun                  = this.STfun;
+
+      ## Save classdef name and all model properties as individual variables
+      save ('-binary', fname, 'classdef_name', 'X', 'Y', 'RowsUsed', 'W', ...
+            'ModelParameters', 'NumObservations', 'BinEdges', ...
+            'PredictorNames', 'CategoricalPredictors', 'ResponseName', ...
+            'ExpandedPredictorNames', 'ClassNames', 'Prior', 'Cost', ...
+            'ScoreTransform', 'DistributionNames', 'Mu', 'Sigma', ...
+            'DistributionParameters', 'CategoricalLevels', 'Kernel', ...
+            'Support', 'Width', 'STfun');
+
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+
+      ## The smallest fit the class accepts, filled property by property
+      ## below.  Two observations per class give every distribution something
+      ## to estimate from, and nothing of the stub survives the copy.
+      mdl = ClassificationNaiveBayes ([0; 1; 2; 3], [1; 1; 2; 2]);
+
+      ## Copy the saved data into the object.  Iterate over what was saved
+      ## rather than over fieldnames (mdl): a private property such as STfun
+      ## is written out by savemodel but is not reported by fieldnames, so
+      ## comparing the two sets could never match and every load failed.
+      ## Assignment is legal here because this is a method of the class
+      ## itself.
+      names = fieldnames (data);
+
+      ## These three are assigned once everything else is in place, and in
+      ## this order rather than the file's.  Cost comes before Prior because
+      ## set.Prior counts the classes by the rows of Cost and not by
+      ## ClassNames, so a prior arriving first is measured against the stub's.
+      order = {'Cost', 'Prior', 'ScoreTransform'};
+      late = ismember (names, order);
+      tail = order(ismember (order, names));
+      names = [names(! late); tail(:)];
+      for i = 1:numel (names)
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          msg = 'ClassificationNaiveBayes.load_model: invalid model in ''%s''.';
+          error (msg, filename);
+        end_try_catch
+      endfor
+
+      mdl.DistributionParameters = nbKernelUnpack ( ...
+                    mdl.DistributionParameters, mdl.DistributionNames, ...
+                    mdl.Kernel, mdl.Support, mdl.Width);
+
+    endfunction
+
   endmethods
 
 
@@ -1620,6 +1732,67 @@ endclassdef
 %!               'DistributionNames', 'mvmn', 'CategoricalPredictors', 'all');
 %! assert_equal (Mdl.CategoricalPredictors, [1, 2]);
 %! assert_equal (Mdl.DistributionNames, {'mvmn', 'mvmn'});
+
+## A fitted model survives savemodel and loadmodel: every property comes back
+## as it was and it predicts the same.
+%!test
+%! load fisheriris
+%! Mdl = fitcnb (meas, species);
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (M2), 'ClassificationNaiveBayes');
+%! p = properties (Mdl);
+%! for i = 1:numel (p)
+%!   assert_equal (M2.(p{i}), Mdl.(p{i}));
+%! endfor
+%! assert_equal (predict (M2, meas(1:10,:)), predict (Mdl, meas(1:10,:)));
+
+## A kernel predictor stores a classdef object, which Octave's save cannot
+## serialize.  It is written as the sample and refitted at the recorded
+## bandwidth, so the density comes back identical and not merely close.
+%!test
+%! load fisheriris
+%! Mdl = fitcnb (meas, species, 'DistributionNames', 'kernel');
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (M2.DistributionParameters{1,1}), ...
+%!               'prob.KernelDistribution');
+%! assert_equal (M2.Width, Mdl.Width);
+%! assert_equal (predict (M2, meas(1:10,:)), predict (Mdl, meas(1:10,:)));
+%! assert_equal (logp (M2, meas(1:10,:)), logp (Mdl, meas(1:10,:)), 1e-12);
+
+## Mixed distributions, a categorical predictor among them, and a model
+## carrying a transform and a non-default cost.
+%!test
+%! load fisheriris
+%! X = [meas, round(meas(:,1))];
+%! Mdl = fitcnb (X, species, 'DistributionNames', ...
+%!               {'normal', 'kernel', 'normal', 'kernel', 'mvmn'}, ...
+%!               'CategoricalPredictors', 5, ...
+%!               'Cost', [0, 2, 1; 1, 0, 1; 1, 1, 0]);
+%! Mdl.ScoreTransform = 'logit';
+%! fname = tempname ();
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.Cost, Mdl.Cost);
+%! assert_equal (M2.ScoreTransform, 'logit');
+%! assert_equal (M2.CategoricalLevels, Mdl.CategoricalLevels);
+%! [l1, s1] = predict (Mdl, X(1:10,:));
+%! [l2, s2] = predict (M2, X(1:10,:));
+%! assert_equal (l2, l1);
+%! assert_equal (s2, s1);
+
+%!error<ClassificationNaiveBayes.savemodel: too few input arguments.> ...
+%! savemodel (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
+%!error<ClassificationNaiveBayes.savemodel: FNAME must be a character vector.> ...
+%! savemodel (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
+%!error<ClassificationNaiveBayes.savemodel: FNAME must be a character vector.> ...
+%! savemodel (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
 
 %!error<ClassificationNaiveBayes: the 'mn' distribution applies to every predictor at once and cannot be named for some of them.> ...
 %! fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'DistributionNames', {'mn', 'normal'})

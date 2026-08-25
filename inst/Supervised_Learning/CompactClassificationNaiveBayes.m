@@ -562,6 +562,111 @@ classdef CompactClassificationNaiveBayes
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationNaiveBayes} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a CompactClassificationNaiveBayes object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## CompactClassificationNaiveBayes object into an Octave binary file, the
+    ## name of which is specified in @var{filename}, along with an extra
+    ## variable, which defines the type classification object these variables
+    ## constitute.  Use @code{loadmodel} in order to load a classification
+    ## object into Octave's workspace.
+    ##
+    ## @seealso{loadmodel, fitcnb, CompactClassificationNaiveBayes}
+    ## @end deftypefn
+    function savemodel (this, fname)
+
+      if (nargin < 2)
+        error (strcat ("CompactClassificationNaiveBayes.savemodel:", ...
+                       " too few input arguments."));
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error (strcat ("CompactClassificationNaiveBayes.savemodel:", ...
+                       " FNAME must be a character vector."));
+      endif
+
+      ## Generate variable for class name
+      classdef_name = 'CompactClassificationNaiveBayes';
+
+      ## Create variables from model properties
+      DistributionNames      = this.DistributionNames;
+      Mu                     = this.Mu;
+      Sigma                  = this.Sigma;
+      CategoricalLevels      = this.CategoricalLevels;
+
+      ## A kernel predictor's density is a classdef object, which Octave's
+      ## save cannot serialize, so it goes out as the sample it was fitted to
+      ## and load_model rebuilds it from that and the recorded bandwidth.
+      DistributionParameters = nbKernelPack (this.DistributionParameters, ...
+                                             this.DistributionNames);
+      Kernel                 = this.Kernel;
+      Support                = this.Support;
+      Width                  = this.Width;
+      ClassNames             = this.ClassNames;
+      Prior                  = this.Prior;
+      Cost                   = this.Cost;
+      ScoreTransform         = this.ScoreTransform;
+      PredictorNames         = this.PredictorNames;
+      CategoricalPredictors  = this.CategoricalPredictors;
+      ResponseName           = this.ResponseName;
+      ExpandedPredictorNames = this.ExpandedPredictorNames;
+      STfun                  = this.STfun;
+
+      ## Save classdef name and all model properties as individual variables
+      save ('-binary', fname, 'classdef_name', 'DistributionNames', 'Mu', ...
+            'Sigma', 'DistributionParameters', 'CategoricalLevels', ...
+            'Kernel', 'Support', 'Width', 'ClassNames', 'Prior', 'Cost', ...
+            'ScoreTransform', 'PredictorNames', 'CategoricalPredictors', ...
+            'ResponseName', 'ExpandedPredictorNames', 'STfun');
+
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+
+      ## The compact model is built from a full one and has no training data
+      ## of its own, so the smallest fit the full class accepts is compacted
+      ## and then filled property by property.
+      mdl = CompactClassificationNaiveBayes ( ...
+                    ClassificationNaiveBayes ([0; 1; 2; 3], [1; 1; 2; 2]));
+
+      ## Copy the saved data into the object.  Iterate over what was saved
+      ## rather than over fieldnames (mdl): a private property such as STfun
+      ## is written out by savemodel but is not reported by fieldnames, so
+      ## comparing the two sets could never match and every load failed.
+      ## Assignment is legal here because this is a method of the class
+      ## itself.
+      names = fieldnames (data);
+
+      ## These three are assigned once everything else is in place, and in
+      ## this order rather than the file's.  Cost comes before Prior because
+      ## set.Prior counts the classes by the rows of Cost and not by
+      ## ClassNames, so a prior arriving first is measured against the stub's.
+      order = {'Cost', 'Prior', 'ScoreTransform'};
+      late = ismember (names, order);
+      tail = order(ismember (order, names));
+      names = [names(! late); tail(:)];
+      for i = 1:numel (names)
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          msg = strcat ("CompactClassificationNaiveBayes.load_model:", ...
+                        " invalid model in '%s'.");
+          error (msg, filename);
+        end_try_catch
+      endfor
+
+      mdl.DistributionParameters = nbKernelUnpack ( ...
+                    mdl.DistributionParameters, mdl.DistributionNames, ...
+                    mdl.Kernel, mdl.Support, mdl.Width);
+
+    endfunction
+
   endmethods
 
 endclassdef
@@ -663,6 +768,42 @@ endclassdef
 %! [~, score] = predict (CMdl, [3, 1]);
 %! assert_equal (score, [0.75, 0.25], 1e-12);
 %! assert_equal (logp (CMdl, [3, 1]), -Inf);
+
+## A compact model survives savemodel and loadmodel, kernel densities and all,
+## although it has no training data of its own to be rebuilt from.
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcnb (meas, species));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! C2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (C2), 'CompactClassificationNaiveBayes');
+%! p = properties (CMdl);
+%! for i = 1:numel (p)
+%!   assert_equal (C2.(p{i}), CMdl.(p{i}));
+%! endfor
+%! assert_equal (predict (C2, meas(1:10,:)), predict (CMdl, meas(1:10,:)));
+
+%!test
+%! load fisheriris
+%! CMdl = compact (fitcnb (meas, species, 'DistributionNames', 'kernel'));
+%! fname = tempname ();
+%! savemodel (CMdl, fname);
+%! C2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (class (C2.DistributionParameters{1,1}), ...
+%!               'prob.KernelDistribution');
+%! assert_equal (C2.Width, CMdl.Width);
+%! assert_equal (predict (C2, meas(1:10,:)), predict (CMdl, meas(1:10,:)));
+
+%!error<CompactClassificationNaiveBayes.savemodel: too few input arguments.> ...
+%! savemodel (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])))
+%!error<CompactClassificationNaiveBayes.savemodel: FNAME must be a character vector.> ...
+%! savemodel (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), 1)
+%!error<CompactClassificationNaiveBayes.savemodel: FNAME must be a character vector.> ...
+%! savemodel (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), ...
+%!            ['ab'; 'cd'])
 
 ## Test input validation
 %!error<CompactClassificationNaiveBayes: too few input arguments.> ...
