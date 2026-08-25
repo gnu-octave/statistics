@@ -4,7 +4,8 @@
 OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            svmtrain.oct fcnntrain.oct fcnnpredict.oct \
            gamtrain.oct gampredict.oct gamboosttrain.oct gamboostpredict.oct \
-           gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct
+           gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct \
+           __knnselect__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -63,6 +64,10 @@ __lbfgs__.oct: __lbfgs__.cc lbfgs.h
 # The Barnes-Hut summation behind tsne's 'barneshut' algorithm.
 __bhtsne__.oct: __bhtsne__.cc
 	$(MKOCTFILE) __bhtsne__.cc
+
+# The partial selection the nearest-neighbour searches take their K from.
+__knnselect__.oct: __knnselect__.cc
+	$(MKOCTFILE) __knnselect__.cc
 
 # Clean target
 clean:

@@ -245,8 +245,7 @@ classdef LocalOutlierFactor
     ## LOF of the training observations from the self-excluded distance matrix.
     function [kdist, lrd, scores] = lofTrain_ (D, k)
       n = rows (D);
-      [Ds, ord] = sort (D, 2);
-      NB = ord(:, 1:k);
+      [NB, Ds] = __knnselect__ (D, k);
       kdist = Ds(:, k);
       lrd = zeros (n, 1);
       for i = 1:n

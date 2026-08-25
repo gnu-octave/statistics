@@ -341,12 +341,12 @@ function [idx, dist] = knnsearch (X, Y, varargin)
           idx {i} = id(tied_idx, :)';
         endfor
       else
-        ## No ties included
+        ## No ties included.  The K smallest come from a partial selection
+        ## rather than from sorting every row and discarding the tail, which
+        ## is where this branch used to spend most of its time.
         D = pdist2 (X, Y, Distance, DistParameter);
         D = reshape (D', size (Y, 1), size (X, 1));
-        [dist, idx] = sort (D, 2);
-        dist = dist(:,1:K);
-        idx = idx(:,1:K);
+        [idx, dist] = __knnselect__ (D, K);
       endif
     endif
   endif

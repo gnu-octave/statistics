@@ -571,8 +571,8 @@ classdef ExhaustiveSearcher
         if (K == 1 && ! IncludeTies)
           [D(blk_start:blk_end), idx(blk_start:blk_end)] = min (D_blk, [], 2);
         else
-          [sorted_D, sorted_idx] = sort (D_blk, 2);
           if (IncludeTies)
+            [sorted_D, sorted_idx] = sort (D_blk, 2);
             for i = 1:blk_rows
               if (K > columns (sorted_D))
                 kth_dist = sorted_D(i, end);
@@ -584,8 +584,10 @@ classdef ExhaustiveSearcher
               idx{blk_start + i - 1} = tie_idx(order);
             endfor
           else
-            idx(blk_start:blk_end, :) = sorted_idx(:, 1:K);
-            D(blk_start:blk_end, :) = sorted_D(:, 1:K);
+            ## Partial selection, not a full sort of every row.
+            [bi, bd] = __knnselect__ (D_blk, K);
+            idx(blk_start:blk_end, :) = bi;
+            D(blk_start:blk_end, :) = bd;
           endif
         endif
       endfor
