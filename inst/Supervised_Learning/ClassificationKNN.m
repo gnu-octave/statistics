@@ -1594,9 +1594,12 @@ classdef ClassificationKNN
         endif
         labels = [labels; this.ClassNames(idl,:)];
 
-        ## Calculate scores and cost
+        ## The expected cost of assigning to each class is the posterior
+        ## weighted by the cost matrix, sum_j P(j) * Cost(j,k).  It was
+        ## 1 - freq, which is that product only for the default matrix and
+        ## ignored any other.
         scores = [scores; freq];
-        cost = [cost; 1-freq];
+        cost = [cost; freq * this.Cost];
 
       endfor
 
@@ -4366,3 +4369,20 @@ endfunction
 %! delete (fname);
 %! assert_equal (M2.Distance, 'manhattan');
 %! assert_equal (predict (M2, meas(1:5,:)), predict (Mdl, meas(1:5,:)));
+
+## The third output is the expected cost of each assignment, the posterior
+## weighted by the cost matrix.  A default matrix cannot tell that apart from
+## 1 - posterior, so the fixture below sets an asymmetric one.
+%!test
+%! load fisheriris
+%! b = strcmp (species, 'setosa');
+%! Mdl = fitcknn (meas, b, 'Cost', [0, 2; 5, 0]);
+%! [label, ~, cost] = predict (Mdl, meas([1, 51],:));
+%! assert_equal (label, [true; false]);
+%! assert_equal (cost, [5, 0; 0, 2]);
+
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [~, score, cost] = predict (Mdl, meas([1, 60, 120],:));
+%! assert_equal (cost, 1 - score);
