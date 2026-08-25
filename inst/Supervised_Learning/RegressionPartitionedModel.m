@@ -157,7 +157,25 @@ classdef RegressionPartitionedModel
     ##
     ## Parameters the folds were fitted with
     ##
-    ## A structure, carried over from the model that was cross validated.
+    ## A structure holding the parameters the folds were fitted with, carried
+    ## through from the learner that was cross validated, beside
+    ## @qcode{NLearn}, the number of folds, and the @qcode{Version},
+    ## @qcode{Method} and @qcode{Type} tags of this class.  The
+    ## learner's own tags are replaced rather than kept, so a cross-validated
+    ## SVM reports @qcode{Method} as @qcode{'PartitionedModel'} and not
+    ## @qcode{'SVM'}.
+    ##
+    ## @strong{Deviation from MATLAB.}  MATLAB reports the parameter record of
+    ## the cross-validation @emph{ensemble} here rather than of the learner,
+    ## so it says nothing at all about how the folds were fitted: of its
+    ## eighteen fields only the fold count, its partitioner and a fit template
+    ## carry anything, and the rest are boosting settings left inert.  Nor can
+    ## the parameters be reached through the folds, a compact model carrying
+    ## none in MATLAB.  This class reports the fit instead, which is strictly
+    ## more than MATLAB offers, and everything MATLAB's record does carry is
+    ## published here as the @qcode{KFold}, @qcode{Partition}, @qcode{X},
+    ## @qcode{Y}, @qcode{W} and @qcode{CrossValidatedModel} properties.
+    ##
     ## This property is read-only.
     ##
     ## @end deftp
@@ -358,7 +376,11 @@ classdef RegressionPartitionedModel
       this.CrossValidatedModel = strrep (class (Mdl), 'Regression', '');
       this.ResponseTransform = Mdl.ResponseTransform;
       this.RTfun = Mdl.RTfun;
-      this.ModelParameters = Mdl.ModelParameters;
+      ## The learner's parameters, under this class's own tags.  MATLAB
+      ## reports an EnsembleParams here instead and so says nothing about the
+      ## fit; see the ModelParameters property for the deviation.
+      this.ModelParameters = partitionedModelParams (Mdl, this.KFold, ...
+                               'PartitionedModel', 'regression');
       if (any (strcmp (properties (Mdl), 'IsStandardDeviationFit')))
         this.IsStandardDeviationFit = Mdl.IsStandardDeviationFit;
       endif
@@ -889,11 +911,12 @@ endclassdef
 %! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionGAM');
 %! assert_equal (CVMdl.CrossValidatedModel, 'GAM');
 %! assert_equal (CVMdl.NumObservations, 20);
-%! ## A GAM carries the same thirteen-field ModelParameters MATLAB reports,
-%! ## and the cross-validated model reads it off like every other backing.
+%! ## The learner's thirteen fields come through, with NLearn added and the
+%! ## three tags reissued for this class, so fourteen in all.
 %! assert_equal (isstruct (CVMdl.ModelParameters), true);
-%! assert_equal (numfields (CVMdl.ModelParameters), 13);
+%! assert_equal (numfields (CVMdl.ModelParameters), 14);
 %! assert_equal (isfield (CVMdl.ModelParameters, 'NumTreesPerPredictor'), true);
+%! assert_equal (CVMdl.ModelParameters.Method, 'PartitionedModel');
 
 %!error<RegressionPartitionedModel: unsupported model type.> ...
 %! RegressionPartitionedModel (1, cvpartition (10, 'KFold', 2))
@@ -1309,3 +1332,21 @@ endclassdef
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (CVMdl.ModelParameters.KernelPolynomialOrder, 2);
 %! assert_equal (numel (CVMdl.Trained), 3);
+
+## ModelParameters carries the learner's parameters under this class's own
+## tags.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitrsvm (meas(:,2:4), meas(:,1)), 'KFold', 3);
+%! MP = CVMdl.ModelParameters;
+%! assert_equal (MP.Method, 'PartitionedModel');
+%! assert_equal (MP.Type, 'regression');
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.NLearn, 3);
+%! assert_equal (MP.SVMtype, 'eps_svr');
+
+%!test
+%! load fisheriris
+%! MP = crossval (fitrgp (meas(:,2:4), meas(:,1)), 'KFold', 3).ModelParameters;
+%! assert_equal (MP.FitMethod, 'Exact');
+%! assert_equal (MP.Method, 'PartitionedModel');

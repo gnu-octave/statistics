@@ -228,9 +228,26 @@ classdef ClassificationPartitionedModel
     ##
     ## Model parameters
     ##
-    ## A structure containing the model parameters used during training.
-    ## This includes any model-specific parameters that were configured prior
-    ## to training.  This property is read-only.
+    ## A structure holding the parameters the folds were fitted with, carried
+    ## through from the learner that was cross validated, beside
+    ## @qcode{NLearn}, the number of folds, and the @qcode{Version},
+    ## @qcode{Method} and @qcode{Type} tags of this class.  The
+    ## learner's own tags are replaced rather than kept, so a cross-validated
+    ## SVM reports @qcode{Method} as @qcode{'PartitionedModel'} and not
+    ## @qcode{'SVM'}.
+    ##
+    ## @strong{Deviation from MATLAB.}  MATLAB reports the parameter record of
+    ## the cross-validation @emph{ensemble} here rather than of the learner,
+    ## so it says nothing at all about how the folds were fitted: of its
+    ## eighteen fields only the fold count, its partitioner and a fit template
+    ## carry anything, and the rest are boosting settings left inert.  Nor can
+    ## the parameters be reached through the folds, a compact model carrying
+    ## none in MATLAB.  This class reports the fit instead, which is strictly
+    ## more than MATLAB offers, and everything MATLAB's record does carry is
+    ## published here as the @qcode{KFold}, @qcode{Partition}, @qcode{X},
+    ## @qcode{Y}, @qcode{W} and @qcode{CrossValidatedModel} properties.
+    ##
+    ## This property is read-only.
     ##
     ## @end deftp
     ModelParameters              = [];
@@ -525,17 +542,6 @@ classdef ClassificationPartitionedModel
             this.Trained{k} = compact (tmp);
           endfor
 
-          ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct ();
-          paramList = {'DiscrimType', 'FillCoeffs', 'Gamma'};
-          for i = 1:numel (paramList)
-            paramName = paramList{i};
-            if (isprop (Mdl, paramName))
-              params.(paramName) = Mdl.(paramName);
-            endif
-          endfor
-          this.ModelParameters = params;
-
         case 'GAM'
           ## Arguments to pass in fitcgam
           args = {};
@@ -592,7 +598,6 @@ classdef ClassificationPartitionedModel
           ## branch used to gather were the spline engine's, and the fit has
           ## been boosted trees by default since 2026-08-24, so the struct it
           ## built described a scheme the folds were no longer fitted under.
-          this.ModelParameters = Mdl.ModelParameters;
 
         case 'KNN'
           ## Arguments to pass in fitcknn
@@ -650,18 +655,6 @@ classdef ClassificationPartitionedModel
             this.Trained{k} = fitcknn (this.X(idx, :), this.Y(idx,:), args{:});
           endfor
 
-          ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct ();
-          paramList = {'NumNeighbors', 'Distance', 'DistParameter', ...
-                       'NSMethod', 'DistanceWeight'};
-          for i = 1:numel (paramList)
-            paramName = paramList{i};
-            if (isprop (Mdl, paramName))
-              params.(paramName) = Mdl.(paramName);
-            endif
-          endfor
-          this.ModelParameters = params;
-
         case 'NaiveBayes'
           ## Arguments to pass in fitcnb.  ScoreTransform is deliberately
           ## absent, as it is for the KNN above: the parent applies it to the
@@ -704,7 +697,6 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          this.ModelParameters = Mdl.ModelParameters;
 
         case 'NeuralNetwork'
           ## Arguments to pass in fitcnet
@@ -743,7 +735,6 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## The model's own, rather than a list of names restated here.
-          this.ModelParameters = Mdl.ModelParameters;
 
         case 'SVM'
           ## Get ModelParameters structure from ClassificationSVM object
@@ -780,9 +771,14 @@ classdef ClassificationPartitionedModel
 
           ## The model's own, rather than the argument struct this branch
           ## assembled to refit the folds with.
-          this.ModelParameters = Mdl.ModelParameters;
 
       endswitch
+
+      ## The learner's parameters, under this class's own tags.  MATLAB
+      ## reports an EnsembleParams here instead and so says nothing about the
+      ## fit; see the ModelParameters property for the deviation.
+      this.ModelParameters = partitionedModelParams (Mdl, this.KFold, ...
+                               'PartitionedModel', 'classification');
 
       ## No fold carries the transform: the parent applies it once to the
       ## assembled score.  Cleared here rather than at each fit call so that
@@ -2273,3 +2269,35 @@ endclassdef
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (CVMdl.ModelParameters.KernelPolynomialOrder, 2);
 %! assert_equal (numel (CVMdl.Trained), 3);
+
+## ModelParameters carries the learner's parameters under this class's own
+## tags, so a cross-validated SVM says what it was fitted with and still
+## reports itself as a partitioned model.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcsvm (meas, strcmp (species, 'setosa')), 'KFold', 3);
+%! MP = CVMdl.ModelParameters;
+%! assert_equal (MP.Method, 'PartitionedModel');
+%! assert_equal (MP.Type, 'classification');
+%! assert_equal (MP.Version, 1);
+%! assert_equal (MP.NLearn, 3);
+%! assert_equal (MP.SVMtype, 'c_svc');
+
+## The discriminant's parameters come through whole.  They were assembled
+## from a name list before, which dropped FillCoeffs because this class has
+## no property of that name to read it from.
+%!test
+%! load fisheriris
+%! CVMdl = crossval (fitcdiscr (meas, species, 'FillCoeffs', 'off'), ...
+%!                   'KFold', 3);
+%! MP = CVMdl.ModelParameters;
+%! assert_equal (MP.FillCoeffs, false);
+%! assert_equal (MP.DiscrimType, 'linear');
+%! assert_equal (MP.Method, 'PartitionedModel');
+
+%!test
+%! load fisheriris
+%! MP = crossval (fitcknn (meas, species, 'Distance', 'minkowski'), ...
+%!                'KFold', 3).ModelParameters;
+%! assert_equal (MP.Exponent, 2);
+%! assert_equal (MP.Method, 'PartitionedModel');

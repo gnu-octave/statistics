@@ -179,9 +179,27 @@ classdef RegressionPartitionedKernel
     ##
     ## What was cross-validated, and how
     ##
-    ## A structure carrying @qcode{Type}, @qcode{Method},
-    ## @qcode{LearnerTemplates} and @qcode{NLearn}.  This property is
-    ## read-only.
+    ## A structure holding the parameters the folds were fitted with, carried
+    ## through from the learner that was cross validated, beside
+    ## @qcode{NLearn}, the number of folds, and the @qcode{Version},
+    ## @qcode{Method} and @qcode{Type} tags of this class, with
+    ## @qcode{LearnerTemplates} naming the backing.  The
+    ## learner's own tags are replaced rather than kept, so a cross-validated
+    ## SVM reports @qcode{Method} as @qcode{'PartitionedKernel'} and not
+    ## @qcode{'SVM'}.
+    ##
+    ## @strong{Deviation from MATLAB.}  MATLAB reports the parameter record of
+    ## the cross-validation @emph{ensemble} here rather than of the learner,
+    ## so it says nothing at all about how the folds were fitted: of its
+    ## eighteen fields only the fold count, its partitioner and a fit template
+    ## carry anything, and the rest are boosting settings left inert.  Nor can
+    ## the parameters be reached through the folds, a compact model carrying
+    ## none in MATLAB.  This class reports the fit instead, which is strictly
+    ## more than MATLAB offers, and everything MATLAB's record does carry is
+    ## published here as the @qcode{KFold}, @qcode{Partition}, @qcode{X},
+    ## @qcode{Y}, @qcode{W} and @qcode{CrossValidatedModel} properties.
+    ##
+    ## This property is read-only.
     ##
     ## @end deftp
     ModelParameters        = [];
@@ -280,10 +298,12 @@ classdef RegressionPartitionedKernel
               parseResponseTransform (P.ResponseTransform, ...
                                       'RegressionPartitionedKernel');
 
-      this.ModelParameters = struct ('Type', 'regression', ...
-                                     'Method', 'PartitionedKernel', ...
-                                     'LearnerTemplates', 'Kernel', ...
-                                     'NLearn', this.KFold);
+      ## The learner's parameters, under this class's own tags.  MATLAB
+      ## reports an EnsembleParams here instead and so says nothing about
+      ## the fit; see the ModelParameters property for the deviation.
+      this.ModelParameters = partitionedModelParams (this.Trained{1}, ...
+                               this.KFold, 'PartitionedKernel', ...
+                               'regression', 'Kernel');
 
     endfunction
 
@@ -539,3 +559,15 @@ endclassdef
 %! kfoldLoss (RegressionPartitionedKernel (ones (10, 2), ones (10, 1), ...
 %!                     'KFold', 2, 'Learner', 'leastsquares'), 'LossFun', ...
 %!                     'epsiloninsensitive')
+
+## ModelParameters carries the learner's parameters beside the tags this
+## class reports for itself.
+%!test
+%! load fisheriris
+%! CVMdl = fitrkernel (meas(:,2:4), meas(:,1), 'KFold', 3);
+%! MP = CVMdl.ModelParameters;
+%! assert_equal (MP.Method, 'PartitionedKernel');
+%! assert_equal (MP.LearnerTemplates, 'Kernel');
+%! assert_equal (MP.NLearn, 3);
+%! assert_equal (MP.Learner, 'svm');
+%! assert_equal (MP.BlockSize, 4000);
