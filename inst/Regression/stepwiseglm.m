@@ -72,10 +72,56 @@
 ##
 ## All @var{Name}/@var{Value} pairs accepted by @code{fitglm} (such as
 ## @qcode{'Distribution'}, @qcode{'Link'}, @qcode{'Weights'}, @qcode{'Offset'},
-## @qcode{'BinomialSize'}, @qcode{'Intercept'}, @qcode{'DispersionFlag'}, and
-## @qcode{'Exclude'}) are also accepted and forwarded to the fit.  Categorical
-## predictors are not supported by the stepwise search; use @code{fitglm} for a
-## fixed model with categorical predictors.
+## @qcode{'BinomialSize'}, @qcode{'Intercept'}, @qcode{'DispersionFlag'},
+## @qcode{'CategoricalVars'}, and @qcode{'Exclude'}) are also accepted and
+## forwarded to the fit.
+##
+## @subsubheading The @code{Steps} property
+##
+## The returned model's @code{Steps} property records the trace, as a
+## structure with seven fields.  @code{Start}, @code{Lower}, and @code{Upper}
+## are @code{LinearFormula} objects for the starting model and the two bounds;
+## @code{Criterion} is the criterion as it was asked for; @code{PEnter} and
+## @code{PRemove} are the thresholds it ran under; and @code{History} is a
+## table with one row per step.
+##
+## @code{History} always carries @code{Action} (@qcode{'Start'},
+## @qcode{'Add'}, or @qcode{'Remove'}), @code{TermName}, @code{Terms} (the
+## terms matrix after the step, over the model's variables), @code{DF} (the
+## coefficient count after the step), and @code{delDF} (the change in it,
+## @emph{negative} for a removal).  The remaining columns follow the
+## criterion, which is why a history is read by name and not by position:
+##
+## @multitable @columnfractions 0.25 0.7
+## @headitem Criterion @tab Further columns
+## @item @qcode{'Deviance'} @tab @code{Deviance}, then @code{Chi2Stat} or
+## @code{FStat} as the dispersion is fixed or estimated, then @code{PValue}.
+## @item @qcode{'sse'} @tab @code{FStat} and @code{pValue}.
+## @item @qcode{'aic'}, @qcode{'bic'} @tab one column, @code{AIC} or
+## @code{BIC}, holding the criterion's value after the step, the starting
+## model included.
+## @end multitable
+##
+## The first row is the starting model, named by its right-hand side.
+##
+## @subsubheading Categorical predictors
+##
+## A categorical predictor with @math{L} levels contributes @math{L - 1}
+## indicator columns, the first level being the omitted reference, and the
+## search treats that whole group as a @emph{single term}: it is added or
+## removed in one step, worth @math{L - 1} degrees of freedom, and never one
+## indicator at a time.  An interaction naming a categorical predictor behaves
+## the same way, contributing one column per indicator and entering as one
+## term.  @code{Steps.History} names such a term by the predictor
+## (@qcode{'g'}, or @qcode{'x1:g'} for the interaction) rather than by its
+## indicators, while @code{CoefficientNames} names the indicators
+## (@qcode{'g_B'}, @qcode{'x1:g_C'}).
+##
+## In a table, every column that groups its observations is taken as
+## categorical: a cell array of character vectors, a @code{categorical} array,
+## a string array, or a logical column.  @qcode{'CategoricalVars'} adds to
+## these, and is the only way to mark a column of a predictor @emph{matrix};
+## it takes predictor names, column indices, or a logical vector.
 ##
 ## @seealso{GeneralizedLinearModel, fitglm, stepwisefit, glmfit, glmval}
 ## @end deftypefn
@@ -139,15 +185,8 @@ function mdl = stepwiseglm (varargin)
       pred_names = col_names(! strcmp (col_names, resp_name));
     endif
     p = numel (pred_names);
+    ## Filled in by RAW_TO_CODES below, which reads the table itself.
     X = zeros (height (data), p);
-    for j = 1:p
-      col = data.(pred_names{j});
-      if (iscell (col) || isa (col, 'categorical') || ! isnumeric (col))
-        error (strcat ("stepwiseglm: categorical predictors are not", ...
-                       " supported; use fitglm for a fixed model."));
-      endif
-      X(:, j) = double (col(:));
-    endfor
     y = double (data.(resp_name)(:));
   else
     if (! (isnumeric (data) && isreal (data) && ismatrix (data)))
@@ -188,10 +227,18 @@ function mdl = stepwiseglm (varargin)
     endif
   endif
 
-  if (! isempty (opts.CategoricalVars))
-    error (strcat ("stepwiseglm: categorical predictors are not supported;", ...
-                   " use fitglm for a fixed model."));
-  endif
+  ## ------------------------------------------------------------------------ ##
+  ## Categorical predictors.  Each is coded 1..L and expanded to L-1 indicator
+  ## columns, exactly as GeneralizedLinearModel encodes them, so that the final
+  ## model refits the design the search scored.  The search itself stays over
+  ## the model's variables, which is what makes a categorical enter and leave
+  ## as one term of L-1 degrees of freedom rather than one indicator at a time.
+  ## ------------------------------------------------------------------------ ##
+  cat_cols = categorical_flags (opts.CategoricalVars, pred_names, p, data);
+  [X, cat_levels] = raw_to_codes (data, X, data, pred_names, cat_cols, ...
+                                  rows (X));
+  [X_enc, enc_names, cat_info] = encode_categorical (X, cat_cols, ...
+                                   pred_names, cat_levels, opts.Intercept);
 
   ## Distribution and criterion validation.
   known_distr = {'normal', 'binomial', 'poisson', 'gamma', ...
@@ -221,7 +268,7 @@ function mdl = stepwiseglm (varargin)
     error (strcat ("stepwiseglm: no observations remain after removing", ...
                    " missing/excluded rows."));
   endif
-  Xs = X(subset, :);
+  Xs = X_enc(subset, :);
   ys = y(subset);
   n  = rows (Xs);
 
@@ -295,7 +342,9 @@ function mdl = stepwiseglm (varargin)
   ## Package the fitting context passed to the inner fitter.
   ctx = struct ('X', Xs, 'yfit', yfit, 'y', ys, 'distr', distr, ...
                 'gargs', {gargs}, 'ilink', ilink, 'off', off_sub, ...
-                'N', N_sub, 'w', w_ll, 'n', n);
+                'N', N_sub, 'w', w_ll, 'n', n, 'p', p, ...
+                'pred_names', {pred_names}, 'cat_info', cat_info, ...
+                'enc_names', {enc_names});
 
   ## ------------------------------------------------------------------------ ##
   ## Resolve the starting, lower, and upper models to terms matrices.
@@ -324,7 +373,13 @@ function mdl = stepwiseglm (varargin)
   unwind_protect
 
     f0      = fit_terms (T, ctx);
-    hist    = start_history (T, f0.dev, p);
+    if (any (strcmp (crit, {'aic', 'bic'})))
+      start_stat = crit_value (f0, crit, ctx);
+    else
+      start_stat = NaN;
+    endif
+    hist    = start_history (T, f0.dev, f0.ncoef, ...
+                             start_name (T, pred_names, p), start_stat);
     stepnum = 0;
     do
       stepnum += 1;
@@ -347,12 +402,27 @@ function mdl = stepwiseglm (varargin)
   ## Build the final object (canonical term order) and attach the trace.
   ## ------------------------------------------------------------------------ ##
   T_final = canonical_sort (T, p);
-  mdl     = GeneralizedLinearModel (data, resp, T_final, glmnv{:});
+  ## With categorical predictors the constructor reads a terms matrix over the
+  ## encoded columns, so the selected terms are expanded and the resolved names
+  ## are handed over -- an index or a table column detected here would
+  ## otherwise be re-derived, and need not agree.
+  if (isempty (cat_info.names))
+    spec_final  = T_final;
+    glmnv_final = glmnv;
+  else
+    spec_final  = expand_terms (T_final, ctx);
+    glmnv_final = set_categorical (glmnv, cat_info.names);
+  endif
+  mdl = GeneralizedLinearModel (data, resp, spec_final, glmnv_final{:});
 
+  var_names = [pred_names, {resp_name}];
   steps = struct ();
-  steps.Start     = terms_formula (T_start, resp_name, pred_names, p);
-  steps.Lower     = terms_formula (T_lower, resp_name, pred_names, p);
-  steps.Upper     = terms_formula (T_upper, resp_name, pred_names, p);
+  steps.Start     = LinearFormula (T_start, var_names, 'ResponseName', ...
+                                   resp_name, 'Link', linkspec);
+  steps.Lower     = LinearFormula (T_lower, var_names, 'ResponseName', ...
+                                   resp_name, 'Link', linkspec);
+  steps.Upper     = LinearFormula (T_upper, var_names, 'ResponseName', ...
+                                   resp_name, 'Link', linkspec);
   steps.Criterion = criterion_label (crit, estdisp);
   steps.PEnter    = sw.PEnter;
   steps.PRemove   = sw.PRemove;
@@ -481,7 +551,7 @@ function [T, hstep] = one_step (T, T_lower, T_upper, ctx, p, crit, estdisp, ...
     endfor
     if (! isempty (worst) && worst_p > premove)
       T     = worst.Tn;
-      hstep = mkhist ('Remove', worst.row, T, worst.df, worst.ddf, ...
+      hstep = mkhist ('Remove', worst.row, T, worst.df, -worst.ddf, ...
                       worst.dev, worst.stat, worst.pval, p);
     endif
 
@@ -496,8 +566,8 @@ function [T, hstep] = one_step (T, T_lower, T_upper, ctx, p, crit, estdisp, ...
       v  = crit_value (fN, crit, ctx);
       if (v < best_val - 1e-12)
         best_val = v;
-        best = struct ('row', r, 'act', 'Add', 'T', [T; r], ...
-                       'dev', fN.dev, 'df', fN.ncoef, 'val', v);
+        best = struct ('row', r, 'act', 'Add', 'T', [T; r], 'dev', fN.dev, ...
+                       'df', fN.ncoef, 'ddf', fN.ncoef - fC.ncoef, 'val', v);
       endif
     endfor
     removable = candidates_remove (T, T_lower, p);
@@ -508,13 +578,13 @@ function [T, hstep] = one_step (T, T_lower, T_upper, ctx, p, crit, estdisp, ...
       v  = crit_value (fN, crit, ctx);
       if (v < best_val - 1e-12)
         best_val = v;
-        best = struct ('row', r, 'act', 'Remove', 'T', Tn, ...
-                       'dev', fN.dev, 'df', fN.ncoef, 'val', v);
+        best = struct ('row', r, 'act', 'Remove', 'T', Tn, 'dev', fN.dev, ...
+                       'df', fN.ncoef, 'ddf', fN.ncoef - fC.ncoef, 'val', v);
       endif
     endfor
     if (! isempty (best))
       T     = best.T;
-      hstep = mkhist (best.act, best.row, T, best.df, NaN, best.dev, ...
+      hstep = mkhist (best.act, best.row, T, best.df, best.ddf, best.dev, ...
                       best.val, NaN, p);
     endif
   endif
@@ -522,10 +592,11 @@ endfunction
 
 ## Fit a candidate model given by terms matrix T.
 function f = fit_terms (T, ctx)
-  Xd = build_design (T, ctx.X);
+  T_enc = expand_terms (T, ctx);
+  Xd    = build_design (T_enc, ctx.X);
   [b, dev, stats] = glmfit (Xd, ctx.yfit, ctx.distr, ctx.gargs{:});
   f = struct ('b', b, 'dev', dev, 'dfe', stats.dfe, 's', stats.s, ...
-              'ncoef', rows (T), 'X', Xd);
+              'ncoef', rows (T_enc), 'X', Xd);
 endfunction
 
 ## Nested-model test between the smaller (A) and larger (B) model.  Returns the
@@ -535,10 +606,10 @@ function [stat, pval, ddf] = nested_test (devA, dfeA, devB, dfeB, estdisp)
   drop = devA - devB;            # deviance reduction from A to B
   if (estdisp)
     stat = (drop / ddf) / (devB / dfeB);
-    pval = 1 - fcdf (stat, ddf, dfeB);
+    pval = fcdf (stat, ddf, dfeB, 'upper');
   else
     stat = drop;
-    pval = 1 - chi2cdf (stat, ddf);
+    pval = chi2cdf (stat, ddf, 'upper');
   endif
 endfunction
 
@@ -640,6 +711,112 @@ function U = union_rows (A, B)
       U = [U; B(i, :)];
     endif
   endfor
+endfunction
+
+## ========================================================================== ##
+## Categorical predictors
+## ========================================================================== ##
+
+## Which predictors are categorical.  An explicit 'CategoricalVars' may name
+## them, index them, or mark them with a logical vector; a table additionally
+## contributes every column whose class groups its observations.
+function cat_cols = categorical_flags (cv, pred_names, p, data)
+  cat_cols = false (1, p);
+  if (! isempty (cv))
+    if (islogical (cv))
+      n = min (numel (cv), p);
+      cat_cols(1:n) = cv(1:n);
+    elseif (isnumeric (cv))
+      cat_cols(cv(cv > 0 & cv <= p)) = true;
+    elseif (iscellstr (cv) || ischar (cv))
+      cv = cellstr (cv);
+      for i = 1:numel (cv)
+        j = find (strcmp (pred_names, cv{i}));
+        if (isempty (j))
+          error ("stepwiseglm: unknown categorical predictor '%s'.", cv{i});
+        endif
+        cat_cols(j) = true;
+      endfor
+    else
+      error (strcat ("stepwiseglm: 'CategoricalVars' must be predictor", ...
+                     " names, indices, or a logical vector."));
+    endif
+  endif
+  if (istable (data))
+    for j = 1:p
+      col = data.(pred_names{j});
+      if (iscell (col) || isa (col, 'categorical') || islogical (col) ...
+          || isa (col, 'string'))
+        cat_cols(j) = true;
+      endif
+    endfor
+  endif
+endfunction
+
+## Expand a terms matrix over the P predictors into one over the encoded
+## indicator columns.  A term naming a categorical predictor becomes one row
+## per indicator, so the whole group is fitted, added, and dropped together.
+function T_enc = expand_terms (T, ctx)
+  if (isempty (ctx.cat_info.names))
+    T_enc = T;
+    return;
+  endif
+  T_enc = zeros (0, numel (ctx.enc_names) + 1);
+  for r = 1:rows (T)
+    G     = expand_term_row (T(r, 1:ctx.p), ctx);
+    T_enc = [T_enc; G, zeros(rows (G), 1)];
+  endfor
+endfunction
+
+## The encoded rows of one term.  Two categorical factors in an interaction
+## multiply out, giving one row per pair of indicators.
+function G = expand_term_row (row, ctx)
+  p_enc = numel (ctx.enc_names);
+  G     = zeros (1, p_enc);
+  for j = find (row != 0)
+    ci = find (strcmp (ctx.cat_info.names, ctx.pred_names{j}), 1);
+    if (isempty (ci))
+      G(:, find (strcmp (ctx.enc_names, ctx.pred_names{j}), 1)) = row(j);
+    else
+      cols = indicator_cols (ctx.pred_names{j}, ctx.cat_info.levels{ci}, ...
+                             ctx.enc_names);
+      Gn = zeros (rows (G) * numel (cols), p_enc);
+      k  = 0;
+      for i = 1:rows (G)
+        for c = cols
+          k += 1;
+          Gn(k, :) = G(i, :);
+          Gn(k, c) = 1;
+        endfor
+      endfor
+      G = Gn;
+    endif
+  endfor
+endfunction
+
+## Encoded columns of a categorical predictor.  The reference level has no
+## column of its own unless the predictor stood in for a dropped intercept, so
+## the levels are looked up by name rather than assumed to start at the second.
+function cols = indicator_cols (name, levels, enc_names)
+  cols = [];
+  for L = 1:numel (levels)
+    c = find (strcmp (enc_names, [name, '_', char(levels{L})]), 1);
+    if (! isempty (c))
+      cols(end+1) = c;
+    endif
+  endfor
+endfunction
+
+## Replace any 'CategoricalVars' pair forwarded to the constructor with the
+## resolved predictor names.
+function nv = set_categorical (nv, names)
+  keep = true (1, numel (nv));
+  for k = 1:2:numel (nv) - 1
+    if (strcmpi (nv{k}, 'CategoricalVars'))
+      keep(k:k+1) = false;
+    endif
+  endfor
+  nv = [nv(keep), {'CategoricalVars', names}];
 endfunction
 
 ## ========================================================================== ##
@@ -752,10 +929,17 @@ endfunction
 ## History
 ## ========================================================================== ##
 
-function h = start_history (T, dev, p)
-  h = struct ('Action', 'Start', 'TermName', '1', 'Terms', T, ...
-              'DF', rows (T), 'delDF', NaN, 'Deviance', dev, ...
-              'Stat', NaN, 'PValue', NaN);
+function h = start_history (T, dev, ncoef, name, stat)
+  h = struct ('Action', 'Start', 'TermName', name, 'Terms', T, ...
+              'DF', ncoef, 'delDF', NaN, 'Deviance', dev, ...
+              'Stat', stat, 'PValue', NaN);
+endfunction
+
+## Name of the Start row: the right-hand side of the starting model, which is
+## '1' for a constant start and the whole term list for any other.
+function nm = start_name (T, pred_names, p)
+  s  = terms_formula (T, 'y', pred_names, p);
+  nm = strtrim (s(index (s, '~') + 1:end));
 endfunction
 
 function h = mkhist (action, r, T, df, ddf, dev, stat, pval, p)
@@ -782,24 +966,34 @@ function tbl = history_table (hist, crit, estdisp, pred_names, p)
     else
       TermName{i} = term_name (hist(i).TermName, pred_names, p);
     endif
-    Terms{i}    = hist(i).Terms;
+    ## The model's own term order, not the order the search added them in:
+    ## MATLAB's last history row equals the fitted model's terms matrix.
+    Terms{i}    = canonical_sort (hist(i).Terms, p);
     DF(i)       = hist(i).DF;
     delDF(i)    = hist(i).delDF;
     Deviance(i) = hist(i).Deviance;
     Stat(i)     = hist(i).Stat;
     PValue(i)   = hist(i).PValue;
   endfor
+  ## Which columns the table carries is decided by the criterion: a p-value
+  ## criterion reports the test that drove the step, an information criterion
+  ## reports its own value after the step and has no test to report.  The
+  ## deviance is reported only where it is the criterion.
   switch (crit)
     case 'deviance'
       statname = ternary (estdisp, 'FStat', 'Chi2Stat');
+      tbl = table (Action, TermName, Terms, DF, delDF, Deviance, Stat, ...
+                   PValue, 'VariableNames', {'Action', 'TermName', 'Terms', ...
+                   'DF', 'delDF', 'Deviance', statname, 'PValue'});
     case 'sse'
-      statname = 'FStat';
+      tbl = table (Action, TermName, Terms, DF, delDF, Stat, PValue, ...
+                   'VariableNames', {'Action', 'TermName', 'Terms', 'DF', ...
+                   'delDF', 'FStat', 'pValue'});
     otherwise
-      statname = upper (crit);
+      tbl = table (Action, TermName, Terms, DF, delDF, Stat, ...
+                   'VariableNames', {'Action', 'TermName', 'Terms', 'DF', ...
+                   'delDF', upper(crit)});
   endswitch
-  tbl = table (Action, TermName, Terms, DF, delDF, Deviance, Stat, PValue, ...
-               'VariableNames', {'Action', 'TermName', 'Terms', 'DF', ...
-               'delDF', 'Deviance', statname, 'PValue'});
 endfunction
 
 ## Print an accepted step to the console (Verbose = 1).
@@ -836,7 +1030,7 @@ endfunction
 function s = criterion_label (crit, estdisp)
   switch (crit)
     case 'deviance'
-      s = ternary (estdisp, 'deviance_F', 'deviance_chi2');
+      s = ternary (estdisp, 'deviance_f', 'deviance_chi2');
     otherwise
       s = crit;
   endswitch
@@ -906,7 +1100,9 @@ endfunction
 %!                    'Criterion', 'aic', 'Verbose', 0)
 
 ## Shared test data (identical to the MATLAB stepwiseglm verification probes).
-%!shared X, yb, yp, yn
+## CT and CU carry a three-level categorical predictor; CU adds a second one,
+## H, that the response does not depend on, so that it can be dropped.
+%!shared X, yb, yp, yn, CT, CU, CN
 %! X = [ 0.83, -0.68,  1.02,  0.02;  0.22,  0.93,  0.29, -0.57; ...
 %!      -0.12,  0.72,  0.09, -1.03;  0.55, -2.55,  0.56,  0.97; ...
 %!       1.89,  1.39,  1.96,  0.16; -1.46, -1.18, -0.46,  0.33; ...
@@ -935,6 +1131,20 @@ endfunction
 %!       1.11 4.26 2.57 3.07 -1.07 1.7 4.58 0.47 6.41 1.55 1.02 3.29 3.81 ...
 %!       1.58 2.65 0.81 2.94 5.93 1.09 1.06 2.55 1.44 0.97 2.8 -0.47 0.81 ...
 %!       4.7]';
+%! lev = {'A', 'B', 'C'}';
+%! a1 = ((1:48)' - 24.5)/12;
+%! a2 = sin ((1:48)'/5);
+%! ag = lev(mod ((0:47)', 3) + 1);
+%! ay = [0 1 0 1 2 0 1 2 0 1 2 1 1 2 1 1 3 1 1 3 1 1 3 1 1 4 1 2 5 1 3 8 ...
+%!       2 4 11 3 5 15 4 7 18 4 8 20 4 8 20 5]';
+%! CT = table (a1, a2, ag, ay, 'VariableNames', {'x1', 'x2', 'g', 'y'});
+%! b1 = ((1:60)' - 30.5)/15;
+%! bg = lev(mod ((0:59)', 3) + 1);
+%! bh = lev(mod (floor ((0:59)'/2), 3) + 1);
+%! by = [2 0 7 2 0 6 2 0 6 2 1 5 2 1 5 2 1 5 2 1 4 3 2 4 3 2 4 3 3 3 3 4 ...
+%!       3 4 5 3 4 6 3 4 8 2 5 11 2 5 14 2 5 18 2 6 23 2 6 30 2 7 39 2]';
+%! CU = table (b1, bg, bh, by, 'VariableNames', {'x1', 'g', 'h', 'y'});
+%! CN = table (b1, bg, bh, by / 4, 'VariableNames', {'x1', 'g', 'h', 'y'});
 
 ## Test results (values verified against MATLAB's stepwiseglm)
 %!test
@@ -1014,6 +1224,172 @@ endfunction
 %! assert_equal (class (mdl), 'GeneralizedLinearModel');
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)', 'x1'});
 
+%!test
+%! ## A cell-array column of a table is taken as categorical without being
+%! ## named, and the fit matches MATLAB R2024a.
+%! mdl = stepwiseglm (CT, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.CoefficientNames, ...
+%!               {'(Intercept)', 'x1', 'x2', 'g_B', 'g_C'});
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [0.603329330791641; 0.796711055930047; 0.285851899335031; ...
+%!                0.915480956228751; -0.550531653341791], 1e-10);
+%! assert_equal (mdl.Deviance, 5.49511881200541, 1e-10);
+
+%!test
+%! ## The indicators of a categorical predictor enter as one term, so the
+%! ## step is worth L-1 degrees of freedom and is named for the predictor.
+%! mdl = stepwiseglm (CT, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.TermName, {'1'; 'x1'; 'g'; 'x2'});
+%! assert_equal (mdl.Steps.History.DF, [1; 2; 4; 5]);
+%! assert_equal (mdl.Steps.History.delDF, [NaN; 1; 2; 1]);
+
+%!test
+%! ## The deviance test of a grouped term is the joint test of its indicators.
+%! mdl = stepwiseglm (CT, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Deviance, ...
+%!               [220.977093395079; 81.2408117834874; 10.3794318146782; ...
+%!                5.49511881200541], 1e-9);
+%! assert_equal (mdl.Steps.History.Chi2Stat, ...
+%!               [NaN; 139.736281611591; 70.8613799688091; ...
+%!                4.88431300267280], 1e-9);
+%! assert_equal (mdl.Steps.History.PValue(4), 0.0271018179857880, 1e-12);
+
+%!test
+%! ## An interaction naming a categorical predictor is also one term, and its
+%! ## coefficients are named for the indicators.
+%! mdl = stepwiseglm (CU, 'y ~ 1', 'Upper', 'y ~ x1*g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.CoefficientNames, {'(Intercept)', 'x1', 'g_B', 'g_C', ...
+%!                                      'x1:g_B', 'x1:g_C'});
+%! assert_equal (mdl.Steps.History.TermName, {'1'; 'x1'; 'g'; 'x1:g'});
+%! assert_equal (mdl.Steps.History.delDF, [NaN; 1; 2; 2]);
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!               [1.21521326020005; 0.372340711075598; -0.0523666888775920; ...
+%!                0; 0.950243386703989; -0.744681422151197], 1e-9);
+
+%!test
+%! ## A grouped term leaves in one step too, and its delDF is negative.
+%! mdl = stepwiseglm (CU, 'y ~ x1 + g + h', 'Lower', 'y ~ 1', 'Upper', ...
+%!                    'y ~ x1 + g + h', 'Distribution', 'poisson', ...
+%!                    'Verbose', 0);
+%! assert_equal (mdl.Formula.LinearPredictor, '1 + x1 + g');
+%! assert_equal (mdl.Steps.History.Action, {'Start'; 'Remove'});
+%! assert_equal (mdl.Steps.History.TermName, {'1 + x1 + g + h'; 'h'});
+%! assert_equal (mdl.Steps.History.DF, [6; 4]);
+%! assert_equal (mdl.Steps.History.delDF, [NaN; -2]);
+%! assert_equal (mdl.Steps.History.Chi2Stat, [NaN; 0.914420851291737], 1e-10);
+
+%!test
+%! ## A categorical array is coded by its categories, a cell array by the
+%! ## order its labels appear; on this fixture the two agree.
+%! ct = CT;
+%! ct.g = categorical (ct.g);
+%! m1 = stepwiseglm (ct, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                   'Distribution', 'poisson', 'Verbose', 0);
+%! m2 = stepwiseglm (CT, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                   'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (m1.CoefficientNames, m2.CoefficientNames);
+%! assert_equal (m1.Coefficients.Estimate, m2.Coefficients.Estimate, 1e-12);
+
+%!test
+%! ## A column of a predictor matrix is categorical only when named, and the
+%! ## levels are then its sorted distinct values.
+%! Xm = [((1:60)' - 30.5)/15, mod((0:59)', 3) + 1, ...
+%!       mod(floor((0:59)'/2), 3) + 1];
+%! ym = CU.y;
+%! mdl = stepwiseglm (Xm, ym, 'constant', 'Upper', 'linear', ...
+%!                    'Distribution', 'poisson', ...
+%!                    'CategoricalVars', logical ([0, 1, 1]), 'Verbose', 0);
+%! assert_equal (mdl.CoefficientNames, {'(Intercept)', 'x1', 'x2_2', 'x2_3'});
+%! assert_equal (mdl.Steps.History.TermName, {'1'; 'x1'; 'x2'});
+%! assert_equal (mdl.Steps.History.delDF, [NaN; 1; 2]);
+
+%!test
+%! ## Indices and a logical vector mark the same columns.
+%! Xm = [((1:60)' - 30.5)/15, mod((0:59)', 3) + 1, ...
+%!       mod(floor((0:59)'/2), 3) + 1];
+%! ym = CU.y;
+%! m1 = stepwiseglm (Xm, ym, 'constant', 'Upper', 'linear', ...
+%!                   'Distribution', 'poisson', 'CategoricalVars', [2, 3], ...
+%!                   'Verbose', 0);
+%! m2 = stepwiseglm (Xm, ym, 'constant', 'Upper', 'linear', ...
+%!                   'Distribution', 'poisson', ...
+%!                   'CategoricalVars', logical ([0, 1, 1]), 'Verbose', 0);
+%! assert_equal (m1.Coefficients.Estimate, m2.Coefficients.Estimate, 1e-12);
+
+%!test
+%! ## The Start row names the starting model, not the constant, and reports
+%! ## the coefficient count it was fitted with.
+%! mdl = stepwiseglm (CU, 'y ~ x1 + g', 'Lower', 'y ~ x1 + g', 'Upper', ...
+%!                    'y ~ x1 + g', 'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.TermName, {'1 + x1 + g'});
+%! assert_equal (mdl.Steps.History.DF, 4);
+
+%!test
+%! ## An estimated dispersion turns the deviance test into an F test, and the
+%! ## criterion is labelled for it.
+%! mdl = stepwiseglm (CN, 'y ~ 1', 'Upper', 'y ~ x1 + g + h', ...
+%!                    'Distribution', 'normal', 'Verbose', 0);
+%! assert_equal (mdl.Steps.Criterion, 'deviance_f');
+%! assert_equal (mdl.Steps.History.Properties.VariableNames, ...
+%!               {'Action', 'TermName', 'Terms', 'DF', 'delDF', 'Deviance', ...
+%!                'FStat', 'PValue'});
+%! assert_equal (mdl.Steps.History.FStat, ...
+%!               [NaN; 15.1516937210352; 4.75429941449063], 1e-10);
+
+%!test
+%! ## Under 'sse' the history reports the F test alone, with MATLAB's own
+%! ## lower-case column name.
+%! mdl = stepwiseglm (CN, 'y ~ 1', 'Upper', 'y ~ x1 + g + h', ...
+%!                    'Distribution', 'normal', 'Criterion', 'sse', ...
+%!                    'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Properties.VariableNames, ...
+%!               {'Action', 'TermName', 'Terms', 'DF', 'delDF', 'FStat', ...
+%!                'pValue'});
+%! assert_equal (mdl.Steps.History.pValue, ...
+%!               [NaN; 0.000258691112717; 0.012385457865093], 1e-12);
+
+%!test
+%! ## An information criterion has no test to report, so the history carries
+%! ## its value instead, the starting model included.
+%! mdl = stepwiseglm (CU, 'y ~ 1', 'Upper', 'y ~ x1 + g + h', ...
+%!                    'Distribution', 'poisson', 'Criterion', 'aic', ...
+%!                    'Verbose', 0);
+%! assert_equal (mdl.Steps.History.Properties.VariableNames, ...
+%!               {'Action', 'TermName', 'Terms', 'DF', 'delDF', 'AIC'});
+%! assert_equal (mdl.Steps.History.AIC, ...
+%!               [504.960173118363; 394.245450753972; 341.770323510125], 1e-9);
+
+%!test
+%! ## A p-value far below eps is computed on the upper tail, not as one minus
+%! ## the lower, so it does not round to zero.
+%! mdl = stepwiseglm (CU, 'y ~ 1', 'Upper', 'y ~ x1*g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.PValue(2), 2.49165e-26, 1e-30);
+%! assert_equal (mdl.Steps.History.PValue(4), 1.19350e-32, 1e-36);
+
+%!test
+%! ## Each history row carries the terms in the model's own order, not in the
+%! ## order the search added them, so the last row is the fitted model's.
+%! mdl = stepwiseglm (CT, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (mdl.Steps.History.TermName, {'1'; 'x1'; 'g'; 'x2'});
+%! assert_equal (mdl.Steps.History.Terms{end}, mdl.Formula.Terms);
+%! assert_equal (mdl.Steps.History.Terms{end}, ...
+%!               [0, 0, 0, 0; 1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0]);
+
+%!test
+%! ## Start, Lower, and Upper are formula objects carrying the link.
+%! mdl = stepwiseglm (CT, 'y ~ 1', 'Upper', 'y ~ x1 + x2 + g', ...
+%!                    'Distribution', 'poisson', 'Verbose', 0);
+%! assert_equal (class (mdl.Steps.Start), 'LinearFormula');
+%! assert_equal (char (mdl.Steps.Start), 'log(y) ~ 1');
+%! assert_equal (char (mdl.Steps.Upper), 'log(y) ~ 1 + x1 + x2 + g');
+%! assert_equal (mdl.Steps.Lower.LinearPredictor, '1');
+
 ## Test input validation
 %!error<Invalid call> stepwiseglm ()
 %!error<stepwiseglm: X must be a real matrix.> stepwiseglm ("a", [1;2])
@@ -1023,8 +1399,10 @@ endfunction
 %! stepwiseglm ([1, 2; 3, 4], [1; 0], 'Criterion', 'nope')
 %!error<stepwiseglm: unknown parameter name 'foo'.> ...
 %! stepwiseglm ([1, 2; 3, 4], [1; 0], 'linear', 'foo', 1)
-%!error<categorical predictors are not supported> ...
-%! stepwiseglm ([1, 2; 3, 4], [1; 0], 'CategoricalVars', 1)
+%!error<stepwiseglm: unknown categorical predictor 'nope'.> ...
+%! stepwiseglm ([1, 2; 3, 4], [1; 0], 'CategoricalVars', {'nope'})
+%!error<stepwiseglm: 'CategoricalVars' must be predictor names, indices, or a logical vector.> ...
+%! stepwiseglm ([1, 2; 3, 4], [1; 0], 'CategoricalVars', {1})
 
 %!test  # a two-column binomial response matches MATLAB R2024a
 %! x = (1:10)';

@@ -75,113 +75,557 @@ classdef GeneralizedLinearModel
 
   properties (GetAccess = public, SetAccess = protected)
 
-    ## Table of coefficient estimates, standard errors, t-statistics, p-values.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Coefficients
+    ##
+    ## Coefficient values
+    ##
+    ## A table with one row per coefficient and four columns:
+    ## @itemize
+    ## @item @code{Estimate} - estimated coefficient value
+    ## @item @code{SE} - standard error of the estimate
+    ## @item @code{tStat} - the estimate divided by its standard error
+    ## @item @code{pValue} - p-value of that statistic
+    ## @end itemize The statistic is referred to the normal distribution where
+    ## the dispersion is fixed, as it is for the binomial and Poisson families,
+    ## and to a
+    ## @math{t}-distribution on @code{DFE} degrees of freedom where it is
+    ## estimated. Coefficients dropped as rank deficient have @code{Estimate =
+    ## 0},
+    ## @code{SE = 0}, and @code{NaN} for both statistics.  Row names are the
+    ## coefficient names.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Coefficients = [];
 
-    ## Cell array of coefficient names.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} CoefficientNames
+    ##
+    ## Names of the coefficients
+    ##
+    ## A cell array of character vectors, one per coefficient, in the order the
+    ## coefficients appear.  The intercept is @qcode{'(Intercept)'}, an
+    ## interaction joins its factors with a colon, and a categorical predictor
+    ## contributes one name per indicator, spelled
+    ## @qcode{@var{name}_@var{level}}, so these are not the term names.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     CoefficientNames = {};
 
-    ## Estimated covariance matrix of the coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} CoefficientCovariance
+    ##
+    ## Covariance matrix of the coefficient estimates
+    ##
+    ## A square matrix with one row and column per coefficient, whose diagonal
+    ## is the square of @code{Coefficients.SE}.  It is scaled by
+    ## @code{Dispersion}, so it is the covariance under the estimated dispersion
+    ## wherever one was estimated.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     CoefficientCovariance = [];
 
-    ## Number of coefficients in the model.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} NumCoefficients
+    ##
+    ## Number of coefficients
+    ##
+    ## A positive integer counting every coefficient the model carries, those
+    ## dropped as rank deficient included.  A categorical predictor with
+    ## @math{L} levels contributes @math{L - 1} of them.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     NumCoefficients = [];
 
-    ## Number of estimated (nonzero-freedom) coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} NumEstimatedCoefficients
+    ##
+    ## Number of coefficients actually estimated
+    ##
+    ## A positive integer counting the coefficients that carry a degree of
+    ## freedom, which is @code{NumCoefficients} less however many were dropped
+    ## as rank deficient.  It is the number the degrees of freedom and the
+    ## information criteria are computed from.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     NumEstimatedCoefficients = [];
 
-    ## Number of predictor variables.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} NumPredictors
+    ##
+    ## Number of predictor variables
+    ##
+    ## A nonnegative integer counting the predictors the model was given,
+    ## whether or not each appears in a term.  It counts variables, so a
+    ## categorical predictor counts once however many indicators it expands to.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     NumPredictors = [];
 
-    ## Number of observations used in the fit (missing/excluded rows removed).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} NumObservations
+    ##
+    ## Number of observations used in the fit
+    ##
+    ## A positive integer giving the number of observations the fit actually
+    ## used. Rows holding a missing value and rows named by the
+    ## @qcode{'Exclude'} name-value argument are not counted.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     NumObservations = [];
 
-    ## Deviance of the fitted model.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Deviance
+    ##
+    ## Deviance of the fitted model
+    ##
+    ## A nonnegative scalar, twice the difference between the log-likelihood of
+    ## the saturated model and that of this one.  It is the generalized linear
+    ## model's counterpart of the residual sum of squares, and it is what a
+    ## nested-model test compares.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Deviance = [];
 
-    ## Error (residual) degrees of freedom.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} DFE
+    ##
+    ## Error degrees of freedom
+    ##
+    ## A nonnegative integer, @code{NumObservations} less
+    ## @code{NumEstimatedCoefficients}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     DFE = [];
 
-    ## Dispersion parameter (estimated or fixed at 1).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Dispersion
+    ##
+    ## Dispersion parameter
+    ##
+    ## A positive scalar.  It is estimated from the Pearson statistic for the
+    ## normal, gamma, and inverse Gaussian families, and fixed at @math{1} for
+    ## the binomial and Poisson families unless @qcode{'DispersionFlag'} asked
+    ## otherwise.  @code{CoefficientCovariance} and the standard errors are
+    ## scaled by it.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Dispersion = [];
 
-    ## True if the dispersion parameter was estimated from the data.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} DispersionEstimated
+    ##
+    ## Whether the dispersion was estimated
+    ##
+    ## A logical scalar, true where @code{Dispersion} was estimated from the
+    ## data and false where it was held at @math{1}.  It decides whether a
+    ## coefficient's statistic is referred to the normal or the @math{t}
+    ## distribution.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     DispersionEstimated = [];
 
-    ## Structure describing the response distribution.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Distribution
+    ##
+    ## The response distribution
+    ##
+    ## A structure with three fields: @code{Name}, the distribution's name;
+    ## @code{DevianceFunction}, a function handle giving the deviance
+    ## contribution of an observation from its response and mean; and
+    ## @code{VarianceFunction}, a function handle giving the variance of an
+    ## observation as a function of its mean.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Distribution = [];
 
-    ## Structure describing the link function (Name, Link, Derivative, Inverse).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Link
+    ##
+    ## The link function
+    ##
+    ## A structure with four fields: @code{Name}, the link's name; @code{Link},
+    ## a function handle mapping the mean to the linear predictor;
+    ## @code{Derivative}, a handle giving that map's derivative; and
+    ## @code{Inverse}, a handle mapping the linear predictor back to the mean.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Link = [];
 
-    ## Table of fitted values (Response on the mean scale, LinearPredictor, and
-    ## Probability for the binomial family).  One row per input observation.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Fitted
+    ##
+    ## Fitted values
+    ##
+    ## A table with one row per input observation and two columns,
+    ## @code{Response} on the scale of the response and @code{LinearPredictor}
+    ## on the scale of the link.  A binomial fit gains a third,
+    ## @code{Probability}, since its
+    ## @code{Response} is a count of successes while the fit works in the
+    ## proportion.  Rows kept out of the fit by @qcode{'Exclude'} still carry a
+    ## prediction; rows dropped as missing carry @code{NaN}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Fitted = [];
 
-    ## Table of residuals (Raw, LinearPredictor, Pearson, Anscombe, Deviance).
-    ## One row per input observation.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Residuals
+    ##
+    ## Residuals for the fitted model
+    ##
+    ## A table with one row per input observation and five columns:
+    ## @itemize
+    ## @item @code{Raw} - observed minus fitted, on the response scale
+    ## @item @code{LinearPredictor} - the working residual, on the link scale
+    ## @item @code{Pearson} - raw residuals divided by the estimated standard
+    ##   deviation of the observation
+    ## @item @code{Anscombe} - the transform that makes the residuals as nearly
+    ##   normal as the family allows
+    ## @item @code{Deviance} - the signed square root of each observation's
+    ##   contribution to @code{Deviance}
+    ## @end itemize Rows not used in the fit contain @code{NaN}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Residuals = [];
 
-    ## Table of per-observation diagnostics (Leverage, CooksDistance,
-    ## HatMatrix).  One row per input observation.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Diagnostics
+    ##
+    ## Per-observation diagnostics
+    ##
+    ## A table with one row per input observation and three columns:
+    ## @code{Leverage}, the diagonal of the weighted hat matrix;
+    ## @code{CooksDistance}, the influence of the observation on every fitted
+    ## value at once; and @code{HatMatrix}, that observation's row of the hat
+    ## matrix. Rows not used in the fit contain @code{NaN}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Diagnostics = [];
 
-    ## Log-likelihood of the fitted model.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} LogLikelihood
+    ##
+    ## Log-likelihood of the fitted model
+    ##
+    ## A scalar, the log-likelihood of the observations under the fitted
+    ## coefficients and the family's own density.  It is what the information
+    ## criteria and the likelihood-ratio @math{R^2} are computed from.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     LogLikelihood = [];
 
-    ## Structure of information criteria (AIC, AICc, BIC, CAIC).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} ModelCriterion
+    ##
+    ## Information criteria
+    ##
+    ## A structure with four fields, @code{AIC}, @code{AICc}, @code{BIC}, and
+    ## @code{CAIC}, each penalising @code{LogLikelihood} by a different function
+    ## of the coefficient count and the sample size.  @code{AICc} is @code{Inf}
+    ## where the correction's denominator is not positive.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ModelCriterion = [];
 
-    ## Structure of R-squared measures (Ordinary, Adjusted, Deviance,
-    ## AdjGeneralized, LLR).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Rsquared
+    ##
+    ## Measures of fit
+    ##
+    ## A structure with five fields: @code{Ordinary} and @code{Adjusted},
+    ## computed from the sums of squares on the response scale; @code{Deviance},
+    ## one less the ratio of the model's deviance to the null model's;
+    ## @code{LLR}, the same ratio taken over log-likelihoods; and
+    ## @code{AdjGeneralized}, the Nagelkerke measure, which rescales the
+    ## generalized @math{R^2} by its own attainable maximum so that it can reach
+    ## one.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Rsquared = [];
 
-    ## Error (residual) sum of squares on the response scale.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} SSE
+    ##
+    ## Error sum of squares
+    ##
+    ## A nonnegative scalar, the weighted sum of squared raw residuals on the
+    ## response scale.  For a generalized linear model this is a descriptive
+    ## quantity rather than the fitted criterion, which is @code{Deviance}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     SSE = [];
 
-    ## Regression sum of squares on the response scale.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} SSR
+    ##
+    ## Regression sum of squares
+    ##
+    ## A nonnegative scalar, the weighted sum of squared differences between the
+    ## fitted values and the weighted mean of the response, on the response
+    ## scale.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     SSR = [];
 
-    ## Total sum of squares on the response scale.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} SST
+    ##
+    ## Total sum of squares
+    ##
+    ## A nonnegative scalar, the weighted sum of squared differences between the
+    ## response and its weighted mean.  Unlike a linear model, a generalized
+    ## linear model does not in general satisfy @code{SST = SSE + SSR}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     SST = [];
 
-    ## Offset vector added to the linear predictor, one element per input
-    ## observation (all zero when no offset was given).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Offset
+    ##
+    ## Offset added to the linear predictor
+    ##
+    ## A column vector with one element per input observation, added to the
+    ## linear predictor with a coefficient fixed at one, so that it shifts the
+    ## fit without being estimated.  It is all zeros where no @qcode{'Offset'}
+    ## was given.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Offset = [];
 
-    ## Penalty applied to the likelihood; always @qcode{"none"} here.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} LikelihoodPenalty
+    ##
+    ## Penalty applied to the likelihood
+    ##
+    ## A character vector, always @qcode{'none'}: no penalized-likelihood
+    ## fitting is offered, so the coefficients are always the plain
+    ## maximum-likelihood ones.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     LikelihoodPenalty = [];
 
-    ## Name of the response variable.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} ResponseName
+    ##
+    ## Name of the response variable
+    ##
+    ## A character vector.  It is taken from the table column, the
+    ## @qcode{'ResponseVar'} or @qcode{'VarNames'} argument, or the formula, and
+    ## defaults to @qcode{'y'} for a predictor matrix.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ResponseName = 'y';
 
-    ## Cell array of predictor variable names.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} PredictorNames
+    ##
+    ## Names of the predictor variables
+    ##
+    ## A cell array of character vectors naming the predictors in the order the
+    ## data lists them.  A predictor matrix gives them the names @qcode{'x1'},
+    ## @qcode{'x2'}, and so on.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     PredictorNames = {};
 
-    ## Cell array of all variable names.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} VariableNames
+    ##
+    ## Names of all the variables
+    ##
+    ## A cell array of character vectors naming every variable the model was
+    ## given, the response included, in the order the data lists them.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     VariableNames = {};
 
-    ## Number of variables (predictors and response).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} NumVariables
+    ##
+    ## Number of variables
+    ##
+    ## A positive integer, the number of elements of @code{VariableNames}: the
+    ## predictors and the response together, whether or not each appears in a
+    ## term.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     NumVariables = [];
 
-    ## Table of per-variable information (class, range, in-model, categorical).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} VariableInfo
+    ##
+    ## Per-variable information
+    ##
+    ## A table with one row per variable, named by it, and four columns:
+    ## @code{Class}, the class of the data column; @code{Range}, its two-element
+    ## range or, for a categorical, the list of its levels; @code{InModel}, true
+    ## where the variable appears in a term; and @code{IsCategorical}, true
+    ## where it was coded as indicators.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     VariableInfo = [];
 
-    ## Table of the data the model was built from.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Variables
+    ##
+    ## The data the model was built from
+    ##
+    ## A table holding every variable, the response included, with one row per
+    ## input observation.  A model fitted from a predictor matrix gets a table
+    ## assembled from it, so this property is a table either way.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Variables = [];
 
-    ## Table recording, per input observation, its weight and whether it was
-    ## excluded, missing, or used in the fit.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} ObservationInfo
+    ##
+    ## Per-observation status
+    ##
+    ## A table with one row per input observation and four columns:
+    ## @code{Weights}, the weight it was given; @code{Excluded}, true where
+    ## @qcode{'Exclude'} named it; @code{Missing}, true where its data are
+    ## incomplete; and @code{Subset}, true where it was used in the fit, which
+    ## is neither excluded nor missing.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ObservationInfo = [];
 
-    ## Cell array of observation names; empty unless the data carried row names.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} ObservationNames
+    ##
+    ## Names of the observations
+    ##
+    ## A cell array of character vectors, one per input observation, and empty
+    ## unless the data carried row names.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ObservationNames = {};
 
-    ## LinearFormula object describing the model formula.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Formula
+    ##
+    ## The model formula
+    ##
+    ## A @code{LinearFormula} object describing the fitted model, with
+    ## properties including @code{ResponseName}, @code{LinearPredictor},
+    ## @code{PredictorNames},
+    ## @code{TermNames}, @code{Terms}, @code{HasIntercept}, and @code{Link}.
+    ## Its terms are expressed over the model's variables, so a categorical
+    ## predictor contributes one term however many indicators it expands to.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Formula = [];
 
-    ## Structure describing the stepwise term-selection history.  Empty unless
-    ## the model was built by @code{stepwiseglm}.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearModel} {property} Steps
+    ##
+    ## Stepwise fitting information
+    ##
+    ## A structure recording the term-selection trace, populated whenever the
+    ## model was fit by @code{stepwiseglm} and @code{[]} otherwise.  It has
+    ## seven fields:
+    ##
+    ## @multitable @columnfractions 0.15 0.8
+    ## @headitem Field @tab Contents
+    ## @item @code{Start} @tab a @code{LinearFormula} for the model the search
+    ##   started from.
+    ## @item @code{Lower} @tab a @code{LinearFormula} for the smallest model
+    ##   considered; its terms are never removed.
+    ## @item @code{Upper} @tab a @code{LinearFormula} for the largest model
+    ##   considered.
+    ## @item @code{Criterion} @tab the selection criterion, such as
+    ## @qcode{'deviance_chi2'}.
+    ## @item @code{PEnter} @tab the threshold a term must beat to enter, empty
+    ##   unless one was given.
+    ## @item @code{PRemove} @tab the threshold above which a term leaves, empty
+    ##   unless one was given.
+    ## @item @code{History} @tab a table with one row per step.
+    ## @end multitable
+    ##
+    ## @code{History} always carries @code{Action} (@qcode{'Start'},
+    ## @qcode{'Add'}, or @qcode{'Remove'}), @code{TermName}, @code{Terms} (the
+    ## terms matrix after the step, over the model's variables), @code{DF} (the
+    ## coefficient count after the step), and @code{delDF} (the change in it,
+    ## negative for a removal).  The remaining columns follow the criterion:
+    ## @code{Deviance}, then
+    ## @code{Chi2Stat} or @code{FStat}, then @code{PValue} under
+    ## @qcode{'Deviance'};
+    ## @code{FStat} and @code{pValue} under @qcode{'sse'}; and a single column
+    ## named
+    ## @code{AIC} or @code{BIC} holding the criterion's value after the step
+    ## otherwise.  The first row is the starting model, named by its right-hand
+    ## side.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Steps = [];
 
   endproperties
