@@ -34,10 +34,8 @@ classdef CompactClassificationGAM
   ## The engine that fitted the model is carried over in @code{FitMethod},
   ## and the compact model predicts by the same scheme the full one did.
   ## Under @qcode{'boostedtrees'}, the default, the fit is described by
-  ## @code{TreeModel}, @code{BinEdges}, @code{PairDetectionBinEdges},
-  ## @code{ModelParameters} and @code{ReasonForTermination}.  Under
-  ## @qcode{'splines'} it is described by @code{Knots}, @code{Order},
-  ## @code{DoF}, @code{Formula}, @code{LearningRate}, @code{NumIterations},
+  ## @code{TreeModel}, @code{BinEdges} and @code{PairDetectionBinEdges}.
+  ## Under @qcode{'splines'} it is described by @code{Formula},
   ## @code{BaseModel}, @code{ModelwInt} and @code{IntMatrix}, which MATLAB's
   ## compact model does not carry.  Whichever fitted the model, the other
   ## set is empty.
@@ -145,61 +143,6 @@ classdef CompactClassificationGAM
     Interactions    = zeros (0, 2);
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Knots
-    ##
-    ## Knots for spline fitting
-    ##
-    ## A scalar or row vector specifying the number of knots for each predictor
-    ## variable in the spline fitting.  This property is read-only.
-    ##
-    ## @end deftp
-    Knots           = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Order
-    ##
-    ## Order of spline fitting
-    ##
-    ## A scalar or row vector specifying the order of the spline for each
-    ## predictor variable.  This property is read-only.
-    ##
-    ## @end deftp
-    Order           = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} DoF
-    ##
-    ## Degrees of freedom for spline fitting
-    ##
-    ## A scalar or row vector specifying the degrees of freedom for each
-    ## predictor variable in the spline fitting.  This property is read-only.
-    ##
-    ## @end deftp
-    DoF             = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} LearningRate
-    ##
-    ## Learning rate for gradient boosting
-    ##
-    ## A scalar value between 0 and 1 specifying the learning rate used in the
-    ## gradient boosting algorithm.  This property is read-only.
-    ##
-    ## @end deftp
-    LearningRate    = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} NumIterations
-    ##
-    ## Maximum number of iterations
-    ##
-    ## A positive integer specifying the maximum number of iterations for the
-    ## gradient boosting algorithm.  This property is read-only.
-    ##
-    ## @end deftp
-    NumIterations   = [];
-
-    ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} BaseModel
     ##
     ## Base model parameters
@@ -299,28 +242,6 @@ classdef CompactClassificationGAM
     ##
     ## @end deftp
     PairDetectionBinEdges = {};
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} ModelParameters
-    ##
-    ## Parameters the model was fitted with
-    ##
-    ## The structure the full model reports, carried over unchanged.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    ModelParameters = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} ReasonForTermination
-    ##
-    ## Why each fitting phase stopped
-    ##
-    ## The structure the full model reports, carried over unchanged.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    ReasonForTermination = [];
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} FitMethod
@@ -488,11 +409,6 @@ classdef CompactClassificationGAM
 
       this.Formula         = Mdl.Formula;
       this.Interactions    = Mdl.Interactions;
-      this.Knots           = Mdl.Knots;
-      this.Order           = Mdl.Order;
-      this.DoF             = Mdl.DoF;
-      this.LearningRate    = Mdl.LearningRate;
-      this.NumIterations   = Mdl.NumIterations;
       this.BaseModel       = Mdl.BaseModel;
       this.ModelwInt       = Mdl.ModelwInt;
       this.IntMatrix       = Mdl.IntMatrix;
@@ -501,8 +417,6 @@ classdef CompactClassificationGAM
       this.TreeModel             = Mdl.TreeModel;
       this.BinEdges              = Mdl.BinEdges;
       this.PairDetectionBinEdges = Mdl.PairDetectionBinEdges;
-      this.ModelParameters       = Mdl.ModelParameters;
-      this.ReasonForTermination  = Mdl.ReasonForTermination;
       this.NumTrainedTrees = Mdl.NumTrainedTrees;
       this.CategoricalPredictors  = Mdl.CategoricalPredictors;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
@@ -1005,11 +919,6 @@ classdef CompactClassificationGAM
       STfun          = this.STfun;
       Formula         = this.Formula;
       Interactions    = this.Interactions;
-      Knots           = this.Knots;
-      Order           = this.Order;
-      DoF             = this.DoF;
-      LearningRate    = this.LearningRate;
-      NumIterations   = this.NumIterations;
       BaseModel       = this.BaseModel;
       ModelwInt       = this.ModelwInt;
       IntMatrix       = this.IntMatrix;
@@ -1017,19 +926,15 @@ classdef CompactClassificationGAM
       TreeModel             = this.TreeModel;
       BinEdges              = this.BinEdges;
       PairDetectionBinEdges = this.PairDetectionBinEdges;
-      ModelParameters       = this.ModelParameters;
-      ReasonForTermination  = this.ReasonForTermination;
 
       ## Save classdef name and all model properties as individual variables
       save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
             'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'STfun', 'Intercept', ...
             'CategoricalPredictors', 'ExpandedPredictorNames', ...
-            'Formula', 'Interactions', 'Knots', ...
-            'Order', 'DoF', 'BaseModel', 'ModelwInt', 'IntMatrix', ...
-            'LearningRate', 'NumIterations', 'FitMethod', 'TreeModel', ...
-            'BinEdges', 'PairDetectionBinEdges', 'ModelParameters', ...
-            'ReasonForTermination');
+            'Formula', 'Interactions', 'BaseModel', 'ModelwInt', ...
+            'IntMatrix', 'FitMethod', 'TreeModel', 'BinEdges', ...
+            'PairDetectionBinEdges');
     endfunction
 
   endmethods
@@ -1183,9 +1088,6 @@ endfunction
 %! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
 %! assert_equal (CMdl.ClassNames, [0; 1])
 %! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
-%! assert_equal (CMdl.Knots, [4, 4, 4])
-%! assert_equal (CMdl.Order, [3, 3, 3])
-%! assert_equal (CMdl.DoF, [7, 7, 7])
 %! assert_equal (CMdl.BaseModel.Intercept, 0.4055, 1e-1)
 
 ## Test input validation for constructor

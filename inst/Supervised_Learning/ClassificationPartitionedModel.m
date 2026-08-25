@@ -2120,8 +2120,9 @@ endclassdef
 %! assert_equal (rows (Mdl.Interactions), 2);
 %! assert_equal (rows (CVMdl.Trained{1}.Interactions), 2);
 
-## A spline-fitted parent is unaffected: its folds still take the spline
-## parameters and report them.
+## A spline-fitted parent is unaffected: its folds take the spline parameters
+## and are fitted by the same engine.  They do not report the parameters
+## themselves, a compact model keeping no record of its fitting.
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'virginica');
@@ -2129,7 +2130,7 @@ endclassdef
 %!                'Knots', 4);
 %! CVMdl = crossval (Mdl, 'KFold', 3);
 %! assert_equal (CVMdl.Trained{1}.FitMethod, 'splines');
-%! assert_equal (CVMdl.Trained{1}.Knots, Mdl.Knots);
+%! assert_equal (isfield (CVMdl.Trained{1}.BaseModel, 'Intercept'), true);
 
 %!test
 %! ## kfoldfun hands the fold's model, its training data and its held-out
