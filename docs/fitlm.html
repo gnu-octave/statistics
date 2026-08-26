@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
     <script type="text/javascript" async
-      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
     </script>
     <script type="text/javascript">
       window.addEventListener("load", () => {
@@ -19,6 +19,32 @@
           tog.onclick = () => tog.classList.toggle("show");
           i.parentElement.removeChild(i.previousSibling);
           i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
         }
       });
     </script>
@@ -82,9 +108,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Model Fitting">
+                  <a class="nav-link" href="index.html#Regression">
                     <i class="fas fa-list-alt"></i>
-                    Model Fitting
+                    Regression
                   </a>
                 </li>
                 <li class="nav-item">
@@ -115,93 +141,39 @@
 			<div class="row">
 				<input id="togList1" type="checkbox">
 				<label for="togList1">
-					<span><h6>Clustering</h6></span>
-					<span><h6>Clustering</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
-					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
-					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
-					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
-					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
-					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
-					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
-					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
-					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
-					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
-					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
-					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
-					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
-					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
-					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
-					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
-					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
-					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
-					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
-					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
-					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
-					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList2" type="checkbox">
 				<label for="togList2">
-					<span><h6>Classification Classes</h6></span>
-					<span><h6>Classification Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
-					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
-					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
-					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
-					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
-					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
-					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
-					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
-					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
-					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
-					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList3" type="checkbox">
-				<label for="togList3">
-					<span><h6>Clustering Classes</h6></span>
-					<span><h6>Clustering Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
-					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
-					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
-					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
-					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
-					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
-					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
-					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
-					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList4" type="checkbox">
-				<label for="togList4">
-					<span><h6>Regression Classes</h6></span>
-					<span><h6>Regression Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList5" type="checkbox">
-				<label for="togList5">
 					<span><h6>Data Manipulation</h6></span>
 					<span><h6>Data Manipulation</h6></span>
 				</label>
@@ -217,75 +189,385 @@
 					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
 					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
 					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
 					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
 					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
-					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox" checked>
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace fw-bolder"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Descriptive Statistics</h6></span>
-					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Supervised Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
-					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
-					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
-					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
-					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
-					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
-					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
-					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
-					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList7" type="checkbox">
 				<label for="togList7">
-					<span><h6>Distribution Classes</h6></span>
-					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="BetaDistribution.html" class="text-decoration-none font-monospace"><small>BetaDistribution</small></a></li>
-					<li><a href="BinomialDistribution.html" class="text-decoration-none font-monospace"><small>BinomialDistribution</small></a></li>
-					<li><a href="BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>BirnbaumSaundersDistribution</small></a></li>
-					<li><a href="BurrDistribution.html" class="text-decoration-none font-monospace"><small>BurrDistribution</small></a></li>
-					<li><a href="ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>ExponentialDistribution</small></a></li>
-					<li><a href="ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>ExtremeValueDistribution</small></a></li>
-					<li><a href="GammaDistribution.html" class="text-decoration-none font-monospace"><small>GammaDistribution</small></a></li>
-					<li><a href="GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>GeneralizedExtremeValueDistribution</small></a></li>
-					<li><a href="GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>GeneralizedParetoDistribution</small></a></li>
-					<li><a href="HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>HalfNormalDistribution</small></a></li>
-					<li><a href="InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>InverseGaussianDistribution</small></a></li>
-					<li><a href="LogisticDistribution.html" class="text-decoration-none font-monospace"><small>LogisticDistribution</small></a></li>
-					<li><a href="LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>LoglogisticDistribution</small></a></li>
-					<li><a href="LognormalDistribution.html" class="text-decoration-none font-monospace"><small>LognormalDistribution</small></a></li>
-					<li><a href="LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>LoguniformDistribution</small></a></li>
-					<li><a href="MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>MultinomialDistribution</small></a></li>
-					<li><a href="NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>NakagamiDistribution</small></a></li>
-					<li><a href="NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>NegativeBinomialDistribution</small></a></li>
-					<li><a href="NormalDistribution.html" class="text-decoration-none font-monospace"><small>NormalDistribution</small></a></li>
-					<li><a href="PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>PiecewiseLinearDistribution</small></a></li>
-					<li><a href="PoissonDistribution.html" class="text-decoration-none font-monospace"><small>PoissonDistribution</small></a></li>
-					<li><a href="RayleighDistribution.html" class="text-decoration-none font-monospace"><small>RayleighDistribution</small></a></li>
-					<li><a href="RicianDistribution.html" class="text-decoration-none font-monospace"><small>RicianDistribution</small></a></li>
-					<li><a href="tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>tLocationScaleDistribution</small></a></li>
-					<li><a href="TriangularDistribution.html" class="text-decoration-none font-monospace"><small>TriangularDistribution</small></a></li>
-					<li><a href="UniformDistribution.html" class="text-decoration-none font-monospace"><small>UniformDistribution</small></a></li>
-					<li><a href="WeibullDistribution.html" class="text-decoration-none font-monospace"><small>WeibullDistribution</small></a></li>
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList8" type="checkbox">
 				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
 					<span><h6>Distribution Fitting</h6></span>
 					<span><h6>Distribution Fitting</h6></span>
 				</label>
@@ -299,6 +581,7 @@
 					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
 					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
 					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
 					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
 					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
 					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
@@ -306,9 +589,9 @@
 					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
 					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
 					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
-					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
 					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
 					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
 					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
 					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
 					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
@@ -335,6 +618,8 @@
 					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
 					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
 					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
 					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
 					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
 					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
@@ -345,8 +630,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList9" type="checkbox">
-				<label for="togList9">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
 					<span><h6>Distribution Functions</h6></span>
 					<span><h6>Distribution Functions</h6></span>
 				</label>
@@ -453,7 +738,6 @@
 					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
 					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
 					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
-					<li><a href="mvtcdfqmc.html" class="text-decoration-none font-monospace"><small>mvtcdfqmc</small></a></li>
 					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
 					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
 					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
@@ -494,6 +778,10 @@
 					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
 					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
 					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -529,8 +817,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList10" type="checkbox">
-				<label for="togList10">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
 					<span><h6>Distribution Statistics</h6></span>
 					<span><h6>Distribution Statistics</h6></span>
 				</label>
@@ -541,6 +829,8 @@
 					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
 					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
 					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
 					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
 					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
 					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
@@ -574,8 +864,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList11" type="checkbox">
-				<label for="togList11">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Distribution Wrappers</h6></span>
 					<span><h6>Distribution Wrappers</h6></span>
 				</label>
@@ -586,116 +876,50 @@
 					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
 					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
 					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
 					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
 					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList12" type="checkbox">
-				<label for="togList12">
-					<span><h6>Experimental Design</h6></span>
-					<span><h6>Experimental Design</h6></span>
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
-					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
-					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
-					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
-					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList13" type="checkbox">
-				<label for="togList13">
-					<span><h6>Machine Learning</h6></span>
-					<span><h6>Machine Learning</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
-					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
-					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
-					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
-					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
-					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
-					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList14" type="checkbox" checked>
-				<label for="togList14">
-					<span><h6>Model Fitting</h6></span>
-					<span><h6>Model Fitting</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
-					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
-					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
-					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
-					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
-					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
-					<li><a href="fitlm.html" class="text-decoration-none font-monospace fw-bolder"><small>fitlm</small></a></li>
-					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
-					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList15" type="checkbox">
-				<label for="togList15">
-					<span><h6>Hypothesis Testing</h6></span>
-					<span><h6>Hypothesis Testing</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
-					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
-					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
-					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
-					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
-					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
-					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
-					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
-					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
-					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
-					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
-					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
-					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
-					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
-					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
-					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
-					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
-					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
-					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
-					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
-					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
-					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
-					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
-					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
-					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
-					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
-					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
-					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
-					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
-					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
-					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
-					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
-					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
-					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList16" type="checkbox">
-				<label for="togList16">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>I/O</h6></span>
 					<span><h6>I/O</h6></span>
 				</label>
@@ -708,86 +932,19 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList17" type="checkbox">
-				<label for="togList17">
-					<span><h6>Interpolation</h6></span>
-					<span><h6>Interpolation</h6></span>
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
-					<span><h6>Plotting</h6></span>
-					<span><h6>Plotting</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
-					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
-					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
-					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
-					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
-					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
-					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
-					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
-					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
-					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
-					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
-					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
-					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
-					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
-					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
-					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
-					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
-					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
-					<span><h6>Regression</h6></span>
-					<span><h6>Regression</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
-					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
-					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
-					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
-					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
-					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
-					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
-					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
-					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
-					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
-					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
-					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
-					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
-					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
-					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
-					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
-					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
-					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList20" type="checkbox">
-				<label for="togList20">
-					<span><h6>Transforms</h6></span>
-					<span><h6>Transforms</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
 					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -869,41 +1026,46 @@
  the terms of the model to fit, using any of the input combinations shown
  above.  <var>modelspec</var> can be any of the following.
 </p>
-<table>
-<thead><tr><th width="18%"><var>Value</var></th><th width="2%"></th><th width="80%"><var>Description</var></th></tr></thead>
-<tr><td width="18%"><code>'constant'</code></td><td width="2%"></td><td width="80%">Model contains only an intercept term.</td></tr>
-<tr><td width="18%"><code>'linear'</code></td><td width="2%"></td><td width="80%">Model contains an intercept and one term
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="18%"><var>Value</var></th><th width="80%"><var>Description</var></th></tr></thead>
+<tr><td width="18%"><code>'constant'</code></td><td width="80%">Model contains only an intercept term.</td></tr>
+<tr><td width="18%"><code>'linear'</code></td><td width="80%">Model contains an intercept and one term
  for each predictor variable.  This is the default when <var>modelspec</var> is
  not specified.</td></tr>
-<tr><td width="18%"><code>'interactions'</code></td><td width="2%"></td><td width="80%">Model contains an intercept, all
+<tr><td width="18%"><code>'interactions'</code></td><td width="80%">Model contains an intercept, all
  linear terms, and all pairwise products of distinct predictor variables
  (no squared terms).</td></tr>
-<tr><td width="18%"><code>'purequadratic'</code></td><td width="2%"></td><td width="80%">Model contains an intercept, all
+<tr><td width="18%"><code>'purequadratic'</code></td><td width="80%">Model contains an intercept, all
  linear terms, and all squared terms.</td></tr>
-<tr><td width="18%"><code>'quadratic'</code></td><td width="2%"></td><td width="80%">Model contains an intercept, all linear
+<tr><td width="18%"><code>'quadratic'</code></td><td width="80%">Model contains an intercept, all linear
  terms, all pairwise products of distinct predictor variables, and all
  squared terms.</td></tr>
-<tr><td width="18%"><code>'full'</code></td><td width="2%"></td><td width="80%">Model contains an intercept and all terms up
+<tr><td width="18%"><code>'full'</code></td><td width="80%">Model contains an intercept and all terms up
  to and including the full <math>P</math>-way interaction of the predictor
  variables, i.e. every combination of one or more distinct predictors.</td></tr>
-<tr><td width="18%">terms matrix</td><td width="2%"></td><td width="80%">A <math>T&times;P</math> or <math>T&times;(P+1)</math> numeric matrix,
+<tr><td width="18%">terms matrix</td><td width="80%">A <math>T&times;P</math> or <math>T&times;(P+1)</math> numeric matrix,
  where <math>T</math> is the number of terms and <math>P</math> is the number of
  predictor variables.  Each row represents one term, and the value in
  column <math>j</math> is the exponent to which predictor <math>j</math> is raised in
  that term; a row of all zeros represents the intercept.  If a
  <math>T&times;(P+1)</math> matrix is supplied, its last column (representing the
  response variable) must be all zeros.</td></tr>
-<tr><td width="18%">Wilkinson formula</td><td width="2%"></td><td width="80%">A character vector of the form
+<tr><td width="18%">Wilkinson formula</td><td width="80%">A character vector of the form
  <code>'y ~ terms'</code> describing the response and predictor terms using
  Wilkinson notation.  The variable name to the left of <code>'~'</code> is used
  as the response, overriding any response implied elsewhere in the call.</td></tr>
 </table>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/fitlm.m">fitlm</a>
+</div>
 
 <p> When <var>modelspec</var> is given as a Wilkinson formula, the following
  operators may be used on its right-hand side to build up <code>terms</code>:
 </p>
-<table>
-<thead><tr><th width="12%">Operator</th><th width="38%">Meaning</th><th width="50%">Example</th></tr></thead>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="12%">Operator</th><th width="38%">Meaning</th><th width="50%">Example</th></tr></thead>
 <tr><td width="12%"><code>+</code></td><td width="38%">add a term</td><td width="50%"><code>'x1 + x2'</code> adds <code>x1</code> and
  <code>x2</code> as separate terms</td></tr>
 <tr><td width="12%"><code>-</code></td><td width="38%">remove a term</td><td width="50%"><code>'x1*x2 - x1:x2'</code> removes the
@@ -918,6 +1080,9 @@
 <tr><td width="12%"><code>-1</code></td><td width="38%">remove intercept</td><td width="50%"><code>'x1 + x2 - 1'</code> fits the
  model without a constant term</td></tr>
 </table>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/fitlm.m">fitlm</a>
+</div>
 
 <p> A formula includes an intercept term by default; append <code>'- 1'</code> to
  the formula to omit it.  For a categorical predictor, <code>fitlm</code>
@@ -932,26 +1097,27 @@
  specifies additional options using one or more <code>Name-Value</code> pair
  arguments, which may be combined with <var>modelspec</var> or used on their own.
 </p>
-<table>
-<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>'Intercept'</code></td><td width="2%"></td><td width="80%">A logical scalar indicating whether to
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>'Intercept'</code></td><td width="80%">A logical scalar indicating whether to
  include a constant (intercept) term in the model.  Default is <code>true</code>.
  This option only applies when <var>modelspec</var> is a character vector model
  name (or omitted); it is ignored when <var>modelspec</var> is a terms matrix or
  a Wilkinson formula, where the intercept is instead controlled by the
  matrix/formula itself.</td></tr>
-<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">A numeric vector of nonnegative
+<tr><td width="18%"><code>'Weights'</code></td><td width="80%">A numeric vector of nonnegative
  observation weights, with one element per observation, used to fit a
  weighted least squares model.  Default is a vector of ones, i.e. an
  unweighted ordinary least squares fit.</td></tr>
-<tr><td width="18%"><code>'Exclude'</code></td><td width="2%"></td><td width="80%">A numeric or logical vector specifying
+<tr><td width="18%"><code>'Exclude'</code></td><td width="80%">A numeric or logical vector specifying
  observations to exclude from the fit, given as row indices into the
  original data or as a logical mask the same length as the number of
  observations.  Excluded observations, together with any observation that
  contains a missing (<code>NaN</code>) value in a predictor or the response, are
  recorded in the <code>ObservationInfo</code> property of the fitted model but do
  not contribute to the fitted coefficients or summary statistics.</td></tr>
-<tr><td width="18%"><code>'CategoricalVars'</code></td><td width="2%"></td><td width="80%">Specifies which predictor
+<tr><td width="18%"><code>'CategoricalVars'</code></td><td width="80%">Specifies which predictor
  variables are treated as categorical, given as a vector of column indices,
  a logical vector, or a cell array of variable names (only valid for table
  input).  Each categorical predictor with <math>L</math> distinct categories is
@@ -960,22 +1126,22 @@
  omitted from the design matrix.  Variables that are already
  <code>categorical</code> arrays or cell arrays of character vectors are always
  treated as categorical, regardless of this option.</td></tr>
-<tr><td width="18%"><code>'VarNames'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+<tr><td width="18%"><code>'VarNames'</code></td><td width="80%">A cell array of character vectors
  naming the predictor and response variables, listed in order with the
  response variable name last, e.g. <code>{&quot;x1&quot;, &quot;x2&quot;, &quot;y&quot;}</code> for two
  predictors.  Only applies when <var>X</var> and <var>y</var> (or a categorical
  vector and <var>y</var>) are supplied directly, since table variables already
  carry their own names.  By default, predictors are named <code>'x1'</code>,
  <code>'x2'</code>, etc. and the response is named <code>'y'</code>.</td></tr>
-<tr><td width="18%"><code>'ResponseVar'</code></td><td width="2%"></td><td width="80%">A character vector naming the
+<tr><td width="18%"><code>'ResponseVar'</code></td><td width="80%">A character vector naming the
  response variable, used to override the response variable name that would
  otherwise be inferred (the last table variable, or <code>'y'</code> for matrix
  input).</td></tr>
-<tr><td width="18%"><code>'PredictorVars'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+<tr><td width="18%"><code>'PredictorVars'</code></td><td width="80%">A cell array of character vectors
  naming which variables in <var>tbl</var> to use as predictors.  By default, all
  variables in <var>tbl</var> other than the response variable are used as
  predictors.</td></tr>
-<tr><td width="18%"><code>'RobustOpts'</code></td><td width="2%"></td><td width="80%">Selects ordinary least squares or
+<tr><td width="18%"><code>'RobustOpts'</code></td><td width="80%">Selects ordinary least squares or
  robust regression fitting.  This value can be <code>'off'</code> (default,
  ordinary least squares), <code>'on'</code> (robust fitting using the
  <code>'bisquare'</code> weighting function), the name of one of the weighting
@@ -989,6 +1155,9 @@
  <code>'ols'</code>, <code>'talwar'</code>, <code>'welsch'</code>, each with its own default
  tuning constant.</td></tr>
 </table>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/fitlm.m">fitlm</a>
+</div>
 
 <a name="Algorithm"></a>
 <h3 class="subheading">Algorithm</h3>
@@ -1008,23 +1177,338 @@
  model is a robust fit rather than an ordinary least squares fit, and its
  <code>Robust</code> property is populated accordingly.
 </p>
+<p> A categorical predictor expands to indicator columns, one per level bar the
+ reference level, which the intercept carries.  When the model has no
+ intercept, the <em>first</em> categorical predictor is given an indicator for
+ every one of its levels instead, so that its coefficients are the group
+ means; any further categorical predictor stays reference coded, which keeps
+ the design full rank.  This differs from MATLAB, which omits the reference
+ level whether or not an intercept is present and so cannot fit the reference
+ group at all &ndash; for a three-level grouping variable <code>g</code>, MATLAB fits
+ <code>y ~ g - 1</code> with two coefficients, predicts exactly 0 for every
+ observation in the omitted group, and reports a negative <math>R^2</math>.  This
+ implementation returns three coefficients, one per group.
+</p>
 <p> <strong>See also: </strong>
   <a href="LinearModel.html">LinearModel</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitlm.m">fitlm</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/fitlm.m">fitlm</a>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
             <div class="row d-flex flex-wrap align-items-center">
               <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                <h3 class="d-inline-block mr-2">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example1" aria-expanded="true"
+                  aria-controls="fitlm-example1">
                 Example: 1
-                </h3>
+                </button>
               </div>
             </div>
           </div>
-          <div class="card-body">
+          <div class="collapse show" id="fitlm-example1">
+            <div class="card-body">
+                <p>The simplest call: a matrix of predictor data and a response vector. Ten students study for varying numbers of hours before an exam, with their resulting scores recorded. With no <code>modelspec</code>, <code>fitlm</code> fits an intercept plus one linear term per column of the predictor matrix.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Hours = [1;2;3;4;5;6;7;8;9;10];
+ Score = [52;55;61;64;70;73;77;81;85;90];
+ mdl = fitlm (Hours, Score)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Linear regression model:
+      y ~ 1 + x1
+
+  Estimated Coefficients:
+
+  2x4 table
+
+                   Estimate       SE         tStat       pValue       
+                   ________    _________    _______    ___________    
+
+    (Intercept)     47.6667     0.488866    97.5046    1.36679e-13    
+    x1              4.20606    0.0787879    53.3846    1.68076e-11    
+
+
+Number of observations: 10, Error degrees of freedom: 8
+Root Mean Squared Error: 0.715626
+R-squared: 0.997201,  Adjusted R-Squared: 0.996851
+F-statistic vs. constant model: 2849.92, p-value = 1.68076e-11</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example2" aria-expanded="true"
+                  aria-controls="fitlm-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitlm-example2">
+            <div class="card-body">
+                <p>Table input with a Wilkinson formula, and a categorical predictor detected automatically from its cell-array type. Nine stores in three regions report ad spend and sales. <code>Region</code> is a cell array of strings, so it is expanded into indicator columns without needing <code>'CategoricalVars'</code> to say so explicitly.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> AdSpend = [10;20;30;15;25;35;12;22;32];
+ Region  = {'North';'North';'North';'South';'South';'South'; ...
+            'East';'East';'East'};
+ Sales   = [15;18;24;20;27;33;12;19;26];
+ T = table (AdSpend, Region, Sales, ...
+   'VariableNames', {'AdSpend','Region','Sales'});
+ mdl = fitlm (T, 'Sales ~ AdSpend + Region')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Linear regression model:
+      Sales ~ 1 + AdSpend + Region
+
+  Estimated Coefficients:
+
+  4x4 table
+
+                    Estimate       SE         tStat        pValue       
+                    ________    _________    ________    ___________    
+
+    (Intercept)            7      1.31656     5.31688     0.00314819    
+    AdSpend              0.6    0.0537484     11.1631    0.000100633    
+    Region_South     4.66667      1.10805      4.2116     0.00839532    
+    Region_East         -1.2      1.08033    -1.11077       0.317206    
+
+
+Number of observations: 9, Error degrees of freedom: 5
+Root Mean Squared Error: 1.31656
+R-squared: 0.974675,  Adjusted R-Squared: 0.959481
+F-statistic vs. constant model: 64.1453, p-value = 0.000206027</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example3" aria-expanded="true"
+                  aria-controls="fitlm-example3">
+                Example: 3
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitlm-example3">
+            <div class="card-body">
+                <p>A terms matrix used directly as modelspec, instead of a keyword or a formula string. Weekly sales depend on temperature and humidity. Each row of the terms matrix is one term, and each column is the exponent of one predictor in that term -- here, both main effects plus their interaction.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Temp     = [60;65;70;75;80;85;90];
+ Humidity = [30;35;40;45;50;55;60];
+ Sales    = [200;230;260;300;340;370;410];
+ T_terms  = [0 0; 1 0; 0 1; 1 1];
+ mdl = fitlm ([Temp, Humidity], Sales, T_terms)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Linear regression model:
+      y ~ 1 + x1*x2
+
+  Estimated Coefficients:
+
+  4x4 table
+
+                   Estimate        SE         tStat       pValue     
+                   _________    _________    ________    ________    
+
+    (Intercept)            0            0         NaN         NaN    
+    x1              0.968254      1.03498    0.935532    0.402478    
+    x2               3.24603      2.92901     1.10823    0.329908    
+    x1:x2          0.0238095    0.0157935     1.50756    0.206151    
+
+
+Number of observations: 7, Error degrees of freedom: 4
+Root Mean Squared Error: 3.61873
+R-squared: 0.998507,  Adjusted R-Squared: 0.997761
+F-statistic vs. constant model: 1337.64, p-value = 2.22888e-06</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example4" aria-expanded="true"
+                  aria-controls="fitlm-example4">
+                Example: 4
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitlm-example4">
+            <div class="card-body">
+                <p>Observation weights and an excluded observation used together. Ten observations follow a roughly linear trend, except one clear outlier. <code>'Exclude'</code> leaves that observation out of the fit entirely, while <code>'Weights'</code> gives the remaining observations unequal influence on the fit.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [1;2;3;4;5;6;7;8;9;10];
+ y = [10;13;15;40;22;25;29;33;35;39];
+ w = [1;1;2;1;2;1;2;1;2;1];
+ mdl = fitlm (x, y, 'Weights', w, 'Exclude', 4)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Linear regression model:
+      y ~ 1 + x1
+
+  Estimated Coefficients:
+
+  2x4 table
+
+                   Estimate       SE        tStat       pValue       
+                   ________    ________    _______    ___________    
+
+    (Intercept)      5.8865    0.468228    12.5719    4.64941e-06    
+    x1              3.27301    0.073125    44.7591     7.2593e-10    
+
+
+Number of observations: 9, Error degrees of freedom: 7
+Root Mean Squared Error: 0.732374
+R-squared: 0.996518,  Adjusted R-Squared: 0.996021
+F-statistic vs. constant model: 2003.37, p-value = 7.2593e-10</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example5" aria-expanded="true"
+                  aria-controls="fitlm-example5">
+                Example: 5
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitlm-example5">
+            <div class="card-body">
+                <p>Robust regression versus an ordinary fit, on data with a planted outlier. Twelve observations follow a linear trend with a small amount of noise, except one observation shifted far off the line. The ordinary fit is pulled toward the outlier; the robust fit, using iteratively reweighted least squares with the bisquare weighting function, downweights it instead.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:12)';
+ y = 3 + 2*x + 0.5*sin (x);
+ y(10) = y(10) + 30;
+ mdl_ols    = fitlm (x, y)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl_ols =
+
+  Linear regression model:
+      y ~ 1 + x1
+
+  Estimated Coefficients:
+
+  2x4 table
+
+                   Estimate       SE        tStat        pValue      
+                   ________    ________    ________    __________    
+
+    (Intercept)      1.0006     5.30224    0.188712      0.854093    
+    x1              2.69141    0.720433     3.73583    0.00387304    
+
+
+Number of observations: 12, Error degrees of freedom: 10
+Root Mean Squared Error: 8.61512
+R-squared: 0.582575,  Adjusted R-Squared: 0.540833
+F-statistic vs. constant model: 13.9564, p-value = 0.00387304</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl_robust = fitlm (x, y, 'RobustOpts', 'bisquare')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl_robust =
+
+  Linear regression model (robust fit):
+      y ~ 1 + x1
+
+  Estimated Coefficients:
+
+  2x4 table
+
+                   Estimate       SE        tStat       pValue       
+                   ________    ________    _______    ___________    
+
+    (Intercept)     3.27409     2.66115    1.23033       0.246729    
+    x1               1.9591    0.361579    5.41819    0.000293756    
+
+
+Number of observations: 12, Error degrees of freedom: 10
+Root Mean Squared Error: 4.32385
+R-squared: 0.769188,  Adjusted R-Squared: 0.746107
+F-statistic vs. constant model: 33.3253, p-value = 0.000179488</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example6" aria-expanded="true"
+                  aria-controls="fitlm-example6">
+                Example: 6
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitlm-example6">
+            <div class="card-body">
+                <p>Selecting specific predictors and a specific response by name from a larger table, using the <code>carsmall</code> data set. <code>'ResponseVar'</code> and <code>'PredictorVars'</code> pick out exactly which columns of the table to use, regardless of how many other variables the table also contains.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall
+ T = table (Weight, Acceleration, MPG);
+ mdl = fitlm (T, 'ResponseVar', 'MPG', ...
+   'PredictorVars', {'Weight', 'Acceleration'})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Linear regression model:
+      MPG ~ 1 + Weight + Acceleration
+
+  Estimated Coefficients:
+
+  3x4 table
+
+                     Estimate          SE          tStat        pValue       
+                    ___________    ___________    ________    ___________    
+
+    (Intercept)         45.1546        3.46591     13.0282    1.62665e-22    
+    Weight          -0.00824745    0.000598364    -13.7833    5.31651e-24    
+    Acceleration       0.196941       0.147426     1.33586       0.184927    
+
+
+Number of observations: 94, Error degrees of freedom: 91
+Root Mean Squared Error: 4.11698
+R-squared: 0.743159,  Adjusted R-Squared: 0.737514
+F-statistic vs. constant model: 131.652, p-value = 1.37959e-27</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example7" aria-expanded="true"
+                  aria-controls="fitlm-example7">
+                Example: 7
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitlm-example7">
+            <div class="card-body">
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
         22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
         22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
@@ -1037,7 +1521,7 @@
   Linear regression model:
       y ~ 1 + x1
 
-  Coefficients:
+  Estimated Coefficients:
 
   5x4 table
 
@@ -1056,6 +1540,7 @@ Root Mean Squared Error: 2.87864
 R-squared: 0.854819,  Adjusted R-Squared: 0.836672
 F-statistic vs. constant model: 47.1038, p-value = 5.71708e-13</pre>
 
+            </div>
           </div>
         </div>
 
@@ -1063,13 +1548,17 @@ F-statistic vs. constant model: 47.1038, p-value = 5.71708e-13</pre>
           <div class="card-header card-header-mod">
             <div class="row d-flex flex-wrap align-items-center">
               <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                <h3 class="d-inline-block mr-2">
-                Example: 2
-                </h3>
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitlm-example8" aria-expanded="true"
+                  aria-controls="fitlm-example8">
+                Example: 8
+                </button>
               </div>
             </div>
           </div>
-          <div class="card-body">
+          <div class="collapse show" id="fitlm-example8">
+            <div class="card-body">
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
             6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
  brands = {'Gourmet', 'National', 'Generic'; ...
@@ -1085,22 +1574,22 @@ F-statistic vs. constant model: 47.1038, p-value = 5.71708e-13</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
 
   Linear regression model:
-      y ~ 1 + brands + popper + brands:brands + brands:popper
+      y ~ 1 + brands*popper
 
-  Coefficients:
+  Estimated Coefficients:
 
   7x4 table
 
                                       Estimate        SE         tStat        pValue       
                                       _________    ________    _________    ___________    
 
-    (Intercept)                             4.5    0.215166      20.9141    8.27238e-11    
-    brands_Gourmet                      2.33333     0.30429      7.66812    5.78606e-06    
-    brands_National                    0.666667     0.30429      2.19089      0.0489297    
-    popper_oil                               -1     0.30429     -3.28634     0.00650333    
-    brands_Gourmet:brands_National            0           0          NaN            NaN    
-    brands_Gourmet:popper_oil         -0.166667    0.430331    -0.387298       0.705317    
-    brands_National:popper_oil         0.166667    0.430331     0.387298       0.705317    
+    (Intercept)                         5.66667    0.215166      26.3363    5.49842e-12    
+    brands_National                    -1.33333     0.30429     -4.38178    0.000893505    
+    brands_Generic                     -2.16667     0.30429     -7.12039    1.21291e-05    
+    popper_air                          1.16667     0.30429      3.83406     0.00237798    
+    brands_National:brands_Generic            0           0          NaN            NaN    
+    brands_National:popper_air        -0.333333    0.430331    -0.774597       0.453571    
+    brands_Generic:popper_air         -0.166667    0.430331    -0.387298       0.705317    
 
 
 Number of observations: 18, Error degrees of freedom: 12
@@ -1108,6 +1597,7 @@ Root Mean Squared Error: 0.372678
 R-squared: 0.924242,  Adjusted R-Squared: 0.892677
 F-statistic vs. constant model: 29.28, p-value = 2.50646e-06</pre>
 
+            </div>
           </div>
         </div>
 

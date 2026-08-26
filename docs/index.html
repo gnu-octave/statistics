@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
     <script type="text/javascript" async
-      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
     </script>
     <script type="text/javascript">
       window.addEventListener("load", () => {
@@ -19,6 +19,32 @@
           tog.onclick = () => tog.classList.toggle("show");
           i.parentElement.removeChild(i.previousSibling);
           i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
         }
       });
     </script>
@@ -108,7 +134,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.8.4&nbsp;2026-07-10</b>
+              <b>1.9.0&nbsp;2026-08-26</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -118,404 +144,212 @@
         <div class="card-body">
            <p>Select Category:
              <select name="cat" onchange="location = this.options[this.selectedIndex].value;">
-             <option value="#Clustering">Clustering</option>
-             <option value="#Classification Classes">Classification Classes</option>
-             <option value="#Clustering Classes">Clustering Classes</option>
-             <option value="#Regression Classes">Regression Classes</option>
-             <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
+             <option value="#Data Manipulation">Data Manipulation</option>
+             <option value="#Hypothesis Testing">Hypothesis Testing</option>
+             <option value="#Experimental Design">Experimental Design</option>
+             <option value="#Regression">Regression</option>
+             <option value="#Supervised Learning">Supervised Learning</option>
+             <option value="#Clustering">Clustering</option>
+             <option value="#Nearest Neighbors">Nearest Neighbors</option>
+             <option value="#Anomaly Detection">Anomaly Detection</option>
+             <option value="#Dimensionality Reduction">Dimensionality Reduction</option>
+             <option value="#Model Evaluation">Model Evaluation</option>
+             <option value="#Markov Models">Markov Models</option>
+             <option value="#Random Sampling">Random Sampling</option>
              <option value="#Distribution Classes">Distribution Classes</option>
              <option value="#Distribution Fitting">Distribution Fitting</option>
              <option value="#Distribution Functions">Distribution Functions</option>
              <option value="#Distribution Statistics">Distribution Statistics</option>
              <option value="#Distribution Wrappers">Distribution Wrappers</option>
-             <option value="#Experimental Design">Experimental Design</option>
-             <option value="#Machine Learning">Machine Learning</option>
-             <option value="#Model Fitting">Model Fitting</option>
-             <option value="#Hypothesis Testing">Hypothesis Testing</option>
-             <option value="#I/O">I/O</option>
-             <option value="#Interpolation">Interpolation</option>
              <option value="#Plotting">Plotting</option>
-             <option value="#Regression">Regression</option>
-             <option value="#Transforms">Transforms</option>
+             <option value="#I/O">I/O</option>
+             <option value="#Utilities">Utilities</option>
              </select>
            <p>
 
            <h3 class="category">
-             <a name="Clustering">Clustering</a>
+             <a name="Descriptive Statistics">Descriptive Statistics</a>
            </h3>
            <table class="table table-striped">
              <tbody>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cluster.html">cluster</a>
+                   <a href="cdfcalc.html">cdfcalc</a>
                    </code></b>
                  </td>
-                 <td>Define clusters from an agglomerative hierarchical cluster tree.</td>
+                 <td>Calculate an empirical cumulative distribution function.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="clusterdata.html">clusterdata</a>
+                   <a href="cl_multinom.html">cl_multinom</a>
                    </code></b>
                  </td>
-                 <td>Wrapper function for ‘linkage’ and ‘cluster’.
-
-   If </td>
+                 <td>Confidence level of multinomial portions.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cmdscale.html">cmdscale</a>
+                   <a href="dcov.html">dcov</a>
                    </code></b>
                  </td>
-                 <td>Classical multidimensional scaling of a matrix.</td>
+                 <td>Distance correlation, covariance and correlation statistics.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="confusionmat.html">confusionmat</a>
+                   <a href="ecdf.html">ecdf</a>
                    </code></b>
                  </td>
-                 <td>Compute a confusion matrix for classification problems</td>
+                 <td>Empirical (Kaplan-Meier) cumulative distribution function.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cophenet.html">cophenet</a>
+                   <a href="geomean.html">geomean</a>
                    </code></b>
                  </td>
-                 <td>Compute the cophenetic correlation coefficient.</td>
+                 <td>Compute the geometric mean of X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="createns.html">createns</a>
+                   <a href="grpstats.html">grpstats</a>
                    </code></b>
                  </td>
-                 <td>Create a nearest neighbor searcher object.</td>
+                 <td>Summary statistics by group.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="crossval.html">crossval</a>
+                   <a href="harmmean.html">harmmean</a>
                    </code></b>
                  </td>
-                 <td>Perform cross validation on given data.</td>
+                 <td>Compute the harmonic mean of X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="editDistance.html">editDistance</a>
+                   <a href="jackknife.html">jackknife</a>
                    </code></b>
                  </td>
-                 <td>Compute the edit (Levenshtein) distance between strings or documents.</td>
+                 <td>Compute jackknife estimates of a parameter taking one or more given samples as
+parameters.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="evalclusters.html">evalclusters</a>
+                   <a href="ksdensity.html">ksdensity</a>
                    </code></b>
                  </td>
-                 <td>Create a clustering evaluation object to find the optimal number of clusters.</td>
+                 <td>Kernel smoothing density estimate.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="inconsistent.html">inconsistent</a>
+                   <a href="mvksdensity.html">mvksdensity</a>
                    </code></b>
                  </td>
-                 <td>Compute the inconsistency coefficient for each link of a hierarchical cluster
-tree.</td>
+                 <td>Multivariate kernel smoothing density estimate.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="kmeans.html">kmeans</a>
+                   <a href="nancov.html">nancov</a>
                    </code></b>
                  </td>
-                 <td>Perform a K-means clustering of the NxD matrix DATA.</td>
+                 <td>Compute the covariance matrix while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="knnsearch.html">knnsearch</a>
+                   <a href="nanmax.html">nanmax</a>
                    </code></b>
                  </td>
-                 <td>Find k-nearest neighbors from input data.</td>
+                 <td>Find the maximum while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="linkage.html">linkage</a>
+                   <a href="nanmean.html">nanmean</a>
                    </code></b>
                  </td>
-                 <td>Produce a hierarchical clustering dendrogram.</td>
+                 <td>Compute the mean while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="mahal.html">mahal</a>
+                   <a href="nanmedian.html">nanmedian</a>
                    </code></b>
                  </td>
-                 <td>Mahalanobis' D-square distance.</td>
+                 <td>Compute the median while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="mhsample.html">mhsample</a>
+                   <a href="nanmin.html">nanmin</a>
                    </code></b>
                  </td>
-                 <td>Draws NSAMPLES samples from a target stationary distribution PDF using
-Metropolis-Hastings algorithm.</td>
+                 <td>Find the minimum while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="optimalleaforder.html">optimalleaforder</a>
+                   <a href="nanstd.html">nanstd</a>
                    </code></b>
                  </td>
-                 <td>Compute the optimal leaf ordering of a hierarchical binary cluster tree.</td>
+                 <td>Compute the standard deviation while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="pdist.html">pdist</a>
+                   <a href="nansum.html">nansum</a>
                    </code></b>
                  </td>
-                 <td>Return the distance between any two rows in X.</td>
+                 <td>Compute the sum while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="pdist2.html">pdist2</a>
+                   <a href="nanvar.html">nanvar</a>
                    </code></b>
                  </td>
-                 <td>Compute pairwise distance between two sets of vectors.</td>
+                 <td>Compute the variance while ignoring NaN values.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="procrustes.html">procrustes</a>
+                   <a href="partialcorr.html">partialcorr</a>
                    </code></b>
                  </td>
-                 <td>Procrustes Analysis.</td>
+                 <td>Linear or rank partial correlation coefficients.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="rangesearch.html">rangesearch</a>
+                   <a href="partialcorri.html">partialcorri</a>
                    </code></b>
                  </td>
-                 <td>Find all neighbors within specified distance from input data.</td>
+                 <td>Partial correlation of each response with each predictor, adjusting for the
+remaining predictors.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="slicesample.html">slicesample</a>
+                   <a href="tabulate.html">tabulate</a>
                    </code></b>
                  </td>
-                 <td>Draws NSAMPLES samples from a target stationary distribution PDF using slice
-sampling of Radford M.</td>
+                 <td>Create a frequency table of unique values in vector X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="squareform.html">squareform</a>
+                   <a href="trimmean.html">trimmean</a>
                    </code></b>
                  </td>
-                 <td>Interchange between distance matrix and distance vector formats.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Classification Classes">Classification Classes</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
-                   </code></b>
-                 </td>
-                 <td>Discriminant analysis classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClassificationGAM.html">ClassificationGAM</a>
-                   </code></b>
-                 </td>
-                 <td>Generalized additive model classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClassificationKNN.html">ClassificationKNN</a>
-                   </code></b>
-                 </td>
-                 <td>K-nearest neighbors classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>
-                   </code></b>
-                 </td>
-                 <td>Neural network classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
-                   </code></b>
-                 </td>
-                 <td>Cross-validated classification model</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClassificationSVM.html">ClassificationSVM</a>
-                   </code></b>
-                 </td>
-                 <td>Support Vector Machine classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="CompactClassificationDiscriminant.html">CompactClassificationDiscriminant</a>
-                   </code></b>
-                 </td>
-                 <td>Compact discriminant analysis classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>
-                   </code></b>
-                 </td>
-                 <td>Compact generalized additive model classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
-                   </code></b>
-                 </td>
-                 <td>Compact neural network classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>
-                   </code></b>
-                 </td>
-                 <td>Compact Support Vector Machine classification</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ConfusionMatrixChart.html">ConfusionMatrixChart</a>
-                   </code></b>
-                 </td>
-                 <td>Confusion matrix chart for classification results</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Clustering Classes">Clustering Classes</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="CalinskiHarabaszEvaluation.html">CalinskiHarabaszEvaluation</a>
-                   </code></b>
-                 </td>
-                 <td>Calinski-Harabasz clustering evaluation.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ClusterCriterion.html">ClusterCriterion</a>
-                   </code></b>
-                 </td>
-                 <td>A clustering evaluation object.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="cvpartition.html">cvpartition</a>
-                   </code></b>
-                 </td>
-                 <td>Partition data for cross-validation</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="DaviesBouldinEvaluation.html">DaviesBouldinEvaluation</a>
-                   </code></b>
-                 </td>
-                 <td>Davies-Bouldin object to evaluate clustering solutions</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ExhaustiveSearcher.html">ExhaustiveSearcher</a>
-                   </code></b>
-                 </td>
-                 <td>Exhaustive nearest neighbor searcher</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="GapEvaluation.html">GapEvaluation</a>
-                   </code></b>
-                 </td>
-                 <td>Gap evaluation for clustering solutions</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hnswSearcher.html">hnswSearcher</a>
-                   </code></b>
-                 </td>
-                 <td>Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="KDTreeSearcher.html">KDTreeSearcher</a>
-                   </code></b>
-                 </td>
-                 <td>KD-tree nearest neighbor searcher</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="SilhouetteEvaluation.html">SilhouetteEvaluation</a>
-                   </code></b>
-                 </td>
-                 <td>Silhouette evaluation for clustering</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Regression Classes">Regression Classes</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="RegressionGAM.html">RegressionGAM</a>
-                   </code></b>
-                 </td>
-                 <td>Create a RegressionGAM class object containing a Generalized Additive Model
-(GAM) for regression.</td>
+                 <td>Compute the trimmed mean.</td>
                </tr>
              </tbody>
            </table>
@@ -608,6 +442,14 @@ van Albada and Robinson.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="randsample.html">randsample</a>
+                   </code></b>
+                 </td>
+                 <td>Sample elements from a vector.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="rmmissing.html">rmmissing</a>
                    </code></b>
                  </td>
@@ -624,106 +466,1775 @@ van Albada and Robinson.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="tabulate.html">tabulate</a>
+                   <a href="tiedrank.html">tiedrank</a>
                    </code></b>
                  </td>
-                 <td>Create a frequency table of unique values in vector X.</td>
+                 <td>X may be a vector or an array.</td>
                </tr>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="Descriptive Statistics">Descriptive Statistics</a>
+             <a name="Hypothesis Testing">Hypothesis Testing</a>
            </h3>
            <table class="table table-striped">
              <tbody>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cdfcalc.html">cdfcalc</a>
+                   <a href="adtest.html">adtest</a>
                    </code></b>
                  </td>
-                 <td>Calculate an empirical cumulative distribution function.</td>
+                 <td>Anderson-Darling goodness-of-fit hypothesis test.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cl_multinom.html">cl_multinom</a>
+                   <a href="anova.html">anova</a>
                    </code></b>
                  </td>
-                 <td>Confidence level of multinomial portions.</td>
+                 <td>Object-oriented interface for analysis of variance.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="geomean.html">geomean</a>
+                   <a href="anova1.html">anova1</a>
                    </code></b>
                  </td>
-                 <td>Compute the geometric mean of X.</td>
+                 <td>Perform a one-way analysis of variance (ANOVA) for comparing the means of two or
+more groups of data under the null hypothesis that the groups are drawn from
+distributions with the same mean.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="grpstats.html">grpstats</a>
+                   <a href="anova2.html">anova2</a>
                    </code></b>
                  </td>
-                 <td>Summary statistics by group.</td>
+                 <td>Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
+for balanced designs.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="harmmean.html">harmmean</a>
+                   <a href="anovan.html">anovan</a>
                    </code></b>
                  </td>
-                 <td>Compute the harmonic mean of X.</td>
+                 <td>Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to evaluate
+the effect of one or more categorical or continuous predictors (i.e.
+independent variables) on a continuous outcome (i.e.  dependent variable).</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="jackknife.html">jackknife</a>
+                   <a href="ansaribradley.html">ansaribradley</a>
                    </code></b>
                  </td>
-                 <td>Compute jackknife estimates of a parameter taking one or more given samples as
-parameters.</td>
+                 <td>Ansari-Bradley two-sample test for equal dispersions.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="nanmax.html">nanmax</a>
+                   <a href="bartlett_test.html">bartlett_test</a>
                    </code></b>
                  </td>
-                 <td>Find the maximum while ignoring NaN values.</td>
+                 <td>Perform a Bartlett test for the homogeneity of variances.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="nanmean.html">nanmean</a>
+                   <a href="barttest.html">barttest</a>
                    </code></b>
                  </td>
-                 <td>Compute the mean while ignoring NaN values.</td>
+                 <td>Bartlett's test of sphericity for correlation.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="nanmin.html">nanmin</a>
+                   <a href="binotest.html">binotest</a>
                    </code></b>
                  </td>
-                 <td>Find the minimum while ignoring NaN values.</td>
+                 <td>Test for probability P of a binomial sample</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="nansum.html">nansum</a>
+                   <a href="chi2gof.html">chi2gof</a>
                    </code></b>
                  </td>
-                 <td>Compute the sum while ignoring NaN values.</td>
+                 <td>Chi-square goodness-of-fit test.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="trimmean.html">trimmean</a>
+                   <a href="chi2test.html">chi2test</a>
                    </code></b>
                  </td>
-                 <td>Compute the trimmed mean.</td>
+                 <td>Perform a chi-squared test (for independence or homogeneity).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="correlation_test.html">correlation_test</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a correlation coefficient test to determine whether two samples X and Y
+come from uncorrelated populations.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="dwtest.html">dwtest</a>
+                   </code></b>
+                 </td>
+                 <td>Durbin-Watson test for autocorrelation in linear regression residuals.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fishertest.html">fishertest</a>
+                   </code></b>
+                 </td>
+                 <td>Fisher's exact test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="friedman.html">friedman</a>
+                   </code></b>
+                 </td>
+                 <td>Performs the nonparametric Friedman's test to compare column effects in a
+two-way layout.  friedman tests the null hypothesis that the column effects are
+all the same against the alternative that they are not all the same.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hotelling_t2test.html">hotelling_t2test</a>
+                   </code></b>
+                 </td>
+                 <td>Compute Hotelling's T^2 ("T-squared") test for a single sample or two dependent
+samples (paired-samples).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hotelling_t2test2.html">hotelling_t2test2</a>
+                   </code></b>
+                 </td>
+                 <td>Compute Hotelling's T^2 ("T-squared") test for two independent samples.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="jbtest.html">jbtest</a>
+                   </code></b>
+                 </td>
+                 <td>Jarque-Bera hypothesis test of composite normality.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="kruskalwallis.html">kruskalwallis</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a Kruskal-Wallis test, the non-parametric alternative of a one-way
+analysis of variance (ANOVA), for comparing the means of two or more groups of
+data under the null hypothesis that the groups are drawn from the same
+population, ...</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="kstest.html">kstest</a>
+                   </code></b>
+                 </td>
+                 <td>Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="kstest2.html">kstest2</a>
+                   </code></b>
+                 </td>
+                 <td>Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="levene_test.html">levene_test</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a Levene's test for the homogeneity of variances.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lillietest.html">lillietest</a>
+                   </code></b>
+                 </td>
+                 <td>Lilliefors goodness-of-fit hypothesis test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="manova1.html">manova1</a>
+                   </code></b>
+                 </td>
+                 <td>One-way multivariate analysis of variance (MANOVA).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mcnemar_test.html">mcnemar_test</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a McNemar's test on paired nominal data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="multcompare.html">multcompare</a>
+                   </code></b>
+                 </td>
+                 <td>Perform posthoc multiple comparison tests or p-value adjustments to control the
+family-wise error rate (FWER) or false discovery rate (FDR).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ranksum.html">ranksum</a>
+                   </code></b>
+                 </td>
+                 <td>Wilcoxon rank sum test for equal medians.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="regression_ftest.html">regression_ftest</a>
+                   </code></b>
+                 </td>
+                 <td>F-test for General Linear Regression Analysis</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="regression_ttest.html">regression_ttest</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a linear regression t-test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="runstest.html">runstest</a>
+                   </code></b>
+                 </td>
+                 <td>Run test for randomness in the vector X.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="sampsizepwr.html">sampsizepwr</a>
+                   </code></b>
+                 </td>
+                 <td>Sample size and power calculation for hypothesis test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="signrank.html">signrank</a>
+                   </code></b>
+                 </td>
+                 <td>Wilcoxon signed rank test for median.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="signtest.html">signtest</a>
+                   </code></b>
+                 </td>
+                 <td>Signed test for median.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ttest.html">ttest</a>
+                   </code></b>
+                 </td>
+                 <td>Test for mean of a normal sample with unknown variance.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ttest2.html">ttest2</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a t-test to compare the means of two groups of data under the null
+hypothesis that the groups are drawn from distributions with the same mean.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="vartest.html">vartest</a>
+                   </code></b>
+                 </td>
+                 <td>One-sample test of variance.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="vartest2.html">vartest2</a>
+                   </code></b>
+                 </td>
+                 <td>Two-sample F test for equal variances.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="vartestn.html">vartestn</a>
+                   </code></b>
+                 </td>
+                 <td>Test for equal variances across multiple groups.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ztest.html">ztest</a>
+                   </code></b>
+                 </td>
+                 <td>One-sample Z-test.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ztest2.html">ztest2</a>
+                   </code></b>
+                 </td>
+                 <td>Two proportions Z-test.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Experimental Design">Experimental Design</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ff2n.html">ff2n</a>
+                   </code></b>
+                 </td>
+                 <td>Two-level full factorial design.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fullfact.html">fullfact</a>
+                   </code></b>
+                 </td>
+                 <td>Full factorial design.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="parseWilkinsonFormula.html">parseWilkinsonFormula</a>
+                   </code></b>
+                 </td>
+                 <td>Parse and expand statistical model formulae using the Wilkinson notation.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="sigma_pts.html">sigma_pts</a>
+                   </code></b>
+                 </td>
+                 <td>Calculates 2*N+1 sigma points in N dimensions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="x2fx.html">x2fx</a>
+                   </code></b>
+                 </td>
+                 <td>Convert predictors to design matrix.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Regression">Regression</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactLinearModel.html">CompactLinearModel</a>
+                   </code></b>
+                 </td>
+                 <td>Compact linear regression model</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CoxModel.html">CoxModel</a>
+                   </code></b>
+                 </td>
+                 <td>Cox proportional hazards regression model class.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="coxphfit.html">coxphfit</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Cox proportional hazards regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcox.html">fitcox</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Cox proportional hazards regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitglm.html">fitglm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a generalized linear regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitglme.html">fitglme</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a generalized linear mixed-effects model specified by a formula.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitlm.html">fitlm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a linear regression model to data and return a ‘LinearModel’ object.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitlme.html">fitlme</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a linear mixed-effects model specified by a formula.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitlmematrix.html">fitlmematrix</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a linear mixed-effects model from design matrices.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitnlm.html">fitnlm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a nonlinear regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GeneralizedLinearMixedModel.html">GeneralizedLinearMixedModel</a>
+                   </code></b>
+                 </td>
+                 <td>Generalized linear mixed-effects model fitted to data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GeneralizedLinearModel.html">GeneralizedLinearModel</a>
+                   </code></b>
+                 </td>
+                 <td>Generalized linear regression model class.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="glmfit.html">glmfit</a>
+                   </code></b>
+                 </td>
+                 <td>Perform generalized linear model fitting.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="glmval.html">glmval</a>
+                   </code></b>
+                 </td>
+                 <td>Predict values for a generalized linear model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invpred.html">invpred</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse prediction from a simple linear regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lasso.html">lasso</a>
+                   </code></b>
+                 </td>
+                 <td>Lasso and elastic-net regularized least-squares regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lassoglm.html">lassoglm</a>
+                   </code></b>
+                 </td>
+                 <td>Lasso and elastic-net regularized generalized linear model regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LinearFormula.html">LinearFormula</a>
+                   </code></b>
+                 </td>
+                 <td>Model formula of a linear or generalized linear regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LinearMixedModel.html">LinearMixedModel</a>
+                   </code></b>
+                 </td>
+                 <td>Linear mixed-effects model fitted to data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LinearModel.html">LinearModel</a>
+                   </code></b>
+                 </td>
+                 <td>Linear regression model</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logistic_regression.html">logistic_regression</a>
+                   </code></b>
+                 </td>
+                 <td>Perform ordinal logistic regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mnrfit.html">mnrfit</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a multinomial logistic regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mnrval.html">mnrval</a>
+                   </code></b>
+                 </td>
+                 <td>Predict values for a multinomial logistic regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="monotone_smooth.html">monotone_smooth</a>
+                   </code></b>
+                 </td>
+                 <td>Produce a smooth monotone increasing approximation to a sampled functional
+dependence.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mvregress.html">mvregress</a>
+                   </code></b>
+                 </td>
+                 <td>Multivariate (multiple-response) linear regression by maximum likelihood.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mvregresslike.html">mvregresslike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for a multivariate regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nlinfit.html">nlinfit</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a nonlinear regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nlparci.html">nlparci</a>
+                   </code></b>
+                 </td>
+                 <td>Confidence intervals for the coefficients of a nonlinear regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nlpredci.html">nlpredci</a>
+                   </code></b>
+                 </td>
+                 <td>Confidence intervals for predictions of a nonlinear regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="NonLinearModel.html">NonLinearModel</a>
+                   </code></b>
+                 </td>
+                 <td>Nonlinear regression model class.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="plsregress.html">plsregress</a>
+                   </code></b>
+                 </td>
+                 <td>Calculate partial least squares regression using SIMPLS algorithm.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="regress.html">regress</a>
+                   </code></b>
+                 </td>
+                 <td>Multiple Linear Regression using Least Squares Fit of Y on X with the model ‘y =
+X * beta + e’.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="regress_gp.html">regress_gp</a>
+                   </code></b>
+                 </td>
+                 <td>Regression using Gaussian Processes.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ridge.html">ridge</a>
+                   </code></b>
+                 </td>
+                 <td>Ridge regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="robustfit.html">robustfit</a>
+                   </code></b>
+                 </td>
+                 <td>Robust linear regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stepwisefit.html">stepwisefit</a>
+                   </code></b>
+                 </td>
+                 <td>Perform stepwise linear regression using conditional p-value criteria.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stepwiseglm.html">stepwiseglm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a generalized linear regression model by stepwise term selection.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stepwiselm.html">stepwiselm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a linear regression model using stepwise regression and return a
+‘LinearModel’ object.
+
+  </td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Supervised Learning">Supervised Learning</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
+                   </code></b>
+                 </td>
+                 <td>Discriminant analysis classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationGAM.html">ClassificationGAM</a>
+                   </code></b>
+                 </td>
+                 <td>Generalized additive model classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationKernel.html">ClassificationKernel</a>
+                   </code></b>
+                 </td>
+                 <td>Gaussian kernel binary classifier for large data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationKNN.html">ClassificationKNN</a>
+                   </code></b>
+                 </td>
+                 <td>K-nearest neighbors classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationLinear.html">ClassificationLinear</a>
+                   </code></b>
+                 </td>
+                 <td>Linear binary classifier for high dimensional data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationNaiveBayes.html">ClassificationNaiveBayes</a>
+                   </code></b>
+                 </td>
+                 <td>Naive Bayes classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>
+                   </code></b>
+                 </td>
+                 <td>Neural network classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationPartitionedKernel.html">ClassificationPartitionedKernel</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated Gaussian kernel binary classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationPartitionedLinear.html">ClassificationPartitionedLinear</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated linear binary classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated classification model</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationSVM.html">ClassificationSVM</a>
+                   </code></b>
+                 </td>
+                 <td>Support Vector Machine classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationDiscriminant.html">CompactClassificationDiscriminant</a>
+                   </code></b>
+                 </td>
+                 <td>Compact discriminant analysis classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>
+                   </code></b>
+                 </td>
+                 <td>Compact generalized additive model classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationNaiveBayes.html">CompactClassificationNaiveBayes</a>
+                   </code></b>
+                 </td>
+                 <td>Compact naive Bayes classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
+                   </code></b>
+                 </td>
+                 <td>Compact neural network classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>
+                   </code></b>
+                 </td>
+                 <td>Compact Support Vector Machine classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactRegressionGAM.html">CompactRegressionGAM</a>
+                   </code></b>
+                 </td>
+                 <td>Compact generalized additive model regression</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactRegressionGP.html">CompactRegressionGP</a>
+                   </code></b>
+                 </td>
+                 <td>Create a CompactRegressionGP object containing a Gaussian process regression
+model without its training data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactRegressionNeuralNetwork.html">CompactRegressionNeuralNetwork</a>
+                   </code></b>
+                 </td>
+                 <td>Create a CompactRegressionNeuralNetwork object, a neural network regression
+model that has dropped its training data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactRegressionSVM.html">CompactRegressionSVM</a>
+                   </code></b>
+                 </td>
+                 <td>Create a CompactRegressionSVM object, a support vector regression model that has
+dropped its training data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fcnnpredict.html">fcnnpredict</a>
+                   </code></b>
+                 </td>
+                 <td>Make predictions from a fully connected Neural Network.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fcnntrain.html">fcnntrain</a>
+                   </code></b>
+                 </td>
+                 <td>Train a fully connected Neural Network.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcdiscr.html">fitcdiscr</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Linear Discriminant Analysis classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcgam.html">fitcgam</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Generalized Additive Model (GAM) for binary classification.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitckernel.html">fitckernel</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Gaussian kernel binary classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcknn.html">fitcknn</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a k-Nearest Neighbor classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitclinear.html">fitclinear</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a linear binary classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcnb.html">fitcnb</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a naive Bayes classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcnet.html">fitcnet</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Neural Network classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcsvm.html">fitcsvm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Support Vector Machine classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrgam.html">fitrgam</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Generalized Additive Model (GAM) for regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrgp.html">fitrgp</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Gaussian process regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrkernel.html">fitrkernel</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Gaussian kernel regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrlinear.html">fitrlinear</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a linear regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrnet.html">fitrnet</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a neural network regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrsvm.html">fitrsvm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a support vector machine regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamboostinter.html">gamboostinter</a>
+                   </code></b>
+                 </td>
+                 <td>Boost trees over selected pairs of predictors.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamboostpairs.html">gamboostpairs</a>
+                   </code></b>
+                 </td>
+                 <td>Score every pair of predictors for an interaction.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamboostpredict.html">gamboostpredict</a>
+                   </code></b>
+                 </td>
+                 <td>Predict from a generalized additive model of boosted trees.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamboosttrain.html">gamboosttrain</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a generalized additive model of boosted trees.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gampredict.html">gampredict</a>
+                   </code></b>
+                 </td>
+                 <td>Evaluate a generalized additive model on new data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamtrain.html">gamtrain</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a generalized additive model of smoothing splines.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionGAM.html">RegressionGAM</a>
+                   </code></b>
+                 </td>
+                 <td>Create a RegressionGAM class object containing a Generalized Additive Model
+(GAM) for regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionGP.html">RegressionGP</a>
+                   </code></b>
+                 </td>
+                 <td>Create a RegressionGP object containing a Gaussian process regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionKernel.html">RegressionKernel</a>
+                   </code></b>
+                 </td>
+                 <td>Gaussian kernel regression model for large data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionLinear.html">RegressionLinear</a>
+                   </code></b>
+                 </td>
+                 <td>Linear regression model for high dimensional data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionNeuralNetwork.html">RegressionNeuralNetwork</a>
+                   </code></b>
+                 </td>
+                 <td>Create a RegressionNeuralNetwork object containing a neural network regression
+model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionPartitionedKernel.html">RegressionPartitionedKernel</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated Gaussian kernel regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionPartitionedLinear.html">RegressionPartitionedLinear</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated linear regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionPartitionedModel.html">RegressionPartitionedModel</a>
+                   </code></b>
+                 </td>
+                 <td>Create a RegressionPartitionedModel object, a regression model cross validated
+over a partition of its training data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionSVM.html">RegressionSVM</a>
+                   </code></b>
+                 </td>
+                 <td>Create a RegressionSVM object containing a support vector machine regression
+model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="svmpredict.html">svmpredict</a>
+                   </code></b>
+                 </td>
+                 <td>This function predicts new labels from a testing instance matrix based on an SVM
+MODEL created with ‘svmtrain’.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="svmtrain.html">svmtrain</a>
+                   </code></b>
+                 </td>
+                 <td>This function trains an SVM MODEL based on known LABELS and their corresponding
+DATA which comprise an instance matrix.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Clustering">Clustering</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CalinskiHarabaszEvaluation.html">CalinskiHarabaszEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>Calinski-Harabasz clustering evaluation.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="cluster.html">cluster</a>
+                   </code></b>
+                 </td>
+                 <td>Define clusters from an agglomerative hierarchical cluster tree.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClusterCriterion.html">ClusterCriterion</a>
+                   </code></b>
+                 </td>
+                 <td>A clustering evaluation object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="clusterdata.html">clusterdata</a>
+                   </code></b>
+                 </td>
+                 <td>Wrapper function for ‘linkage’ and ‘cluster’.
+
+   If </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="cophenet.html">cophenet</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the cophenetic correlation coefficient.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="DaviesBouldinEvaluation.html">DaviesBouldinEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>Davies-Bouldin object to evaluate clustering solutions</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="dbscan.html">dbscan</a>
+                   </code></b>
+                 </td>
+                 <td>Density-Based Spatial Clustering of Applications with Noise (DBSCAN).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="evalclusters.html">evalclusters</a>
+                   </code></b>
+                 </td>
+                 <td>Create a clustering evaluation object to find the optimal number of clusters.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitgmdist.html">fitgmdist</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Gaussian mixture model with K components to DATA.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GapEvaluation.html">GapEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>Gap evaluation for clustering solutions</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gmdistribution.html">gmdistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Create an object of the gmdistribution class which represents a Gaussian mixture
+model with k components of n-dimensional Gaussians.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="inconsistent.html">inconsistent</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the inconsistency coefficient for each link of a hierarchical cluster
+tree.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="kmeans.html">kmeans</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a K-means clustering of the N*D matrix DATA.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="kmedoids.html">kmedoids</a>
+                   </code></b>
+                 </td>
+                 <td>Partition observations into K clusters using the k-medoids algorithm.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="linkage.html">linkage</a>
+                   </code></b>
+                 </td>
+                 <td>Produce a hierarchical clustering dendrogram.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="optimalleaforder.html">optimalleaforder</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the optimal leaf ordering of a hierarchical binary cluster tree.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="SilhouetteEvaluation.html">SilhouetteEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>Silhouette evaluation for clustering</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="spectralcluster.html">spectralcluster</a>
+                   </code></b>
+                 </td>
+                 <td>Partition observations into K clusters using spectral clustering.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Nearest Neighbors">Nearest Neighbors</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="createns.html">createns</a>
+                   </code></b>
+                 </td>
+                 <td>Create a nearest neighbor searcher object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="editDistance.html">editDistance</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the edit (Levenshtein) distance between strings or documents.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ExhaustiveSearcher.html">ExhaustiveSearcher</a>
+                   </code></b>
+                 </td>
+                 <td>Exhaustive nearest neighbor searcher</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnswSearcher.html">hnswSearcher</a>
+                   </code></b>
+                 </td>
+                 <td>Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="KDTreeSearcher.html">KDTreeSearcher</a>
+                   </code></b>
+                 </td>
+                 <td>KD-tree nearest neighbor searcher</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="knnsearch.html">knnsearch</a>
+                   </code></b>
+                 </td>
+                 <td>Find k-nearest neighbors from input data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mahal.html">mahal</a>
+                   </code></b>
+                 </td>
+                 <td>Mahalanobis' D-square distance.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pdist.html">pdist</a>
+                   </code></b>
+                 </td>
+                 <td>Return the distance between any two rows in X.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pdist2.html">pdist2</a>
+                   </code></b>
+                 </td>
+                 <td>Compute pairwise distance between two sets of vectors.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="rangesearch.html">rangesearch</a>
+                   </code></b>
+                 </td>
+                 <td>Find all neighbors within specified distance from input data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="squareform.html">squareform</a>
+                   </code></b>
+                 </td>
+                 <td>Interchange between distance matrix and distance vector formats.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Anomaly Detection">Anomaly Detection</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="iforest.html">iforest</a>
+                   </code></b>
+                 </td>
+                 <td>Detect anomalies with an isolation forest.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="IsolationForest.html">IsolationForest</a>
+                   </code></b>
+                 </td>
+                 <td>Isolation Forest model for anomaly detection.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LocalOutlierFactor.html">LocalOutlierFactor</a>
+                   </code></b>
+                 </td>
+                 <td>Local Outlier Factor model for anomaly detection.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lof.html">lof</a>
+                   </code></b>
+                 </td>
+                 <td>Detect anomalies with the Local Outlier Factor (LOF) method.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ocsvm.html">ocsvm</a>
+                   </code></b>
+                 </td>
+                 <td>Detect anomalies with a one-class support vector machine.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="OneClassSVM.html">OneClassSVM</a>
+                   </code></b>
+                 </td>
+                 <td>One-class support vector machine model for anomaly detection.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="robustcov.html">robustcov</a>
+                   </code></b>
+                 </td>
+                 <td>Robust multivariate covariance and mean estimate.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Dimensionality Reduction">Dimensionality Reduction</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="canoncorr.html">canoncorr</a>
+                   </code></b>
+                 </td>
+                 <td>Canonical correlation analysis.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="cmdscale.html">cmdscale</a>
+                   </code></b>
+                 </td>
+                 <td>Classical multidimensional scaling of a matrix.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="factoran.html">factoran</a>
+                   </code></b>
+                 </td>
+                 <td>Common factor analysis.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mdscale.html">mdscale</a>
+                   </code></b>
+                 </td>
+                 <td>Nonclassical (metric and nonmetric) multidimensional scaling.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nnmf.html">nnmf</a>
+                   </code></b>
+                 </td>
+                 <td>Nonnegative matrix factorization.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pca.html">pca</a>
+                   </code></b>
+                 </td>
+                 <td>Performs a principal component analysis on a data matrix.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pcacov.html">pcacov</a>
+                   </code></b>
+                 </td>
+                 <td>Perform principal component analysis on covariance matrix</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pcares.html">pcares</a>
+                   </code></b>
+                 </td>
+                 <td>Calculate residuals from principal component analysis.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ppca.html">ppca</a>
+                   </code></b>
+                 </td>
+                 <td>Probabilistic principal component analysis.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="princomp.html">princomp</a>
+                   </code></b>
+                 </td>
+                 <td>Performs a principal component analysis on a NxP data matrix X.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="procrustes.html">procrustes</a>
+                   </code></b>
+                 </td>
+                 <td>Procrustes Analysis.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ReconstructionICA.html">ReconstructionICA</a>
+                   </code></b>
+                 </td>
+                 <td>Reconstruction independent component analysis (RICA) feature-extraction model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="rica.html">rica</a>
+                   </code></b>
+                 </td>
+                 <td>Reconstruction independent component analysis (RICA) for feature extraction.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="rotatefactors.html">rotatefactors</a>
+                   </code></b>
+                 </td>
+                 <td>Rotate a factor-loading matrix.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="sparsefilt.html">sparsefilt</a>
+                   </code></b>
+                 </td>
+                 <td>Sparse filtering for feature extraction.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="SparseFiltering.html">SparseFiltering</a>
+                   </code></b>
+                 </td>
+                 <td>Sparse filtering feature-extraction model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="tsne.html">tsne</a>
+                   </code></b>
+                 </td>
+                 <td>t-distributed stochastic neighbor embedding (t-SNE).</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Model Evaluation">Model Evaluation</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="confusionchart.html">confusionchart</a>
+                   </code></b>
+                 </td>
+                 <td>Display a chart of a confusion matrix.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="confusionmat.html">confusionmat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute a confusion matrix for classification problems</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ConfusionMatrixChart.html">ConfusionMatrixChart</a>
+                   </code></b>
+                 </td>
+                 <td>Confusion matrix chart for classification results</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="crossval.html">crossval</a>
+                   </code></b>
+                 </td>
+                 <td>Perform cross validation on given data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="cvpartition.html">cvpartition</a>
+                   </code></b>
+                 </td>
+                 <td>Partition data for cross-validation</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="perfcurve.html">perfcurve</a>
+                   </code></b>
+                 </td>
+                 <td>Receiver operating characteristic (ROC) and other classifier performance curves.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="rocmetrics.html">rocmetrics</a>
+                   </code></b>
+                 </td>
+                 <td>Receiver operating characteristic (ROC) metrics for classifier output.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Markov Models">Markov Models</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hmmdecode.html">hmmdecode</a>
+                   </code></b>
+                 </td>
+                 <td>Posterior state probabilities of a hidden Markov model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hmmestimate.html">hmmestimate</a>
+                   </code></b>
+                 </td>
+                 <td>Estimation of a hidden Markov model for a given sequence.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hmmgenerate.html">hmmgenerate</a>
+                   </code></b>
+                 </td>
+                 <td>Output sequence and hidden states of a hidden Markov model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hmmtrain.html">hmmtrain</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate the parameters of a hidden Markov model from emitted sequences.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hmmviterbi.html">hmmviterbi</a>
+                   </code></b>
+                 </td>
+                 <td>Viterbi path of a hidden Markov model.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Random Sampling">Random Sampling</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="johnsrnd.html">johnsrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the Johnson system of distributions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mhsample.html">mhsample</a>
+                   </code></b>
+                 </td>
+                 <td>Draws NSAMPLES samples from a target stationary distribution PDF using
+Metropolis-Hastings algorithm.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pearsrnd.html">pearsrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the Pearson system of distributions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="qrandn.html">qrandn</a>
+                   </code></b>
+                 </td>
+                 <td>Returns random deviates drawn from a q-Gaussian distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="slicesample.html">slicesample</a>
+                   </code></b>
+                 </td>
+                 <td>Draws NSAMPLES samples from a target stationary distribution PDF using slice
+sampling of Radford M.</td>
                </tr>
              </tbody>
            </table>
@@ -735,7 +2246,23 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="BetaDistribution.html">BetaDistribution</a>
+                   <a href="paretotails.html">paretotails</a>
+                   </code></b>
+                 </td>
+                 <td>Piecewise distribution with generalized Pareto tails.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="prob.ProbabilityDistribution.html">prob.ProbabilityDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Abstract base class of the probability distribution objects.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="prob.BetaDistribution.html">prob.BetaDistribution</a>
                    </code></b>
                  </td>
                  <td>Beta probability distribution object.</td>
@@ -743,7 +2270,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="BinomialDistribution.html">BinomialDistribution</a>
+                   <a href="prob.BinomialDistribution.html">prob.BinomialDistribution</a>
                    </code></b>
                  </td>
                  <td>Binomial probability distribution object.</td>
@@ -751,7 +2278,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="BirnbaumSaundersDistribution.html">BirnbaumSaundersDistribution</a>
+                   <a href="prob.BirnbaumSaundersDistribution.html">prob.BirnbaumSaundersDistribution</a>
                    </code></b>
                  </td>
                  <td>Birnbaum-Saunders probability distribution object.</td>
@@ -759,7 +2286,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="BurrDistribution.html">BurrDistribution</a>
+                   <a href="prob.BurrDistribution.html">prob.BurrDistribution</a>
                    </code></b>
                  </td>
                  <td>Burr probability distribution object.</td>
@@ -767,7 +2294,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="ExponentialDistribution.html">ExponentialDistribution</a>
+                   <a href="prob.ExponentialDistribution.html">prob.ExponentialDistribution</a>
                    </code></b>
                  </td>
                  <td>Exponential probability distribution object.</td>
@@ -775,7 +2302,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="ExtremeValueDistribution.html">ExtremeValueDistribution</a>
+                   <a href="prob.ExtremeValueDistribution.html">prob.ExtremeValueDistribution</a>
                    </code></b>
                  </td>
                  <td>Extreme value probability distribution object.</td>
@@ -783,7 +2310,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="GammaDistribution.html">GammaDistribution</a>
+                   <a href="prob.GammaDistribution.html">prob.GammaDistribution</a>
                    </code></b>
                  </td>
                  <td>Gamma probability distribution object.</td>
@@ -791,7 +2318,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="GeneralizedExtremeValueDistribution.html">GeneralizedExtremeValueDistribution</a>
+                   <a href="prob.GeneralizedExtremeValueDistribution.html">prob.GeneralizedExtremeValueDistribution</a>
                    </code></b>
                  </td>
                  <td>Generalized extreme value probability distribution object.</td>
@@ -799,7 +2326,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="GeneralizedParetoDistribution.html">GeneralizedParetoDistribution</a>
+                   <a href="prob.GeneralizedParetoDistribution.html">prob.GeneralizedParetoDistribution</a>
                    </code></b>
                  </td>
                  <td>Generalized Pareto probability distribution object.</td>
@@ -807,7 +2334,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="HalfNormalDistribution.html">HalfNormalDistribution</a>
+                   <a href="prob.HalfNormalDistribution.html">prob.HalfNormalDistribution</a>
                    </code></b>
                  </td>
                  <td>Half-normal probability distribution object.</td>
@@ -815,7 +2342,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="InverseGaussianDistribution.html">InverseGaussianDistribution</a>
+                   <a href="prob.InverseGaussianDistribution.html">prob.InverseGaussianDistribution</a>
                    </code></b>
                  </td>
                  <td>Inverse Gaussian probability distribution object.</td>
@@ -823,7 +2350,15 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="LogisticDistribution.html">LogisticDistribution</a>
+                   <a href="prob.KernelDistribution.html">prob.KernelDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Kernel probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="prob.LogisticDistribution.html">prob.LogisticDistribution</a>
                    </code></b>
                  </td>
                  <td>Logistic probability distribution object.</td>
@@ -831,7 +2366,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="LoglogisticDistribution.html">LoglogisticDistribution</a>
+                   <a href="prob.LoglogisticDistribution.html">prob.LoglogisticDistribution</a>
                    </code></b>
                  </td>
                  <td>Log-logistic probability distribution object.</td>
@@ -839,7 +2374,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="LognormalDistribution.html">LognormalDistribution</a>
+                   <a href="prob.LognormalDistribution.html">prob.LognormalDistribution</a>
                    </code></b>
                  </td>
                  <td>Lognormal probability distribution object.</td>
@@ -847,7 +2382,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="LoguniformDistribution.html">LoguniformDistribution</a>
+                   <a href="prob.LoguniformDistribution.html">prob.LoguniformDistribution</a>
                    </code></b>
                  </td>
                  <td>Log-uniform probability distribution object.</td>
@@ -855,7 +2390,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="MultinomialDistribution.html">MultinomialDistribution</a>
+                   <a href="prob.MultinomialDistribution.html">prob.MultinomialDistribution</a>
                    </code></b>
                  </td>
                  <td>Multinomial probability distribution object.</td>
@@ -863,7 +2398,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="NakagamiDistribution.html">NakagamiDistribution</a>
+                   <a href="prob.NakagamiDistribution.html">prob.NakagamiDistribution</a>
                    </code></b>
                  </td>
                  <td>Nakagami probability distribution object.</td>
@@ -871,7 +2406,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="NegativeBinomialDistribution.html">NegativeBinomialDistribution</a>
+                   <a href="prob.NegativeBinomialDistribution.html">prob.NegativeBinomialDistribution</a>
                    </code></b>
                  </td>
                  <td>Negative binomial probability distribution object.</td>
@@ -879,7 +2414,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="NormalDistribution.html">NormalDistribution</a>
+                   <a href="prob.NormalDistribution.html">prob.NormalDistribution</a>
                    </code></b>
                  </td>
                  <td>Normal probability distribution object.</td>
@@ -887,7 +2422,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="PiecewiseLinearDistribution.html">PiecewiseLinearDistribution</a>
+                   <a href="prob.PiecewiseLinearDistribution.html">prob.PiecewiseLinearDistribution</a>
                    </code></b>
                  </td>
                  <td>Piecewise linear probability distribution object.</td>
@@ -895,7 +2430,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="PoissonDistribution.html">PoissonDistribution</a>
+                   <a href="prob.PoissonDistribution.html">prob.PoissonDistribution</a>
                    </code></b>
                  </td>
                  <td>Poisson probability distribution object.</td>
@@ -903,7 +2438,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="RayleighDistribution.html">RayleighDistribution</a>
+                   <a href="prob.RayleighDistribution.html">prob.RayleighDistribution</a>
                    </code></b>
                  </td>
                  <td>Rayleigh probability distribution object.</td>
@@ -911,7 +2446,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="RicianDistribution.html">RicianDistribution</a>
+                   <a href="prob.RicianDistribution.html">prob.RicianDistribution</a>
                    </code></b>
                  </td>
                  <td>Rician probability distribution object.</td>
@@ -919,7 +2454,15 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="tLocationScaleDistribution.html">tLocationScaleDistribution</a>
+                   <a href="prob.StableDistribution.html">prob.StableDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Stable probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="prob.tLocationScaleDistribution.html">prob.tLocationScaleDistribution</a>
                    </code></b>
                  </td>
                  <td>Location-Scale Student's T probability distribution object.</td>
@@ -927,7 +2470,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="TriangularDistribution.html">TriangularDistribution</a>
+                   <a href="prob.TriangularDistribution.html">prob.TriangularDistribution</a>
                    </code></b>
                  </td>
                  <td>Triangular probability distribution object.</td>
@@ -935,7 +2478,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="UniformDistribution.html">UniformDistribution</a>
+                   <a href="prob.UniformDistribution.html">prob.UniformDistribution</a>
                    </code></b>
                  </td>
                  <td>Continuous uniform probability distribution object.</td>
@@ -943,7 +2486,7 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="WeibullDistribution.html">WeibullDistribution</a>
+                   <a href="prob.WeibullDistribution.html">prob.WeibullDistribution</a>
                    </code></b>
                  </td>
                  <td>Weibull probability distribution object.</td>
@@ -1022,6 +2565,14 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="copulafit.html">copulafit</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a copula to data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="evfit.html">evfit</a>
                    </code></b>
                  </td>
@@ -1078,15 +2629,6 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="gevfit_lmom.html">gevfit_lmom</a>
-                   </code></b>
-                 </td>
-                 <td>Find an estimator (PARAMHAT) of the generalized extreme value (GEV) distribution
-fitting DATA using the method of L-moments.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="gevfit.html">gevfit</a>
                    </code></b>
                  </td>
@@ -1100,6 +2642,15 @@ fitting DATA using the method of L-moments.</td>
                    </code></b>
                  </td>
                  <td>Negative log-likelihood for the generalized extreme value (GEV) distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gevfit_lmom.html">gevfit_lmom</a>
+                   </code></b>
+                 </td>
+                 <td>Find an estimator (PARAMHAT) of the generalized extreme value (GEV) distribution
+fitting DATA using the method of L-moments.</td>
                </tr>
                <tr>
                  <td>
@@ -1314,6 +2865,22 @@ distribution.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="stblfit.html">stblfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the stable distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stbllike.html">stbllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the stable distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="tlsfit.html">tlsfit</a>
                    </code></b>
                  </td>
@@ -1343,7 +2910,7 @@ distribution.</td>
                    <a href="unifit.html">unifit</a>
                    </code></b>
                  </td>
-                 <td>Estimate parameter and confidence intervals for the continuous uniform
+                 <td>Estimate parameters and confidence intervals for the continuous uniform
 distribution.</td>
                </tr>
                <tr>
@@ -2182,14 +3749,6 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="mvtcdfqmc.html">mvtcdfqmc</a>
-                   </code></b>
-                 </td>
-                 <td>Quasi-Monte-Carlo computation of the multivariate Student's T CDF.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="nakacdf.html">nakacdf</a>
                    </code></b>
                  </td>
@@ -2510,6 +4069,38 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="stblcdf.html">stblcdf</a>
+                   </code></b>
+                 </td>
+                 <td>Stable cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stblinv.html">stblinv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the stable cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stblpdf.html">stblpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Stable probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stblrnd.html">stblrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the stable distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="tcdf.html">tcdf</a>
                    </code></b>
                  </td>
@@ -2808,6 +4399,22 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="copulaparam.html">copulaparam</a>
+                   </code></b>
+                 </td>
+                 <td>Copula parameter as a function of rank correlation.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="copulastat.html">copulastat</a>
+                   </code></b>
+                 </td>
+                 <td>Rank correlation for a copula family.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="evstat.html">evstat</a>
                    </code></b>
                  </td>
@@ -3087,6 +4694,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="mlecov.html">mlecov</a>
+                   </code></b>
+                 </td>
+                 <td>Asymptotic covariance matrix of maximum likelihood estimators.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="pdf.html">pdf</a>
                    </code></b>
                  </td>
@@ -3103,514 +4718,203 @@ parameters</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="Experimental Design">Experimental Design</a>
+             <a name="Plotting">Plotting</a>
            </h3>
            <table class="table table-striped">
              <tbody>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fullfact.html">fullfact</a>
+                   <a href="andrewsplot.html">andrewsplot</a>
                    </code></b>
                  </td>
-                 <td>Full factorial design.</td>
+                 <td>Create an Andrews plot of the multivariate data in X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="ff2n.html">ff2n</a>
+                   <a href="bar3.html">bar3</a>
                    </code></b>
                  </td>
-                 <td>Two-level full factorial design.</td>
+                 <td>Plot a 3D bar graph.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="parseWilkinsonFormula.html">parseWilkinsonFormula</a>
+                   <a href="bar3h.html">bar3h</a>
                    </code></b>
                  </td>
-                 <td>Parse and expand statistical model formulae using the Wilkinson notation.</td>
+                 <td>Plot a horizontal 3D bar graph.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="sigma_pts.html">sigma_pts</a>
+                   <a href="biplot.html">biplot</a>
                    </code></b>
                  </td>
-                 <td>Calculates 2*N+1 sigma points in N dimensions.</td>
+                 <td>Create a biplot of the coefficients in COEFS.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="x2fx.html">x2fx</a>
+                   <a href="boxplot.html">boxplot</a>
                    </code></b>
                  </td>
-                 <td>Convert predictors to design matrix.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Machine Learning">Machine Learning</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="fcnnpredict.html">fcnnpredict</a>
-                   </code></b>
-                 </td>
-                 <td>Make predictions from a fully connected Neural Network.</td>
+                 <td>Produce a box plot.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fcnntrain.html">fcnntrain</a>
+                   <a href="cdfplot.html">cdfplot</a>
                    </code></b>
                  </td>
-                 <td>Train a fully connected Neural Network.</td>
+                 <td>Display an empirical cumulative distribution function.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="hmmestimate.html">hmmestimate</a>
+                   <a href="dendrogram.html">dendrogram</a>
                    </code></b>
                  </td>
-                 <td>Estimation of a hidden Markov model for a given sequence.</td>
+                 <td>Plot a dendrogram of a hierarchical binary cluster tree.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="hmmgenerate.html">hmmgenerate</a>
+                   <a href="ecdfhist.html">ecdfhist</a>
                    </code></b>
                  </td>
-                 <td>Output sequence and hidden states of a hidden Markov model.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hmmviterbi.html">hmmviterbi</a>
-                   </code></b>
-                 </td>
-                 <td>Viterbi path of a hidden Markov model.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="svmpredict.html">svmpredict</a>
-                   </code></b>
-                 </td>
-                 <td>This function predicts new labels from a testing instance matrix based on an SVM
-MODEL created with ‘svmtrain’.
+                 <td>Create a histogram from the output of ‘ecdf’.
 
   </td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="svmtrain.html">svmtrain</a>
+                   <a href="einstein.html">einstein</a>
                    </code></b>
                  </td>
-                 <td>This function trains an SVM MODEL based on known LABELS and their corresponding
-DATA which comprise an instance matrix.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Model Fitting">Model Fitting</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="fitcdiscr.html">fitcdiscr</a>
-                   </code></b>
-                 </td>
-                 <td>Fit a Linear Discriminant Analysis classification model.</td>
+                 <td>Plots the tiling of the basic clusters of einstein tiles.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitcgam.html">fitcgam</a>
+                   <a href="glyphplot.html">glyphplot</a>
                    </code></b>
                  </td>
-                 <td>Fit a Generalized Additive Model (GAM) for binary classification.</td>
+                 <td>Create a star (glyph) plot of the multivariate data in X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitcknn.html">fitcknn</a>
+                   <a href="gplotmatrix.html">gplotmatrix</a>
                    </code></b>
                  </td>
-                 <td>Fit a k-Nearest Neighbor classification model.</td>
+                 <td>Create a matrix of scatter plots grouped by a categorical variable.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitcnet.html">fitcnet</a>
+                   <a href="gscatter.html">gscatter</a>
                    </code></b>
                  </td>
-                 <td>Fit a Neural Network classification model.</td>
+                 <td>Draw a scatter plot with grouped data.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitcsvm.html">fitcsvm</a>
+                   <a href="hist3.html">hist3</a>
                    </code></b>
                  </td>
-                 <td>Fit a Support Vector Machine classification model.</td>
+                 <td>Produce bivariate (2D) histogram counts or plots.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitgmdist.html">fitgmdist</a>
+                   <a href="histfit.html">histfit</a>
                    </code></b>
                  </td>
-                 <td>Fit a Gaussian mixture model with K components to DATA.</td>
+                 <td>Plot histogram with superimposed distribution fit.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitlm.html">fitlm</a>
+                   <a href="manovacluster.html">manovacluster</a>
                    </code></b>
                  </td>
-                 <td>Fit a linear regression model to data and return a ‘LinearModel’ object.
-
-  </td>
+                 <td>Cluster group means using manova1 output.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="fitrgam.html">fitrgam</a>
+                   <a href="normplot.html">normplot</a>
                    </code></b>
                  </td>
-                 <td>Fit a Generalized Additive Model (GAM) for regression.</td>
+                 <td>Produce normal probability plot of the data in X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="LinearModel.html">LinearModel</a>
+                   <a href="parallelcoords.html">parallelcoords</a>
                    </code></b>
                  </td>
-                 <td>Linear regression model</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Hypothesis Testing">Hypothesis Testing</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="adtest.html">adtest</a>
-                   </code></b>
-                 </td>
-                 <td>Anderson-Darling goodness-of-fit hypothesis test.</td>
+                 <td>Create a parallel coordinates plot of the multivariate data in X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="anova.html">anova</a>
+                   <a href="ppplot.html">ppplot</a>
                    </code></b>
                  </td>
-                 <td>Object-oriented interface for analysis of variance.</td>
+                 <td>Perform a PP-plot (probability plot).</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="anova1.html">anova1</a>
+                   <a href="probplot.html">probplot</a>
                    </code></b>
                  </td>
-                 <td>Perform a one-way analysis of variance (ANOVA) for comparing the means of two or
-more groups of data under the null hypothesis that the groups are drawn from
-distributions with the same mean.</td>
+                 <td>Produce a probability plot of the data in Y against the distribution DIST.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="anova2.html">anova2</a>
+                   <a href="qqplot.html">qqplot</a>
                    </code></b>
                  </td>
-                 <td>Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
-for balanced designs.</td>
+                 <td>Perform a QQ-plot (quantile plot).</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="anovan.html">anovan</a>
+                   <a href="scatterhist.html">scatterhist</a>
                    </code></b>
                  </td>
-                 <td>Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to evaluate
-the effect of one or more categorical or continuous predictors (i.e.
-independent variables) on a continuous outcome (i.e.  dependent variable).</td>
+                 <td>Create a scatter plot of X and Y with marginal histograms.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="bartlett_test.html">bartlett_test</a>
+                   <a href="silhouette.html">silhouette</a>
                    </code></b>
                  </td>
-                 <td>Perform a Bartlett test for the homogeneity of variances.</td>
+                 <td>Compute the silhouette values of clustered data and show them on a plot.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="barttest.html">barttest</a>
+                   <a href="violin.html">violin</a>
                    </code></b>
                  </td>
-                 <td>Bartlett's test of sphericity for correlation.</td>
+                 <td>Produce a Violin plot of the data X.</td>
                </tr>
                <tr>
                  <td>
                    <b><code>
-                   <a href="binotest.html">binotest</a>
+                   <a href="wblplot.html">wblplot</a>
                    </code></b>
                  </td>
-                 <td>Test for probability P of a binomial sample</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="chi2gof.html">chi2gof</a>
-                   </code></b>
-                 </td>
-                 <td>Chi-square goodness-of-fit test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="chi2test.html">chi2test</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a chi-squared test (for independence or homogeneity).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="correlation_test.html">correlation_test</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a correlation coefficient test to determine whether two samples X and Y
-come from uncorrelated populations.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="fishertest.html">fishertest</a>
-                   </code></b>
-                 </td>
-                 <td>Fisher's exact test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="friedman.html">friedman</a>
-                   </code></b>
-                 </td>
-                 <td>Performs the nonparametric Friedman's test to compare column effects in a
-two-way layout.  friedman tests the null hypothesis that the column effects are
-all the same against the alternative that they are not all the same.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hotelling_t2test.html">hotelling_t2test</a>
-                   </code></b>
-                 </td>
-                 <td>Compute Hotelling's T^2 ("T-squared") test for a single sample or two dependent
-samples (paired-samples).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hotelling_t2test2.html">hotelling_t2test2</a>
-                   </code></b>
-                 </td>
-                 <td>Compute Hotelling's T^2 ("T-squared") test for two independent samples.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="kruskalwallis.html">kruskalwallis</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a Kruskal-Wallis test, the non-parametric alternative of a one-way
-analysis of variance (ANOVA), for comparing the means of two or more groups of
-data under the null hypothesis that the groups are drawn from the same
-population, ...</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="kstest.html">kstest</a>
-                   </code></b>
-                 </td>
-                 <td>Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="kstest2.html">kstest2</a>
-                   </code></b>
-                 </td>
-                 <td>Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="levene_test.html">levene_test</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a Levene's test for the homogeneity of variances.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="manova1.html">manova1</a>
-                   </code></b>
-                 </td>
-                 <td>One-way multivariate analysis of variance (MANOVA).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="mcnemar_test.html">mcnemar_test</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a McNemar's test on paired nominal data.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="multcompare.html">multcompare</a>
-                   </code></b>
-                 </td>
-                 <td>Perform posthoc multiple comparison tests or p-value adjustments to control the
-family-wise error rate (FWER) or false discovery rate (FDR).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ranksum.html">ranksum</a>
-                   </code></b>
-                 </td>
-                 <td>Wilcoxon rank sum test for equal medians.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="regression_ftest.html">regression_ftest</a>
-                   </code></b>
-                 </td>
-                 <td>F-test for General Linear Regression Analysis</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="regression_ttest.html">regression_ttest</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a linear regression t-test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="runstest.html">runstest</a>
-                   </code></b>
-                 </td>
-                 <td>Run test for randomness in the vector X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="sampsizepwr.html">sampsizepwr</a>
-                   </code></b>
-                 </td>
-                 <td>Sample size and power calculation for hypothesis test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="signrank.html">signrank</a>
-                   </code></b>
-                 </td>
-                 <td>Wilcoxon signed rank test for median.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="signtest.html">signtest</a>
-                   </code></b>
-                 </td>
-                 <td>Signed test for median.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="tiedrank.html">tiedrank</a>
-                   </code></b>
-                 </td>
-                 <td>Compute rank adjusted for ties.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ttest.html">ttest</a>
-                   </code></b>
-                 </td>
-                 <td>Test for mean of a normal sample with unknown variance.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ttest2.html">ttest2</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a t-test to compare the means of two groups of data under the null
-hypothesis that the groups are drawn from distributions with the same mean.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="vartest.html">vartest</a>
-                   </code></b>
-                 </td>
-                 <td>One-sample test of variance.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="vartest2.html">vartest2</a>
-                   </code></b>
-                 </td>
-                 <td>Two-sample F test for equal variances.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="vartestn.html">vartestn</a>
-                   </code></b>
-                 </td>
-                 <td>Test for equal variances across multiple groups.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ztest.html">ztest</a>
-                   </code></b>
-                 </td>
-                 <td>One-sample Z-test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ztest2.html">ztest2</a>
-                   </code></b>
-                 </td>
-                 <td>Two proportions Z-test.</td>
+                 <td>Plot a column vector DATA on a Weibull probability plot using rank regression.</td>
                </tr>
              </tbody>
            </table>
@@ -3648,185 +4952,10 @@ specified by FILENAME.</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="Interpolation">Interpolation</a>
+             <a name="Utilities">Utilities</a>
            </h3>
            <table class="table table-striped">
              <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="makima.html">makima</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of sample
-data X and Y.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Plotting">Plotting</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bar3.html">bar3</a>
-                   </code></b>
-                 </td>
-                 <td>Plot a 3D bar graph.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bar3h.html">bar3h</a>
-                   </code></b>
-                 </td>
-                 <td>Plot a horizontal 3D bar graph.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="boxplot.html">boxplot</a>
-                   </code></b>
-                 </td>
-                 <td>Produce a box plot.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="cdfplot.html">cdfplot</a>
-                   </code></b>
-                 </td>
-                 <td>Display an empirical cumulative distribution function.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="confusionchart.html">confusionchart</a>
-                   </code></b>
-                 </td>
-                 <td>Display a chart of a confusion matrix.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="dendrogram.html">dendrogram</a>
-                   </code></b>
-                 </td>
-                 <td>Plot a dendrogram of a hierarchical binary cluster tree.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ecdf.html">ecdf</a>
-                   </code></b>
-                 </td>
-                 <td>Empirical (Kaplan-Meier) cumulative distribution function.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="einstein.html">einstein</a>
-                   </code></b>
-                 </td>
-                 <td>Plots the tiling of the basic clusters of einstein tiles.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gscatter.html">gscatter</a>
-                   </code></b>
-                 </td>
-                 <td>Draw a scatter plot with grouped data.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="histfit.html">histfit</a>
-                   </code></b>
-                 </td>
-                 <td>Plot histogram with superimposed distribution fit.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hist3.html">hist3</a>
-                   </code></b>
-                 </td>
-                 <td>Produce bivariate (2D) histogram counts or plots.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="manovacluster.html">manovacluster</a>
-                   </code></b>
-                 </td>
-                 <td>Cluster group means using manova1 output.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="normplot.html">normplot</a>
-                   </code></b>
-                 </td>
-                 <td>Produce normal probability plot of the data in X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ppplot.html">ppplot</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a PP-plot (probability plot).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="qqplot.html">qqplot</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a QQ-plot (quantile plot).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="silhouette.html">silhouette</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the silhouette values of clustered data and show them on a plot.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="violin.html">violin</a>
-                   </code></b>
-                 </td>
-                 <td>Produce a Violin plot of the data X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="wblplot.html">wblplot</a>
-                   </code></b>
-                 </td>
-                 <td>Plot a column vector DATA on a Weibull probability plot using rank regression.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Regression">Regression</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="canoncorr.html">canoncorr</a>
-                   </code></b>
-                 </td>
-                 <td>Canonical correlation analysis.</td>
-               </tr>
                <tr>
                  <td>
                    <b><code>
@@ -3838,154 +4967,6 @@ data X and Y.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="dcov.html">dcov</a>
-                   </code></b>
-                 </td>
-                 <td>Distance correlation, covariance and correlation statistics.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="factoran.html">factoran</a>
-                   </code></b>
-                 </td>
-                 <td>Perform principal axis factor analysis on data matrix.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="glmfit.html">glmfit</a>
-                   </code></b>
-                 </td>
-                 <td>Perform generalized linear model fitting.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="glmval.html">glmval</a>
-                   </code></b>
-                 </td>
-                 <td>Predict values for a generalized linear model.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="logistic_regression.html">logistic_regression</a>
-                   </code></b>
-                 </td>
-                 <td>Perform ordinal logistic regression.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="mnrfit.html">mnrfit</a>
-                   </code></b>
-                 </td>
-                 <td>Perform logistic regression for binomial responses or multiple ordinal
-responses.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="monotone_smooth.html">monotone_smooth</a>
-                   </code></b>
-                 </td>
-                 <td>Produce a smooth monotone increasing approximation to a sampled functional
-dependence.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="parseWilkinsonFormula.html">parseWilkinsonFormula</a>
-                   </code></b>
-                 </td>
-                 <td>Parse and expand statistical model formulae using the Wilkinson notation.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="pca.html">pca</a>
-                   </code></b>
-                 </td>
-                 <td>Performs a principal component analysis on a data matrix.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="pcacov.html">pcacov</a>
-                   </code></b>
-                 </td>
-                 <td>Perform principal component analysis on covariance matrix</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="pcares.html">pcares</a>
-                   </code></b>
-                 </td>
-                 <td>Calculate residuals from principal component analysis.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="plsregress.html">plsregress</a>
-                   </code></b>
-                 </td>
-                 <td>Calculate partial least squares regression using SIMPLS algorithm.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="princomp.html">princomp</a>
-                   </code></b>
-                 </td>
-                 <td>Performs a principal component analysis on a NxP data matrix X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="regress.html">regress</a>
-                   </code></b>
-                 </td>
-                 <td>Multiple Linear Regression using Least Squares Fit of Y on X with the model ‘y =
-X * beta + e’.
-
-  </td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="regress_gp.html">regress_gp</a>
-                   </code></b>
-                 </td>
-                 <td>Regression using Gaussian Processes.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ridge.html">ridge</a>
-                   </code></b>
-                 </td>
-                 <td>Ridge regression.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stepwisefit.html">stepwisefit</a>
-                   </code></b>
-                 </td>
-                 <td>Perform stepwise linear regression using conditional p-value criteria.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Transforms">Transforms</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="logit.html">logit</a>
                    </code></b>
                  </td>
@@ -3994,10 +4975,35 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="makima.html">makima</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of sample
+data X and Y.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="probit.html">probit</a>
                    </code></b>
                  </td>
                  <td>Probit transformation</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="statget.html">statget</a>
+                   </code></b>
+                 </td>
+                 <td>Read one option out of a statistics options structure.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="statset.html">statset</a>
+                   </code></b>
+                 </td>
+                 <td>Create or modify an options structure for iterative statistics algorithms.</td>
                </tr>
              </tbody>
            </table>

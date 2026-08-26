@@ -1,0 +1,3163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: prob.BetaDistribution</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
+        }
+      });
+    </script>
+    <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
+    h6:hover {
+      color: gray;
+    }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
+    var {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
+    }
+    td {
+      vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distribution Classes">
+                    <i class="fas fa-list-alt"></i>
+                    Distribution Classes
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="row flex-nowrap" style="min-height:0">
+        <div class="col-md-2 bg-light" style="overflow-y: scroll; width: 250px;">
+          <div class="p-2" style="text-align: center;">
+            <h3>Categories &</h3>
+            <h4 style="color: blue">Functions List</h4>
+          </div>
+			<div class="row">
+				<input id="togList1" type="checkbox">
+				<label for="togList1">
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList2" type="checkbox">
+				<label for="togList2">
+					<span><h6>Data Manipulation</h6></span>
+					<span><h6>Data Manipulation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="combnk.html" class="text-decoration-none font-monospace"><small>combnk</small></a></li>
+					<li><a href="crosstab.html" class="text-decoration-none font-monospace"><small>crosstab</small></a></li>
+					<li><a href="datasample.html" class="text-decoration-none font-monospace"><small>datasample</small></a></li>
+					<li><a href="dummyvar.html" class="text-decoration-none font-monospace"><small>dummyvar</small></a></li>
+					<li><a href="fillmissing.html" class="text-decoration-none font-monospace"><small>fillmissing</small></a></li>
+					<li><a href="grp2idx.html" class="text-decoration-none font-monospace"><small>grp2idx</small></a></li>
+					<li><a href="ismissing.html" class="text-decoration-none font-monospace"><small>ismissing</small></a></li>
+					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
+					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
+					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
+					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
+					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox">
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox">
+				<label for="togList6">
+					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Supervised Learning</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList7" type="checkbox">
+				<label for="togList7">
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList8" type="checkbox">
+				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox" checked>
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace fw-bolder"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
+					<span><h6>Distribution Fitting</h6></span>
+					<span><h6>Distribution Fitting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betafit.html" class="text-decoration-none font-monospace"><small>betafit</small></a></li>
+					<li><a href="betalike.html" class="text-decoration-none font-monospace"><small>betalike</small></a></li>
+					<li><a href="binofit.html" class="text-decoration-none font-monospace"><small>binofit</small></a></li>
+					<li><a href="binolike.html" class="text-decoration-none font-monospace"><small>binolike</small></a></li>
+					<li><a href="bisafit.html" class="text-decoration-none font-monospace"><small>bisafit</small></a></li>
+					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
+					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
+					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
+					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
+					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
+					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
+					<li><a href="explike.html" class="text-decoration-none font-monospace"><small>explike</small></a></li>
+					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
+					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
+					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
+					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
+					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
+					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
+					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
+					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
+					<li><a href="gumbellike.html" class="text-decoration-none font-monospace"><small>gumbellike</small></a></li>
+					<li><a href="hnfit.html" class="text-decoration-none font-monospace"><small>hnfit</small></a></li>
+					<li><a href="hnlike.html" class="text-decoration-none font-monospace"><small>hnlike</small></a></li>
+					<li><a href="invgfit.html" class="text-decoration-none font-monospace"><small>invgfit</small></a></li>
+					<li><a href="invglike.html" class="text-decoration-none font-monospace"><small>invglike</small></a></li>
+					<li><a href="logifit.html" class="text-decoration-none font-monospace"><small>logifit</small></a></li>
+					<li><a href="logilike.html" class="text-decoration-none font-monospace"><small>logilike</small></a></li>
+					<li><a href="loglfit.html" class="text-decoration-none font-monospace"><small>loglfit</small></a></li>
+					<li><a href="logllike.html" class="text-decoration-none font-monospace"><small>logllike</small></a></li>
+					<li><a href="lognfit.html" class="text-decoration-none font-monospace"><small>lognfit</small></a></li>
+					<li><a href="lognlike.html" class="text-decoration-none font-monospace"><small>lognlike</small></a></li>
+					<li><a href="nakafit.html" class="text-decoration-none font-monospace"><small>nakafit</small></a></li>
+					<li><a href="nakalike.html" class="text-decoration-none font-monospace"><small>nakalike</small></a></li>
+					<li><a href="nbinfit.html" class="text-decoration-none font-monospace"><small>nbinfit</small></a></li>
+					<li><a href="nbinlike.html" class="text-decoration-none font-monospace"><small>nbinlike</small></a></li>
+					<li><a href="normfit.html" class="text-decoration-none font-monospace"><small>normfit</small></a></li>
+					<li><a href="normlike.html" class="text-decoration-none font-monospace"><small>normlike</small></a></li>
+					<li><a href="poissfit.html" class="text-decoration-none font-monospace"><small>poissfit</small></a></li>
+					<li><a href="poisslike.html" class="text-decoration-none font-monospace"><small>poisslike</small></a></li>
+					<li><a href="raylfit.html" class="text-decoration-none font-monospace"><small>raylfit</small></a></li>
+					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
+					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
+					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
+					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
+					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
+					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
+					<li><a href="unifit.html" class="text-decoration-none font-monospace"><small>unifit</small></a></li>
+					<li><a href="wblfit.html" class="text-decoration-none font-monospace"><small>wblfit</small></a></li>
+					<li><a href="wbllike.html" class="text-decoration-none font-monospace"><small>wbllike</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
+					<span><h6>Distribution Functions</h6></span>
+					<span><h6>Distribution Functions</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betacdf.html" class="text-decoration-none font-monospace"><small>betacdf</small></a></li>
+					<li><a href="betainv.html" class="text-decoration-none font-monospace"><small>betainv</small></a></li>
+					<li><a href="betapdf.html" class="text-decoration-none font-monospace"><small>betapdf</small></a></li>
+					<li><a href="betarnd.html" class="text-decoration-none font-monospace"><small>betarnd</small></a></li>
+					<li><a href="binocdf.html" class="text-decoration-none font-monospace"><small>binocdf</small></a></li>
+					<li><a href="binoinv.html" class="text-decoration-none font-monospace"><small>binoinv</small></a></li>
+					<li><a href="binopdf.html" class="text-decoration-none font-monospace"><small>binopdf</small></a></li>
+					<li><a href="binornd.html" class="text-decoration-none font-monospace"><small>binornd</small></a></li>
+					<li><a href="bisacdf.html" class="text-decoration-none font-monospace"><small>bisacdf</small></a></li>
+					<li><a href="bisainv.html" class="text-decoration-none font-monospace"><small>bisainv</small></a></li>
+					<li><a href="bisapdf.html" class="text-decoration-none font-monospace"><small>bisapdf</small></a></li>
+					<li><a href="bisarnd.html" class="text-decoration-none font-monospace"><small>bisarnd</small></a></li>
+					<li><a href="burrcdf.html" class="text-decoration-none font-monospace"><small>burrcdf</small></a></li>
+					<li><a href="burrinv.html" class="text-decoration-none font-monospace"><small>burrinv</small></a></li>
+					<li><a href="burrpdf.html" class="text-decoration-none font-monospace"><small>burrpdf</small></a></li>
+					<li><a href="burrrnd.html" class="text-decoration-none font-monospace"><small>burrrnd</small></a></li>
+					<li><a href="bvncdf.html" class="text-decoration-none font-monospace"><small>bvncdf</small></a></li>
+					<li><a href="bvtcdf.html" class="text-decoration-none font-monospace"><small>bvtcdf</small></a></li>
+					<li><a href="cauchycdf.html" class="text-decoration-none font-monospace"><small>cauchycdf</small></a></li>
+					<li><a href="cauchyinv.html" class="text-decoration-none font-monospace"><small>cauchyinv</small></a></li>
+					<li><a href="cauchypdf.html" class="text-decoration-none font-monospace"><small>cauchypdf</small></a></li>
+					<li><a href="cauchyrnd.html" class="text-decoration-none font-monospace"><small>cauchyrnd</small></a></li>
+					<li><a href="chi2cdf.html" class="text-decoration-none font-monospace"><small>chi2cdf</small></a></li>
+					<li><a href="chi2inv.html" class="text-decoration-none font-monospace"><small>chi2inv</small></a></li>
+					<li><a href="chi2pdf.html" class="text-decoration-none font-monospace"><small>chi2pdf</small></a></li>
+					<li><a href="chi2rnd.html" class="text-decoration-none font-monospace"><small>chi2rnd</small></a></li>
+					<li><a href="copulacdf.html" class="text-decoration-none font-monospace"><small>copulacdf</small></a></li>
+					<li><a href="copulapdf.html" class="text-decoration-none font-monospace"><small>copulapdf</small></a></li>
+					<li><a href="copularnd.html" class="text-decoration-none font-monospace"><small>copularnd</small></a></li>
+					<li><a href="evcdf.html" class="text-decoration-none font-monospace"><small>evcdf</small></a></li>
+					<li><a href="evinv.html" class="text-decoration-none font-monospace"><small>evinv</small></a></li>
+					<li><a href="evpdf.html" class="text-decoration-none font-monospace"><small>evpdf</small></a></li>
+					<li><a href="evrnd.html" class="text-decoration-none font-monospace"><small>evrnd</small></a></li>
+					<li><a href="expcdf.html" class="text-decoration-none font-monospace"><small>expcdf</small></a></li>
+					<li><a href="expinv.html" class="text-decoration-none font-monospace"><small>expinv</small></a></li>
+					<li><a href="exppdf.html" class="text-decoration-none font-monospace"><small>exppdf</small></a></li>
+					<li><a href="exprnd.html" class="text-decoration-none font-monospace"><small>exprnd</small></a></li>
+					<li><a href="fcdf.html" class="text-decoration-none font-monospace"><small>fcdf</small></a></li>
+					<li><a href="finv.html" class="text-decoration-none font-monospace"><small>finv</small></a></li>
+					<li><a href="fpdf.html" class="text-decoration-none font-monospace"><small>fpdf</small></a></li>
+					<li><a href="frnd.html" class="text-decoration-none font-monospace"><small>frnd</small></a></li>
+					<li><a href="gamcdf.html" class="text-decoration-none font-monospace"><small>gamcdf</small></a></li>
+					<li><a href="gaminv.html" class="text-decoration-none font-monospace"><small>gaminv</small></a></li>
+					<li><a href="gampdf.html" class="text-decoration-none font-monospace"><small>gampdf</small></a></li>
+					<li><a href="gamrnd.html" class="text-decoration-none font-monospace"><small>gamrnd</small></a></li>
+					<li><a href="geocdf.html" class="text-decoration-none font-monospace"><small>geocdf</small></a></li>
+					<li><a href="geoinv.html" class="text-decoration-none font-monospace"><small>geoinv</small></a></li>
+					<li><a href="geopdf.html" class="text-decoration-none font-monospace"><small>geopdf</small></a></li>
+					<li><a href="geornd.html" class="text-decoration-none font-monospace"><small>geornd</small></a></li>
+					<li><a href="gevcdf.html" class="text-decoration-none font-monospace"><small>gevcdf</small></a></li>
+					<li><a href="gevinv.html" class="text-decoration-none font-monospace"><small>gevinv</small></a></li>
+					<li><a href="gevpdf.html" class="text-decoration-none font-monospace"><small>gevpdf</small></a></li>
+					<li><a href="gevrnd.html" class="text-decoration-none font-monospace"><small>gevrnd</small></a></li>
+					<li><a href="gpcdf.html" class="text-decoration-none font-monospace"><small>gpcdf</small></a></li>
+					<li><a href="gpinv.html" class="text-decoration-none font-monospace"><small>gpinv</small></a></li>
+					<li><a href="gppdf.html" class="text-decoration-none font-monospace"><small>gppdf</small></a></li>
+					<li><a href="gprnd.html" class="text-decoration-none font-monospace"><small>gprnd</small></a></li>
+					<li><a href="gumbelcdf.html" class="text-decoration-none font-monospace"><small>gumbelcdf</small></a></li>
+					<li><a href="gumbelinv.html" class="text-decoration-none font-monospace"><small>gumbelinv</small></a></li>
+					<li><a href="gumbelpdf.html" class="text-decoration-none font-monospace"><small>gumbelpdf</small></a></li>
+					<li><a href="gumbelrnd.html" class="text-decoration-none font-monospace"><small>gumbelrnd</small></a></li>
+					<li><a href="hncdf.html" class="text-decoration-none font-monospace"><small>hncdf</small></a></li>
+					<li><a href="hninv.html" class="text-decoration-none font-monospace"><small>hninv</small></a></li>
+					<li><a href="hnpdf.html" class="text-decoration-none font-monospace"><small>hnpdf</small></a></li>
+					<li><a href="hnrnd.html" class="text-decoration-none font-monospace"><small>hnrnd</small></a></li>
+					<li><a href="hygecdf.html" class="text-decoration-none font-monospace"><small>hygecdf</small></a></li>
+					<li><a href="hygeinv.html" class="text-decoration-none font-monospace"><small>hygeinv</small></a></li>
+					<li><a href="hygepdf.html" class="text-decoration-none font-monospace"><small>hygepdf</small></a></li>
+					<li><a href="hygernd.html" class="text-decoration-none font-monospace"><small>hygernd</small></a></li>
+					<li><a href="invgcdf.html" class="text-decoration-none font-monospace"><small>invgcdf</small></a></li>
+					<li><a href="invginv.html" class="text-decoration-none font-monospace"><small>invginv</small></a></li>
+					<li><a href="invgpdf.html" class="text-decoration-none font-monospace"><small>invgpdf</small></a></li>
+					<li><a href="invgrnd.html" class="text-decoration-none font-monospace"><small>invgrnd</small></a></li>
+					<li><a href="iwishpdf.html" class="text-decoration-none font-monospace"><small>iwishpdf</small></a></li>
+					<li><a href="iwishrnd.html" class="text-decoration-none font-monospace"><small>iwishrnd</small></a></li>
+					<li><a href="jsucdf.html" class="text-decoration-none font-monospace"><small>jsucdf</small></a></li>
+					<li><a href="jsupdf.html" class="text-decoration-none font-monospace"><small>jsupdf</small></a></li>
+					<li><a href="laplacecdf.html" class="text-decoration-none font-monospace"><small>laplacecdf</small></a></li>
+					<li><a href="laplaceinv.html" class="text-decoration-none font-monospace"><small>laplaceinv</small></a></li>
+					<li><a href="laplacepdf.html" class="text-decoration-none font-monospace"><small>laplacepdf</small></a></li>
+					<li><a href="laplacernd.html" class="text-decoration-none font-monospace"><small>laplacernd</small></a></li>
+					<li><a href="logicdf.html" class="text-decoration-none font-monospace"><small>logicdf</small></a></li>
+					<li><a href="logiinv.html" class="text-decoration-none font-monospace"><small>logiinv</small></a></li>
+					<li><a href="logipdf.html" class="text-decoration-none font-monospace"><small>logipdf</small></a></li>
+					<li><a href="logirnd.html" class="text-decoration-none font-monospace"><small>logirnd</small></a></li>
+					<li><a href="loglcdf.html" class="text-decoration-none font-monospace"><small>loglcdf</small></a></li>
+					<li><a href="loglinv.html" class="text-decoration-none font-monospace"><small>loglinv</small></a></li>
+					<li><a href="loglpdf.html" class="text-decoration-none font-monospace"><small>loglpdf</small></a></li>
+					<li><a href="loglrnd.html" class="text-decoration-none font-monospace"><small>loglrnd</small></a></li>
+					<li><a href="logncdf.html" class="text-decoration-none font-monospace"><small>logncdf</small></a></li>
+					<li><a href="logninv.html" class="text-decoration-none font-monospace"><small>logninv</small></a></li>
+					<li><a href="lognpdf.html" class="text-decoration-none font-monospace"><small>lognpdf</small></a></li>
+					<li><a href="lognrnd.html" class="text-decoration-none font-monospace"><small>lognrnd</small></a></li>
+					<li><a href="mnpdf.html" class="text-decoration-none font-monospace"><small>mnpdf</small></a></li>
+					<li><a href="mnrnd.html" class="text-decoration-none font-monospace"><small>mnrnd</small></a></li>
+					<li><a href="mvncdf.html" class="text-decoration-none font-monospace"><small>mvncdf</small></a></li>
+					<li><a href="mvnpdf.html" class="text-decoration-none font-monospace"><small>mvnpdf</small></a></li>
+					<li><a href="mvnrnd.html" class="text-decoration-none font-monospace"><small>mvnrnd</small></a></li>
+					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
+					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
+					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
+					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
+					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
+					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
+					<li><a href="nakarnd.html" class="text-decoration-none font-monospace"><small>nakarnd</small></a></li>
+					<li><a href="nbincdf.html" class="text-decoration-none font-monospace"><small>nbincdf</small></a></li>
+					<li><a href="nbininv.html" class="text-decoration-none font-monospace"><small>nbininv</small></a></li>
+					<li><a href="nbinpdf.html" class="text-decoration-none font-monospace"><small>nbinpdf</small></a></li>
+					<li><a href="nbinrnd.html" class="text-decoration-none font-monospace"><small>nbinrnd</small></a></li>
+					<li><a href="ncfcdf.html" class="text-decoration-none font-monospace"><small>ncfcdf</small></a></li>
+					<li><a href="ncfinv.html" class="text-decoration-none font-monospace"><small>ncfinv</small></a></li>
+					<li><a href="ncfpdf.html" class="text-decoration-none font-monospace"><small>ncfpdf</small></a></li>
+					<li><a href="ncfrnd.html" class="text-decoration-none font-monospace"><small>ncfrnd</small></a></li>
+					<li><a href="nctcdf.html" class="text-decoration-none font-monospace"><small>nctcdf</small></a></li>
+					<li><a href="nctinv.html" class="text-decoration-none font-monospace"><small>nctinv</small></a></li>
+					<li><a href="nctpdf.html" class="text-decoration-none font-monospace"><small>nctpdf</small></a></li>
+					<li><a href="nctrnd.html" class="text-decoration-none font-monospace"><small>nctrnd</small></a></li>
+					<li><a href="ncx2cdf.html" class="text-decoration-none font-monospace"><small>ncx2cdf</small></a></li>
+					<li><a href="ncx2inv.html" class="text-decoration-none font-monospace"><small>ncx2inv</small></a></li>
+					<li><a href="ncx2pdf.html" class="text-decoration-none font-monospace"><small>ncx2pdf</small></a></li>
+					<li><a href="ncx2rnd.html" class="text-decoration-none font-monospace"><small>ncx2rnd</small></a></li>
+					<li><a href="normcdf.html" class="text-decoration-none font-monospace"><small>normcdf</small></a></li>
+					<li><a href="norminv.html" class="text-decoration-none font-monospace"><small>norminv</small></a></li>
+					<li><a href="normpdf.html" class="text-decoration-none font-monospace"><small>normpdf</small></a></li>
+					<li><a href="normrnd.html" class="text-decoration-none font-monospace"><small>normrnd</small></a></li>
+					<li><a href="plcdf.html" class="text-decoration-none font-monospace"><small>plcdf</small></a></li>
+					<li><a href="plinv.html" class="text-decoration-none font-monospace"><small>plinv</small></a></li>
+					<li><a href="plpdf.html" class="text-decoration-none font-monospace"><small>plpdf</small></a></li>
+					<li><a href="plrnd.html" class="text-decoration-none font-monospace"><small>plrnd</small></a></li>
+					<li><a href="poisscdf.html" class="text-decoration-none font-monospace"><small>poisscdf</small></a></li>
+					<li><a href="poissinv.html" class="text-decoration-none font-monospace"><small>poissinv</small></a></li>
+					<li><a href="poisspdf.html" class="text-decoration-none font-monospace"><small>poisspdf</small></a></li>
+					<li><a href="poissrnd.html" class="text-decoration-none font-monospace"><small>poissrnd</small></a></li>
+					<li><a href="raylcdf.html" class="text-decoration-none font-monospace"><small>raylcdf</small></a></li>
+					<li><a href="raylinv.html" class="text-decoration-none font-monospace"><small>raylinv</small></a></li>
+					<li><a href="raylpdf.html" class="text-decoration-none font-monospace"><small>raylpdf</small></a></li>
+					<li><a href="raylrnd.html" class="text-decoration-none font-monospace"><small>raylrnd</small></a></li>
+					<li><a href="ricecdf.html" class="text-decoration-none font-monospace"><small>ricecdf</small></a></li>
+					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
+					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
+					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
+					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
+					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
+					<li><a href="trnd.html" class="text-decoration-none font-monospace"><small>trnd</small></a></li>
+					<li><a href="tlscdf.html" class="text-decoration-none font-monospace"><small>tlscdf</small></a></li>
+					<li><a href="tlsinv.html" class="text-decoration-none font-monospace"><small>tlsinv</small></a></li>
+					<li><a href="tlspdf.html" class="text-decoration-none font-monospace"><small>tlspdf</small></a></li>
+					<li><a href="tlsrnd.html" class="text-decoration-none font-monospace"><small>tlsrnd</small></a></li>
+					<li><a href="tricdf.html" class="text-decoration-none font-monospace"><small>tricdf</small></a></li>
+					<li><a href="triinv.html" class="text-decoration-none font-monospace"><small>triinv</small></a></li>
+					<li><a href="tripdf.html" class="text-decoration-none font-monospace"><small>tripdf</small></a></li>
+					<li><a href="trirnd.html" class="text-decoration-none font-monospace"><small>trirnd</small></a></li>
+					<li><a href="unidcdf.html" class="text-decoration-none font-monospace"><small>unidcdf</small></a></li>
+					<li><a href="unidinv.html" class="text-decoration-none font-monospace"><small>unidinv</small></a></li>
+					<li><a href="unidpdf.html" class="text-decoration-none font-monospace"><small>unidpdf</small></a></li>
+					<li><a href="unidrnd.html" class="text-decoration-none font-monospace"><small>unidrnd</small></a></li>
+					<li><a href="unifcdf.html" class="text-decoration-none font-monospace"><small>unifcdf</small></a></li>
+					<li><a href="unifinv.html" class="text-decoration-none font-monospace"><small>unifinv</small></a></li>
+					<li><a href="unifpdf.html" class="text-decoration-none font-monospace"><small>unifpdf</small></a></li>
+					<li><a href="unifrnd.html" class="text-decoration-none font-monospace"><small>unifrnd</small></a></li>
+					<li><a href="vmcdf.html" class="text-decoration-none font-monospace"><small>vmcdf</small></a></li>
+					<li><a href="vminv.html" class="text-decoration-none font-monospace"><small>vminv</small></a></li>
+					<li><a href="vmpdf.html" class="text-decoration-none font-monospace"><small>vmpdf</small></a></li>
+					<li><a href="vmrnd.html" class="text-decoration-none font-monospace"><small>vmrnd</small></a></li>
+					<li><a href="wblcdf.html" class="text-decoration-none font-monospace"><small>wblcdf</small></a></li>
+					<li><a href="wblinv.html" class="text-decoration-none font-monospace"><small>wblinv</small></a></li>
+					<li><a href="wblpdf.html" class="text-decoration-none font-monospace"><small>wblpdf</small></a></li>
+					<li><a href="wblrnd.html" class="text-decoration-none font-monospace"><small>wblrnd</small></a></li>
+					<li><a href="wienrnd.html" class="text-decoration-none font-monospace"><small>wienrnd</small></a></li>
+					<li><a href="wishpdf.html" class="text-decoration-none font-monospace"><small>wishpdf</small></a></li>
+					<li><a href="wishrnd.html" class="text-decoration-none font-monospace"><small>wishrnd</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
+					<span><h6>Distribution Statistics</h6></span>
+					<span><h6>Distribution Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betastat.html" class="text-decoration-none font-monospace"><small>betastat</small></a></li>
+					<li><a href="binostat.html" class="text-decoration-none font-monospace"><small>binostat</small></a></li>
+					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
+					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
+					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
+					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
+					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
+					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
+					<li><a href="gamstat.html" class="text-decoration-none font-monospace"><small>gamstat</small></a></li>
+					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
+					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
+					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
+					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
+					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
+					<li><a href="logistat.html" class="text-decoration-none font-monospace"><small>logistat</small></a></li>
+					<li><a href="loglstat.html" class="text-decoration-none font-monospace"><small>loglstat</small></a></li>
+					<li><a href="lognstat.html" class="text-decoration-none font-monospace"><small>lognstat</small></a></li>
+					<li><a href="nakastat.html" class="text-decoration-none font-monospace"><small>nakastat</small></a></li>
+					<li><a href="nbinstat.html" class="text-decoration-none font-monospace"><small>nbinstat</small></a></li>
+					<li><a href="ncfstat.html" class="text-decoration-none font-monospace"><small>ncfstat</small></a></li>
+					<li><a href="nctstat.html" class="text-decoration-none font-monospace"><small>nctstat</small></a></li>
+					<li><a href="ncx2stat.html" class="text-decoration-none font-monospace"><small>ncx2stat</small></a></li>
+					<li><a href="normstat.html" class="text-decoration-none font-monospace"><small>normstat</small></a></li>
+					<li><a href="plstat.html" class="text-decoration-none font-monospace"><small>plstat</small></a></li>
+					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
+					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
+					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
+					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
+					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
+					<li><a href="unidstat.html" class="text-decoration-none font-monospace"><small>unidstat</small></a></li>
+					<li><a href="unifstat.html" class="text-decoration-none font-monospace"><small>unifstat</small></a></li>
+					<li><a href="wblstat.html" class="text-decoration-none font-monospace"><small>wblstat</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
+					<span><h6>Distribution Wrappers</h6></span>
+					<span><h6>Distribution Wrappers</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdf.html" class="text-decoration-none font-monospace"><small>cdf</small></a></li>
+					<li><a href="fitdist.html" class="text-decoration-none font-monospace"><small>fitdist</small></a></li>
+					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
+					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
+					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
+					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
+					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
+					<span><h6>I/O</h6></span>
+					<span><h6>I/O</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
+					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
+					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
+				</ul>
+				</div>
+			</div>
+
+			  </div>
+			  <div class="col-md-10">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <h3 class="d-inline-block mr-2">
+                Class&nbsp;Definition: <b><code>prob.BetaDistribution</code></b>
+                </h3>
+              </div>
+            </div>
+            <div class="card-body">
+<dl><code><h5 class="description">statistics: prob.BetaDistribution</h5></code></dl>
+<p> Beta probability distribution object.
+</p>
+<div class="ms-5">
+<p> A <code>prob.BetaDistribution</code> object consists of parameters, a model
+ description, and sample data for a beta probability distribution.
+</p>
+<p> The beta distribution is a family of continuous probability distributions
+ defined on the interval <math>[0, 1]</math> in terms of two positive parameters,
+ denoted by alpha <code>(<var>a</var>)</code> and beta <code>(<var>b</var>)</code>, that appear
+ as exponents of the variable and its complement to 1, respectively, and
+ control the shape of the distribution.
+</p>
+<p> There are several ways to create a <code>prob.BetaDistribution</code> object.
+</p>
+<ul>
+<li> Fit a distribution to data using the <code>fitdist</code> function.
+</li><li> Create a distribution with fixed parameter values using the
+ <code>makedist</code> function.
+</li><li> Use the constructor <code>prob.BetaDistribution (<var>a</var>, <var>b</var>)</code>
+ to create a beta distribution with fixed parameter values <var>a</var> and
+ <var>b</var>.
+</li><li> Use the static method <code>prob.BetaDistribution.fit (<var>x</var>,
+ <var>alpha</var>, <var>freq</var>, <var>options</var>)</code> to fit a distribution to the data
+ in <var>x</var> using the same input arguments as the <code>betafit</code> function.
+</li></ul>
+
+<p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
+</p>
+<p> Further information about the beta distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitdist.html">fitdist</a>, 
+  <a href="makedist.html">makedist</a>, 
+  <a href="betacdf.html">betacdf</a>, 
+  <a href="betainv.html">betainv</a>, 
+  <a href="betapdf.html">betapdf</a>, 
+  <a href="betarnd.html">betarnd</a>, 
+  <a href="betafit.html">betafit</a>, 
+  <a href="betalike.html">betalike</a>, 
+  <a href="betastat.html">betastat</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Distribution_Classes/+prob/BetaDistribution.m">prob.BetaDistribution</a>
+</p>
+</div>
+        <p class="lead my-3">The <code>prob.BetaDistribution</code> class contains the following properties:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
+              aria-expanded="false" aria-controls="collapseProperty1">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>a</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+First shape parameter
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty1">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A positive scalar value characterizing the shape of the beta
+ distribution.  You can access the <code>a</code> property using dot name
+ assignment.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_a-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_a-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_a-example1">
+            <div class="card-body">
+                <p>Create a beta distribution with default parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 1
+        b = 1</pre>
+                <p>Query parameter 'alpha' (first shape parameter)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.a</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+                <p>Set parameter 'alpha'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.a = 2</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 1</pre>
+                <p>Use this to initialize or modify the first shape parameter of a beta distribution. The parameter 'alpha' must be a positive real scalar.</p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_a-example2" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_a-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_a-example2">
+            <div class="card-body">
+                <p>Create a beta distribution object by calling its constructor</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = BetaDistribution (2, 3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">error: 'BetaDistribution' undefined near line 1, column 7
+
+The 'BetaDistribution' function belongs to the 'statistics' package indexed in
+Octave Packages at &lt;https://packages.octave.org&gt; but has not yet been
+implemented.</pre>
+                <p>Query parameter 'alpha'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.a</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
+              aria-expanded="false" aria-controls="collapseProperty2">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>b</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Second shape parameter
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty2">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A positive scalar value characterizing the shape of the beta
+ distribution. You can access the <code>b</code> property using dot name
+ assignment.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_b-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_b-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_b-example1">
+            <div class="card-body">
+                <p>Create a beta distribution with default parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 1
+        b = 1</pre>
+                <p>Query parameter 'beta' (second shape parameter)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.b</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+                <p>Set parameter 'beta'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.b = 2</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 1
+        b = 2</pre>
+                <p>Use this to initialize or modify the second shape parameter of a beta distribution. The parameter 'beta' must be a positive real scalar.</p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_b-example2" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_b-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_b-example2">
+            <div class="card-body">
+                <p>Create a beta distribution object by calling its constructor</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = BetaDistribution (2, 3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">error: 'BetaDistribution' undefined near line 1, column 7
+
+The 'BetaDistribution' function belongs to the 'statistics' package indexed in
+Octave Packages at &lt;https://packages.octave.org&gt; but has not yet been
+implemented.</pre>
+                <p>Query parameter 'beta'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.b</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
+              aria-expanded="false" aria-controls="collapseProperty3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DistributionName</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Probability distribution name
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty3">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_DistributionName-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_DistributionName-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_DistributionName-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.DistributionName-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
+              aria-expanded="false" aria-controls="collapseProperty4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumParameters</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of parameters
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty4">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_NumParameters-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_NumParameters-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_NumParameters-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.NumParameters-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
+              aria-expanded="false" aria-controls="collapseProperty5">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of parameters
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty5">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_ParameterNames-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_ParameterNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_ParameterNames-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.ParameterNames-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
+              aria-expanded="false" aria-controls="collapseProperty6">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterDescription</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Description of parameters
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty6">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_ParameterDescription-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_ParameterDescription-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_ParameterDescription-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.ParameterDescription-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
+              aria-expanded="false" aria-controls="collapseProperty7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterValues</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Distribution parameter values
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty7">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>2&times;1</math> numeric vector containing the values of the distribution
+ parameters.  This property is read-only.  You can change the distribution
+ parameters by assigning new values to the <code>a</code> and <code>b</code>
+ properties.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_ParameterValues-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_ParameterValues-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_ParameterValues-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.ParameterValues-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
+              aria-expanded="false" aria-controls="collapseProperty8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Truncation</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Truncation interval
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty8">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_Truncation-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_Truncation-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_Truncation-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.Truncation-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
+              aria-expanded="false" aria-controls="collapseProperty9">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IsTruncated</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Flag for truncated probability distribution
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty9">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_IsTruncated-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_IsTruncated-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_IsTruncated-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.IsTruncated-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
+              aria-expanded="false" aria-controls="collapseProperty10">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterCovariance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Covariance matrix of the parameter estimates
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty10">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>2&times;2</math> numeric matrix containing the variance-covariance of the
+ parameter estimates.  Diagonal elements contain the variance of each
+ estimated parameter and non-diagonal elements contain the covariance
+ between the parameter estimates.  The covariance matrix is only
+ meaningful when the distribution was fitted to data.  If the distribution
+ object was created with fixed parameters, or a parameter of a fitted
+ distribution is modified, then all elements of the variance-covariance
+ are zero.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_ParameterCovariance-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_ParameterCovariance-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_ParameterCovariance-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.ParameterCovariance-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
+              aria-expanded="false" aria-controls="collapseProperty11">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterIsFixed</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Flag for fixed parameters
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty11">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>1&times;2</math> logical vector specifying which parameters are fixed and
+ which are estimated.  <code>true</code> values correspond to fixed parameters,
+ <code>false</code> values correspond to parameter estimates.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_ParameterIsFixed-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_ParameterIsFixed-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_ParameterIsFixed-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.ParameterIsFixed-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
+              aria-expanded="false" aria-controls="collapseProperty12">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>InputData</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Data used for fitting a probability distribution
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty12">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A scalar structure containing the following fields:
+</p>
+<ul>
+<li> <code>data</code> : a numeric vector containing the data used for
+ distribution fitting.
+</li><li> <code>cens</code> : an empty array, since <code>prob.BetaDistribution</code> does
+ not allow censoring.
+</li><li> <code>frequency</code> : a numeric vector of non-negative integer values
+ containing the frequency information corresponding to the elements of the
+ data used for distribution fitting.  If no frequency vector was used for
+ distribution fitting, then this field defaults to an empty array.
+</li></ul>
+
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_InputData-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_InputData-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_InputData-example1">
+            <div class="card-body">
+                <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.InputData-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <p class="lead my-3">The <code>prob.BetaDistribution</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
+              aria-expanded="false" aria-controls="collapseMethod1">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>cdf</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the cumulative distribution function (CDF).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod1">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>'upper'</code>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>p</var> = cdf (<var>pd</var>, <var>x</var>)</code> computes the CDF of the
+ probability distribution object, <var>pd</var>, evaluated at the values in
+ <var>x</var>.
+</p>
+<p> <code><var>p</var> = cdf (&hellip;, <code>'upper'</code>)</code> returns the complement of
+ the CDF of the probability distribution object, <var>pd</var>, evaluated at
+ the values in <var>x</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_cdf-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_cdf-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_cdf-example1">
+            <div class="card-body">
+                <p>Plot various CDFs from the Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:1;
+ pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+ pd2 = makedist ("Beta", "a", 2, "b", 2);
+ pd3 = makedist ("Beta", "a", 5, "b", 2);
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+         "location", "southeast")
+ title ("Beta CDF")
+ xlabel ("Value")
+ ylabel ("Cumulative probability")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.cdf-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+                <p>Use this to compute and visualize the cumulative distribution function for different beta distributions, showing how probability accumulates over the interval [0, 1].</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
+              aria-expanded="false" aria-controls="collapseMethod2">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>icdf</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the inverse cumulative distribution function (iCDF).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod2">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
+ inverse of the CDF) of the probability distribution object, <var>pd</var>,
+ evaluated at the values in <var>p</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_icdf-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_icdf-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_icdf-example1">
+            <div class="card-body">
+                <p>Plot various iCDFs from the Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
+ pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+ pd2 = makedist ("Beta", "a", 2, "b", 2);
+ pd3 = makedist ("Beta", "a", 5, "b", 2);
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+         "location", "northwest")
+ title ("Beta iCDF")
+ xlabel ("Probability")
+ ylabel ("Value")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.icdf-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+                <p>This demonstrates the inverse CDF (quantiles) for beta distributions, useful for finding values corresponding to given probabilities.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
+              aria-expanded="false" aria-controls="collapseMethod3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>iqr</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the interquartile range of a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod3">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
+ probability distribution object, <var>pd</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_iqr-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_iqr-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_iqr-example1">
+            <div class="card-body">
+                <p>Compute the interquartile range for a Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> iqr_value = iqr (pd)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 0.2283</pre>
+                <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the beta distribution.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
+              aria-expanded="false" aria-controls="collapseMethod4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>mean</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the mean of a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod4">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
+ distribution object, <var>pd</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_mean-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_mean-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_mean-example1">
+            <div class="card-body">
+                <p>Compute the mean for different Beta distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd1 = makedist ("Beta", "a", 1, "b", 1);
+ pd2 = makedist ("Beta", "a", 2, "b", 5);
+ mean1 = mean (pd1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 0.5000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 0.2857</pre>
+                <p>This shows how to compute the expected value of beta distributions with different shape parameters, representing the average outcome.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
+              aria-expanded="false" aria-controls="collapseMethod5">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>median</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the median of a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod5">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
+ distribution object, <var>pd</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_median-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_median-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_median-example1">
+            <div class="card-body">
+                <p>Compute the median for different Beta distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd1 = makedist ("Beta", "a", 1, "b", 1);
+ pd2 = makedist ("Beta", "a", 2, "b", 5);
+ median1 = median (pd1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.5000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 0.2644</pre>
+                <p>Use this to find the median value, which splits the beta distribution into two equal probability halves.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
+              aria-expanded="false" aria-controls="collapseMethod6">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>negloglik</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the negative loglikelihood of a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod6">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>nlogL</var> = <b>negloglik</b> (<var>pd</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
+ loglikelihood
+ of the probability distribution object, <var>pd</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_negloglik-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_negloglik-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_negloglik-example1">
+            <div class="card-body">
+                <p>Compute the negative loglikelihood for a fitted Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
+ data = random (pd, 100, 1);
+ pd_fitted = fitdist (data, "Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.32229   [1.70697, 3.15943]
+        b = 5.76248   [4.16064, 7.98103]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nlogL = negloglik (pd_fitted)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = -53.339</pre>
+                <p>This is useful for assessing the fit of a beta distribution to data, lower values indicate a better fit.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
+              aria-expanded="false" aria-controls="collapseMethod7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>paramci</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the confidence intervals for probability distribution parameters.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod7">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>ci</var> = paramci (<var>pd</var>)</code> computes the lower and upper
+ boundaries of the 95% confidence interval for each parameter of the
+ probability distribution object, <var>pd</var>.
+</p>
+<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes
+ the
+ confidence intervals with additional options specified by
+ <code>Name-Value</code> pair arguments listed below.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>'Alpha'</code></td><td width="80%">A scalar value in the range <math>(0,1)</math>
+ specifying the significance level for the confidence interval.  The
+ default value 0.05 corresponds to a 95% confidence interval.</td></tr>
+<tr><td width="18%"><code>'Parameter'</code></td><td width="80%">A character vector or a cell array of
+ character vectors specifying the parameter names for which to compute
+ confidence intervals.  By default, <code>paramci</code> computes confidence
+ intervals for all distribution parameters.</td></tr>
+</table>
+</div>
+
+<p> <code>paramci</code> is meaningful only when <var>pd</var> is fitted to data,
+ otherwise an empty array, <code>[]</code>, is returned.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_paramci-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_paramci-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_paramci-example1">
+            <div class="card-body">
+                <p>Compute confidence intervals for parameters of a fitted Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
+ data = random (pd, 1000, 1);
+ pd_fitted = fitdist (data, "Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 1.83588   [1.69282, 1.99104]
+        b = 4.68397   [4.27705, 5.1296]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
+
+   1.6928   4.2771
+   1.9910   5.1296</pre>
+                <p>Use this to obtain confidence intervals for the estimated parameters (a, b), providing a range of plausible values given the data.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
+              aria-expanded="false" aria-controls="collapseMethod8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>pdf</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the probability distribution function (PDF).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod8">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
+ probability distribution object, <var>pd</var>, evaluated at the values in
+ <var>x</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_pdf-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_pdf-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_pdf-example1">
+            <div class="card-body">
+                <p>Plot various PDFs from the Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:1;
+ pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+ pd2 = makedist ("Beta", "a", 2, "b", 2);
+ pd3 = makedist ("Beta", "a", 5, "b", 2);
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+         "location", "north")
+ title ("Beta PDF")
+ xlabel ("Value")
+ ylabel ("Probability Density")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.pdf-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+                <p>This visualizes the probability density function for beta distributions, showing the likelihood of different values in [0, 1].</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
+              aria-expanded="false" aria-controls="collapseMethod9">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plot</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot a probability distribution object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod9">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <b>plot</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
+ probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
+ which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
+ histogram of the data.
+</p>
+<p> <code>plot (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> specifies additional
+ options with the <code>Name-Value</code> pair arguments listed below.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>'PlotType'</code></td><td width="80%">A character vector specifying the plot
+ type.  <code>'pdf'</code> plots the probability density function (PDF).  When
+ <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
+ data.  <code>'cdf'</code> plots the cumulative density function (CDF).  When
+ <var>pd</var> is fit to data, the CDF is superimposed over an empirical CDF.
+ <code>'probability'</code> plots a probability plot using a CDF of the data
+ and a CDF of the fitted probability distribution.  This option is
+ available only when <var>pd</var> is fitted to data.</td></tr>
+<tr><td width="18%"><code>'Discrete'</code></td><td width="80%">A logical scalar to specify whether to
+ plot the PDF or CDF of a discrete distribution object as a line plot or a
+ stem plot, by specifying <code>false</code> or <code>true</code>, respectively.  By
+ default, it is <code>true</code> for discrete distributions and <code>false</code>
+ for continuous distributions.  When <var>pd</var> is a continuous distribution
+ object, option is ignored.</td></tr>
+<tr><td width="18%"><code>'Parent'</code></td><td width="80%">An axes graphics object for plot.  If
+ not specified, the <code>plot</code> function plots into the current axes or
+ creates a new axes object if one does not exist.</td></tr>
+</table>
+</div>
+
+<p> <code><var>h</var> = plot (&hellip;)</code> returns a graphics handle to the plotted
+ objects.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_plot-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_plot-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_plot-example1">
+            <div class="card-body">
+                <p>Create a Beta distribution with fixed parameters a = 2 and b = 5, and plot its PDF.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
+ title ("Fixed Beta distribution with a = 2 and b = 5")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.plot-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_plot-example2" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_plot-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_plot-example2">
+            <div class="card-body">
+                <p>Generate a data set of 100 random samples from a Beta distribution with parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot its CDF superimposed over an empirical CDF of the data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("Beta", "a", 2, "b", 4)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 4</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
+ data = random (pd_fixed, 100, 1);
+ pd_fitted = fitdist (data, "Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 1.58844   [1.2184, 2.07086]
+        b =  3.3298   [2.43615, 4.55126]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "plottype", "cdf")
+ txt = "Fitted Beta distribution with a = %0.2f and b = %0.2f";
+ title (sprintf (txt, pd_fitted.a, pd_fitted.b))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "east")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.plot-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_plot-example3" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_plot-example3">
+                Example: 3
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_plot-example3">
+            <div class="card-body">
+                <p>Generate a data set of 200 random samples from a Beta distribution with parameters a = 2 and b = 4.  Display a probability plot for the Beta distribution fit to the data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("Beta", "a", 2, "b", 4)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 4</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
+ data = random (pd_fixed, 200, 1);
+ pd_fitted = fitdist (data, "Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 1.68235   [1.42401, 1.98756]
+        b =  3.7591   [3.1139, 4.53798]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "plottype", "probability")
+ txt = "Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f";
+ title (sprintf (txt, pd_fitted.a, pd_fitted.b))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.plot-301.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod10"
+              aria-expanded="false" aria-controls="collapseMethod10">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>proflik</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Profile likelihood function for a probability distribution object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod10">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <code>'Display'</code>, <var>display</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>'Display'</code>, <var>display</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: [<var>nlogL</var>, <var>param</var>, <var>other</var>] = <b>proflik</b> (&hellip;)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>)</code>
+ returns a vector <var>nlogL</var> of negative loglikelihood values and a
+ vector <var>param</var> of corresponding parameter values for the parameter in
+ the position indicated by <var>pnum</var>.  By default, <code>proflik</code> uses
+ the lower and upper bounds of the 98% confidence interval and computes
+ 101 equispaced values for the selected parameter when it is the only one
+ being estimated, and 21 values otherwise.  <var>pd</var> must be fitted to
+ data.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>,
+ <code>'Display'</code>, <code>'on'</code>)</code> also plots the profile likelihood
+ against the default range of the selected parameter.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>,
+ <var>setparam</var>)</code> defines a user-defined range of the selected parameter.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>,
+ <var>setparam</var>, <code>'Display'</code>, <code>'on'</code>)</code> also plots the profile
+ likelihood against the user-defined range of the selected parameter.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>)</code> selects the
+ first parameter that is not fixed.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>, <var>other</var>] = proflik (&hellip;)</code> also
+ returns a matrix <var>other</var> holding, in each row, the values of the
+ remaining parameters that maximize the likelihood at the corresponding
+ value of <var>param</var>.  A fixed parameter keeps its own value.
+</p>
+<p> For the beta distribution, <code><var>pnum</var> = 1</code> selects the parameter
+ <code>a</code> and <code><var>pnum</var> = 2</code> selects the parameter <code>b</code>.
+</p>
+<p> When opted to display the profile likelihood plot, <code>proflik</code> also
+ plots the baseline loglikelihood computed at the lower bound of the 95%
+ confidence interval and estimated maximum likelihood.  The latter might
+ not be observable if it is outside of the used-defined range of parameter
+ values.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_proflik-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_proflik-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_proflik-example1">
+            <div class="card-body">
+                <p>Compute and plot the profile likelihood for the first shape parameter of a fitted Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
+ data = random (pd, 1000, 1);
+ pd_fitted = fitdist (data, "Beta")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.07971   [1.90886, 2.26585]
+        b = 5.07244   [4.64654, 5.53739]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.proflik-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+                <p>Use this to analyze the profile likelihood of the shape parameter (a), helping to understand the uncertainty in parameter estimates.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod11"
+              aria-expanded="false" aria-controls="collapseMethod11">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>random</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Generate random arrays from the probability distribution object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod11">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
+ distribution object <var>pd</var>.
+</p>
+<p> When called with a single size argument, <code>betarnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one
+ scalar argument, the first two arguments are taken as the number of rows
+ and columns and any further arguments specify additional matrix
+ dimensions.  The size may also be specified with a row vector of
+ dimensions, <var>sz</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_random-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_random-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_random-example1">
+            <div class="card-body">
+                <p>Generate random samples from a Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
+ samples = random (pd, 500, 1);
+ hist (samples, 20)
+ title ("Histogram of 500 random samples from Beta(a=2, b=5)")
+ xlabel ("Value")
+ ylabel ("Frequency")</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.random-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+                <p>This generates random samples from a beta distribution, useful for simulating data within the [0, 1] interval.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod12"
+              aria-expanded="false" aria-controls="collapseMethod12">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>std</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the standard deviation of a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod12">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
+ probability distribution object, <var>pd</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_std-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_std-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_std-example1">
+            <div class="card-body">
+                <p>Compute the standard deviation for a Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> std_value = std (pd)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.1597</pre>
+                <p>Use this to calculate the standard deviation, which measures the variability of the beta distribution.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod13"
+              aria-expanded="false" aria-controls="collapseMethod13">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>truncate</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Truncate a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod13">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit,
+ <var>lower</var>,
+ and upper limit, <var>upper</var>.  If <var>pd</var> is fitted to data with
+ <code>fitdist</code>, the returned probability distribution <var>t</var> is not
+ fitted, does not contain any data or estimated values, and it is as it
+ has been created with the <var>makedist</var> function, but it includes the
+ truncation interval.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_truncate-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_truncate-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_truncate-example1">
+            <div class="card-body">
+                <p>Plot the PDF of a Beta distribution, with parameters a = 2 and b = 4, truncated at [0.1, 0.8] intervals.  Generate 10000 random samples from this truncated distribution and superimpose a histogram with 100 bins scaled accordingly</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 4)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 4</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> t = truncate (pd, 0.1, 0.8)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">t =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 4
+  Truncated to the interval [0.1, 0.8]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
+ data = random (t, 10000, 1);
+ plot (t)
+ title ("Beta distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
+ hold on
+ hist (data, 100, 140)
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution.truncate-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod14"
+              aria-expanded="false" aria-controls="collapseMethod14">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>var</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Compute the variance of a probability distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod14">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">prob.BetaDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
+ probability distribution object, <var>pd</var>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#prob_BetaDistribution_var-example1" aria-expanded="false"
+                  aria-controls="prob_BetaDistribution_var-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="prob_BetaDistribution_var-example1">
+            <div class="card-body">
+                <p>Compute the variance for a Beta distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Beta", "a", 2, "b", 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> var_value = var (pd)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.025510</pre>
+                <p>Use this to calculate the variance, which quantifies the spread of the beta distribution.</p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#prob_BetaDistribution-example1"
+              aria-expanded="false" aria-controls="prob_BetaDistribution-example1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="prob_BetaDistribution-example1">
+            <div class="border-bottom py-2">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
+  Beta
+
+  beta distribution
+        a = 2
+        b = 5</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, 'Beta')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
+  Beta
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
+ msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))</pre>
+                <div class="text-center">
+                  <img src="assets/prob.BetaDistribution-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

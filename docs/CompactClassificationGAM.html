@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
     <script type="text/javascript" async
-      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
     </script>
     <script type="text/javascript">
       window.addEventListener("load", () => {
@@ -19,6 +19,32 @@
           tog.onclick = () => tog.classList.toggle("show");
           i.parentElement.removeChild(i.previousSibling);
           i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
         }
       });
     </script>
@@ -82,9 +108,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Classification Classes">
+                  <a class="nav-link" href="index.html#Supervised Learning">
                     <i class="fas fa-list-alt"></i>
-                    Classification Classes
+                    Supervised Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -115,93 +141,39 @@
 			<div class="row">
 				<input id="togList1" type="checkbox">
 				<label for="togList1">
-					<span><h6>Clustering</h6></span>
-					<span><h6>Clustering</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
-					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
-					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
-					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
-					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
-					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
-					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
-					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
-					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
-					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
-					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
-					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
-					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
-					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
-					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
-					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
-					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
-					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
-					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
-					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
-					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
-					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList2" type="checkbox" checked>
+				<input id="togList2" type="checkbox">
 				<label for="togList2">
-					<span><h6>Classification Classes</h6></span>
-					<span><h6>Classification Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
-					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
-					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
-					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
-					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
-					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
-					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
-					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace fw-bolder"><small>CompactClassificationGAM</small></a></li>
-					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
-					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
-					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList3" type="checkbox">
-				<label for="togList3">
-					<span><h6>Clustering Classes</h6></span>
-					<span><h6>Clustering Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
-					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
-					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
-					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
-					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
-					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
-					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
-					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
-					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList4" type="checkbox">
-				<label for="togList4">
-					<span><h6>Regression Classes</h6></span>
-					<span><h6>Regression Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList5" type="checkbox">
-				<label for="togList5">
 					<span><h6>Data Manipulation</h6></span>
 					<span><h6>Data Manipulation</h6></span>
 				</label>
@@ -217,75 +189,385 @@
 					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
 					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
 					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
 					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
 					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
-					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList6" type="checkbox">
-				<label for="togList6">
-					<span><h6>Descriptive Statistics</h6></span>
-					<span><h6>Descriptive Statistics</h6></span>
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
-					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
-					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
-					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
-					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
-					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
-					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
-					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
-					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox">
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox" checked>
+				<label for="togList6">
+					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Supervised Learning</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace fw-bolder"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList7" type="checkbox">
 				<label for="togList7">
-					<span><h6>Distribution Classes</h6></span>
-					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="BetaDistribution.html" class="text-decoration-none font-monospace"><small>BetaDistribution</small></a></li>
-					<li><a href="BinomialDistribution.html" class="text-decoration-none font-monospace"><small>BinomialDistribution</small></a></li>
-					<li><a href="BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>BirnbaumSaundersDistribution</small></a></li>
-					<li><a href="BurrDistribution.html" class="text-decoration-none font-monospace"><small>BurrDistribution</small></a></li>
-					<li><a href="ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>ExponentialDistribution</small></a></li>
-					<li><a href="ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>ExtremeValueDistribution</small></a></li>
-					<li><a href="GammaDistribution.html" class="text-decoration-none font-monospace"><small>GammaDistribution</small></a></li>
-					<li><a href="GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>GeneralizedExtremeValueDistribution</small></a></li>
-					<li><a href="GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>GeneralizedParetoDistribution</small></a></li>
-					<li><a href="HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>HalfNormalDistribution</small></a></li>
-					<li><a href="InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>InverseGaussianDistribution</small></a></li>
-					<li><a href="LogisticDistribution.html" class="text-decoration-none font-monospace"><small>LogisticDistribution</small></a></li>
-					<li><a href="LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>LoglogisticDistribution</small></a></li>
-					<li><a href="LognormalDistribution.html" class="text-decoration-none font-monospace"><small>LognormalDistribution</small></a></li>
-					<li><a href="LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>LoguniformDistribution</small></a></li>
-					<li><a href="MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>MultinomialDistribution</small></a></li>
-					<li><a href="NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>NakagamiDistribution</small></a></li>
-					<li><a href="NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>NegativeBinomialDistribution</small></a></li>
-					<li><a href="NormalDistribution.html" class="text-decoration-none font-monospace"><small>NormalDistribution</small></a></li>
-					<li><a href="PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>PiecewiseLinearDistribution</small></a></li>
-					<li><a href="PoissonDistribution.html" class="text-decoration-none font-monospace"><small>PoissonDistribution</small></a></li>
-					<li><a href="RayleighDistribution.html" class="text-decoration-none font-monospace"><small>RayleighDistribution</small></a></li>
-					<li><a href="RicianDistribution.html" class="text-decoration-none font-monospace"><small>RicianDistribution</small></a></li>
-					<li><a href="tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>tLocationScaleDistribution</small></a></li>
-					<li><a href="TriangularDistribution.html" class="text-decoration-none font-monospace"><small>TriangularDistribution</small></a></li>
-					<li><a href="UniformDistribution.html" class="text-decoration-none font-monospace"><small>UniformDistribution</small></a></li>
-					<li><a href="WeibullDistribution.html" class="text-decoration-none font-monospace"><small>WeibullDistribution</small></a></li>
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList8" type="checkbox">
 				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
 					<span><h6>Distribution Fitting</h6></span>
 					<span><h6>Distribution Fitting</h6></span>
 				</label>
@@ -299,6 +581,7 @@
 					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
 					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
 					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
 					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
 					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
 					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
@@ -306,9 +589,9 @@
 					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
 					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
 					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
-					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
 					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
 					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
 					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
 					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
 					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
@@ -335,6 +618,8 @@
 					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
 					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
 					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
 					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
 					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
 					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
@@ -345,8 +630,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList9" type="checkbox">
-				<label for="togList9">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
 					<span><h6>Distribution Functions</h6></span>
 					<span><h6>Distribution Functions</h6></span>
 				</label>
@@ -453,7 +738,6 @@
 					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
 					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
 					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
-					<li><a href="mvtcdfqmc.html" class="text-decoration-none font-monospace"><small>mvtcdfqmc</small></a></li>
 					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
 					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
 					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
@@ -494,6 +778,10 @@
 					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
 					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
 					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -529,8 +817,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList10" type="checkbox">
-				<label for="togList10">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
 					<span><h6>Distribution Statistics</h6></span>
 					<span><h6>Distribution Statistics</h6></span>
 				</label>
@@ -541,6 +829,8 @@
 					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
 					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
 					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
 					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
 					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
 					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
@@ -574,8 +864,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList11" type="checkbox">
-				<label for="togList11">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Distribution Wrappers</h6></span>
 					<span><h6>Distribution Wrappers</h6></span>
 				</label>
@@ -586,116 +876,50 @@
 					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
 					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
 					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
 					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
 					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList12" type="checkbox">
-				<label for="togList12">
-					<span><h6>Experimental Design</h6></span>
-					<span><h6>Experimental Design</h6></span>
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
-					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
-					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
-					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
-					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList13" type="checkbox">
-				<label for="togList13">
-					<span><h6>Machine Learning</h6></span>
-					<span><h6>Machine Learning</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
-					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
-					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
-					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
-					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
-					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
-					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList14" type="checkbox">
-				<label for="togList14">
-					<span><h6>Model Fitting</h6></span>
-					<span><h6>Model Fitting</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
-					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
-					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
-					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
-					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
-					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
-					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
-					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
-					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList15" type="checkbox">
-				<label for="togList15">
-					<span><h6>Hypothesis Testing</h6></span>
-					<span><h6>Hypothesis Testing</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
-					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
-					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
-					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
-					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
-					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
-					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
-					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
-					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
-					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
-					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
-					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
-					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
-					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
-					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
-					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
-					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
-					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
-					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
-					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
-					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
-					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
-					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
-					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
-					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
-					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
-					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
-					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
-					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
-					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
-					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
-					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
-					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
-					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList16" type="checkbox">
-				<label for="togList16">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>I/O</h6></span>
 					<span><h6>I/O</h6></span>
 				</label>
@@ -708,86 +932,19 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList17" type="checkbox">
-				<label for="togList17">
-					<span><h6>Interpolation</h6></span>
-					<span><h6>Interpolation</h6></span>
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
-					<span><h6>Plotting</h6></span>
-					<span><h6>Plotting</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
-					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
-					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
-					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
-					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
-					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
-					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
-					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
-					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
-					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
-					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
-					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
-					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
-					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
-					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
-					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
-					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
-					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
-					<span><h6>Regression</h6></span>
-					<span><h6>Regression</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
-					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
-					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
-					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
-					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
-					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
-					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
-					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
-					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
-					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
-					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
-					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
-					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
-					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
-					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
-					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
-					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
-					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList20" type="checkbox">
-				<label for="togList20">
-					<span><h6>Transforms</h6></span>
-					<span><h6>Transforms</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
 					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -816,12 +973,21 @@
 <p> A <code>CompactClassificationGAM</code> object can only be created from a
  <code>ClassificationGAM</code> model by using the <code>compact</code> method.
 </p>
+<p> The engine that fitted the model is carried over in <code>FitMethod</code>,
+ and the compact model predicts by the same scheme the full one did.
+ Under <code>'boostedtrees'</code>, the default, the fit is described by
+ <code>TreeModel</code>, <code>BinEdges</code> and <code>PairDetectionBinEdges</code>.
+ Under <code>'splines'</code> it is described by <code>Formula</code>,
+ <code>BaseModel</code>, <code>ModelwInt</code> and <code>IntMatrix</code>, which MATLAB&rsquo;s
+ compact model does not carry.  Whichever fitted the model, the other
+ set is empty.
+</p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
   <a href="fitcgam.html">fitcgam</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/CompactClassificationGAM.m">CompactClassificationGAM</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Supervised_Learning/CompactClassificationGAM.m">CompactClassificationGAM</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactClassificationGAM</code> class contains the following properties:</p>
@@ -850,6 +1016,54 @@ Number of predictors
  training dataset used for training the ClassificationGAM model.
  This property is read-only.
 </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_NumPredictors-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_NumPredictors-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_NumPredictors-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -881,6 +1095,54 @@ Names of predictor variables
  training dataset.  This property is read-only.
 </p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_PredictorNames-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_PredictorNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_PredictorNames-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -909,6 +1171,54 @@ Response variable name
 <p> A character vector specifying the name of the response variable <var>Y</var>.
  This property is read-only.
 </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_ResponseName-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_ResponseName-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_ResponseName-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -947,6 +1257,54 @@ Names of classes in the response variable
 </li></ul>
 
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_ClassNames-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_ClassNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_ClassNames-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -977,6 +1335,54 @@ Prior probability for each class
  order of the classes in <code>ClassNames</code>.  This property is read-only.
 </p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_Prior-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_Prior-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_Prior-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -990,6 +1396,952 @@ Prior probability for each class
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
+                    <b><code>Formula</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Model specification formula
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty6">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A character vector specifying the model formula in the form
+ <code>'Y ~ terms'</code> where <code>Y</code> represents the response variable and
+ <code>terms</code> specifies the predictor variables and interaction terms.
+ This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_Formula-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_Formula-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_Formula-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
+              aria-expanded="false" aria-controls="collapseProperty7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Interactions</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Two-way interaction terms of the fitted model
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty7">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A <math>Kx2</math> matrix of predictor index pairs, one row per two-way term
+ the model carries, and <code>zeros (0, 2)</code> when it carries none.  It
+ reports what was fitted rather than what was asked for, so a count of
+ terms, <code>'all'</code>, a logical matrix and a formula all leave the same
+ kind of value behind.  This property is read-only.
+</p>
+<p> A main effect names one predictor and a higher-order term names three
+ or more, and neither has a two-column form, so neither appears here.
+ <code>IntMatrix</code> remains the complete record of every term fitted.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_Interactions-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_Interactions-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_Interactions-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
+              aria-expanded="false" aria-controls="collapseProperty8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BaseModel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Base model parameters
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty8">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A structure containing the parameters of the base model without any
+ interaction terms.  The base model represents the generalized additive
+ model with only the main effects (predictor terms) included.
+ This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_BaseModel-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_BaseModel-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_BaseModel-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
+              aria-expanded="false" aria-controls="collapseProperty9">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ModelwInt</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Model parameters with interactions
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty9">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A structure containing the parameters of the model that includes
+ interaction terms.  This model extends the base model by adding
+ interaction terms between predictors.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_ModelwInt-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_ModelwInt-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_ModelwInt-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
+              aria-expanded="false" aria-controls="collapseProperty10">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IntMatrix</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Every term the model fits
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty10">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A logical matrix with one row per term and one column per predictor,
+ true wherever the term multiplies that predictor.  A row naming one
+ predictor is a main effect, two an interaction, and three or more a
+ higher-order term.  This property is read-only.
+</p>
+<p> It is the complete record, where <code>Interactions</code> reports only the
+ two-way terms, in the form MATLAB reports them.  It is also the form
+ the <code>'Interactions'</code> option takes back, so passing it to the
+ constructor rebuilds a model over the same terms.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_IntMatrix-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_IntMatrix-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_IntMatrix-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
+              aria-expanded="false" aria-controls="collapseProperty11">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Intercept</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Intercept of the fitted model
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty11">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A numeric scalar, the log-odds of the response mean, which every
+ additive term is measured against.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_Intercept-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_Intercept-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_Intercept-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
+              aria-expanded="false" aria-controls="collapseProperty12">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CategoricalPredictors</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Indices of the categorical predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty12">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A numeric vector holding the column of each predictor treated as
+ categorical, and empty when none is.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_CategoricalPredictors-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_CategoricalPredictors-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_CategoricalPredictors-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
+              aria-expanded="false" aria-controls="collapseProperty13">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ExpandedPredictorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the expanded predictor variables
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty13">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array of character vectors naming the predictors as the model
+ sees them.  It matches <code>PredictorNames</code> unless a categorical
+ predictor was expanded into dummy variables.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_ExpandedPredictorNames-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_ExpandedPredictorNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_ExpandedPredictorNames-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
+              aria-expanded="false" aria-controls="collapseProperty14">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BinEdges</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Bin edges of the fitted shape functions
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty14">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array with one row vector per predictor, holding the cut points
+ the boosted-tree engine binned it at.  It is the empty cell under the
+ spline engine, which does no binning.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_BinEdges-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_BinEdges-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_BinEdges-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
+              aria-expanded="false" aria-controls="collapseProperty15">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>PairDetectionBinEdges</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Bin edges the interaction terms are held on
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty15">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array with one coarse row vector per predictor, empty when the
+ model carries no interaction terms.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_PairDetectionBinEdges-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_PairDetectionBinEdges-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_PairDetectionBinEdges-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
+              aria-expanded="false" aria-controls="collapseProperty16">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>FitMethod</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which engine fitted the model
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty16">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> Either <code>'boostedtrees'</code> or <code>'splines'</code>, as the model it was
+ compacted from was fitted.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_FitMethod-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_FitMethod-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_FitMethod-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
+              aria-expanded="false" aria-controls="collapseProperty17">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>TreeModel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The fitted shape functions and interaction surfaces
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty17">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The structure the full model reports, carried over unchanged, and
+ empty under the spline engine.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_TreeModel-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_TreeModel-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_TreeModel-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
+              aria-expanded="false" aria-controls="collapseProperty18">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
                     <b><code>Cost</code></b>
                   </h4>
                 </div>
@@ -998,7 +2350,7 @@ Cost of Misclassification
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty6">
+          <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1019,6 +2371,64 @@ Cost of Misclassification
 <li> <code><var>obj</var>.Cost = <var>costMatrix</var></code>
 </li></ul>
 
+<p> A cost may also be given as a struct with the fields
+ <code>ClassNames</code> and <code>ClassificationCosts</code>, which names the
+ order its own matrix is written in.  That matrix is permuted into the
+ order of <code>ClassNames</code> above, so a caller need not know which
+ order the classes were sorted into.  It must name every class.
+</p>
+<p> A cost must be floating point, not sparse, not complex, non-negative
+ and zero down its diagonal, and must hold no <code>NaN</code> or
+ <code>Inf</code>.  A <code>single</code> is widened to <code>double</code>.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_Cost-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_Cost-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_Cost-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1028,8 +2438,8 @@ Cost of Misclassification
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
-              aria-expanded="false" aria-controls="collapseProperty7">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
+              aria-expanded="false" aria-controls="collapseProperty19">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1041,7 +2451,7 @@ Transformation function for classification scores
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty7">
+          <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1058,319 +2468,80 @@ Transformation function for classification scores
  built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
  always stores their function handle equivalent.
 </p>
-<table>
-<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="20%"><code>'ismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="5%"></td><td width="75%"> <math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt;
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
  0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="5%"></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
-<tr><td width="20%"><code>'symmetricismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
 </table>
+</div>
 
+<p> The default is <code>'logit'</code>, as in MATLAB.  This model&rsquo;s raw
+ score is a log-odds, reported as the pair <math>[-f, f]</math> whose two
+ columns sum to zero, and the transform is what turns it into the
+ posterior probabilities that sum to one.  Every transform therefore
+ composes on the log-odds and not on the probabilities, so
+ <code>'none'</code> returns the log-odds themselves.
+</p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_ScoreTransform-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_ScoreTransform-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_ScoreTransform-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
 
             </div>
           </div>
         </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
-              aria-expanded="false" aria-controls="collapseProperty8">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Formula</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Model specification formula
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty8">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A character vector specifying the model formula in the form
- <code>'Y ~ terms'</code> where <code>Y</code> represents the response variable and
- <code>terms</code> specifies the predictor variables and interaction terms.
- This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
-              aria-expanded="false" aria-controls="collapseProperty9">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Interactions</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Interaction terms specification
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty9">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A logical matrix, positive integer scalar, or character vector
- <code>'all'</code> specifying the interaction terms between predictor
- variables.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Knots</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Knots for spline fitting
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A scalar or row vector specifying the number of knots for each predictor
- variable in the spline fitting.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Order</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Order of spline fitting
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A scalar or row vector specifying the order of the spline for each
- predictor variable.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>DoF</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Degrees of freedom for spline fitting
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A scalar or row vector specifying the degrees of freedom for each
- predictor variable in the spline fitting.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>LearningRate</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Learning rate for gradient boosting
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A scalar value between 0 and 1 specifying the learning rate used in the
- gradient boosting algorithm.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>NumIterations</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Maximum number of iterations
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A positive integer specifying the maximum number of iterations for the
- gradient boosting algorithm.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>BaseModel</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Base model parameters
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A structure containing the parameters of the base model without any
- interaction terms.  The base model represents the generalized additive
- model with only the main effects (predictor terms) included.
- This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ModelwInt</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Model parameters with interactions
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A structure containing the parameters of the model that includes
- interaction terms.  This model extends the base model by adding
- interaction terms between predictors.  This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IntMatrix</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Interaction matrix
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A logical matrix or matrix of column indices describing the interaction
- terms applied to the predictor data.  This property is read-only.
-</p>
 
 
             </div>
@@ -1433,6 +2604,73 @@ Predict labels for new data using the Generalized Additive Model (GAM)
   <a href="fitcgam.html">fitcgam</a>
 </p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_predict-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_predict-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_predict-example1">
+            <div class="card-body">
+                <ol>
+                  <li>A compact model drops the training data and predicts identically</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ inds = ! strcmp (species, 'virginica');
+ X = meas(inds, :);
+ Y = species(inds);
+ mdl = fitcgam (X, Y);
+ cmdl = compact (mdl);</pre>
+                <p>No X and no Y on the compact model, and the same labels out of it</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [isprop(mdl, 'X'), isprop(cmdl, 'X'), isequal(predict (mdl, X), predict (cmdl, X))]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+  1  0  1</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_predict-example2" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_predict-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_predict-example2">
+            <div class="card-body">
+                <ol>
+                  <li>The compact model assesses new data just as the full one does</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ inds = ! strcmp (species, 'setosa');
+ X = meas(inds, :);
+ Y = species(inds);
+ cmdl = compact (fitcgam (X, Y, 'NumTreesPerPredictor', 20));</pre>
+                <p>margin, edge and loss are all available without the training data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [edge(cmdl, X, Y), loss(cmdl, X, Y, 'LossFun', 'classiferror')]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   0.9930        0</pre>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1446,6 +2684,290 @@ Predict labels for new data using the Generalized Additive Model (GAM)
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
+                    <b><code>margin</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification margin of a compact generalized additive model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod2">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns a column
+ vector holding, for each row of <var>X</var>, the score the model gives its
+ true class in <var>Y</var> less the score it gives the other class.  A
+ positive margin means the observation is classified correctly, and the
+ larger it is the more confidently so.
+</p>
+<p> <strong>See also: </strong>
+  <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>, 
+  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
+edge, 
+loss, 
+predict
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_margin-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_margin-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_margin-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
+              aria-expanded="false" aria-controls="collapseMethod3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>edge</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification edge of a compact generalized additive model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod3">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>e</var> = <b>edge</b> (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>e</var> = edge (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the mean of
+ the classification margins over the rows of <var>X</var>.
+</p>
+<p> <code><var>e</var> = edge (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code> takes the
+ weighted mean instead, with one weight per row of <var>X</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>, 
+  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
+margin, 
+loss, 
+predict
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_edge-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_edge-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_edge-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
+              aria-expanded="false" aria-controls="collapseMethod4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>loss</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification loss of a compact generalized additive model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod4">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the loss of
+ the model on the rows of <var>X</var> against the true labels <var>Y</var>.
+</p>
+<p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> accepts the
+ following name-value pairs:
+</p>
+<ul>
+<li>
+ <code>&quot;LossFun&quot;</code> selects the loss.  Supported values are
+ <code>&quot;mincost&quot;</code>, the default, <code>&quot;binodeviance&quot;</code>,
+ <code>&quot;classifcost&quot;</code>, <code>&quot;classiferror&quot;</code>, <code>&quot;exponential&quot;</code>,
+ <code>&quot;hinge&quot;</code>, <code>&quot;logit&quot;</code> and <code>&quot;quadratic&quot;</code>.
+ <code>&quot;mincost&quot;</code> assigns each observation to the class of least
+ expected cost and charges what that assignment costs, so it reads the
+ scores as a posterior, which is what this model returns;
+ <code>&quot;classifcost&quot;</code> charges what the model&rsquo;s own prediction costs.
+</li><li>
+ <code>&quot;Weights&quot;</code> holds one weight per row of <var>X</var>, normalised to
+ sum to one before it is applied.
+</li></ul>
+
+<p> <strong>See also: </strong>
+  <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>, 
+  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
+margin, 
+edge, 
+predict
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_loss-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_loss-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_loss-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
+              aria-expanded="false" aria-controls="collapseMethod5">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
                     <b><code>savemodel</code></b>
                   </h4>
                 </div>
@@ -1454,7 +2976,7 @@ Save a CompactClassificationGAM object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
+          <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">CompactClassificationGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
@@ -1474,6 +2996,54 @@ Save a CompactClassificationGAM object.
   <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>
 </p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationGAM_savemodel-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationGAM_savemodel-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationGAM_savemodel-example1">
+            <div class="card-body">
+                <p>Create a generalized additive model classifier and its compact version and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationDiscriminant
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [3x3 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1486,8 +3056,8 @@ Save a CompactClassificationGAM object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
-              aria-expanded="false" aria-controls="collapseDemo1">
+              data-bs-toggle="collapse" data-bs-target="#CompactClassificationGAM-example1"
+              aria-expanded="false" aria-controls="CompactClassificationGAM-example1">
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
@@ -1496,7 +3066,7 @@ Create a generalized additive model classifier and its compact version and compa
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseDemo1">
+          <div class="collapse multi-collapse" id="CompactClassificationGAM-example1">
             <div class="border-bottom py-2">
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  X = meas;
@@ -1513,29 +3083,18 @@ Create a generalized additive model classifier and its compact version and compa
             NumPredictors: 4
               DiscrimType: 'linear'
                        Mu: [3x4 double]
-                   Coeffs: [4x4 struct]</pre>
+                   Coeffs: [3x3 struct]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = crossval (Mdl)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
 
-  1x1 ClassificationPartitionedModel object with properties:
+  ClassificationPartitionedModel
 
-                   BinEdges: []
-      CategoricalPredictors: []
-                          X: [5.1000, 3.5000, 1.4000, 0.2000; 4.9000, 3, 1.4000, 0.2000; 4.7000, 3.2000, ...]
-                          Y: [150x1 cell]
-                 ClassNames: [3x1 cell]
-                       Cost: [0, 1, 1; 1, 0, 1; 1, 1, 0]
-        CrossValidatedModel: 'ClassificationDiscriminant'
-                      KFold: 10
-            ModelParameters: [1x1 struct]
-            NumObservations: 150
-                  Partition: [1x1 cvpartition]
-             PredictorNames: [1x4 cell]
-                      Prior: [0.3333; 0.3333; 0.3333]
-               ResponseName: 'Y'
-             ScoreTransform: [1x1 function_handle]
-                Standardize: []
-                    Trained: [10x1 cell]</pre>
+      CrossValidatedModel: 'Discriminant'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
 
             </div>
           </div>

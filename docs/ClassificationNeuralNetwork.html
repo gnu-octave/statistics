@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
     <script type="text/javascript" async
-      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
     </script>
     <script type="text/javascript">
       window.addEventListener("load", () => {
@@ -19,6 +19,32 @@
           tog.onclick = () => tog.classList.toggle("show");
           i.parentElement.removeChild(i.previousSibling);
           i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
         }
       });
     </script>
@@ -82,9 +108,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Classification Classes">
+                  <a class="nav-link" href="index.html#Supervised Learning">
                     <i class="fas fa-list-alt"></i>
-                    Classification Classes
+                    Supervised Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -115,93 +141,39 @@
 			<div class="row">
 				<input id="togList1" type="checkbox">
 				<label for="togList1">
-					<span><h6>Clustering</h6></span>
-					<span><h6>Clustering</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
-					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
-					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
-					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
-					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
-					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
-					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
-					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
-					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
-					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
-					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
-					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
-					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
-					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
-					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
-					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
-					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
-					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
-					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
-					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
-					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
-					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList2" type="checkbox" checked>
+				<input id="togList2" type="checkbox">
 				<label for="togList2">
-					<span><h6>Classification Classes</h6></span>
-					<span><h6>Classification Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
-					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
-					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
-					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationNeuralNetwork</small></a></li>
-					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
-					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
-					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
-					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
-					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
-					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
-					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList3" type="checkbox">
-				<label for="togList3">
-					<span><h6>Clustering Classes</h6></span>
-					<span><h6>Clustering Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
-					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
-					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
-					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
-					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
-					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
-					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
-					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
-					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList4" type="checkbox">
-				<label for="togList4">
-					<span><h6>Regression Classes</h6></span>
-					<span><h6>Regression Classes</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList5" type="checkbox">
-				<label for="togList5">
 					<span><h6>Data Manipulation</h6></span>
 					<span><h6>Data Manipulation</h6></span>
 				</label>
@@ -217,75 +189,385 @@
 					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
 					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
 					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
 					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
 					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
-					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList6" type="checkbox">
-				<label for="togList6">
-					<span><h6>Descriptive Statistics</h6></span>
-					<span><h6>Descriptive Statistics</h6></span>
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
-					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
-					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
-					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
-					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
-					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
-					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
-					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
-					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox">
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox" checked>
+				<label for="togList6">
+					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Supervised Learning</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList7" type="checkbox">
 				<label for="togList7">
-					<span><h6>Distribution Classes</h6></span>
-					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="BetaDistribution.html" class="text-decoration-none font-monospace"><small>BetaDistribution</small></a></li>
-					<li><a href="BinomialDistribution.html" class="text-decoration-none font-monospace"><small>BinomialDistribution</small></a></li>
-					<li><a href="BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>BirnbaumSaundersDistribution</small></a></li>
-					<li><a href="BurrDistribution.html" class="text-decoration-none font-monospace"><small>BurrDistribution</small></a></li>
-					<li><a href="ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>ExponentialDistribution</small></a></li>
-					<li><a href="ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>ExtremeValueDistribution</small></a></li>
-					<li><a href="GammaDistribution.html" class="text-decoration-none font-monospace"><small>GammaDistribution</small></a></li>
-					<li><a href="GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>GeneralizedExtremeValueDistribution</small></a></li>
-					<li><a href="GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>GeneralizedParetoDistribution</small></a></li>
-					<li><a href="HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>HalfNormalDistribution</small></a></li>
-					<li><a href="InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>InverseGaussianDistribution</small></a></li>
-					<li><a href="LogisticDistribution.html" class="text-decoration-none font-monospace"><small>LogisticDistribution</small></a></li>
-					<li><a href="LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>LoglogisticDistribution</small></a></li>
-					<li><a href="LognormalDistribution.html" class="text-decoration-none font-monospace"><small>LognormalDistribution</small></a></li>
-					<li><a href="LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>LoguniformDistribution</small></a></li>
-					<li><a href="MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>MultinomialDistribution</small></a></li>
-					<li><a href="NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>NakagamiDistribution</small></a></li>
-					<li><a href="NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>NegativeBinomialDistribution</small></a></li>
-					<li><a href="NormalDistribution.html" class="text-decoration-none font-monospace"><small>NormalDistribution</small></a></li>
-					<li><a href="PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>PiecewiseLinearDistribution</small></a></li>
-					<li><a href="PoissonDistribution.html" class="text-decoration-none font-monospace"><small>PoissonDistribution</small></a></li>
-					<li><a href="RayleighDistribution.html" class="text-decoration-none font-monospace"><small>RayleighDistribution</small></a></li>
-					<li><a href="RicianDistribution.html" class="text-decoration-none font-monospace"><small>RicianDistribution</small></a></li>
-					<li><a href="tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>tLocationScaleDistribution</small></a></li>
-					<li><a href="TriangularDistribution.html" class="text-decoration-none font-monospace"><small>TriangularDistribution</small></a></li>
-					<li><a href="UniformDistribution.html" class="text-decoration-none font-monospace"><small>UniformDistribution</small></a></li>
-					<li><a href="WeibullDistribution.html" class="text-decoration-none font-monospace"><small>WeibullDistribution</small></a></li>
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
 				<input id="togList8" type="checkbox">
 				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
 					<span><h6>Distribution Fitting</h6></span>
 					<span><h6>Distribution Fitting</h6></span>
 				</label>
@@ -299,6 +581,7 @@
 					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
 					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
 					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
 					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
 					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
 					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
@@ -306,9 +589,9 @@
 					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
 					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
 					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
-					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
 					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
 					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
 					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
 					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
 					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
@@ -335,6 +618,8 @@
 					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
 					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
 					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
 					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
 					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
 					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
@@ -345,8 +630,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList9" type="checkbox">
-				<label for="togList9">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
 					<span><h6>Distribution Functions</h6></span>
 					<span><h6>Distribution Functions</h6></span>
 				</label>
@@ -453,7 +738,6 @@
 					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
 					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
 					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
-					<li><a href="mvtcdfqmc.html" class="text-decoration-none font-monospace"><small>mvtcdfqmc</small></a></li>
 					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
 					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
 					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
@@ -494,6 +778,10 @@
 					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
 					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
 					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -529,8 +817,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList10" type="checkbox">
-				<label for="togList10">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
 					<span><h6>Distribution Statistics</h6></span>
 					<span><h6>Distribution Statistics</h6></span>
 				</label>
@@ -541,6 +829,8 @@
 					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
 					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
 					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
 					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
 					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
 					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
@@ -574,8 +864,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList11" type="checkbox">
-				<label for="togList11">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Distribution Wrappers</h6></span>
 					<span><h6>Distribution Wrappers</h6></span>
 				</label>
@@ -586,116 +876,50 @@
 					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
 					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
 					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
 					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
 					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList12" type="checkbox">
-				<label for="togList12">
-					<span><h6>Experimental Design</h6></span>
-					<span><h6>Experimental Design</h6></span>
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
-					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
-					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
-					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
-					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList13" type="checkbox">
-				<label for="togList13">
-					<span><h6>Machine Learning</h6></span>
-					<span><h6>Machine Learning</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
-					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
-					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
-					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
-					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
-					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
-					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList14" type="checkbox">
-				<label for="togList14">
-					<span><h6>Model Fitting</h6></span>
-					<span><h6>Model Fitting</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
-					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
-					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
-					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
-					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
-					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
-					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
-					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
-					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList15" type="checkbox">
-				<label for="togList15">
-					<span><h6>Hypothesis Testing</h6></span>
-					<span><h6>Hypothesis Testing</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
-					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
-					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
-					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
-					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
-					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
-					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
-					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
-					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
-					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
-					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
-					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
-					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
-					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
-					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
-					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
-					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
-					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
-					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
-					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
-					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
-					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
-					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
-					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
-					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
-					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
-					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
-					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
-					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
-					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
-					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
-					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
-					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
-					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList16" type="checkbox">
-				<label for="togList16">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>I/O</h6></span>
 					<span><h6>I/O</h6></span>
 				</label>
@@ -708,86 +932,19 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList17" type="checkbox">
-				<label for="togList17">
-					<span><h6>Interpolation</h6></span>
-					<span><h6>Interpolation</h6></span>
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
-					<span><h6>Plotting</h6></span>
-					<span><h6>Plotting</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
-					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
-					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
-					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
-					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
-					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
-					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
-					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
-					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
-					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
-					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
-					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
-					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
-					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
-					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
-					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
-					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
-					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
-					<span><h6>Regression</h6></span>
-					<span><h6>Regression</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
-					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
-					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
-					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
-					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
-					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
-					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
-					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
-					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
-					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
-					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
-					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
-					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
-					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
-					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
-					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
-					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
-					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
-				</ul>
-				</div>
-			</div>
-			<div class="row">
-				<input id="togList20" type="checkbox">
-				<label for="togList20">
-					<span><h6>Transforms</h6></span>
-					<span><h6>Transforms</h6></span>
-				</label>
-				<div class="list">
-				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
 					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -823,7 +980,7 @@
   <a href="fitcnet.html">fitcnet</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Supervised_Learning/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationNeuralNetwork</code> class contains the following properties:</p>
@@ -940,9 +1097,10 @@ Rows used for fitting
 
 <p> </p>
 <p> A logical column vector with the same length as the observations in the
- original predictor data <var>X</var> specifying which rows have been used for
- fitting the ClassificationNeuralNetwork model.  This property is
- read-only.
+ original predictor data <var>X</var>, true for each row that was used for
+ fitting the ClassificationNeuralNetwork model.  It is empty, <code>[]</code>,
+ when every observation was used, so a non-empty value means that rows
+ holding missing values were dropped.  This property is read-only.
 </p>
 
 
@@ -1084,11 +1242,11 @@ Names of classes in the response variable
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ScoreTransform</code></b>
+                    <b><code>Sigma</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-Transformation function for classification scores
+Predictor standard deviations
                 </div>
               </div>
           </div>
@@ -1096,36 +1254,15 @@ Transformation function for classification scores
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> Specified as a function handle for transforming the classification
- scores.  Add or change the <code>ScoreTransform</code> property using dot
- notation as in:
+<p> A numeric vector containing the standard deviations of the predictors
+ used for standardization.  Empty when the predictor data were not
+ standardized.
+ This property is read-only.
 </p>
-<ul>
-<li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
-</li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
-</li></ul>
-
-<p> When specified as a character vector, it can be any of the following
- built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
- always stores their function handle equivalent.
+<p> Only observations with no missing predictor enter the estimate, and
+ they are weighted so that each class keeps the share of the
+ observation weight it carried before any row was set aside.
 </p>
-<table>
-<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="20%"><code>'ismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
- largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="5%"></td><td width="75%"> <math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt;
- 0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="5%"></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
-<tr><td width="20%"><code>'symmetricismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class
- with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
-</table>
-
 
 
             </div>
@@ -1140,11 +1277,11 @@ Transformation function for classification scores
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Standardize</code></b>
+                    <b><code>Mu</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-Flag to standardize predictors
+Predictor means
                 </div>
               </div>
           </div>
@@ -1152,10 +1289,13 @@ Flag to standardize predictors
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A boolean flag indicating whether the predictor data has been
- standardized prior to training. When <code>true</code>, the predictors are
- centered and scaled to have zero mean and unit variance. This property is
- read-only.
+<p> A numeric vector containing the means of the predictors used for
+ standardization.  Empty when the predictor data were not standardized.
+ This property is read-only.
+</p>
+<p> Only observations with no missing predictor enter the estimate, and
+ they are weighted so that each class keeps the share of the
+ observation weight it carried before any row was set aside.
 </p>
 
 
@@ -1171,66 +1311,6 @@ Flag to standardize predictors
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Sigma</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Predictor standard deviations
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A numeric vector containing the standard deviations of the predictors
- used for standardization.  Empty if <code>Standardize</code> is <code>false</code>.
- This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Mu</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Predictor means
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
-            <div class="border-bottom py-2">
-
-<p> </p>
-<p> A numeric vector containing the means of the predictors used for
- standardization.  Empty if <code>Standardize</code> is <code>false</code>.
- This property is read-only.
-</p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
                     <b><code>LayerSizes</code></b>
                   </h4>
                 </div>
@@ -1239,7 +1319,7 @@ Sizes of fully connected layers
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
+          <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1260,8 +1340,8 @@ Sizes of fully connected layers
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
+              aria-expanded="false" aria-controls="collapseProperty12">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1273,7 +1353,7 @@ Activation functions for hidden layers
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
+          <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1293,8 +1373,8 @@ Activation functions for hidden layers
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
+              aria-expanded="false" aria-controls="collapseProperty13">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1306,13 +1386,16 @@ Activation function for output layer
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
+          <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
 
 <p> </p>
 <p> A character vector specifying the activation function of the output layer
  of the neural network.  Supported activation functions are the same as
- for the <code>Activations</code> property.  This property is read-only.
+ for the <code>Activations</code> property.  The default, <code>softmax</code>,
+ reports a probability over the classes; the network is then trained
+ against cross entropy rather than the mean squared error.  This
+ property is read-only.
 </p>
 
 
@@ -1323,8 +1406,8 @@ Activation function for output layer
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
+              aria-expanded="false" aria-controls="collapseProperty14">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1336,7 +1419,7 @@ Learning rate for gradient descent
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
+          <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1352,8 +1435,8 @@ Learning rate for gradient descent
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
+              aria-expanded="false" aria-controls="collapseProperty15">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1365,7 +1448,7 @@ Maximum number of training iterations
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
+          <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1381,8 +1464,8 @@ Maximum number of training iterations
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
-              aria-expanded="false" aria-controls="collapseProperty18">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
+              aria-expanded="false" aria-controls="collapseProperty16">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1394,13 +1477,34 @@ Neural network model parameters
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty18">
+          <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A structure containing the parameters used to train the neural network
- classifier model, including layer weights and activations as generated by
- the <code>fcnntrain</code> function.  This property is read-only.
+<p> A structure holding the fit as it was asked for: <code>LayerSizes</code>,
+ <code>Activations</code>, <code>OutputLayerActivation</code>,
+ <code>LayerWeightsInitializers</code>, <code>Solver</code>,
+ <code>LearningRate</code>, <code>IterationLimit</code>,
+ <code>GradientTolerance</code>, <code>LossTolerance</code>,
+ <code>StepTolerance</code>, <code>DisplayInfo</code>, <code>StandardizeData</code>,
+ and the <code>Version</code>, <code>Method</code> and <code>Type</code> tags.
+</p>
+<p> What came out of the fit is elsewhere: the <code>LayerWeights</code> and
+ <code>LayerBiases</code> properties hold the network, <code>TrainingHistory</code>
+ the series and <code>ConvergenceInfo</code> where it stopped.
+</p>
+<p> <code>LayerWeightsInitializers</code> names the scheme each layer&rsquo;s weights
+ were drawn with, the output layer last: <code>'he'</code> for a rectifying
+ activation and <code>'glorot'</code> for a symmetric one.  It is a report,
+ not a setting, the engine choosing per layer from the activation and
+ offering no way to override it.
+</p>
+<p> <code>OutputLayerActivation</code>, <code>Solver</code> and <code>LearningRate</code>
+ are this package&rsquo;s own; MATLAB has no counterpart for them.  The fields
+ it reports that this class does not accept as arguments
+ (<code>Lambda</code>, the validation set and its patience and frequency,
+ <code>InitialStepSize</code> and the two initializer settings) are absent.
+ This property is read-only.
 </p>
 
 
@@ -1411,8 +1515,8 @@ Neural network model parameters
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
-              aria-expanded="false" aria-controls="collapseProperty19">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
+              aria-expanded="false" aria-controls="collapseProperty17">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1424,7 +1528,7 @@ Training convergence information
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty19">
+          <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1442,6 +1546,13 @@ Training convergence information
 
 <p> This property is read-only.
 </p>
+<p> Under <code>'lbfgs'</code> the structure carries <code>Gradient</code> and
+ <code>Step</code>, the two quantities the solver measured to decide it had
+ converged, and <code>ConvergenceCriterion</code>, naming the test that
+ stopped it.  It carries no <code>Accuracy</code>: MATLAB reports none, and
+ measuring it would cost a pass over the whole training set at every
+ iteration.
+</p>
 
 
             </div>
@@ -1451,8 +1562,8 @@ Training convergence information
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty20"
-              aria-expanded="false" aria-controls="collapseProperty20">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
+              aria-expanded="false" aria-controls="collapseProperty18">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1464,7 +1575,7 @@ Display training information flag
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty20">
+          <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1480,8 +1591,8 @@ Display training information flag
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty21"
-              aria-expanded="false" aria-controls="collapseProperty21">
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
+              aria-expanded="false" aria-controls="collapseProperty19">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1493,14 +1604,407 @@ Solver used for training
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty21">
+          <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
 
 <p> </p>
 <p> A character vector specifying the solver algorithm used to train the
- neural network model.  Currently only <code>'Gradient Descend'</code> is
- supported.  This property is read-only.
+ neural network model, either <code>'Gradient Descent'</code> for the
+ stochastic solver or <code>'LBFGS'</code> for the full-batch one.  This
+ property is read-only.
 </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty20"
+              aria-expanded="false" aria-controls="collapseProperty20">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LayerWeights</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Learned weights of each fully connected layer
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty20">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array holding one weight matrix per layer, the output layer
+ included.  <code>LayerWeights{i}</code> has one row per neuron of layer
+ <math>i</math> and one column per input it receives.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty21"
+              aria-expanded="false" aria-controls="collapseProperty21">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LayerBiases</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Learned bias of each fully connected layer
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty21">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array holding one column vector per layer, the output layer
+ included, with one entry per neuron of that layer.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty22"
+              aria-expanded="false" aria-controls="collapseProperty22">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>TrainingHistory</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Iteration by iteration record of training
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty22">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A table with one row per iteration, holding the iteration number, the
+ training loss and the training accuracy recorded at it.  This property
+ is read-only.
+</p>
+<p> The columns follow the solver.  Under <code>'sgd'</code> they are
+ <code>Iteration</code> and <code>TrainingLoss</code>, with <code>TrainingAccuracy</code>
+ for a classifier.  Under <code>'lbfgs'</code> they are <code>Iteration</code>,
+ <code>TrainingLoss</code>, <code>Gradient</code> and <code>Step</code>, as MATLAB&rsquo;s are.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty23"
+              aria-expanded="false" aria-controls="collapseProperty23">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Prior</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Prior probability of each class
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty23">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A numeric vector with one entry per class, in the order of
+ <code>ClassNames</code>, summing to one.  It defaults to the relative
+ frequency of each class in the training data.  This property is
+ read-only, as MATLAB documents it; pass <code>'Prior'</code> to
+ <code>fitcnet</code> to set it.
+</p>
+<p> Specified as a row vector with one entry per class, in the order of
+ <code>ClassNames</code>, and rescaled to sum to one.  It may be given as
+ <code>'empirical'</code>, <code>'uniform'</code>, a numeric vector, or a
+ structure with <code>ClassNames</code> and <code>ClassProbs</code> fields, which
+ assigns each probability by class name rather than by position.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty24"
+              aria-expanded="false" aria-controls="collapseProperty24">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>W</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Observation weights
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty24">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A numeric column vector with one entry per training observation.  It
+ defaults to a uniform weight for every observation.  This property is
+ read-only.
+</p>
+<p> Each class carries its prior spread evenly over its own observations,
+ so an observation of a class weighs <code>Prior</code> for that class
+ divided by the number of observations it holds.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty25"
+              aria-expanded="false" aria-controls="collapseProperty25">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CategoricalPredictors</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Indices of the categorical predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty25">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A numeric vector of column indices into <code>X</code> naming the predictors
+ treated as categorical, and empty when none is.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty26"
+              aria-expanded="false" aria-controls="collapseProperty26">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ExpandedPredictorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the predictors as the model expanded them
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty26">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array of character vectors.  It matches <code>PredictorNames</code>
+ unless a categorical predictor was expanded into indicator variables.
+ This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty27"
+              aria-expanded="false" aria-controls="collapseProperty27">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BinEdges</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Bin edges of the predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty27">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array with one entry per predictor, holding that predictor&rsquo;s bin
+ edges where the learner discretized it before fitting.  It is empty here
+ and stays empty: this learner fits the predictors as they are, and
+ MATLAB&rsquo;s reports an empty cell for it as well.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty28"
+              aria-expanded="false" aria-controls="collapseProperty28">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>HyperparameterOptimizationResults</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Results of the hyperparameter optimization
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty28">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> <strong>Always empty.</strong>  It is declared for MATLAB compatibility, where
+ it holds what an automatic search over the hyperparameters found.  This
+ class fits the parameters it is given and runs no such search, so there
+ is nothing to report.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty29"
+              aria-expanded="false" aria-controls="collapseProperty29">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Cost</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Cost of misclassification
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty29">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A numeric matrix with one row and one column per class, where
+ <code>Cost(i,j)</code> is the cost of classifying an observation of class
+ <math>i</math> as class <math>j</math>.  The default has zeros on the diagonal and
+ ones elsewhere.  Change it on a trained model with dot notation, as
+ in <code><var>obj</var>.Cost = <var>cost</var></code>.
+</p>
+<p> A cost may also be given as a struct with the fields
+ <code>ClassNames</code> and <code>ClassificationCosts</code>, which names the
+ order its own matrix is written in.  That matrix is permuted into the
+ order of <code>ClassNames</code> above, so a caller need not know which
+ order the classes were sorted into.  It must name every class.
+</p>
+<p> A cost must be floating point, not sparse, not complex, non-negative
+ and zero down its diagonal, and must hold no <code>NaN</code> or
+ <code>Inf</code>.  A <code>single</code> is widened to <code>double</code>.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty30"
+              aria-expanded="false" aria-controls="collapseProperty30">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ScoreTransform</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Transformation function for classification scores
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty30">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> Specified as a function handle for transforming the classification
+ scores.  Add or change the <code>ScoreTransform</code> property using dot
+ notation as in:
+</p>
+<ul>
+<li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
+</li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+</li></ul>
+
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
+ 0</math></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
+</table>
+</div>
+
 
 
             </div>
@@ -1554,46 +2058,80 @@ Create a <code>ClassificationNeuralNetwork</code> class object containing a
  parameters specified by the following <code><var>name</var>, <var>value</var></code>
  paired input arguments:
 </p>
-<table>
-<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>'PredictorNames'</code></td><td width="80%">A cell array of character
  vectors specifying the names of the predictors. The length of this array
  must match the number of columns in <var>X</var>.</td></tr>
-<tr><td width="18%"><code>'ResponseName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'ResponseName'</code></td><td width="80%">A character vector specifying the
  name of the response variable.</td></tr>
-<tr><td width="18%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+<tr><td width="18%"><code>'ClassNames'</code></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the neural network model.
  <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A user-defined function handle
+<tr><td width="18%"><code>'ScoreTransform'</code></td><td width="80%">A user-defined function handle
  or a character vector specifying one of the following builtin functions
  specifying the transformation applied to predicted classification scores.
  Supported values include <code>'doublelogit'</code>, <code>'invlogit'</code>,
  <code>'ismax'</code>, <code>'logit'</code>, <code>'none'</code>, <code>'identity'</code>,
  <code>'sign'</code>, <code>'symmetric'</code>, <code>'symmetricismax'</code>, and
  <code>'symmetriclogit'</code>.</td></tr>
-<tr><td width="18%"><code>'Standardize'</code></td><td width="2%"></td><td width="80%">A logical scalar specifying whether
+<tr><td width="18%"><code>'Standardize'</code></td><td width="80%">A logical scalar specifying whether
  to standardize the predictor data.  When <code>true</code>, the predictors are
  centered and scaled to have zero mean and unit variance.</td></tr>
-<tr><td width="18%"><code>'LayerSizes'</code></td><td width="2%"></td><td width="80%">A positive integer vector specifying
+<tr><td width="18%"><code>'LayerSizes'</code></td><td width="80%">A positive integer vector specifying
  the sizes of the fully connected layers in the neural network.  The
  default is 10.</td></tr>
-<tr><td width="18%"><code>'Activations'</code></td><td width="2%"></td><td width="80%">A character vector or cell array of
+<tr><td width="18%"><code>'Activations'</code></td><td width="80%">A character vector or cell array of
  character vectors specifying the activation functions for the hidden
  layers.  Supported values include <code>'linear'</code>, <code>'sigmoid'</code>,
  <code>'relu'</code>, <code>'tanh'</code>, <code>'softmax'</code>, <code>'lrelu'</code>,
  <code>'prelu'</code>, <code>'elu'</code>, and <code>'gelu'</code>.  The default is
- <code>'sigmoid'</code>.</td></tr>
-<tr><td width="18%"><code>'OutputLayerActivation'</code></td><td width="2%"></td><td width="80%">A character vector
+ <code>'relu'</code>, whose gradient is one wherever a unit is active and so
+ does not shrink as it passes back through the layers, where a sigmoid
+ multiplies it by at most a quarter at every one.</td></tr>
+<tr><td width="18%"><code>'OutputLayerActivation'</code></td><td width="80%">A character vector
  specifying the activation function for the output layer.  Supported
  values are the same as for <code>'Activations'</code>.  The default is
- <code>'sigmoid'</code>.</td></tr>
-<tr><td width="18%"><code>'LearningRate'</code></td><td width="2%"></td><td width="80%">A positive scalar specifying the
- learning rate for gradient descent.  The default is 0.01.</td></tr>
-<tr><td width="18%"><code>'IterationLimit'</code></td><td width="2%"></td><td width="80%">A positive integer specifying
- the maximum number of training iterations.  The default is 1000.</td></tr>
-<tr><td width="18%"><code>'DisplayInfo'</code></td><td width="2%"></td><td width="80%">A logical scalar specifying whether
+ <code>'softmax'</code>, which makes the scores a probability over the
+ classes and trains the network against cross entropy; any other value
+ trains it against the mean squared error.</td></tr>
+<tr><td width="18%"><code>'LearningRate'</code></td><td width="80%">A positive scalar specifying the
+ learning rate for gradient descent.  The default is 0.003.  A larger
+ rate can drive every unit of a hidden layer negative, after which a
+ rectifier passes no gradient and the network stops training.
+ Applies only when <code>'Solver'</code> is <code>'sgd'</code>.</td></tr>
+<tr><td width="18%"><code>'Solver'</code></td><td width="80%">A character vector naming the solver that
+ trains the network, either <code>'lbfgs'</code> or <code>'sgd'</code>.  The
+ default is <code>'lbfgs'</code>, which minimizes the loss over the whole
+ training set at once by limited-memory BFGS, as MATLAB does.  It takes
+ no learning rate, stops on the three tolerances below, and reaches a
+ lower training loss in fewer passes over the data, though each of its
+ iterations costs several passes where an epoch costs one.
+ <code>'sgd'</code> visits the samples one at a time and steps down the
+ gradient of each, running for <code>'IterationLimit'</code> epochs; it was
+ the default before version 1.9.0.</td></tr>
+<tr><td width="18%"><code>'GradientTolerance'</code></td><td width="80%">A nonnegative scalar.  Training
+ stops once the gradient&rsquo;s infinity norm falls to or below it, which is
+ the quantity MATLAB tests too.  The default is <code>1e-6</code>.  Applies
+ only when <code>'Solver'</code> is <code>'lbfgs'</code>.</td></tr>
+<tr><td width="18%"><code>'StepTolerance'</code></td><td width="80%">A nonnegative scalar.  Training
+ stops once the step&rsquo;s infinity norm falls to or below it, which is the
+ quantity MATLAB tests too.  The default is <code>1e-6</code>.  Applies only
+ when <code>'Solver'</code> is <code>'lbfgs'</code>.</td></tr>
+<tr><td width="18%"><code>'LossTolerance'</code></td><td width="80%">A real scalar.  Training stops once
+ the training loss falls to or below it.  The test is on the loss
+ itself and not on its change, matching MATLAB; pass <code>-Inf</code> to
+ switch it off.  The default is <code>1e-6</code>.  Applies only when
+ <code>'Solver'</code> is <code>'lbfgs'</code>.</td></tr>
+<tr><td width="18%"><code>'IterationLimit'</code></td><td width="80%">A positive integer specifying
+ the maximum number of training iterations.  The default is 1000.
+ Under <code>'sgd'</code> this counts epochs, under
+ <code>'lbfgs'</code> solver iterations.</td></tr>
+<tr><td width="18%"><code>'DisplayInfo'</code></td><td width="80%">A logical scalar specifying whether
  to display training information.  The default is <code>false</code>.</td></tr>
 </table>
+</div>
 
 <p> <strong>See also: </strong>
   <a href="fitcnet.html">fitcnet</a>
@@ -1658,6 +2196,120 @@ Classify new data points into categories using the neural network
   <a href="fitcnet.html">fitcnet</a>
 </p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_predict-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_predict-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_predict-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Labels and scores for new observations</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);</pre>
+                <p>One row per observation asked about</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> xc = [min(meas); mean(meas); max(meas)];
+ [label, score] = predict (mdl, xc);
+ table (label, score(:,1), score(:,2), score(:,3), 'VariableNames', ...
+        {'Label', 'setosa', 'versicolor', 'virginica'})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  3x4 table
+
+        Label           setosa       versicolor      virginica     
+    ______________    ___________    ___________    ___________    
+
+    {'setosa'    }              1    2.31255e-08    2.13353e-32    
+    {'versicolor'}    3.20796e-09              1    1.86129e-09    
+    {'virginica' }    6.48333e-36    4.27951e-09              1</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_predict-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_predict-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_predict-example2">
+            <div class="card-body">
+                <ol>
+                  <li>The scores are a posterior, so each row sums to one</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);
+ [~, score] = predict (mdl, meas(1:8,:));</pre>
+                <p>The output layer is softmax by default, which is what makes this hold</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> bar (score, 'stacked');
+ xlabel ('Observation');
+ ylabel ('Posterior probability');
+ title ('Softmax scores stack to one');
+ legend ({'setosa', 'versicolor', 'virginica'}, 'location', 'eastoutside');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.predict-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_predict-example3" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_predict-example3">
+                Example: 3
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_predict-example3">
+            <div class="card-body">
+                <ol>
+                  <li>What the classifier has learned, over two predictors</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas(:,3:4);
+ mdl = fitcnet (X, species, 'IterationLimit', 300);</pre>
+                <p>Ask the model about a grid, and paint each point by its answer</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [gx, gy] = meshgrid (linspace (0.5, 7.5, 120), linspace (0, 3, 120));
+ [~, ~, region] = unique (predict (mdl, [gx(:), gy(:)]));
+ contourf (gx, gy, reshape (region, size (gx)), [1 2 3]);
+ colormap (summer);
+ hold on;
+ gscatter (X(:,1), X(:,2), species, 'krb', 'ox+');
+ hold off;
+ xlabel ('Petal length');
+ ylabel ('Petal width');
+ title ('Regions the network assigns to each species');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.predict-301.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1708,6 +2360,71 @@ Classify the training data using the trained neural network
   <a href="fitcnet.html">fitcnet</a>
 </p>
 
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubPredict-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubPredict-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubPredict-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Predicting the data the model was fitted on</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);</pre>
+                <p>Same as calling predict with the training predictors</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> label = resubPredict (mdl);
+ confusionchart (species, label, 'Title', 'Resubstitution confusion');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.resubPredict-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubPredict-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubPredict-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubPredict-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Scores as well as labels</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);
+ [label, score] = resubPredict (mdl);</pre>
+                <p>How sure the model is about the class it picked, for each row</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> hist (max (score, [], 2), 20);
+ xlabel ('Score of the chosen class');
+ ylabel ('Observations');
+ title ('Confidence of the resubstitution predictions');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.resubPredict-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1721,51 +2438,105 @@ Classify the training data using the trained neural network
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>crossval</code></b>
+                    <b><code>margin</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-Cross Validate a Neural Network classification object.
+Classification margin of a neural network classifier.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
 <p> </p>
-<p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
- object, <var>CVMdl</var>, from a trained model, <var>obj</var>, using 10-fold
- cross-validation by default.
+<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns a column
+ vector holding, for each row of <var>X</var>, the score the model gives its
+ true class in <var>Y</var> less the largest score it gives any other class.
+ A positive margin means the observation is classified correctly, and
+ the larger it is the more confidently so.
 </p>
-<p> <code><var>CVMdl</var> = crossval (<var>obj</var>, <var>name</var>, <var>value</var>)</code>
- specifies additional name-value pair arguments to customize the
- cross-validation process.
-</p>
-<table>
-<thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="28%"><code>'KFold'</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
- k-fold cross-validation.  <code>&quot;KFold&quot;, <var>k</var></code>, where <var>k</var> is an
- integer greater than 1.</td></tr>
-<tr><td width="28%"><code>'Holdout'</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
- hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
- scalar in the range <math>(0,1)</math>.</td></tr>
-<tr><td width="28%"><code>'Leaveout'</code></td><td width="2%"></td><td width="70%">Specify whether to perform
- leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
- <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>
-<tr><td width="28%"><code>'CVPartition'</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
- object used for cross-validation.  <code>&quot;CVPartition&quot;, <var>cv</var></code>, where
- <code>isa (<var>cv</var>, &quot;cvpartition&quot;)</code> = 1.</td></tr>
-</table>
-
 <p> <strong>See also: </strong>
-  <a href="fitcnet.html">fitcnet</a>, 
   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
-  <a href="cvpartition.html">cvpartition</a>, 
-  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
+edge, 
+loss, 
+predict
 </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_margin-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_margin-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_margin-example1">
+            <div class="card-body">
+                <ol>
+                  <li>How far each observation sits from being misclassified</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);</pre>
+                <p>The score of the true class less the best score among the others</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> m = margin (mdl, meas, species);
+ table (min (m), median (m), max (m), 'VariableNames', ...
+        {'Smallest', 'Median', 'Largest'})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  1x3 table
+
+    Smallest     Median    Largest    
+    _________    ______    _______    
+
+    -0.735257         1          1</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_margin-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_margin-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_margin-example2">
+            <div class="card-body">
+                <ol>
+                  <li>A negative margin marks a misclassified observation</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);
+ m = sort (margin (mdl, meas, species));</pre>
+                <p>Sorting shows how much of the data the model is confident about, and how far below zero the mistakes fall</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> bar (m, 'facecolor', [0.3 0.5 0.8], 'edgecolor', 'none');
+ hold on;
+ plot ([1, numel(m)], [0, 0], 'r-', 'linewidth', 1.5);
+ hold off;
+ xlabel ('Observation, sorted by margin');
+ ylabel ('Margin');
+ title ('Margins below zero are the misclassified rows');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.margin-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1780,28 +2551,100 @@ Cross Validate a Neural Network classification object.
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>compact</code></b>
+                    <b><code>edge</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-Create a CompactClassificationNeuralNetwork object.
+Classification edge of a neural network classifier.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>e</var> = <b>edge</b> (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code></h5></dt>
 </dl>
 <p> </p>
-<p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
- ClassificationNeuralNetwork object, <var>obj</var>.
+<p> <code><var>e</var> = edge (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the mean of
+ the classification margins over the rows of <var>X</var>.
+</p>
+<p> <code><var>e</var> = edge (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code> takes the
+ weighted mean instead, <var>w</var> holding one weight per row of <var>X</var>.
+ The weights are normalised to sum to one before they are applied.
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitcnet.html">fitcnet</a>, 
   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
-  <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
+margin, 
+loss, 
+predict
 </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_edge-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_edge-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_edge-example1">
+            <div class="card-body">
+                <ol>
+                  <li>The mean margin over a data set</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);</pre>
+                <p>edge is the average of what margin returns</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [edge(mdl, meas, species), mean(margin (mdl, meas, species))]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   0.9508   0.9508</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_edge-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_edge-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_edge-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Weighting the observations</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);</pre>
+                <p>Weighting one species only gives the edge over that species alone. The weights are normalised before they are applied</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> classes = unique (species);
+ e = zeros (1, 3);
+ for k = 1:3
+   e(k) = edge (mdl, meas, species, 'Weights', strcmp (species, classes{k}));
+ endfor</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">error: ClassificationNeuralNetwork.edge: 'Weights' must be a numeric vector.</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> bar ([edge(mdl, meas, species), e]);
+ set (gca, 'xticklabel', {'all', classes{:}});
+ ylabel ('Edge');
+ title ('Edge overall and within each species');</pre>
+
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1816,6 +2659,752 @@ Create a CompactClassificationNeuralNetwork object.
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
+                    <b><code>loss</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification loss of a neural network classifier.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod5">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the
+ proportion of the rows of <var>X</var> the model misclassifies against the
+ true labels <var>Y</var>.
+</p>
+<p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> accepts the
+ following name-value pairs:
+</p>
+<ul>
+<li>
+ <code>&quot;LossFun&quot;</code> selects the loss.  Supported values are
+ <code>&quot;mincost&quot;</code>, the default, <code>&quot;binodeviance&quot;</code>,
+ <code>&quot;classifcost&quot;</code>, <code>&quot;classiferror&quot;</code>, <code>&quot;crossentropy&quot;</code>,
+ <code>&quot;exponential&quot;</code>, <code>&quot;hinge&quot;</code>, <code>&quot;logit&quot;</code> and
+ <code>&quot;quadratic&quot;</code>.  <code>&quot;mincost&quot;</code> assigns each observation to
+ the class of least expected cost and charges what that assignment
+ costs, so it reads the scores as a posterior; <code>&quot;classifcost&quot;</code>
+ charges what the model&rsquo;s own prediction costs.  <code>&quot;crossentropy&quot;</code>
+ is defined for a network only.  Note that the default differs from the
+ other classifiers in this package, which default to
+ <code>&quot;classiferror&quot;</code>, and follows MATLAB&rsquo;s for this class.
+</li><li>
+ <code>&quot;Weights&quot;</code> holds one weight per row of <var>X</var>, normalised to
+ sum to one before it is applied.
+</li></ul>
+
+<p> <strong>See also: </strong>
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+margin, 
+edge, 
+predict
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_loss-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_loss-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_loss-example1">
+            <div class="card-body">
+                <ol>
+                  <li>The proportion of observations the model gets wrong</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);</pre>
+                <p>classiferror counts mistakes; mincost, the default, charges what the least costly assignment costs given the true class</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [loss(mdl, meas, species, 'LossFun', 'classiferror'), ...
+  loss(mdl, meas, species)]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   0.013333   0.013333</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_loss-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_loss-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_loss-example2">
+            <div class="card-body">
+                <ol>
+                  <li>The losses differ in how hard they punish an uncertain answer</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 150);</pre>
+                <p>Every one is a function of the same margins, so they rank models alike but not on the same scale</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> names = {'classiferror', 'mincost', 'hinge', 'quadratic', ...
+          'binodeviance', 'logit', 'exponential'};
+ L = cellfun (@(f) loss (mdl, meas, species, 'LossFun', f), names);
+ barh (L, 'facecolor', [0.4 0.6 0.4], 'edgecolor', 'none');
+ set (gca, 'yticklabel', names);
+ xlabel ('Loss');
+ title ('The same fit under each loss function');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.loss-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_loss-example3" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_loss-example3">
+                Example: 3
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_loss-example3">
+            <div class="card-body">
+                <ol>
+                  <li>Watching the loss fall as training proceeds</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ iters = [5, 10, 25, 50, 100, 200, 400];
+ L = zeros (size (iters));
+ for k = 1:numel (iters)
+   mdl = fitcnet (meas, species, 'IterationLimit', iters(k));
+   L(k) = loss (mdl, meas, species, 'LossFun', 'classiferror');
+ endfor
+ semilogx (iters, L, 'o-', 'linewidth', 1.5);
+ xlabel ('Iteration limit');
+ ylabel ('Misclassification rate');
+ title ('Training longer buys accuracy, up to a point');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.loss-301.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
+              aria-expanded="false" aria-controls="collapseMethod6">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubMargin</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification margin of a neural network classifier on its training
+ data.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod6">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>m</var> = <b>resubMargin</b> (<var>obj</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>m</var> = resubMargin (<var>obj</var>)</code> is <code>margin</code> applied to
+ the observations the model was fitted on.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+margin
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubMargin-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubMargin-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubMargin-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Margins on the training data</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);</pre>
+                <p>Same as margin called with the training predictors and labels</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> m = resubMargin (mdl);
+ table (sum (m &gt; 0), sum (m &lt;= 0), 'VariableNames', {'Correct', 'Wrong'})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  1x2 table
+
+    Correct    Wrong    
+    _______    _____    
+
+        148        2</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubMargin-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubMargin-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubMargin-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Where the classes are easy and where they overlap</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);
+ m = resubMargin (mdl);</pre>
+                <p>One species separates cleanly; the other two share a boundary, and that is where the small margins are</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> boxplot (m, species);
+ ylabel ('Margin');
+ title ('Resubstitution margin by species');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.resubMargin-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
+              aria-expanded="false" aria-controls="collapseMethod7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubEdge</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification edge of a neural network classifier on its training
+ data.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod7">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>e</var> = <b>resubEdge</b> (<var>obj</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>e</var> = resubEdge (<var>obj</var>)</code> is <code>edge</code> applied to the
+ observations the model was fitted on, weighted by <code>obj.W</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+edge
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubEdge-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubEdge-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubEdge-example1">
+            <div class="card-body">
+                <ol>
+                  <li>The mean training margin</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);</pre>
+                <p>resubEdge is the weighted mean of what resubMargin returns</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [resubEdge(mdl), mean(resubMargin (mdl))]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   0.9663   0.9663</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubEdge-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubEdge-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubEdge-example2">
+            <div class="card-body">
+                <ol>
+                  <li>The edge grows as the fit sharpens</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ iters = [5, 10, 25, 50, 100, 200, 400];
+ e = zeros (size (iters));
+ for k = 1:numel (iters)
+   e(k) = resubEdge (fitcnet (meas, species, 'IterationLimit', iters(k)));
+ endfor
+ semilogx (iters, e, 'o-', 'linewidth', 1.5);
+ xlabel ('Iteration limit');
+ ylabel ('Resubstitution edge');
+ title ('Confidence rises with training');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.resubEdge-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
+              aria-expanded="false" aria-controls="collapseMethod8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubLoss</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification loss of a neural network classifier on its training
+ data.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod8">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>L</var> = resubLoss (<var>obj</var>)</code> is <code>loss</code> applied to the
+ observations the model was fitted on, weighted by <code>obj.W</code>.  It
+ takes the same <code>&quot;LossFun&quot;</code> name-value pair.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+loss
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubLoss-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubLoss-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubLoss-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Loss on the training data</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);</pre>
+                <p>resubLoss is loss over the rows the model was fitted on, weighted by the observation weights the model carries</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [resubLoss(mdl), loss(mdl, meas, species, 'Weights', mdl.W)]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   0.013333   0.013333</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_resubLoss-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_resubLoss-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_resubLoss-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Resubstitution flatters a model, cross-validation does not</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 300);
+ cv = crossval (mdl, 'KFold', 5);</pre>
+                <p>The gap between the two is what the model gained by seeing the answers</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> bar ([resubLoss(mdl, 'LossFun', 'classiferror'), ...
+       kfoldLoss(cv, 'LossFun', 'classiferror')]);
+ set (gca, 'xticklabel', {'resubstitution', '5-fold'});
+ ylabel ('Misclassification rate');
+ title ('Training error against cross-validated error');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.resubLoss-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
+              aria-expanded="false" aria-controls="collapseMethod9">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>crossval</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Cross Validate a Neural Network classification object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod9">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
+ object, <var>CVMdl</var>, from a trained model, <var>obj</var>, using 10-fold
+ cross-validation by default.
+</p>
+<p> <code><var>CVMdl</var> = crossval (<var>obj</var>, <var>name</var>, <var>value</var>)</code>
+ specifies additional name-value pair arguments to customize the
+ cross-validation process.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="28%"><var>Name</var></th><th width="70%"><var>Value</var></th></tr></thead>
+<tr><td width="28%"><code>'KFold'</code></td><td width="70%">Specify the number of folds to use in
+ k-fold cross-validation.  <code>&quot;KFold&quot;, <var>k</var></code>, where <var>k</var> is an
+ integer greater than 1.</td></tr>
+<tr><td width="28%"><code>'Holdout'</code></td><td width="70%">Specify the fraction of the data to
+ hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
+ scalar in the range <math>(0,1)</math>.</td></tr>
+<tr><td width="28%"><code>'Leaveout'</code></td><td width="70%">Specify whether to perform
+ leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
+ <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>
+<tr><td width="28%"><code>'CVPartition'</code></td><td width="70%">Specify a <code>cvpartition</code>
+ object used for cross-validation.  <code>&quot;CVPartition&quot;, <var>cv</var></code>, where
+ <code>isa (<var>cv</var>, &quot;cvpartition&quot;)</code> = 1.</td></tr>
+</table>
+</div>
+
+<p> <strong>See also: </strong>
+  <a href="fitcnet.html">fitcnet</a>, 
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+  <a href="cvpartition.html">cvpartition</a>, 
+  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_crossval-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_crossval-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_crossval-example1">
+            <div class="card-body">
+                <ol>
+                  <li>A five-fold cross-validated model</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);</pre>
+                <p>Each fold holds out a fifth of the data and refits on the rest</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cv = crossval (mdl, 'KFold', 5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">cv =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'NeuralNetwork'
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+          NumObservations: 150
+                    KFold: 5
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_crossval-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_crossval-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_crossval-example2">
+            <div class="card-body">
+                <ol>
+                  <li>What the held-out data costs, fold by fold</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);
+ cv = crossval (mdl, 'KFold', 5);</pre>
+                <p>Spread across the folds says how much the estimate itself can be trusted; a wide spread means five folds were not enough</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = zeros (1, 5);
+ for k = 1:5
+   L(k) = kfoldLoss (cv, 'Folds', k, 'LossFun', 'classiferror');
+ endfor
+ bar (L, 'facecolor', [0.6 0.4 0.6], 'edgecolor', 'none');
+ hold on;
+ plot ([0.5, 5.5], [1, 1] * mean (L), 'r-', 'linewidth', 1.5);
+ hold off;
+ xlabel ('Fold');
+ ylabel ('Misclassification rate');
+ title ('Held-out error of each fold, and their mean');</pre>
+                <div class="text-center">
+                  <img src="assets/ClassificationNeuralNetwork.crossval-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_crossval-example3" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_crossval-example3">
+                Example: 3
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_crossval-example3">
+            <div class="card-body">
+                <ol>
+                  <li>Holding out a single observation at a time</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ keep = [1:15, 51:65, 101:115];
+ mdl = fitcnet (meas(keep,:), species(keep), 'IterationLimit', 100);</pre>
+                <p>Leaveout fits as many models as there are observations, so it is the most expensive choice and the least biased</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cv = crossval (mdl, 'Leaveout', 'on');
+ kfoldLoss (cv, 'LossFun', 'classiferror')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.044444</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod10"
+              aria-expanded="false" aria-controls="collapseMethod10">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>compact</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Create a CompactClassificationNeuralNetwork object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod10">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
+ ClassificationNeuralNetwork object, <var>obj</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcnet.html">fitcnet</a>, 
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+  <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_compact-example1" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_compact-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_compact-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Dropping the training data from a fitted model</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);</pre>
+                <p>The compact model keeps what it needs to predict and nothing else</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cmdl = compact (mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">cmdl =
+
+  CompactClassificationNeuralNetwork
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+            NumPredictors: 4
+               LayerSizes: [10]
+              Activations: 'relu'
+    OutputLayerActivation: 'softmax'</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#ClassificationNeuralNetwork_compact-example2" aria-expanded="false"
+                  aria-controls="ClassificationNeuralNetwork_compact-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="ClassificationNeuralNetwork_compact-example2">
+            <div class="card-body">
+                <ol>
+                  <li>It predicts exactly as the full model does</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ mdl = fitcnet (meas, species, 'IterationLimit', 200);
+ cmdl = compact (mdl);</pre>
+                <p>Same weights, so the same answers</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> xc = [min(meas); mean(meas); max(meas)];
+ isequal (predict (mdl, xc), predict (cmdl, xc))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod11"
+              aria-expanded="false" aria-controls="collapseMethod11">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
                     <b><code>savemodel</code></b>
                   </h4>
                 </div>
@@ -1824,7 +3413,7 @@ Save a ClassificationNeuralNetwork object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod5">
+          <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationNeuralNetwork: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
