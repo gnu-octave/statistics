@@ -58,7 +58,7 @@
 ## result in the integer class of the input, truncating a probability to
 ## @math{0} or @math{1}.
 ##
-## @seealso{nbininv, nbininv, nbinrnd, nbinfit, nbinlike, nbinstat}
+## @seealso{nbincdf, nbininv, nbinrnd, nbinfit, nbinlike, nbinstat}
 ## @end deftypefn
 
 function y = nbinpdf (x, r, ps)

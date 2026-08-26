@@ -39,7 +39,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{nakacdf, nakapdf, nakarnd, nakafit, nakalike, nakastat}
+## @seealso{nakacdf, nakainv, nakarnd, nakafit, nakalike, nakastat}
 ## @end deftypefn
 
 function y = nakapdf (x, mu, omega)

@@ -35,7 +35,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{tcdf, tpdf, trnd, tstat}
+## @seealso{tcdf, tinv, trnd, tstat}
 ## @end deftypefn
 
 function y = tpdf (x, df)

@@ -48,7 +48,7 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
-## @seealso{unidcdf, unidinv, unidrnd, unidfit, unidstat}
+## @seealso{unidcdf, unidinv, unidpdf, unidfit, unidstat}
 ## @end deftypefn
 
 function r = unidrnd (N, varargin)

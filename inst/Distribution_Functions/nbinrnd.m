@@ -60,7 +60,7 @@
 ## Further information about the negative binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
 ##
-## @seealso{nbininv, nbininv, nbinpdf, nbinfit, nbinlike, nbinstat}
+## @seealso{nbincdf, nbininv, nbinpdf, nbinfit, nbinlike, nbinstat}
 ## @end deftypefn
 
 function rnd = nbinrnd (r, ps, varargin)

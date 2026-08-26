@@ -37,7 +37,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{bisacdf, bisapdf, bisarnd, bisafit, bisalike, bisastat}
+## @seealso{bisacdf, bisainv, bisarnd, bisafit, bisalike, bisastat}
 ## @end deftypefn
 
 function y = bisapdf (x, beta, gamma)

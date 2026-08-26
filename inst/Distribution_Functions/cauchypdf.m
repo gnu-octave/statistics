@@ -36,7 +36,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{cauchycdf, cauchypdf, cauchyrnd}
+## @seealso{cauchycdf, cauchyinv, cauchyrnd}
 ## @end deftypefn
 
 function y = cauchypdf (x, x0, gamma)

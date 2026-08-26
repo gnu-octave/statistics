@@ -32,7 +32,7 @@
 ## Further information about the normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
-## @seealso{norminv, norminv, normpdf, normrnd, normfit, normlike}
+## @seealso{normcdf, norminv, normpdf, normrnd, normfit, normlike}
 ## @end deftypefn
 
 function [m, v] = normstat (mu, sigma)

@@ -31,7 +31,7 @@
 ## Further information about the half-normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Half-normal_distribution}
 ##
-## @seealso{norminv, norminv, normpdf, normrnd, normfit, normlike}
+## @seealso{hncdf, hninv, hnpdf, hnrnd, hnfit, hnlike}
 ## @end deftypefn
 
 function [m, v] = hnstat (mu, sigma)

@@ -43,7 +43,7 @@
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
 ##
-## @seealso{laplacecdf, laplaceinv, laplacernd}
+## @seealso{laplacecdf, laplaceinv, laplacepdf}
 ## @end deftypefn
 
 function r = laplacernd (mu, beta, varargin)

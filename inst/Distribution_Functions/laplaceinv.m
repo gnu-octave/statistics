@@ -39,7 +39,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{laplaceinv, laplacepdf, laplacernd}
+## @seealso{laplacecdf, laplacepdf, laplacernd}
 ## @end deftypefn
 
 function x = laplaceinv (p, mu, beta)

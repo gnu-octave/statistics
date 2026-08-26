@@ -41,7 +41,7 @@
 ## Further information about the normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
-## @seealso{norminv, norminv, normpdf, normfit, normlike, normstat}
+## @seealso{normcdf, norminv, normpdf, normfit, normlike, normstat}
 ## @end deftypefn
 
 function r = normrnd (mu, sigma, varargin)

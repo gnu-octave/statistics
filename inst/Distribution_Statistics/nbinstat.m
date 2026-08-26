@@ -34,7 +34,7 @@
 ## Further information about the negative binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
 ##
-## @seealso{nbincdf, nbininv, nbininv, nbinrnd, nbinfit, nbinlike}
+## @seealso{nbincdf, nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike}
 ## @end deftypefn
 
 function [m, v] = nbinstat (r, ps)

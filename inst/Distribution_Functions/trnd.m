@@ -43,7 +43,7 @@
 ## Further information about the Student's T distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution}
 ##
-## @seealso{tcdf, tpdf, tpdf, tstat}
+## @seealso{tcdf, tinv, tpdf, tstat}
 ## @end deftypefn
 
 function r = trnd (df, varargin)

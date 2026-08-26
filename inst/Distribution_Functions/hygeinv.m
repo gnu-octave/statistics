@@ -44,7 +44,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{hygeinv, hygepdf, hygernd, hygestat}
+## @seealso{hygecdf, hygepdf, hygernd, hygestat}
 ## @end deftypefn
 
 function x = hygeinv (p, m, k, n)

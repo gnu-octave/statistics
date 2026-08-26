@@ -44,7 +44,7 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
-## @seealso{norminv, normpdf, normrnd, normfit, normlike, normstat, probit}
+## @seealso{normcdf, normpdf, normrnd, normfit, normlike, normstat, probit}
 ## @end deftypefn
 
 function x = norminv (p, mu, sigma)
