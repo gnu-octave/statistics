@@ -1,202 +1,985 @@
- Summary of important user-visible changes for statistics 1.8.0:
+ Summary of important user-visible changes for statistics 1.9.0:
 -------------------------------------------------------------------
 
- Important Notice: 1) Minimum Octave version required is 9.1.0
-                   2) Add dependency to the datatypes package
-                   3) Incompatibility with the `nan` package
-                   4) Update 'libsvm' library to version 3.36
-                   5) Using `tablicious` as a drop in replacement
-                      for `datatypes` might cause issues.  Future
-                      development of statistical functions to enable
-                      support for tables and categorical arrays will
-                      be based on the implementations in `datatypes`
+ Important Notice: 1) Update dependency to datatypes 1.3.3.
+                   2) The 29 probability distribution classes have moved into
+                      the `prob` namespace.  The flat class names are gone;
+                      this is a rename, not an alias.
+                   3) The generalized additive model classes now fit boosted
+                      trees by default, as MATLAB does.  Every fitted value,
+                      score and loss moves.  The spline engine remains
+                      available as 'FitMethod', 'splines'.
+                   4) `fitcnet` and `fitrnet` now default to the LBFGS
+                      solver, and `fitcnet` to rectified hidden layers and a
+                      softmax output.  Every default fit returns different
+                      weights.
+                   5) Models of the compact classes saved by an earlier
+                      version no longer load and must be re-saved from the
+                      model they were compacted from.
+                   6) Incompatibility with the `nan` package.
+                   7) Using `tablicious` as a drop in replacement for
+                      `datatypes` might cause issues.
+
+ Breaking changes:
+ =================
+
+ This release changes behaviour that working code may depend on.  Each item
+ below says what breaks and what to write instead.
+
+ ** anova2:
+    NaN values are refused again, as they always were and as MATLAB does.
+
+ ** anovan:
+    the returned table has nine columns where it had seven; 'Singular?' is
+    inserted at column 4, moving 'Mean Sq.' to column 5, and 'Eta Sq.' and
+    'Part. Eta Sq.' are appended at 8 and 9.  A model with any random factor
+    keeps the interactions that factor appears in, so `p` and the table are
+    longer and the table gains eight further columns; p-values change for
+    every random effects model.  An interaction is named 'X1:X2', and the
+    random factor marker is no longer carried in the names returned in
+    `atab`, `stats.varnames` or the expected mean square expressions.
+    Reading the table by name from `atab(1,:)` is unaffected.
+
+ ** boxplot:
+    the quartiles are taken from `quantile` at its own default method, the
+    one `prctile` and MATLAB use, rather than from core's `statistics`.
+    Boxes, whisker fences, the returned statistics matrix and what counts as
+    an outlier all move.
+
+ ** ClassificationGAM, RegressionGAM:
+    the classes fit boosted trees by default; pass 'FitMethod', 'splines' for
+    the previous engine.  Eleven spline options now raise unless that engine
+    is selected, and a second output from `RegressionGAM.predict` raises
+    under the default engine.  The boosted classifier fits by local scoring,
+    so every multi-predictor classification GAM fits to different numbers.  A
+    tree leaf now holds at least five observations.  `Interactions` reports
+    the K-by-2 matrix of fitted predictor pairs, not the request that was
+    passed; use `IntMatrix` to recover the argument.  `ScoreTransform`
+    defaults to 'logit' and the raw score is the log-odds pair MATLAB
+    reports.  `RegressionGAM.fitBoosted` is no longer a public method.
+
+ ** ClassificationKNN:
+    `DistanceWeight` holds the name of the weight rather than a function
+    handle, and now applies: nothing read it before, so 'inverse' and
+    'squaredinverse' changed no prediction.  The documented spelling
+    'squaredinverse' is accepted.
+
+ ** ClassificationSVM:
+    `loss` returns different numbers, having scaled every loss by the class
+    labels so that only the classification error was right.  `margin` takes Y
+    in the form the class labels are in, as documented, where it required the
+    +1/-1 coding.  `Alpha` is populated for every kernel and holds unsigned
+    magnitudes, `Beta` is the primal coefficient vector for a linear kernel
+    only, `SupportVectorLabels` is s-by-1 of +/-1, and `IsSupportVector` is
+    logical.  No classification result changes.
+
+ ** cluster, clusterdata:
+    'MaxClust' yields exactly N clusters however the merge heights tie, and a
+    'Cutoff' on the inconsistency coefficient requires every node below to be
+    under the cutoff.  Both returned too few clusters.
+
+ ** ClusterCriterion, CalinskiHarabaszEvaluation, DaviesBouldinEvaluation,
+    GapEvaluation, SilhouetteEvaluation:
+    the cluster evaluation classes are value classes, not handles, so `e2 =
+    e1` copies; assign results back, as `e = addK (e, 4)`.
+    `ClusterCriterion` is abstract and can no longer be constructed directly.
+
+ ** CompactClassificationSVM:
+    the class drops `IsSupportVector`, which was sized to the training set
+    and which MATLAB's compact class does not carry.
+
+ ** cvpartition:
+    `test` and `training` return one column per requested set; given a vector
+    of set indices they returned one column per set per pass.
+
+ ** evalclusters:
+    a matrix of clustering solutions with no `KList` is numbered by the
+    clusters each column holds, not by column position, so criterion values
+    and `OptimalK` change.  `SilhouetteEvaluation.ClusterSilhouettes` holds
+    the mean silhouette of each cluster rather than every observation's
+    value.
+
+ ** factoran:
+    the function is rewritten and its output signature is now MATLAB's,
+    `[lambda, psi, T, stats, F]`.  The third output was the factor scores and
+    is now the rotation matrix; scores moved to the fifth, so code taking the
+    third output as scores silently receives an m-by-m matrix.  The fit is
+    maximum likelihood by default where it was principal axis factoring,
+    which remains available as 'Extraction', 'paf'.
+
+ ** fcnntrain, fcnnpredict:
+    both take activation names in two arguments, `Activations` and
+    `OutputLayerActivation`, rather than numeric codes in a single vector.
+    `fcnnpredict` takes the layer weights and biases, not the model structure
+    `fcnntrain` returns.  The `Alpha` argument and field are removed.  The
+    'elu' activation saturates at -1, as it is defined to, where its negative
+    arm carried the leaky rectifier's 0.01 scale.
+
+ ** fitcnet:
+    'Solver' defaults to 'lbfgs', MATLAB's solver, where it defaulted to
+    'sgd', so every default fit returns different weights.  'LearningRate'
+    belongs to the epoch loop and now raises unless a solver is named, while
+    'GradientTolerance', 'LossTolerance' and 'StepTolerance' are now accepted
+    by default; `TrainingHistory` and `ConvergenceInfo` carry the fields of
+    the solver that ran.  `fitrnet` is new in this release.  `fitcnet`
+    additionally defaults 'Activations' to 'relu', 'OutputLayerActivation' to
+    'softmax' and 'LearningRate' to 0.003.  Initial weights are drawn from
+    Octave's generator, so repeated fits no longer return an identical model
+    and `rand ('seed', s)` governs a fit.  `ConvergenceInfo` reports the
+    value the fit ended at as a scalar and carries the series beside it as
+    `History`.  `ModelParameters` reports the fit rather than the network;
+    read `Mdl.LayerWeights` and `Mdl.LayerBiases`.
+
+ ** fitdist:
+    the 'theta' option defaults to 0 for the generalized Pareto, as MATLAB
+    assumes it, where it defaulted to 1; `mle` changes with it.
+
+ ** fpdf:
+    the density at x = 0 is 1 at df1 = 2 and Inf below it, where it was zero
+    whatever the numerator degrees of freedom.
+
+ ** friedman:
+    the second output is a cell array with a header row, as MATLAB's is and
+    as `anova1` and `anova2` already were; read `tbl{2,2}` rather than
+    `tbl.SS(1)`.  The table is displayed by default.
+
+ ** gpfit:
+    the second argument is `alpha`, the confidence level, not `theta`, a
+    known location; `paramhat` is 1-by-2 and `paramci` 2-by-2.  Fit a known
+    location by shifting the data.  Note `gpfit (x, 0.05)` was a fit at
+    location 0.05 and is now a 95% confidence level.
+
+ ** gplike:
+    `params` is the two element vector [k, sigma] and `acov` is 2-by-2, where
+    it was 3-by-3 with a zero row and column.
+
+ ** hmmviterbi, hmmestimate:
+    `hmmviterbi` returns the true maximum probability path, having scored a
+    spurious transition out of the last state, and `hmmestimate` no longer
+    counts a phantom transition out of an assumed initial state.  Both return
+    different values.
+
+ ** LinearModel:
+    a weighted fit's `LogLikelihood` carries the 0.5 * sum (log (w)) term and
+    counts only nonzero weight observations, following R rather than MATLAB;
+    `AIC`, `AICc`, `BIC` and `CAIC` move with it.  Unweighted and robust fits
+    are unchanged.
+
+ ** LinearModel:
+    `Formula` is a `LinearFormula` object rather than a structure or a
+    character vector.  Term order follows the variable order of the data
+    rather than the alphabetical order of their names, and no longer depends
+    on the order the formula names them, so coefficient names move with it.
+    The omitted reference level of a character or string grouping column is
+    the level the data presents first, not the alphabetically first one, so
+    coefficients change name and meaning; a categorical column is unaffected.
+    A model with no intercept and a categorical predictor gives the first
+    categorical an indicator for every level by both routes, so its
+    coefficients are the group means; this is a deliberate deviation from
+    MATLAB, which drops the reference level.
+
+ ** mle:
+    the 'normal' and 'lognormal' distributions return the maximum likelihood
+    estimate, `std (x, 1)`, where they returned the unbiased `std (x, 0)`.
+
+ ** nbinfit:
+    the confidence bounds are no longer clamped to the parameter space, a
+    bound outside it being what tells the caller the normal approximation has
+    broken down.
+
+ ** negloglik:
+    the distribution object method returns the negative log likelihood, as
+    documented and as MATLAB returns it; it returned the log likelihood, the
+    wrong sign.
+
+ ** pca:
+    `tsquared` is 0 where the fit has one degree of freedom or fewer, and NaN
+    for dropped rows, returned at the full observation count.
+
+ ** prob distribution objects:
+    the 29 classes are now `prob.NormalDistribution` and so on; the flat
+    names are gone, so `class (pd)` and `isa (pd, ...)` take the qualified
+    name.  `makedist`, `fitdist`, `cdf`, `pdf`, `icdf`, `random` and `mle`
+    take the distribution's name and are unaffected.  `DistributionName`
+    holds the distribution's name ('Normal'), not the class name.
+    `prob.WeibullDistribution` renames `lambda` and `k` to `A` and `B` and
+    `prob.RayleighDistribution` renames `sigma` to `B`.  `ParameterValues` is
+    a cell for the piecewise linear and multinomial classes, `x` and `Fx` of
+    the piecewise linear class are rows, and the 29 classes now share an
+    abstract base, `prob.ProbabilityDistribution`, as MATLAB's do.
+
+ ** proflik:
+    the distribution object method computes a true profile likelihood, re-
+    maximizing over the remaining parameters at each point, where it held
+    them fixed at their fitted values and so gave wrong results for every
+    multi-parameter distribution.  The default grid is 101 values over the
+    98% confidence interval when the selected parameter is the only one
+    estimated, and 21 otherwise.
+
+ ** regress_gp:
+    the prediction intervals were wrong in both branches and are now correct,
+    and both branches return the lower bound in column 1; code reading
+    Yint(:,1) as an upper bound must be changed.
+
+ ** signrank:
+    two differences agreeing to within eps (x) + eps (y) rank as tied and one
+    smaller than that is dropped, as MATLAB does, so `signedrank`, `zval` and
+    the p-value move on such data.  `stats` carries `signedrank` where it
+    carried `sign`, which belongs to `signtest`, and `zval` is empty for the
+    exact test.
+
+ ** signtest:
+    the test decision `h` is returned as a logical, as documented and as
+    MATLAB returns it, where it was a double.
+
+ ** tabulate:
+    the percentage column is count / total * 100 taken literally, so data
+    with no observations gives NaN where it gave zero.
+
+ ** The compact classes:
+    `CompactClassificationSVM` drops `ModelParameters` and `IsSupportVector`,
+    `CompactClassificationNeuralNetwork` drops six properties describing the
+    fit, and `CompactClassificationGAM` drops seven, MATLAB's own compact
+    classes carrying none of them.  Read any of them off the model that was
+    compacted from.  A compact SVM, neural network or GAM model saved by an
+    earlier version therefore no longer loads, and `loadmodel` raises
+    'invalid model'.  The compact regression and Gaussian process classes are
+    new in this release and never carried them.
+
+ ** The distribution functions:
+    the 130 *cdf, *pdf and *inv functions validate the class of their numeric
+    arguments.  Continuous distributions and every *inv accept double and
+    single only; the discrete *cdf and *pdf additionally accept the integer
+    types and promote to double, so the result is always a probability.
+    Logical and character arrays are rejected.  This fixes silently wrong
+    answers: `geocdf (int32 (0:4), 0.3)` returned [0 1 1 1 1], `nbincdf`
+    returned zeros and `binopdf` returned Inf.
+
+ ** The random generators:
+    the 39 generators and the distribution objects' `random` method treat a
+    negative dimension as zero and return an empty array, as core Octave and
+    MATLAB do, instead of raising.
+
+ ** The supervised learner classes:
+    `ScoreTransform` and `ResponseTransform` hold the name of the transform
+    rather than a function handle, so `strcmp (Mdl.ScoreTransform, 'none')`
+    works and `predict` applies the transform for you.  `Prior` is a 1-by-K
+    row in `ClassNames` order.  `W` weighs each class by its prior rather
+    than being uniform.  An observation is dropped only for a missing
+    response, so `size (X, 1)`, `numel (W)` and `NumObservations` now agree
+    and `RowsUsed` is empty when nothing was dropped.  The `Standardize`
+    property is gone from eleven classes; test `! isempty (Mdl.Mu)` instead.
+    `Cost` refuses anything that is not a square matrix.  `BinEdges` is a
+    cell on the cross-validated classifier, and a column cell on the GAM
+    classes.  `RowsUsed` is a logical mask on `ClassificationGAM`,
+    `ClassificationSVM` and `RegressionGAM`, where it was a double.  `edge`
+    normalizes its 'Weights' within each class to that class's prior.  The
+    cross-validated models are read only apart from `Cost`, `Prior` and the
+    transforms, either assignment now reaching every fold, and their
+    transforms are applied where they used to be inert.
+    `CrossValidatedModel` holds the learner's short name, not the class name.
+    An observation that no fold held out gets a missing label with NaN
+    scores, a deliberate deviation from MATLAB, which names the first class.
+
+ ** tiedrank:
+    an array is ranked along its first dimension, as MATLAB does, instead of
+    being refused; `tieadj` carries one entry per column.
+
+ ** trimmean:
+    a non-scalar percentage is refused, as in MATLAB; it was accepted and
+    returned an untrimmed mean behind a warning.
+
+ ** ttest, ttest2:
+    `Alpha` is validated; a negative, zero, unit or vector value was
+    accepted, a negative one returning a NaN confidence interval together
+    with 'do not reject'.
+
+ ** unifit:
+    the function returns MATLAB's four outputs [ahat, bhat, aci, bci], where
+    it packed both estimates into one vector and both intervals into one
+    matrix.  X may now be a matrix, negative data is accepted, and the upper
+    endpoint's interval was inverted.
 
  New functions:
  ==============
 
- ** makima
+ ** andrewsplot:
+    Andrews plot of multivariate data, with grouping, four standardizations
+    and a quantile mode.
+
+ ** ansaribradley:
+    Ansari-Bradley test for equal dispersions, with an exact permutation
+    p-value or a tie corrected normal approximation.
+
+ ** biplot:
+    biplot of principal component coefficients or factor loadings.
+
+ ** ClassificationDiscriminant.cvshrink:
+    cross-validate the discriminant over a grid of `Gamma` and optionally
+    `Delta`.
+
+ ** ClassificationDiscriminant.mahal, ClassificationDiscriminant.logp,
+    ClassificationDiscriminant.nLinearCoeffs:
+    squared Mahalanobis distance to each class mean, the log of the density
+    summed over the classes, and the number of predictors kept at a
+    regularization threshold; also on the compact class.
+
+ ** ClassificationGAM.addInteractions, RegressionGAM.addInteractions:
+    fit interaction terms onto a model that already carries its univariate
+    ones.
+
+ ** ClassificationGAM.resume, RegressionGAM.resume:
+    add trees to a fitted model, continuing in the phase that ran last.
+
+ ** ClassificationPartitionedLinear, ClassificationPartitionedKernel,
+    RegressionPartitionedLinear, RegressionPartitionedKernel:
+    the cross-validated counterparts of the linear and kernel learners.
+
+ ** ClassificationPartitionedModel.kfoldLoss,
+    ClassificationPartitionedModel.kfoldMargin,
+    ClassificationPartitionedModel.kfoldEdge:
+    the class had none of the three; `kfoldLoss` takes 'classiferror',
+    'classifcost', 'mincost' or a function handle, the margin based losses
+    not being offered.
+
+ ** CompactLinearModel:
+    a fitted linear model without its training data, returned by
+    `LinearModel`'s new `compact` method.
+
+ ** CompactRegressionGAM:
+    the compact counterpart of `RegressionGAM`.
+
+ ** copulastat, copulaparam, copulafit:
+    complete the copula family, which already shipped `copulacdf`,
+    `copulapdf` and `copularnd`.
+
+ ** coxphfit:
+    Cox proportional hazards regression, opening survival analysis, with
+    stratified models, the counting process form and seven residual types.
+
+ ** dbscan:
+    density-based spatial clustering of applications with noise.
+
+ ** discardSupportVectors:
+    empty the support vectors of a linear kernel model and leave `Beta` and
+    `Bias` to predict, on the four SVM classes; the engine's own copy is
+    collapsed, so the memory is freed.
+
+ ** dwtest:
+    Durbin-Watson test for autocorrelation in regression residuals, with an
+    exact p-value by Imhof's method.
+
+ ** ecdfhist:
+    histogram built from the output of `ecdf`.
+
+ ** fitckernel, ClassificationKernel, fitrkernel, RegressionKernel:
+    Gaussian kernel models for large data, fitted linearly in a randomized
+    feature space, with `resume`.
+
+ ** fitclinear, ClassificationLinear, fitrlinear, RegressionLinear:
+    linear models for data with many predictors, with ridge or lasso
+    penalties and six solvers; a vector 'Lambda' fits one model per strength
+    inside a single object, narrowed afterwards by `selectModels`.
+
+ ** fitcnb, ClassificationNaiveBayes, CompactClassificationNaiveBayes:
+    naive Bayes classification with the 'normal', 'kernel', 'mvmn' and 'mn'
+    predictor distributions, mixable one per predictor.
+
+ ** fitcox, CoxModel:
+    the Cox proportional hazards model as an object, with `survival`,
+    `hazardratio`, `coefci`, `linhyptest`, `plotSurvival` and
+    `discardResiduals`.
+
+ ** fitglm, GeneralizedLinearModel:
+    generalized linear regression as a fitted model object over five
+    families, the GLM counterpart of `fitlm` and `LinearModel`.  A binomial
+    response given with 'BinomialSize' is the number of successes, as MATLAB
+    reads it, and `predict` returns the probability of success.
+
+ ** fitglme, GeneralizedLinearMixedModel:
+    generalized linear mixed effects models by penalized quasi-likelihood,
+    with four fit methods.
+
+ ** fitlme, fitlmematrix, LinearMixedModel:
+    linear mixed effects models from a Wilkinson formula extended with random
+    effects terms or from design matrices, by maximum likelihood or REML.
+
+ ** fitnlm, NonLinearModel:
+    nonlinear regression by iterative least squares as a fitted model object,
+    with an error model and robust fitting.
+
+ ** fitrgp, RegressionGP, CompactRegressionGP:
+    Gaussian process regression with ten covariance functions, four explicit
+    bases, and `postFitStatistics`.
+
+ ** fitrnet, RegressionNeuralNetwork, CompactRegressionNeuralNetwork:
+    neural network regression against the mean squared error with an identity
+    output layer.
+
+ ** fitrsvm, RegressionSVM, CompactRegressionSVM:
+    support vector machine regression by epsilon-insensitive loss, with
+    'SVMtype', 'nu_svr' as an Octave extension.
+
+ ** gamtrain, gampredict, gamboosttrain, gamboostpredict, gamboostpairs,
+    gamboostinter, __lbfgs__, __bhtsne__, __knnselect__, __knnbrute__:
+    new compiled functions: the spline and boosted-tree GAM engines, the
+    limited-memory BFGS solver, the Barnes-Hut t-SNE summation and the
+    nearest-neighbour kernels.  They are not meant to be called directly.
+
+ ** glyphplot:
+    star glyph plot of multivariate data; Chernoff faces are not supported.
+
+ ** gplotmatrix:
+    matrix of grouped scatter plots, with grouped histograms on the diagonal.
+
+ ** hmmdecode:
+    posterior state probabilities of a hidden Markov model by a scaled
+    forward-backward recursion.
+
+ ** hmmtrain:
+    maximum likelihood estimation of hidden Markov model parameters by Baum-
+    Welch or Viterbi training.  Baum-Welch is verified bit-for-bit against
+    MATLAB; Viterbi training carries two documented deviations.
+
+ ** iforest, IsolationForest:
+    isolation forest anomaly detection, with an `isanomaly` method.
+
+ ** invpred:
+    inverse prediction from a simple linear regression, with Fieller
+    confidence bounds that need not be finite.
+
+ ** jbtest:
+    Jarque-Bera hypothesis test of composite normality.
+
+ ** johnsrnd:
+    random arrays from the Johnson system of distributions.
+
+ ** KernelDistribution:
+    nonparametric kernel smoothing distribution object, created by `fitdist
+    (x, 'Kernel')`.
+
+ ** kfoldfun:
+    apply a function across the folds of a cross-validated model, on
+    `ClassificationPartitionedModel` and `RegressionPartitionedModel`.
+
+ ** kmedoids:
+    k-medoids clustering, with the 'pam' and 'small' algorithms.
+
+ ** ksdensity:
+    kernel smoothing density estimate, with four kernels, five output
+    functions and bounded support; 'Censoring' is not yet implemented.
+
+ ** lasso, lassoglm:
+    lasso and elastic net regularized regression by cyclic coordinate
+    descent, for least squares and for the five GLM families, with cross-
+    validation and the 1-SE rule.
+
+ ** lillietest:
+    Lilliefors composite goodness of fit test for the normal, exponential and
+    extreme value families.
+
+ ** LinearFormula:
+    model formula object, the class of the `Formula` property of a
+    `LinearModel` and of a `GeneralizedLinearModel`.
+
+ ** LinearModel.plot, LinearModel.plotInteraction, LinearModel.anova,
+    LinearModel.step, LinearModel.compact:
+    five new methods.
+
+ ** lof, LocalOutlierFactor:
+    local outlier factor anomaly detection, with an `isanomaly` method.
+
+ ** mdscale:
+    nonclassical metric and nonmetric multidimensional scaling over five
+    stress criteria.
+
+ ** mlecov:
+    asymptotic covariance matrix of maximum likelihood estimators, from the
+    observed Fisher information.
+
+ ** mnrval:
+    predict category probabilities and confidence bounds from a multinomial
+    logistic regression model, the companion to `mnrfit`.
+
+ ** mvksdensity:
+    multivariate product-kernel smoothing density estimate.
+
+ ** mvregress, mvregresslike:
+    multivariate linear regression by maximum likelihood, with three
+    algorithms for missing responses.
+
+ ** nanvar, nanstd, nanmedian, nancov:
+    complete the nan* family alongside the existing `nanmean`, `nansum`,
+    `nanmax` and `nanmin`.
+
+ ** nlinfit, nlparci, nlpredci:
+    Levenberg-Marquardt nonlinear least squares with a numeric Jacobian, and
+    confidence and prediction intervals for its coefficients and predictions.
+
+ ** nnmf:
+    nonnegative matrix factorization, by alternating least squares or
+    multiplicative updates.
+
+ ** ocsvm, OneClassSVM:
+    one-class support vector machine anomaly detection, with an `isanomaly`
+    method.
+
+ ** parallelcoords:
+    parallel coordinates plot of multivariate data.
+
+ ** paretotails:
+    piecewise distribution object with generalized Pareto tails and an
+    empirical middle; the 'kernel' middle segment is not supported.
+
+ ** partialcorr, partialcorri:
+    linear and rank partial correlation coefficients, with p-values.
+
+ ** pearsrnd:
+    random arrays from the Pearson system of distributions.
+
+ ** perfcurve:
+    ROC and other classifier performance curves, returning the curve,
+    thresholds, AUC and optimal operating point, with bootstrap bounds.
+
+ ** ppca:
+    probabilistic principal component analysis, handling missing data by
+    expectation-maximization.
+
+ ** probplot:
+    probability plot of a sample against eight reference distributions, with
+    censoring and frequency weights.
+
+ ** RegressionPartitionedModel:
+    the regression counterpart of `ClassificationPartitionedModel`, returned
+    by `crossval` on a `RegressionGAM`, `RegressionGP`,
+    `RegressionNeuralNetwork` or `RegressionSVM`.
+
+ ** rica, ReconstructionICA:
+    reconstruction independent component analysis for feature extraction,
+    with a `transform` method.  `Mu` and `Sigma` are columns and `FitInfo`
+    carries the whole minimisation history, as in MATLAB.
+
+ ** robustcov:
+    robust multivariate covariance and mean estimate, with the 'fmcd' and
+    'ogk' methods; 'olivehawkins' is not implemented.
+
+ ** robustfit:
+    robust M-estimator linear regression by iteratively reweighted least
+    squares, with nine weight functions.
+
+ ** rocmetrics:
+    receiver operating characteristic metrics object, with per-class AUC and
+    the `addMetrics`, `average` and `plot` methods.
+
+ ** rotatefactors:
+    rotate a factor loading matrix by the orthomax family, promax, or
+    procrustes rotation, the last defaulting to 'Type', 'oblique' as in
+    MATLAB.
+
+ ** scatterhist:
+    scatter plot with marginal histograms or kernel densities.  As in MATLAB,
+    the marginal bars point toward the scatter by default and 'Location'
+    names the corner the histograms occupy, not the scatter.
+
+ ** sparsefilt, SparseFiltering:
+    sparse filtering for feature extraction, with a `transform` method.
+
+ ** spectralcluster:
+    spectral clustering using the eigenvectors of a similarity graph
+    Laplacian.
+
+ ** StableDistribution, stblpdf, stblcdf, stblinv, stblrnd, stblfit,
+    stbllike:
+    the stable distribution in the Nolan S0 parameterization, by numerical
+    inversion of the characteristic function; `makedist ('Stable')` was
+    previously an unsupported stub.
+
+ ** statset, statget:
+    the options structure pair used across the package's iterative
+    algorithms; seven functions documented an 'Options' argument and nothing
+    could build one.
+
+ ** stepwiseglm:
+    fit a `GeneralizedLinearModel` by stepwise term selection, with the
+    selection trace in its `Steps` property.
+
+ ** stepwiselm:
+    stepwise linear regression over five criteria, with term hierarchy
+    enforced on both addition and removal.
+
+ ** The classification margin and edge surface:
+    fifteen new methods complete it: every full classifier now has `margin`,
+    `edge`, `resubPredict`, `resubMargin`, `resubEdge` and `resubLoss`, and
+    every compact classifier has `margin` and `edge`.  A compact classifier
+    gets no resubstitution method, as in MATLAB.
+
+ ** tsne:
+    t-distributed stochastic neighbor embedding, with the 'exact' and
+    'barneshut' algorithms.
 
  Improvements:
  =============
 
- ** fillmissing: add support for the "makima" interpolation method
+ ** anova:
+    the `anova1`, `anova2` and `anovan` backends all run silently, so fitting
+    never prints a table or opens a figure.  `varianceComponent` no longer
+    returns an interval for a negative variance estimate, and a saturated
+    model reports its error term as zero on zero degrees of freedom rather
+    than producing no F-ratios at all.
 
- ** svmpredict: add support for one class posterior probablity
+ ** anova1:
+    `p` and `F` are NaN for a design with no variation at all and `p` is 0
+    where the fit is exact, both having been the wrong way round.  A
+    categorical level that no observation uses leaves every field of `stats`,
+    so they can be indexed together; this is a deliberate deviation from
+    MATLAB, whose own fields disagree in length there.  The `vartype`
+    argument is documented as an Octave extension.
 
- Removed functions: (available in core Octave)
+ ** anovan:
+    the table reports a 'Singular?' flag and the degrees of freedom that can
+    actually be estimated for each term.  A design that is not of full column
+    rank now takes the minimum-norm least squares solution, where the
+    coefficients came from a triangular solve of a singular system and the
+    sums of squares were nonsense.  A continuous factor raised to a power is
+    squared from the raw predictor rather than the centred one, which could
+    put Type II and Type III out by orders of magnitude.  `stats.termcols`
+    counts one column per level, and 'sstype' accepts 'H' beside 'h'.
+
+ ** boxplot:
+    a single observation, an entirely missing variable and an empty input are
+    plotted rather than failing inside the function, integer observations are
+    accepted, and a grouped plot with a one-observation group no longer
+    fails.
+
+ ** canoncorr:
+    rank deficient input was solved against a singular triangular factor, so
+    the coefficients ran away and the canonical correlations came back wrong
+    with nothing said.  The factorisation now pivots, deficient columns are
+    dropped, and a warning is raised as MATLAB raises one.
+
+ ** ClassificationDiscriminant, CompactClassificationDiscriminant:
+    all six discriminant types are available where only 'linear' was.
+    `DiscrimType`, `Gamma` and `Delta` may be assigned after fitting, re-
+    deriving `Sigma`, `LogDetSigma` and `Coeffs` without refitting, and
+    `Delta` now eliminates predictors, the new `DeltaPredictor` reporting the
+    value at which each drops out.  `predict` applies the `ScoreTransform`
+    the model holds, where it ignored it entirely.  Assigning `Prior` or
+    `Cost` no longer destroys the model, `LogDetSigma` is accurate on nearly
+    collinear predictors, and the class can be loaded at all, `load_model`
+    having raised 'invalid model' whatever the model held.
+
+ ** ClassificationGAM, CompactClassificationGAM:
+    'Interactions' given as 'all' or as a count built no interaction term at
+    all.  Assigning `Cost` was refused on every model.  `ClassNames` keeps
+    the type of Y, where it was a cell of character vectors whatever the
+    response was.  A numeric response coded 1 and 2 gave a NaN intercept and
+    every score with it.  `predict` applies the `ScoreTransform`, which was
+    documented, settable and read by nothing.
+
+ ** ClassificationKNN:
+    `NumNeighbors`, `Distance`, `DistanceWeight`, `BreakTies`, `IncludeTies`
+    and `DistParameter` may be assigned after fitting and are live.
+    `predict` applies the score transform once rather than once per query
+    row, and its third output honours the cost matrix where it returned 1 -
+    posterior.  A model fitted with any metric a kd-tree cannot search could
+    not be reloaded; eight of the twelve metrics were affected.  'CacheSize'
+    is carried for compatibility.
+
+ ** ClassificationNeuralNetwork:
+    the trained parameters are reachable through `LayerWeights` and
+    `LayerBiases`; before this a network could be trained with no way to see
+    what it had learned.  `loss` accepts every loss MATLAB documents for the
+    class and defaults to 'mincost'.  A saved model came back carrying
+    another model's numbers, `savemodel` having written 21 of 29 properties
+    into a placeholder object.
+
+ ** ClassificationPartitionedModel:
+    an explicit `Prior` reached no fold on the discriminant, SVM and neural
+    network backings, and a non-default `Cost` reached no fold on the SVM
+    backing, which enters it into the box constraint.  A standardized
+    `ClassificationKNN` refitted every fold on the raw scale.  `kfoldPredict`
+    discarded the predictions of a 'Holdout' partition, raised for a GAM
+    backing and refused a cost for a network backing.  The class gains `W`
+    and a `disp` of its own, and takes a `Prior` on a naive Bayes backing.
+
+ ** ClassificationSVM, CompactClassificationSVM:
+    `predict` and `resubPredict` return the expected cost as a third output,
+    and `kfoldPredict` does for an SVM-backed cross-validated model, where it
+    raised.  MATLAB returns the cost matrix read transposed; we return the
+    row, which is documented.  `resubLoss` returned the wrong number or none,
+    and `resubPredict` selected the training rows with a bare mask, so a
+    three-predictor model was asked about a single column.  The classes
+    report `Prior`, `Cost`, `W`, `CategoricalPredictors` and
+    `ExpandedPredictorNames`.
+
+ ** crossval:
+    the partition covers only the observations actually trained on; with any
+    missing value present each fold trained on rows its own fit then
+    discarded.  A function handle over a predictor and a response is no
+    longer rejected, the last data variable having been dropped, which is why
+    `plsregress`'s 'CV' never worked.
+
+ ** cvpartition:
+    'Stratify' and 'GroupingVariables' can be combined, and
+    'GroupingVariables' applies to 'Holdout' and 'Leaveout' as well as
+    'KFold', where all three accepted it and silently ignored it, giving the
+    caller the leakage the option exists to prevent.  A scalar SVAL to
+    `repartition` never worked, and seeding is now confined to the call.
+
+ ** evalclusters:
+    the returned object has MATLAB's shape and reports MATLAB's names.  The
+    silhouette criterion honours the 'Distance' it is given, where it always
+    used 'sqeuclidean' and every metric returned the same numbers.
+
+ ** ExhaustiveSearcher, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch:
+    the exhaustive search no longer forms the whole distance matrix for the
+    four Minkowski-family metrics, and the searches take their K smallest by
+    partial selection: a 4000-point self-search at K = 5 falls from 4.5 s to
+    1.9 s and searches that could not allocate now run.  The kd-tree search
+    is about five times faster, resolving the metric once per query.
+    `knnsearch` and `rangesearch` accept a per-call metric.  Asking for more
+    neighbours than the data holds is answered with all of them.  Single data
+    stays single and every other class converts to double, which fixes
+    integer data silently rounding each coordinate difference.  Raising
+    `SearchSetSize` on `hnswSearcher` returned the same neighbour for every
+    query past a threshold.
+
+ ** fcnntrain, fcnnpredict:
+    every network the package trained descended the wrong gradient: the mean
+    squared error layer differentiated sum (y - t)^2 as 2y - t rather than 2
+    (y - t), so training settled at 2y = t and the network converged on half
+    its target.  The backward pass of a hidden activation layer recovered the
+    incoming gradient by dividing by its own input, read past the end of the
+    array for any widening network, and applied the wrong local derivative
+    for six of the eight activations.  The `Accuracy` and `Loss` vectors
+    described no network that ever existed and were then stored behind as
+    many zeros as the epoch count.  Training visited the samples in a fixed
+    order, so with sorted labels the weights swung between the classes
+    instead of settling.  Weights are drawn on a range set by the fan-in
+    rather than always on [-1, 1].
+
+ ** fitcgam, fitrgam:
+    nine new boosted-tree options matching MATLAB in name and default, and an
+    interaction asked for by count or 'all' is chosen by testing each
+    candidate pair against the predictor phase's residuals and ranking by
+    p-value, with 'MaxPValue' setting the cut.  The GAM classes report
+    `FitMethod`, `TreeModel`, `ReasonForTermination`, `BinEdges` and
+    `PairDetectionBinEdges`, and `ModelParameters` reports MATLAB's thirteen
+    fields under the boosted-tree engine.
+
+ ** fitcnet:
+    'Prior' and 'Cost' are accepted, having been rejected as unknown
+    parameters, so there had been no way to weigh the classes at all.
+    'Activations' accepts 'none', which the documentation listed and the code
+    rejected.  A model fitted with 'Standardize' set to true was trained on
+    the raw predictors while `predict` standardized its own, so
+    resubstitution accuracy on a badly scaled problem was 0.275 and is now
+    0.925.
+
+ ** fitcsvm:
+    a model fitted with 'Standardize' set to true was trained on the raw
+    predictors while `predict` standardized its own, so resubstitution
+    accuracy on a badly scaled problem was 0.500, chance, and is now 0.912.
+
+ ** glmfit:
+    the returned coefficient vector was clobbered by the binomial Anscombe
+    residual computation, returning garbage coefficients whenever the `stats`
+    output was requested and taking `glmval`'s confidence intervals with it.
+
+ ** glmval:
+    accept a numeric 0 or 1 for the 'simultaneous' option and 'BinomialSize'
+    as an alias for 'size'.
+
+ ** gpfit:
+    the boundary warnings say which boundary was reached and that the
+    confidence intervals are withheld.  NaN and Inf observations propagate
+    into the estimates rather than being dropped with a warning.
+
+ ** hygecdf, poisstat, wblpdf, ClassificationNeuralNetwork:
+    error messages and help text corrected: `hygecdf` named its third
+    argument `k` where `hygepdf` names it `M`, `poisstat` named SIGMA,
+    `wblpdf`'s three signature lines named `wblinv`, and the `Solver`
+    property read 'Gradient Descend'.
+
+ ** LinearModel, fitlm:
+    a robust fit reported the wrong `LogLikelihood` and information criteria,
+    and a robust fit given weights scored the wrong residuals, so a precisely
+    measured observation was less likely to be downweighted.  A variable the
+    model does not use is no longer counted as one of its predictors.
+    `Steps` is populated by `stepwiselm` and `step`, where it was always
+    empty.  `removeTerms` could not name a term on a table model whose
+    formula uses only some of the table's variables, `step` refused any model
+    holding a power term, and `stepwiselm` silently dropped one from a
+    starting model or bound.  Thresholds letting a term enter and leave at
+    once are refused, where the search never returned.  `VariableNames` and
+    `PredictorNames` are column cell arrays.
+
+ ** mle:
+    the custom distribution interface is implemented, having been a stub that
+    printed a message and silently fitted a normal.  The 'bernoulli' and
+    'unif' families could not be fitted at all, and an empty 'Frequency'
+    raised instead of meaning no frequencies.
+
+ ** mnrfit:
+    rewritten for MATLAB compatibility: nominal models with any number of
+    categories, having errored for more than two, plus ordinal and
+    hierarchical models, four links, the full `stats` structure and the
+    `EstDisp` option.
+
+ ** ModelParameters:
+    the property reaches its final shape on every learner that has one.
+    `ClassificationKNN` and `ClassificationDiscriminant` gain it, having been
+    the only learners without one; the neural network pair reports the fit as
+    it was asked for rather than the network that came out of it;
+    `RegressionGP` reports its starting values; and the six partitioned
+    classes report the learner's parameters under their own tags.
+
+ ** optimalleaforder:
+    a custom 'Transformation' is reachable, having been documented and
+    implemented but refused before the code that uses it ran, and a two-leaf
+    tree no longer crashes.
+
+ ** paramci, proflik:
+    `paramci` reports one column per parameter on `BinomialDistribution`,
+    holding the fixed N at its own value, which also unblocks `proflik`
+    there, and a fixed parameter is addressable by name again on every
+    distribution.  `proflik` returns a third output, defaults `pnum` to the
+    first free parameter, keeps the profiled-out parameters inside their own
+    range, and refuses a parameter with no confidence interval.  On
+    `BurrDistribution` it profiled a censored likelihood, the frequencies
+    having landed in the censoring slot.
+
+ ** pca:
+    three defects in the handling of missing data and weights, contributed by
+    Swayam Shah (GitHub PR #451).  With 'Rows' set to 'all' the guard that
+    refuses NaN input fired only when every column held a NaN.
+
+ ** pdist, pdist2:
+    no longer return a negative distance: 'cosine', 'correlation' and
+    'spearman' put a row at -2.2e-16 from itself.
+
+ ** prob.PiecewiseLinearDistribution:
+    `mean`, `var` and `std` of a truncated distribution are computed exactly
+    segment by segment, where quadrature integrated across the density's
+    jumps and lost four to five digits.
+
+ ** randsample:
+    added to the package INDEX, so the function is listed in `pkg describe`
+    and the online documentation; it shipped but was undiscoverable there.
+
+ ** regress:
+    the coefficient standard errors and confidence intervals are computed
+    from the QR factor directly rather than by inverting R' * R, which
+    squared the condition number of the design.  On the Longley benchmark
+    they now match the NIST certified values to 6e-13 relative, previously
+    2e-8, with no spurious singularity warning.
+
+ ** regression_ftest, regression_ttest:
+    `regression_ttest` had no working call form, `cov` of two vectors
+    returning a matrix, and its fitted values were evaluated at mean (x)
+    instead of at x, so the residual sum of squares was really the total.
+    `regression_ftest` refused the commonest test of all, dropping a single
+    predictor.  Positive tests have been added to both.
+
+ ** RegressionGAM:
+    `predict` computes ySD and yInt from the model's own terms rather than
+    the stored predictors, so a model built with 'Interactions' or a
+    'Formula' no longer reports a standard deviation several times too large,
+    or raises.  A single Inf passed validation, and a scalar 'Knots', 'Order'
+    or 'DoF' was never expanded.  `savemodel` wrote a text file where every
+    other class writes a binary one.
+
+ ** RegressionGAM, ClassificationGAM:
+    the spline fitting is compiled and each predictor's design is factorised
+    once for the whole fit: fitting a classifier is four times faster and
+    cross-validating one between five and nine times.  A rank deficient
+    design no longer divides by a singular value that is rounding noise.
+
+ ** sampsizepwr:
+    the 'r' test type for the correlation coefficient was unreachable by any
+    route, and the sample size came from Fisher's transformation of the
+    difference between the two correlations, which is right only when the
+    null correlation is zero, the single value the function refused.
+
+ ** slicesample:
+    a log density supplied through 'logpdf' was logged a second time, so the
+    chain sampled an entirely different distribution without complaint;
+    drawing from a standard normal returned values with a mean around -8000.
+    Three missing input checks are added.
+
+ ** svmpredict:
+    scoring a single observation corrupted the heap and aborted the
+    interpreter; two or more rows were fine.  The result pointers referred to
+    a temporary that was freed before the prediction loop wrote to it.
+
+ ** The copula family:
+    `copulapdf` gains the Gaussian and Student's t families and `copularnd`
+    the Frank and Gumbel-Hougaard families, so every family MATLAB supports
+    now works in every copula function; only Clayton previously worked in all
+    five.  The Ali-Mikhail-Haq and Farlie-Gumbel-Morgenstern Octave
+    extensions work throughout as well.
+
+ ** The distribution name wrappers:
+    `cdf`, `pdf`, `icdf`, `random`, `makedist`, `fitdist` and `mle` accept
+    the same set of distribution names, matched ignoring case, spaces and
+    hyphens; they previously accepted disjoint spellings, so `makedist
+    ('Extreme Value')` and `cdf ('ExtremeValue', ...)` were both errors while
+    their opposites worked.
+
+ ** The distribution objects:
+    `prob.KernelDistribution` hides `NumParameters`, `ParameterNames` and
+    `ParameterDescription`, MATLAB carrying none of the three, and
+    `prob.StableDistribution` no longer lists `ParameterCI`; all remain
+    readable by name.  The classes list `Truncation` and `IsTruncated` where
+    MATLAB lists them.  `MultinomialDistribution.random` and
+    `LoguniformDistribution.random` were broken in every call form, and
+    `KernelDistribution`'s `pdf`, `cdf` and `icdf` errored on an empty query.
+
+ ** The learner classes:
+    each reaches the property and method surface MATLAB gives it.
+    `Intercept`, `CategoricalPredictors`, `ExpandedPredictorNames`, `W`,
+    `BetweenSigma`, `KernelParameters`, `BoxConstraints`, `OutlierFraction`,
+    `Nu` and `BinEdges` are added where each was missing, and the ten classes
+    with a MATLAB counterpart declare `HyperparameterOptimizationResults`,
+    read-only and always empty.  Every classification learner accepts a
+    response given as a character matrix, which the documentation always
+    listed and which had never worked.  Every classifier with a settable
+    `Cost` validates the matrix as MATLAB does and accepts a struct of
+    `ClassNames` and `ClassificationCosts`; `Prior` accepts the matching
+    struct form.  The seventeen supervised classes enforce access with
+    property attributes rather than hand-written `subsref` and `subsasgn`
+    whitelists.  Setting `ScoreTransform` to 'none' or 'identity' made
+    `predict` raise on four classes, and assigning it raised on five others,
+    so the property could not be set at all.  'ismax' and 'symmetricismax'
+    mark the largest score of each observation, where the maximum was taken
+    down the column.
+
+ ** The paired argument parser:
+    `crossval`, `grpstats`, `rmmissing`, `stepwisefit` and `scatterhist`
+    parse Name-Value arguments through `parsePairedArguments` from the
+    `datatypes` package, and the statistics package's own private
+    `pairedArgs` is gone.
+
+ ** tiedrank:
+    accepts MATLAB's fourth argument, a tolerance, which defaults to exact
+    comparison so every existing call is unaffected.
+
+ ** violin:
+    a row vector is read as one variable, a cell of row vectors works,
+    integer and logical observations are accepted, and a single observation,
+    an empty input and a call with no arguments report what is wrong instead
+    of failing inside the function.
+
+ ** wblplot:
+    a non-finite observation is rejected; `wblplot ([1, Inf, 2, 3])` never
+    returned, creating nine graphics objects per iteration for as long as it
+    was left alone.
+
+ Removed functions:
  ==================
 
- ** mad
-
- ** mean
-
- ** median
-
- ** std
-
- ** var
-
-
- Summary of important user-visible changes for statistics 1.8.1:
--------------------------------------------------------------------
-
- Important Notice: 1) Soon after Octave 11.1 is officially released the
-                      'statistics' package will update its dependency to
-                      Octave 11, so that further development can rely on
-                      advancements to core statistics and data functions
-                      that will be available with Octave 11.
-                   2) Incompatibility with the `nan` package
-                   3) Using `tablicious` as a drop in replacement
-                      for `datatypes` might cause issues.
-
- New functions:
- ==============
-
- ** dummyvar
-
- ** parseWilkinsonFormula
-
- Improvements:
- =============
-
- All random generator distribution functions now accept empty size vectors
- as third input argument for MATLAB compatibility.
-
- ** confusionmat: add support for new data types
-
- ** crosstab: add support for new data types
-
- ** cvpartition: implement 'summary' method
-
- ** datasample: improve input validation
-
- ** fillmissing: char arrays do not have standard missing values
-
- ** friedman: return ANOVA results in a table
-
- ** grp2idx: fix MATLAB compatibility, add support for new data types
-
- ** grpstats: add support for tables and categorical arrays, add ploting
-              functionality, fix remaining MATLAB compatiblity issue
-
- ** hnswSearcher: improve performance in building index and query operations
-
- ** ismissing: fix MATLAB compatibility, char arrays do not have standard
-               missing values
-
- ** KDTreeSearcher: improve query speed
-
- ** knnsearch: improve input validation and avoid infinite recursion
-
- ** pcacov: improve input validation
-
- ** pdist, pdist2: improve performance, add fast euclidean algorithms
-
- ** rangesearch: improve input validation and avoid infinite recursion
-
- ** rmmissing: fix MATLAB compatibility, char arrays do not have standard
-               missing values
-
- ** standardizeMissing: fix MATLAB compatibility, char arrays do not have
-                        standard missing values
-
- ** stepwisefit: fix MATLAB compatibility, replace legacy Draper-Smith
-                 algorithm, results may differ from previous implementation
-
- ** tabulate: add support for tables and categorical arrays
-
- ** wishrnd: allow for non-integral DF under certain constrains
-
-
- Summary of important user-visible changes for statistics 1.8.2:
--------------------------------------------------------------------
-
- Important Notice: 1) Update dependency to datatypes 1.2.0
-                   2) Incompatibility with the `nan` package
-                   3) Using `tablicious` as a drop in replacement
-                      for `datatypes` might cause issues.
-
-
- Improvements:
- =============
-
- ** anova1: properly handle NaN values as group labels
-
- ** boxplot: add support for multi grouping variables
-
- ** grp2idx: improve integration with datatypes class objects
-
- ** makima: improve MATLAB compatibility
-
- ** parseWilkinsonFormula: add 'equations' mode
-
- ** sampsizepwr: fix computations for single-tailed distributions
-
- ** signtest: properly handle NaN values
-
-
- Summary of important user-visible changes for statistics 1.8.3:
--------------------------------------------------------------------
-
- Important Notice: 1) Minimum Octave version required is 11.1.0
-                   2) Update dependency to datatypes 1.2.3
-                   3) Incompatibility with the `nan` package
-                   4) Using `tablicious` as a drop in replacement
-                      for `datatypes` might cause issues.
-
-
- Improvements:
- =============
-
- ** ClusterCriterion: improve speed
-
- ** cmdscale: add support for second argument
-
- ** DaviesBouldinEvaluation: fix index
-
- ** harmmean, trimmean: improve MATLAB compatibility
-
- ** linkage: improve speed and fix unused variable
-
- ** pca, princomp: improve speed
-
- ** randsample: fix edge cases
-
- ** stepwisefit: improve speed
-
- ** squareform, tabulate: improve MATLAB compatibility
-
- ** RegressionGAM.predict: correct ySD computation using residual variance
-
-
- Summary of important user-visible changes for statistics 1.8.4:
--------------------------------------------------------------------
-
- Important Notice: 1) Update dependency to datatypes 1.2.6
-                   2) Incompatibility with the `nan` package
-                   3) Using `tablicious` as a drop in replacement
-                      for `datatypes` might cause issues.
-
-
- New functions:
- ==============
-
- ** LinearModel: object-oriented linear regression model class,
-                 returned by `fitlm`
-
- ** anova: object-oriented interface for analysis of variance,
-           built on `anova1`, `anova2`, and `anovan` with a
-           MATLAB-compatible object API
-
- Improvements:
- =============
-
- ** anova1: add support for categorical arrays as grouping variables
-
- ** fitlm: now returns a LinearModel object; the previous
-           `[TAB, STATS] = fitlm (...)` output form is no longer supported
-
- ** glmfit: fix a variable error (GitHub PR #440)
-
- ** parseWilkinsonFormula: fix power-term resolution from a base table column
-
+ ** mvtcdfqmc:
+    the quasi-Monte-Carlo integrator behind `mvtcdf` and `mvncdf` is now the
+    private helper `__mvtcdfqmc__` and can no longer be called directly.
+    MATLAB ships no such function, so nothing portable depended on it.  Call
+    `mvtcdf` or `mvncdf` instead.
