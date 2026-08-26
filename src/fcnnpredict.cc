@@ -33,8 +33,7 @@ using namespace std;
 DEFUN_DLD(fcnnpredict, args, nargout,
           "-*- texinfo -*-\n\
  @deftypefn  {statistics} {@var{pred_Y} =} fcnnpredict (@var{LayerWeights}, @\
- @var{LayerBiases}, @var{Activations}, @var{OutputLayerActivation}, @\
- @var{XC})\n\
+ @var{LayerBiases}, @var{Activations}, @var{OutputLayerActivation}, @var{XC})\n\
  @deftypefnx {statistics} {@var{pred_Y} =} fcnnpredict @\
  (@dots{}, @var{NumThreads})\n\
  @deftypefnx {statistics} {[@var{pred_Y}, @var{scores}] =} fcnnpredict (@dots{})\n\
@@ -43,7 +42,7 @@ DEFUN_DLD(fcnnpredict, args, nargout,
 Make predictions from a fully connected Neural Network. \n\
 \n\n\
 \n\n\
-@code{@var{pred_Y} = fcnnpredict (@var{LayerWeights}, @var{LayerBiases}, @\
+@code{@var{pred_Y} = fcnnpredict (@var{LayerWeights}, @var{LayerBiases}, \
 @var{Activations}, @var{OutputLayerActivation}, @var{XC})} requires the \
 following input arguments.\
 \n\n\
