@@ -1060,15 +1060,15 @@ Number of successes
  pd = fitdist (data, "NegativeBinomial");</pre>
                 <p>Query parameter 'R' (number of successes)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.R</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 4.9749</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 4.7848</pre>
                 <p>Set parameter 'R'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.R = 10</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Negative Binomial
 
   negative binomial distribution
-        R =      10
-        P = 0.50083</pre>
+        R =       10
+        P = 0.492437</pre>
                 <p>Use this to initialize or modify the number of successes parameter in a Negative Binomial distribution. R must be a positive scalar, controlling the shape and often fixed based on the problem context, like successes in trials.</p>
 
             </div>
@@ -1155,14 +1155,14 @@ Probability of success
  pd = fitdist (data, "NegativeBinomial");</pre>
                 <p>Query parameter 'P' (probability of success)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.P</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.4901</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.4970</pre>
                 <p>Set parameter 'P'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.P = 0.3</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Negative Binomial
 
   negative binomial distribution
-        R = 4.79097
+        R = 4.92443
         P =     0.3</pre>
                 <p>Use this to initialize or modify the success probability in a Negative Binomial distribution. P must be a real scalar in (0,1], influencing the mean and variance of the distribution.</p>
 
@@ -1259,8 +1259,8 @@ Probability distribution name
   Negative Binomial
 
   negative binomial distribution
-        R =  4.95317   [4.55139, 5.35496]
-        P = 0.497688   [0.476939, 0.518437]</pre>
+        R =  4.74238   [4.36471, 5.12004]
+        P = 0.488201   [0.467813, 0.50859]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1331,8 +1331,8 @@ Number of parameters
   Negative Binomial
 
   negative binomial distribution
-        R =  4.66554   [4.29691, 5.03418]
-        P = 0.482529   [0.462303, 0.502754]</pre>
+        R =  4.80724   [4.4267, 5.18779]
+        P = 0.488469   [0.468203, 0.508736]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1403,8 +1403,8 @@ Names of parameters
   Negative Binomial
 
   negative binomial distribution
-        R =  5.29374   [4.85348, 5.734]
-        P = 0.511703   [0.490481, 0.532925]</pre>
+        R =  5.04212   [4.63074, 5.45351]
+        P = 0.501468   [0.480608, 0.522328]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1476,8 +1476,8 @@ Description of parameters
   Negative Binomial
 
   negative binomial distribution
-        R =  4.99995   [4.5931, 5.40679]
-        P = 0.500067   [0.479258, 0.520877]</pre>
+        R =  5.13331   [4.71097, 5.55565]
+        P = 0.503764   [0.482743, 0.524785]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1550,8 +1550,8 @@ Distribution parameter values
   Negative Binomial
 
   negative binomial distribution
-        R =  4.86883   [4.47919, 5.25848]
-        P = 0.492755   [0.472273, 0.513238]</pre>
+        R =  4.73674   [4.36089, 5.11259]
+        P = 0.485514   [0.465203, 0.505824]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1625,8 +1625,8 @@ Truncation interval
   Negative Binomial
 
   negative binomial distribution
-        R = 5.24905   [4.81158, 5.68652]
-        P = 0.51173   [0.490462, 0.532999]</pre>
+        R =   4.8059   [4.42406, 5.18774]
+        P = 0.488003   [0.467666, 0.50834]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1697,8 +1697,8 @@ Flag for truncated probability distribution
   Negative Binomial
 
   negative binomial distribution
-        R =    4.945   [4.54095, 5.34905]
-        P = 0.499465   [0.478568, 0.520361]</pre>
+        R =  5.00758   [4.59648, 5.41868]
+        P = 0.502306   [0.481319, 0.523294]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1775,8 +1775,8 @@ Covariance matrix of the parameter estimates
   Negative Binomial
 
   negative binomial distribution
-        R =  4.99745   [4.59306, 5.40184]
-        P = 0.499193   [0.478495, 0.519892]</pre>
+        R =   5.1454   [4.72135, 5.56945]
+        P = 0.506876   [0.485823, 0.527929]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1849,8 +1849,8 @@ Flag for fixed parameters
   Negative Binomial
 
   negative binomial distribution
-        R =   4.9441   [4.54382, 5.34439]
-        P = 0.497991   [0.477278, 0.518703]</pre>
+        R =  5.51749   [5.04796, 5.98702]
+        P = 0.521084   [0.499425, 0.542742]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -1933,8 +1933,8 @@ Data used for fitting a probability distribution
   Negative Binomial
 
   negative binomial distribution
-        R =  5.15563   [4.73057, 5.5807]
-        P = 0.508113   [0.487052, 0.529173]</pre>
+        R = 4.88338   [4.48959, 5.27717]
+        P = 0.49395   [0.473317, 0.514583]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
@@ -2208,9 +2208,9 @@ Compute the mean of a probability distribution.
  pd1 = fitdist (data1, "NegativeBinomial");
  pd2 = fitdist (data2, "NegativeBinomial");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 11.781</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 11.716</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 4.9986</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 5.0005</pre>
                 <p>This shows how to compute the expected value for Negative Binomial distributions with different success probabilities, representing average number of failures.</p>
 
             </div>
@@ -2330,7 +2330,7 @@ Compute the negative loglikelihood of a probability distribution.
  pd_fitted = fitdist (data, "NegativeBinomial");
  params = [pd_fitted.R, pd_fitted.P];
  nlogL_nbinlike = nbinlike (params, data)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL_nbinlike = 249.46</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL_nbinlike = 252.42</pre>
                 <p>This is useful for assessing the fit of a Negative Binomial distribution to data, with lower values indicating a better fit, often used in model comparison.</p>
 
             </div>
@@ -2412,8 +2412,8 @@ Compute the confidence intervals for probability distribution parameters.
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   3.7039   0.4264
-   5.2337   0.5140</pre>
+   3.6454   0.4142
+   5.1117   0.4997</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (R and P), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2874,7 +2874,7 @@ Compute the standard deviation of a probability distribution.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = nbinrnd(5, 0.5, 10000, 1);
  pd = fitdist (data, "NegativeBinomial");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 3.1572</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 3.1166</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in the count values of the distribution.</p>
 
             </div>
@@ -3012,7 +3012,7 @@ Compute the variance of a probability distribution.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = nbinrnd(5, 0.5, 10000, 1);
  pd = fitdist (data, "NegativeBinomial");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 9.9656</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 10.238</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the count values in the distribution.</p>
 
             </div>
@@ -3057,8 +3057,8 @@ Generate a data set of 5000 random samples from a Negative Binomial distribution
   Negative Binomial
 
   negative binomial distribution
-        R = 4.65199   [4.28817, 5.01582]
-        P = 0.47805   [0.458037, 0.498062]</pre>
+        R =  4.78078   [4.39994, 5.16161]
+        P = 0.488583   [0.468192, 0.508975]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f';
  title (sprintf (msg, pd_fitted.R, pd_fitted.P))</pre>
