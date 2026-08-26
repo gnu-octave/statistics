@@ -415,7 +415,7 @@ bisainv
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: bisainv, bisapdf, bisarnd, bisafit, bisalike, bisastat.
+     See also: bisacdf, bisapdf, bisarnd, bisafit, bisalike, bisastat.
 
 
 # name: <cell-element>
@@ -455,7 +455,7 @@ bisapdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: bisacdf, bisapdf, bisarnd, bisafit, bisalike, bisastat.
+     See also: bisacdf, bisainv, bisarnd, bisafit, bisalike, bisastat.
 
 
 # name: <cell-element>
@@ -873,7 +873,7 @@ cauchypdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: cauchycdf, cauchypdf, cauchyrnd.
+     See also: cauchycdf, cauchyinv, cauchyrnd.
 
 
 # name: <cell-element>
@@ -1040,7 +1040,7 @@ chi2pdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: chi2cdf, chi2pdf, chi2rnd, chi2stat.
+     See also: chi2cdf, chi2inv, chi2rnd, chi2stat.
 
 
 # name: <cell-element>
@@ -3242,7 +3242,7 @@ hygeinv
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: hygeinv, hygepdf, hygernd, hygestat.
+     See also: hygecdf, hygepdf, hygernd, hygestat.
 
 
 # name: <cell-element>
@@ -3778,7 +3778,7 @@ laplaceinv
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: laplaceinv, laplacepdf, laplacernd.
+     See also: laplacecdf, laplacepdf, laplacernd.
 
 
 # name: <cell-element>
@@ -3821,7 +3821,7 @@ laplacepdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: laplacecdf, laplacepdf, laplacernd.
+     See also: laplacecdf, laplaceinv, laplacernd.
 
 
 # name: <cell-element>
@@ -3867,7 +3867,7 @@ laplacernd
      Further information about the Laplace distribution can be found at
      <https://en.wikipedia.org/wiki/Laplace_distribution>
 
-     See also: laplacecdf, laplaceinv, laplacernd.
+     See also: laplacecdf, laplaceinv, laplacepdf.
 
 
 # name: <cell-element>
@@ -5160,7 +5160,7 @@ nakapdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: nakacdf, nakapdf, nakarnd, nakafit, nakalike, nakastat.
+     See also: nakacdf, nakainv, nakarnd, nakafit, nakalike, nakastat.
 
 
 # name: <cell-element>
@@ -5332,7 +5332,7 @@ nbininv
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike, nbinstat.
+     See also: nbincdf, nbinpdf, nbinrnd, nbinfit, nbinlike, nbinstat.
 
 
 # name: <cell-element>
@@ -5392,7 +5392,7 @@ nbinpdf
      of the discrete distributions it returns the result in the integer class of
      the input, truncating a probability to 0 or 1.
 
-     See also: nbininv, nbininv, nbinrnd, nbinfit, nbinlike, nbinstat.
+     See also: nbincdf, nbininv, nbinrnd, nbinfit, nbinlike, nbinstat.
 
 
 # name: <cell-element>
@@ -5455,7 +5455,7 @@ nbinrnd
      Further information about the negative binomial distribution can be found
      at <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
 
-     See also: nbininv, nbininv, nbinpdf, nbinfit, nbinlike, nbinstat.
+     See also: nbincdf, nbininv, nbinpdf, nbinfit, nbinlike, nbinstat.
 
 
 # name: <cell-element>
@@ -6082,7 +6082,7 @@ norminv
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: norminv, normpdf, normrnd, normfit, normlike, normstat, probit.
+     See also: normcdf, normpdf, normrnd, normfit, normlike, normstat, probit.
 
 
 # name: <cell-element>
@@ -6125,7 +6125,7 @@ normpdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: norminv, norminv, normrnd, normfit, normlike, normstat.
+     See also: normcdf, norminv, normrnd, normfit, normlike, normstat.
 
 
 # name: <cell-element>
@@ -6169,7 +6169,7 @@ normrnd
      Further information about the normal distribution can be found at
      <https://en.wikipedia.org/wiki/Normal_distribution>
 
-     See also: norminv, norminv, normpdf, normfit, normlike, normstat.
+     See also: normcdf, norminv, normpdf, normfit, normlike, normstat.
 
 
 # name: <cell-element>
@@ -7342,7 +7342,7 @@ tpdf
      the character codes, which Octave deliberately does not, since a character
      array is an integer type and integers are refused too.
 
-     See also: tcdf, tpdf, trnd, tstat.
+     See also: tcdf, tinv, trnd, tstat.
 
 
 # name: <cell-element>
@@ -7598,7 +7598,7 @@ trnd
      Further information about the Student's T distribution can be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution>
 
-     See also: tcdf, tpdf, tpdf, tstat.
+     See also: tcdf, tinv, tpdf, tstat.
 
 
 # name: <cell-element>
@@ -7797,7 +7797,7 @@ unidrnd
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
 
-     See also: unidcdf, unidinv, unidrnd, unidfit, unidstat.
+     See also: unidcdf, unidinv, unidpdf, unidfit, unidstat.
 
 
 # name: <cell-element>

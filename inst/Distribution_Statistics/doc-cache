@@ -605,7 +605,7 @@ hnstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 676
+# length: 664
  -- statistics: [M, V] = hnstat (MU, SIGMA)
 
      Compute statistics of the half-normal distribution.
@@ -621,7 +621,7 @@ hnstat
      Further information about the half-normal distribution can be found at
      <https://en.wikipedia.org/wiki/Half-normal_distribution>
 
-     See also: norminv, norminv, normpdf, normrnd, normfit, normlike.
+     See also: hncdf, hninv, hnpdf, hnrnd, hnfit, hnlike.
 
 
 # name: <cell-element>
@@ -893,7 +893,7 @@ nbinstat
      Further information about the negative binomial distribution can be found
      at <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
 
-     See also: nbincdf, nbininv, nbininv, nbinrnd, nbinfit, nbinlike.
+     See also: nbincdf, nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike.
 
 
 # name: <cell-element>
@@ -1041,7 +1041,7 @@ normstat
      Further information about the normal distribution can be found at
      <https://en.wikipedia.org/wiki/Normal_distribution>
 
-     See also: norminv, norminv, normpdf, normrnd, normfit, normlike.
+     See also: normcdf, norminv, normpdf, normrnd, normfit, normlike.
 
 
 # name: <cell-element>
