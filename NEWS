@@ -1005,4 +1005,9 @@
     clicking the package in the GUI Documentation tab opens an overview
     listing every documented name under its category, rather than whichever
     category came first, and the one formula that reached the page as raw
-    TeX now renders as the plain text form of its docstring.
+    TeX now renders as the plain text form of its docstring.  The online
+    pages for `NonLinearModel` and `gmdistribution` were published as plain
+    function pages, listing none of their properties or methods, because a
+    member documented outside texinfo made the class renderer fail and fall
+    back silently; both are rendered as classes again, restoring 105 and 72
+    documented members.
