@@ -970,8 +970,8 @@
 <p><code><var>Mdl</var> = fcnntrain (&hellip;)</code> requires the following input arguments.
 </p>
 <ul>
-<li> <var>X</var> : An <math>NxM</math> matrix containing the data set to be trained upon.  Rows <math>N</math> correspond to individual samples and columns <math>M</math> correspond to features (dimensions).  Type of <var>X</var> must be double.
-</li><li> <var>Y</var> : An <math>Nx1</math> column vector containing the labels of the training dataset.  The labels must be natural numbers (positive integers) starting from 1 up to the number of classes, similarly as returned by the &lsquo;grp2idx&lsquo; function. Type of <var>Y</var> must be double.  Under regression, selected by <var>LossFunction</var> 2, <var>Y</var> is instead an <math>NxR</math> matrix of response values, which may take any finite value, and the output layer is sized to its <math>R</math> columns rather than to a number of classes.
+<li> <var>X</var> : An <em class="math">NxM</em> matrix containing the data set to be trained upon.  Rows <em class="math">N</em> correspond to individual samples and columns <em class="math">M</em> correspond to features (dimensions).  Type of <var>X</var> must be double.
+</li><li> <var>Y</var> : An <em class="math">Nx1</em> column vector containing the labels of the training dataset.  The labels must be natural numbers (positive integers) starting from 1 up to the number of classes, similarly as returned by the &lsquo;grp2idx&lsquo; function. Type of <var>Y</var> must be double.  Under regression, selected by <var>LossFunction</var> 2, <var>Y</var> is instead an <em class="math">NxR</em> matrix of response values, which may take any finite value, and the output layer is sized to its <em class="math">R</em> columns rather than to a number of classes.
 </li><li> <var>LayerSizes</var> : A numeric row vector of integer values defining the size of the hidden layers of the network.  Input and output layers are automatically determined by the training data and their labels.
 </li><li> <var>Activations</var> : The activation function of the hidden layers, named as a character vector applying to all of them or as a cellstring naming them one by one, in which case it must have one name per hidden layer.  The supported names are:
 <ul>
@@ -981,7 +981,7 @@
 </li><li> <code>'tanh'</code> : hyperbolic tangent
 </li><li> <code>'softmax'</code>
 </li><li> <code>'lrelu'</code> or <code>'prelu'</code> : leaky rectified linear unit, whose negative slope is a constant 0.01
-</li><li> <code>'elu'</code> : exponential linear unit, saturating at <math>-1</math>
+</li><li> <code>'elu'</code> : exponential linear unit, saturating at <em class="math">-1</em>
 </li><li> <code>'gelu'</code> : Gaussian error linear unit
 </li></ul>
 
@@ -993,7 +993,7 @@
 </li><li> <var>DisplayInfo</var> : A boolean scalar indicating whether to print information during training.
 </li></ul>
 
-<p><code><var>Mdl</var> = fcnntrain (&hellip;, <var>LossFunction</var>)</code> also selects the loss the network is trained against.  <var>LossFunction</var> is a scalar: 0 for mean squared error over a one-hot target, which is the default, 1 for cross entropy, and 2 for mean squared error over a continuous response.  Cross entropy expects the output layer to report a probability over the classes, so it belongs with a softmax output; paired that way the two gradients compose to <math>y - t</math>.  Its loss is undefined where the predicted probability of the true class is zero, so both the logarithm and its derivative are floored.  Code 2 is regression: <var>Y</var> holds response values rather than labels, the output layer belongs with the identity activation, and the returned model carries no <code>Accuracy</code> field, there being no labels to count. 
+<p><code><var>Mdl</var> = fcnntrain (&hellip;, <var>LossFunction</var>)</code> also selects the loss the network is trained against.  <var>LossFunction</var> is a scalar: 0 for mean squared error over a one-hot target, which is the default, 1 for cross entropy, and 2 for mean squared error over a continuous response.  Cross entropy expects the output layer to report a probability over the classes, so it belongs with a softmax output; paired that way the two gradients compose to <em class="math">y - t</em>.  Its loss is undefined where the predicted probability of the true class is zero, so both the logarithm and its derivative are floored.  Code 2 is regression: <var>Y</var> holds response values rather than labels, the output layer belongs with the identity activation, and the returned model carries no <code>Accuracy</code> field, there being no labels to count. 
 </p>
 <p><code>fcnntrain</code> returns the trained model, <var>Mdl</var>, as a structure containing the following fields: 
 </p>

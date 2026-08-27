@@ -970,16 +970,16 @@
 <p> Fit a Cox proportional hazards regression model.
 </p>
 <div class="ms-5">
-<p> <code><var>b</var> = coxphfit (<var>X</var>, <var>T</var>)</code> returns the <math>p</math>-by-1 vector
+<p> <code><var>b</var> = coxphfit (<var>X</var>, <var>T</var>)</code> returns the <em class="math">p</em>-by-1 vector
  of coefficients <var>b</var> of the Cox model
 </p>
 <p> $$ h(x_i, t) = h_0(t)\exp\left(\sum_{j=1}^{p} x_{ij} b_j\right) $$
 </p>
-<p> fitted to the <math>n</math>-by-<math>p</math> matrix of predictors <var>X</var> and the
- <math>n</math>-by-1 vector of event times <var>T</var>.  <var>T</var> may instead be an
- <math>n</math>-by-2 matrix whose rows give a <math>(start, stop]</math> interval of
+<p> fitted to the <em class="math">n</em>-by-<em class="math">p</em> matrix of predictors <var>X</var> and the
+ <em class="math">n</em>-by-1 vector of event times <var>T</var>.  <var>T</var> may instead be an
+ <em class="math">n</em>-by-2 matrix whose rows give a <em class="math">(start, stop]</em> interval of
  exposure, the counting process form, in which an observation joins the risk
- set only after its start time.  <math>h_0(t)</math> is the baseline
+ set only after its start time.  <em class="math">h_0(t)</em> is the baseline
  hazard, which is left unspecified: the coefficients are estimated by
  maximizing the Cox partial likelihood, which does not involve it.
 </p>
@@ -1012,26 +1012,26 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%">Name</th><th width="82%">Value</th></tr></thead>
 <tr><td width="18%"><code>&quot;Baseline&quot;</code></td><td width="82%">The <var>X</var> values at which the baseline
- hazard is computed, either a scalar or a 1-by-<math>p</math> vector.  The default
+ hazard is computed, either a scalar or a 1-by-<em class="math">p</em> vector.  The default
  is the mean of <var>X</var> weighted by <code>&quot;Frequency&quot;</code> and taken within each
  stratum, so the hazard is that of an average observation of its stratum;
  pass <code>0</code> for a hazard relative to the origin.  A value given
  explicitly is used for every stratum.  The coefficients do not depend on
  this choice, only <var>H</var> does.</td></tr>
-<tr><td width="18%"><code>&quot;Censoring&quot;</code></td><td width="82%">A logical or 0/1 vector of length <math>n</math>,
+<tr><td width="18%"><code>&quot;Censoring&quot;</code></td><td width="82%">A logical or 0/1 vector of length <em class="math">n</em>,
  where 1 marks an observation right-censored at its recorded time.  The
  default is a vector of zeros, so every observation is a recorded event.</td></tr>
-<tr><td width="18%"><code>&quot;Frequency&quot;</code></td><td width="82%">A vector of length <math>n</math> of non-negative
+<tr><td width="18%"><code>&quot;Frequency&quot;</code></td><td width="82%">A vector of length <em class="math">n</em> of non-negative
  values giving the number of observations each row represents, or a weight.
  The default is a vector of ones.</td></tr>
 <tr><td width="18%"><code>&quot;Ties&quot;</code></td><td width="82%">The method of handling tied event times, either
  <code>&quot;breslow&quot;</code> (default) or <code>&quot;efron&quot;</code>.</td></tr>
 <tr><td width="18%"><code>&quot;B0&quot;</code></td><td width="82%">The starting value of the iteration, a vector of
- length <math>p</math>.  The default is <code>0.01 ./ std (<var>X</var>)</code>.</td></tr>
+ length <em class="math">p</em>.  The default is <code>0.01 ./ std (<var>X</var>)</code>.</td></tr>
 <tr><td width="18%"><code>&quot;Options&quot;</code></td><td width="82%">A structure of iteration settings, as built by
  <code>statset (&quot;coxphfit&quot;)</code>.  The fields used are <code>&quot;MaxIter&quot;</code>,
  <code>&quot;TolX&quot;</code> and <code>&quot;Display&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Strata&quot;</code></td><td width="82%">A vector of length <math>n</math> of stratum labels.
+<tr><td width="18%"><code>&quot;Strata&quot;</code></td><td width="82%">A vector of length <em class="math">n</em> of stratum labels.
  Each stratum carries its own baseline hazard and its own risk sets, while
  the coefficients are shared across all of them.  A predictor that does not
  vary within any stratum cannot be estimated from a stratified fit; it is
@@ -1049,9 +1049,9 @@
 <tr><td width="24%"><code>&quot;covb&quot;</code></td><td width="76%">The estimated covariance matrix of <var>b</var>.</td></tr>
 <tr><td width="24%"><code>&quot;beta&quot;</code></td><td width="76%">The coefficients, as returned in <var>b</var>.</td></tr>
 <tr><td width="24%"><code>&quot;se&quot;</code></td><td width="76%">The standard errors of the coefficients.</td></tr>
-<tr><td width="24%"><code>&quot;z&quot;</code></td><td width="76%">The <math>z</math> statistics, <var>b</var> over its standard
+<tr><td width="24%"><code>&quot;z&quot;</code></td><td width="76%">The <em class="math">z</em> statistics, <var>b</var> over its standard
  error.</td></tr>
-<tr><td width="24%"><code>&quot;p&quot;</code></td><td width="76%">The two-sided <math>p</math>-values of the <math>z</math>
+<tr><td width="24%"><code>&quot;p&quot;</code></td><td width="76%">The two-sided <em class="math">p</em>-values of the <em class="math">z</em>
  statistics.</td></tr>
 <tr><td width="24%"><code>&quot;csres&quot;</code></td><td width="76%">The Cox-Snell residuals.</td></tr>
 <tr><td width="24%"><code>&quot;devres&quot;</code></td><td width="76%">The deviance residuals.</td></tr>
@@ -1066,7 +1066,7 @@
 <tr><td width="24%"><code>&quot;sschres&quot;</code></td><td width="76%">The scaled Schoenfeld residuals.</td></tr>
 <tr><td width="24%"><code>&quot;scores&quot;</code></td><td width="76%">The score residuals.</td></tr>
 <tr><td width="24%"><code>&quot;sscores&quot;</code></td><td width="76%">The scaled score residuals.</td></tr>
-<tr><td width="24%"><code>&quot;LikelihoodRatioTestP&quot;</code></td><td width="76%">The <math>p</math>-value of the
+<tr><td width="24%"><code>&quot;LikelihoodRatioTestP&quot;</code></td><td width="76%">The <em class="math">p</em>-value of the
  likelihood ratio test against the model with no predictors.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
@@ -1081,14 +1081,14 @@
 </p>
 <p> Under <code>&quot;efron&quot;</code> ties MATLAB&rsquo;s do not: its <code>&quot;martres&quot;</code> comes from
  a cumulative hazard agreeing neither with its own <code>&quot;csres&quot;</code> nor with
- the <var>H</var> it returns, and the two sum to 1.0437 and <math>-0.0414</math> where
+ the <var>H</var> it returns, and the two sum to 1.0437 and <em class="math">-0.0414</em> where
  they must give 1 and 0.
 </p>
 <p> In the counting process form MATLAB&rsquo;s <code>&quot;martres&quot;</code> correctly subtracts
  the hazard accrued before the observation entered, but its <code>&quot;csres&quot;</code>
  does not, so the two disagree by exactly that amount for any row whose start
  time follows an event.  Here both account for it, so <code>&quot;csres&quot;</code>
- differs from MATLAB&rsquo;s by <math>\Lambda(start) \exp (x'b)</math> and the identity
+ differs from MATLAB&rsquo;s by <em class="math">\Lambda(start) \exp (x'b)</em> and the identity
  is preserved.
 </p>
 <p> The score residuals inherit the first of those two deviations, being an

@@ -971,8 +971,8 @@
  and provides the <code>addMetrics</code>, <code>average</code>, and <code>plot</code>
  methods for follow-up analysis.
 </p>
-<p> For a problem with <math>K</math> classes and scores supplied as an
- <math>N</math>-by-<math>K</math> matrix, the discriminant score used for class
+<p> For a problem with <em class="math">K</em> classes and scores supplied as an
+ <em class="math">N</em>-by-<em class="math">K</em> matrix, the discriminant score used for class
  <var>k</var> is the one-versus-all margin
  <code>Scores(:,k) - max (Scores(:,j))</code> over <code>j != k</code>, matching
  MATLAB&rsquo;s <code>rocmetrics</code>.  Every metric is evaluated at each distinct
@@ -1597,7 +1597,7 @@ Classification scores
 
 <p> </p>
 <p> Classification scores supplied at construction, as an
- <math>N</math>-by-<math>K</math> matrix.  This property is read-only.
+ <em class="math">N</em>-by-<em class="math">K</em> matrix.  This property is read-only.
 </p>
 
         <div class="card rounded my-4">
@@ -1797,10 +1797,10 @@ Create a <code>rocmetrics</code> object from labels and classification scores.
 <p> </p>
 <p> <var>labels</var> is a vector of true class labels with one element per
  observation; it may be numeric, logical, a character matrix, or a cell
- array of character vectors.  <var>scores</var> is an <math>N</math>-by-<math>K</math>
+ array of character vectors.  <var>scores</var> is an <em class="math">N</em>-by-<em class="math">K</em>
  numeric matrix of classification scores, where <code>scores(i,k)</code> is the
  score of observation <var>i</var> for the class <code>classnames(k)</code>.
- <var>classnames</var> lists the <math>K</math> classes in the column order of
+ <var>classnames</var> lists the <em class="math">K</em> classes in the column order of
  <var>scores</var>.
 </p>
 <p> The following <code>Name-Value</code> pairs are supported:
@@ -1821,7 +1821,7 @@ Create a <code>rocmetrics</code> object from labels and classification scores.
 <tr><td width="25%"><code>'Prior'</code></td><td width="75%">Prior class probabilities, given as
  <code>'empirical'</code> (default), <code>'uniform'</code>, or a numeric vector
  with one value per class.</td></tr>
-<tr><td width="25%"><code>'Cost'</code></td><td width="75%">A <math>K</math>-by-<math>K</math> misclassification-cost
+<tr><td width="25%"><code>'Cost'</code></td><td width="75%">A <em class="math">K</em>-by-<em class="math">K</em> misclassification-cost
  matrix used by the <code>ExpectedCost</code> metric.  The default has zero
  diagonal and unit off-diagonal entries.</td></tr>
 <tr><td width="25%"><code>'Weights'</code></td><td width="75%">A vector of non-negative observation

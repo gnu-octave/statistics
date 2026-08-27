@@ -972,8 +972,8 @@
  parameter values in <var>params</var> for the sample data in <var>data</var>.
  <var>params</var> is a numeric vector of parameter values (typically the estimates
  returned by <code>mle</code> or <code>fitdist</code>) and <var>data</var> is a numeric vector
- of the sample observations.  <var>acov</var> is a <math>p&times;p</math> matrix, where
- <math>p = numel (<var>params</var>)</math>.
+ of the sample observations.  <var>acov</var> is a <em class="math">p&times;p</em> matrix, where
+ <em class="math">p = numel (<var>params</var>)</em>.
 </p>
 <p> The distribution is not identified by name; instead it is supplied through
  <code>Name-Value</code> paired arguments that give function handles to its
@@ -1003,7 +1003,7 @@
  <strong>required</strong> together with <code>'pdf'</code> when the data are censored, so
  that censored observations can contribute their survival probability.</td></tr>
 <tr><td width="18%"><code>'logsf'</code></td><td width="80%">A function handle to the logarithm of the survivor
- function <math>log (1 - cdf)</math>, with the same calling convention as
+ function <em class="math">log (1 - cdf)</em>, with the same calling convention as
  <code>'pdf'</code>.  It is <strong>required</strong> together with <code>'logpdf'</code> when
  the data are censored.</td></tr>
 <tr><td width="18%"><code>'Censoring'</code></td><td width="80%">A vector of the same size as <var>data</var>

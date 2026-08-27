@@ -1009,7 +1009,7 @@ Point data
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> Point data, specified as an <math>N&times;P</math> numeric matrix where each row is
+<p> Point data, specified as an <em class="math">N&times;P</em> numeric matrix where each row is
  an observation and each column is a feature.  This property is private
  and cannot be modified after object creation.
 </p>
@@ -1218,31 +1218,31 @@ Point data
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.X-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -1505,31 +1505,31 @@ Maximum number of data points in each leaf node
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.BucketSize-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -1793,31 +1793,31 @@ Distance metric
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.Distance-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -2086,31 +2086,31 @@ Distance parameter
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.DistParameter-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -2175,7 +2175,7 @@ Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
 <p> <code><var>obj</var> = KDTreeSearcher (<var>X</var>)</code> constructs a
  <code>KDTreeSearcher</code> object with training data <var>X</var> using the
  default <code>'euclidean'</code> distance metric. <var>X</var> must be an
- <math>N&times;P</math> numeric matrix, where rows represent observations and columns
+ <em class="math">N&times;P</em> numeric matrix, where rows represent observations and columns
  represent features.
 </p>
 <p> <code><var>obj</var> = KDTreeSearcher (<var>X</var>, <var>name</var>, <var>value</var>)</code>
@@ -2414,31 +2414,31 @@ Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.KDTreeSearcher-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -2487,7 +2487,7 @@ Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
                   </h4>
                 </div>
                 <div class="col-8">
-Find the <math>K</math> nearest neighbors in the training data to query points.
+Find the <em class="math">K</em> nearest neighbors in the training data to query points.
                 </div>
               </div>
           </div>
@@ -2499,14 +2499,14 @@ Find the <math>K</math> nearest neighbors in the training data to query points.
 </dl>
 <p> </p>
 <p> <code>[<var>idx</var>, <var>D</var>] = knnsearch (<var>obj</var>, <var>Y</var>, <var>K</var>)</code>
- returns the indices <var>idx</var> and distances <var>D</var> of the <math>K</math>
+ returns the indices <var>idx</var> and distances <var>D</var> of the <em class="math">K</em>
  nearest neighbors in <var>obj.X</var> to each point in <var>Y</var>, using the
  distance metric specified in <var>obj.Distance</var>.
 </p>
 <ul>
 <li> <var>obj</var> is a <code>KDTreeSearcher</code> object.
-</li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
- <math>P</math> must match the number of columns in <var>obj.X</var>.
+</li><li> <var>Y</var> is an <em class="math">M&times;P</em> numeric matrix of query points, where
+ <em class="math">P</em> must match the number of columns in <var>obj.X</var>.
 </li><li> <var>idx</var> contains the indices of the nearest neighbors in
  <var>obj.X</var>.
 </li><li> <var>D</var> contains the corresponding distances.
@@ -2528,7 +2528,7 @@ Find the <math>K</math> nearest neighbors in the training data to query points.
  number of observations in the training data is answered with all of
  them, since there are no more neighbors to return.</td></tr>
 <tr><td width="18%"><code>'IncludeTies'</code></td><td width="80%">Logical flag indicating whether to
- include all neighbors tied with the <math>K</math>th smallest distance. Default
+ include all neighbors tied with the <em class="math">K</em>th smallest distance. Default
  is <code>false</code>. If <code>true</code>, <var>idx</var> and <var>D</var> are cell arrays.</td></tr>
 <tr><td width="18%"><code>'SortIndices'</code></td><td width="80%">Logical flag indicating whether to
  sort the indices by distance. Default is <code>true</code>.</td></tr>
@@ -2741,31 +2741,31 @@ Find the <math>K</math> nearest neighbors in the training data to query points.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.knnsearch-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -2832,8 +2832,8 @@ Find all neighbors within a specified radius of query points.
 </p>
 <ul>
 <li> <var>obj</var> is a <code>KDTreeSearcher</code> object.
-</li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
- <math>P</math> must match the number of columns in <var>obj.X</var>.
+</li><li> <var>Y</var> is an <em class="math">M&times;P</em> numeric matrix of query points, where
+ <em class="math">P</em> must match the number of columns in <var>obj.X</var>.
 </li><li> <var>r</var> is a nonnegative scalar specifying the search radius.
 </li></ul>
 
@@ -3064,31 +3064,31 @@ Find all neighbors within a specified radius of query points.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher.rangesearch-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -3330,31 +3330,31 @@ demo&nbsp;KDTreeSearcher&nbsp;4
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 22:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 26:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31
 
- Columns 23 through 34:
+ Columns 27 through 34:
 
-   39   21    7   31   45   30    4   16   47    9   29    8</pre>
+   45   30    4   16   47    9   29    8</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 10:
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;"> Columns 1 through 11:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686
 
- Columns 11 through 20:
+ Columns 12 through 22:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983
 
- Columns 21 through 30:
+ Columns 23 through 33:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
+   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870
 
- Columns 31 through 34:
+ Column 34:
 
-   0.130208   0.136007   0.142870   0.143009</pre>
+   0.143009</pre>
                 <div class="text-center">
                   <img src="assets/KDTreeSearcher-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>

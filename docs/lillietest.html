@@ -993,9 +993,9 @@
  standard deviation for the normal, mean for the exponential, and location and
  scale for the extreme value distribution.</td></tr>
 <tr><td width="20%"><code>'Alpha'</code></td><td width="80%">The significance level, a scalar.  Without
- <code>'MCTol'</code> it must lie in <math>[0.001, 0.5]</math> (the tabulated range); with
- <code>'MCTol'</code> it may be any value in <math>(0, 1)</math>.  The default is
- <math>0.05</math>.</td></tr>
+ <code>'MCTol'</code> it must lie in <em class="math">[0.001, 0.5]</em> (the tabulated range); with
+ <code>'MCTol'</code> it may be any value in <em class="math">(0, 1)</em>.  The default is
+ <em class="math">0.05</em>.</td></tr>
 <tr><td width="20%"><code>'MCTol'</code></td><td width="80%">Maximum Monte-Carlo standard error for the
  p-value.  When supplied, the p-value and critical value are computed by
  Monte-Carlo simulation instead of by interpolating the embedded table.</td></tr>
@@ -1007,9 +1007,9 @@
 <p> <code>[<var>h</var>, <var>p</var>, <var>kstat</var>, <var>critval</var>] = lillietest (&hellip;)</code>
  also returns the p-value <var>p</var>, the test statistic <var>kstat</var>, and the
  critical value <var>critval</var>.  Without <code>'MCTol'</code> the p-value is clamped
- to the tabulated range <math>[0.001, 0.5]</math> and a warning is issued when it
+ to the tabulated range <em class="math">[0.001, 0.5]</em> and a warning is issued when it
  lies outside.  The warning is an addition here: MATLAB clamps silently, so a
- p-value reported as <math>0.001</math> or <math>0.5</math> there may be a bound rather
+ p-value reported as <em class="math">0.001</em> or <em class="math">0.5</em> there may be a bound rather
  than an estimate, with nothing to say so.
 </p>
 <p> <strong>See also: </strong>

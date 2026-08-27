@@ -1339,8 +1339,8 @@ Repartition data for cross-validation.
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'Holdout'</code>, <var>p</var>)</code> also
  creates a nonstratified random partition for holdout validation with the
  percentage of training and test sets defined by <var>p</var>, which can be a
- scalar value in the range <math>(0,1)</math> or a positive integer scalar in
- the range <math>[1,<var>n</var>)</math>.
+ scalar value in the range <em class="math">(0,1)</em> or a positive integer scalar in
+ the range <em class="math">[1,<var>n</var>)</em>.
 </p>
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'Leaveout'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a random partition for
@@ -1380,8 +1380,8 @@ Repartition data for cross-validation.
 <p> <code><var>C</var> = cvpartition (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</code> also
  creates a stratified random partition for holdout validation with the
  percentage of training and test sets defined by <var>p</var>, which can be a
- scalar value in the range <math>(0,1)</math> or a positive integer scalar in
- the range <math>[1,<var>n</var>)</math>.
+ scalar value in the range <em class="math">(0,1)</em> or a positive integer scalar in
+ the range <em class="math">[1,<var>n</var>)</em>.
 </p>
 <p> <code><var>C</var> = cvpartition (<var>X</var>, <code>'Holdout'</code>, <var>p</var>,
  <code>'Stratify'</code>, <var>opt</var>)</code> creates a random partition for holdout
@@ -1394,18 +1394,18 @@ Repartition data for cross-validation.
  to the following options:
 </p>
 <ul>
-<li> A positive integer vector of length <math>N</math> with values in the
- range <math>[1,K]</math>, where <math>K &lt; N</math>, will specify a K-fold
+<li> A positive integer vector of length <em class="math">N</em> with values in the
+ range <em class="math">[1,K]</em>, where <em class="math">K &lt; N</em>, will specify a K-fold
  cross-validation partition, in which each value indicates the test set
  of each observation.  Alternatively, the same vector with values in the
- range <math>[1,N]</math> will specify a leave-one-out cross-validation.
+ range <em class="math">[1,N]</em> will specify a leave-one-out cross-validation.
 </li><li> A logical vector will specify a holdout validation, in which the
  <code>true</code> elements correspond to the test set and the <code>false</code>
  elements correspond to the training set.
-</li><li> A logical matrix with <math>K</math> columns will specify a K-fold
+</li><li> A logical matrix with <em class="math">K</em> columns will specify a K-fold
  cross-validation partition, in which each column corresponds to a fold
- and each row to an observation.  Alternatively, an <math>N&times;N</math> logical
- matrix will specify a leave-one-out cross-validation, where <math>N</math> is
+ and each row to an observation.  Alternatively, an <em class="math">N&times;N</em> logical
+ matrix will specify a leave-one-out cross-validation, where <em class="math">N</em> is
  the number of observations.  <code>true</code> elements correspond to the
  test set and the <code>false</code> elements correspond to the training set.
 </li></ul>
@@ -1925,7 +1925,7 @@ Test indices for cross-validation.
 <p> <code><var>idx</var> = test (<var>C</var>, <var>i</var>)</code> returns a logical vector or
  matrix with the indices of the test set indicated by <var>i</var>.  If <var>i</var>
  is a scalar, then <var>idx</var> is a logical vector with the indices of the
- <math>i-th</math> set.  If <var>i</var> is a vector, then <var>idx</var> is a logical
+ <em class="math">i-th</em> set.  If <var>i</var> is a vector, then <var>idx</var> is a logical
  matrix in which <code><var>idx</var>(:,j)</code> specified the observations in the
  test set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not exceed the
  number of tests in the <code>cvpartition</code> object <var>C</var>.
@@ -1980,7 +1980,7 @@ Training indices for cross-validation.
 <p> <code><var>idx</var> = training (<var>C</var>, <var>i</var>)</code> returns a logical vector
  or matrix with the indices of the training set indicated by <var>i</var>.  If
  <var>i</var> is a scalar, then <var>idx</var> is a logical vector with the indices
- of the <math>i-th</math> set.  If <var>i</var> is a vector, then <var>idx</var> is a
+ of the <em class="math">i-th</em> set.  If <var>i</var> is a vector, then <var>idx</var> is a
  logical matrix in which <code><var>idx</var>(:,j)</code> specified the observations
  in the training set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not
  exceed the number of tests in the <code>cvpartition</code> object <var>C</var>.

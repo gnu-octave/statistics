@@ -974,7 +974,7 @@
  by <var>modelspec</var> and repeatedly adds or removes terms, one at a time, until
  no further move improves the selection criterion.  It returns the fitted
  <code>GeneralizedLinearModel</code> object <var>mdl</var>, whose <code>Steps</code> property
- records the term-selection trace.  <var>X</var> is an <math>n</math>-by-<math>p</math> numeric
+ records the term-selection trace.  <var>X</var> is an <em class="math">n</em>-by-<em class="math">p</em> numeric
  predictor matrix and <var>y</var> the response; <code><var>mdl</var> = stepwiseglm
  (<var>tbl</var>)</code> instead takes the predictors and response from the table
  <var>tbl</var> (the last column is the response unless overridden).
@@ -998,17 +998,17 @@
 <tr><td width="20%"><code>'Criterion'</code></td><td width="75%">the selection criterion: <code>'Deviance'</code>
  (default), <code>'sse'</code>, <code>'aic'</code>, or <code>'bic'</code>.  Under
  <code>'Deviance'</code> and <code>'sse'</code>, terms enter or leave by a chi-squared
- or <math>F</math> test on the change in deviance; under <code>'aic'</code>/<code>'bic'</code>
+ or <em class="math">F</em> test on the change in deviance; under <code>'aic'</code>/<code>'bic'</code>
  the move that most reduces the information criterion is taken.</td></tr>
-<tr><td width="20%"><code>'PEnter'</code></td><td width="75%">the <math>p</math>-value (or criterion margin) below
- which a term is added.  Defaults to <math>0.05</math> for <code>'Deviance'</code> and
- <code>'sse'</code>, and <math>0</math> for <code>'aic'</code>/<code>'bic'</code>.</td></tr>
-<tr><td width="20%"><code>'PRemove'</code></td><td width="75%">the <math>p</math>-value (or criterion margin) above
- which a term is removed.  Defaults to <math>0.10</math> for <code>'Deviance'</code> and
- <code>'sse'</code>, and <math>0</math> for <code>'aic'</code>/<code>'bic'</code>.</td></tr>
+<tr><td width="20%"><code>'PEnter'</code></td><td width="75%">the <em class="math">p</em>-value (or criterion margin) below
+ which a term is added.  Defaults to <em class="math">0.05</em> for <code>'Deviance'</code> and
+ <code>'sse'</code>, and <em class="math">0</em> for <code>'aic'</code>/<code>'bic'</code>.</td></tr>
+<tr><td width="20%"><code>'PRemove'</code></td><td width="75%">the <em class="math">p</em>-value (or criterion margin) above
+ which a term is removed.  Defaults to <em class="math">0.10</em> for <code>'Deviance'</code> and
+ <code>'sse'</code>, and <em class="math">0</em> for <code>'aic'</code>/<code>'bic'</code>.</td></tr>
 <tr><td width="20%"><code>'NSteps'</code></td><td width="75%">the maximum number of steps.  Defaults to
  <code>Inf</code> (run to convergence).</td></tr>
-<tr><td width="20%"><code>'Verbose'</code></td><td width="75%"><math>0</math> to run silently, or <math>1</math> (default)
+<tr><td width="20%"><code>'Verbose'</code></td><td width="75%"><em class="math">0</em> to run silently, or <em class="math">1</em> (default)
  to print each accepted step.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
@@ -1017,7 +1017,7 @@
 
 <p> As in <code>fitglm</code>, a <code>'binomial'</code> response is the number of
  successes, and the trials come either from <code>'BinomialSize'</code> or from
- passing <var>y</var> as an <math>n</math>-by-<math>2</math> matrix of successes and trials.
+ passing <var>y</var> as an <em class="math">n</em>-by-<em class="math">2</em> matrix of successes and trials.
  <strong>Changed in 1.9.0</strong>: <var>y</var> was previously read as the proportion.
 </p>
 <p> All <var>Name</var>/<var>Value</var> pairs accepted by <code>fitglm</code> (such as
@@ -1060,10 +1060,10 @@
 </p>
 <p>  Categorical predictors
 </p>
-<p> A categorical predictor with <math>L</math> levels contributes <math>L - 1</math>
+<p> A categorical predictor with <em class="math">L</em> levels contributes <em class="math">L - 1</em>
  indicator columns, the first level being the omitted reference, and the
  search treats that whole group as a <em>single term</em>: it is added or
- removed in one step, worth <math>L - 1</math> degrees of freedom, and never one
+ removed in one step, worth <em class="math">L - 1</em> degrees of freedom, and never one
  indicator at a time.  An interaction naming a categorical predictor behaves
  the same way, contributing one column per indicator and entering as one
  term.  <code>Steps.History</code> names such a term by the predictor

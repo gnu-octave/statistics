@@ -969,7 +969,7 @@
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
  of the discrete uniform distribution with parameter <var>N</var>, which
  corresponds to the maximum observable value.  <code>unidpdf</code> assumes the
- integer values in the range <math>[1,N]</math> with equal probability.  The size of
+ integer values in the range <em class="math">[1,N]</em> with equal probability.  The size of
  <var>x</var> is the common size of <var>p</var> and <var>N</var>.  A scalar input functions
  as a constant matrix of the same size as the other inputs.
 </p>
@@ -977,7 +977,7 @@
  <code>NaN</code> is returned.
 </p>
 <p> Warning: The underlying implementation uses the double class and will only
- be accurate for <var>N</var> &lt; <code>flintmax</code> (<math>2^{53}</math> on
+ be accurate for <var>N</var> &lt; <code>flintmax</code> (<em class="math">2^{53}</em> on
  IEEE 754 compatible systems).
 </p>
 <p> Further information about the discrete uniform distribution can be found at
@@ -988,7 +988,7 @@
  <code>double</code>, so the result is always a probability.  MATLAB is
  inconsistent here: for several of the discrete distributions it returns the
  result in the integer class of the input, truncating a probability to
- <math>0</math> or <math>1</math>.
+ <em class="math">0</em> or <em class="math">1</em>.
 </p>
 <p> <strong>See also: </strong>
   <a href="unidcdf.html">unidcdf</a>, 

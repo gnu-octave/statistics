@@ -973,10 +973,10 @@
 </p>
 <ul>
 <li>
- <var>X</var> must be an <math>NxP</math> numeric matrix of predictor data, where rows
+ <var>X</var> must be an <em class="math">NxP</em> numeric matrix of predictor data, where rows
  correspond to observations and columns to features or variables.
 </li><li>
- <var>Y</var> must be an <math>Nx1</math> numeric vector holding the response of the
+ <var>Y</var> must be an <em class="math">Nx1</em> numeric vector holding the response of the
  corresponding predictor data in <var>X</var>.  <var>Y</var> must have the same number
  of rows as <var>X</var>.
 </li></ul>
@@ -1064,9 +1064,9 @@
  is set by that layer&rsquo;s activation, and the scheme cannot be chosen: a
  rectifying activation (<code>'relu'</code>, <code>'lrelu'</code>, <code>'prelu'</code>,
  <code>'elu'</code>, <code>'gelu'</code>) takes the He range
- <math>sqrt (6 / fan_in)</math>, because it passes only half of its input, and
+ <em class="math">sqrt (6 / fan_in)</em>, because it passes only half of its input, and
  the remaining activations take the Glorot range
- <math>sqrt (6 / (fan_in + fan_out))</math>, which accounts for the backward pass
+ <em class="math">sqrt (6 / (fan_in + fan_out))</em>, which accounts for the backward pass
  as well.  A network whose layers do not share an activation is therefore
  built with both schemes.  What each layer was given is reported by the
  <code>LayerWeightsInitializers</code> field of the fitted model&rsquo;s

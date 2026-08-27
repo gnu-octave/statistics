@@ -1181,17 +1181,17 @@ Between-class covariance matrix
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>P</math>-by-<math>P</math> matrix holding the covariance of the class means
+<p> A <em class="math">P</em>-by-<em class="math">P</em> matrix holding the covariance of the class means
  about the overall mean, weighted by how many observations each class
- contributes.  With <math>n_k</math> observations in class <math>k</math>,
- <math>p_k = n_k / n</math> and <math>\bar{\mu} = \sum_k p_k \mu_k</math>, it is
+ contributes.  With <em class="math">n_k</em> observations in class <em class="math">k</em>,
+ <em class="math">p_k = n_k / n</em> and <em class="math">\bar{\mu} = \sum_k p_k \mu_k</em>, it is
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example"> BetweenSigma = sum_k n_k (Mu(k,:) - mubar)' * (Mu(k,:) - mubar)
                 / (n * (1 - sum_k p_k^2))
 </pre></td></tr></table>
 
 <p> The denominator is the unbiased one for a weighted covariance, so a
- balanced fit divides by <math>n (K-1) / K</math>.  It reads the <strong>class
+ balanced fit divides by <em class="math">n (K-1) / K</em>.  It reads the <strong>class
  sizes</strong>, not <code>Prior</code>: assigning a prior leaves it where it was.  It
  is estimated for every discriminant type, the quadratic family included,
  since it describes the classes rather than the fit.  This property is
@@ -1589,18 +1589,18 @@ Within-class covariance
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A numeric array whose shape follows <code>DiscrimType</code>, with <math>P</math>
- predictors and <math>K</math> classes:
+<p> A numeric array whose shape follows <code>DiscrimType</code>, with <em class="math">P</em>
+ predictors and <em class="math">K</em> classes:
 </p>
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="40%"><var>DiscrimType</var></th><th width="25%"><var>Sigma</var></th><th width="35%"><var>LogDetSigma</var></th></tr></thead>
-<tr><td width="40%"><code>'linear'</code>, <code>'pseudoLinear'</code></td><td width="25%"><math>PxP</math>
+<tr><td width="40%"><code>'linear'</code>, <code>'pseudoLinear'</code></td><td width="25%"><em class="math">PxP</em>
   scalar</td></tr>
-<tr><td width="40%"><code>'quadratic'</code>, <code>'pseudoQuadratic'</code></td><td width="25%"><math>PxPxK</math>
-  <math>Kx1</math></td></tr>
-<tr><td width="40%"><code>'diagLinear'</code></td><td width="25%"><math>1xP</math></td><td width="35%">scalar</td></tr>
-<tr><td width="40%"><code>'diagQuadratic'</code></td><td width="25%"><math>1xPxK</math></td><td width="35%"><math>Kx1</math></td></tr>
+<tr><td width="40%"><code>'quadratic'</code>, <code>'pseudoQuadratic'</code></td><td width="25%"><em class="math">PxPxK</em>
+  <em class="math">Kx1</em></td></tr>
+<tr><td width="40%"><code>'diagLinear'</code></td><td width="25%"><em class="math">1xP</em></td><td width="35%">scalar</td></tr>
+<tr><td width="40%"><code>'diagQuadratic'</code></td><td width="25%"><em class="math">1xPxK</em></td><td width="35%"><em class="math">Kx1</em></td></tr>
 </table>
 </div>
 
@@ -1683,9 +1683,9 @@ Class means
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>K&times;P</math> numeric matrix specifying the mean of the multivariate
- normal distribution of each corresponding class, where <math>K</math> is the
- number of classes and <math>P</math> is the number of predictors. This property
+<p> A <em class="math">K&times;P</em> numeric matrix specifying the mean of the multivariate
+ normal distribution of each corresponding class, where <em class="math">K</em> is the
+ number of classes and <em class="math">P</em> is the number of predictors. This property
  is read-only.
 </p>
 
@@ -1762,8 +1762,8 @@ Coefficient matrices
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>K&times;K</math> structure containing the coefficient matrices, where
- <math>K</math> is the number of classes.  If the <code>'FillCoeffs'</code> parameter
+<p> A <em class="math">K&times;K</em> structure containing the coefficient matrices, where
+ <em class="math">K</em> is the number of classes.  If the <code>'FillCoeffs'</code> parameter
  was set to <code>'off'</code> in the original
  <code>ClassificationDiscriminant</code> model, then <code>Coeffs</code> is empty
  <code>([])</code>. This property is read-only.
@@ -1777,8 +1777,8 @@ Coefficient matrices
 </li><li> <code>Class2</code> - <code><var>ClassNames</var>(j)</code>
 </li><li> <code>Const</code> - A scalar
 </li><li> <code>Linear</code> - A vector with length as the number of predictors.
-</li><li> <code>Quadratic</code> - The quadratic family only.  A <math>PxP</math>
- matrix, or a <math>1xP</math> vector for <code>'diagQuadratic'</code>, following
+</li><li> <code>Quadratic</code> - The quadratic family only.  A <em class="math">PxP</em>
+ matrix, or a <em class="math">1xP</em> vector for <code>'diagQuadratic'</code>, following
  the shape of <code>Sigma</code>.
 </li></ul>
 
@@ -2024,7 +2024,7 @@ Logarithm of the determinant of the within-class covariance matrix
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A scalar for the linear family and a <math>Kx1</math> vector for the quadratic
+<p> A scalar for the linear family and a <em class="math">Kx1</em> vector for the quadratic
  one, one entry per class.  It is computed in correlation space, as the
  sum of the logarithms of the predictor variances plus the log
  determinant of the correlation matrix, which is far better conditioned
@@ -2564,19 +2564,19 @@ Transformation function for classification scores
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-2 &times; x))</em></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><em class="math">log (x ./ (1 - x))</em></td></tr>
 <tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
- 0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-x))</em></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <em class="math">-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
+ 0</em></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><em class="math">2 &times; x - 1</em></td></tr>
 <tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><em class="math">2 ./ (1 + exp (-x)) - 1</em></td></tr>
 </table>
 </div>
 
@@ -2767,8 +2767,8 @@ Classify new data points into categories using the discriminant
  <var>obj</var> must be a <code>CompactClassificationDiscriminant</code> class
  object.
 </li><li>
- <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the discriminant
+ <var>XC</var> must be an <em class="math">M&times;P</em> numeric matrix with the same number of
+ features <em class="math">P</em> as the corresponding predictors of the discriminant
  model in <var>obj</var>.
 </li></ul>
 
@@ -2875,11 +2875,11 @@ Compute loss for a trained CompactClassificationDiscriminant object.
 <li>
  <code>obj</code> is a <var>CompactClassificationDiscriminant</var> object.
 </li><li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <code>Y</code> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of rows as <var>X</var>.
 </li></ul>
@@ -2897,18 +2897,18 @@ Compute loss for a trained CompactClassificationDiscriminant object.
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
 <ul>
 <li>
- <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
- number of observations and <math>K</math> is the number of classes.
+ <code>C</code> is a logical matrix of size <em class="math">N&times;K</em>, where <em class="math">N</em> is the
+ number of observations and <em class="math">K</em> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
 </li><li>
- <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
+ <code>S</code> is a numeric matrix of size <em class="math">N&times;K</em>, where each element
  represents the classification score for the corresponding class.
 </li><li>
- <code>W</code> is a numeric vector of length <math>N</math>, representing
+ <code>W</code> is a numeric vector of length <em class="math">N</em>, representing
  the observation weights.
 </li><li>
- <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
+ <code>Cost</code> is a <em class="math">K&times;K</em> matrix representing the misclassification
  costs.
 </li></ul>
 
@@ -3009,11 +3009,11 @@ Classification margins for discriminant analysis classifier.
 <li>
  <code>obj</code> is a <var>CompactClassificationDiscriminant</var> object.
 </li><li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <code>Y</code> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of rows as <var>X</var>.
 </li></ul>
@@ -3190,9 +3190,9 @@ Squared Mahalanobis distance to the class means.
 <dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>M</var> = <b>mahal</b> (&hellip;, <code>'ClassLabels'</code>, <var>labels</var>)</code></h5></dt>
 </dl>
 <p> </p>
-<p> <code><var>M</var> = mahal (<var>obj</var>, <var>X</var>)</code> returns an <math>NxK</math>
- matrix whose element <math>(i,j)</math> is the squared Mahalanobis distance
- from observation <math>i</math> to the mean of class <math>j</math>, measured
+<p> <code><var>M</var> = mahal (<var>obj</var>, <var>X</var>)</code> returns an <em class="math">NxK</em>
+ matrix whose element <em class="math">(i,j)</em> is the squared Mahalanobis distance
+ from observation <em class="math">i</em> to the mean of class <em class="math">j</em>, measured
  against the covariance that class carries: the one shared covariance
  for a linear discriminant and the class&rsquo;s own for a quadratic one.
 </p>
@@ -3200,12 +3200,12 @@ Squared Mahalanobis distance to the class means.
 <li>
  <var>obj</var> must be a <code>CompactClassificationDiscriminant</code> object.
 </li><li>
- <var>X</var> must be an <math>NxP</math> numeric matrix with one column per
+ <var>X</var> must be an <em class="math">NxP</em> numeric matrix with one column per
  predictor of the trained model.
 </li></ul>
 
 <p> <code><var>M</var> = mahal (&hellip;, <code>'ClassLabels'</code>, <var>labels</var>)</code>
- returns an <math>Nx1</math> vector instead, holding for each observation the
+ returns an <em class="math">Nx1</em> vector instead, holding for each observation the
  distance to the mean of the class <var>labels</var> names for it.
  <var>labels</var> must have one entry per row of <var>X</var>, each of them one
  of <code>ClassNames</code>.
@@ -3290,18 +3290,18 @@ Log unconditional probability density of the observations.
 <dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>lp</var> = <b>logp</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
 </dl>
 <p> </p>
-<p> <code><var>lp</var> = logp (<var>obj</var>, <var>X</var>)</code> returns an <math>Nx1</math>
+<p> <code><var>lp</var> = logp (<var>obj</var>, <var>X</var>)</code> returns an <em class="math">Nx1</em>
  vector holding, for each row of <var>X</var>, the natural logarithm of
- <math>P(x) = sum_k P(k) P(x|k)</math>, the density of the observation summed
- over the classes with each class weighted by its prior <math>P(k)</math>.
- Each <math>P(x|k)</math> is the multivariate normal density of class
- <math>k</math>.
+ <em class="math">P(x) = sum_k P(k) P(x|k)</em>, the density of the observation summed
+ over the classes with each class weighted by its prior <em class="math">P(k)</em>.
+ Each <em class="math">P(x|k)</em> is the multivariate normal density of class
+ <em class="math">k</em>.
 </p>
 <ul>
 <li>
  <var>obj</var> must be a <code>CompactClassificationDiscriminant</code> object.
 </li><li>
- <var>X</var> must be an <math>NxP</math> numeric matrix with one column per
+ <var>X</var> must be an <em class="math">NxP</em> numeric matrix with one column per
  predictor of the trained model.
 </li></ul>
 

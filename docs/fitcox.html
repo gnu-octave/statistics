@@ -973,13 +973,13 @@
 </p>
 <p> $$ h(x_i, t) = h_0(t)\exp\left(\sum_{j=1}^{p} x_{ij} b_j\right) $$
 </p>
-<p> to the <math>n</math>-by-<math>p</math> numeric matrix of predictors <var>X</var> and the
- <math>n</math>-by-1 vector of event times <var>T</var>, and returns a <code>CoxModel</code>
- object.  <var>T</var> may instead be an <math>n</math>-by-2 matrix whose rows give a
- <math>(start, stop]</math> interval of exposure, the counting process form, in
+<p> to the <em class="math">n</em>-by-<em class="math">p</em> numeric matrix of predictors <var>X</var> and the
+ <em class="math">n</em>-by-1 vector of event times <var>T</var>, and returns a <code>CoxModel</code>
+ object.  <var>T</var> may instead be an <em class="math">n</em>-by-2 matrix whose rows give a
+ <em class="math">(start, stop]</em> interval of exposure, the counting process form, in
  which an observation joins the risk set only after its start time.
 </p>
-<p> <math>h_0(t)</math> is the baseline hazard, which is left unspecified: the
+<p> <em class="math">h_0(t)</em> is the baseline hazard, which is left unspecified: the
  coefficients are estimated by maximizing the Cox partial likelihood, which
  does not involve it.  <strong><var>X</var> must not contain a column of ones</strong>,
  the model having no constant term, since any constant is absorbed into that
@@ -997,30 +997,30 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="25%">Name</th><th width="75%">Value</th></tr></thead>
 <tr><td width="25%"><code>&quot;Baseline&quot;</code></td><td width="75%">The <var>X</var> values at which the baseline hazard
- is computed, either a scalar or a 1-by-<math>p</math> vector.  The default is the
+ is computed, either a scalar or a 1-by-<em class="math">p</em> vector.  The default is the
  mean of each numeric predictor and zero for each indicator column of a
  categorical predictor, taken within each stratum.  Pass <code>0</code> for a
  hazard relative to the origin.  The coefficients do not depend on this
  choice.</td></tr>
 <tr><td width="25%"><code>&quot;Beta&quot;</code></td><td width="75%">The starting value of the iteration, a vector of
- length <math>p</math>.  The default is <code>0.01 ./ std (<var>X</var>)</code>.</td></tr>
+ length <em class="math">p</em>.  The default is <code>0.01 ./ std (<var>X</var>)</code>.</td></tr>
 <tr><td width="25%"><code>&quot;CategoricalPredictors&quot;</code></td><td width="75%">The predictors to treat as
  categorical, given as column indices, a logical vector, or a cell array of
  predictor names.  Table variables of class <code>categorical</code> are detected
  without this argument.</td></tr>
-<tr><td width="25%"><code>&quot;Censoring&quot;</code></td><td width="75%">A logical or 0/1 vector of length <math>n</math>,
+<tr><td width="25%"><code>&quot;Censoring&quot;</code></td><td width="75%">A logical or 0/1 vector of length <em class="math">n</em>,
  where 1 marks an observation right-censored at its recorded time.  The
  default is a vector of zeros, so every observation is a recorded event.</td></tr>
-<tr><td width="25%"><code>&quot;Frequency&quot;</code></td><td width="75%">A vector of length <math>n</math> of non-negative
+<tr><td width="25%"><code>&quot;Frequency&quot;</code></td><td width="75%">A vector of length <em class="math">n</em> of non-negative
  values giving the number of observations each row represents, or a weight.
  The default is a vector of ones.</td></tr>
 <tr><td width="25%"><code>&quot;OptimizationOptions&quot;</code></td><td width="75%">A structure of iteration settings,
  as built by <code>statset (&quot;fitcox&quot;)</code>.  The fields used are
  <code>&quot;MaxIter&quot;</code>, <code>&quot;TolX&quot;</code> and <code>&quot;Display&quot;</code>.</td></tr>
-<tr><td width="25%"><code>&quot;PredictorNames&quot;</code></td><td width="75%">A cell array of <math>p</math> predictor names.
+<tr><td width="25%"><code>&quot;PredictorNames&quot;</code></td><td width="75%">A cell array of <em class="math">p</em> predictor names.
  The default is <code>&quot;X1&quot;</code>, <code>&quot;X2&quot;</code>, and so on, or the table variable
  names.</td></tr>
-<tr><td width="25%"><code>&quot;Stratification&quot;</code></td><td width="75%">A vector of length <math>n</math> of stratum
+<tr><td width="25%"><code>&quot;Stratification&quot;</code></td><td width="75%">A vector of length <em class="math">n</em> of stratum
  labels.  Each stratum carries its own baseline hazard and its own risk sets,
  while the coefficients are shared across all of them.</td></tr>
 <tr><td width="25%"><code>&quot;TieBreakMethod&quot;</code></td><td width="75%">The method of handling tied event times,

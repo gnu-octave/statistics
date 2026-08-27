@@ -2255,7 +2255,7 @@ Cost of misclassification
 <p> </p>
 <p> A numeric matrix with one row and one column per class, where
  <code>Cost(i,j)</code> is the cost of classifying an observation of class
- <math>i</math> as class <math>j</math>.  It is taken from the model this object was
+ <em class="math">i</em> as class <em class="math">j</em>.  It is taken from the model this object was
  compacted from.  This property is read-only.
 </p>
 <p> A cost may also be given as a struct with the fields
@@ -2368,19 +2368,19 @@ Transformation function for classification scores
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-2 &times; x))</em></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><em class="math">log (x ./ (1 - x))</em></td></tr>
 <tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
- 0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-x))</em></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <em class="math">-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
+ 0</em></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><em class="math">2 &times; x - 1</em></td></tr>
 <tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><em class="math">2 ./ (1 + exp (-x)) - 1</em></td></tr>
 </table>
 </div>
 
@@ -2484,8 +2484,8 @@ Classify new data points into categories using the neural network
  <var>obj</var> must be a <code>CompactClassificationNeuralNetwork</code> class
  object.
 </li><li>
- <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the neural network
+ <var>XC</var> must be an <em class="math">M&times;P</em> numeric matrix with the same number of
+ features <em class="math">P</em> as the corresponding predictors of the neural network
  model in <var>obj</var>.
 </li></ul>
 

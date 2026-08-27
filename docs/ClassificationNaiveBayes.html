@@ -981,8 +981,8 @@
  <code>fitcnb</code> function or the class constructor.
 </p>
 <p> Each predictor carries its own distribution, named in
- <code>DistributionNames</code>, and the fitted parameters of class <math>k</math> and
- predictor <math>j</math> are held in <code>DistributionParameters{k,j}</code>.  A
+ <code>DistributionNames</code>, and the fitted parameters of class <em class="math">k</em> and
+ predictor <em class="math">j</em> are held in <code>DistributionParameters{k,j}</code>.  A
  <code>'normal'</code> predictor stores a two element column vector, the class
  conditional mean and standard deviation; a <code>'kernel'</code> predictor
  stores a <code>prob.KernelDistribution</code> object.
@@ -1456,7 +1456,7 @@ Misclassification cost
 <p> </p>
 <p> A square numeric matrix with one row and column per class, in the order
  of <code>ClassNames</code>.  <code>Cost(i,j)</code> is the cost of classifying an
- observation of class <math>i</math> into class <math>j</math>, and the default is
+ observation of class <em class="math">i</em> into class <em class="math">j</em>, and the default is
  one off the diagonal and zero on it.  It may be assigned after fitting,
  as a matrix or as a structure carrying <code>ClassNames</code> and
  <code>ClassificationCosts</code>.
@@ -1612,7 +1612,7 @@ Fitted distribution parameters
 <p> </p>
 <p> A cell array with one row per class and one column per predictor.
  <code>DistributionParameters{k,j}</code> holds the parameters fitted to
- predictor <math>j</math> within class <math>k</math>: a two element column vector,
+ predictor <em class="math">j</em> within class <em class="math">k</em>: a two element column vector,
  the mean and the standard deviation, for a <code>'normal'</code> predictor,
  and a <code>prob.KernelDistribution</code> object for a <code>'kernel'</code> one.
  This property is read-only.

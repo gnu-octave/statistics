@@ -980,7 +980,7 @@
 <p> <code><var>f</var> = ksdensity (<var>x</var>, <var>pts</var>)</code> evaluates the estimate at the
  values in <var>pts</var> instead; <var>f</var> is then the same size as <var>pts</var>.  For
  <code>'Function'</code> equal to <code>'icdf'</code> the entries of <var>pts</var> are
- probabilities in <math>[0, 1]</math>.
+ probabilities in <em class="math">[0, 1]</em>.
 </p>
 <p> <code>[<var>f</var>, <var>xi</var>, <var>bw</var>] = ksdensity (&hellip;)</code> additionally
  returns the bandwidth <var>bw</var> of the smoothing kernel.
@@ -996,7 +996,7 @@
  <var>z</var>.</td></tr>
 <tr><td width="18%"><code>'Bandwidth'</code></td><td width="82%">The kernel bandwidth, a positive scalar.  The
  default is the value that is optimal for estimating a normal density,
- <math><var>bw</var> = <var>sigma</var> &times; (4 / (3 &times; <var>n</var>)) ^ (1 / 5)</math>, with
+ <em class="math"><var>bw</var> = <var>sigma</var> &times; (4 / (3 &times; <var>n</var>)) ^ (1 / 5)</em>, with
  <var>sigma</var> a robust estimate of the standard deviation of <var>x</var>.</td></tr>
 <tr><td width="18%"><code>'Function'</code></td><td width="82%">The function to estimate: <code>'pdf'</code>
  (default), <code>'cdf'</code>, <code>'icdf'</code>, <code>'survivor'</code>, or
@@ -1005,7 +1005,7 @@
  element of <var>x</var>.  The default weights are all equal.</td></tr>
 <tr><td width="18%"><code>'NumPoints'</code></td><td width="82%">The number of equally spaced points <var>xi</var>
  at which to evaluate the estimate when <var>pts</var> is not given.  The default
- is <math>100</math>.</td></tr>
+ is <em class="math">100</em>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Descriptive_Statistics/ksdensity.m">ksdensity</a>

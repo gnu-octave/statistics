@@ -980,26 +980,26 @@
 </p>
 <p> The Jarque-Bera test statistic is
  $$ JB = \frac{n}{6} \left( s^2 + \frac{(k-3)^2}{4} \right), $$
-  where <math>n</math> is the sample size, <math>s</math> is the sample skewness, and
- <math>k</math> is the sample kurtosis.  Under the null hypothesis it is
+  where <em class="math">n</em> is the sample size, <em class="math">s</em> is the sample skewness, and
+ <em class="math">k</em> is the sample kurtosis.  Under the null hypothesis it is
  asymptotically chi-square distributed with two degrees of freedom.
 </p>
 <p> <code><var>h</var> = jbtest (<var>x</var>, <var>alpha</var>)</code> performs the test at the
- significance level <var>alpha</var>, a scalar in the range <math>(0,1)</math>.  The
- default is <math>0.05</math>.
+ significance level <var>alpha</var>, a scalar in the range <em class="math">(0,1)</em>.  The
+ default is <em class="math">0.05</em>.
 </p>
 <p> <code><var>h</var> = jbtest (<var>x</var>, <var>alpha</var>, <var>mctol</var>)</code> computes a
  Monte-Carlo approximation of the p-value instead of interpolating the
  embedded table.  <var>mctol</var> is the maximum Monte-Carlo standard
  error allowed for the p-value; the number of simulated samples is chosen
  accordingly.  Use this for small samples, where the chi-square approximation
- is inaccurate, or for significance levels outside <math>[0.001, 0.5]</math>.
+ is inaccurate, or for significance levels outside <em class="math">[0.001, 0.5]</em>.
 </p>
 <p> <code>[<var>h</var>, <var>p</var>] = jbtest (&hellip;)</code> also returns the p-value
  <var>p</var> of the test.  <var>p</var> is clamped to the tabulated range
- <math>[0.001, 0.5]</math>, as MATLAB clamps it, and a warning is issued when the
+ <em class="math">[0.001, 0.5]</em>, as MATLAB clamps it, and a warning is issued when the
  value lies outside that range.  The warning is an addition here: MATLAB
- clamps silently, so a p-value reported as <math>0.001</math> or <math>0.5</math> there
+ clamps silently, so a p-value reported as <em class="math">0.001</em> or <em class="math">0.5</em> there
  may be a bound rather than an estimate, with nothing to say so.
 </p>
 <p> <code>[<var>h</var>, <var>p</var>, <var>jbstat</var>, <var>critval</var>] = jbtest (&hellip;)</code> also
@@ -1007,7 +1007,7 @@
  at significance level <var>alpha</var>.  The null hypothesis is rejected when
  <code><var>jbstat</var> &gt; <var>critval</var></code>.
 </p>
-<p> Note: for <math>n \le 2000</math> the p-value and critical value are obtained by
+<p> Note: for <em class="math">n \le 2000</em> the p-value and critical value are obtained by
  interpolating an embedded critical-value table (the same approach MATLAB
  uses); for larger samples the large-sample chi-square approximation with two
  degrees of freedom is used instead.  The embedded table was generated here by

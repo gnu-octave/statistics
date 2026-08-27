@@ -967,10 +967,10 @@
 </p>
 <div class="ms-5">
 <p> <code><var>f</var> = mvksdensity (<var>x</var>, <var>pts</var>)</code> computes a probability
- density estimate of the sample in the <math>N&times;D</math> matrix <var>x</var>, evaluated at
- the points in the <math>M&times;D</math> matrix <var>pts</var>.  Each row of <var>x</var> is a
- single <math>D</math>-dimensional observation, and each row of <var>pts</var> is a point
- at which to evaluate the estimate.  The result <var>f</var> is an <math>M&times;1</math>
+ density estimate of the sample in the <em class="math">N&times;D</em> matrix <var>x</var>, evaluated at
+ the points in the <em class="math">M&times;D</em> matrix <var>pts</var>.  Each row of <var>x</var> is a
+ single <em class="math">D</em>-dimensional observation, and each row of <var>pts</var> is a point
+ at which to evaluate the estimate.  The result <var>f</var> is an <em class="math">M&times;1</em>
  vector, with one density value per row of <var>pts</var>.
 </p>
 <p> The density estimate uses a product kernel: the multivariate kernel is the
@@ -983,7 +983,7 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="82%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>'Bandwidth'</code></td><td width="82%">The kernel bandwidth, either a positive scalar
- applied to every dimension or a <math>1&times;D</math> vector of positive values, one per
+ applied to every dimension or a <em class="math">1&times;D</em> vector of positive values, one per
  dimension.  The default is a diagonal normal-reference (Silverman) rule
  computed from <var>x</var>.</td></tr>
 <tr><td width="18%"><code>'Kernel'</code></td><td width="82%">The smoothing kernel applied in each dimension:

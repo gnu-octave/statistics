@@ -969,12 +969,12 @@
 </p>
 <div class="ms-5">
 <ul>
-<li> <var>BinEdges</var> is a <math>1xP</math> cell of row vectors and
-<var>ShapeValues</var> a <math>1xP</math> cell of column vectors, as
+<li> <var>BinEdges</var> is a <em class="math">1xP</em> cell of row vectors and
+<var>ShapeValues</var> a <em class="math">1xP</em> cell of column vectors, as
 <code>gamboosttrain</code> returns them in the fields of the same names.  Each
 shape function is a step function over its predictor&rsquo;s bins, so a term is
 evaluated by a lookup.
-</li><li> <var>X</var> is an <math>NxP</math> numeric matrix with one column per additive
+</li><li> <var>X</var> is an <em class="math">NxP</em> numeric matrix with one column per additive
 term, and a count that does not match is an error.  A missing value
 contributes nothing from that term rather than making the whole prediction
 <code>NaN</code>, which is what a tree does with a value it cannot place.  A
@@ -983,7 +983,7 @@ so a shape function is constant beyond its data rather than extrapolated.
 </li><li> <var>Intercept</var> is the model&rsquo;s constant term.
 </li><li> <var>Link</var>, if given, selects what the additive prediction is mapped
 through: <code>0</code> returns it as it stands and <code>1</code> takes it as a
-log-odds, returning the <math>Nx2</math> matrix of class probabilities whose
+log-odds, returning the <em class="math">Nx2</em> matrix of class probabilities whose
 second column is the logistic function of it.  The default is <code>0</code>.
 </li><li> <var>PairBinEdges</var>, <var>PairValues</var> and <var>Pairs</var> carry the
 interaction terms, as <code>gamboostinter</code> returns the first two and as it

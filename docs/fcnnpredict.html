@@ -975,7 +975,7 @@
 </li><li> <var>LayerBiases</var> : A cell row vector holding one bias column per layer, matching <var>LayerWeights</var> layer for layer and row for row.
 </li><li> <var>Activations</var> : The activation function of the hidden layers, named as a character vector applying to all of them or as a cellstring naming them one by one.  The supported names are listed under <code>fcnntrain</code>.
 </li><li> <var>OutputLayerActivation</var> : The activation function of the output layer, named as a character vector.
-</li><li> <var>XC</var> : An <math>NxM</math> matrix containing the data set to be predicted upon.  Rows <math>N</math> correspond to individual samples and columns <math>M</math> correspond to features (dimensions).  Type of <var>XC</var> must be double and the number of features must correspond to those of the trained model.
+</li><li> <var>XC</var> : An <em class="math">NxM</em> matrix containing the data set to be predicted upon.  Rows <em class="math">N</em> correspond to individual samples and columns <em class="math">M</em> correspond to features (dimensions).  Type of <var>XC</var> must be double and the number of features must correspond to those of the trained model.
 </li></ul>
 
 <p><code>fcnnpredict</code> can also be called with a sixth input argument, in which case, <var>NumThreads</var>, a positive scalar integer value, defines the number of threads to be used when computing the activation layers.  For layers with less than 1000 neurons, <var>NumThreads</var> always defaults to 1. 

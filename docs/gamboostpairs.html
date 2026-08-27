@@ -968,34 +968,34 @@
 <div class="ms-5">
 <p><code><var>S</var> = gamboostpairs (<var>X</var>, <var>R</var>)</code> lays the residuals <var>R</var>
 of a fitted additive model on the coarse grid of each pair of columns of
-<var>X</var> and returns the two-way analysis of variance <math>F</math> ratio testing
+<var>X</var> and returns the two-way analysis of variance <em class="math">F</em> ratio testing
 what only the cells explain.  It is used to rank candidate interactions for
 <code>ClassificationGAM</code> and <code>RegressionGAM</code>, and it is not meant to be
 called directly.
 </p>
-<p>The <math>p</math>-values are deliberately not computed here.  Turning <math>F</math>
+<p>The <em class="math">p</em>-values are deliberately not computed here.  Turning <em class="math">F</em>
 into a probability needs <code>fcdf</code>, which the package already ships and
 which is verified against MATLAB, so the caller applies it rather than a
 second implementation being carried in the compiled engine.  Which pairs to
 keep is policy and belongs beside that.
 </p>
 <ul>
-<li> <var>X</var> is an <math>NxP</math> numeric matrix of predictors, and <var>P</var> must
+<li> <var>X</var> is an <em class="math">NxP</em> numeric matrix of predictors, and <var>P</var> must
 be at least 2 for any pair to exist.
-</li><li> <var>R</var> is the <math>Nx1</math> residual vector of the additive fit.
+</li><li> <var>R</var> is the <em class="math">Nx1</em> residual vector of the additive fit.
 </li></ul>
 
 <p><var>S</var> is a structure with the following fields, one row per pair, ordered
 as <code>nchoosek</code> orders them.
 </p>
 <ul>
-<li> <code>Pairs</code>, the <math>Mx2</math> matrix of predictor index pairs.
-</li><li> <code>F</code>, the <math>Mx1</math> vector of <math>F</math> ratios.  A pair with too
+<li> <code>Pairs</code>, the <em class="math">Mx2</em> matrix of predictor index pairs.
+</li><li> <code>F</code>, the <em class="math">Mx1</em> vector of <em class="math">F</em> ratios.  A pair with too
 few observations, no spare degrees of freedom or no within-cell scatter
 scores <code>0</code>.
-</li><li> <code>DF1</code> and <code>DF2</code>, the <math>Mx1</math> numerator and denominator
+</li><li> <code>DF1</code> and <code>DF2</code>, the <em class="math">Mx1</em> numerator and denominator
 degrees of freedom.
-</li><li> <code>BinEdges</code>, a <math>1xP</math> cell of the coarse cut points each
+</li><li> <code>BinEdges</code>, a <em class="math">1xP</em> cell of the coarse cut points each
 predictor was laid on.  The grid is fixed at eight equal-frequency bins,
 which is what MATLAB reports for pair detection at every sample size.
 </li></ul>

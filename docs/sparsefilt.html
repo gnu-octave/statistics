@@ -968,14 +968,14 @@
 </p>
 <div class="ms-5">
 <p> <code><var>Mdl</var> = sparsefilt (<var>X</var>, <var>Q</var>)</code> learns <var>Q</var> features from
- the <math>N &times; P</math> data matrix <var>X</var> (rows are observations, columns are
+ the <em class="math">N &times; P</em> data matrix <var>X</var> (rows are observations, columns are
  predictors) and returns a <code>SparseFiltering</code> object <var>Mdl</var>.  Apply the
  learned transformation to data with <code>transform (<var>Mdl</var>, <var>X</var>)</code>.
 </p>
-<p> The <math>N &times; <var>Q</var></math> features returned by <code>transform</code> are the
+<p> The <em class="math">N &times; <var>Q</var></em> features returned by <code>transform</code> are the
  soft-absolute activations <code>sqrt ((<var>X</var> * <var>W</var>) .^ 2 + 1e-8)</code>,
  normalized first across observations (each feature) and then across features
- (each observation).  The <math>P &times; <var>Q</var></math> weight matrix <var>W</var> minimizes
+ (each observation).  The <em class="math">P &times; <var>Q</var></em> weight matrix <var>W</var> minimizes
  the sum of those features plus an L2 penalty <code><var>Lambda</var> * ||<var>W</var>
  ||_F^2</code>, driving the features to be sparse.
 </p>
@@ -990,7 +990,7 @@
 <dd> Logical; center and scale each predictor before fitting (default
  <code>false</code>).</dd>
 <dt> <code>'InitialTransformWeights'</code></dt>
-<dd> A <math>P &times; <var>Q</var></math> initial value for the weights.  The default is random.</dd>
+<dd> A <em class="math">P &times; <var>Q</var></em> initial value for the weights.  The default is random.</dd>
 <dt> <code>'GradientTolerance'</code>, <code>'StepTolerance'</code></dt>
 <dd> Stop once the gradient&rsquo;s or the step&rsquo;s infinity norm falls to or below the
  given value (default <code>1e-6</code> each).  They govern the fit only under

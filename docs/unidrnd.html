@@ -972,7 +972,7 @@
 <p> <code><var>r</var> = unidrnd (<var>N</var>)</code> returns an array of random numbers chosen
  from the discrete uniform distribution with parameter <var>N</var>, which
  corresponds to the maximum observable value.  <code>unidrnd</code> assumes the
- integer values in the range <math>[1,N]</math> with equal probability.  The size of
+ integer values in the range <em class="math">[1,N]</em> with equal probability.  The size of
  <var>r</var> is the size of <var>N</var>.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
@@ -986,7 +986,7 @@
  also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
 <p> Warning: The underlying implementation uses the double class and will only
- be accurate for <var>N</var> &lt; <code>flintmax</code> (<math>2^{53}</math> on
+ be accurate for <var>N</var> &lt; <code>flintmax</code> (<em class="math">2^{53}</em> on
  IEEE 754 compatible systems).
 </p>
 <p> Further information about the discrete uniform distribution can be found at

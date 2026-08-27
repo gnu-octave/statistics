@@ -973,11 +973,11 @@
 </p>
 <p> $$ h(x, t) = h_0(t)\exp\left(\sum_{j=1}^{p} x_{j} b_j\right) $$
 </p>
-<p> where <math>h_0(t)</math> is an unspecified baseline hazard.  The model carries no
+<p> where <em class="math">h_0(t)</em> is an unspecified baseline hazard.  The model carries no
  constant term: any constant is absorbed into that baseline.
 </p>
 <p> The most useful properties are <code>Coefficients</code> (a table of estimates,
- standard errors, <math>z</math>-statistics and p-values), <code>Hazard</code> (the
+ standard errors, <em class="math">z</em>-statistics and p-values), <code>Hazard</code> (the
  estimated baseline cumulative hazard), <code>LogLikelihood</code>,
  <code>Residuals</code>, and the three p-values <code>LikelihoodRatioTestPValue</code>,
  <code>ProportionalHazardsPValue</code> and
@@ -1415,9 +1415,9 @@ Fit a Cox proportional hazards regression model.
 </dl>
 <p> </p>
 <p> <code><var>mdl</var> = CoxModel (<var>X</var>, <var>T</var>)</code> fits the model to the
- <math>n</math>-by-<math>p</math> numeric predictor matrix <var>X</var> and the
- <math>n</math>-by-1 vector of event times <var>T</var>.  <var>T</var> may instead be an
- <math>n</math>-by-2 matrix giving a <math>(start, stop]</math> interval of exposure,
+ <em class="math">n</em>-by-<em class="math">p</em> numeric predictor matrix <var>X</var> and the
+ <em class="math">n</em>-by-1 vector of event times <var>T</var>.  <var>T</var> may instead be an
+ <em class="math">n</em>-by-2 matrix giving a <em class="math">(start, stop]</em> interval of exposure,
  the counting process form.
 </p>
 <p> <code><var>mdl</var> = CoxModel (<var>tbl</var>, <var>respvar</var>)</code> takes the data
@@ -1434,28 +1434,28 @@ Fit a Cox proportional hazards regression model.
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="25%">Name</th><th width="75%">Value</th></tr></thead>
 <tr><td width="25%"><code>&quot;Baseline&quot;</code></td><td width="75%">The <var>X</var> values at which the baseline
- hazard is computed, either a scalar or a 1-by-<math>p</math> vector.  The
+ hazard is computed, either a scalar or a 1-by-<em class="math">p</em> vector.  The
  default is the mean of each numeric predictor and zero for each indicator
  column of a categorical predictor, taken within each stratum.</td></tr>
 <tr><td width="25%"><code>&quot;Beta&quot;</code></td><td width="75%">The starting value of the iteration, a vector
- of length <math>p</math>.  The default is <code>0.01 ./ std (<var>X</var>)</code>.</td></tr>
+ of length <em class="math">p</em>.  The default is <code>0.01 ./ std (<var>X</var>)</code>.</td></tr>
 <tr><td width="25%"><code>&quot;CategoricalPredictors&quot;</code></td><td width="75%">The predictors to treat as
  categorical, given as column indices, a logical vector, or a cell array
  of predictor names.  Table variables of class <code>categorical</code> are
  detected without this argument.</td></tr>
 <tr><td width="25%"><code>&quot;Censoring&quot;</code></td><td width="75%">A logical or 0/1 vector of length
- <math>n</math>, where 1 marks an observation right-censored at its recorded
+ <em class="math">n</em>, where 1 marks an observation right-censored at its recorded
  time.  The default is a vector of zeros.</td></tr>
-<tr><td width="25%"><code>&quot;Frequency&quot;</code></td><td width="75%">A vector of length <math>n</math> of
+<tr><td width="25%"><code>&quot;Frequency&quot;</code></td><td width="75%">A vector of length <em class="math">n</em> of
  non-negative values giving the number of observations each row
  represents, or a weight.  The default is a vector of ones.</td></tr>
 <tr><td width="25%"><code>&quot;OptimizationOptions&quot;</code></td><td width="75%">A structure of iteration
  settings, as built by <code>statset (&quot;fitcox&quot;)</code>.  The fields used are
  <code>&quot;MaxIter&quot;</code>, <code>&quot;TolX&quot;</code> and <code>&quot;Display&quot;</code>.</td></tr>
-<tr><td width="25%"><code>&quot;PredictorNames&quot;</code></td><td width="75%">A cell array of <math>p</math> predictor
+<tr><td width="25%"><code>&quot;PredictorNames&quot;</code></td><td width="75%">A cell array of <em class="math">p</em> predictor
  names.  The default is <code>&quot;X1&quot;</code>, <code>&quot;X2&quot;</code>, and so on, or the
  table variable names.</td></tr>
-<tr><td width="25%"><code>&quot;Stratification&quot;</code></td><td width="75%">A vector of length <math>n</math> of
+<tr><td width="25%"><code>&quot;Stratification&quot;</code></td><td width="75%">A vector of length <em class="math">n</em> of
  stratum labels.  Each stratum carries its own baseline hazard and its own
  risk sets, while the coefficients are shared across all of them.</td></tr>
 <tr><td width="25%"><code>&quot;TieBreakMethod&quot;</code></td><td width="75%">The method of handling tied event
@@ -2027,8 +2027,8 @@ Sequential tests on the coefficients of a Cox model.
 </dl>
 <p> </p>
 <p> <code><var>tbl</var> = linhyptest (<var>obj</var>)</code> returns a table with one row
- per predictor, whose <math>k</math>-th row tests the hypothesis that the
- coefficients of the <math>k</math>-th and every later predictor are jointly
+ per predictor, whose <em class="math">k</em>-th row tests the hypothesis that the
+ coefficients of the <em class="math">k</em>-th and every later predictor are jointly
  zero.  The <code>Predictor</code> column names the predictors the hypothesis
  leaves in the model, so its first row reads <code>&quot;Empty Model&quot;</code> and
  tests every coefficient at once, and its last row tests the last

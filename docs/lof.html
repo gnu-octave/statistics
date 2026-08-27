@@ -970,12 +970,12 @@
 </p>
 <div class="ms-5">
 <p> <code><var>Mdl</var> = lof (<var>X</var>)</code> fits a Local Outlier Factor model to the
- <math>N</math>-by-<math>P</math> matrix <var>X</var>, whose rows are observations and columns
+ <em class="math">N</em>-by-<em class="math">P</em> matrix <var>X</var>, whose rows are observations and columns
  are variables, and returns a <code>LocalOutlierFactor</code> object <var>Mdl</var>.
 </p>
 <p> <code>[<var>Mdl</var>, <var>tf</var>, <var>scores</var>] = lof (<var>X</var>)</code> also returns the
- <math>N</math>-by-1 logical vector <var>tf</var> flagging the anomalous observations and
- the <math>N</math>-by-1 vector <var>scores</var> of LOF values.  A score near 1
+ <em class="math">N</em>-by-1 logical vector <var>tf</var> flagging the anomalous observations and
+ the <em class="math">N</em>-by-1 vector <var>scores</var> of LOF values.  A score near 1
  indicates an inlier, whereas a score well above 1 indicates an outlier lying
  in a region sparser than its neighbors.
 </p>
@@ -983,7 +983,7 @@
  reachability density of its <var>NumNeighbors</var> nearest neighbors to its own
  local reachability density, where the local reachability density is the
  inverse mean reachability distance to those neighbors and the reachability
- distance from <math>p</math> to <math>o</math> is <code>max (k-distance (o), d (p, o))</code>.
+ distance from <em class="math">p</em> to <em class="math">o</em> is <code>max (k-distance (o), d (p, o))</code>.
 </p>
 <p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.
 </p>
@@ -991,12 +991,12 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="28%"><var>Name</var></th><th width="72%"><var>Value</var></th></tr></thead>
 <tr><td width="28%"><code>'NumNeighbors'</code></td><td width="72%">the number of nearest neighbors, a positive
- integer less than <math>N</math>.  The default is <code>min (20, <var>u</var> - 1)</code>,
+ integer less than <em class="math">N</em>.  The default is <code>min (20, <var>u</var> - 1)</code>,
  where <var>u</var> is the number of unique observations.</td></tr>
 <tr><td width="28%"><code>'Distance'</code></td><td width="72%">the distance metric used to find neighbors, one
  of the metrics accepted by <code>pdist2</code> (<code>'euclidean'</code> by default).</td></tr>
 <tr><td width="28%"><code>'ContaminationFraction'</code></td><td width="72%">the assumed fraction of anomalies
- in <var>X</var>, a scalar in <math>[0, 1]</math> (default 0).  It sets
+ in <var>X</var>, a scalar in <em class="math">[0, 1]</em> (default 0).  It sets
  <code><var>Mdl</var>.ScoreThreshold</code> to <code>quantile (<var>scores</var>, 1 -
  <var>ContaminationFraction</var>)</code>; when it is 0 the threshold is the maximum
  score and no training observation is flagged.</td></tr>

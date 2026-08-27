@@ -980,7 +980,7 @@
  observations as <var>Mdl</var> was trained on.
 </li></ul>
 
-<p> Every observation is held out by exactly one fold under <math>k</math>-fold or
+<p> Every observation is held out by exactly one fold under <em class="math">k</em>-fold or
  leave-one-out partitioning, so <code>kfoldPredict</code> can answer for it with a
  model that never saw it.  Under a holdout partition only the test set is
  answered for, and the rest come back <code>NaN</code>.
@@ -1649,7 +1649,7 @@ Compute the cross-validated regression loss.
 <tr><td width="24%"><code>'LossFun'</code></td><td width="76%"><code>'mse'</code>, the default,
  <code>'epsiloninsensitive'</code>, or a function handle called as
  <code><var>lossfun</var> (<var>Y</var>, <var>yFit</var>, <var>W</var>)</code> returning a scalar.
- The <math>epsilon</math>-insensitive loss belongs to a support vector model
+ The <em class="math">epsilon</em>-insensitive loss belongs to a support vector model
  and is refused for any other, there being no tube to measure against.</td></tr>
 <tr><td width="24%"><code>'Mode'</code></td><td width="76%"><code>'average'</code>, the default, which returns
  one number over the observations of every fold asked for, or
@@ -1692,8 +1692,8 @@ Apply a function to each fold of a cross-validated model.
 </dl>
 <p> </p>
 <p> <code><var>vals</var> = kfoldfun (<var>obj</var>, <var>fun</var>)</code> calls <var>fun</var> once
- per fold and returns a <math>K&times;M</math> numeric matrix whose row <math>k</math> is
- what <var>fun</var> returned for fold <math>k</math>.
+ per fold and returns a <em class="math">K&times;M</em> numeric matrix whose row <em class="math">k</em> is
+ what <var>fun</var> returned for fold <em class="math">k</em>.
 </p>
 <p> <var>fun</var> is a function handle taking seven inputs and returning a
  numeric vector of the same length every time it is called:

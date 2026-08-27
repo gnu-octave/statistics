@@ -983,8 +983,8 @@
  in <code>[-2/9, 2/9]</code>.
 </p>
 <p> For the Gaussian and Student&rsquo;s t families, <var>param</var> is a linear
- correlation coefficient <var>rho</var> in the range <math>[-1,1]</math>, or a
- <math>p</math>-by-<math>p</math> correlation matrix, in which case <var>r</var> has the same
+ correlation coefficient <var>rho</var> in the range <em class="math">[-1,1]</em>, or a
+ <em class="math">p</em>-by-<em class="math">p</em> correlation matrix, in which case <var>r</var> has the same
  size and each element is computed elementwise.  For the Clayton,
  Gumbel-Hougaard, and Frank families, <var>param</var> is the scalar copula
  parameter.
@@ -994,15 +994,15 @@
  default) for Kendall&rsquo;s tau, or <code>&quot;Spearman&quot;</code> for Spearman&rsquo;s rho.
 </p>
 <p> The relationships are closed form for the Gaussian and Student&rsquo;s t families
- (<math>r = 2 \arcsin(\rho) / \pi</math> for Kendall&rsquo;s tau and
- <math>r = 6 \arcsin(\rho/2) / \pi</math> for Spearman&rsquo;s rho) and for the Kendall&rsquo;s
+ (<em class="math">r = 2 \arcsin(\rho) / \pi</em> for Kendall&rsquo;s tau and
+ <em class="math">r = 6 \arcsin(\rho/2) / \pi</em> for Spearman&rsquo;s rho) and for the Kendall&rsquo;s
  tau of the Archimedean families.  Spearman&rsquo;s rho of the Archimedean families
  has no closed form and is computed by accurate numerical integration of the
  copula.
 </p>
 <p> <strong>Note:</strong> <small>MATLAB</small> returns the Archimedean Spearman&rsquo;s rho by
  interpolating an internal precomputed table, whose values deviate from the
- true relationship by up to about <math>10^{-4}</math>.  This implementation returns
+ true relationship by up to about <em class="math">10^{-4}</em>.  This implementation returns
  the mathematically exact value instead, so results for
  <code>copulastat (<var>family</var>, <var>param</var>, &quot;type&quot;, &quot;Spearman&quot;)</code> with an
  Archimedean <var>family</var> may differ from <small>MATLAB</small> at that level.

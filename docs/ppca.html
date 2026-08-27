@@ -973,27 +973,27 @@
 </p>
 <div class="ms-5">
 <p> <code><var>coeff</var> = ppca (<var>Y</var>, <var>K</var>)</code> fits a probabilistic principal
- component analysis (PPCA) model with <var>K</var> components to the <math>N &times; P</math>
+ component analysis (PPCA) model with <var>K</var> components to the <em class="math">N &times; P</em>
  data matrix <var>Y</var> (rows are observations, columns are variables) and returns
- the <math>P &times; <var>K</var></math> matrix <var>coeff</var> of orthonormal principal component
+ the <em class="math">P &times; <var>K</var></em> matrix <var>coeff</var> of orthonormal principal component
  coefficients, ordered by decreasing component variance.  <var>Y</var> may contain
  <code>NaN</code> values marking missing observations; the model is fitted by an
  expectation-maximization algorithm that accounts for them.  <var>K</var> must be a
- positive integer smaller than <math>P</math>.
+ positive integer smaller than <em class="math">P</em>.
 </p>
 <p> <code>[<var>coeff</var>, <var>score</var>, <var>pcvar</var>, <var>mu</var>, <var>v</var>, <var>S</var>] =
  ppca (&hellip;)</code> returns further outputs:
 </p>
 <dl compact="compact">
 <dt> <var>score</var></dt>
-<dd> The <math>N &times; <var>K</var></math> principal component scores (the data projected onto the
+<dd> The <em class="math">N &times; <var>K</var></em> principal component scores (the data projected onto the
  components; missing entries are reconstructed from the model before
  projection).</dd>
 <dt> <var>pcvar</var></dt>
-<dd> A <math><var>K</var> &times; 1</math> vector of the principal component variances (the variance
+<dd> A <em class="math"><var>K</var> &times; 1</em> vector of the principal component variances (the variance
  explained by each component).</dd>
 <dt> <var>mu</var></dt>
-<dd> A <math>1 &times; P</math> vector of the estimated mean of <var>Y</var>.</dd>
+<dd> A <em class="math">1 &times; P</em> vector of the estimated mean of <var>Y</var>.</dd>
 <dt> <var>v</var></dt>
 <dd> The estimated residual (isotropic noise) variance.</dd>
 <dt> <var>S</var></dt>
@@ -1006,7 +1006,7 @@
 </p>
 <dl compact="compact">
 <dt> <code>'W0'</code></dt>
-<dd> A <math>P &times; <var>K</var></math> initial value for the loadings used by the
+<dd> A <em class="math">P &times; <var>K</var></em> initial value for the loadings used by the
  expectation-maximization algorithm (missing-data case).</dd>
 <dt> <code>'Options'</code></dt>
 <dd> A structure of algorithm options, as returned by <code>statset</code>, whose

@@ -970,12 +970,12 @@
 </p>
 <div class="ms-5">
 <p> <code><var>Mdl</var> = ocsvm (<var>X</var>)</code> fits a one-class support vector machine to
- the <math>N</math>-by-<math>P</math> matrix <var>X</var>, whose rows are observations and
+ the <em class="math">N</em>-by-<em class="math">P</em> matrix <var>X</var>, whose rows are observations and
  columns are variables, and returns a <code>OneClassSVM</code> object <var>Mdl</var>.
 </p>
 <p> <code>[<var>Mdl</var>, <var>tf</var>, <var>scores</var>] = ocsvm (<var>X</var>)</code> also returns the
- <math>N</math>-by-1 logical vector <var>tf</var> flagging the anomalous observations and
- the <math>N</math>-by-1 vector <var>scores</var> of anomaly scores.  A higher score
+ <em class="math">N</em>-by-1 logical vector <var>tf</var> flagging the anomalous observations and
+ the <em class="math">N</em>-by-1 vector <var>scores</var> of anomaly scores.  A higher score
  indicates an observation that lies further outside the boundary enclosing the
  data, and is therefore more likely to be an anomaly.
 </p>
@@ -1000,7 +1000,7 @@
  means and standard deviations are stored in <code><var>Mdl</var>.Mu</code> and
  <code><var>Mdl</var>.Sigma</code>.</td></tr>
 <tr><td width="34%"><code>'ContaminationFraction'</code></td><td width="66%">the assumed fraction of anomalies
- in <var>X</var>, a scalar in <math>[0, 1]</math> (default 0).  It sets
+ in <var>X</var>, a scalar in <em class="math">[0, 1]</em> (default 0).  It sets
  <code><var>Mdl</var>.ScoreThreshold</code> to <code>quantile (<var>scores</var>, 1 -
  <var>ContaminationFraction</var>)</code>; when it is 0 the threshold is the maximum
  score and no training observation is flagged.</td></tr>

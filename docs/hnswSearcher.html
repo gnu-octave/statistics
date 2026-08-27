@@ -1412,7 +1412,7 @@ Point data
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> Point data, specified as an <math>N&times;P</math> numeric matrix where each row is
+<p> Point data, specified as an <em class="math">N&times;P</em> numeric matrix where each row is
  an observation and each column is a feature.  This property is private
  and cannot be modified after object creation.
 </p>
@@ -1522,7 +1522,7 @@ Create an <code>hnswSearcher</code> object for approximate nearest neighbor
 <p> <code><var>obj</var> = hnswSearcher (<var>X</var>)</code> constructs an
  <code>hnswSearcher</code> object with training data <var>X</var> using the
  default <code>'euclidean'</code> distance metric. <var>X</var> must be an
- <math>N&times;P</math> numeric matrix, where rows represent observations and columns
+ <em class="math">N&times;P</em> numeric matrix, where rows represent observations and columns
  represent features.
 </p>
 <p> <code><var>obj</var> = hnswSearcher (<var>X</var>, <var>name</var>, <var>value</var>)</code>
@@ -1661,8 +1661,8 @@ Find the nearest neighbors in the training data to query points.
 </p>
 <ul>
 <li> <var>obj</var> is an <code>hnswSearcher</code> object.
-</li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
- <math>P</math> must match the number of columns in <var>obj.X</var>.
+</li><li> <var>Y</var> is an <em class="math">M&times;P</em> numeric matrix of query points, where
+ <em class="math">P</em> must match the number of columns in <var>obj.X</var>.
 </li><li> <var>idx</var> contains the indices of the nearest neighbors in
  <var>obj.X</var>.
 </li><li> <var>D</var> contains the corresponding distances.

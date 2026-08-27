@@ -969,11 +969,11 @@
 </p>
 <div class="ms-5">
 <p> <code>[<var>W</var>, <var>H</var>] = nnmf (<var>A</var>, <var>K</var>)</code> factors the nonnegative
- <math>N &times; M</math> matrix <var>A</var> into nonnegative factors <var>W</var> (<math>N &times;
- <var>K</var></math>) and <var>H</var> (<math><var>K</var> &times; M</math>) whose product approximates
+ <em class="math">N &times; M</em> matrix <var>A</var> into nonnegative factors <var>W</var> (<em class="math">N &times;
+ <var>K</var></em>) and <var>H</var> (<em class="math"><var>K</var> &times; M</em>) whose product approximates
  <var>A</var>, by minimizing the root-mean-square residual between <var>A</var> and
  <code><var>W</var> * <var>H</var></code>.  <var>K</var>, the number of factors, is typically smaller
- than <math>N</math> and <math>M</math>.
+ than <em class="math">N</em> and <em class="math">M</em>.
 </p>
 <p> <code>[<var>W</var>, <var>H</var>, <var>D</var>] = nnmf (&hellip;)</code> also returns the
  root-mean-square residual <var>D</var>, that is <code>norm (<var>A</var> - <var>W</var> *
@@ -995,9 +995,9 @@
  and more reliably; multiplicative updates are more sensitive to the starting
  point.</dd>
 <dt> <code>'W0'</code></dt>
-<dd> An <math>N &times; <var>K</var></math> initial value for <var>W</var>.</dd>
+<dd> An <em class="math">N &times; <var>K</var></em> initial value for <var>W</var>.</dd>
 <dt> <code>'H0'</code></dt>
-<dd> A <math><var>K</var> &times; M</math> initial value for <var>H</var>.</dd>
+<dd> A <em class="math"><var>K</var> &times; M</em> initial value for <var>H</var>.</dd>
 <dt> <code>'Replicates'</code></dt>
 <dd> The number of times to repeat the factorization from new random starting
  points, keeping the result with the smallest residual.  The default is 1.

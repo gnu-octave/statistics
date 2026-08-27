@@ -968,12 +968,12 @@
 </p>
 <div class="ms-5">
 <p> <code><var>Mdl</var> = rica (<var>X</var>, <var>Q</var>)</code> learns <var>Q</var> features from the
- <math>N &times; P</math> data matrix <var>X</var> (rows are observations, columns are
+ <em class="math">N &times; P</em> data matrix <var>X</var> (rows are observations, columns are
  predictors) and returns a <code>ReconstructionICA</code> object <var>Mdl</var>.  Apply
  the learned transformation to data with <code>transform (<var>Mdl</var>, <var>X</var>)</code>,
  which returns <code><var>X</var> * <var>Mdl</var>.TransformWeights</code>.
 </p>
-<p> The <math>P &times; <var>Q</var></math> weight matrix (with unit-length columns) minimizes the
+<p> The <em class="math">P &times; <var>Q</var></em> weight matrix (with unit-length columns) minimizes the
  objective
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example"> <var>Lambda</var> * ||<var>X</var> * <var>W</var> * <var>W</var>' - <var>X</var>||_F^2
@@ -995,13 +995,13 @@
 <dd> Logical; center and scale each predictor before fitting (default
  <code>false</code>).</dd>
 <dt> <code>'ContrastFcn'</code></dt>
-<dd> The sparsity contrast <var>g</var> applied to each element <math>z</math> of
- <math><var>X</var> &times; <var>W</var></math>: <code>'logcosh'</code> (default), which is
- <math>0.5 &times; log (cosh (2 &times; z))</math>; <code>'exp'</code>, which is
- <math>-exp (-z^2 / 2)</math>; or <code>'sqrt'</code>, which is
- <math>sqrt (z^2 + 1e-8)</math>, a smooth stand-in for <math>abs (z)</math>.</dd>
+<dd> The sparsity contrast <var>g</var> applied to each element <em class="math">z</em> of
+ <em class="math"><var>X</var> &times; <var>W</var></em>: <code>'logcosh'</code> (default), which is
+ <em class="math">0.5 &times; log (cosh (2 &times; z))</em>; <code>'exp'</code>, which is
+ <em class="math">-exp (-z^2 / 2)</em>; or <code>'sqrt'</code>, which is
+ <em class="math">sqrt (z^2 + 1e-8)</em>, a smooth stand-in for <em class="math">abs (z)</em>.</dd>
 <dt> <code>'InitialTransformWeights'</code></dt>
-<dd> A <math>P &times; <var>Q</var></math> initial value for the weights.  The default is random.</dd>
+<dd> A <em class="math">P &times; <var>Q</var></em> initial value for the weights.  The default is random.</dd>
 <dt> <code>'GradientTolerance'</code>, <code>'StepTolerance'</code></dt>
 <dd> Stop once the gradient&rsquo;s or the step&rsquo;s infinity norm falls to or below the
  given value (default <code>1e-6</code> each).  They govern the fit only under

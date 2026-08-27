@@ -998,7 +998,7 @@
 <tr><td width="18%"><code>'NegClass'</code></td><td width="82%">The negative class(es).  The default,
  <code>'all'</code>, treats every label other than <var>posclass</var> as negative.</td></tr>
 <tr><td width="18%"><code>'Weights'</code></td><td width="82%">A vector of non-negative observation weights.</td></tr>
-<tr><td width="18%"><code>'Cost'</code></td><td width="82%">A <math>2&times;2</math> misclassification-cost matrix
+<tr><td width="18%"><code>'Cost'</code></td><td width="82%">A <em class="math">2&times;2</em> misclassification-cost matrix
  <code>[C(P|P) C(N|P); C(P|N) C(N|N)]</code> used for <var>OPTROCPT</var>.  The default
  is <code>[0 1; 1 0]</code>.</td></tr>
 <tr><td width="18%"><code>'XVals'</code></td><td width="82%">Values of the <var>X</var> criterion at which to return
@@ -1006,18 +1006,18 @@
 <tr><td width="18%"><code>'ProcessNaN'</code></td><td width="82%">How to treat <code>NaN</code> scores:
  <code>'ignore'</code> (default) or <code>'addtofalse'</code>.</td></tr>
 <tr><td width="18%"><code>'NBoot'</code></td><td width="82%">Number of bootstrap replicates for confidence
- bounds on <var>Y</var> and <var>AUC</var>.  The default <math>0</math> computes no bounds.</td></tr>
+ bounds on <var>Y</var> and <var>AUC</var>.  The default <em class="math">0</em> computes no bounds.</td></tr>
 <tr><td width="18%"><code>'BootType'</code></td><td width="82%">The bootstrap interval: <code>'bca'</code> (default,
  bias-corrected and accelerated), <code>'percentile'</code>, or <code>'normal'</code>.</td></tr>
 <tr><td width="18%"><code>'Alpha'</code></td><td width="82%">The significance level for the bounds, so the
- confidence level is <math>1 - <var>Alpha</var></math>.  The default is <math>0.05</math>.</td></tr>
+ confidence level is <em class="math">1 - <var>Alpha</var></em>.  The default is <em class="math">0.05</em>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Model_Evaluation/perfcurve.m">perfcurve</a>
 </div>
 
 <p> With <code>'NBoot'</code> greater than zero, <var>Y</var> is returned as an
- <math>m&times;3</math> array <code>[<var>Y</var>, <var>Ylow</var>, <var>Yhigh</var>]</code> and <var>AUC</var> as
+ <em class="math">m&times;3</em> array <code>[<var>Y</var>, <var>Ylow</var>, <var>Yhigh</var>]</code> and <var>AUC</var> as
  <code>[<var>AUC</var>, <var>AUClow</var>, <var>AUChigh</var>]</code>.  The bootstrap uses an
  independent random stream, so the bounds do not match MATLAB numerically.
  <code>[&hellip;, <var>SUBY</var>, <var>SUBYNAMES</var>] = perfcurve (&hellip;)</code> returns

@@ -977,12 +977,12 @@
 </p>
 <p> <code><var>B</var> = mnrfit (<var>X</var>, <var>Y</var>)</code>  returns a matrix, <var>B</var>, of
  coefficient estimates for a multinomial logistic regression of the nominal
- responses in <var>Y</var> on the predictors in <var>X</var>.  <var>X</var> is an <math>N&times;P</math>
- numeric matrix the observations on predictor variables, where <math>N</math>
- corresponds to the number of observations and <math>P</math> corresponds to
+ responses in <var>Y</var> on the predictors in <var>X</var>.  <var>X</var> is an <em class="math">N&times;P</em>
+ numeric matrix the observations on predictor variables, where <em class="math">N</em>
+ corresponds to the number of observations and <em class="math">P</em> corresponds to
  predictor variables.  <var>Y</var> contains the response category labels and it
- either be an <math>N&times;P</math> categorical or numerical matrix (containing only 1s
- and 0s) or an <math>N&times;1</math> numeric vector with positive integer values, a cell
+ either be an <em class="math">N&times;P</em> categorical or numerical matrix (containing only 1s
+ and 0s) or an <em class="math">N&times;1</em> numeric vector with positive integer values, a cell
  array of character vectors and a logical vector.  <var>Y</var> can also be defined
  as a character matrix with each row corresponding to an observation of
  <var>X</var>.
@@ -1002,8 +1002,8 @@
  <code>'loglog'</code>.  Nominal models always use the logit link.</td></tr>
 <tr><td width="18%"><code>'estdisp'</code></td><td width="80%"><code>'on'</code> to estimate a dispersion
  parameter, scaling the coefficient standard errors by it and testing the
- coefficients against the <math>t</math> distribution, or <code>'off'</code> (default)
- for the theoretical dispersion of <math>1</math>.</td></tr>
+ coefficients against the <em class="math">t</em> distribution, or <code>'off'</code> (default)
+ for the theoretical dispersion of <em class="math">1</em>.</td></tr>
 <tr><td width="18%"><code>'display'</code></td><td width="80%">A flag to enable/disable displaying
  information about the fitted model.  Default is <code>'off'</code>.</td></tr>
 </table>
@@ -1016,7 +1016,7 @@
  coefficients <code>'beta'</code> (same as <var>B</var>), their standard errors
  <code>'se'</code>, covariance matrix <code>'covb'</code>, correlation matrix
  <code>'coeffcorr'</code>, error degrees of freedom <code>'dfe'</code>, the coefficient
- <math>t</math> statistics <code>'t'</code> and <math>p</math>-values <code>'p'</code>, the
+ <em class="math">t</em> statistics <code>'t'</code> and <em class="math">p</em>-values <code>'p'</code>, the
  dispersion parameters <code>'s'</code>, <code>'sfit'</code>, and <code>'estdisp'</code>, and
  the raw, Pearson, and deviance residuals <code>'resid'</code>, <code>'residp'</code>,
  and <code>'residd'</code>.

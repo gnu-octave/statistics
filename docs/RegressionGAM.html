@@ -975,11 +975,11 @@
 </p>
 <ul>
 <li>
- <var>X</var> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <var>X</var> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or variables.
  <var>X</var> will be used to train the GAM model.
 </li><li>
- <var>Y</var> must be <math>N&times;1</math> numeric vector containing the response data
+ <var>Y</var> must be <em class="math">N&times;1</em> numeric vector containing the response data
  corresponding to the predictor data in <var>X</var>. <var>Y</var> must have same
  number of rows as <var>X</var>.
 </li></ul>
@@ -2827,7 +2827,7 @@ Two-way interaction terms of the fitted model
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>Kx2</math> matrix of predictor index pairs, one row per two-way term
+<p> A <em class="math">Kx2</em> matrix of predictor index pairs, one row per two-way term
  the model carries, and <code>zeros (0, 2)</code> when it carries none.  It
  reports what was fitted rather than what was asked for, so a count of
  terms, <code>'all'</code>, a logical matrix and a formula all leave the same
@@ -6104,7 +6104,7 @@ Cross validate a Generalized Additive Model regression object.
  integer greater than 1.</td></tr>
 <tr><td width="28%"><code>'Holdout'</code></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
- scalar in the range <math>(0,1)</math>.</td></tr>
+ scalar in the range <em class="math">(0,1)</em>.</td></tr>
 <tr><td width="28%"><code>'Leaveout'</code></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>

@@ -3308,7 +3308,7 @@ Classification margins of the cross-validated observations.
 <dt><code><h5 class="fs">ClassificationPartitionedModel: <var>m</var> = <b>kfoldMargin</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 <p> </p>
-<p> <code><var>m</var> = kfoldMargin (<var>obj</var>)</code> returns an <math>Nx1</math> vector
+<p> <code><var>m</var> = kfoldMargin (<var>obj</var>)</code> returns an <em class="math">Nx1</em> vector
  holding, for every observation, the score its own fold&rsquo;s model gave the
  true class less the largest score that model gave any other class.  A
  larger margin is a more confident correct answer and a negative one is
@@ -3553,8 +3553,8 @@ Apply a function to each fold of a cross-validated model.
 </dl>
 <p> </p>
 <p> <code><var>vals</var> = kfoldfun (<var>obj</var>, <var>fun</var>)</code> calls <var>fun</var> once
- per fold and returns a <math>K&times;M</math> numeric matrix whose row <math>k</math> is
- what <var>fun</var> returned for fold <math>k</math>.
+ per fold and returns a <em class="math">K&times;M</em> numeric matrix whose row <em class="math">k</em> is
+ what <var>fun</var> returned for fold <em class="math">k</em>.
 </p>
 <p> <var>fun</var> is a function handle taking seven inputs and returning a
  numeric vector of the same length every time it is called:

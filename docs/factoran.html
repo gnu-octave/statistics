@@ -972,9 +972,9 @@
 </p>
 <div class="ms-5">
 <p> <code><var>lambda</var> = factoran (<var>X</var>, <var>m</var>)</code> fits the common factor
- model with <var>m</var> common factors to the <math>N</math>-by-<math>P</math> data matrix
+ model with <var>m</var> common factors to the <em class="math">N</em>-by-<em class="math">P</em> data matrix
  <var>X</var>, whose rows are observations and columns are variables, and returns
- the <math>P</math>-by-<var>m</var> matrix <var>lambda</var> of factor loadings.  The model is
+ the <em class="math">P</em>-by-<var>m</var> matrix <var>lambda</var> of factor loadings.  The model is
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example"> <var>x</var> = <var>mu</var> + <var>lambda</var> * <var>f</var> + <var>e</var>
 </pre></td></tr></table>
@@ -986,7 +986,7 @@
  its specific variance <code><var>psi</var>(i)</code> sum to one.
 </p>
 <p> <code>[<var>lambda</var>, <var>psi</var>] = factoran (&hellip;)</code> also returns the
- <math>P</math>-by-1 vector <var>psi</var> of specific variances.
+ <em class="math">P</em>-by-1 vector <var>psi</var> of specific variances.
 </p>
 <p> <code>[<var>lambda</var>, <var>psi</var>, <var>T</var>] = factoran (&hellip;)</code> also returns
  the <var>m</var>-by-<var>m</var> rotation matrix <var>T</var> that was applied to the
@@ -1016,7 +1016,7 @@
  likelihood.  Test for them with <code>isfield</code> before using them.
 </p>
 <p> <code>[<var>lambda</var>, <var>psi</var>, <var>T</var>, <var>stats</var>, <var>F</var>] = factoran
- (&hellip;)</code> also returns the <math>N</math>-by-<var>m</var> matrix <var>F</var> of predicted
+ (&hellip;)</code> also returns the <em class="math">N</em>-by-<var>m</var> matrix <var>F</var> of predicted
  factor scores.  Scores are not available from a covariance matrix, only from
  data.
 </p>

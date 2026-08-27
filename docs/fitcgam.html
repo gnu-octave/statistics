@@ -973,10 +973,10 @@
 </p>
 <ul>
 <li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> numeric vector containing binary class labels,
+ <code>Y</code> is <em class="math">N&times;1</em> numeric vector containing binary class labels,
  typically 0 or 1.
 </li></ul>
 
@@ -1006,9 +1006,9 @@
 <tr><td width="18%"><code>'ClassNames'</code></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the Discriminant model. <code>ClassNames</code>
  are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>'Cost'</code></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
+<tr><td width="18%"><code>'Cost'</code></td><td width="80%">A <em class="math">N&times;R</em> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var> where
- <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
+ <em class="math">R</em> is the number of unique categories in <var>Y</var>.  If an instance is
  correctly classified into its category the cost is calculated to be 1,
  otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
  default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
@@ -1091,7 +1091,7 @@
 <tr><td width="18%"><code>'InitialLearnRateForInteractions'</code></td><td width="80%">The same for the
  interaction phase.  The default is 1.</td></tr>
 <tr><td width="18%"><code>'MaxPValue'</code></td><td width="80%">A value between 0 and 1.  A candidate pair
- of predictors is kept only if its interaction test gives a <math>p</math>-value
+ of predictors is kept only if its interaction test gives a <em class="math">p</em>-value
  no larger than this.  The default is 1, which keeps every pair asked for.</td></tr>
 <tr><td width="18%"><code>'Verbose'</code></td><td width="80%">A non-negative integer.  Greater than zero
  prints a trace of the fit.  The default is 0.</td></tr>

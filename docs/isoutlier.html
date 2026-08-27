@@ -1018,7 +1018,7 @@
 
 <p> <code>isoutlier (<var>x</var>, <code>'percentiles'</code>, <var>threshold</var>)</code> detects
  outliers based on a percentile thresholds,  specified as a two-element row
- vector whose elements are in the interval <math>[0, 100]</math>.  The first element
+ vector whose elements are in the interval <em class="math">[0, 100]</em>.  The first element
  indicates the lower percentile threshold, and the second element indicates
  the upper percentile threshold. The first element of threshold must be less
  than the second element.
@@ -1045,9 +1045,9 @@
  the window is centered about the current element and contains
  <code><var>window</var> - 1</code> neighboring elements.  If even, then the window is
  centered about the current and previous elements.  When <var>window</var> is a
- two-element vector of positive integers <math>[nb, na]</math>, the window contains
- the current element, <math>nb</math> elements before the current element, and
- <math>na</math> elements after the current element.  When <code>'SamplePoints'</code>
+ two-element vector of positive integers <em class="math">[nb, na]</em>, the window contains
+ the current element, <em class="math">nb</em> elements before the current element, and
+ <em class="math">na</em> elements after the current element.  When <code>'SamplePoints'</code>
  are also specified, <var>window</var> can take any real positive values (either as
  a scalar or a two-element vector) and in this case, the windows are computed
  relative to the sample points.
@@ -1074,7 +1074,7 @@
  <code>'mean'</code> and <code>'movmean'</code>, the detection threshold factor replaces
  the number of standard deviations, which is 3 by default.  For methods
  <code>'grubbs'</code> and <code>'gesd'</code>, the detection threshold factor ranges
- from 0 to 1, specifying the critical <math>alpha</math>-value of the respective
+ from 0 to 1, specifying the critical <em class="math">alpha</em>-value of the respective
  test, and it is 0.05 by default.  For the <code>'quartiles'</code> method, the
  detection threshold factor replaces the number of interquartile ranges, which
  is 1.5 by default.  <code>'ThresholdFactor'</code> is not supported for the

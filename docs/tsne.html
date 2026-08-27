@@ -968,9 +968,9 @@
 <p> t-distributed stochastic neighbor embedding (t-SNE).
 </p>
 <div class="ms-5">
-<p> <code><var>Y</var> = tsne (<var>X</var>)</code> embeds the <math>N &times; P</math> data matrix <var>X</var>
+<p> <code><var>Y</var> = tsne (<var>X</var>)</code> embeds the <em class="math">N &times; P</em> data matrix <var>X</var>
  (rows are observations) into a low-dimensional space and returns the
- <math>N &times; <var>NumDimensions</var></math> matrix <var>Y</var> of embedded points, whose
+ <em class="math">N &times; <var>NumDimensions</var></em> matrix <var>Y</var> of embedded points, whose
  pairwise (Student-t) affinities approximate the Gaussian affinities of the
  rows of <var>X</var>.
 </p>
@@ -983,14 +983,14 @@
 <dl compact="compact">
 <dt> <code>'Algorithm'</code></dt>
 <dd> <code>'exact'</code> (default) forms the affinities and the gradient over every
- pair of points, which costs <math>O(N^2)</math> in time and memory at each
+ pair of points, which costs <em class="math">O(N^2)</em> in time and memory at each
  iteration.  <code>'barneshut'</code> approximates both: the high-dimensional
- affinities are kept only over each point&rsquo;s <math>3 &times; Perplexity</math> nearest
+ affinities are kept only over each point&rsquo;s <em class="math">3 &times; Perplexity</em> nearest
  neighbours, and the repulsive part of the gradient is summed over a
- space-partitioning tree of the embedding, giving <math>O(N log N)</math>.  Use it
- when <math>N</math> is large enough that the exact algorithm is slow or cannot
- allocate; on this machine the two cost the same at about <math>N = 500</math> and
- <code>'barneshut'</code> is eight times faster at <math>N = 2000</math>.
+ space-partitioning tree of the embedding, giving <em class="math">O(N log N)</em>.  Use it
+ when <em class="math">N</em> is large enough that the exact algorithm is slow or cannot
+ allocate; on this machine the two cost the same at about <em class="math">N = 500</em> and
+ <code>'barneshut'</code> is eight times faster at <em class="math">N = 2000</em>.
 <p> The two do not return the same embedding, and their <var>loss</var> values are
  not comparable either: the divergence is summed over the pairs that carry an
  affinity, and <code>'barneshut'</code> keeps far fewer of them.
@@ -1001,7 +1001,7 @@
  (default 0.5).  A cell of the tree is collapsed to its centre of mass when
  its width is smaller than <var>Theta</var> times its distance from the point
  being pushed, so a larger value is faster and coarser.  <code>0</code> collapses
- nothing and makes the repulsion exact, at <math>O(N^2)</math>; note that this
+ nothing and makes the repulsion exact, at <em class="math">O(N^2)</em>; note that this
  still leaves the affinities sparse, so it does not reproduce
  <code>'exact'</code>.  Ignored by <code>'exact'</code>.</dd>
 <dt> <code>'Distance'</code></dt>
@@ -1017,14 +1017,14 @@
  <code>false</code>).</dd>
 <dt> <code>'Perplexity'</code></dt>
 <dd> The effective number of local neighbors (default 30).  It must be smaller
- than <math>N</math>.</dd>
+ than <em class="math">N</em>.</dd>
 <dt> <code>'Exaggeration'</code></dt>
 <dd> Tightness factor applied to the high-dimensional affinities for the first 100
  iterations (default 4, no less than 1).</dd>
 <dt> <code>'LearnRate'</code></dt>
 <dd> The learning rate of the optimization (default 500).</dd>
 <dt> <code>'InitialY'</code></dt>
-<dd> An <math>N &times; <var>NumDimensions</var></math> initial embedding (default
+<dd> An <em class="math">N &times; <var>NumDimensions</var></em> initial embedding (default
  <code>1e-4 * randn</code>).</dd>
 <dt> <code>'Options'</code></dt>
 <dd> A structure (as returned by <code>statset</code>) whose <code>MaxIter</code> (default

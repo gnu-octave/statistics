@@ -969,11 +969,11 @@
 </p>
 <div class="ms-5">
 <p> <code><var>D</var> = pdist (<var>X</var></code> calculates the euclidean distance between
- pairs of observations in <var>X</var>.  <var>X</var> must be an <math>M&times;P</math> numeric
- matrix representing <math>M</math> points in <math>P</math>-dimensional space.  This
+ pairs of observations in <var>X</var>.  <var>X</var> must be an <em class="math">M&times;P</em> numeric
+ matrix representing <em class="math">M</em> points in <em class="math">P</em>-dimensional space.  This
  function computes the pairwise distances returned in <var>D</var> as an
- <math>M&times;(M-1)/P</math> row vector.  Use <code><var>Z</var> = squareform (<var>D</var>)</code> to
- convert the row vector <var>D</var> into a an <math>M&times;M</math> symmetric matrix <var>Z</var>,
+ <em class="math">M&times;(M-1)/P</em> row vector.  Use <code><var>Z</var> = squareform (<var>D</var>)</code> to
+ convert the row vector <var>D</var> into a an <em class="math">M&times;M</em> symmetric matrix <var>Z</var>,
  where <code><var>Z</var>(i,j)</code> corresponds to the pairwise distance between
  points <code>i</code> and <code>j</code>.
 </p>
@@ -1015,10 +1015,10 @@
  correlation between observations (treated as sequences of values).</td></tr>
 <tr><td width="23%"><var>@distfun</var></td><td width="65%">Custom distance function handle.  A distance
  function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
- where <var>XI</var> is a <math>1&times;P</math> vector containing a single observation in
- <math>P</math>-dimensional space, <var>YI</var> is an <math>N&times;P</math> matrix containing an
- arbitrary number of observations in the same <math>P</math>-dimensional space, and
- <var>D2</var> is an <math>N&times;P</math> vector of distances, where <code>(<var>D2</var>k)</code> is
+ where <var>XI</var> is a <em class="math">1&times;P</em> vector containing a single observation in
+ <em class="math">P</em>-dimensional space, <var>YI</var> is an <em class="math">N&times;P</em> matrix containing an
+ arbitrary number of observations in the same <em class="math">P</em>-dimensional space, and
+ <var>D2</var> is an <em class="math">N&times;P</em> vector of distances, where <code>(<var>D2</var>k)</code> is
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>

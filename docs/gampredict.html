@@ -969,14 +969,14 @@
 <div class="ms-5">
 <p><code><var>yFit</var> = gampredict (<var>Parameters</var>, <var>X</var>, <var>Intercept</var>)</code>
 adds the intercept to the sum of the additive terms evaluated at each row of
-<var>X</var> and returns the <math>Nx1</math> result.  It is the prediction engine
+<var>X</var> and returns the <em class="math">Nx1</em> result.  It is the prediction engine
 shared by <code>ClassificationGAM</code> and <code>RegressionGAM</code>, and it is not
 meant to be called directly.
 </p>
 <ul>
-<li> <var>Parameters</var> is a <math>1xP</math> structure array of piecewise
+<li> <var>Parameters</var> is a <em class="math">1xP</em> structure array of piecewise
 polynomials, as returned by <code>gamtrain</code> in the field of the same name.
-</li><li> <var>X</var> is an <math>NxP</math> numeric matrix with one column per additive
+</li><li> <var>X</var> is an <em class="math">NxP</em> numeric matrix with one column per additive
 term, and a count that does not match is an error.  A model carrying
 interaction terms must therefore be given the augmented matrix, not the
 predictors alone.
@@ -986,7 +986,7 @@ from the nearest piece, as <code>ppval</code> extrapolates.
 </li><li> <var>Intercept</var> is the model&rsquo;s constant term.
 </li><li> <var>Link</var>, if given, selects what the additive prediction is mapped
 through: <code>0</code> returns it as it stands and <code>1</code> takes it as a
-log-odds, returning the <math>Nx2</math> matrix of class probabilities whose
+log-odds, returning the <em class="math">Nx2</em> matrix of class probabilities whose
 second column is the logistic function of it.  The default is <code>0</code>.
 </li></ul>
 

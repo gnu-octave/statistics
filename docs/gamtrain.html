@@ -973,15 +973,15 @@ the fitting engine shared by <code>ClassificationGAM</code> and
 <code>RegressionGAM</code>, and it is not meant to be called directly.
 </p>
 <ul>
-<li> <var>X</var> is an <math>NxP</math> numeric matrix of predictors.  A missing
+<li> <var>X</var> is an <em class="math">NxP</em> numeric matrix of predictors.  A missing
 value is not an error: the observation is left out of the affected
 predictor&rsquo;s spline and its prediction from that term is <code>NaN</code>.
-</li><li> <var>Y</var> is an <math>Nx1</math> numeric vector of responses.  For
+</li><li> <var>Y</var> is an <em class="math">Nx1</em> numeric vector of responses.  For
 <var>Method</var> 1 it must hold zeros and ones.
-</li><li> <var>Knots</var> is a <math>1xP</math> vector giving the number of spline pieces
-for each predictor, and <var>Order</var> a <math>1xP</math> vector giving the degree of
-the polynomial on each piece.  A spline of <math>K</math> pieces and degree
-<math>D</math> spans a space of <math>K + D</math> dimensions.
+</li><li> <var>Knots</var> is a <em class="math">1xP</em> vector giving the number of spline pieces
+for each predictor, and <var>Order</var> a <em class="math">1xP</em> vector giving the degree of
+the polynomial on each piece.  A spline of <em class="math">K</em> pieces and degree
+<em class="math">D</em> spans a space of <em class="math">K + D</em> dimensions.
 </li><li> <var>Method</var> selects the fitting scheme: <code>1</code> boosts the log-odds
 by gradient descent, as a classifier is fitted, and <code>2</code> backfits the
 partial residuals, as a regression is fitted.
@@ -1000,13 +1000,13 @@ number of backfitting cycles.
 </p>
 <ul>
 <li> <code>Intercept</code>, the constant term the additive terms are added to.
-</li><li> <code>Parameters</code>, a <math>1xP</math> structure array of piecewise
+</li><li> <code>Parameters</code>, a <em class="math">1xP</em> structure array of piecewise
 polynomials in the form <code>ppval</code> consumes, one per predictor.
 </li><li> <code>Iterations</code>, the number of iterations performed.
-</li><li> <code>Residuals</code>, the <math>Nx1</math> residual vector at the last
+</li><li> <code>Residuals</code>, the <em class="math">Nx1</em> residual vector at the last
 iteration.
 </li><li> <code>RSS</code>, the scalar residual sum of squares for <var>Method</var> 1 and
-the <math>1xP</math> per-term criterion the backfitting stops on for <var>Method</var>
+the <em class="math">1xP</em> per-term criterion the backfitting stops on for <var>Method</var>
 2.
 </li></ul>
 

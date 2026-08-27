@@ -971,8 +971,8 @@
 <p> <code><var>B</var> = lasso (<var>X</var>, <var>y</var>)</code> fits a series of regularized linear
  models of the response <var>y</var> on the predictor matrix <var>X</var> by lasso, over
  a sequence of values of the regularization parameter <var>Lambda</var>.  <var>B</var>
- is a <math>P&times;L</math> matrix whose column <math>k</math> holds the coefficient estimates
- for the <math>k</math>-th <var>Lambda</var>, in ascending order of <var>Lambda</var>.
+ is a <em class="math">P&times;L</em> matrix whose column <em class="math">k</em> holds the coefficient estimates
+ for the <em class="math">k</em>-th <var>Lambda</var>, in ascending order of <var>Lambda</var>.
 </p>
 <p> <code>[<var>B</var>, <var>FitInfo</var>] = lasso (&hellip;)</code> additionally returns a
  structure <var>FitInfo</var> with fields <code>Intercept</code>, <code>Lambda</code>,
@@ -985,35 +985,35 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="82%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>'Alpha'</code></td><td width="82%">The elastic-net mixing parameter in
- <math>(0, 1]</math>.  <math>1</math> (default) is the lasso penalty; smaller values add a
+ <em class="math">(0, 1]</em>.  <em class="math">1</em> (default) is the lasso penalty; smaller values add a
  ridge penalty.</td></tr>
 <tr><td width="18%"><code>'Lambda'</code></td><td width="82%">A vector of non-negative regularization
  parameters.  By default a geometric sequence of <code>'NumLambda'</code> values is
  used, from the smallest value that drives all coefficients to zero down to
  <code>'LambdaRatio'</code> times that value.</td></tr>
 <tr><td width="18%"><code>'NumLambda'</code></td><td width="82%">The number of <var>Lambda</var> values in the
- default sequence (default <math>100</math>).</td></tr>
+ default sequence (default <em class="math">100</em>).</td></tr>
 <tr><td width="18%"><code>'LambdaRatio'</code></td><td width="82%">The ratio of the smallest to the largest
- <var>Lambda</var> in the default sequence (default <math>1e-4</math>, or <math>1e-2</math>
+ <var>Lambda</var> in the default sequence (default <em class="math">1e-4</em>, or <em class="math">1e-2</em>
  when the number of observations is below the number of predictors).</td></tr>
 <tr><td width="18%"><code>'Standardize'</code></td><td width="82%">Whether to standardize <var>X</var> to zero mean
  and unit variance before fitting (default <code>true</code>).  Coefficients are
  always returned on the original scale.</td></tr>
 <tr><td width="18%"><code>'Weights'</code></td><td width="82%">A vector of non-negative observation weights.</td></tr>
 <tr><td width="18%"><code>'RelTol'</code></td><td width="82%">Convergence tolerance for the coordinate descent
- (default <math>1e-4</math>).</td></tr>
+ (default <em class="math">1e-4</em>).</td></tr>
 <tr><td width="18%"><code>'MaxIter'</code></td><td width="82%">Maximum number of coordinate-descent iterations
- (default <math>1e5</math>).</td></tr>
+ (default <em class="math">1e5</em>).</td></tr>
 <tr><td width="18%"><code>'DFmax'</code></td><td width="82%">The maximum number of non-zero coefficients; the
  default sequence stops once this is exceeded.</td></tr>
 <tr><td width="18%"><code>'Intercept'</code></td><td width="82%">Whether to fit a constant term (default
  <code>true</code>).</td></tr>
 <tr><td width="18%"><code>'PredictorNames'</code></td><td width="82%">A cell array of predictor names, kept in
  <var>FitInfo</var>.</td></tr>
-<tr><td width="18%"><code>'CV'</code></td><td width="82%">The number of folds <math>K</math> for <math>K</math>-fold
+<tr><td width="18%"><code>'CV'</code></td><td width="82%">The number of folds <em class="math">K</em> for <em class="math">K</em>-fold
  cross-validation of the mean squared error, or a <code>cvpartition</code> object.</td></tr>
 <tr><td width="18%"><code>'MCReps'</code></td><td width="82%">The number of Monte-Carlo repetitions of the
- cross-validation (default <math>1</math>).</td></tr>
+ cross-validation (default <em class="math">1</em>).</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/lasso.m">lasso</a>

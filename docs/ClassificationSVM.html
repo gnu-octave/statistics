@@ -2586,8 +2586,8 @@ Trained classifier coefficients
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> The coefficients of the trained SVM classifier specified as an <math>s&times;1</math>
- numeric vector, where <math>s</math> is the number of support vectors equal to
+<p> The coefficients of the trained SVM classifier specified as an <em class="math">s&times;1</em>
+ numeric vector, where <em class="math">s</em> is the number of support vectors equal to
  <code>sum (obj.IsSupportVector)</code>.  They are the magnitudes of the dual
  coefficients and are never negative; the class each belongs to is given
  by the corresponding entry of <code>SupportVectorLabels</code>.
@@ -2731,8 +2731,8 @@ Linear predictor coefficients
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> The linear predictor coefficients specified as a <math>p&times;1</math> numeric
- vector, where <math>p</math> is the number of predictors.  <code>Beta</code> is
+<p> The linear predictor coefficients specified as a <em class="math">p&times;1</em> numeric
+ vector, where <em class="math">p</em> is the number of predictors.  <code>Beta</code> is
  the primal representation of the fitted hyperplane and exists only when
  the SVM classifier was trained with a <code>'linear'</code> kernel function;
  for any other kernel there is no such representation and <code>Beta</code> is
@@ -3016,8 +3016,8 @@ Support vector indicator
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> An <math>N&times;1</math> logical vector that flags whether a corresponding
- observation in the predictor data matrix is a Support Vector.  <math>N</math>
+<p> An <em class="math">N&times;1</em> logical vector that flags whether a corresponding
+ observation in the predictor data matrix is a Support Vector.  <em class="math">N</em>
  is the number of observations in the training data.  This property is
  read-only.
 </p>
@@ -3158,8 +3158,8 @@ Support vector class labels
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> The support vector class labels specified as an <math>s&times;1</math> numeric
- vector, where <math>s</math> is the number of support vectors equal to
+<p> The support vector class labels specified as an <em class="math">s&times;1</em> numeric
+ vector, where <em class="math">s</em> is the number of support vectors equal to
  <code>sum (obj.IsSupportVector)</code>.  A value of +1 in
  <code>SupportVectorLabels</code> indicates that the corresponding support
  vector
@@ -3304,9 +3304,9 @@ Support vectors
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> The support vectors of the trained SVM classifier specified an <math>s&times;p</math>
- numeric matrix, where <math>s</math> is the number of support vectors equal to
- <code>sum (obj.IsSupportVector)</code>, and <math>p</math> is the number of
+<p> The support vectors of the trained SVM classifier specified an <em class="math">s&times;p</em>
+ numeric matrix, where <em class="math">s</em> is the number of support vectors equal to
+ <code>sum (obj.IsSupportVector)</code>, and <em class="math">p</em> is the number of
  predictor
  variables in the predictor data.  This property is read-only.
 </p>
@@ -3595,7 +3595,7 @@ Cost of misclassification
 
 <p> </p>
 <p> A numeric square matrix, where <code>Cost(i,j)</code> is the cost of
- classifying an observation of class <math>i</math> as class <math>j</math>.  It
+ classifying an observation of class <em class="math">i</em> as class <em class="math">j</em>.  It
  defaults to zero on the diagonal and one elsewhere.  This property is
  read-only.
 </p>
@@ -4174,8 +4174,8 @@ Expected fraction of outliers in the training data
 <p> <strong>Deviation from MATLAB.</strong>  The value is reported as it was given,
  but it reaches the fit by a different route: MATLAB removes outliers
  iteratively and reports <code>Solver</code> as <code>'ISDA'</code>, where a
- nonzero fraction here selects LIBSVM&rsquo;s <math>\nu</math>-SVC, in which
- <math>\nu</math> bounds the fraction of margin errors.  The two agree on what
+ nonzero fraction here selects LIBSVM&rsquo;s <em class="math">\nu</em>-SVC, in which
+ <em class="math">\nu</em> bounds the fraction of margin errors.  The two agree on what
  the number means and not on how the fit reaches it.  This property is
  read-only.
 </p>
@@ -5040,19 +5040,19 @@ Transformation function for classification scores
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-2 &times; x))</em></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><em class="math">log (x ./ (1 - x))</em></td></tr>
 <tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
- 0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-x))</em></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <em class="math">-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
+ 0</em></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><em class="math">2 &times; x - 1</em></td></tr>
 <tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><em class="math">2 ./ (1 + exp (-x)) - 1</em></td></tr>
 </table>
 </div>
 
@@ -5205,11 +5205,11 @@ Create a <code>ClassificationSVM</code> class object containing a Support
 </p>
 <ul>
 <li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.  <var>X</var> will be used to train the SVM model.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <code>Y</code> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> can be either
  numeric, logical, or cell array of character vectors.  It must have same
  numbers of rows as <var>X</var>.
@@ -5578,8 +5578,8 @@ Classify new data points into categories using the Support Vector Machine
 <li>
  <var>obj</var> must be a <code>ClassificationSVM</code> class object.
 </li><li>
- <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the SVM model in
+ <var>XC</var> must be an <em class="math">M&times;P</em> numeric matrix with the same number of
+ features <em class="math">P</em> as the corresponding predictors of the SVM model in
  <var>obj</var>.
 </li></ul>
 
@@ -5591,7 +5591,7 @@ Classify new data points into categories using the Support Vector Machine
  does not compute yet.
 </p>
 <p> <strong>Deviation from MATLAB.</strong>  <var>cost</var> is the expected cost of
- each assignment, <math>sum_j P(j) Cost(j,k)</math>.  An SVM score is a
+ each assignment, <em class="math">sum_j P(j) Cost(j,k)</em>.  An SVM score is a
  signed distance to the boundary and not a posterior, so the only
  distribution available is the one concentrated on the predicted class
  and <var>cost</var> is the row of <code>Cost</code> belonging to it.  MATLAB
@@ -5766,7 +5766,7 @@ Classify the training data using the trained Support Vector Machine
  does not compute yet.
 </p>
 <p> <strong>Deviation from MATLAB.</strong>  <var>cost</var> is the expected cost of
- each assignment, <math>sum_j P(j) Cost(j,k)</math>.  An SVM score is a
+ each assignment, <em class="math">sum_j P(j) Cost(j,k)</em>.  An SVM score is a
  signed distance to the boundary and not a posterior, so the only
  distribution available is the one concentrated on the predicted class
  and <var>cost</var> is the row of <code>Cost</code> belonging to it.  MATLAB
@@ -5927,11 +5927,11 @@ Classification margins for Support Vector Machine classifier.
  <var>obj</var> is a <var>ClassificationSVM</var> object trained on <code>X</code>
  and <code>Y</code>.
 </li><li>
- <var>X</var> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <var>X</var> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
 </li><li>
- <var>Y</var> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <var>Y</var> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
 </li></ul>
@@ -6092,11 +6092,11 @@ Compute loss for a trained ClassificationSVM object.
  <code>obj</code> is a <var>ClassificationSVM</var> object trained on
  <code>X</code> and <code>Y</code>.
 </li><li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <code>Y</code> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
 </li></ul>
@@ -6114,18 +6114,18 @@ Compute loss for a trained ClassificationSVM object.
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
 <ul>
 <li>
- <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
- number of observations and <math>K</math> is the number of classes.
+ <code>C</code> is a logical matrix of size <em class="math">N&times;K</em>, where <em class="math">N</em> is the
+ number of observations and <em class="math">K</em> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
 </li><li>
- <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
+ <code>S</code> is a numeric matrix of size <em class="math">N&times;K</em>, where each element
  represents the classification score for the corresponding class.
 </li><li>
- <code>W</code> is a numeric vector of length <math>N</math>, representing
+ <code>W</code> is a numeric vector of length <em class="math">N</em>, representing
  the observation weights.
 </li><li>
- <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
+ <code>Cost</code> is a <em class="math">K&times;K</em> matrix representing the misclassification
  costs.
 </li></ul>
 
@@ -6304,18 +6304,18 @@ Compute resubstitution loss for a trained ClassificationSVM object.
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
 <ul>
 <li>
- <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
- number of observations and <math>K</math> is the number of classes.
+ <code>C</code> is a logical matrix of size <em class="math">N&times;K</em>, where <em class="math">N</em> is the
+ number of observations and <em class="math">K</em> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
 </li><li>
- <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
+ <code>S</code> is a numeric matrix of size <em class="math">N&times;K</em>, where each element
  represents the classification score for the corresponding class.
 </li><li>
- <code>W</code> is a numeric vector of length <math>N</math>, representing
+ <code>W</code> is a numeric vector of length <em class="math">N</em>, representing
  the observation weights.
 </li><li>
- <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
+ <code>Cost</code> is a <em class="math">K&times;K</em> matrix representing the misclassification
  costs.
 </li></ul>
 
@@ -6488,7 +6488,7 @@ Cross Validate a Support Vector Machine classification object.
  integer greater than 1.</td></tr>
 <tr><td width="28%"><code>'Holdout'</code></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
- scalar in the range <math>(0,1)</math>.</td></tr>
+ scalar in the range <em class="math">(0,1)</em>.</td></tr>
 <tr><td width="28%"><code>'Leaveout'</code></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>

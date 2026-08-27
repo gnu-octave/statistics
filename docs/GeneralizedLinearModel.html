@@ -971,16 +971,16 @@
 </p>
 <p> The response is modelled through a distribution from the exponential family
  (<code>'normal'</code>, <code>'binomial'</code>, <code>'poisson'</code>, <code>'gamma'</code>, or
- <code>'inverse gaussian'</code>) and a link function <math>g</math> relating the mean
- <math>mu</math> to the linear predictor <math>eta = g (mu)</math>.
+ <code>'inverse gaussian'</code>) and a link function <em class="math">g</em> relating the mean
+ <em class="math">mu</em> to the linear predictor <em class="math">eta = g (mu)</em>.
 </p>
 <p> The most useful properties are <code>Coefficients</code> (a table of estimates,
- standard errors, <math>t</math>-statistics and p-values), <code>Deviance</code>,
+ standard errors, <em class="math">t</em>-statistics and p-values), <code>Deviance</code>,
  <code>Dispersion</code>, <code>Residuals</code>, <code>Fitted</code>, <code>Diagnostics</code>,
  <code>Distribution</code>, and <code>Link</code>.  <code>ObservationInfo</code> records which
  rows were weighted, excluded, or missing, and <code>Variables</code> holds the data
  the model was built from.  For a binomial response given as an
- <math>n</math>-by-<math>2</math> matrix of successes and trials, <code>Variables</code> holds
+ <em class="math">n</em>-by-<em class="math">2</em> matrix of successes and trials, <code>Variables</code> holds
  the <strong>success count</strong> alone, that being the response the model fits;
  MATLAB stores both columns there.  Fitted models support the
  <code>predict</code> and <code>feval</code> methods for prediction.
@@ -991,12 +991,12 @@
  still carry a fitted value and a residual, since the model can be evaluated
  there; rows dropped because a variable was missing carry <code>NaN</code>.
 </p>
-<p> For a binomial response carrying a number of trials <math>N</math> &ndash; given
+<p> For a binomial response carrying a number of trials <em class="math">N</em> &ndash; given
  either by the <code>'BinomialSize'</code> pair or as the second column of a
  two-column response &ndash; the response is the <em>number of successes</em>, as
  <code>fitglm</code> documents.  <code>Fitted.Response</code> is then the fitted count
- <math>N p</math> and <code>Residuals.Raw</code> is on that same count scale, while
- <code>Fitted.Probability</code> carries <math>p</math> itself.  <code>predict</code> returns
+ <em class="math">N p</em> and <code>Residuals.Raw</code> is on that same count scale, while
+ <code>Fitted.Probability</code> carries <em class="math">p</em> itself.  <code>predict</code> returns
  the probability, never a count: a trial count belongs to an observation,
  and new predictor values do not carry one.
 </p>
@@ -1009,7 +1009,7 @@
  level whether or not an intercept is present and so cannot fit the reference
  group at all &ndash; for a three-level grouping variable <code>g</code>, MATLAB fits
  <code>y ~ g - 1</code> with two coefficients, predicts exactly 0 for every
- observation in the omitted group, and reports a negative <math>R^2</math>.  This
+ observation in the omitted group, and reports a negative <em class="math">R^2</em>.  This
  implementation returns three coefficients, one per group.
 </p>
 <p> <strong>See also: </strong>
@@ -1055,7 +1055,7 @@ Coefficient values
 
 <p> the dispersion is fixed, as it is for the binomial and Poisson families,
  and to a
- <math>t</math>-distribution on <code>DFE</code> degrees of freedom where it is
+ <em class="math">t</em>-distribution on <code>DFE</code> degrees of freedom where it is
  estimated. Coefficients dropped as rank deficient have <code>Estimate =
  0</code>,
  <code>SE = 0</code>, and <code>NaN</code> for both statistics.  Row names are the
@@ -1263,7 +1263,7 @@ Number of coefficients
 <p> </p>
 <p> A positive integer counting every coefficient the model carries, those
  dropped as rank deficient included.  A categorical predictor with
- <math>L</math> levels contributes <math>L - 1</math> of them.
+ <em class="math">L</em> levels contributes <em class="math">L - 1</em> of them.
 </p>
 <p> This property is read-only.
 </p>
@@ -1665,7 +1665,7 @@ Dispersion parameter
 
 <p> </p>
 <p> A positive scalar.  It is estimated from the Pearson statistic for the
- normal, gamma, and inverse Gaussian families, and fixed at <math>1</math> for
+ normal, gamma, and inverse Gaussian families, and fixed at <em class="math">1</em> for
  the binomial and Poisson families unless <code>'DispersionFlag'</code> asked
  otherwise.  <code>CoefficientCovariance</code> and the standard errors are
  scaled by it.
@@ -1734,8 +1734,8 @@ Whether the dispersion was estimated
 
 <p> </p>
 <p> A logical scalar, true where <code>Dispersion</code> was estimated from the
- data and false where it was held at <math>1</math>.  It decides whether a
- coefficient&rsquo;s statistic is referred to the normal or the <math>t</math>
+ data and false where it was held at <em class="math">1</em>.  It decides whether a
+ coefficient&rsquo;s statistic is referred to the normal or the <em class="math">t</em>
  distribution.
 </p>
 <p> This property is read-only.
@@ -2156,7 +2156,7 @@ Log-likelihood of the fitted model
 <p> </p>
 <p> A scalar, the log-likelihood of the observations under the fitted
  coefficients and the family&rsquo;s own density.  It is what the information
- criteria and the likelihood-ratio <math>R^2</math> are computed from.
+ criteria and the likelihood-ratio <em class="math">R^2</em> are computed from.
 </p>
 <p> This property is read-only.
 </p>
@@ -2294,7 +2294,7 @@ Measures of fit
  one less the ratio of the model&rsquo;s deviance to the null model&rsquo;s;
  <code>LLR</code>, the same ratio taken over log-likelihoods; and
  <code>AdjGeneralized</code>, the Nagelkerke measure, which rescales the
- generalized <math>R^2</math> by its own attainable maximum so that it can reach
+ generalized <em class="math">R^2</em> by its own attainable maximum so that it can reach
  one.
 </p>
 <p> This property is read-only.
@@ -3465,9 +3465,9 @@ Fit a generalized linear model.  Prefer the <code>fitglm</code> function, which
                 <div class="col-8">
 Predict the response of the model <var>mdl</var> at the new predictor data
  <var>Xnew</var> (a numeric matrix or a table).  Predictions are on the mean
- (response) scale.  With two outputs, <var>yci</var> is an <math>m</math>-by-2 matrix
+ (response) scale.  With two outputs, <var>yci</var> is an <em class="math">m</em>-by-2 matrix
  of confidence intervals.  The <code>'Alpha'</code> pair sets the confidence
- level to <math>100 (1 - <var>Alpha</var>)%</math> (default 0.05).
+ level to <em class="math">100 (1 - <var>Alpha</var>)%</em> (default 0.05).
                 </div>
               </div>
           </div>
@@ -3598,8 +3598,8 @@ Predict the response by passing each predictor as a separate argument (a
                 </div>
                 <div class="col-8">
 Confidence intervals for the coefficient estimates.  <var>ci</var> is a
- <math>k</math>-by-2 matrix of <math>100 (1 - <var>alpha</var>)%</math> intervals (default
- <var>alpha</var> = 0.05).  The <math>t</math> distribution is used when the
+ <em class="math">k</em>-by-2 matrix of <em class="math">100 (1 - <var>alpha</var>)%</em> intervals (default
+ <var>alpha</var> = 0.05).  The <em class="math">t</em> distribution is used when the
  dispersion was estimated, the normal distribution otherwise.
                 </div>
               </div>
@@ -3664,8 +3664,8 @@ Confidence intervals for the coefficient estimates.  <var>ci</var> is a
                   </h4>
                 </div>
                 <div class="col-8">
-Wald test of the linear hypothesis <math>H b = 0</math> on the coefficients.
- <var>H</var> is an <math>m</math>-by-<math>k</math> contrast matrix; when omitted it tests
+Wald test of the linear hypothesis <em class="math">H b = 0</em> on the coefficients.
+ <var>H</var> is an <em class="math">m</em>-by-<em class="math">k</em> contrast matrix; when omitted it tests
  that all coefficients except the intercept are zero (the model versus the
  constant model).  Returns the p-value <var>p</var>, and optionally the test
  statistic <var>stat</var> and its numerator degrees of freedom <var>df</var>.

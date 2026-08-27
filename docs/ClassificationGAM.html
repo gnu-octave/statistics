@@ -1792,7 +1792,7 @@ Two-way interaction terms of the fitted model
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>Kx2</math> matrix of predictor index pairs, one row per two-way term
+<p> A <em class="math">Kx2</em> matrix of predictor index pairs, one row per two-way term
  the model carries, and <code>zeros (0, 2)</code> when it carries none.  It
  reports what was fitted rather than what was asked for, so a count of
  terms, <code>'all'</code>, a logical matrix and a formula all leave the same
@@ -3450,24 +3450,24 @@ Transformation function for classification scores
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-2 &times; x))</em></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><em class="math">log (x ./ (1 - x))</em></td></tr>
 <tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
- 0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-x))</em></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <em class="math">-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
+ 0</em></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><em class="math">2 &times; x - 1</em></td></tr>
 <tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><em class="math">2 ./ (1 + exp (-x)) - 1</em></td></tr>
 </table>
 </div>
 
 <p> The default is <code>'logit'</code>, as in MATLAB.  This model&rsquo;s raw
- score is a log-odds, reported as the pair <math>[-f, f]</math> whose two
+ score is a log-odds, reported as the pair <em class="math">[-f, f]</em> whose two
  columns sum to zero, and the transform is what turns it into the
  posterior probabilities that sum to one.  Every transform therefore
  composes on the log-odds and not on the probabilities, so
@@ -3555,11 +3555,11 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
 </p>
 <ul>
 <li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.  <var>X</var> will be used to train the GAM model.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <code>Y</code> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> can contain any type
  of categorical data. <var>Y</var> must have the same number of rows as
  <var>X</var>.
@@ -3581,9 +3581,9 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
 <tr><td width="18%"><code>'ClassNames'</code></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the GAM model.
  <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>'Cost'</code></td><td width="80%">An <math>N&times;R</math> numeric matrix containing
+<tr><td width="18%"><code>'Cost'</code></td><td width="80%">An <em class="math">N&times;R</em> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var>, where
- <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance
+ <em class="math">R</em> is the number of unique categories in <var>Y</var>.  If an instance
  is correctly classified into its category the cost is calculated to be 1,
  otherwise 0. The cost matrix can be altered by using
  <code><var>Mdl</var>.cost = somecost</code>.  By default, its value is
@@ -3824,7 +3824,7 @@ Predict labels for new data using the Generalized Additive Model (GAM)
 <li>
  <var>obj</var> must be a <code>ClassificationGAM</code> class object.
 </li><li>
- <var>XC</var> must be an <math>M&times;P</math> numeric matrix where each row is an
+ <var>XC</var> must be an <em class="math">M&times;P</em> numeric matrix where each row is an
  observation and each column corresponds to a predictor variable.
 </li><li>
  <var>includeInteractions</var> is a logical scalar indicating whether to
@@ -3924,7 +3924,7 @@ Cross Validate a Generalized Additive Model classification object.
  integer greater than 1.</td></tr>
 <tr><td width="28%"><code>'Holdout'</code></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
- scalar in the range <math>(0,1)</math>.</td></tr>
+ scalar in the range <em class="math">(0,1)</em>.</td></tr>
 <tr><td width="28%"><code>'Leaveout'</code></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>

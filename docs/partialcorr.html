@@ -971,19 +971,19 @@
 </p>
 <div class="ms-5">
 <p> <code><var>rho</var> = partialcorr (<var>x</var>)</code> returns the sample linear partial
- correlation coefficients between pairs of variables in the <math>n</math>-by-<math>p</math>
+ correlation coefficients between pairs of variables in the <em class="math">n</em>-by-<em class="math">p</em>
  matrix <var>x</var>, controlling for the remaining columns of <var>x</var>.  Each element
  <code><var>rho</var>(i,j)</code> is the partial correlation between <code><var>x</var>(:,i)</code>
- and <code><var>x</var>(:,j)</code>, adjusted for the other <math>p-2</math> columns.  <var>rho</var>
- is a symmetric <math>p</math>-by-<math>p</math> matrix with ones on the diagonal.
+ and <code><var>x</var>(:,j)</code>, adjusted for the other <em class="math">p-2</em> columns.  <var>rho</var>
+ is a symmetric <em class="math">p</em>-by-<em class="math">p</em> matrix with ones on the diagonal.
 </p>
 <p> <code><var>rho</var> = partialcorr (<var>x</var>, <var>z</var>)</code> controls instead for the
- variables in the <math>n</math>-by-<math>q</math> matrix <var>z</var>, returning the
- <math>p</math>-by-<math>p</math> partial correlations among the columns of <var>x</var>.
+ variables in the <em class="math">n</em>-by-<em class="math">q</em> matrix <var>z</var>, returning the
+ <em class="math">p</em>-by-<em class="math">p</em> partial correlations among the columns of <var>x</var>.
 </p>
 <p> <code><var>rho</var> = partialcorr (<var>x</var>, <var>y</var>, <var>z</var>)</code> returns the
- <math>p1</math>-by-<math>p2</math> matrix of partial correlations between the columns of
- the <math>n</math>-by-<math>p1</math> matrix <var>x</var> and the <math>n</math>-by-<math>p2</math> matrix
+ <em class="math">p1</em>-by-<em class="math">p2</em> matrix of partial correlations between the columns of
+ the <em class="math">n</em>-by-<em class="math">p1</em> matrix <var>x</var> and the <em class="math">n</em>-by-<em class="math">p2</em> matrix
  <var>y</var>, controlling for <var>z</var>.  Element <code><var>rho</var>(i,j)</code> is the partial
  correlation between <code><var>x</var>(:,i)</code> and <code><var>y</var>(:,j)</code>.
 </p>
@@ -1013,8 +1013,8 @@
 
 <p> The partial correlation is computed by regressing each of the two variables on
  the controlling variables (with an intercept) and correlating the residuals.
- The p-value uses a Student&rsquo;s <math>t</math> statistic with <math>n - 2 - k</math> degrees
- of freedom, where <math>k</math> is the number of controlling variables and <math>n</math>
+ The p-value uses a Student&rsquo;s <em class="math">t</em> statistic with <em class="math">n - 2 - k</em> degrees
+ of freedom, where <em class="math">k</em> is the number of controlling variables and <em class="math">n</em>
  the number of observations used.
 </p>
 <p> <strong>See also: </strong>

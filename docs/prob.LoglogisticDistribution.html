@@ -1364,7 +1364,7 @@ Names of parameters
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+<p> A <em class="math">2&times;1</em> cell array of character vectors with each element containing
  the name of a distribution parameter.  This property is read-only.
 </p>
 
@@ -1436,7 +1436,7 @@ Description of parameters
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+<p> A <em class="math">2&times;1</em> cell array of character vectors with each element containing
  a short description of a distribution parameter.  This property is
  read-only.
 </p>
@@ -1509,7 +1509,7 @@ Distribution parameter values
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>2&times;1</math> numeric vector containing the values of the distribution
+<p> A <em class="math">2&times;1</em> numeric vector containing the values of the distribution
  parameters.  This property is read-only. You can change the distribution
  parameters by assigning new values to the <code>mu</code> and <code>sigma</code>
  properties.
@@ -1583,7 +1583,7 @@ Truncation interval
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+<p> A <em class="math">1&times;2</em> numeric vector specifying the truncation interval for the
  probability distribution.  First element contains the lower boundary,
  second element contains the upper boundary.  This property is read-only.
  You can only truncate a probability distribution with the
@@ -1730,7 +1730,7 @@ Covariance matrix of the parameter estimates
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>2&times;2</math> numeric matrix containing the variance-covariance of the
+<p> A <em class="math">2&times;2</em> numeric matrix containing the variance-covariance of the
  parameter estimates.  Diagonal elements contain the variance of each
  estimated parameter, and non-diagonal elements contain the covariance
  between the parameter estimates.  The covariance matrix is only
@@ -1808,7 +1808,7 @@ Flag for fixed parameters
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;2</math> logical vector specifying which parameters are fixed and
+<p> A <em class="math">1&times;2</em> logical vector specifying which parameters are fixed and
  which are estimated.  <code>true</code> values correspond to fixed parameters,
  <code>false</code> values correspond to parameter estimates.  This property is
  read-only.
@@ -2372,7 +2372,7 @@ Compute the confidence intervals for probability distribution parameters.
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>'Alpha'</code></td><td width="80%">A scalar value in the range <math>(0,1)</math>
+<tr><td width="18%"><code>'Alpha'</code></td><td width="80%">A scalar value in the range <em class="math">(0,1)</em>
  specifying the significance level for the confidence interval.  The
  default value 0.05 corresponds to a 95% confidence interval.</td></tr>
 <tr><td width="18%"><code>'Parameter'</code></td><td width="80%">A character vector or a cell array of

@@ -970,17 +970,17 @@
 </p>
 <div class="ms-5">
 <p> <code><var>Mdl</var> = iforest (<var>X</var>)</code> fits an isolation forest to the
- <math>N</math>-by-<math>P</math> matrix <var>X</var>, whose rows are observations and columns
+ <em class="math">N</em>-by-<em class="math">P</em> matrix <var>X</var>, whose rows are observations and columns
  are variables, and returns an <code>IsolationForest</code> object <var>Mdl</var>.
 </p>
 <p> <code>[<var>Mdl</var>, <var>tf</var>, <var>scores</var>] = iforest (<var>X</var>)</code> also returns
- the <math>N</math>-by-1 logical vector <var>tf</var> flagging the anomalous observations
- and the <math>N</math>-by-1 vector <var>scores</var> of anomaly scores in the range
- <math>[0, 1]</math>.  A higher score indicates an observation that is more easily
+ the <em class="math">N</em>-by-1 logical vector <var>tf</var> flagging the anomalous observations
+ and the <em class="math">N</em>-by-1 vector <var>scores</var> of anomaly scores in the range
+ <em class="math">[0, 1]</em>.  A higher score indicates an observation that is more easily
  isolated, and therefore more likely to be an anomaly.
 </p>
-<p> The score of an observation is <code>2^(-E[h] / c)</code>, where <math>E[h]</math> is its
- average path length over the isolation trees and <math>c</math> is the expected
+<p> The score of an observation is <code>2^(-E[h] / c)</code>, where <em class="math">E[h]</em> is its
+ average path length over the isolation trees and <em class="math">c</em> is the expected
  path length of an unsuccessful search in a binary tree of
  <var>NumObservationsPerLearner</var> nodes.  Each tree is grown from a random
  subsample of the data by recursively splitting on a random variable at a
@@ -994,10 +994,10 @@
 <tr><td width="34%"><code>'NumLearners'</code></td><td width="66%">the number of isolation trees, a positive
  integer (default 100).</td></tr>
 <tr><td width="34%"><code>'NumObservationsPerLearner'</code></td><td width="66%">the subsample size used to
- grow each tree, an integer in <math>[3, N]</math> (default <code>min (<var>N</var>,
+ grow each tree, an integer in <em class="math">[3, N]</em> (default <code>min (<var>N</var>,
  256)</code>).</td></tr>
 <tr><td width="34%"><code>'ContaminationFraction'</code></td><td width="66%">the assumed fraction of anomalies
- in <var>X</var>, a scalar in <math>[0, 1]</math> (default 0).  It sets
+ in <var>X</var>, a scalar in <em class="math">[0, 1]</em> (default 0).  It sets
  <code><var>Mdl</var>.ScoreThreshold</code> to <code>quantile (<var>scores</var>, 1 -
  <var>ContaminationFraction</var>)</code>; when it is 0 the threshold is the maximum
  score and no training observation is flagged.</td></tr>

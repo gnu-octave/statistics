@@ -970,7 +970,7 @@
 <p> Wilcoxon signed rank test for median.
 </p>
 <div class="ms-5">
-<p> <code><var>pval</var> = signrank (<var>x</var>)</code> returns the <math>p</math>-value of a
+<p> <code><var>pval</var> = signrank (<var>x</var>)</code> returns the <em class="math">p</em>-value of a
  two-sided Wilcoxon signed rank test. It tests the null hypothesis that data
  in <var>x</var> come from a distribution with zero median at the 5% significance
  level under the assumption that the distribution is symmetric about its
@@ -1024,7 +1024,7 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>'method'</code></td><td width="80%">A character vector specifying the method for
- computing the <math>p</math>-value.  It can take one of the following values:</td></tr>
+ computing the <em class="math">p</em>-value.  It can take one of the following values:</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Hypothesis_Testing/signrank.m">signrank</a>
@@ -1033,11 +1033,11 @@
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'exact'</code></td><td width="75%">Exact computation of the <math>p</math>-value.  It
+<tr><td width="20%"><code>'exact'</code></td><td width="75%">Exact computation of the <em class="math">p</em>-value.  It
  is the default value for 15 of fewer observations when <code>'method'</code> is
  not specified.</td></tr>
 <tr><td width="20%"><code>'approximate'</code></td><td width="75%">Using normal approximation for
- computing the <math>p</math>-value.  It is the default value for more than 15
+ computing the <em class="math">p</em>-value.  It is the default value for more than 15
  observations when <code>'method'</code> is not specified.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
@@ -1055,7 +1055,7 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%"><var>Field</var></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>signedrank</code></td><td width="80%">Value of the sign rank test statistic.</td></tr>
-<tr><td width="18%"><code>zval</code></td><td width="80%">Value of the <math>z</math>-statistic (only computed
+<tr><td width="18%"><code>zval</code></td><td width="80%">Value of the <em class="math">z</em>-statistic (only computed
  when the <code>'method'</code> is <code>'approximate'</code>).</td></tr>
 </table>
 <p><strong>Source Code: </strong>

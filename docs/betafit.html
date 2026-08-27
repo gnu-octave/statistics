@@ -973,8 +973,8 @@
 <div class="ms-5">
 <p> <code><var>paramhat</var> = betafit (<var>x</var>)</code> returns the maximum likelihood
  estimates of the parameters of the Beta distribution given the data in vector
- <var>x</var>.  <code><var>paramhat</var>([1, 2])</code> corresponds to the <math>α</math> and
- <math>β</math> shape parameters, respectively.  Missing values, <code>NaNs</code>, are
+ <var>x</var>.  <code><var>paramhat</var>([1, 2])</code> corresponds to the <em class="math">α</em> and
+ <em class="math">β</em> shape parameters, respectively.  Missing values, <code>NaNs</code>, are
  ignored.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = betafit (<var>x</var>)</code> returns the 95%
@@ -1003,7 +1003,7 @@
 </li><li> <code><var>options</var>.TolX = 1e-6</code>
 </li></ul>
 
-<p> The Beta distribution is defined on the open interval <math>(0,1)</math>.  However,
+<p> The Beta distribution is defined on the open interval <em class="math">(0,1)</em>.  However,
  <code>betafit</code> can also compute the unbounded beta likelihood function for
  data that include exact zeros or ones.  In such cases, zeros and ones are
  treated as if they were values that have been left-censored at

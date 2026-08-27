@@ -1047,7 +1047,7 @@ The number of observations subsampled to grow each isolation tree.
                   </h4>
                 </div>
                 <div class="col-8">
-The assumed fraction of anomalies in the training data, in <math>[0, 1]</math>.
+The assumed fraction of anomalies in the training data, in <em class="math">[0, 1]</em>.
                 </div>
               </div>
           </div>
@@ -1101,7 +1101,7 @@ The score above which an observation is flagged as an anomaly.
                   </h4>
                 </div>
                 <div class="col-8">
-Fit an isolation forest to the <math>N</math>-by-<math>P</math> matrix <var>X</var>.
+Fit an isolation forest to the <em class="math">N</em>-by-<em class="math">P</em> matrix <var>X</var>.
  Prefer the <code>iforest</code> function to this constructor.
                 </div>
               </div>
@@ -1166,25 +1166,13 @@ Detect anomalies in the new observations <var>Xnew</var> using the fitted
                   </h4>
                 </div>
                 <div class="col-8">
-Detect anomalies in the new observations <var>Xnew</var> using the fitted
- model <var>Mdl</var>.  Returns the logical vector <var>tf</var> flagging anomalies
- and the anomaly <var>scores</var>, each obtained by dropping <var>Xnew</var>
- through the isolation trees.  The threshold defaults to
- <code><var>Mdl</var>.ScoreThreshold</code> and may be overridden with the
- <code>'ScoreThreshold'</code> name-value argument.
+undocumented
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">IsolationForest: <var>tf</var> = <b>isanomaly</b> (<var>Mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">IsolationForest: [<var>tf</var>, <var>scores</var>] = <b>isanomaly</b> (<var>Mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">IsolationForest: [&hellip;] = <b>isanomaly</b> (&hellip;, <code>'ScoreThreshold'</code>, <var>t</var>)</code></h5></dt>
-</dl>
-<p> </p>
-
-
+<b><code>IsolationForest.disp</code></b> is not documented.
             </div>
           </div>
         </div>

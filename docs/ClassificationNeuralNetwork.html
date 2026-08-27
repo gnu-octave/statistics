@@ -1641,7 +1641,7 @@ Learned weights of each fully connected layer
 <p> </p>
 <p> A cell array holding one weight matrix per layer, the output layer
  included.  <code>LayerWeights{i}</code> has one row per neuron of layer
- <math>i</math> and one column per input it receives.  This property is
+ <em class="math">i</em> and one column per input it receives.  This property is
  read-only.
 </p>
 
@@ -1933,7 +1933,7 @@ Cost of misclassification
 <p> </p>
 <p> A numeric matrix with one row and one column per class, where
  <code>Cost(i,j)</code> is the cost of classifying an observation of class
- <math>i</math> as class <math>j</math>.  The default has zeros on the diagonal and
+ <em class="math">i</em> as class <em class="math">j</em>.  The default has zeros on the diagonal and
  ones elsewhere.  Change it on a trained model with dot notation, as
  in <code><var>obj</var>.Cost = <var>cost</var></code>.
 </p>
@@ -1989,19 +1989,19 @@ Transformation function for classification scores
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + exp (-2 &times; x))</math></td></tr>
-<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (x ./ (1 - x))</math></td></tr>
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-2 &times; x))</em></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="75%"><em class="math">log (x ./ (1 - x))</em></td></tr>
 <tr><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + exp (-x))</math></td></tr>
-<tr><td width="20%"><code>'none'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'identity'</code></td><td width="75%"><math>x</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <math>-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
- 0</math></td></tr>
-<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; x - 1</math></td></tr>
+<tr><td width="20%"><code>'logit'</code></td><td width="75%"><em class="math">1 ./ (1 + exp (-x))</em></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="75%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="75%"> <em class="math">-1 for x &lt; 0, 0 for x = 0, 1 for x &gt;
+ 0</em></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="75%"><em class="math">2 &times; x - 1</em></td></tr>
 <tr><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + exp (-x)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><em class="math">2 ./ (1 + exp (-x)) - 1</em></td></tr>
 </table>
 </div>
 
@@ -2043,11 +2043,11 @@ Create a <code>ClassificationNeuralNetwork</code> class object containing a
 </p>
 <ul>
 <li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <em class="math">N&times;P</em> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.  <var>X</var> will be used to train the neural network model.
 </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <code>Y</code> is <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> can contain any type
  of categorical data. <var>Y</var> must have the same number of rows as
  <var>X</var>.
@@ -2175,8 +2175,8 @@ Classify new data points into categories using the neural network
 <li>
  <var>obj</var> must be a <code>ClassificationNeuralNetwork</code> class object.
 </li><li>
- <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the neural network
+ <var>XC</var> must be an <em class="math">M&times;P</em> numeric matrix with the same number of
+ features <em class="math">P</em> as the corresponding predictors of the neural network
  model in <var>obj</var>.
 </li></ul>
 
@@ -3163,7 +3163,7 @@ Cross Validate a Neural Network classification object.
  integer greater than 1.</td></tr>
 <tr><td width="28%"><code>'Holdout'</code></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
- scalar in the range <math>(0,1)</math>.</td></tr>
+ scalar in the range <em class="math">(0,1)</em>.</td></tr>
 <tr><td width="28%"><code>'Leaveout'</code></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>

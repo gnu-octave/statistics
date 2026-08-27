@@ -975,10 +975,10 @@ structure.  It is the fitting engine shared by <code>ClassificationGAM</code> an
 <code>RegressionGAM</code>, and it is not meant to be called directly.
 </p>
 <ul>
-<li> <var>X</var> is an <math>NxP</math> numeric matrix of predictors.  A missing
+<li> <var>X</var> is an <em class="math">NxP</em> numeric matrix of predictors.  A missing
 value is not an error: the observation takes no part in the affected
 predictor&rsquo;s trees and that term contributes nothing to its prediction.
-</li><li> <var>Y</var> is an <math>Nx1</math> numeric vector of responses.  For
+</li><li> <var>Y</var> is an <em class="math">Nx1</em> numeric vector of responses.  For
 <var>Method</var> 1 it must hold zeros and ones.
 </li><li> <var>Method</var> selects what is boosted: <code>1</code> the logistic deviance,
 as a classifier is fitted, and <code>2</code> the squared error, as a regression
@@ -1007,15 +1007,15 @@ For a classifier it is fitted rather than fixed: it is seeded with the
 log-odds of the response mean and then collects the constant each shape
 function gives up when it is recentred.  For a regression it is the response
 mean and stays there.
-</li><li> <code>BinEdges</code>, a <math>1xP</math> cell of row vectors, the cut points each
+</li><li> <code>BinEdges</code>, a <em class="math">1xP</em> cell of row vectors, the cut points each
 predictor was binned at.
-</li><li> <code>ShapeValues</code>, a <math>1xP</math> cell of column vectors, one value per
+</li><li> <code>ShapeValues</code>, a <em class="math">1xP</em> cell of column vectors, one value per
 bin.  A shape function is a step function, so this is the whole of it however
 many trees produced it.
 </li><li> <code>NumTrees</code>, the number of rounds actually performed.
 </li><li> <code>ReasonForTermination</code>, why fitting stopped.
 </li><li> <code>Deviance</code>, the deviance at the last round.
-</li><li> <code>Residuals</code>, the <math>Nx1</math> residual vector at the last round.
+</li><li> <code>Residuals</code>, the <em class="math">Nx1</em> residual vector at the last round.
 </li></ul>
 
 <p> <strong>See also: </strong>

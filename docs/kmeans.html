@@ -968,7 +968,7 @@
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>kmeans</b> (<var>data</var>, <var>k</var>, <var>param1</var>, <var>value1</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>kmeans</b> (<var>data</var>, [], <code>'start'</code>, <var>start</var>, &hellip;)</code></h5></dt>
 </dl>
-<p> Perform a <var>k</var>-means clustering of the <math>N&times;D</math> matrix <var>data</var>.
+<p> Perform a <var>k</var>-means clustering of the <em class="math">N&times;D</em> matrix <var>data</var>.
 </p>
 <div class="ms-5">
 <p> If parameter <code>'start'</code> is specified, then <var>k</var> may be empty
@@ -978,14 +978,14 @@
 </p>
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
-<tr><td width="15%"><var>idx</var></td><td width="80%">An <math>N&times;1</math> vector whose <math>i</math>-th element is
- the class to which row <math>i</math> of <var>data</var> is assigned.</td></tr>
-<tr><td width="15%"><var>centers</var></td><td width="80%">A <math>K&times;D</math> array whose <math>i</math>-th row is the
- centroid of cluster <math>i</math>.</td></tr>
-<tr><td width="15%"><var>sumd</var></td><td width="80%">A <math>k&times;1</math> vector whose <math>i</math>-th entry is the
- sum of the distances from samples in cluster <math>i</math> to centroid <math>i</math>.</td></tr>
-<tr><td width="15%"><var>dist</var></td><td width="80%">An <math>N&times;k</math> matrix whose <math>i</math><math>j</math>-th
- element is the distance from sample <math>i</math> to centroid <math>j</math>.</td></tr>
+<tr><td width="15%"><var>idx</var></td><td width="80%">An <em class="math">N&times;1</em> vector whose <em class="math">i</em>-th element is
+ the class to which row <em class="math">i</em> of <var>data</var> is assigned.</td></tr>
+<tr><td width="15%"><var>centers</var></td><td width="80%">A <em class="math">K&times;D</em> array whose <em class="math">i</em>-th row is the
+ centroid of cluster <em class="math">i</em>.</td></tr>
+<tr><td width="15%"><var>sumd</var></td><td width="80%">A <em class="math">k&times;1</em> vector whose <em class="math">i</em>-th entry is the
+ sum of the distances from samples in cluster <em class="math">i</em> to centroid <em class="math">i</em>.</td></tr>
+<tr><td width="15%"><var>dist</var></td><td width="80%">An <em class="math">N&times;k</em> matrix whose <em class="math">i</em><em class="math">j</em>-th
+ element is the distance from sample <em class="math">i</em> to centroid <em class="math">j</em>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/kmeans.m">kmeans</a>
@@ -1007,7 +1007,7 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="19%">Value</th><th width="75%">Description</th></tr></thead>
 <tr><td width="19%"><code>'plus'</code></td><td width="75%">The k-means++ algorithm.  (Default)</td></tr>
-<tr><td width="19%"><code>'sample'</code></td><td width="75%">A subset of <math>k</math> rows from
+<tr><td width="19%"><code>'sample'</code></td><td width="75%">A subset of <em class="math">k</em> rows from
  <var>data</var>, sampled uniformly without replacement.</td></tr>
 <tr><td width="19%"><code>'cluster'</code></td><td width="75%">Perform a pilot clustering on 10% of
  the rows of <var>data</var>.</td></tr>
@@ -1015,12 +1015,12 @@
  drawn uniformly from the interval between the maximum and minimum values of
  that component within <var>data</var>.  This performs poorly and is implemented
  only for Matlab compatibility.</td></tr>
-<tr><td width="19%"><var>numeric matrix</var></td><td width="75%">A <math>k&times;D</math> matrix of centroid
+<tr><td width="19%"><var>numeric matrix</var></td><td width="75%">A <em class="math">k&times;D</em> matrix of centroid
  starting locations.  The rows correspond to seeds.</td></tr>
-<tr><td width="19%"><var>numeric array</var></td><td width="75%">A <math>k&times;D&times;r</math> array of centroid
+<tr><td width="19%"><var>numeric array</var></td><td width="75%">A <em class="math">k&times;D&times;r</em> array of centroid
  starting locations.  The third dimension invokes replication of the
- clustering routine.  Page <math>r</math> contains the set of seeds for replicate
- <math>r</math>.  <code>kmeans</code> infers the number of replicates (specified by the
+ clustering routine.  Page <em class="math">r</em> contains the set of seeds for replicate
+ <em class="math">r</em>.  <code>kmeans</code> infers the number of replicates (specified by the
  <code>'Replicates'</code> Name-Value pair argument) from the size of the third
  dimension.</td></tr>
 </table>

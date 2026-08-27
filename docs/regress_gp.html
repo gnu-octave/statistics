@@ -979,13 +979,13 @@
 <p> <code>[<var>Yfit</var>, <var>Yint</var>, <var>m</var>, <var>K</var>] = regress_gp (<var>X</var>,
  <var>Y</var>, <var>Xfit</var>)</code> will estimate a linear Gaussian Process model <var>m</var>
  in the form <code><var>Y</var> = <var>X</var>' * <var>m</var></code>, where <var>X</var> is an
- <math>N&times;P</math> matrix with <math>N</math> observations in <math>P</math> dimensional space
- and <var>Y</var> is an <math>N&times;1</math> column vector as the dependent variable.  The
+ <em class="math">N&times;P</em> matrix with <em class="math">N</em> observations in <em class="math">P</em> dimensional space
+ and <var>Y</var> is an <em class="math">N&times;1</em> column vector as the dependent variable.  The
  information about errors of the predictions (interpolation/extrapolation) is
  given by the covariance matrix <var>K</var>.
  By default, the linear model defines the prior covariance of <var>m</var> as
  <code><var>Sp</var> = 100 * eye (size (<var>X</var>, 2) + 1)</code>.  A custom prior
- covariance matrix can be passed as <var>Sp</var>, which must be a <math>P+1&times;P+1</math>
+ covariance matrix can be passed as <var>Sp</var>, which must be a <em class="math">P+1&times;P+1</em>
  positive definite matrix.  The model is evaluated for input <var>Xfit</var>, which
  must have the same columns as <var>X</var>, and the estimates are returned in
  <var>Yfit</var> along with the estimated variation in <var>Yint</var>.
@@ -1010,8 +1010,8 @@
 <ul>
 <li>
  <var>theta</var> is not the characteristic lengthscale.  The kernel is
- <code>exp (-d^2 / <var>theta</var>)</code> with <math>d</math> the distance between two
- points, so <var>theta</var> is twice the square of a lengthscale <math>l</math>, and
+ <code>exp (-d^2 / <var>theta</var>)</code> with <em class="math">d</em> the distance between two
+ points, so <var>theta</var> is twice the square of a lengthscale <em class="math">l</em>, and
  <code><var>theta</var> = 2 * l^2</code>.
 </li><li>
  The intervals in <var>Yint</var> are prediction intervals for a <em>new

@@ -984,7 +984,7 @@
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = gpfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the estimated parameters <var>k</var> and <var>sigma</var> as
- a <math>2</math>-by-<math>2</math> matrix whose first row holds the lower bounds and
+ a <em class="math">2</em>-by-<em class="math">2</em> matrix whose first row holds the lower bounds and
  whose second row holds the upper bounds.
 </p>
 <p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>)</code> also returns the
@@ -1010,7 +1010,7 @@
  element of <var>x</var> was observed.  This fourth argument is an Octave
  extension; MATLAB&rsquo;s <code>gpfit</code> takes three inputs at most.
 </p>
-<p> When the shape parameter falls below <math>-1</math> the likelihood is unbounded:
+<p> When the shape parameter falls below <em class="math">-1</em> the likelihood is unbounded:
  the density at the upper endpoint of the support diverges as that endpoint
  closes onto the largest observation, so no maximum likelihood estimate
  exists and whatever is returned is an arbitrary point on that ridge.

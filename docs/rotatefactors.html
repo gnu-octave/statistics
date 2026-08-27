@@ -968,13 +968,13 @@
 <p> Rotate a factor-loading matrix.
 </p>
 <div class="ms-5">
-<p> <code><var>B</var> = rotatefactors (<var>A</var>)</code> rotates the <math>D &times; M</math> factor
- loadings matrix <var>A</var> (<math>D</math> observed variables, <math>M</math> factors) to
+<p> <code><var>B</var> = rotatefactors (<var>A</var>)</code> rotates the <em class="math">D &times; M</em> factor
+ loadings matrix <var>A</var> (<em class="math">D</em> observed variables, <em class="math">M</em> factors) to
  the <code>'varimax'</code> criterion and returns the rotated loadings <var>B</var>, the
  same size as <var>A</var>.
 </p>
 <p> <code>[<var>B</var>, <var>T</var>] = rotatefactors (&hellip;)</code> also returns the
- <math>M &times; M</math> rotation matrix <var>T</var>, so that <code><var>B</var> = <var>A</var> *
+ <em class="math">M &times; M</em> rotation matrix <var>T</var>, so that <code><var>B</var> = <var>A</var> *
  <var>T</var></code>.  For the orthogonal methods <var>T</var> is orthonormal
  (<code><var>T</var>' * <var>T</var></code> is the identity); for the oblique methods
  (<code>'promax'</code> and oblique <code>'procrustes'</code>) it is a general invertible
@@ -992,9 +992,9 @@
 <dt> <code>'quartimax'</code></dt>
 <dd> Orthomax with a coefficient of 0; simplifies the description of each variable.</dd>
 <dt> <code>'equamax'</code></dt>
-<dd> Orthomax with a coefficient of <math>M / 2</math>.</dd>
+<dd> Orthomax with a coefficient of <em class="math">M / 2</em>.</dd>
 <dt> <code>'parsimax'</code></dt>
-<dd> Orthomax with a coefficient of <math>D (M - 1) / (D + M - 2)</math>.</dd>
+<dd> Orthomax with a coefficient of <em class="math">D (M - 1) / (D + M - 2)</em>.</dd>
 <dt> <code>'orthomax'</code></dt>
 <dd> General orthomax with the coefficient given by <code>'Coeff'</code>.</dd>
 <dt> <code>'promax'</code></dt>

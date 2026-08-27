@@ -998,7 +998,7 @@
  as the response.
 </li><li>
  <code><var>mdl</var> = stepwiselm (<var>X</var>, <var>y</var>)</code> fits a stepwise model of
- the response <var>y</var> to the predictor data <var>X</var>, an <math>N&times;P</math> numeric
+ the response <var>y</var> to the predictor data <var>X</var>, an <em class="math">N&times;P</em> numeric
  or logical matrix.  By default, the predictors are named <code>'x1'</code>,
  <code>'x2'</code>, &hellip;, <code>'xP'</code> and the response is named
  <code>'y'</code>.
@@ -1030,13 +1030,13 @@
  terms, all pairwise products of distinct predictor variables, and all
  squared terms.</td></tr>
 <tr><td width="18%"><code>'polyijk'</code></td><td width="80%">Model is a polynomial with maximum degree
- <math>i</math> in the first predictor, <math>j</math> in the second, and so on, given
+ <em class="math">i</em> in the first predictor, <em class="math">j</em> in the second, and so on, given
  as a run of single-digit numerals, one per predictor (e.g.
  <code>'poly21'</code> for two predictors).  The model contains interaction
  terms, but the degree of each interaction term never exceeds the largest
  of the specified per-predictor degrees.</td></tr>
-<tr><td width="18%">terms matrix</td><td width="80%">A <math>T&times;P</math> or <math>T&times;(P+1)</math> numeric matrix,
- where <math>T</math> is the number of terms and <math>P</math> is the number of
+<tr><td width="18%">terms matrix</td><td width="80%">A <em class="math">T&times;P</em> or <em class="math">T&times;(P+1)</em> numeric matrix,
+ where <em class="math">T</em> is the number of terms and <em class="math">P</em> is the number of
  predictor variables, following the same convention as <code>fitlm</code>&rsquo;s
  terms matrix.  When <var>InitialModel</var> is given as a terms matrix, the
  <code>'PredictorVars'</code> option may not also be used.</td></tr>
@@ -1101,8 +1101,8 @@
 <tr><td width="18%"><code>'CategoricalVars'</code></td><td width="80%">Specifies which predictor variables
  are treated as categorical, given as a vector of column indices, a logical
  vector, or a cell array of variable names (table input only).  Each
- categorical predictor with <math>L</math> distinct categories is expanded into
- <math>L-1</math> indicator variables, and <code>stepwiselm</code> always adds or
+ categorical predictor with <em class="math">L</em> distinct categories is expanded into
+ <em class="math">L-1</em> indicator variables, and <code>stepwiselm</code> always adds or
  removes that entire group of indicator variables together, in a single
  step, treating the categorical predictor as one term.</td></tr>
 <tr><td width="18%"><code>'VarNames'</code></td><td width="80%">A cell array of character vectors naming the

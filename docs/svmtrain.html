@@ -997,9 +997,9 @@
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <tr><td width="10%"></td><td width="10%">0</td><td width="80%">linear: u&rsquo;*v</td></tr>
-<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <math>(gamma &times; u' &times; v + coef0) ^ degree</math></td></tr>
-<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <math>exp(-gamma &times; |u-v| ^ 2)</math></td></tr>
-<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <math>tanh(gamma &times; u' &times; v + coef0)</math></td></tr>
+<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <em class="math">(gamma &times; u' &times; v + coef0) ^ degree</em></td></tr>
+<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <em class="math">exp(-gamma &times; |u-v| ^ 2)</em></td></tr>
+<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <em class="math">tanh(gamma &times; u' &times; v + coef0)</em></td></tr>
 <tr><td width="10%"></td><td width="10%">4</td><td width="80%">precomputed kernel (kernel values in training_instance_matrix)</td></tr>
 </table>
 <p><strong>Source Code: </strong>
@@ -1028,7 +1028,7 @@
 <li> <code>Parameters</code> : parameters
 </li><li> <code>nr_class</code> : number of classes; = 2 for regression/one-class svm
 </li><li> <code>totalSV</code> : total #SV
-</li><li> <code>rho</code> : <math>-b</math> of the decision function(s) <math>wx+b</math>
+</li><li> <code>rho</code> : <em class="math">-b</em> of the decision function(s) <em class="math">wx+b</em>
 </li><li> <code>Label</code> : label of each class; empty for regression/one-class SVM
 </li><li> <code>sv_indices</code> : values in [1,...,num_training_data] to indicate SVs in the training set
 </li><li> <code>ProbA</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM

@@ -971,7 +971,7 @@
 </p>
 <div class="ms-5">
 <p> <code><var>mdl</var> = fitglm (<var>X</var>, <var>y</var>)</code> fits a generalized linear model
- of the response vector <var>y</var> on the columns of the <math>n</math>-by-<math>p</math>
+ of the response vector <var>y</var> on the columns of the <em class="math">n</em>-by-<em class="math">p</em>
  numeric predictor matrix <var>X</var>, and returns a <code>GeneralizedLinearModel</code>
  object.  <code><var>mdl</var> = fitglm (<var>tbl</var>)</code> instead takes the predictors
  and response from the table <var>tbl</var> (the last column is the response unless
@@ -981,7 +981,7 @@
 <p> For the <code>'binomial'</code> distribution <var>y</var> holds the <em>number of
  successes</em>, and the number of trials is given either by the
  <code>'BinomialSize'</code> pair or by passing <var>y</var> as an
- <math>n</math>-by-<math>2</math> matrix whose first column holds the successes and
+ <em class="math">n</em>-by-<em class="math">2</em> matrix whose first column holds the successes and
  whose second holds the trials.  The two forms describe the same model; when
  both are given, the trials supplied with the response are used.  A trial
  count must be a positive integer, while a success count need not be whole.
@@ -1018,7 +1018,7 @@
  logical vector, numeric indices, or a cell array of names).</td></tr>
 <tr><td width="20%"><code>'Exclude'</code></td><td width="75%">observations to exclude from the fit (a logical
  vector or numeric indices).</td></tr>
-<tr><td width="20%"><code>'VarNames'</code></td><td width="75%">a cell array of <math>p + 1</math> variable names
+<tr><td width="20%"><code>'VarNames'</code></td><td width="75%">a cell array of <em class="math">p + 1</em> variable names
  (predictors followed by the response) for numeric <var>X</var>.</td></tr>
 <tr><td width="20%"><code>'PredictorVars'</code>, <code>'ResponseVar'</code></td><td width="75%">for table input,
  the predictor and response variable names.</td></tr>
@@ -1036,7 +1036,7 @@
  level whether or not an intercept is present and so cannot fit the reference
  group at all &ndash; for a three-level grouping variable <code>g</code>, MATLAB fits
  <code>y ~ g - 1</code> with two coefficients, predicts exactly 0 for every
- observation in the omitted group, and reports a negative <math>R^2</math>.  This
+ observation in the omitted group, and reports a negative <em class="math">R^2</em>.  This
  implementation returns three coefficients, one per group.
 </p>
 <p> <strong>See also: </strong>

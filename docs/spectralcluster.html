@@ -971,16 +971,16 @@
 </p>
 <div class="ms-5">
 <p> <code><var>idx</var> = spectralcluster (<var>X</var>, <var>k</var>)</code> partitions the
- <math>N&times;P</math> numeric matrix <var>X</var> into <var>k</var> clusters and returns the
- <math>N&times;1</math> vector <var>idx</var> of cluster indices.  Rows of <var>X</var> correspond
+ <em class="math">N&times;P</em> numeric matrix <var>X</var> into <var>k</var> clusters and returns the
+ <em class="math">N&times;1</em> vector <var>idx</var> of cluster indices.  Rows of <var>X</var> correspond
  to observations and columns to features.  Spectral clustering builds a
  similarity graph over the observations, embeds them with the eigenvectors of
  the graph Laplacian, and clusters that embedding, which lets it recover
  clusters that are not linearly separable in the original space.
 </p>
 <p> <code>[<var>idx</var>, <var>V</var>, <var>D</var>] = spectralcluster (&hellip;)</code> also returns
- the <math>N&times;k</math> matrix <var>V</var> whose columns are the eigenvectors associated
- with the <var>k</var> smallest eigenvalues of the Laplacian, and the <math>k&times;1</math>
+ the <em class="math">N&times;k</em> matrix <var>V</var> whose columns are the eigenvectors associated
+ with the <var>k</var> smallest eigenvalues of the Laplacian, and the <em class="math">k&times;1</em>
  vector <var>D</var> of those eigenvalues.  The signs of the eigenvectors, and the
  basis within a repeated eigenvalue, are arbitrary.
 </p>
@@ -995,7 +995,7 @@
  <code>'chebychev'</code>, <code>'cosine'</code>, <code>'correlation'</code>,
  <code>'hamming'</code>, <code>'jaccard'</code>, <code>'spearman'</code>, or a function
  handle accepted by <code>pdist2</code>, or the string <code>'precomputed'</code> to
- interpret the first input as an <math>N&times;N</math> similarity matrix.</td></tr>
+ interpret the first input as an <em class="math">N&times;N</em> similarity matrix.</td></tr>
 <tr><td width="22%"><code>'SimilarityGraph'</code></td><td width="76%"><code>'knn'</code> (default) to connect each
  observation to its nearest neighbors, or <code>'epsilon'</code> to connect
  observations that are within a fixed radius.</td></tr>
@@ -1003,7 +1003,7 @@
  <code>'knn'</code> graph, a positive integer.  The default is
  <code>ceil (log (<var>N</var>))</code>.</td></tr>
 <tr><td width="22%"><code>'KNNGraphType'</code></td><td width="76%"><code>'complete'</code> (default) to connect
- <math>i</math> and <math>j</math> when either is a nearest neighbor of the other, or
+ <em class="math">i</em> and <em class="math">j</em> when either is a nearest neighbor of the other, or
  <code>'mutual'</code> to connect them only when each is a nearest neighbor of the
  other.</td></tr>
 <tr><td width="22%"><code>'Radius'</code></td><td width="76%">the radius for the <code>'epsilon'</code> graph, a

@@ -1044,12 +1044,12 @@
  <var>modeltype</var> can specified as one of the following:
 <ul>
 <li>
- &quot;linear&quot; (default) : compute <math>N</math> main effects with no interactions.
+ &quot;linear&quot; (default) : compute <em class="math">N</em> main effects with no interactions.
 </li><li>
- &quot;interaction&quot; : compute <math>N</math> effects and <math>N&times;(N-1)</math> two-factor
+ &quot;interaction&quot; : compute <em class="math">N</em> effects and <em class="math">N&times;(N-1)</em> two-factor
  interactions
 </li><li>
- &quot;full&quot; : compute the <math>N</math> main effects and interactions at all levels
+ &quot;full&quot; : compute the <em class="math">N</em> main effects and interactions at all levels
 </li><li>
  a scalar integer : representing the maximum interaction order
 </li><li>
@@ -1113,7 +1113,7 @@
 <ul>
 <li>
  <var>alpha</var> must be a scalar value between 0 and 1 requesting
- <math>100&times;(1-<var>alpha</var>)%</math> confidence bounds for the regression coefficients
+ <em class="math">100&times;(1-<var>alpha</var>)%</em> confidence bounds for the regression coefficients
  returned in <var>stats</var>.coeffs (default 0.05 for 95% confidence).
 </li></ul>
 
@@ -1198,7 +1198,7 @@
 <p> <code>[<var>p</var>, <var>atab</var>] = anovan (&hellip;)</code> returns a cell array
  containing the ANOVA table.  Its first row holds the column names, and the
  columns are, in order, the term name, its sum-of-squares, its degrees of
- freedom, a singularity flag, its mean square, the <math>F</math> statistic, the
+ freedom, a singularity flag, its mean square, the <em class="math">F</em> statistic, the
  p-value, and then two effect sizes: eta squared and partial eta squared.
  The first seven follow MATLAB&rsquo;s layout, so a caller reading them by
  position gets the same quantity in either language; the two effect sizes
@@ -1213,7 +1213,7 @@
  synthesised from several and carries Satterthwaite degrees of freedom,
  which are generally not whole numbers.
 </p>
-<p> The singularity flag is <math>1</math> when a term is aliased with the rest of
+<p> The singularity flag is <em class="math">1</em> when a term is aliased with the rest of
  the model, which happens when the design is not of full rank, most often
  because a combination of factor levels holds no observations.  The degrees
  of freedom reported for such a term are the ones that can be estimated,
@@ -1222,14 +1222,14 @@
  and therefore on <code>&quot;sstype&quot;</code>: a term that is estimable in a sequential
  fit may not be estimable in a marginal one.  A flagged term&rsquo;s
  sum-of-squares is not uniquely attributable to it, so the corresponding
- <math>F</math> and p-value should not be read as a test of that term.
+ <em class="math">F</em> and p-value should not be read as a test of that term.
 </p>
 <p> <code>[<var>p</var>, <var>atab</var>, <var>stats</var>] = anovan (&hellip;)</code> returns a
  structure containing additional statistics, including degrees of freedom and
  effect sizes for each term in the linear model, the design matrix, the
  variance-covariance matrix, (weighted) model residuals, and the mean squared
  error. The columns of <var>stats</var>.coeffs (from left-to-right) report the
- model coefficients, standard errors, lower and upper <math>100&times;(1-alpha)%</math>
+ model coefficients, standard errors, lower and upper <em class="math">100&times;(1-alpha)%</em>
  confidence interval bounds, t-statistics, and p-values relating to the
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that

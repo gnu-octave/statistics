@@ -972,7 +972,7 @@
  <var>beta</var>, <var>resid</var>, <code>'Jacobian'</code>, <var>J</var>)</code> returns the predicted
  responses <var>ypred</var> of the model <code><var>modelfun</var> (<var>beta</var>,
  <var>X</var>)</code> at the new predictor values <var>X</var>, together with the half-widths
- <var>delta</var> of the <math>100 (1 - <var>alpha</var>)%</math> confidence intervals, so
+ <var>delta</var> of the <em class="math">100 (1 - <var>alpha</var>)%</em> confidence intervals, so
  that <code><var>ypred</var> - <var>delta</var></code> and <code><var>ypred</var> + <var>delta</var></code>
  bound the response.  <var>beta</var>, <var>resid</var> (the residuals) and <var>J</var> (the
  Jacobian) come from <code>nlinfit</code>.
@@ -992,7 +992,7 @@
 <tr><td width="20%"><code>'SimOpt'</code></td><td width="78%"><code>'off'</code> (default) for pointwise intervals,
  or <code>'on'</code> for simultaneous (Scheffe) intervals.</td></tr>
 <tr><td width="20%"><code>'Alpha'</code></td><td width="78%">The significance level; the interval has
- confidence <math>100 (1 - <var>alpha</var>)%</math> (default <var>alpha</var> = 0.05).</td></tr>
+ confidence <em class="math">100 (1 - <var>alpha</var>)%</em> (default <var>alpha</var> = 0.05).</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/nlpredci.m">nlpredci</a>
@@ -1007,10 +1007,10 @@
  <code><var>MSE</var> * inv (<var>J</var>' * <var>J</var>)</code> when a Jacobian is supplied) and
  <var>Jnew</var> is the Jacobian of <var>modelfun</var> at <var>X</var>; an
  <code>'observation'</code> interval adds the error variance <var>MSE</var> to <code>v</code>.
- The critical value <code>c</code> is the Student&rsquo;s <math>t</math> quantile at
- <math>1 - <var>alpha</var>/2</math> with the error degrees of freedom for a pointwise
+ The critical value <code>c</code> is the Student&rsquo;s <em class="math">t</em> quantile at
+ <em class="math">1 - <var>alpha</var>/2</em> with the error degrees of freedom for a pointwise
  interval, or the Scheffe value <code>sqrt (k * finv (1 - <var>alpha</var>, k,
- dfe))</code> for a simultaneous interval, where <math>k</math> is the number of
+ dfe))</code> for a simultaneous interval, where <em class="math">k</em> is the number of
  coefficients (plus one for an observation interval).
 </p>
 <p> <strong>See also: </strong>

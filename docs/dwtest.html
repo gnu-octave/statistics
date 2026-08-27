@@ -972,8 +972,8 @@
  the residuals <var>r</var> of a linear regression with design matrix <var>x</var>
  (which should include a column of ones if the model has a constant term).
  The null hypothesis is that the residuals are uncorrelated, against the
- alternative that they are autocorrelated.  <var>r</var> is an <math>N&times;1</math> vector and
- <var>x</var> is an <math>N&times;P</math> matrix.  <var>p</var> is the p-value of the test.
+ alternative that they are autocorrelated.  <var>r</var> is an <em class="math">N&times;1</em> vector and
+ <var>x</var> is an <em class="math">N&times;P</em> matrix.  <var>p</var> is the p-value of the test.
 </p>
 <p> The Durbin-Watson statistic is
  $$ d = \sum_{i=1}^{n-1} (r_{i+1} - r_i)^2 / \sum_{i=1}^{n} r_i^2. $$
@@ -990,7 +990,7 @@
  from the null distribution of the statistic (a ratio of quadratic forms,
  evaluated with Imhof&rsquo;s method), or <code>'approximate'</code> to use a normal
  approximation based on the mean and variance of the statistic.  The default is
- <code>'exact'</code> for <math>n &lt; 400</math> and <code>'approximate'</code> otherwise.</td></tr>
+ <code>'exact'</code> for <em class="math">n &lt; 400</em> and <code>'approximate'</code> otherwise.</td></tr>
 <tr><td width="18%"><code>'Tail'</code></td><td width="80%">The alternative hypothesis: <code>'both'</code>
  (default) for a nonzero autocorrelation, <code>'right'</code> for a positive
  autocorrelation, or <code>'left'</code> for a negative autocorrelation.</td></tr>

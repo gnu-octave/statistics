@@ -973,10 +973,10 @@
 </p>
 <ul>
 <li>
- <var>X</var> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
+ <var>X</var> must be a <em class="math">N&times;P</em> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
 </li><li>
- <var>Y</var> is an <math>N&times;1</math> matrix or cell matrix containing the class labels
+ <var>Y</var> is an <em class="math">N&times;1</em> matrix or cell matrix containing the class labels
  of the corresponding predictor data in <var>X</var>.  <var>Y</var> can be numeric,
  logical, a character array or a cell array of character vectors.  <var>Y</var>
  must have the same number of rows as <var>X</var>.
@@ -1013,7 +1013,7 @@
  <code>'uniform'</code> to give every class the same probability.</td></tr>
 <tr><td width="18%"><code>'Cost'</code></td><td width="80%">A square numeric matrix of misclassification
  costs, where <code>Cost(i,j)</code> is the cost of classifying an observation of
- class <math>i</math> into class <math>j</math>.  The default is one off the diagonal and
+ class <em class="math">i</em> into class <em class="math">j</em>.  The default is one off the diagonal and
  zero on it.</td></tr>
 <tr><td width="18%"><code>'ScoreTransform'</code></td><td width="80%">A character vector naming a transform
  applied to the posterior returned by <code>predict</code>, or a function handle

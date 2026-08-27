@@ -969,11 +969,11 @@
 </p>
 <div class="ms-5">
 <p> <code><var>ci</var> = nlparci (<var>beta</var>, <var>resid</var>, <code>'covar'</code>,
- <var>CovB</var>)</code> returns the <math>100 (1 - <var>alpha</var>)%</math> confidence intervals
+ <var>CovB</var>)</code> returns the <em class="math">100 (1 - <var>alpha</var>)%</em> confidence intervals
  for the fitted coefficients <var>beta</var> of a nonlinear regression, given the
  residual vector <var>resid</var> and the estimated coefficient covariance matrix
  <var>CovB</var> (both produced by <code>nlinfit</code>).  <var>ci</var> is a
- <math>p</math>-by-<math>2</math> matrix whose rows are the lower and upper bounds for the
+ <em class="math">p</em>-by-<em class="math">2</em> matrix whose rows are the lower and upper bounds for the
  corresponding coefficient.
 </p>
 <p> <code><var>ci</var> = nlparci (<var>beta</var>, <var>resid</var>, <code>'jacobian'</code>,
@@ -981,9 +981,9 @@
  <var>J</var> and the residuals.  A legacy positional form <code>nlparci
  (<var>beta</var>, <var>resid</var>, <var>J</var>)</code> is also accepted.
 </p>
-<p> The confidence level defaults to <math>95%</math>; pass <code><code>'alpha'</code>,
- <var>alpha</var></code> for a <math>100 (1 - <var>alpha</var>)%</math> interval.  The intervals use
- Student&rsquo;s <math>t</math> distribution with <code>numel (<var>resid</var>) - numel
+<p> The confidence level defaults to <em class="math">95%</em>; pass <code><code>'alpha'</code>,
+ <var>alpha</var></code> for a <em class="math">100 (1 - <var>alpha</var>)%</em> interval.  The intervals use
+ Student&rsquo;s <em class="math">t</em> distribution with <code>numel (<var>resid</var>) - numel
  (<var>beta</var>)</code> degrees of freedom.
 </p>
 <p> <strong>See also: </strong>

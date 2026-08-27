@@ -968,7 +968,7 @@
  randomized feature space whose inner product approximates a Gaussian
  kernel, and then fits a linear model there.  A kernel classifier is
  therefore as nonlinear as a support vector machine with a Gaussian kernel,
- while costing what a linear fit costs: nothing of size <math>NxN</math> is ever
+ while costing what a linear fit costs: nothing of size <em class="math">NxN</em> is ever
  formed.
 </p>
 <p> The expansion is the random Fourier basis of Rahimi and Recht, drawn once
@@ -1323,8 +1323,8 @@ Cost of misclassifying an observation
 
 <p> </p>
 <p> A square numeric matrix with one row and one column per class, whose
- <math>(i,j)</math> element is the cost of classifying an observation of
- class <math>i</math> into class <math>j</math>.  It defaults to one everywhere
+ <em class="math">(i,j)</em> element is the cost of classifying an observation of
+ class <em class="math">i</em> into class <em class="math">j</em>.  It defaults to one everywhere
  except the diagonal, which is zero.  This property is read-only, as it
  is in MATLAB; a cost matrix is given to the constructor instead.
 </p>
@@ -2848,7 +2848,7 @@ Fit a Gaussian kernel binary classifier.
 <p> </p>
 <p> <code><var>obj</var> = ClassificationKernel (<var>X</var>, <var>Y</var>)</code> fits a
  support vector machine in a randomized Gaussian kernel space to the
- <math>NxP</math> predictor matrix <var>X</var> and the <math>Nx1</math> response
+ <em class="math">NxP</em> predictor matrix <var>X</var> and the <em class="math">Nx1</em> response
  <var>Y</var>, which must name exactly two classes.
 </p>
 <p> <code><var>obj</var> = ClassificationKernel (&hellip;, <var>name</var>,
@@ -3009,7 +3009,7 @@ Classify new observations.
  largest score.
 </p>
 <p> <code>[<var>labels</var>, <var>scores</var>] = predict (<var>obj</var>, <var>XC</var>)</code>
- also returns the <math>Nx2</math> scores, whose columns follow
+ also returns the <em class="math">Nx2</em> scores, whose columns follow
  <code>ClassNames</code>, after <code>ScoreTransform</code> has been applied.
 </p>
 

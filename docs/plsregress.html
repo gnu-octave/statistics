@@ -983,14 +983,14 @@
  respectively.
 </p>
 <ul>
-<li> <var>X</var> is an <math>N&times;P</math> matrix of predictor variables, with rows
+<li> <var>X</var> is an <em class="math">N&times;P</em> matrix of predictor variables, with rows
  corresponding to observations, and columns corresponding to variables.
-</li><li> <var>Y</var> is an <math>N&times;M</math> response matrix.
-</li><li> <var>xload</var> is a <math>P&times;NCOMP</math> matrix of predictor loadings, where
+</li><li> <var>Y</var> is an <em class="math">N&times;M</em> response matrix.
+</li><li> <var>xload</var> is a <em class="math">P&times;NCOMP</em> matrix of predictor loadings, where
  each row of <var>xload</var> contains coefficients that define a linear
  combination of PLS components that approximate the original predictor
  variables.
-</li><li> <var>yload</var> is an <math>M&times;NCOMP</math> matrix of response loadings, where
+</li><li> <var>yload</var> is an <em class="math">M&times;NCOMP</em> matrix of response loadings, where
  each row of <var>yload</var> contains coefficients that define a linear
  combination of PLS components that approximate the original response
  variables.
@@ -1006,33 +1006,33 @@
  <var>NCOMP</var>)</code> also returns the following arguments:
 </p>
 <ul>
-<li> <var>xscore</var> is an <math>N&times;NCOMP</math> orthonormal matrix with the predictor
+<li> <var>xscore</var> is an <em class="math">N&times;NCOMP</em> orthonormal matrix with the predictor
  scores, i.e., the PLS components that are linear combinations of the
  variables in <var>X</var>, with rows corresponding to observations and columns
  corresponding to components.
-</li><li> <var>yscore</var> is an <math>N&times;NCOMP</math> orthonormal matrix with the response
+</li><li> <var>yscore</var> is an <em class="math">N&times;NCOMP</em> orthonormal matrix with the response
  scores, i.e., the linear combinations of the responses with which the PLS
  components <var>xscore</var> have maximum covariance, with rows corresponding to
  observations and columns corresponding to components.
-</li><li> <var>coef</var> is a <math>(P+1)&times;M</math> matrix with the PLS regression
+</li><li> <var>coef</var> is a <em class="math">(P+1)&times;M</em> matrix with the PLS regression
  coefficients, containing the intercepts in the first row.
-</li><li> <var>pctVar</var> is a <math>2&times;NCOMP</math> matrix containing the percentage of
+</li><li> <var>pctVar</var> is a <em class="math">2&times;NCOMP</em> matrix containing the percentage of
  the variance explained by the model with the first row containing the
  percentage of explained varianced in <var>X</var> by each PLS component and the
  second row containing the percentage of explained variance in <var>Y</var>.
-</li><li> <var>mse</var> is a <math>2&times;(NCOMP+1)</math> matrix containing the estimated mean
+</li><li> <var>mse</var> is a <em class="math">2&times;(NCOMP+1)</em> matrix containing the estimated mean
  squared errors for PLS models with <code>0:<var>NCOMP</var></code> components with the
  first row containing the squared errors for the predictor variables in
  <var>X</var> and the second row containing the mean squared errors for the
  response variable(s) in <var>Y</var>.
 </li><li> <var>stats</var> is a structure with the following fields:
 <ul>
-<li> <var>stats</var><code>.W</code> is a <math>P&times;NCOMP</math> matrix of PLS weights.
-</li><li> <var>stats</var><code>.T2</code> is the <math>T^2</math> statistics for each point in
+<li> <var>stats</var><code>.W</code> is a <em class="math">P&times;NCOMP</em> matrix of PLS weights.
+</li><li> <var>stats</var><code>.T2</code> is the <em class="math">T^2</em> statistics for each point in
  <var>xscore</var>.
-</li><li> <var>stats</var><code>.Xresiduals</code> is an <math>N&times;P</math> matrix with the
+</li><li> <var>stats</var><code>.Xresiduals</code> is an <em class="math">N&times;P</em> matrix with the
  predictor residuals.
-</li><li> <var>stats</var><code>.Yresiduals</code> is an <math>N&times;M</math> matrix with the
+</li><li> <var>stats</var><code>.Yresiduals</code> is an <em class="math">N&times;M</em> matrix with the
  response residuals.
 </li></ul>
 
@@ -1046,8 +1046,8 @@
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
 <tr><td width="20%"><code>'CV'</code></td><td width="75%">The method used to compute <var>mse</var>.  When
- <var>Value</var> is a positive integer <math>K</math>, <code>plsregress</code> uses
- <math>K</math>-fold cross-validation.  Set <var>Value</var> to a cross-validation
+ <var>Value</var> is a positive integer <em class="math">K</em>, <code>plsregress</code> uses
+ <em class="math">K</em>-fold cross-validation.  Set <var>Value</var> to a cross-validation
  partition, created using <code>cvpartition</code>, to use other forms of
  cross-validation.  Set <var>Value</var> to <code>'resubstitution'</code> to use both
  <var>X</var> and <var>Y</var> to fit the model and to estimate the mean squared errors,

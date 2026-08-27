@@ -965,18 +965,18 @@
 <dt><code><h5 class="fs">statistics: <var>r</var> = <b>ncfrnd</b> (<var>df1</var>, <var>df2</var>, <var>lambda</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>r</var> = <b>ncfrnd</b> (<var>df1</var>, <var>df2</var>, <var>lambda</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
-<p> Random arrays from the noncentral <math>F</math>-distribution.
+<p> Random arrays from the noncentral <em class="math">F</em>-distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>x</var> = ncfrnd (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</code> returns
- an array of random numbers chosen from the noncentral <math>F</math>-distribution
+ an array of random numbers chosen from the noncentral <em class="math">F</em>-distribution
  with
  <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
  <var>lambda</var>.  The size of <var>r</var> is the common size of <var>df1</var>,
  <var>df2</var>, and <var>lambda</var>.  A scalar input functions as a constant matrix
  of the same size as the other input.
 </p>
-<p> <code>ncfrnd</code> generates values using the definition of a noncentral <math>F</math>
+<p> <code>ncfrnd</code> generates values using the definition of a noncentral <em class="math">F</em>
  random variable, as the ratio of a noncentral chi-squared distribution and a
  (central) chi-squared distribution.
 </p>
@@ -986,7 +986,7 @@
  and any further arguments specify additional matrix dimensions.  The size may
  also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
-<p> Further information about the noncentral <math>F</math>-distribution can be found
+<p> Further information about the noncentral <em class="math">F</em>-distribution can be found
  at <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> <strong>See also: </strong>

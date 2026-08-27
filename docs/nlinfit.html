@@ -1036,7 +1036,7 @@
  weighted fit the coefficient covariance is <code><var>CovB</var> = <var>MSE</var> *
  inv (<var>J</var>' * <var>W</var> * <var>J</var>)</code>, where <var>W</var> is the diagonal matrix of
  observation weights and <var>MSE</var> is the weighted residual sum of squares
- divided by the error degrees of freedom <math>n - p</math> (with <math>p</math>
+ divided by the error degrees of freedom <em class="math">n - p</em> (with <em class="math">p</em>
  coefficients).  A non-constant <code>'ErrorModel'</code> is fitted by generalized
  least squares, re-deriving the observation weights from the fitted values
  each iteration; the <code>'proportional'</code> model weights each observation by
@@ -1048,9 +1048,9 @@
  (the leverage is taken from the ordinary fit and held fixed).  The robust
  coefficient covariance follows the Street-Carroll-Ruppert convention, the
  same one used by <code>robustfit</code>: <code><var>CovB</var> = s^2 * inv (<var>J</var>' *
- <var>J</var>)</code> and <math><var>MSE</var> = s^2</math>, where the scale <code>s</code> blends the
+ <var>J</var>)</code> and <em class="math"><var>MSE</var> = s^2</em>, where the scale <code>s</code> blends the
  ordinary-fit scale <code>ols_s</code> with the robust scale <code>robust_s</code> at the
- solution as <math>s^2 = (p^2 &times; ols_s^2 + n &times; robust_s^2) / (n + p^2)</math>, taken
+ solution as <em class="math">s^2 = (p^2 &times; ols_s^2 + n &times; robust_s^2) / (n + p^2)</em>, taken
  to be at least <code>robust_s</code>.
 </p>
 <p> The robust <code>MSE</code> and <code>CovB</code> differ from MATLAB&rsquo;s by up to a few

@@ -971,10 +971,10 @@
 <div class="ms-5">
 <p> <code><var>Y</var> = mdscale (<var>D</var>, <var>p</var>)</code> takes a matrix of dissimilarities
  <var>D</var> and returns a configuration <var>Y</var> of <var>n</var> points in <var>p</var>
- dimensions (an <math><var>n</var> &times; <var>p</var> </math> matrix) whose interpoint distances
+ dimensions (an <em class="math"><var>n</var> &times; <var>p</var> </em> matrix) whose interpoint distances
  approximate <var>D</var>, by minimizing a stress criterion.  <var>D</var> may be given
- either as a full <math><var>n</var> &times; <var>n</var></math> symmetric matrix with zero diagonal,
- or as the vector of the <math><var>n</var> (<var>n</var> - 1) / 2</math> upper-triangle
+ either as a full <em class="math"><var>n</var> &times; <var>n</var></em> symmetric matrix with zero diagonal,
+ or as the vector of the <em class="math"><var>n</var> (<var>n</var> - 1) / 2</em> upper-triangle
  dissimilarities returned by <code>pdist</code>.
 </p>
 <p> <code>[<var>Y</var>, <var>stress</var>, <var>disparities</var>] = mdscale (&hellip;)</code> also
@@ -991,18 +991,18 @@
 <dd> The goodness-of-fit criterion to minimize, one of:
 <dl compact="compact">
 <dt> <code>'stress'</code> (default)</dt>
-<dd> Kruskal&rsquo;s normalized stress-1, <math>sqrt (sum ((d - dhat)^2) / sum (d^2))</math>,
+<dd> Kruskal&rsquo;s normalized stress-1, <em class="math">sqrt (sum ((d - dhat)^2) / sum (d^2))</em>,
  computed from disparities <var>dhat</var> (nonmetric).</dd>
 <dt> <code>'sstress'</code></dt>
-<dd> Squared stress, <math>sqrt (sum ((d^2 - dhat^2)^2) / sum (d^4))</math> (nonmetric).</dd>
+<dd> Squared stress, <em class="math">sqrt (sum ((d^2 - dhat^2)^2) / sum (d^4))</em> (nonmetric).</dd>
 <dt> <code>'metricstress'</code></dt>
-<dd> Metric stress, <math>sqrt (sum ((d - delta)^2) / sum (delta^2))</math>, fitting the
+<dd> Metric stress, <em class="math">sqrt (sum ((d - delta)^2) / sum (delta^2))</em>, fitting the
  dissimilarities <var>delta</var> directly.</dd>
 <dt> <code>'metricsstress'</code></dt>
-<dd> Metric squared stress, <math>sqrt (sum ((d^2 - delta^2)^2) / sum (delta^4))</math>.</dd>
+<dd> Metric squared stress, <em class="math">sqrt (sum ((d^2 - delta^2)^2) / sum (delta^4))</em>.</dd>
 <dt> <code>'sammon'</code></dt>
 <dd> Sammon&rsquo;s nonlinear mapping criterion,
- <math>(1 / sum (delta)) sum ((d - delta)^2 / delta)</math>.</dd>
+ <em class="math">(1 / sum (delta)) sum ((d - delta)^2 / delta)</em>.</dd>
 <dt> <code>'strain'</code></dt>
 <dd> The classical scaling criterion; equivalent to <code>cmdscale</code>.</dd>
 </dl>
@@ -1013,7 +1013,7 @@
  each dissimilarity in the criterion.</dd>
 <dt> <code>'Start'</code></dt>
 <dd> The initial configuration: <code>'cmdscale'</code> (default, classical scaling),
- <code>'random'</code>, or an explicit <math><var>n</var> &times; <var>p</var> </math> matrix.</dd>
+ <code>'random'</code>, or an explicit <em class="math"><var>n</var> &times; <var>p</var> </em> matrix.</dd>
 <dt> <code>'Replicates'</code></dt>
 <dd> The number of times to repeat the minimization from different starting points,
  keeping the best (lowest-stress) result.  The default is 1.</dd>

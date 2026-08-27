@@ -969,9 +969,9 @@
 <div class="ms-5">
 <p> <code><var>nlogL</var> = betalike (<var>params</var>, <var>x</var>)</code> returns the negative
  log likelihood of the data in <var>x</var> corresponding to the Beta distribution
- with (1) shape parameter <math>α</math> and (2) shape parameter <math>β</math> given in
+ with (1) shape parameter <em class="math">α</em> and (2) shape parameter <em class="math">β</em> given in
  the two-element vector <var>params</var>.  Both parameters must be positive real
- numbers and the data in the range <math>[0,1]</math>.  Out of range parameters or
+ numbers and the data in the range <em class="math">[0,1]</em>.  Out of range parameters or
  data return <code>NaN</code>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>avar</var>] = betalike (<var>params</var>, <var>x</var>)</code> returns
@@ -985,7 +985,7 @@
  in <var>x</var>.  By default, or if left empty,
  <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> The Beta distribution is defined on the open interval <math>(0,1)</math>.  However,
+<p> The Beta distribution is defined on the open interval <em class="math">(0,1)</em>.  However,
  <code>betafit</code> can also compute the unbounded beta likelihood function for
  data that include exact zeros or ones.  In such cases, zeros and ones are
  treated as if they were values that have been left-censored at

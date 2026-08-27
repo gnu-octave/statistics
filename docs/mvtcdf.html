@@ -972,13 +972,13 @@
 <p> <code><var>p</var> = mvtcdf (<var>x</var>, <var>rho</var>, <var>df</var>)</code> returns the cumulative
  probability of the multivariate student&rsquo;s t distribution with correlation
  parameters <var>rho</var> and degrees of freedom <var>df</var>, evaluated at each row
- of <var>x</var>.  The rows of the <math>N&times;D</math> matrix <var>x</var> correspond to sample
+ of <var>x</var>.  The rows of the <em class="math">N&times;D</em> matrix <var>x</var> correspond to sample
  observations and its columns correspond to variables or coordinates.  The
  return argument <var>p</var> is a column vector with the same number of rows as in
  <var>x</var>.
 </p>
-<p> <var>rho</var> is a symmetric, positive definite, <math>D&times;D</math> correlation matrix.
- <var>dF</var> is a scalar or a vector with <math>N</math> elements.
+<p> <var>rho</var> is a symmetric, positive definite, <em class="math">D&times;D</em> correlation matrix.
+ <var>dF</var> is a scalar or a vector with <em class="math">N</em> elements.
 </p>
 <p> Note: <code>mvtcdf</code> computes the CDF for the standard multivariate Student&rsquo;s
  t distribution, centered at the origin, with no scale parameters.  If
@@ -992,7 +992,7 @@
  <var>x</var>.
 </p>
 <ul>
-<li> <math>Pr{T(1)&lt;=X(1), T(2)&lt;=X(2), ... T(D)&lt;=X(D)}</math>.
+<li> <em class="math">Pr{T(1)&lt;=X(1), T(2)&lt;=X(2), ... T(D)&lt;=X(D)}</em>.
 </li></ul>
 
 <p> <code><var>p</var> = mvtcdf (<var>x_lo</var>, <var>x_hi</var>, <var>rho</var>, <var>df</var>)</code> returns
@@ -1012,12 +1012,12 @@
 <tr><td width="20%"><code>'TolFun'</code></td><td width="75%">Maximum absolute error tolerance.  Default
  is 1e-8 for D &lt; 4, or 1e-4 for D &gt;= 4.</td></tr>
 <tr><td width="20%"><code>'MaxFunEvals'</code></td><td width="75%">Maximum number of integrand evaluations
- when <math>D &gt;= 4</math>.  Default is 1e7.  Ignored when <math>D &lt; 4</math>.</td></tr>
+ when <em class="math">D &gt;= 4</em>.  Default is 1e7.  Ignored when <em class="math">D &lt; 4</em>.</td></tr>
 <tr><td width="20%"><code>'Display'</code></td><td width="75%">Display options.  Choices are <code>'off'</code>
  (default), <code>'iter'</code>, which shows the probability and estimated error at
  each repetition, and <code>'final'</code>, which shows the final probability and
  related error after the integrand has converged successfully.  Ignored when
- <math>D &lt; 4</math>.</td></tr>
+ <em class="math">D &lt; 4</em>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Distribution_Functions/mvtcdf.m">mvtcdf</a>

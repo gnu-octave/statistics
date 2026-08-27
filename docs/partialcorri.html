@@ -971,15 +971,15 @@
 </p>
 <div class="ms-5">
 <p> <code><var>rho</var> = partialcorri (<var>y</var>, <var>x</var>)</code> returns the sample partial
- correlation coefficients between the columns of the <math>n</math>-by-<math>p</math>
- response matrix <var>y</var> and the columns of the <math>n</math>-by-<math>q</math> predictor
+ correlation coefficients between the columns of the <em class="math">n</em>-by-<em class="math">p</em>
+ response matrix <var>y</var> and the columns of the <em class="math">n</em>-by-<em class="math">q</em> predictor
  matrix <var>x</var>.  Element <code><var>rho</var>(i,j)</code> is the partial correlation
  between <code><var>y</var>(:,i)</code> and <code><var>x</var>(:,j)</code>, adjusted for the other
- columns of <var>x</var> (that is, all columns of <var>x</var> except the <math>j</math>-th).
- <var>rho</var> is a <math>p</math>-by-<math>q</math> matrix.
+ columns of <var>x</var> (that is, all columns of <var>x</var> except the <em class="math">j</em>-th).
+ <var>rho</var> is a <em class="math">p</em>-by-<em class="math">q</em> matrix.
 </p>
 <p> <code><var>rho</var> = partialcorri (<var>y</var>, <var>x</var>, <var>z</var>)</code> additionally
- controls for the variables in the <math>n</math>-by-<math>r</math> matrix <var>z</var>, so that
+ controls for the variables in the <em class="math">n</em>-by-<em class="math">r</em> matrix <var>z</var>, so that
  <code><var>rho</var>(i,j)</code> is adjusted for both the other columns of <var>x</var> and all
  columns of <var>z</var>.
 </p>

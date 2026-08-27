@@ -992,14 +992,14 @@
  since a character array is an integer type and integers are refused too.
 </p>
 <p> With a negative shape parameter the support is the closed interval
- <math>[<var>theta</var>, <var>theta</var> - <var>sigma</var>/<var>k</var>]</math>, and the density at
- its upper endpoint follows the limit of the density there: <math>0</math> for
- <math>-1 &lt; <var>k</var> &lt; 0</math>, <math>1/<var>sigma</var></math> at <math><var>k</var> = -1</math>, and
- unbounded for <math><var>k</var> &lt; -1</math>.  MATLAB returns <math>0</math> at that endpoint
+ <em class="math">[<var>theta</var>, <var>theta</var> - <var>sigma</var>/<var>k</var>]</em>, and the density at
+ its upper endpoint follows the limit of the density there: <em class="math">0</em> for
+ <em class="math">-1 &lt; <var>k</var> &lt; 0</em>, <em class="math">1/<var>sigma</var></em> at <em class="math"><var>k</var> = -1</em>, and
+ unbounded for <em class="math"><var>k</var> &lt; -1</em>.  MATLAB returns <em class="math">0</em> at that endpoint
  whatever the shape, which contradicts its own <code>unifpdf</code>: the
- generalized Pareto with <math><var>k</var> = -1</math> <em>is</em> the uniform
- distribution on <math>[<var>theta</var>, <var>theta</var> + <var>sigma</var>]</math>, for which
- MATLAB&rsquo;s <code>unifpdf</code> returns <math>1/<var>sigma</var></math> at the same point.  This
+ generalized Pareto with <em class="math"><var>k</var> = -1</em> <em>is</em> the uniform
+ distribution on <em class="math">[<var>theta</var>, <var>theta</var> + <var>sigma</var>]</em>, for which
+ MATLAB&rsquo;s <code>unifpdf</code> returns <em class="math">1/<var>sigma</var></em> at the same point.  This
  implementation returns the limit, and so agrees with <code>unifpdf</code>.
 </p>
 <p> <strong>See also: </strong>

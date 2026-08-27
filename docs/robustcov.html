@@ -972,15 +972,15 @@
 </p>
 <div class="ms-5">
 <p> <code><var>sig</var> = robustcov (<var>X</var>)</code> returns a robust estimate <var>sig</var> of
- the covariance matrix of the <math>N&times;P</math> data matrix <var>X</var>, computed so that
+ the covariance matrix of the <em class="math">N&times;P</em> data matrix <var>X</var>, computed so that
  it is not distorted by outlying observations.  Rows of <var>X</var> are
  observations and columns are variables.  Rows containing <code>NaN</code> values
  are removed.
 </p>
 <p> <code>[<var>sig</var>, <var>mu</var>, <var>mah</var>, <var>outliers</var>, <var>s</var>] = robustcov
- (&hellip;)</code> also returns the robust mean <var>mu</var> (<math>1&times;P</math>), the robust
- Mahalanobis distances <var>mah</var> (<math>N&times;1</math>) of each observation from the
- estimated distribution, a logical vector <var>outliers</var> (<math>N&times;1</math>) flagging
+ (&hellip;)</code> also returns the robust mean <var>mu</var> (<em class="math">1&times;P</em>), the robust
+ Mahalanobis distances <var>mah</var> (<em class="math">N&times;1</em>) of each observation from the
+ estimated distribution, a logical vector <var>outliers</var> (<em class="math">N&times;1</em>) flagging
  observations whose distance exceeds <code>sqrt (chi2inv (0.975, <var>P</var>))</code>,
  and a structure <var>s</var> holding the estimate metadata.
 </p>
@@ -994,7 +994,7 @@
  Orthogonalized Gnanadesikan-Kettenring estimator).  <code>'olivehawkins'</code> is
  not implemented.</td></tr>
 <tr><td width="22%"><code>'OutlierFraction'</code></td><td width="76%">the maximum fraction of outliers, a
- scalar in <math>[0, 0.5]</math> (default 0.5), used to set the size of the
+ scalar in <em class="math">[0, 0.5]</em> (default 0.5), used to set the size of the
  elemental subsets in <code>'fmcd'</code>.</td></tr>
 <tr><td width="22%"><code>'NumTrials'</code></td><td width="76%">the number of random elemental subsets drawn
  by <code>'fmcd'</code>, a positive integer (default 500).</td></tr>

@@ -970,8 +970,8 @@
 <p> Performs a principal component analysis on a data matrix.
 </p>
 <div class="ms-5">
-<p> A principal component analysis of a data matrix of <math>N</math> observations in a
- <math>D</math> dimensional space returns a <math>D&times;D</math> transformation matrix, to
+<p> A principal component analysis of a data matrix of <em class="math">N</em> observations in a
+ <em class="math">D</em> dimensional space returns a <em class="math">D&times;D</em> transformation matrix, to
  perform a change of basis on the data.  The first component of the new basis
  is the direction that maximizes the variance of the projected data.
 </p>
@@ -979,7 +979,7 @@
 </p>
 <ul>
 <li>
- <var>x</var> : a <math>N&times;D</math> data matrix
+ <var>x</var> : a <em class="math">N&times;D</em> data matrix
 </li></ul>
 
 <p> The following <var>Name</var>, <var>Value</var> pair arguments can be used:
@@ -1000,11 +1000,11 @@
  <code>'Economy'</code> is a boolean indicator for the economy size output.  It is
  <code>true</code> by default.  Hence, <code>pca</code> returns only the elements of
  <var>latent</var> that are not necessarily zero, and the corresponding columns of
- <var>coeff</var> and <var>score</var>, that is, when <math>N &lt;= D</math>, only the first
- <math>N - 1</math>.
+ <var>coeff</var> and <var>score</var>, that is, when <em class="math">N &lt;= D</em>, only the first
+ <em class="math">N - 1</em>.
 </li><li>
- <code>'NumComponents'</code> defines the number of components <math>k</math> to return.
- If <math>k &lt; p</math>, then only the first <math>k</math> columns of <var>coeff</var> and
+ <code>'NumComponents'</code> defines the number of components <em class="math">k</em> to return.
+ If <em class="math">k &lt; p</em>, then only the first <em class="math">k</em> columns of <var>coeff</var> and
  <var>score</var> are returned.
 </li><li>
  <code>'Rows'</code> defines how to handle missing values:
@@ -1022,11 +1022,11 @@
 
 </li><li>
  <code>'Weights'</code> defines observation weights as a vector of positive values
- of length <math>N</math>.
+ of length <em class="math">N</em>.
 </li><li>
  <code>'VariableWeights'</code> defines variable weights:
 <ul>
-<li> a <var>vector</var> of positive values of length <math>D</math>.
+<li> a <var>vector</var> of positive values of length <em class="math">D</em>.
 </li><li> the string <code>'variance'</code> to use the sample variance as weights.
 </li></ul>
 
@@ -1037,7 +1037,7 @@
 </p>
 <ul>
 <li>
- <var>coeff</var> : the principal component coefficients, a <math>D&times;D</math>
+ <var>coeff</var> : the principal component coefficients, a <em class="math">D&times;D</em>
  transformation matrix
 </li><li>
  <var>score</var> : the principal component scores, the representation of <var>x</var>

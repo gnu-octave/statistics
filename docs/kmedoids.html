@@ -972,9 +972,9 @@
 <p> Partition observations into <var>k</var> clusters using the k-medoids algorithm.
 </p>
 <div class="ms-5">
-<p> <code><var>idx</var> = kmedoids (<var>X</var>, <var>k</var>)</code> partitions the <math>N&times;P</math>
+<p> <code><var>idx</var> = kmedoids (<var>X</var>, <var>k</var>)</code> partitions the <em class="math">N&times;P</em>
  numeric matrix <var>X</var> into <var>k</var> clusters, each represented by one of the
- observations (its <em>medoid</em>), and returns the <math>N&times;1</math> vector
+ observations (its <em>medoid</em>), and returns the <em class="math">N&times;1</em> vector
  <var>idx</var> of cluster indices.  Rows of <var>X</var> correspond to observations and
  columns correspond to features or variables.  Unlike <code>kmeans</code>, whose
  centroids are the mean of each cluster, a medoid is an actual data point,
@@ -986,14 +986,14 @@
 </p>
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
-<tr><td width="18%"><var>C</var></td><td width="80%">a <math>k&times;P</math> matrix with the coordinates of the <var>k</var>
+<tr><td width="18%"><var>C</var></td><td width="80%">a <em class="math">k&times;P</em> matrix with the coordinates of the <var>k</var>
  medoids, one per row (<code><var>C</var> = <var>X</var>(<var>midx</var>,:)</code>).</td></tr>
-<tr><td width="18%"><var>sumd</var></td><td width="80%">a <math>k&times;1</math> vector with the within-cluster sum of the
+<tr><td width="18%"><var>sumd</var></td><td width="80%">a <em class="math">k&times;1</em> vector with the within-cluster sum of the
  distances from each point to its cluster medoid, measured with the selected
  metric.</td></tr>
-<tr><td width="18%"><var>D</var></td><td width="80%">an <math>N&times;k</math> matrix with the distance from every
+<tr><td width="18%"><var>D</var></td><td width="80%">an <em class="math">N&times;k</em> matrix with the distance from every
  observation to every medoid.</td></tr>
-<tr><td width="18%"><var>midx</var></td><td width="80%">a <math>k&times;1</math> vector with the row indices into <var>X</var>
+<tr><td width="18%"><var>midx</var></td><td width="80%">a <em class="math">k&times;1</em> vector with the row indices into <var>X</var>
  of the <var>k</var> medoids.</td></tr>
 <tr><td width="18%"><var>info</var></td><td width="80%">a scalar structure with the fields <code>'algorithm'</code>,
  <code>'start'</code>, <code>'distance'</code>, <code>'iterations'</code>, and
@@ -1022,8 +1022,8 @@
 <tr><td width="18%"><code>'Start'</code></td><td width="80%">the method used to choose the initial medoids:
  <code>'plus'</code> (default, k-means++), <code>'sample'</code> (a random subset of the
  observations), <code>'cluster'</code> (a preliminary pass on a subsample), or a
- <math>k&times;P</math> numeric matrix of starting medoid locations, each snapped to the
- nearest observation.  A <math>k&times;P&times;R</math> array supplies a separate start for each
+ <em class="math">k&times;P</em> numeric matrix of starting medoid locations, each snapped to the
+ nearest observation.  A <em class="math">k&times;P&times;R</em> array supplies a separate start for each
  of <var>R</var> replicates.</td></tr>
 <tr><td width="18%"><code>'Replicates'</code></td><td width="80%">a positive integer number of times to repeat
  the clustering, each with a new set of initial medoids; the solution with the

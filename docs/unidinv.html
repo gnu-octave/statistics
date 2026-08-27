@@ -969,7 +969,7 @@
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
  the discrete uniform distribution with parameter <var>N</var>, which corresponds
  to the maximum observable value.  <code>unidinv</code> assumes the integer values
- in the range <math>[1,N]</math> with equal probability.  The size of <var>x</var> is the
+ in the range <em class="math">[1,N]</em> with equal probability.  The size of <var>x</var> is the
  common size of <var>p</var> and <var>N</var>.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
@@ -977,7 +977,7 @@
  <code>NaN</code> is returned.
 </p>
 <p> Warning: The underlying implementation uses the double class and will only
- be accurate for <var>N</var> &lt; <code>flintmax</code> (<math>2^{53}</math> on
+ be accurate for <var>N</var> &lt; <code>flintmax</code> (<em class="math">2^{53}</em> on
  IEEE 754 compatible systems).
 </p>
 <p> Further information about the discrete uniform distribution can be found at

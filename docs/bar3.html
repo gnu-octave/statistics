@@ -981,9 +981,9 @@
  between a row and column vector of <var>z</var>.  Hence, when <var>z</var> is column
  vector, it is plotted as a single series of bars (same color), whereas when
  <var>z</var> is row vector, each bar is plotted as a different group (different
- colors).  For an <math>M&times;N</math> matrix, the function plots the bars corresponding
- to each row on the <code>y-axis</code> ranging from <math>1</math> to <math>M</math> and each
- column on the <code>x-axis</code> ranging from <math>1</math> to <math>N</math>.
+ colors).  For an <em class="math">M&times;N</em> matrix, the function plots the bars corresponding
+ to each row on the <code>y-axis</code> ranging from <em class="math">1</em> to <em class="math">M</em> and each
+ column on the <code>x-axis</code> ranging from <em class="math">1</em> to <em class="math">N</em>.
 </p>
 <p> <code>bar3 (<var>y</var>, <var>z</var>)</code> plots a 3D bar graph of the elements in
  <var>z</var> at the <code>y-values</code> specified in <var>y</var>.  It should be noted
@@ -993,7 +993,7 @@
 </p>
 <p> <code>bar3 (&hellip;, <var>width</var>)</code> sets the width of the bars along the
  <code>x-</code> and <code>y-axes</code> and controls the separation of bars among each
- other. <var>width</var> can take any value in the range <math>(0,1]</math>.  By default,
+ other. <var>width</var> can take any value in the range <em class="math">(0,1]</em>.  By default,
  <var>width</var> is 0.8 and the bars have a small separation. If width is 1, the
  bars touch one another.  Alternatively, you can define <var>width</var> as a two-
  element vector using the paired <var>name</var>/<var>value</var> syntax shown below, in
@@ -1008,9 +1008,9 @@
  by color.  For example, use <code>'red'</code> or <code>'r'</code> to specify all red
  bars.  When you want to specify colors for several groups, <var>color</var> can be
  a cellstr vector with each element specifying the color of each group.
- <var>color</var> can also be specified as a numerical <math>M&times;3</math> matrix, where
+ <var>color</var> can also be specified as a numerical <em class="math">M&times;3</em> matrix, where
  each row corresponds to a RGB value with its elements in the range
- <math>[0,1]</math>.  If only one color is specified, then it applies to all bars.
+ <em class="math">[0,1]</em>.  If only one color is specified, then it applies to all bars.
  If the number of colors equals the number of groups, then each color is
  applied to each group.  If the number of colors equals the number of elements
  in <var>z</var>, then each individual bar is assigned the particular color.  You
@@ -1025,9 +1025,9 @@
 <thead class="table-primary"><tr><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
 <tr><td width="20%"><code>'width'</code></td><td width="75%">A two-element vector specifying the width
  of the bars along the <code>x-</code> and <code>y-axes</code>, respectively.  Each
- element must be in the range <math>(0,1]</math>.</td></tr>
+ element must be in the range <em class="math">(0,1]</em>.</td></tr>
 <tr><td width="20%"><code>'color'</code></td><td width="75%">A character or a cellstr vector, or a
- numerical <math>M&times;3</math> matrix following the same conventions as the <var>color</var>
+ numerical <em class="math">M&times;3</em> matrix following the same conventions as the <var>color</var>
  input argument.</td></tr>
 <tr><td width="20%"><code>'xlabel'</code></td><td width="75%">A cellstr vector specifying the group names
  along the <code>x-axis</code>.</td></tr>

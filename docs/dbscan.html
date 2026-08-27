@@ -970,14 +970,14 @@
 </p>
 <div class="ms-5">
 <p> <code><var>idx</var> = dbscan (<var>X</var>, <var>epsilon</var>, <var>minpts</var>)</code> partitions
- the observations in the <math>N&times;P</math> numeric matrix <var>X</var> into clusters
+ the observations in the <em class="math">N&times;P</em> numeric matrix <var>X</var> into clusters
  using the DBSCAN algorithm with neighborhood radius <var>epsilon</var> and
  minimum number of neighbors <var>minpts</var>.  Rows of <var>X</var> correspond to
  observations and columns correspond to features or variables.  <var>epsilon</var>
  must be a nonnegative scalar and <var>minpts</var> a positive integer scalar.
- <var>idx</var> is an <math>N&times;1</math> vector of cluster indices, numbered <math>1</math> to
+ <var>idx</var> is an <em class="math">N&times;1</em> vector of cluster indices, numbered <em class="math">1</em> to
  the number of clusters found; observations flagged as noise are assigned the
- value <math>-1</math>.
+ value <em class="math">-1</em>.
 </p>
 <p> A point is a <em>core point</em> when at least <var>minpts</var> observations
  (<strong>including the point itself</strong>) lie within distance <var>epsilon</var> of
@@ -990,13 +990,13 @@
  following the order of the observations in <var>X</var>.
 </p>
 <p> <code><var>idx</var> = dbscan (<var>D</var>, <var>epsilon</var>, <var>minpts</var>,
- <code>'Distance'</code>, <code>'precomputed'</code>)</code> treats the <math>N&times;N</math> matrix
+ <code>'Distance'</code>, <code>'precomputed'</code>)</code> treats the <em class="math">N&times;N</em> matrix
  <var>D</var> as a precomputed matrix of pairwise distances between observations,
  such as the output of <code>pdist2</code>; <code><var>D</var>(i,j)</code> is the distance
- between observations <math>i</math> and <math>j</math>.
+ between observations <em class="math">i</em> and <em class="math">j</em>.
 </p>
 <p> <code>[<var>idx</var>, <var>corepts</var>] = dbscan (&hellip;)</code> also returns an
- <math>N&times;1</math> logical vector <var>corepts</var> that is <code>true</code> for each
+ <em class="math">N&times;1</em> logical vector <var>corepts</var> that is <code>true</code> for each
  observation that is a core point.
 </p>
 <p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.

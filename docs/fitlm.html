@@ -973,7 +973,7 @@
 </p>
 <div class="ms-5">
 <p> The returned object stores the fitted coefficients, their standard errors,
- t-statistics, and p-values, summary statistics of the fit (<math>R^2</math>,
+ t-statistics, and p-values, summary statistics of the fit (<em class="math">R^2</em>,
  RMSE, F-statistic, etc.), and the residuals and diagnostics of the fit, and
  exposes methods such as <code>predict</code>, <code>plotResiduals</code>,
  <code>coefTest</code>, <code>addTerms</code>, and <code>removeTerms</code> for further
@@ -989,16 +989,16 @@
 </p>
 <ul>
 <li>
- <var>X</var> is an <math>N&times;P</math> numeric or logical matrix of predictor data, where
+ <var>X</var> is an <em class="math">N&times;P</em> numeric or logical matrix of predictor data, where
  rows correspond to observations and columns correspond to variables.  By
  default, the predictors are named <code>'x1'</code>, <code>'x2'</code>, &hellip;,
  <code>'xP'</code>.
 </li><li>
- <var>X</var> can also be a categorical vector of length <math>N</math>, representing a
+ <var>X</var> can also be a categorical vector of length <em class="math">N</em>, representing a
  single categorical predictor.  In this case <var>y</var> must be supplied as the
  next argument, and the predictor is named <code>'x1'</code> by default.
 </li><li>
- <var>y</var> is an <math>N&times;1</math> numeric or logical vector of response values, and
+ <var>y</var> is an <em class="math">N&times;1</em> numeric or logical vector of response values, and
  must have the same number of observations (rows) as <var>X</var>.  By default,
  the response is named <code>'y'</code>.
 </li></ul>
@@ -1042,14 +1042,14 @@
  terms, all pairwise products of distinct predictor variables, and all
  squared terms.</td></tr>
 <tr><td width="18%"><code>'full'</code></td><td width="80%">Model contains an intercept and all terms up
- to and including the full <math>P</math>-way interaction of the predictor
+ to and including the full <em class="math">P</em>-way interaction of the predictor
  variables, i.e. every combination of one or more distinct predictors.</td></tr>
-<tr><td width="18%">terms matrix</td><td width="80%">A <math>T&times;P</math> or <math>T&times;(P+1)</math> numeric matrix,
- where <math>T</math> is the number of terms and <math>P</math> is the number of
+<tr><td width="18%">terms matrix</td><td width="80%">A <em class="math">T&times;P</em> or <em class="math">T&times;(P+1)</em> numeric matrix,
+ where <em class="math">T</em> is the number of terms and <em class="math">P</em> is the number of
  predictor variables.  Each row represents one term, and the value in
- column <math>j</math> is the exponent to which predictor <math>j</math> is raised in
+ column <em class="math">j</em> is the exponent to which predictor <em class="math">j</em> is raised in
  that term; a row of all zeros represents the intercept.  If a
- <math>T&times;(P+1)</math> matrix is supplied, its last column (representing the
+ <em class="math">T&times;(P+1)</em> matrix is supplied, its last column (representing the
  response variable) must be all zeros.</td></tr>
 <tr><td width="18%">Wilkinson formula</td><td width="80%">A character vector of the form
  <code>'y ~ terms'</code> describing the response and predictor terms using
@@ -1120,8 +1120,8 @@
 <tr><td width="18%"><code>'CategoricalVars'</code></td><td width="80%">Specifies which predictor
  variables are treated as categorical, given as a vector of column indices,
  a logical vector, or a cell array of variable names (only valid for table
- input).  Each categorical predictor with <math>L</math> distinct categories is
- expanded into <math>L-1</math> indicator (dummy) variables, using the first
+ input).  Each categorical predictor with <em class="math">L</em> distinct categories is
+ expanded into <em class="math">L-1</em> indicator (dummy) variables, using the first
  category (in sorted or original order) as the reference level that is
  omitted from the design matrix.  Variables that are already
  <code>categorical</code> arrays or cell arrays of character vectors are always
@@ -1186,7 +1186,7 @@
  level whether or not an intercept is present and so cannot fit the reference
  group at all &ndash; for a three-level grouping variable <code>g</code>, MATLAB fits
  <code>y ~ g - 1</code> with two coefficients, predicts exactly 0 for every
- observation in the omitted group, and reports a negative <math>R^2</math>.  This
+ observation in the omitted group, and reports a negative <em class="math">R^2</em>.  This
  implementation returns three coefficients, one per group.
 </p>
 <p> <strong>See also: </strong>

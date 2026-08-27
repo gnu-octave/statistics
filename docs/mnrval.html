@@ -973,8 +973,8 @@
 <p> <code><var>pihat</var> = mnrval (<var>B</var>, <var>X</var>)</code> returns the predicted
  category probabilities <var>pihat</var> of a multinomial logistic regression with
  coefficients <var>B</var>, evaluated at the predictor values in <var>X</var>.  <var>X</var>
- is an <math>N&times;P</math> numeric matrix of <math>N</math> observations on <math>P</math>
- predictors.  <var>pihat</var> is an <math>N&times;K</math> matrix, where <math>K</math> is the number
+ is an <em class="math">N&times;P</em> numeric matrix of <em class="math">N</em> observations on <em class="math">P</em>
+ predictors.  <var>pihat</var> is an <em class="math">N&times;K</em> matrix, where <em class="math">K</em> is the number
  of response categories and each row sums to one.  <var>B</var> is the coefficient
  matrix returned by <code>mnrfit</code> (see below for its shape under each model).
 </p>
@@ -985,10 +985,10 @@
 </p>
 <p> <code><var>yhat</var> = mnrval (<var>B</var>, <var>X</var>, <var>ssize</var>)</code> returns predicted
  category counts instead of probabilities, for the sample sizes in <var>ssize</var>
- (a scalar or an <math>N&times;1</math> vector).
+ (a scalar or an <em class="math">N&times;1</em> vector).
 </p>
 <p> <code>[<var>pihat</var>, <var>dlo</var>, <var>dhi</var>] = mnrval (<var>B</var>, <var>X</var>,
- <var>stats</var>)</code> also returns <math>95%</math> confidence bounds on the predictions.
+ <var>stats</var>)</code> also returns <em class="math">95%</em> confidence bounds on the predictions.
  <var>stats</var> is the structure returned by <code>mnrfit</code>; its <code>'covb'</code>
  field (the coefficient covariance matrix) is required.  The confidence
  interval for each prediction is <code>[<var>pihat</var> - <var>dlo</var>, <var>pihat</var> +
@@ -1006,19 +1006,19 @@
  coefficients, or <code>'off'</code> for a common set of coefficients with
  category-specific intercepts only.  Default is <code>'on'</code> for nominal and
  hierarchical models and <code>'off'</code> for ordinal models.  With
- <code>'interactions','on'</code>, <var>B</var> is a <math>(P+1)&times;(K-1)</math> matrix.  With
- <code>'interactions','off'</code>, <var>B</var> is a <math>(K-1+P)&times;1</math> vector holding the
- <math>K-1</math> intercepts followed by the <math>P</math> common slopes.</td></tr>
+ <code>'interactions','on'</code>, <var>B</var> is a <em class="math">(P+1)&times;(K-1)</em> matrix.  With
+ <code>'interactions','off'</code>, <var>B</var> is a <em class="math">(K-1+P)&times;1</em> vector holding the
+ <em class="math">K-1</em> intercepts followed by the <em class="math">P</em> common slopes.</td></tr>
 <tr><td width="18%"><code>'link'</code></td><td width="80%">The link function for ordinal and hierarchical
  models: <code>'logit'</code> (default), <code>'probit'</code>, <code>'comploglog'</code>, or
  <code>'loglog'</code>.  Nominal models always use the multinomial logit link.</td></tr>
 <tr><td width="18%"><code>'type'</code></td><td width="80%">The kind of probability returned:
- <code>'category'</code> (default, <math>N&times;K</math> category probabilities),
- <code>'cumulative'</code> (<math>N&times;(K-1)</math> cumulative probabilities of the first
- <math>K-1</math> categories), or <code>'conditional'</code> (<math>N&times;(K-1)</math> conditional
+ <code>'category'</code> (default, <em class="math">N&times;K</em> category probabilities),
+ <code>'cumulative'</code> (<em class="math">N&times;(K-1)</em> cumulative probabilities of the first
+ <em class="math">K-1</em> categories), or <code>'conditional'</code> (<em class="math">N&times;(K-1)</em> conditional
  probabilities of each category given membership in that or a later category).</td></tr>
 <tr><td width="18%"><code>'confidence'</code></td><td width="80%">The confidence level for <var>dlo</var> and
- <var>dhi</var>, a scalar in the range <math>(0,1)</math>.  Default is <math>0.95</math>.</td></tr>
+ <var>dhi</var>, a scalar in the range <em class="math">(0,1)</em>.  Default is <em class="math">0.95</em>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/mnrval.m">mnrval</a>

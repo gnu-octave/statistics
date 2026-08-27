@@ -971,11 +971,11 @@
 <p> <code><var>idx</var> = rangesearch (<var>X</var>, <var>Y</var>, <var>r</var>)</code> returns all the
  points in <var>X</var> that are within distance <var>r</var> from the points in
  <var>Y</var>.
- <var>X</var> must be an <math>N&times;P</math> numeric matrix of input data, where rows
+ <var>X</var> must be an <em class="math">N&times;P</em> numeric matrix of input data, where rows
  correspond to observations and columns correspond to features or variables.
- <var>Y</var> is an <math>M&times;P</math> numeric matrix with query points, which must have
+ <var>Y</var> is an <em class="math">M&times;P</em> numeric matrix with query points, which must have
  the same numbers of column as <var>X</var>.  <var>r</var> must be a nonnegative scalar
- value.  <var>idx</var> is an <math>M&times;1</math> cell array, where <math>M</math> is the number
+ value.  <var>idx</var> is an <em class="math">M&times;1</em> cell array, where <em class="math">M</em> is the number
  of observations in <var>Y</var>.  The vector <code><var>Idx</var>{j}</code> contains the
  indices of observations (rows) in <var>X</var> whose distances to
  <code><var>Y</var>(j,:)</code> are not greater than <var>r</var>.
@@ -983,7 +983,7 @@
 <p> <code>[<var>idx</var>, <var>D</var>] = rangesearch (<var>X</var>, <var>Y</var>, <var>r</var>)</code> also
  returns the distances, <var>D</var>, which correspond to the points in <var>X</var>
  that are within distance <var>r</var> from the points in <var>Y</var>.  <var>D</var> is an
- <math>M&times;1</math> cell array, where <math>M</math> is the number of observations in
+ <em class="math">M&times;1</em> cell array, where <em class="math">M</em> is the number of observations in
  <var>Y</var>.  The vector <code><var>D</var>{j}</code> contains the distances of
  observations (rows) in <var>X</var> whose distances to <code><var>Y</var>(j,:)</code> are
  not greater than <var>r</var>.
@@ -1050,10 +1050,10 @@
  the percentage of nonzero coordinates that differ.</td></tr>
 <tr><td width="20%"><var>@distfun</var></td><td width="75%">Custom distance function handle.  A distance
  function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
- where <var>XI</var> is a <math>1&times;P</math> vector containing a single observation in
- <math>P</math>-dimensional space, <var>YI</var> is an <math>N&times;P</math> matrix containing an
- arbitrary number of observations in the same <math>P</math>-dimensional space, and
- <var>D2</var> is an <math>N&times;P</math> vector of distances, where <code>(<var>D2</var>k)</code> is
+ where <var>XI</var> is a <em class="math">1&times;P</em> vector containing a single observation in
+ <em class="math">P</em>-dimensional space, <var>YI</var> is an <em class="math">N&times;P</em> matrix containing an
+ arbitrary number of observations in the same <em class="math">P</em>-dimensional space, and
+ <var>D2</var> is an <em class="math">N&times;P</em> vector of distances, where <code>(<var>D2</var>k)</code> is
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>

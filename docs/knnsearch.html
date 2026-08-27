@@ -968,16 +968,16 @@
 <p> Find k-nearest neighbors from input data.
 </p>
 <div class="ms-5">
-<p> <code><var>idx</var> = knnsearch (<var>X</var>, <var>Y</var>)</code> finds <math>K</math> nearest
+<p> <code><var>idx</var> = knnsearch (<var>X</var>, <var>Y</var>)</code> finds <em class="math">K</em> nearest
  neighbors in <var>X</var> for <var>Y</var>. It returns <var>idx</var> which contains indices
- of <math>K</math> nearest neighbors of each row of <var>Y</var>, If not specified,
- <code><var>K</var> = 1</code>.  <var>X</var> must be an <math>N&times;P</math> numeric matrix of input
+ of <em class="math">K</em> nearest neighbors of each row of <var>Y</var>, If not specified,
+ <code><var>K</var> = 1</code>.  <var>X</var> must be an <em class="math">N&times;P</em> numeric matrix of input
  data, where rows correspond to observations and columns correspond to
- features or variables.  <var>Y</var> is an <math>M&times;P</math> numeric matrix with query
+ features or variables.  <var>Y</var> is an <em class="math">M&times;P</em> numeric matrix with query
  points, which must have the same numbers of column as <var>X</var>.
 </p>
 <p> <code>[<var>idx</var>, <var>D</var>] = knnsearch (<var>X</var>, <var>Y</var>)</code> also returns the
- the distances, <var>D</var>, which correspond to the <math>K</math> nearest neighbour in
+ the distances, <var>D</var>, which correspond to the <em class="math">K</em> nearest neighbour in
  <var>X</var> for each <var>Y</var>
 </p>
 <p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.
@@ -1045,10 +1045,10 @@
  the percentage of nonzero coordinates that differ.</td></tr>
 <tr><td width="20%"><var>@distfun</var></td><td width="75%">Custom distance function handle.  A distance
  function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
- where <var>XI</var> is a <math>1&times;P</math> vector containing a single observation in
- <math>P</math>-dimensional space, <var>YI</var> is an <math>N&times;P</math> matrix containing an
- arbitrary number of observations in the same <math>P</math>-dimensional space, and
- <var>D2</var> is an <math>N&times;P</math> vector of distances, where <code>(<var>D2</var>k)</code> is
+ where <var>XI</var> is a <em class="math">1&times;P</em> vector containing a single observation in
+ <em class="math">P</em>-dimensional space, <var>YI</var> is an <em class="math">N&times;P</em> matrix containing an
+ arbitrary number of observations in the same <em class="math">P</em>-dimensional space, and
+ <var>D2</var> is an <em class="math">N&times;P</em> vector of distances, where <code>(<var>D2</var>k)</code> is
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
@@ -1085,13 +1085,13 @@
 <table class="table table-striped table-bordered table-sm">
 <tr><td width="18%"><code>'IncludeTies'</code></td><td width="80%">is a boolean flag to indicate if the
  returned values should contain the indices that have same distance as the
- <math>K^th</math> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
+ <em class="math">K^th</em> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
  observation with the smallest index among the observations that have the same
  distance from a query point.  When <code>true</code>, <code>knnsearch</code> includes
- all nearest neighbors whose distances are equal to the <math>K^th</math> smallest
- distance in the output arguments.  To specify <math>K</math>, use the <code>'K'</code>
+ all nearest neighbors whose distances are equal to the <em class="math">K^th</em> smallest
+ distance in the output arguments.  To specify <em class="math">K</em>, use the <code>'K'</code>
  name-value pair argument.  In that case <var>idx</var> and <var>D</var> are
- <math>M</math>-by-<math>1</math> cell arrays and each cell holds a <em>row</em> vector,
+ <em class="math">M</em>-by-<em class="math">1</em> cell arrays and each cell holds a <em>row</em> vector,
  whichever search method is used.</td></tr>
 </table>
 <p><strong>Source Code: </strong>

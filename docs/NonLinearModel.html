@@ -955,14 +955,12 @@
             <div class="card-header card-header-mod">
               <div class="row d-flex flex-wrap align-items-center">
                 <h3 class="d-inline-block mr-2">
-                Function&nbsp;Reference: <b><code>NonLinearModel</code></b>
+                Class&nbsp;Definition: <b><code>NonLinearModel</code></b>
                 </h3>
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>NonLinearModel</b> (&hellip;)</code></h5></dt>
-</dl>
+<dl><code><h5 class="description">statistics: NonLinearModel</h5></code></dl>
 <p> Nonlinear regression model class.
 </p>
 <div class="ms-5">
@@ -991,14 +989,14 @@
  the error degrees of freedom.  <code>RMSE</code> is <code>sqrt (<var>MSE</var>)</code>, and
  the Gaussian <code>LogLikelihood</code> uses the maximum-likelihood error variance
  <code><var>SSE</var> / n</code>.  The information criteria in <code>ModelCriterion</code>
- (<code>AIC</code>, <code>AICc</code>, <code>BIC</code>, <code>CAIC</code>) count the <math>p</math>
+ (<code>AIC</code>, <code>AICc</code>, <code>BIC</code>, <code>CAIC</code>) count the <em class="math">p</em>
  coefficients as the only parameters &ndash; the error variance is <em>not</em>
  counted.  <code>coefTest</code> is a Wald test: for a contrast matrix <var>H</var> it
  forms <code>(<var>H</var>*b)' * inv (<var>H</var>*<var>V</var>*<var>H</var>') * (<var>H</var>*b) / r</code>
- with <var>V</var> the coefficient covariance and <math>r</math> the number of rows of
- <var>H</var>, referred to an <math>F</math> distribution on <math>r</math> and <var>DFE</var>
+ with <var>V</var> the coefficient covariance and <em class="math">r</em> the number of rows of
+ <var>H</var>, referred to an <em class="math">F</em> distribution on <em class="math">r</em> and <var>DFE</var>
  degrees of freedom.  The summary printed by <code>disp</code> instead reports an
- <math>F</math> statistic versus the zero model, formed from the uncorrected
+ <em class="math">F</em> statistic versus the zero model, formed from the uncorrected
  regression sum of squares (the sum of the squared fitted values).
 </p>
 <p> <strong>See also: </strong>
@@ -1011,23 +1009,1245 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/NonLinearModel.m">NonLinearModel</a>
+</p>
 </div>
+        <p class="lead my-3">The <code>NonLinearModel</code> class contains the following properties:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
+              aria-expanded="false" aria-controls="collapseProperty1">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Coefficients</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty1">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.Coefficients</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
+              aria-expanded="false" aria-controls="collapseProperty2">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CoefficientNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty2">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.CoefficientNames</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
+              aria-expanded="false" aria-controls="collapseProperty3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CoefficientCovariance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty3">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.CoefficientCovariance</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
+              aria-expanded="false" aria-controls="collapseProperty4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumCoefficients</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty4">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.NumCoefficients</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
+              aria-expanded="false" aria-controls="collapseProperty5">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumEstimatedCoefficients</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty5">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.NumEstimatedCoefficients</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
+              aria-expanded="false" aria-controls="collapseProperty6">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumPredictors</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty6">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.NumPredictors</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
+              aria-expanded="false" aria-controls="collapseProperty7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumObservations</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty7">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.NumObservations</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
+              aria-expanded="false" aria-controls="collapseProperty8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DFE</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty8">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.DFE</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
+              aria-expanded="false" aria-controls="collapseProperty9">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MSE</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty9">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.MSE</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
+              aria-expanded="false" aria-controls="collapseProperty10">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>RMSE</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty10">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.RMSE</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
+              aria-expanded="false" aria-controls="collapseProperty11">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>SSE</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty11">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.SSE</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
+              aria-expanded="false" aria-controls="collapseProperty12">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>SST</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty12">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.SST</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
+              aria-expanded="false" aria-controls="collapseProperty13">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>SSR</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty13">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.SSR</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
+              aria-expanded="false" aria-controls="collapseProperty14">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LogLikelihood</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty14">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.LogLikelihood</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
+              aria-expanded="false" aria-controls="collapseProperty15">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ModelCriterion</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty15">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.ModelCriterion</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
+              aria-expanded="false" aria-controls="collapseProperty16">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Rsquared</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty16">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.Rsquared</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
+              aria-expanded="false" aria-controls="collapseProperty17">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Residuals</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty17">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.Residuals</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
+              aria-expanded="false" aria-controls="collapseProperty18">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Fitted</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty18">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.Fitted</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
+              aria-expanded="false" aria-controls="collapseProperty19">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ErrorModelInfo</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty19">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.ErrorModelInfo</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty20"
+              aria-expanded="false" aria-controls="collapseProperty20">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Robust</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty20">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.Robust</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty21"
+              aria-expanded="false" aria-controls="collapseProperty21">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Formula</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty21">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.Formula</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty22"
+              aria-expanded="false" aria-controls="collapseProperty22">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ResponseName</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty22">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.ResponseName</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty23"
+              aria-expanded="false" aria-controls="collapseProperty23">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>PredictorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty23">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.PredictorNames</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty24"
+              aria-expanded="false" aria-controls="collapseProperty24">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>VariableNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty24">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.VariableNames</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <p class="lead my-3">The <code>NonLinearModel</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
+              aria-expanded="false" aria-controls="colapsibleConstructor">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NonLinearModel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit a nonlinear regression model.  Prefer the <code>fitnlm</code> function,
+ which documents the accepted inputs and <var>Name</var>/<var>Value</var> pairs.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="colapsibleConstructor">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>mdl</var> = <b>NonLinearModel</b> (<var>data</var>, <var>resp</var>, <var>modelfun</var>, <var>beta0</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: <var>mdl</var> = <b>NonLinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
             <div class="row d-flex flex-wrap align-items-center">
               <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                 <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
                   type="button" data-bs-toggle="collapse"
-                  data-bs-target="#NonLinearModel-example1" aria-expanded="true"
-                  aria-controls="NonLinearModel-example1">
+                  data-bs-target="#NonLinearModel_NonLinearModel-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_NonLinearModel-example1">
                 Example: 1
                 </button>
               </div>
             </div>
           </div>
-          <div class="collapse show" id="NonLinearModel-example1">
+          <div class="collapse" id="NonLinearModel_NonLinearModel-example1">
             <div class="card-body">
                 <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
+              aria-expanded="false" aria-controls="collapseMethod1">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>display</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod1">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.display</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
+              aria-expanded="false" aria-controls="collapseMethod2">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>disp</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod2">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.disp</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
+              aria-expanded="false" aria-controls="collapseMethod3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>subsref</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+undocumented
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod3">
+            <div class="border-bottom py-2">
+<b><code>NonLinearModel.subsref</code></b> is not documented.
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
+              aria-expanded="false" aria-controls="collapseMethod4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>predict</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Predict responses of the nonlinear model <var>mdl</var> at the new predictor
+ values <var>Xnew</var> (a numeric matrix or a table).  With two outputs it
+ also returns the confidence intervals <var>yci</var>.  Accepts <code>'Alpha'</code>
+ (default 0.05), <code>'Prediction'</code> (<code>'curve'</code> or
+ <code>'observation'</code>), and <code>'Simultaneous'</code> (a logical).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod4">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: [<var>yhat</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: [&hellip;] = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_predict-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_predict-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_predict-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
+              aria-expanded="false" aria-controls="collapseMethod5">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>feval</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Evaluate the fitted model at the predictor values <var>X</var>, given either
+ as a single matrix/table or as separate column arguments (one per
+ predictor).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod5">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_feval-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_feval-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_feval-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
+              aria-expanded="false" aria-controls="collapseMethod6">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>random</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Simulate responses from the fitted model at <var>Xnew</var> (default: the
+ training predictors), adding Gaussian noise with the model&rsquo;s error
+ standard deviation.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod6">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_random-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_random-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_random-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
+              aria-expanded="false" aria-controls="collapseMethod7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>coefCI</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Confidence intervals for the coefficients at level
+ <em class="math">100 (1 - <var>alpha</var>)%</em> (default <var>alpha</var> = 0.05).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod7">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_coefCI-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_coefCI-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_coefCI-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
+              aria-expanded="false" aria-controls="collapseMethod8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>coefTest</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Wald test of a linear hypothesis on the coefficients.  With no <var>H</var> it
+ tests that all coefficients are zero (the model versus the zero model)
+ and returns the <em class="math">p</em>-value <var>p</var>, the <em class="math">F</em> statistic <var>F</var>,
+ and its numerator degrees of freedom <var>df</var>.  <var>H</var> is an
+ <em class="math">r</em>-by-<em class="math">p</em> contrast matrix testing <code><var>H</var> * <var>beta</var>
+ = 0</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod8">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: [<var>p</var>, <var>F</var>, <var>df</var>] = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: [&hellip;] = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_coefTest-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_coefTest-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_coefTest-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
+              aria-expanded="false" aria-controls="collapseMethod9">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plotResiduals</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot the model residuals.  <var>plottype</var> is <code>'histogram'</code>
+ (default),
+ <code>'fitted'</code>, <code>'caseorder'</code>, or <code>'probability'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod9">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_plotResiduals-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_plotResiduals-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_plotResiduals-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod10"
+              aria-expanded="false" aria-controls="collapseMethod10">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plotDiagnostics</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot fit diagnostics.  <var>plottype</var> is <code>'leverage'</code> (default) or
+ <code>'cookd'</code> (Cook&rsquo;s distance).
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod10">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_plotDiagnostics-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_plotDiagnostics-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_plotDiagnostics-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod11"
+              aria-expanded="false" aria-controls="collapseMethod11">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plotSlice</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot the fitted response as each predictor is varied over its observed
+ range with the others held at their means.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod11">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotSlice</b> (<var>mdl</var>)</code></h5></dt>
+</dl>
+<p> </p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_plotSlice-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_plotSlice-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_plotSlice-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#NonLinearModel-example1"
+              aria-expanded="false" aria-controls="NonLinearModel-example1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+Fit an exponential growth model y = b1 * exp (b2 * x) and inspect it.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="NonLinearModel-example1">
+            <div class="border-bottom py-2">
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
  y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
  modelfun = @(b, x) b(1) .* exp (b(2) .* x);

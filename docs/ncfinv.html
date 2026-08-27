@@ -963,18 +963,18 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>x</var> = <b>ncfinv</b> (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</code></h5></dt>
 </dl>
-<p> Inverse of the noncentral <math>F</math>-cumulative distribution function (iCDF).
+<p> Inverse of the noncentral <em class="math">F</em>-cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
- the noncentral <math>F</math>-distribution with <var>df1</var> and <var>df2</var> degrees of
+ the noncentral <em class="math">F</em>-distribution with <var>df1</var> and <var>df2</var> degrees of
  freedom and noncentrality parameter <var>lambda</var>.  The size of <var>x</var> is the
  common size of <var>p</var>, <var>df1</var>, <var>df2</var>, and <var>lambda</var>.  A scalar
  input functions as a constant matrix of the same size as the other inputs.
 </p>
 <p> <code>ncfinv</code> uses Newton&rsquo;s method to converge to the solution.
 </p>
-<p> Further information about the noncentral <math>F</math>-distribution can be found
+<p> Further information about the noncentral <em class="math">F</em>-distribution can be found
  at <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> Input arguments must be <code>double</code> or <code>single</code>; integer, logical,

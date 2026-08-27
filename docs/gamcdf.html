@@ -981,7 +981,7 @@
 <p> When called with three output arguments, i.e. <code>[<var>p</var>, <var>plo</var>,
  <var>pup</var>]</code>, <code>gamcdf</code> computes the confidence bounds for <var>p</var> when
  the input parameters <var>a</var> and <var>b</var> are estimates.  In such case,
- <var>pcov</var>, a <math>2&times;2</math> matrix containing the covariance matrix of the
+ <var>pcov</var>, a <em class="math">2&times;2</em> matrix containing the covariance matrix of the
  estimated parameters, is necessary.  Optionally, <var>alpha</var>, which has a
  default value of 0.05, specifies the <code>100 * (1 - <var>alpha</var>)</code> percent
  confidence bounds.  <var>plo</var> and <var>pup</var> are arrays of the same size as
@@ -992,11 +992,11 @@
  <var>b</var>, at the values in <var>x</var>.
 </p>
 <p> OCTAVE/MATLAB use the alternative parameterization given by the pair
- <math>α, β</math>, i.e. shape <var>a</var> and scale <var>b</var>.  In Wikipedia, the two
- common parameterizations use the pairs <math>k, θ</math>, as shape and scale, and
- <math>α, β</math>, as shape and rate, respectively.  The parameter names <var>a</var>
+ <em class="math">α, β</em>, i.e. shape <var>a</var> and scale <var>b</var>.  In Wikipedia, the two
+ common parameterizations use the pairs <em class="math">k, θ</em>, as shape and scale, and
+ <em class="math">α, β</em>, as shape and rate, respectively.  The parameter names <var>a</var>
  and <var>b</var> used here (for MATLAB compatibility) correspond to the parameter
- notation <math>k, θ</math> instead of the <math>α, β</math> as reported in Wikipedia.
+ notation <em class="math">k, θ</em> instead of the <em class="math">α, β</em> as reported in Wikipedia.
 </p>
 <p> Further information about the Gamma distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>

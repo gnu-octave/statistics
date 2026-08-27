@@ -1055,7 +1055,7 @@ Rate parameter
  pd = fitdist (data, "Poisson");</pre>
                 <p>Query parameter 'lambda' (rate parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.lambda</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 5.1800</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 5.2000</pre>
                 <p>Set parameter 'lambda'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.lambda = 10</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
@@ -1157,7 +1157,7 @@ Probability distribution name
   Poisson
 
   Poisson distribution
-   lambda = 4.9934   [4.93146, 5.05534]</pre>
+   lambda = 4.9866   [4.9247, 5.0485]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1227,7 +1227,7 @@ Number of parameters
   Poisson
 
   Poisson distribution
-   lambda = 5.0458   [4.98354, 5.10806]</pre>
+   lambda = 4.9482   [4.88654, 5.00986]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1264,7 +1264,7 @@ Names of parameters
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;1</math> cell array of character vectors with each element containing
+<p> A <em class="math">1&times;1</em> cell array of character vectors with each element containing
  the name of a distribution parameter. This property is read-only.
 </p>
 
@@ -1297,7 +1297,7 @@ Names of parameters
   Poisson
 
   Poisson distribution
-   lambda = 5.0014   [4.93941, 5.06339]</pre>
+   lambda = 5.0468   [4.98453, 5.10907]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1334,7 +1334,7 @@ Description of parameters
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;1</math> cell array of character vectors with each element containing
+<p> A <em class="math">1&times;1</em> cell array of character vectors with each element containing
  a short description of a distribution parameter. This property is
  read-only.
 </p>
@@ -1368,7 +1368,7 @@ Description of parameters
   Poisson
 
   Poisson distribution
-   lambda = 5.0322   [4.97002, 5.09438]</pre>
+   lambda = 4.9634   [4.90165, 5.02515]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1405,7 +1405,7 @@ Distribution parameter values
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;1</math> numeric vector containing the values of the distribution
+<p> A <em class="math">1&times;1</em> numeric vector containing the values of the distribution
  parameters. This property is read-only. You can change the distribution
  parameters by assigning new values to the <code>lambda</code> property.
 </p>
@@ -1476,7 +1476,7 @@ Truncation interval
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+<p> A <em class="math">1&times;2</em> numeric vector specifying the truncation interval for the
  probability distribution. The first element contains the lower boundary,
  the second element contains the upper boundary. This property is
  read-only. You can only truncate a probability distribution with the
@@ -1512,7 +1512,7 @@ Truncation interval
   Poisson
 
   Poisson distribution
-   lambda = 5.037   [4.97479, 5.09921]</pre>
+   lambda = 5.0258   [4.96366, 5.08794]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1582,7 +1582,7 @@ Flag for truncated probability distribution
   Poisson
 
   Poisson distribution
-   lambda = 4.9484   [4.88674, 5.01006]</pre>
+   lambda = 5.09   [5.02747, 5.15253]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1619,7 +1619,7 @@ Covariance matrix of the parameter estimates
             <div class="border-bottom py-2">
 
 <p> </p>
-<p> A <math>1&times;1</math> numeric matrix containing the variance of the parameter
+<p> A <em class="math">1&times;1</em> numeric matrix containing the variance of the parameter
  estimate. This matrix is only meaningful when the distribution was fitted
  to data. If the distribution object was created with fixed parameters,
  or a parameter of a fitted distribution is modified, then the
@@ -1655,7 +1655,7 @@ Covariance matrix of the parameter estimates
   Poisson
 
   Poisson distribution
-   lambda = 4.9846   [4.92272, 5.04648]</pre>
+   lambda = 5.016   [4.95392, 5.07808]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1726,7 +1726,7 @@ Flag for fixed parameters
   Poisson
 
   Poisson distribution
-   lambda = 5.0532   [4.99089, 5.11551]</pre>
+   lambda = 4.9242   [4.86269, 4.98571]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -1808,7 +1808,7 @@ Data used for fitting a probability distribution
   Poisson
 
   Poisson distribution
-   lambda = 5.0322   [4.97002, 5.09438]</pre>
+   lambda = 5.044   [4.98175, 5.10625]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>
@@ -2082,9 +2082,9 @@ Compute the mean of a probability distribution.
  pd1 = fitdist (data1, "Poisson");
  pd2 = fitdist (data2, "Poisson");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.9842</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 2.0105</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 5.0151</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 4.9815</pre>
                 <p>This shows how to compute the expected value for Poisson distributions, which equals lambda, representing the average number of events.</p>
 
             </div>
@@ -2203,7 +2203,7 @@ Compute the negative loglikelihood of a probability distribution.
  data = poissrnd (5, 100, 1);
  pd_fitted = fitdist (data, "Poisson");
  nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 217.39</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 220.14</pre>
                 <p>This is useful for assessing the fit of a Poisson distribution to data, with lower values indicating better fit, often used in model selection.</p>
 
             </div>
@@ -2249,7 +2249,7 @@ Compute the confidence intervals for probability distribution parameters.
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="18%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>'Alpha'</code></td><td width="80%">A scalar value in the range <math>(0,1)</math>
+<tr><td width="18%"><code>'Alpha'</code></td><td width="80%">A scalar value in the range <em class="math">(0,1)</em>
  specifying the significance level for the confidence interval.  The
  default value 0.05 corresponds to a 95% confidence interval.</td></tr>
 <tr><td width="18%"><code>'Parameter'</code></td><td width="80%">A character vector or a cell array of
@@ -2285,8 +2285,8 @@ Compute the confidence intervals for probability distribution parameters.
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   4.8249
-   5.1011</pre>
+   4.8535
+   5.1305</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameter (lambda), providing a range of plausible values based on the data.</p>
 
             </div>
@@ -2743,7 +2743,7 @@ Compute the standard deviation of a probability distribution.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = poissrnd (5, 10000, 1);
  pd = fitdist (data, "Poisson");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 2.2396</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 2.2295</pre>
                 <p>Use this to calculate the standard deviation, which equals sqrt(lambda), measuring variability in event counts.</p>
 
             </div>
@@ -2877,7 +2877,7 @@ Compute the variance of a probability distribution.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = poissrnd (5, 10000, 1);
  pd = fitdist (data, "Poisson");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 5.0330</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 5.0027</pre>
                 <p>Use this to calculate the variance, which equals lambda, quantifying the spread in count data.</p>
 
             </div>
@@ -2921,7 +2921,7 @@ Generate a data set of 5000 random samples from a Poisson distribution with para
   Poisson
 
   Poisson distribution
-   lambda = 4.945   [4.88336, 5.00664]</pre>
+   lambda = 5.0262   [4.96406, 5.08834]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Poisson distribution with lambda = %0.2f';
  title (sprintf (msg, pd_fitted.lambda))</pre>

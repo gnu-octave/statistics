@@ -975,11 +975,11 @@
  distribution defined in <var>distribution</var>.
 </p>
 <ul>
-<li> <var>X</var> is an <math>n&times;p</math> numeric matrix of predictor variables with
- <math>n</math> observations and <math>p</math> predictors.
-</li><li> <var>y</var> is an <math>n&times;1</math> numeric vector of responses for all supported
+<li> <var>X</var> is an <em class="math">n&times;p</em> numeric matrix of predictor variables with
+ <em class="math">n</em> observations and <em class="math">p</em> predictors.
+</li><li> <var>y</var> is an <em class="math">n&times;1</em> numeric vector of responses for all supported
  distributions, except for the &rsquo;binomial&rsquo; distribution in which case <var>y</var>
- can be either a numeric or logical <math>n&times;1</math> vector or an <math>n&times;2</math>
+ can be either a numeric or logical <em class="math">n&times;1</em> vector or an <em class="math">n&times;2</em>
  matrix, where the first column contains the number of successes and the
  second column contains the number of trials.
 </li><li> <var>distribution</var> is a character vector specifying the distribution of
@@ -1013,7 +1013,7 @@
  <code>'binomial'</code> distribution), <code>'probit'</code>, <code>'loglog'</code>,
  <code>'comploglog'</code>, and <code>'reciprocal'</code> (default for the
  <code>'gamma'</code> distribution).  The <code>'power'</code> link function is the
- default for the <code>'inverse gaussian'</code> distribution with <math>p = -2</math>.
+ default for the <code>'inverse gaussian'</code> distribution with <em class="math">p = -2</em>.
  For custom link functions, the user can provide cell array with three
  function handles: the link function, its derivative, and its inverse, or
  alternatively a structure <var>S</var> with three fields: <code>S.Link</code>,
@@ -1029,8 +1029,8 @@
  integer specifying the maximum number of iteration allowed for fitting the
  model, and <code>TolX</code> must be a positive scalar value specifying the
  termination tolerance.</td></tr>
-<tr><td width="18%"><code>'Weights'</code></td><td width="80%">An <math>n&times;1</math> numeric vector of nonnegative
- values, where <math>n</math> is the number of observations in <var>X</var>.  By default,
+<tr><td width="18%"><code>'Weights'</code></td><td width="80%">An <em class="math">n&times;1</em> numeric vector of nonnegative
+ values, where <em class="math">n</em> is the number of observations in <var>X</var>.  By default,
  it is <code>ones (n, 1)</code>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
@@ -1057,8 +1057,8 @@
 </li><li> <code>se</code> - Vector of standard errors of the coefficient estimates
  <var>b</var>
 </li><li> <code>coeffcorr</code> - Correlation matrix for <var>b</var>
-</li><li> <code>t</code> - <math>t</math> statistics for <var>b</var>
-</li><li> <code>p</code> - <math>p</math>-values for <var>b</var>
+</li><li> <code>t</code> - <em class="math">t</em> statistics for <var>b</var>
+</li><li> <code>p</code> - <em class="math">p</em>-values for <var>b</var>
 </li><li> <code>resid</code> - Vector of residuals
 </li><li> <code>residp</code> - Vector of Pearson residuals
 </li><li> <code>residd</code> - Vector of deviance residuals

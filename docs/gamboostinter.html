@@ -973,14 +973,14 @@ predictor phase left rather than refitting it.  It is used by
 called directly.
 </p>
 <ul>
-<li> <var>X</var> is an <math>NxP</math> numeric matrix of predictors and <var>Y</var> the
-<math>Nx1</math> response, as <code>gamboosttrain</code> takes them.
-</li><li> <var>F0</var> is the <math>Nx1</math> additive prediction of the predictor phase.
+<li> <var>X</var> is an <em class="math">NxP</em> numeric matrix of predictors and <var>Y</var> the
+<em class="math">Nx1</em> response, as <code>gamboosttrain</code> takes them.
+</li><li> <var>F0</var> is the <em class="math">Nx1</em> additive prediction of the predictor phase.
 The interaction phase starts from it, so its deviance is where this phase
 begins.
 </li><li> <var>Method</var> selects what is boosted, <code>1</code> the logistic deviance
 and <code>2</code> the squared error.
-</li><li> <var>Pairs</var> is an <math>Mx2</math> matrix of predictor index pairs, one-based
+</li><li> <var>Pairs</var> is an <em class="math">Mx2</em> matrix of predictor index pairs, one-based
 and within range.  Choosing them is the caller&rsquo;s business; see
 <code>gamboostpairs</code>.
 </li><li> <var>NumTrees</var>, <var>LearnRate</var> and <var>MaxNumSplits</var> are the
@@ -990,11 +990,11 @@ interaction phase&rsquo;s own budget, initial step and split limit.
 <p><var>Mdl</var> is a structure with the following fields.
 </p>
 <ul>
-<li> <code>PairBinEdges</code>, a <math>1xP</math> cell of the coarse cut points the
+<li> <code>PairBinEdges</code>, a <em class="math">1xP</em> cell of the coarse cut points the
 surfaces are held on.  Interactions are binned coarser than main effects: a
 tree limited to <var>MaxNumSplits</var> splits carves no more regions than that,
 so a finer grid buys nothing and costs memory in every pair.
-</li><li> <code>PairValues</code>, a <math>1xM</math> cell of matrices, one value per
+</li><li> <code>PairValues</code>, a <em class="math">1xM</em> cell of matrices, one value per
 cell of the pair&rsquo;s grid.
 </li><li> <code>Intercept</code>, the constant the recentred surfaces gave up.  Add it
 to the intercept of the predictor phase.
