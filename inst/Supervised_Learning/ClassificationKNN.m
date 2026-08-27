@@ -338,9 +338,17 @@ classdef ClassificationKNN
     ## Distance metric
     ##
     ## A character vector specifying the distance metric used by the
-    ## neighbor-searcher method.  See the available distance metrics in
-    ## @code{knnsearch} for more info.  Change the @qcode{Distance} property
-    ## using dot notation as in:
+    ## neighbor-searcher method, or a function handle to a custom distance
+    ## function.  See the available distance metrics in @code{knnsearch} for
+    ## more info.  A custom distance function must have the form
+    ## @qcode{@var{D2} = @var{distfun} (@var{ZI}, @var{ZJ})}, where
+    ## @var{ZI} is a @math{1*N} vector containing one row of the predictor
+    ## data, @var{ZJ} is an @math{M2*N} matrix containing multiple rows of the
+    ## predictor data, and @var{D2} is an @math{M2*1} vector of distances
+    ## whose @math{k}-th element is the distance between the observations
+    ## @var{ZI} and @qcode{@var{ZJ}(@var{k},:)}.  A custom distance function
+    ## carries no @qcode{DistParameter}.  Change the @qcode{Distance}
+    ## property using dot notation as in:
     ## @itemize
     ## @item @qcode{@var{obj}.Distance = @var{newDistance}}
     ## @end itemize
@@ -349,9 +357,9 @@ classdef ClassificationKNN
     ## This property may be assigned after fitting.  @qcode{NSMethod} is
     ## read-only and constrains it: a @qcode{'kdtree'} model takes
     ## @qcode{'euclidean'}, @qcode{'cityblock'}, @qcode{'chebychev'} and
-    ## @qcode{'minkowski'} only.  Assigning a different metric recomputes
-    ## @qcode{DistParameter}, since a parameter belonging to one metric means
-    ## nothing under another.
+    ## @qcode{'minkowski'} only, and never a function handle.  Assigning a
+    ## different metric recomputes @qcode{DistParameter}, since a parameter
+    ## belonging to one metric means nothing under another.
     ## @end deftp
     Distance        = [];
 
@@ -696,6 +704,22 @@ classdef ClassificationKNN
                  || (ischar (val) && any (strcmpi (all, val)))))
         error ("ClassificationKNN: unsupported distance metric.");
       endif
+      ## A custom metric is probed here as the constructor probes it: called
+      ## on one observation against the training data, it must return one
+      ## distance per row.  Taken unchecked, it would defer the failure to
+      ## predict, which names neither the property nor the user's function.
+      if (is_function_handle (val) && ! isempty (this.X))
+        try
+          D2 = val (this.X(1,:), this.X);
+        catch
+          error (strcat ("ClassificationKNN: invalid function", ...
+                         " handle for distance metric."));
+        end_try_catch
+        if (! isequal (size (D2), [rows(this.X), 1]))
+          error (strcat ("ClassificationKNN: custom distance", ...
+                         " function produces wrong output size."));
+        endif
+      endif
       if (ischar (val) && ischar (this.Distance)
           && strcmpi (val, this.Distance))
         return;   # unchanged, so the parameter it carries is kept
@@ -821,7 +845,11 @@ classdef ClassificationKNN
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
+      if (is_function_handle (this.Distance))
+        fprintf ("%+25s: %s\n", 'Distance', func2str (this.Distance));
+      else
+        fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
+      endif
       fprintf ("%+25s: '%s'\n", 'NSMethod', this.NSMethod);
       fprintf ("%+25s: %d\n", 'NumNeighbors', this.NumNeighbors);
     endfunction
@@ -1111,13 +1139,13 @@ classdef ClassificationKNN
               ## Check the input output sizes of the user function
               D2 = [];
               try
-                D2 = Distance(X(1,:), Y);
+                D2 = Distance(X(1,:), X);
               catch ME
                 error (strcat ("ClassificationKNN: invalid function", ...
                                " handle for distance metric."));
               end_try_catch
-              Yrows = rows (Y);
-              if (! isequal (size (D2), [Yrows, 1]))
+              Xrows = rows (X);
+              if (! isequal (size (D2), [Xrows, 1]))
                 error (strcat ("ClassificationKNN: custom distance", ...
                                " function produces wrong output size."));
               endif
@@ -2755,6 +2783,47 @@ endfunction
 %! ## Calculate partialDependence using queryPoints
 %! [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
 %! queryPoints)
+
+## Test constructor with custom Distance as function_handle (issue #459)
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! f = @(d1,d2) sqrt (sum ((d1 - d2) .^ 2, 2));
+%! a = ClassificationKNN (x, y, 'Distance', f);
+%!error<ClassificationKNN: invalid function handle for distance metric.> ...
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! f = @(d1,d2) sqrt (dot (d1, d2));
+%! a = ClassificationKNN (x, y, 'Distance', f);
+%!error<ClassificationKNN: custom distance function produces wrong output size.> ...
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! f = @(d1,d2) sqrt (sum ((d1 - d2) .^ 2, 1));
+%! a = ClassificationKNN (x, y, 'Distance', f);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! f = @(d1,d2) sqrt (sum ((d1 - d2) .^ 2, 2));
+%! a = ClassificationKNN (x, y, 'NSMethod', 'exhaustive', 'Distance', ...
+%! 'cityblock');
+%! a.Distance = f;
+%! assert_equal (a.Distance, f);
+%! assert_equal (isempty (a.DistParameter), true);
+%!error<ClassificationKNN: invalid function handle for distance metric.> ...
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'NSMethod', 'exhaustive');
+%! a.Distance = @(d1,d2) sqrt (dot (d1, d2));
+%!error<ClassificationKNN: custom distance function produces wrong output size.> ...
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'NSMethod', 'exhaustive');
+%! a.Distance = @(d1,d2) sqrt (sum ((d1 - d2) .^ 2, 1));
+%!error<ClassificationKNN: 'Distance' for a kd-tree model can only be 'euclidean', 'cityblock', 'manhattan', 'chebychev', or 'minkowski'.> ...
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y);
+%! a.Distance = @(d1,d2) sqrt (sum ((d1 - d2) .^ 2, 2));
 
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
