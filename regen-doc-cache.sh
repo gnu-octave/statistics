@@ -23,6 +23,14 @@
 #   ./regen-doc-cache.sh <name>          # update ONE function/class entry in its
 #                                        #   directory's existing cache, e.g.
 #                                        #   ./regen-doc-cache.sh anova1
+#                                        #   ./regen-doc-cache.sh svmtrain
+#                                        #   ./regen-doc-cache.sh prob.BetaDistribution
+#
+# A namespaced class is named with its qualifier, and its entry is written to
+# the cache of the directory holding the +pkg, which is the only cache that can
+# be read from.  A name that no longer resolves anywhere is treated as removed:
+# its column is dropped from whichever cache still carries it, so a rename is
+# refreshed by running the old name and then the new one.
 #
 # The single-name form is the fast path: it edits only the one column of the
 # existing cache instead of rebuilding the whole directory, so refreshing a
@@ -52,6 +60,9 @@ DC_ARG="${1:-}" "$OCTAVE" --no-gui -q --eval "
   crash_dumps_octave_core (false);   ## no octave-workspace dump if interrupted
   pkg load datatypes;
   addpath (genpath (fullfile (pwd, 'inst')));
+  ## An oct-file function carries its help text in the compiled file, so a
+  ## single-name refresh of one can only resolve with src on the path.
+  addpath (fullfile (pwd, 'src'));
 
   arg = getenv ('DC_ARG');
 
@@ -170,59 +181,88 @@ DC_ARG="${1:-}" "$OCTAVE" --no-gui -q --eval "
     f = arg;
     fpath = which (f);
     if (isempty (fpath))
-      error ('regen-doc-cache: function or class \"%s\" not found on the path.', f);
-    endif
-    d = fileparts (fpath);
-    cachefile = fullfile (d, 'doc-cache');
-
-    if (exist (cachefile, 'file') != 2)
-      ## No cache in this directory yet -- build the whole thing.
-      printf ('  no existing cache in %s; regenerating the directory ...\n', d);
-      doc_cache_create (cachefile, d);
-      printf ('  regenerated %s\n', cachefile);
-    else
-      ## Build the single cache entry exactly as doc_cache_create does per
-      ## function: name / plain-text help / first help sentence.
-      entry = {};
-      if (! strncmp (f, '__', 2))
-        [text, format] = get_help_text (f);
-        status = 1;
-        switch (lower (format))
-          case 'plain text'
-            status = 0;
-          case 'texinfo'
-            [text, status] = __makeinfo__ (text, 'plain text');
-        endswitch
-        if (status == 0 && ! isempty (text))
-          entry = {f; text; get_first_help_sentence(f)};
-        else
-          warning ('regen-doc-cache: unusable help text in %s', fpath);
-        endif
-      endif
-
-      ## Splice the entry into the existing cache (native Octave -text data).
-      tmp = load (cachefile);
-      cache = tmp.cache;
-      idx = find (strcmp (cache(1,:), f));
-      if (isempty (entry))
-        ## Internal (__name__) or unusable -> drop any stale column.
+      ## The name resolves nowhere, which is what a function removed or
+      ## renamed by the same change looks like.  Whichever cache still carries
+      ## a column for it is stale, so they are searched and the entry dropped.
+      cf = [glob(fullfile ('src', 'doc-cache'));
+            glob(fullfile ('inst', 'doc-cache'));
+            glob(fullfile ('inst', '*', 'doc-cache'))];
+      found = false;
+      for k = 1:numel (cf)
+        tmp = load (cf{k});
+        cache = tmp.cache;
+        idx = find (strcmp (cache(1,:), f));
         if (! isempty (idx))
           cache(:, idx) = [];
-          printf ('  removed stale entry \"%s\" from %s\n', f, cachefile);
-        else
-          printf ('  \"%s\" is internal/unusable; nothing to cache.\n', f);
+          save_header_format_string (['# doc-cache created by Octave ' OCTAVE_VERSION]);
+          save ('-text', cf{k}, 'cache');
+          printf ('  removed stale entry \"%s\" from %s\n', f, cf{k});
+          found = true;
         endif
-      elseif (isempty (idx))
-        cache(:, end+1) = entry;
-        printf ('  added \"%s\" to %s\n', f, cachefile);
-      else
-        cache(:, idx) = entry;
-        printf ('  updated \"%s\" in %s\n', f, cachefile);
+      endfor
+      if (! found)
+        error ('regen-doc-cache: \"%s\" is not on the path and no cache holds it.', f);
       endif
+    else
+      d = fileparts (fpath);
+      ## A +pkg directory never goes on the load path, so nothing could read a
+      ## cache placed inside one.  A namespaced class is cached in the parent
+      ## directory instead, under the qualified name the caller passed.
+      [dparent, dbase] = fileparts (d);
+      if (strncmp (dbase, '+', 1))
+        d = dparent;
+      endif
+      cachefile = fullfile (d, 'doc-cache');
 
-      ## Save with the same header doc_cache_create writes.
-      save_header_format_string (['# doc-cache created by Octave ' OCTAVE_VERSION]);
-      save ('-text', cachefile, 'cache');
+      if (exist (cachefile, 'file') != 2)
+        ## No cache in this directory yet -- build the whole thing.
+        printf ('  no existing cache in %s; regenerating the directory ...\n', d);
+        doc_cache_create (cachefile, d);
+        printf ('  regenerated %s\n', cachefile);
+      else
+        ## Build the single cache entry exactly as doc_cache_create does per
+        ## function: name / plain-text help / first help sentence.
+        entry = {};
+        if (! strncmp (f, '__', 2))
+          [text, format] = get_help_text (f);
+          status = 1;
+          switch (lower (format))
+            case 'plain text'
+              status = 0;
+            case 'texinfo'
+              [text, status] = __makeinfo__ (text, 'plain text');
+          endswitch
+          if (status == 0 && ! isempty (text))
+            entry = {f; text; get_first_help_sentence(f)};
+          else
+            warning ('regen-doc-cache: unusable help text in %s', fpath);
+          endif
+        endif
+
+        ## Splice the entry into the existing cache (native Octave -text data).
+        tmp = load (cachefile);
+        cache = tmp.cache;
+        idx = find (strcmp (cache(1,:), f));
+        if (isempty (entry))
+          ## Internal (__name__) or unusable -> drop any stale column.
+          if (! isempty (idx))
+            cache(:, idx) = [];
+            printf ('  removed stale entry \"%s\" from %s\n', f, cachefile);
+          else
+            printf ('  \"%s\" is internal/unusable; nothing to cache.\n', f);
+          endif
+        elseif (isempty (idx))
+          cache(:, end+1) = entry;
+          printf ('  added \"%s\" to %s\n', f, cachefile);
+        else
+          cache(:, idx) = entry;
+          printf ('  updated \"%s\" in %s\n', f, cachefile);
+        endif
+
+        ## Save with the same header doc_cache_create writes.
+        save_header_format_string (['# doc-cache created by Octave ' OCTAVE_VERSION]);
+        save ('-text', cachefile, 'cache');
+      endif
     endif
   endif
 "
