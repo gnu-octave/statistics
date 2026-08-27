@@ -983,3 +983,26 @@
     private helper `__mvtcdfqmc__` and can no longer be called directly.
     MATLAB ships no such function, so nothing portable depended on it.  Call
     `mvtcdf` or `mvncdf` instead.
+
+ Summary of important user-visible changes for statistics 1.9.1:
+-------------------------------------------------------------------
+
+ Improvements:
+ =============
+
+ ** ClassificationKNN:
+    a custom distance function handle works again.  The constructor probed
+    the handle against the response instead of the predictors and sized the
+    result against the number of response rows, so a correctly written
+    `distfun` was rejected and no custom metric could be used at all.  A
+    handle assigned to `Distance` after fitting was accepted without being
+    probed and failed later inside `predict`, and `disp` could not print
+    one.  The `D2 = distfun (ZI, ZJ)` signature is now documented in the
+    property's help text.
+
+ ** documentation:
+    `doc/statistics.qch` is rebuilt with pkg-octave-doc 0.7.7.  Double-
+    clicking the package in the GUI Documentation tab opens an overview
+    listing every documented name under its category, rather than whichever
+    category came first, and the one formula that reached the page as raw
+    TeX now renders as the plain text form of its docstring.
