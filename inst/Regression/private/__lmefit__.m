@@ -113,9 +113,12 @@ function M = __lmefit__ (X, y, Z, G, method)
     sigma2 = rMir / n;
   endif
 
-  ## BLUPs and covariance of the fixed effects.
+  ## BLUPs and covariance of the fixed effects.  The covariance is genuinely
+  ## an inverse, but XtMiX is symmetric positive definite and W'*W already
+  ## has its factor, so take it from there rather than from a general inverse.
   b = Dfull * (Zx' * Mir);
-  covbeta = sigma2 * inv (XtMiX);
+  Rx = chol (XtMiX);
+  covbeta = sigma2 * (Rx \ (Rx' \ eye (p)));
   loglik = -0.5 * dev;
 
   ## Per-term covariance matrices Psi_k = sigma2 * D_k.
