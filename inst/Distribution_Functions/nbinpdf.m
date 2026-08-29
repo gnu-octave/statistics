@@ -117,6 +117,29 @@ function y = nbinpdf (x, r, ps)
     y(k) = bincoeff (-r(k), x(k)) .* (ps(k) .^ r(k)) .* ((ps(k) - 1) .^ x(k));
   endif
 
+  ## The three factors leave the range of a double long before their product
+  ## does: at 1001 successes bincoeff is Inf from 308 failures on, where the
+  ## density is an ordinary number peaking at 0.0089.  Recompute those through
+  ## the log gamma form, which holds the whole product in the exponent.
+  b = k & ! isfinite (y);
+  if (any (b(:)))
+    xb = x(b);
+    if (isscalar (r))
+      rb = r;
+    else
+      rb = r(b);
+    endif
+    if (isscalar (ps))
+      psb = ps;
+    else
+      psb = ps(b);
+    endif
+    t = xb .* log1p (-psb);
+    t(xb == 0) = 0;
+    y(b) = exp (gammaln (xb + rb) - gammaln (rb) - gammaln (xb + 1) ...
+                + rb .* log (psb) + t);
+  endif
+
   ## The density at an infinite abscissa is zero: no proper distribution
   ## places mass there.
   y(isinf (x) & (r > 0) & (r < Inf) & (ps >= 0) & (ps <= 1)) = 0;
@@ -152,6 +175,12 @@ endfunction
 %!assert_equal (nbinpdf (Inf, 5, 0.4), 0)
 %!assert_equal (nbinpdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
 %!assert_equal (nbinpdf ([x, NaN], 1, 0.5), [y, NaN])
+
+## The three factors leave the range of a double before their product does:
+## bincoeff (-1001, 1000) is Inf where the density peaks at 0.0089.
+%!assert_equal (nbinpdf (1000, 1001, 0.5), 0.0089195055729428853, 1e-17)
+%!assert_equal (nbinpdf (2000, 1001, 0.5), 1.2637737073869266e-76, 1e-89)
+%!assert (all (isfinite (nbinpdf (0:2500, 1001, 0.5))))
 
 ## Test class of input preserved
 %!assert_equal (nbinpdf (single ([x, NaN]), 1, 0.5), single ([y, NaN]))

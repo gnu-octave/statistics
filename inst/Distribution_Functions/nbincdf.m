@@ -214,6 +214,12 @@ endfunction
 %!assert_equal (nbincdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
 %!assert_equal (nbincdf ([x(1:2) NaN x(4:5)], 1, 0.5), [y(1:2) NaN y(4:5)])
 
+## A density that overflowed made the summed CDF read 1 from 308 failures on
+## and NaN past the mode, where the value at the mode is 0.5 exactly.
+%!assert_equal (nbincdf (1000, 1001, 0.5), 0.5, 1e-11)
+%!assert (all (isfinite (nbincdf (0:2500, 1001, 0.5))))
+%!assert (all (diff (nbincdf (0:2500, 1001, 0.5)) >= 0))
+
 ## Test class of input preserved
 %!assert_equal (nbincdf ([x, NaN], 1, 0.5), [y, NaN])
 %!assert_equal (nbincdf (single ([x, NaN]), 1, 0.5), single ([y, NaN]))
