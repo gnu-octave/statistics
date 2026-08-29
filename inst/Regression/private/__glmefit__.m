@@ -273,13 +273,23 @@ function [dev, grad] = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, ...
   endfor
 endfunction
 
+## The dispersion at the fitted covariance parameters: the weighted residual
+## sum of squares over its degrees of freedom.  Whitened, as weighted_dev is,
+## rather than through an explicit inverse of V.
 function d = profile_dispersion (theta, X, z, Zx, qk, nlev, w, isreml)
   n = rows (X);  p = columns (X);
   V = build_V (theta, qk, nlev, Zx, w, 1);
-  Vi = inv (V);
-  beta = (X' * Vi * X) \ (X' * Vi * z);
+  Rc = chol (V);
+  W = Rc' \ X;
+  zz = Rc' \ z;
+  beta = W \ zz;
   r = z - X * beta;
-  if (isreml), d = r' * Vi * r / (n - p); else, d = r' * Vi * r / n; endif
+  u = Rc' \ r;
+  if (isreml)
+    d = (u' * u) / (n - p);
+  else
+    d = (u' * u) / n;
+  endif
 endfunction
 
 function [beta, b, Psi, covbeta, V] = inner_solve (theta, X, z, Zx, qk, ...
