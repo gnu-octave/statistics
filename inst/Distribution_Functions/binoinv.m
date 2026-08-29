@@ -79,20 +79,28 @@ function x = binoinv (p, n, ps)
   k = find ((p >= 0) & (p <= 1) & (n >= 0) & (n == fix (n) ...
                      & (ps >= 0) & (ps <= 1)));
   if (! isempty (k))
-    p = p(k);
+    pk = p(k)(:);
     if (isscalar (n) && isscalar (ps))
-      [x(k), unfinished] = scalar_binoinv (p(:), n, ps);
-      k = k(unfinished);
-      if (! isempty (k))
-        x(k) = bin_search_binoinv (p(k), n, ps);
+      [xk, unfinished] = scalar_binoinv (pk, n, ps);
+      if (! isempty (unfinished))
+        xk(unfinished) = bin_search_binoinv (pk(unfinished), n, ps);
       endif
+      xk = tie_correct (xk, pk, n, ps);
+      ## P of 1 attains N.  The CDF saturates to 1 well below it, reading 1 at
+      ## 206 for 500 trials at 0.25, so no search can locate it.
+      xk(pk == 1) = n;
     else
-      [x(k), unfinished] = vector_binoinv (p(:), n(:), ps(:));
-      k = k(unfinished);
-      if (! isempty (k))
-        x(k) = bin_search_binoinv (p(k), n(k), ps(k));
+      nk = n(k)(:);
+      psk = ps(k)(:);
+      [xk, unfinished] = vector_binoinv (pk, nk, psk);
+      if (! isempty (unfinished))
+        xk(unfinished) = bin_search_binoinv (pk(unfinished), nk(unfinished), ...
+                                             psk(unfinished));
       endif
+      xk = tie_correct (xk, pk, nk, psk);
+      xk(pk == 1) = nk(pk == 1);
     endif
+    x(k) = xk;
   endif
 
 endfunction
@@ -111,12 +119,7 @@ function [m, k] = scalar_binoinv (p, n, ps)
   v = 0;
   do
     cdf = binocdf (prev_limit:limit-1, n, ps);
-    ## The CDF carries a relative error of a few eps, so an exactly attained
-    ## probability can read a couple of ulps short and step the search past
-    ## the right answer: binocdf (2, 5, 0.5) is 0.49999999999999989 where the
-    ## exact value, 16/32, is representable.  Compare with that slack, as
-    ## MATLAB does, whose own CDF is short there too.
-    r = bsxfun (@le, p(k), cdf .* (1 + 4 * eps));
+    r = bsxfun (@le, p(k), cdf);
     [v, m(k)] = max (r, [], 2);     # find first instance of p <= cdf
     m(k) += prev_limit - 1;
     k = k(v == 0);
@@ -147,12 +150,7 @@ function [m, k] = vector_binoinv (p, n, ps)
     pdf = binopdf (xx, nn, pp);
     pdf(:,1) += cdf(v==0, end);
     cdf = cumsum (pdf, 2);
-    ## The CDF carries a relative error of a few eps, so an exactly attained
-    ## probability can read a couple of ulps short and step the search past
-    ## the right answer: binocdf (2, 5, 0.5) is 0.49999999999999989 where the
-    ## exact value, 16/32, is representable.  Compare with that slack, as
-    ## MATLAB does, whose own CDF is short there too.
-    r = bsxfun (@le, p(k), cdf .* (1 + 4 * eps));
+    r = bsxfun (@le, p(k), cdf);
     [v, m(k)] = max (r, [], 2);     # find first instance of p <= cdf
     m(k) += prev_limit - 1;
     k = k(v == 0);
@@ -171,6 +169,8 @@ endfunction
 ## may cost more than the extra computations.
 function m = bin_search_binoinv (p, n, ps)
 
+  ## binocdf returns a column, so a row P would broadcast into a full matrix.
+  p = p(:);
   k = 1:length (p);
   lower = zeros (size (p));
   limit = 500;              # lower bound on point at which prev phase finished
@@ -191,6 +191,36 @@ function m = bin_search_binoinv (p, n, ps)
   endfor
   m = ceil (lower);
   m(p > binocdf (m(:), n, ps)) += 1;  # fix off-by-one errors from binary search
+
+endfunction
+
+## Step the answer back onto M-1 wherever P lies within the error of the CDF
+## there.  The CDF carries a relative error that grows with N, so an exactly
+## attained probability reads short and sends the search past its answer:
+## binocdf (2, 5, 0.5) is 0.49999999999999989 where the exact value, 16/32,
+## is representable, and the shortfall reaches 2355 eps by 2001 trials.  The
+## slack is capped at half the probability of M so that it can never cross a
+## real step of the distribution and round P to the wrong side of one.
+function m = tie_correct (m, p, n, ps)
+
+  j = find (m > 0);
+  if (isempty (j))
+    return;
+  endif
+  mj = m(j);
+  if (isscalar (n))
+    nj = n;
+  else
+    nj = n(j);
+  endif
+  if (isscalar (ps))
+    psj = ps;
+  else
+    psj = ps(j);
+  endif
+  lo = binocdf (mj - 1, nj, psj);
+  tol = min (32 * nj .* eps (lo), 0.5 * binopdf (mj, nj, psj));
+  m(j(p(j) <= lo + tol)) -= 1;
 
 endfunction
 
@@ -224,13 +254,31 @@ endfunction
 %!assert_equal (binoinv ([p, NaN], single (2), 0.5), single ([NaN 0 1 2 NaN NaN]))
 %!assert_equal (binoinv ([p, NaN], 2, single (0.5)), single ([NaN 0 1 2 NaN NaN]))
 
-## Test accuracy, to within +/- 1 since it is a discrete distribution
-%!shared x, tol
+## Test accuracy against a round trip through the CDF
+%!shared x
 %! x = magic (3) + 1;
-%! tol = 1;
-%!assert_equal (binoinv (binocdf (1:10, 11, 0.1), 11, 0.1), 1:10, tol)
-%!assert_equal (binoinv (binocdf (1:10, 2*(1:10), 0.1), 2*(1:10), 0.1), 1:10, tol)
-%!assert_equal (binoinv (binocdf (x, 2*x, 1./x), 2*x, 1./x), x, tol)
+%!assert_equal (binoinv (binocdf (1:10, 11, 0.1), 11, 0.1), 1:10)
+%!assert_equal (binoinv (binocdf (1:10, 2*(1:10), 0.1), 2*(1:10), 0.1), 1:10)
+%!assert_equal (binoinv (binocdf (x, 2*x, 1./x), 2*x, 1./x), x)
+
+## A symmetric binomial with an odd number of trials attains 0.5 exactly at
+## its median, which the CDF reads short of by an error growing with N.
+%!assert_equal (binoinv (0.5, 5, 0.5), 2)
+%!assert_equal (binoinv (0.5, 7, 0.5), 3)
+%!assert_equal (binoinv (0.5, 501, 0.5), 250)
+%!assert_equal (binoinv (0.5, 2001, 0.5), 1000)
+%!assert_equal (binoinv (0.5, 100001, 0.5), 50000)
+
+## P of 1 attains N even where the CDF saturates to 1 far below it.
+%!assert_equal (binoinv (1, 500, 0.25), 500)
+%!assert_equal (binoinv (1, [50, 500], [0.5, 0.1]), [50, 500])
+
+## Answers above 500 take the binary search, where the CDF is a column and P
+## keeps the orientation it was given.
+%!assert_equal (binoinv ([0.5, 0.9], 2001, 0.5), [1000, 1029])
+%!assert_equal (binoinv ([0.5; 0.9], 2001, 0.5), [1000; 1029])
+%!assert_equal (binoinv ([NaN, 0.5], 2001, 0.5), [NaN, 1000])
+%!assert_equal (binoinv ([2, 0.5], [2001, 2001], [0.5, 0.5]), [NaN, 1000])
 
 ## Test input validation
 %!error<binoinv: function called with too few input arguments.> binoinv ()
