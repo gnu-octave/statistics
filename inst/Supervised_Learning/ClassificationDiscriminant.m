@@ -3422,13 +3422,15 @@ endclassdef
 %! assert_equal (loss (Mdl, meas, species), 0.0267, 1e-4);
 
 ## A collinear fit is raised to MinGamma rather than failing, and cannot be
-## brought back below it.
+## brought back below it.  MinGamma lands a few eps above zero, so
+## LogDetSigma is the logarithm of a rounding-level eigenvalue: it moves by
+## 0.02 between platforms where doubling MinGamma moves it by log (2).
 %!test
 %! load fisheriris
 %! Mdl = fitcdiscr ([meas(:,1:3), meas(:,3)], species);
 %! assert (Mdl.MinGamma > 0);
 %! assert_equal (Mdl.Gamma, Mdl.MinGamma);
-%! assert_equal (Mdl.LogDetSigma, -41.3112, 1e-4);
+%! assert_equal (Mdl.LogDetSigma, -41.3112, 0.1);
 
 ## The pseudo types answer a singular covariance where the plain one is
 ## regularized and the diagonal one drops the correlations.
