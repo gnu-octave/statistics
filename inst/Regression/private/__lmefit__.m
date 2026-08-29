@@ -84,11 +84,17 @@ function M = __lmefit__ (X, y, Z, G, method)
 
   ## Recover everything at the optimum.
   Dfull = build_Dfull (theta, qk, nlev);
+  ## Zx * Dfull * Zx' is symmetric in exact arithmetic but not bitwise, since
+  ## the two products are separate BLAS calls.  'chol' reads one triangle, so
+  ## which one it reads decides the factor and a threaded or blocked BLAS can
+  ## disagree with a reference one.  Symmetrise before every factorisation.
   Mrel = eye (n) + Zx * Dfull * Zx';
+  Mrel = (Mrel + Mrel') / 2;
   Rc = chol (Mrel);
   MiX = Rc \ (Rc' \ X);
   Miy = Rc \ (Rc' \ y);
   XtMiX = X' * MiX;
+  XtMiX = (XtMiX + XtMiX') / 2;
   beta = XtMiX \ (X' * Miy);
   r = y - X * beta;
   Mir = Rc \ (Rc' \ r);
@@ -141,6 +147,7 @@ endfunction
 function dev = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, is_reml)
   Dfull = build_Dfull (theta, qk, nlev);
   Mrel = eye (n) + Zx * Dfull * Zx';
+  Mrel = (Mrel + Mrel') / 2;
   [Rc, flag] = chol (Mrel);
   if (flag != 0)
     dev = Inf;
@@ -149,6 +156,7 @@ function dev = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, is_reml)
   MiX = Rc \ (Rc' \ X);
   Miy = Rc \ (Rc' \ y);
   XtMiX = X' * MiX;
+  XtMiX = (XtMiX + XtMiX') / 2;
   beta = XtMiX \ (X' * Miy);
   r = y - X * beta;
   rMir = r' * (Rc \ (Rc' \ r));

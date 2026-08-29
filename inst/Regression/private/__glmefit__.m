@@ -193,6 +193,7 @@ function dev = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, disp0)
   if (flag != 0), dev = Inf; return; endif
   ViX = Rc \ (Rc' \ X);  Viz = Rc \ (Rc' \ z);
   XtViX = X' * ViX;
+  XtViX = (XtViX + XtViX') / 2;
   beta = XtViX \ (X' * Viz);
   r = z - X * beta;
   dev = 2*sum (log (diag (Rc))) + r' * (Rc \ (Rc' \ r));
@@ -233,7 +234,12 @@ endfunction
 function V = build_V (theta, qk, nlev, Zx, w, disp0)
   n = rows (Zx);
   Dfull = build_Dfull (theta, qk, nlev);
+  ## Zx * Dfull * Zx' is symmetric in exact arithmetic but not bitwise, since
+  ## the two products are separate BLAS calls.  'chol' reads one triangle, so
+  ## a threaded or blocked BLAS can disagree with a reference one on which
+  ## factor comes out.  Symmetrise before it is handed to 'chol'.
   V = Zx * Dfull * Zx' + disp0 * diag (1 ./ w);
+  V = (V + V') / 2;
 endfunction
 
 function Dfull = build_Dfull (theta, qk, nlev)
@@ -332,5 +338,7 @@ function lp = log_pmf (y, mu, distr)
 endfunction
 
 function ld = logdet_spd (A)
+  ## A is built from products and is not bitwise symmetric; see build_V.
+  A = (A + A') / 2;
   ld = 2 * sum (log (diag (chol (A))));
 endfunction
