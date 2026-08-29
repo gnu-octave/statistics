@@ -176,8 +176,13 @@ endfunction
 function [theta, disp0] = inner_fit (theta0, X, z, Zx, qk, nlev, w, ...
                                      isreml, fixed_disp)
   obj = @(th) weighted_dev (th, X, z, Zx, qk, nlev, w, isreml, 1);
+  ## The weighted deviance is differentiable in theta and its gradient is
+  ## closed form, so hand it over rather than let the optimiser difference an
+  ## objective whose curvature in the variance components is far below the
+  ## step a finite difference has to take.  See __lmefit__ for the same
+  ## treatment of the linear case.
   opts = optimset ("TolX", 1e-10, "TolFun", 1e-10, "MaxFunEvals", 2000, ...
-                   "Display", "off");
+                   "Display", "off", "GradObj", "on");
   theta = fminunc (obj, theta0, opts);
   if (fixed_disp)
     disp0 = 1;
@@ -186,20 +191,86 @@ function [theta, disp0] = inner_fit (theta0, X, z, Zx, qk, nlev, w, ...
   endif
 endfunction
 
-function dev = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, disp0)
+## Weighted -2*log-likelihood at the covariance parameters theta, and its
+## gradient.  Only Zx*D*Zx' in V depends on theta, so dV/dtheta is
+## Zx*(dD/dtheta)*Zx'; beta drops out because it is the GLS minimiser, and
+## D = L*L' gives dD = E_ij*L' + L*E_ij', so every entry is 2*(S*L)(i,j) for
+## the matching accumulated S.  The dispersion is held at one here and
+## profiled afterwards, so there is no scale term to differentiate through.
+function [dev, grad] = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, ...
+                                     disp0)
   n = rows (X);  p = columns (X);
   V = build_V (theta, qk, nlev, Zx, w, disp0);
   [Rc, flag] = chol (V);
-  if (flag != 0), dev = Inf; return; endif
-  ViX = Rc \ (Rc' \ X);  Viz = Rc \ (Rc' \ z);
-  XtViX = X' * ViX;
-  XtViX = (XtViX + XtViX') / 2;
-  beta = XtViX \ (X' * Viz);
-  r = z - X * beta;
-  dev = 2*sum (log (diag (Rc))) + r' * (Rc \ (Rc' \ r));
-  if (isreml)
-    dev += 2 * sum (log (diag (chol (XtViX))));
+  if (flag != 0)
+    dev = Inf;
+    grad = zeros (size (theta));
+    return;
   endif
+  ## V is Rc'*Rc, so X'*inv (V)*X is (Rc'\X)'*(Rc'\X): whitening once halves
+  ## the triangular solves and makes XtViX symmetric by construction.
+  W = Rc' \ X;
+  zz = Rc' \ z;
+  XtViX = W' * W;
+  beta = W \ zz;
+  r = z - X * beta;
+  u = Rc' \ r;
+  dev = 2*sum (log (diag (Rc))) + u' * u;
+  if (isreml)
+    Rx = chol (XtViX);
+    dev += 2 * sum (log (diag (Rx)));
+  endif
+  if (nargout < 2)
+    return;
+  endif
+
+  ## One further solve carries the gradient, all of it in the random effects
+  ## dimension: Vv'*Vv is Zx'*inv (V)*Zx, Vv'*u is Zx'*inv (V)*r, Vv'*W is
+  ## Zx'*inv (V)*X.
+  Vv = Rc' \ Zx;
+  c = Vv' * u;
+  B = Vv' * W;
+  if (isreml)
+    T = Rx' \ B';
+  endif
+  grad = zeros (size (theta));
+  off = 0;
+  col = 0;
+  for k = 1:numel (qk)
+    q = qk(k);
+    m = q*(q+1)/2;
+    Lk = tril_from_theta (theta(off+(1:m)), q);
+    Sa = zeros (q);
+    Sc = zeros (q);
+    Sp = zeros (q);
+    for l = 1:nlev(k)
+      sel = col + (1:q);
+      col += q;
+      Vs = Vv(:,sel);
+      Sa += Vs' * Vs;
+      cs = c(sel);
+      Sc += cs * cs';
+      if (isreml)
+        Ts = T(:,sel);
+        Sp += Ts' * Ts;
+      endif
+    endfor
+    Ga = 2 * (Sa * Lk);
+    Gc = 2 * (Sc * Lk);
+    if (isreml)
+      Gp = 2 * (Sp * Lk);
+    else
+      Gp = zeros (q);
+    endif
+    idx = 0;
+    for j = 1:q
+      for i = j:q
+        idx += 1;
+        grad(off+idx) = Ga(i,j) - Gc(i,j) - Gp(i,j);
+      endfor
+    endfor
+    off += m;
+  endfor
 endfunction
 
 function d = profile_dispersion (theta, X, z, Zx, qk, nlev, w, isreml)
