@@ -295,12 +295,22 @@ endfunction
 function [beta, b, Psi, covbeta, V] = inner_solve (theta, X, z, Zx, qk, ...
                                                    nlev, w, disp0)
   V = build_V (theta, qk, nlev, Zx, w, disp0);
-  Vi = inv (V);
-  XtViX = X' * Vi * X;
-  beta = XtViX \ (X' * Vi * z);
+  ## Whitened, as weighted_dev and profile_dispersion are: V is Rc'*Rc, so
+  ## X'*inv (V)*X is (Rc'\X)'*(Rc'\X) and beta is the least squares solution
+  ## of the whitened system.  inv (V) is never formed; the BLUPs need
+  ## inv (V)*r in full, which is the one place both solves are used.
+  Rc = chol (V);
+  W = Rc' \ X;
+  zz = Rc' \ z;
+  XtViX = W' * W;
+  beta = W \ zz;
   Dfull = build_Dfull (theta, qk, nlev);
-  b = Dfull * (Zx' * (Vi * (z - X * beta)));
-  covbeta = inv (XtViX);
+  Vir = Rc \ (Rc' \ (z - X * beta));
+  b = Dfull * (Zx' * Vir);
+  ## The covariance of the fixed effects is genuinely an inverse, but it is
+  ## the inverse of a matrix already factored, so take it from the factor.
+  Rx = chol (XtViX);
+  covbeta = Rx \ (Rx' \ eye (columns (X)));
   ## per-term covariance matrices
   Psi = cell (1, numel (qk));  off = 0;
   for k = 1:numel (qk)
