@@ -78,8 +78,14 @@ function M = __lmefit__ (X, y, Z, G, method)
 
   obj = @(th) profiled_deviance (th, X, y, Zx, qk, nlev, n, p, is_reml);
 
+  ## The profiled deviance is differentiable in theta and the gradient is
+  ## closed form, so give it to the optimiser rather than let it difference.
+  ## A finite difference takes a step near 1e-8 on an objective whose
+  ## curvature in the variance components is around 1e-13, which makes the
+  ## search path, and the estimate it stops at, sensitive to the last bits of
+  ## the linear algebra and so to the BLAS in use.
   opts = optimset ("TolX", 1e-10, "TolFun", 1e-10, "MaxFunEvals", 2000, ...
-                   "MaxIter", 1000, "Display", "off");
+                   "MaxIter", 1000, "Display", "off", "GradObj", "on");
   [theta, dev] = fminunc (obj, theta0, opts);
 
   ## Recover everything at the optimum.
@@ -91,14 +97,16 @@ function M = __lmefit__ (X, y, Z, G, method)
   Mrel = eye (n) + Zx * Dfull * Zx';
   Mrel = (Mrel + Mrel') / 2;
   Rc = chol (Mrel);
-  MiX = Rc \ (Rc' \ X);
-  Miy = Rc \ (Rc' \ y);
-  XtMiX = X' * MiX;
-  XtMiX = (XtMiX + XtMiX') / 2;
-  beta = XtMiX \ (X' * Miy);
+  ## Whitened once, as in profiled_deviance above.  Mir is still formed in
+  ## full because the BLUPs need inv (Mrel)*r and not just its norm.
+  W = Rc' \ X;
+  z = Rc' \ y;
+  XtMiX = W' * W;
+  beta = W \ z;
   r = y - X * beta;
-  Mir = Rc \ (Rc' \ r);
-  rMir = r' * Mir;
+  u = Rc' \ r;
+  Mir = Rc \ u;
+  rMir = u' * u;
   if (is_reml)
     sigma2 = rMir / (n - p);
   else
@@ -143,32 +151,103 @@ function M = __lmefit__ (X, y, Z, G, method)
 
 endfunction
 
-## Profiled -2*log-likelihood at the covariance parameters theta.
-function dev = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, is_reml)
+## Profiled -2*log-likelihood at the covariance parameters theta, and its
+## gradient.  With M = I + Zx*D*Zx' and nu = n or n-p, the deviance is
+## nu*log (rMir/nu) + logdet (M) [+ logdet (X'*inv (M)*X)] + const, and each
+## term differentiates through dM/dtheta = Zx*(dD/dtheta)*Zx'.  Because beta
+## is the GLS minimiser, its own dependence on theta drops out.  Every
+## derivative then contracts to the random effects dimension: with
+## V = Rc'\Zx, the three quantities needed are V'*V, V'*u and V'*W, and since
+## D = L*L' gives dD = E_ij*L' + L*E_ij', each gradient entry is 2*(S*L)(i,j)
+## for the matching accumulated S.
+function [dev, grad] = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, ...
+                                          is_reml)
   Dfull = build_Dfull (theta, qk, nlev);
   Mrel = eye (n) + Zx * Dfull * Zx';
   Mrel = (Mrel + Mrel') / 2;
   [Rc, flag] = chol (Mrel);
   if (flag != 0)
     dev = Inf;
+    grad = zeros (size (theta));
     return;
   endif
-  MiX = Rc \ (Rc' \ X);
-  Miy = Rc \ (Rc' \ y);
-  XtMiX = X' * MiX;
-  XtMiX = (XtMiX + XtMiX') / 2;
-  beta = XtMiX \ (X' * Miy);
+  ## Whiten once rather than solving twice.  Mrel is Rc'*Rc, so
+  ## X'*inv (Mrel)*X is (Rc'\X)'*(Rc'\X): three triangular solves here where
+  ## six were needed, and XtMiX comes out symmetric to the last bit by
+  ## construction rather than needing to be symmetrised.  beta is then the
+  ## least squares solution of the whitened system, which avoids forming the
+  ## normal equations and squaring the condition number with them.
+  W = Rc' \ X;
+  z = Rc' \ y;
+  XtMiX = W' * W;
+  beta = W \ z;
   r = y - X * beta;
-  rMir = r' * (Rc \ (Rc' \ r));
+  u = Rc' \ r;
+  rMir = u' * u;
   logdetM = 2 * sum (log (diag (Rc)));
   if (is_reml)
-    s2 = rMir / (n - p);
-    ldXMiX = 2 * sum (log (diag (chol (XtMiX))));
-    dev = (n-p)*log (s2) + logdetM + rMir/s2 + ldXMiX + (n-p)*log (2*pi);
+    nu = n - p;
+    Rx = chol (XtMiX);
+    ldXMiX = 2 * sum (log (diag (Rx)));
+    dev = nu*log (rMir/nu) + logdetM + rMir/(rMir/nu) + ldXMiX + nu*log (2*pi);
   else
-    s2 = rMir / n;
-    dev = n*log (s2) + logdetM + rMir/s2 + n*log (2*pi);
+    nu = n;
+    dev = nu*log (rMir/nu) + logdetM + rMir/(rMir/nu) + nu*log (2*pi);
   endif
+  if (nargout < 2)
+    return;
+  endif
+
+  ## One further triangular solve carries the whole gradient: V'*V is
+  ## Zx'*inv (M)*Zx, V'*u is Zx'*inv (M)*r, and V'*W is Zx'*inv (M)*X, so
+  ## nothing works in the observation dimension beyond this point.
+  V = Rc' \ Zx;
+  c = V' * u;
+  B = V' * W;
+  if (is_reml)
+    T = Rx' \ B';
+  endif
+  grad = zeros (size (theta));
+  off = 0;
+  col = 0;
+  for k = 1:numel (qk)
+    q = qk(k);
+    m = q*(q+1)/2;
+    Lk = tril_from_theta (theta(off+(1:m)), q);
+    Sa = zeros (q);
+    Sc = zeros (q);
+    Sp = zeros (q);
+    for l = 1:nlev(k)
+      S = col + (1:q);
+      col += q;
+      Vs = V(:,S);
+      Sa += Vs' * Vs;
+      cs = c(S);
+      Sc += cs * cs';
+      if (is_reml)
+        Ts = T(:,S);
+        Sp += Ts' * Ts;
+      endif
+    endfor
+    ## dD = E_ij*L' + L*E_ij', so tr (dD*S) and v'*dD*v are both 2*(S*L)(i,j)
+    ## for symmetric S.  logdet (M) rises with it, rMir and logdet (X'MiX)
+    ## fall.
+    Ga = 2 * (Sa * Lk);
+    Gc = 2 * (Sc * Lk);
+    if (is_reml)
+      Gp = 2 * (Sp * Lk);
+    else
+      Gp = zeros (q);
+    endif
+    idx = 0;
+    for j = 1:q
+      for i = j:q
+        idx += 1;
+        grad(off+idx) = -nu * Gc(i,j) / rMir + Ga(i,j) - Gp(i,j);
+      endfor
+    endfor
+    off += m;
+  endfor
 endfunction
 
 ## Block-diagonal relative covariance: D_k repeated over the nlev_k levels.
