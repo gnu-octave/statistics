@@ -32,6 +32,10 @@
 ## curve passing through these four points using the quantile method of Slifker
 ## and Shapiro.
 ##
+## @var{quantiles} may also be a 2-by-4 numeric matrix, whose first row holds
+## four strictly increasing, evenly spaced standard normal quantiles and whose
+## second row holds the corresponding strictly increasing data quantiles.
+##
 ## @code{johnsrnd (@var{quantiles}, @var{m}, @var{n}, @dots{})} or
 ## @code{johnsrnd (@var{quantiles}, [@var{m}, @var{n}, @dots{}])} returns an
 ## @var{m}-by-@var{n}-by-@dots{} array of random values, following the size
@@ -57,17 +61,34 @@ function [r, type, coefs] = johnsrnd (quantiles, varargin)
     print_usage ();
   endif
 
-  if (! (isnumeric (quantiles) && isreal (quantiles) && isvector (quantiles) ...
-         && numel (quantiles) == 4))
-    error ("johnsrnd: QUANTILES must be a four-element numeric vector.");
+  if (isnumeric (quantiles) && isreal (quantiles) && isvector (quantiles) ...
+      && numel (quantiles) == 4)
+    zrow = [-1.5, -0.5, 0.5, 1.5];
+    q = quantiles(:)';
+  elseif (isnumeric (quantiles) && isreal (quantiles) ...
+          && isequal (size (quantiles), [2, 4]))
+    zrow = quantiles(1, :);
+    q = quantiles(2, :);
+    zdiff = diff (zrow);
+    if (any (zdiff <= 0) || any (abs (zdiff - zdiff(1)) > 1e-9 .* abs (zdiff(1))))
+      error (["johnsrnd: standard normal quantiles must be strictly " ...
+              "increasing and evenly spaced."]);
+    endif
+  else
+    error (["johnsrnd: QUANTILES must be a four-element numeric vector " ...
+            "or a 2-by-4 numeric matrix."]);
   endif
-  q = quantiles(:)';
-  if (any (diff (q) <= 0))
+  if (any (isnan (q)) || any (diff (q) <= 0))
     error ("johnsrnd: QUANTILES must be strictly increasing.");
   endif
 
-  ## Fit the Johnson curve through the four quantiles
+  ## Fit the Johnson curve in normalised z-space, then rescale gamma and delta
+  ## to the standard normal quantiles actually supplied in ZROW
   [type, coefs] = johnson_fit (q);
+  h = zrow(2) - zrow(1);
+  center = (zrow(2) + zrow(3)) ./ 2;
+  coefs(1) = center + h .* coefs(1);
+  coefs(2) = h .* coefs(2);
 
   ## Draw standard normal deviates and apply the fitted transform.  Negative
   ## dimensions are treated as zero, as in core Octave and MATLAB.
@@ -111,7 +132,7 @@ function [type, coefs] = johnson_fit (q)
       ## Lognormal
       type = "SL";
       delta = 1 ./ log (t1);
-      lambda = 1;
+      lambda = sign (delta);
       scale = p ./ (2 .* sinh (0.5 ./ delta));
       gamma = -delta .* log (scale ./ lambda);
       xi = x2 - lambda .* exp ((-0.5 - gamma) ./ delta);
@@ -200,13 +221,40 @@ endfunction
 %! [r, ~, c] = johnsrnd ([0.1, 0.3, 0.8, 0.95], 1, 500);
 %! assert_equal (all (r > c(3) & r < c(3) + c(4), 'all'), true);
 
+%!test
+%! [~, type, coefs] = johnsrnd ([-7, -3, -1, 0]);
+%! assert_equal (type, "SL");
+%! assert_equal (coefs, [1.5, -1.44269504088896, 1, -1], 1e-10);
+%! assert_equal (isreal (coefs), true);
+
+%!test
+%! qnorm = [.5, 1, 1.5, 2];
+%! q = [16.7000, 18.2086, 19.5376, 21.7263];
+%! [r, type, coefs] = johnsrnd ([qnorm; q], 0);
+%! assert_equal (r, []);
+%! assert_equal (type, "SU");
+%! assert_equal (coefs, [1.0920, 0.5829, 18.4382, 1.4493], 1e-4);
+%!test
+%! [~, type, coefs] = johnsrnd ([-1.5, -0.5, 0.5, 1.5; -1, -0.25, 0.75, 3], 0);
+%! [~, type2, coefs2] = johnsrnd ([-1, -0.25, 0.75, 3]);
+%! assert_equal (type, type2);
+%! assert_equal (coefs, coefs2, 1e-12);
+
 ## Test input validation
 %!error <Invalid call to johnsrnd> johnsrnd ()
-%!error <johnsrnd: QUANTILES must be a four-element numeric vector.> ...
+%!error <johnsrnd: QUANTILES must be a four-element numeric vector or a 2-by-4 numeric matrix.> ...
 %! johnsrnd ([1, 2, 3])
-%!error <johnsrnd: QUANTILES must be a four-element numeric vector.> ...
+%!error <johnsrnd: QUANTILES must be a four-element numeric vector or a 2-by-4 numeric matrix.> ...
 %! johnsrnd ("abcd")
+%!error <johnsrnd: QUANTILES must be a four-element numeric vector or a 2-by-4 numeric matrix.> ...
+%! johnsrnd (ones (3, 4))
 %!error <johnsrnd: QUANTILES must be strictly increasing.> ...
 %! johnsrnd ([1, 2, 2, 3])
 %!error <johnsrnd: QUANTILES must be strictly increasing.> ...
 %! johnsrnd ([4, 3, 2, 1])
+%!error <johnsrnd: QUANTILES must be strictly increasing.> ...
+%! johnsrnd ([1, NaN, 3, 4])
+%!error <johnsrnd: standard normal quantiles must be strictly increasing and evenly spaced.> ...
+%! johnsrnd ([1.5, 0.5, -0.5, -1.5; -1, -0.25, 0.75, 3])
+%!error <johnsrnd: standard normal quantiles must be strictly increasing and evenly spaced.> ...
+%! johnsrnd ([-1.5, -0.5, 0.5, 1; -1, -0.25, 0.75, 3])
