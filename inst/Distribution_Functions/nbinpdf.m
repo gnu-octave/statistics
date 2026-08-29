@@ -178,8 +178,11 @@ endfunction
 
 ## The three factors leave the range of a double before their product does:
 ## bincoeff (-1001, 1000) is Inf where the density peaks at 0.0089.
-%!assert_equal (nbinpdf (1000, 1001, 0.5), 0.0089195055729428853, 1e-17)
-%!assert_equal (nbinpdf (2000, 1001, 0.5), 1.2637737073869266e-76, 1e-89)
+## The rescue path is exp (gammaln (...) - gammaln (...) - gammaln (...) + ...),
+## so the value rides on the platform's lgamma and moves about 2e-12 relative
+## between them.  Assert the density, not the agreement of lgamma.
+%!assert_equal (nbinpdf (1000, 1001, 0.5), 0.0089195055729428853, -1e-10)
+%!assert_equal (nbinpdf (2000, 1001, 0.5), 1.2637737073869266e-76, -1e-10)
 %!assert (all (isfinite (nbinpdf (0:2500, 1001, 0.5))))
 
 ## Test class of input preserved
