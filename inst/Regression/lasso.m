@@ -153,6 +153,11 @@ function [B, FitInfo] = lasso (X, y, varargin)
   if (! isempty (lambda) && (! isnumeric (lambda) || any (lambda < 0)))
     error ("lasso: 'Lambda' must be a vector of non-negative values.");
   endif
+  if (! intercept && standardize)
+    warning (["lasso: when the 'Intercept' value is false, the " ...
+              "'Standardize' value is set to false."]);
+    standardize = false;
+  endif
 
   ## Drop observations with missing values.
   ok = ! (any (isnan (X), 2) | isnan (y));
@@ -433,6 +438,9 @@ endfunction
 %! [~, I] = lasso (X, y, "CV", 4, "MCReps", 2);
 %! thr = I.MSE(I.IndexMinMSE) + I.SE(I.IndexMinMSE);
 %! assert_equal (I.MSE(I.Index1SE) <= thr + 1e-9, true);
+
+%!warning <lasso: when the 'Intercept' value is false, the 'Standardize' value is set to false.> ...
+%! lasso (X, y, "Lambda", 0.1, "Intercept", false);
 
 ## Test input validation
 %!error <Invalid call to lasso> lasso (1)
