@@ -1762,9 +1762,13 @@ endfunction
 %! x = linspace (0, 1, 20)';
 %! y = sin (2*pi*x) + 0.1 * cos (7*x);
 %! Mdl = RegressionGP (x, y, 'Optimizer', 'lbfgs');
+%! ## Relative, and loose: the likelihood surface is flat here, so where the
+%! ## search stops is decided by the last bits of the arithmetic and moves by
+%! ## about 1e-6 between platforms.  The likelihood is what pins this optimum,
+%! ## and the test below holds it to 1e-8.
 %! assert_equal (Mdl.KernelInformation.KernelParameters, ...
-%!               [0.386370514454926; 1.505132511329997], 1e-6);
-%! assert_equal (Mdl.Beta, -0.072781321631854, 1e-6);
+%!               [0.386370514454926; 1.505132511329997], -1e-4);
+%! assert_equal (Mdl.Beta, -0.072781321631854, -1e-4);
 
 %!test
 %! ## The likelihood agrees far more tightly than the parameters do, because
