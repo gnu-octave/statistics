@@ -15,10 +15,19 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-function stop = objective_history_fcn (x, optimValues, state)
+## -*- texinfo -*-
+## @deftypefn {Private Function} {@var{stop} =} objective_history_fcn (@var{x}, @var{optimValues}, @var{state})
+##
+## Append the current objective to the history, as @code{fminunc}'s
+## @code{OutputFcn}.
+##
+## @var{stop} is always false, so a fit is never halted from here, and @var{x}
+## is unused.  The @qcode{'init'} call carries the objective at the starting
+## weights, which is the first entry of the history MATLAB reports.
+##
+## @end deftypefn
 
-  ## OutputFcn for fminunc.  The 'init' call carries the objective at the
-  ## starting weights, which is the first entry of the history MATLAB reports.
+function stop = objective_history_fcn (x, optimValues, state)
 
   stop = false;
   if (any (strcmp (state, {"init", "iter"})))

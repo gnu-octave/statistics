@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {@var{r} =} copularnd (@var{family}, @var{theta}, @var{n})
-## @deftypefnx {Function File} {@var{r} =} copularnd (@var{family}, @var{theta}, @var{n}, @var{d})
-## @deftypefnx {Function File} {@var{r} =} copularnd ('t', @var{theta}, @var{df}, @var{n})
+## @deftypefn  {statistics} {@var{r} =} copularnd (@var{family}, @var{theta}, @var{n})
+## @deftypefnx {statistics} {@var{r} =} copularnd (@var{family}, @var{theta}, @var{n}, @var{d})
+## @deftypefnx {statistics} {@var{r} =} copularnd ('t', @var{theta}, @var{df}, @var{n})
 ##
 ## Random arrays from the copula family distributions.
 ##

@@ -15,13 +15,24 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-function out = objective_history (action, val)
+## -*- texinfo -*-
+## @deftypefn {Private Function} {@var{out} =} objective_history (@var{action}, @var{val})
+##
+## Collect the objective values @code{fminunc} walks through.
+##
+## @var{action} is @qcode{'reset'} to begin a fit, @qcode{'add'} to append
+## @var{val}, or @qcode{'get'} to return everything gathered since the reset.
+## Only @qcode{'get'} returns anything, the others leaving @var{out} empty.
+##
+## @code{fminunc} offers no history of its own and its @code{OutputFcn} cannot
+## return one, so the values are gathered here and reported as
+## @code{FitInfo.Objective}, which would otherwise hold the final value alone.
+## One fit runs at a time, which is what lets a single buffer serve both
+## classes.
+##
+## @end deftypefn
 
-  ## Collect the objective fminunc walks through, so FitInfo.Objective can
-  ## report the trajectory rather than only its final value.  fminunc offers
-  ## no history of its own and its OutputFcn cannot return one, so the values
-  ## are gathered here between a 'reset' and a 'get'.  One fit runs at a time,
-  ## which is what lets a single buffer serve both classes.
+function out = objective_history (action, val)
 
   persistent buf
 

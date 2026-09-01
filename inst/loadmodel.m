@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {ClassificationSVM} {@var{obj} = } loadmodel (@var{filename})
+## @deftypefn  {statistics} {@var{obj} = } loadmodel (@var{filename})
 ##
 ## Load a Classification or Regression model from a file.
 ##

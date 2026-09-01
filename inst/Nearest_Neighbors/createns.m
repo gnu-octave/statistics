@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {@var{obj} =} createns (@var{X})
-## @deftypefnx {Function File} {@var{obj} =} createns (@var{X}, @var{name}, @var{value}, @dots{})
+## @deftypefn  {statistics} {@var{obj} =} createns (@var{X})
+## @deftypefnx {statistics} {@var{obj} =} createns (@var{X}, @var{name}, @var{value}, @dots{})
 ##
 ## Create a nearest neighbor searcher object.
 ##
