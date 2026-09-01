@@ -727,8 +727,7 @@ classdef anova
     ## -*- texinfo -*-
     ## @deftypefn  {anova} {@var{m} =} multcompare (@var{obj})
     ## @deftypefnx {anova} {@var{m} =} multcompare (@var{obj}, @var{factors})
-    ## @deftypefnx {anova} {@var{m} =} multcompare (@dots{}, @var{name},
-    ## @var{value})
+    ## @deftypefnx {anova} {@var{m} =} multcompare (@dots{}, @var{name}, @var{value})
     ##
     ## Perform post-hoc multiple comparisons for a fitted ANOVA object.
     ##
