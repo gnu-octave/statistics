@@ -235,6 +235,24 @@ classdef anova
     formulaTerms_ = [];
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display of the model summary: backend, fit state, number of
+    ## factors, sum-of-squares type and significance level.
+    function disp (obj)
+      obj.ensureFit_ ();
+      constrained = 'constrained';
+      fprintf ("\n  %d-way anova, %s (Type %s) sums of squares.\n\n", ...
+               obj.NumFactors, constrained, obj.sstypeLabel_ ());
+      if (! isempty (obj.formulaText_))
+        fprintf ("  %s\n\n", obj.formulaText_);
+      endif
+      obj.printAtab_ (obj.AnovaTable);
+      fprintf ("\n  Properties, Methods\n\n");
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -453,27 +471,6 @@ classdef anova
   endmethods
 
   methods (Access = public)
-
-    ## -*- texinfo -*-
-    ## @deftypefn {anova} {} disp (@var{obj})
-    ##
-    ## Display a compact description of an @code{anova} object.
-    ##
-    ## The display includes the selected backend, fit state, number of factors,
-    ## sum-of-squares type, and significance level.
-    ##
-    ## @end deftypefn
-    function disp (obj)
-      obj.ensureFit_ ();
-      constrained = 'constrained';
-      fprintf ("\n  %d-way anova, %s (Type %s) sums of squares.\n\n", ...
-               obj.NumFactors, constrained, obj.sstypeLabel_ ());
-      if (! isempty (obj.formulaText_))
-        fprintf ("  %s\n\n", obj.formulaText_);
-      endif
-      obj.printAtab_ (obj.AnovaTable);
-      fprintf ("\n  Properties, Methods\n\n");
-    endfunction
 
     ## -*- texinfo -*-
     ## @deftypefn  {anova} {@var{s} =} stats (@var{obj})

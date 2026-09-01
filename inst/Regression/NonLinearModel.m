@@ -99,7 +99,7 @@ classdef NonLinearModel
     istable_   = false;   # true when the model was fit from a table
   endproperties
 
-  methods (Access = public)
+  methods (Hidden)
 
     ## Custom display of the object with its variable name.
     function display (this)
@@ -143,6 +143,10 @@ classdef NonLinearModel
                  Fstat, pval);
       endif
     endfunction
+
+  endmethods
+
+  methods (Access = public)
 
     ## Class specific subscripted reference.
     function varargout = subsref (this, s)

@@ -80,6 +80,26 @@ classdef paretotails
     method = "ecdf"      # description of the middle segment
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display of the segment summary.
+    function disp (this)
+      printf ("  Piecewise distribution with %d segments fit to %d ", ...
+              this.NumSegments, this.nobs);
+      printf ("observations:\n\n");
+      if (this.pl > 0)
+        printf ("    P = [0, %g]: lower tail, generalized Pareto ", this.pl);
+        printf ("(k = %g, sigma = %g)\n", this.lowerP(1), this.lowerP(2));
+      endif
+      printf ("    P = [%g, %g]: middle, %s\n", this.pl, this.pu, this.method);
+      if (this.pu < 1)
+        printf ("    P = [%g, 1]: upper tail, generalized Pareto ", this.pu);
+        printf ("(k = %g, sigma = %g)\n", this.upperP(1), this.upperP(2));
+      endif
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -371,27 +391,6 @@ classdef paretotails
         s = 2 .* ones (size (x));
         s(x < this.ql) = 1;
         s(x > this.qu) = 3;
-      endif
-    endfunction
-
-    ## -*- texinfo -*-
-    ## @deftypefn {paretotails} {} disp (@var{pt})
-    ##
-    ## Display a summary of the @code{paretotails} object @var{pt}.
-    ##
-    ## @end deftypefn
-    function disp (this)
-      printf ("  Piecewise distribution with %d segments fit to %d ", ...
-              this.NumSegments, this.nobs);
-      printf ("observations:\n\n");
-      if (this.pl > 0)
-        printf ("    P = [0, %g]: lower tail, generalized Pareto ", this.pl);
-        printf ("(k = %g, sigma = %g)\n", this.lowerP(1), this.lowerP(2));
-      endif
-      printf ("    P = [%g, %g]: middle, %s\n", this.pl, this.pu, this.method);
-      if (this.pu < 1)
-        printf ("    P = [%g, 1]: upper tail, generalized Pareto ", this.pu);
-        printf ("(k = %g, sigma = %g)\n", this.upperP(1), this.upperP(2));
       endif
     endfunction
 

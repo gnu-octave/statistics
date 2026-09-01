@@ -143,6 +143,20 @@ classdef rocmetrics
     AddMetrics_ = {};
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display of the object summary.
+    function disp (obj)
+      printf ("  rocmetrics with properties:\n\n");
+      printf ("    ClassNames: %d class(es)\n", numel (obj.ClassData_));
+      printf ("           AUC: [%s]\n", ...
+              strtrim (sprintf ("%.4f ", obj.AUC)));
+      printf ("       Metrics: [%dx%d table]\n\n", size (obj.Metrics, 1), ...
+              size (obj.Metrics, 2));
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -396,21 +410,6 @@ classdef rocmetrics
       if (nargout > 0)
         varargout{1} = h;
       endif
-    endfunction
-
-    ## -*- texinfo -*-
-    ## @deftypefn {rocmetrics} {} disp (@var{obj})
-    ##
-    ## Display a summary of a @code{rocmetrics} object.
-    ##
-    ## @end deftypefn
-    function disp (obj)
-      printf ("  rocmetrics with properties:\n\n");
-      printf ("    ClassNames: %d class(es)\n", numel (obj.ClassData_));
-      printf ("           AUC: [%s]\n", ...
-              strtrim (sprintf ("%.4f ", obj.AUC)));
-      printf ("       Metrics: [%dx%d table]\n\n", size (obj.Metrics, 1), ...
-              size (obj.Metrics, 2));
     endfunction
 
   endmethods

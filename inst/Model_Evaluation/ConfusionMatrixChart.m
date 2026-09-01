@@ -291,6 +291,22 @@ classdef ConfusionMatrixChart < handle
     RowSummaryAbsoluteValues = [];
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display of the normalized values and the class labels.
+    function disp (this)
+      nv_sizes = size (this.NormalizedValues);
+      cl_sizes = size (this.ClassLabels);
+
+      printf ("%s with properties:\n\n", class (this));
+      printf ("\tNormalizedValues: [ %dx%d %s ]\n", nv_sizes(1), nv_sizes(2),...
+        class (this.NormalizedValues));
+      printf ("\tClassLabels: { %dx%d %s }\n\n", cl_sizes(1), cl_sizes(2),...
+        class (this.ClassLabels));
+    endfunction
+
+  endmethods
+
   methods(Access = public)
 
     ## -*- texinfo -*-
@@ -601,28 +617,6 @@ classdef ConfusionMatrixChart < handle
       endif
 
       set (this.hax, 'units', string);
-    endfunction
-
-    ## -*- texinfo -*-
-    ## @deftypefn  {ConfusionMatrixChart} {} disp (@var{cmc})
-    ##
-    ## Display the properties of the ConfusionMatrixChart object.
-    ##
-    ## @code{disp (@var{cmc})} displays the main properties of the
-    ## ConfusionMatrixChart object @var{cmc}, including the normalized values
-    ## and class labels.
-    ##
-    ## @seealso{ConfusionMatrixChart}
-    ## @end deftypefn
-    function disp (this)
-      nv_sizes = size (this.NormalizedValues);
-      cl_sizes = size (this.ClassLabels);
-
-      printf ("%s with properties:\n\n", class (this));
-      printf ("\tNormalizedValues: [ %dx%d %s ]\n", nv_sizes(1), nv_sizes(2),...
-        class (this.NormalizedValues));
-      printf ("\tClassLabels: { %dx%d %s }\n\n", cl_sizes(1), cl_sizes(2),...
-        class (this.ClassLabels));
     endfunction
 
     ## -*- texinfo -*-
