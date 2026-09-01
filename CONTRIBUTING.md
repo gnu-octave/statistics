@@ -381,23 +381,44 @@ These feed `lookfor` and let `pkg install` skip a slow regeneration step, so
 keep them current.  Do this whenever you:
 
 - add a new function or class, or
-- change the **top-level help docstring** of an existing function or class.
+- change the docstring of a function, of a class, or of one of a class's
+  methods or properties.
 
-Use the repo-root helper (build the oct-files first with `make -C src` so
-`src/doc-cache` is complete):
+Regeneration is done by the **`pkg-octave-doc`** package, version 0.8.0 or
+newer, which caches a class's documented members under their qualified names
+alongside the class itself.  Build the oct-files first with `make -C src`: a
+compiled function's help text lives inside its `.oct` file, and a missing or
+stale one stops the run and asks for a build.
 
 ```
-./regen-doc-cache.sh                 # rebuild every directory (slow, ~minutes)
-./regen-doc-cache.sh anova1          # update just this function/class entry (fast)
-./regen-doc-cache.sh inst/Distribution_Functions   # rebuild one directory's cache
+pkg load pkg-octave-doc
+
+# At the package root, for every cache below it:
+package_texi2cache ('-auto')      # only what git reports as changed (seconds)
+package_texi2cache ()             # the whole package (slow, ~minutes)
+package_texi2cache ('-check')     # writes nothing, reports what would change
+
+# Standing in one function directory, e.g. inst/Distribution_Functions:
+folder_texi2cache ('-auto')       # that directory's cache alone
+
+# Standing in the directory that holds the file, for a single name:
+function_texi2cache ('anova1')
+classdef_texi2cache ('prob.NormalDistribution')
 ```
 
-The single-name form is the fast path: it edits only that one entry in the
-existing cache, so a docstring tweak costs a second instead of several minutes.
+`-auto` is the fast path and takes the work from `git`: everything differing
+from `HEAD`, staged and unstaged, plus untracked files, so a function written
+but not yet committed still counts.  `-check` writes nothing and reports what
+would change, which is how a tree is tested for a stale cache; since every
+docstring is linted as it is parsed, it is also how the package is checked for
+broken texinfo without touching anything.
 
-Changes to a **method's or property's** docstring do **not** require a
-regeneration — those never enter the cache (and `help` reads them straight from
-the source file regardless).
+Naming a class caches the class and all of its documented members together, so
+a renamed or newly documented method needs the class named once and no more.
+
+**`INDEX` decides what is cached** at the package and directory scopes: only
+the names it lists are written, so add yours there first.  The two per-name
+functions cache whatever you name and only warn when it is unlisted.
 
 ---
 
