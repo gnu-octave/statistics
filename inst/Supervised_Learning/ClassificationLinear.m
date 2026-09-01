@@ -1701,6 +1701,21 @@ endclassdef
 %! assert_equal (isfinite (Mdl.FitInfo_.RelativeChangeInBeta), true);
 
 %!test
+%! ## A line search that cannot improve the objective says so, rather than
+%! ## reporting the iteration limit it never reached.  Code and wording
+%! ## measured on R2024a.  Where the search gives up varies by platform, so
+%! ## the count is only asserted to be short of the limit.
+%! load fisheriris
+%! Mdl = ClassificationLinear (meas(51:end,:), species(51:end), ...
+%!                             'Learner', 'logistic', 'Lambda', 1e-10, ...
+%!                             'BetaTolerance', 0, 'GradientTolerance', 0);
+%! assert_equal (Mdl.FitInfo_.TerminationCode, -11);
+%! assert_equal (Mdl.FitInfo_.TerminationStatus, ...
+%!               {'Unable to find a step decreasing the objective.'});
+%! S = Mdl.fitInfo_ ();
+%! assert_equal (S.NumIterations < S.IterationLimit, true);
+
+%!test
 %! ## A tolerance of exactly zero switches its test off and the quantity it
 %! ## governs comes back NaN, which is what MATLAB reports.  Not "never
 %! ## satisfied": not computed.

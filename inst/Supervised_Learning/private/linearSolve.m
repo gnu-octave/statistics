@@ -587,6 +587,13 @@ endfunction
 ## fitclinear says 'Tolerance on gradient satisfied.' for the same event.  A
 ## build that offers no token has nothing to map, and reports the iteration
 ## limit.
+##
+## Measured on R2024a fitclinear: the coefficient tolerance is code 1, the
+## gradient tolerance 2, the iteration limit 0, and a line search that cannot
+## improve the objective -11, worded 'Unable to find a step decreasing the
+## objective.'  'loss' and 'step' are unreachable from here: LossTolerance is
+## -Inf and StepTolerance 0, and a failed line search returns before the step
+## test is ever reached, so a step of exactly zero cannot arise.
 function [code, status] = terminationOf (info)
 
   token = '';
@@ -599,6 +606,8 @@ function [code, status] = terminationOf (info)
       code = 1;
     case {'gradient', 'step'}
       code = 2;
+    case 'linesearch'
+      code = -11;
     otherwise
       code = 0;
   endswitch
@@ -615,6 +624,8 @@ function [code, status] = terminationOfCode (code)
       status = {'Tolerance on gradient satisfied.'};
     case 4
       status = {'Tolerance on the complementarity gap satisfied.'};
+    case -11
+      status = {'Unable to find a step decreasing the objective.'};
     otherwise
       code = 0;
       status = {'Iteration limit exceeded.'};
