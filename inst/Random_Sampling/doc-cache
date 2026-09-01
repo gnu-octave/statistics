@@ -13,7 +13,7 @@ johnsrnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1566
+# length: 1798
  -- statistics: R = johnsrnd (QUANTILES)
  -- statistics: R = johnsrnd (QUANTILES, M)
  -- statistics: R = johnsrnd (QUANTILES, M, N, ...)
@@ -28,6 +28,10 @@ johnsrnd
      the standard normal quantiles ‘[-1.5, -0.5, 0.5, 1.5]’, and its elements
      must be strictly increasing.  ‘johnsrnd’ fits the Johnson curve passing
      through these four points using the quantile method of Slifker and Shapiro.
+
+     QUANTILES may also be a 2-by-4 numeric matrix, whose first row holds four
+     strictly increasing, evenly spaced standard normal quantiles and whose
+     second row holds the corresponding strictly increasing data quantiles.
 
      ‘johnsrnd (QUANTILES, M, N, ...)’ or ‘johnsrnd (QUANTILES, [M, N, ...])’
      returns an M-by-N-by-... array of random values, following the size
