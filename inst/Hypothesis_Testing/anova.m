@@ -241,8 +241,7 @@ classdef anova
     ## @deftypefn  {anova} {@var{obj} =} anova (@var{Y})
     ## @deftypefnx {anova} {@var{obj} =} anova (@var{factors}, @var{Y})
     ## @deftypefnx {anova} {@var{obj} =} anova (@var{tbl}, @var{Y})
-    ## @deftypefnx {anova} {@var{obj} =} anova (@var{tbl},
-    ## @var{responseVarName})
+    ## @deftypefnx {anova} {@var{obj} =} anova (@var{tbl}, @var{responseVarName})
     ## @deftypefnx {anova} {@var{obj} =} anova (@var{tbl}, @var{formula})
     ## @deftypefnx {anova} {@var{obj} =} anova (@dots{}, @var{name}, @var{value})
     ##

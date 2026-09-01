@@ -86,14 +86,14 @@ classdef GeneralizedLinearModel
     ## @item @code{SE} - standard error of the estimate
     ## @item @code{tStat} - the estimate divided by its standard error
     ## @item @code{pValue} - p-value of that statistic
-    ## @end itemize The statistic is referred to the normal distribution where
-    ## the dispersion is fixed, as it is for the binomial and Poisson families,
-    ## and to a
+    ## @end itemize
+    ##
+    ## The statistic is referred to the normal distribution where the dispersion
+    ## is fixed, as it is for the binomial and Poisson families, and to a
     ## @math{t}-distribution on @code{DFE} degrees of freedom where it is
-    ## estimated. Coefficients dropped as rank deficient have @code{Estimate =
-    ## 0},
-    ## @code{SE = 0}, and @code{NaN} for both statistics.  Row names are the
-    ## coefficient names.
+    ## estimated.  Coefficients dropped as rank deficient have
+    ## @code{Estimate = 0}, @code{SE = 0}, and @code{NaN} for both statistics.
+    ## Row names are the coefficient names.
     ##
     ## This property is read-only.
     ##
@@ -311,7 +311,9 @@ classdef GeneralizedLinearModel
     ##   normal as the family allows
     ## @item @code{Deviance} - the signed square root of each observation's
     ##   contribution to @code{Deviance}
-    ## @end itemize Rows not used in the fit contain @code{NaN}.
+    ## @end itemize
+    ##
+    ## Rows not used in the fit contain @code{NaN}.
     ##
     ## This property is read-only.
     ##

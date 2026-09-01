@@ -305,8 +305,8 @@ classdef GapEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClusterCriterion} {} plot (@var{obj})
-    ## @deftypefnx {ClusterCriterion} {@var{h} =} plot (@var{obj})
+    ## @deftypefn  {GapEvaluation} {} plot (@var{obj})
+    ## @deftypefnx {GapEvaluation} {@var{h} =} plot (@var{obj})
     ##
     ## Plot Gap evaluation results
     ##

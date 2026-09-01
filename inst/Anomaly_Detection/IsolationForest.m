@@ -69,6 +69,20 @@ classdef IsolationForest
     tf_      = [];    # anomaly flags of the training observations
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function disp (obj)
+      printf ("  IsolationForest model\n");
+      printf ("    NumLearners:               %d\n", obj.NumLearners);
+      printf ("    NumObservationsPerLearner: %d\n", ...
+              obj.NumObservationsPerLearner);
+      printf ("    ContaminationFraction:     %g\n", obj.ContaminationFraction);
+      printf ("    ScoreThreshold:            %g\n", obj.ScoreThreshold);
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -196,15 +210,6 @@ classdef IsolationForest
                                           obj.NumObservationsPerLearner);
       tf = scores > thr;
 
-    endfunction
-
-    function disp (obj)
-      printf ("  IsolationForest model\n");
-      printf ("    NumLearners:               %d\n", obj.NumLearners);
-      printf ("    NumObservationsPerLearner: %d\n", ...
-              obj.NumObservationsPerLearner);
-      printf ("    ContaminationFraction:     %g\n", obj.ContaminationFraction);
-      printf ("    ScoreThreshold:            %g\n", obj.ScoreThreshold);
     endfunction
 
   endmethods

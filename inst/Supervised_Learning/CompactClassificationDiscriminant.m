@@ -236,7 +236,7 @@ classdef CompactClassificationDiscriminant
     Coeffs          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {%s} {property} DeltaPredictor
+    ## @deftp {CompactClassificationDiscriminant} {property} DeltaPredictor
     ##
     ## Minimum Delta at which each predictor drops out
     ##

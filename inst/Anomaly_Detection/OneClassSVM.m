@@ -89,6 +89,20 @@ classdef OneClassSVM
     tf_     = [];    # anomaly flags of the training observations
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function disp (obj)
+      printf ("  OneClassSVM model\n");
+      printf ("    KernelScale:            %g\n", obj.KernelScale);
+      printf ("    Lambda:                 %g\n", obj.Lambda);
+      printf ("    NumExpansionDimensions: %d\n", obj.NumExpansionDimensions);
+      printf ("    ContaminationFraction:  %g\n", obj.ContaminationFraction);
+      printf ("    ScoreThreshold:         %g\n", obj.ScoreThreshold);
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -252,15 +266,6 @@ classdef OneClassSVM
       scores = - (Phi * obj.beta_);
       tf = scores > thr;
 
-    endfunction
-
-    function disp (obj)
-      printf ("  OneClassSVM model\n");
-      printf ("    KernelScale:            %g\n", obj.KernelScale);
-      printf ("    Lambda:                 %g\n", obj.Lambda);
-      printf ("    NumExpansionDimensions: %d\n", obj.NumExpansionDimensions);
-      printf ("    ContaminationFraction:  %g\n", obj.ContaminationFraction);
-      printf ("    ScoreThreshold:         %g\n", obj.ScoreThreshold);
     endfunction
 
   endmethods

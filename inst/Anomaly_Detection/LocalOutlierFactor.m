@@ -73,6 +73,19 @@ classdef LocalOutlierFactor
     tf_            = [];    # anomaly flags of the training observations
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function disp (obj)
+      printf ("  LocalOutlierFactor model\n");
+      printf ("    NumNeighbors:          %d\n", obj.NumNeighbors);
+      printf ("    Distance:              %s\n", obj.Distance);
+      printf ("    ContaminationFraction: %g\n", obj.ContaminationFraction);
+      printf ("    ScoreThreshold:        %g\n", obj.ScoreThreshold);
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -219,14 +232,6 @@ classdef LocalOutlierFactor
                                              obj.kdist_, obj.lrd_);
       tf = scores > thr;
 
-    endfunction
-
-    function disp (obj)
-      printf ("  LocalOutlierFactor model\n");
-      printf ("    NumNeighbors:          %d\n", obj.NumNeighbors);
-      printf ("    Distance:              %s\n", obj.Distance);
-      printf ("    ContaminationFraction: %g\n", obj.ContaminationFraction);
-      printf ("    ScoreThreshold:        %g\n", obj.ScoreThreshold);
     endfunction
 
   endmethods

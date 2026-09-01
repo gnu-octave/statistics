@@ -372,10 +372,10 @@ classdef ClassificationKNN
     ## function, which can be any of the following values:
     ##
     ## @itemize
-    ## @item @qcode{'equal'}, which corresponds to @code{@(d) d}.
-    ## @item @qcode{'inverse'}, which corresponds to @code{@(d) 1/d}.
-    ## @item @qcode{'squaredinverse'}, which corresponds to @code{@(d) 1/d.^2}.
-    ## @item @qcode{@fcn}, which is a function handle that accepts a matrix of
+    ## @item @qcode{'equal'}, which corresponds to @code{@@(d) d}.
+    ## @item @qcode{'inverse'}, which corresponds to @code{@@(d) 1/d}.
+    ## @item @qcode{'squaredinverse'}, which corresponds to @code{@@(d) 1/d.^2}.
+    ## @item @qcode{@@fcn}, which is a function handle that accepts a matrix of
     ## nonnegative distances, and returns a matrix the same size containing
     ## nonnegative distance weights.
     ## @end itemize

@@ -296,7 +296,7 @@ classdef ClassificationDiscriminant
     Coeffs          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {%s} {property} DeltaPredictor
+    ## @deftp {ClassificationDiscriminant} {property} DeltaPredictor
     ##
     ## Minimum Delta at which each predictor drops out
     ##
