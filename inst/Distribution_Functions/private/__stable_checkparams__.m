@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{msg} =} __stable_checkparams__ (@var{alpha}, @var{beta}, @var{gam}, @var{delta})
+## @deftypefn {Private Function} {@var{msg} =} __stable_checkparams__ (@var{alpha}, @var{beta}, @var{gam}, @var{delta})
 ##
 ## Validate the parameters of a stable distribution.
 ##

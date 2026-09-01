@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {private} {@var{M} =} __glmefit__ (@var{X}, @var{y}, @var{Z}, @var{G}, @var{distr}, @var{link}, @var{method})
+## @deftypefn {Private Function} {@var{M} =} __glmefit__ (@var{X}, @var{y}, @var{Z}, @var{G}, @var{distr}, @var{link}, @var{method})
 ##
 ## Estimation core for generalized linear mixed-effects models.  Undocumented
 ## internal function for @code{fitglme}/@code{GeneralizedLinearMixedModel}.

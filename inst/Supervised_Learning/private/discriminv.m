@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{SigmaInv} =} discriminv (@var{Sigma}, @var{DiscrimType})
+## @deftypefn {Private Function} {@var{SigmaInv} =} discriminv (@var{Sigma}, @var{DiscrimType})
 ##
 ## Inverse within-class covariance of a discriminant, one @math{PxP} slice per
 ## class, whatever shape @var{Sigma} is stored in.

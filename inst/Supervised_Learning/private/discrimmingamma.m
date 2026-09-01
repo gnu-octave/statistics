@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{g} =} discrimmingamma (@var{S})
+## @deftypefn {Private Function} {@var{g} =} discrimmingamma (@var{S})
 ##
 ## Least regularization that leaves a covariance invertible.
 ##

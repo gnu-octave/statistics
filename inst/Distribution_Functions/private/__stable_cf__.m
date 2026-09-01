@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{phi} =} __stable_cf__ (@var{t}, @var{alpha}, @var{beta})
+## @deftypefn {Private Function} {@var{phi} =} __stable_cf__ (@var{t}, @var{alpha}, @var{beta})
 ##
 ## Characteristic function of the standard stable distribution.
 ##

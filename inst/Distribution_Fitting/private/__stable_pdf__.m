@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} __stable_pdf__ (@var{x}, @var{alpha}, @var{beta}, @var{gam}, @var{delta})
+## @deftypefn {Private Function} {@var{y} =} __stable_pdf__ (@var{x}, @var{alpha}, @var{beta}, @var{gam}, @var{delta})
 ##
 ## Fast stable probability density for the fitting functions.
 ##

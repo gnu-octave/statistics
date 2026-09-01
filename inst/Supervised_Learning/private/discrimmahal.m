@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{M} =} discrimmahal (@var{X}, @var{Mu}, @var{Sigma}, @var{DiscrimType})
+## @deftypefn {Private Function} {@var{M} =} discrimmahal (@var{X}, @var{Mu}, @var{Sigma}, @var{DiscrimType})
 ##
 ## Squared Mahalanobis distance from every row of @var{X} to every class mean
 ## of a discriminant, returned as an @math{NxK} matrix.

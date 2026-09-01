@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{s} =} svmKernelParams (@var{fcn}, @var{scale}, @var{order})
+## @deftypefn {Private Function} {@var{s} =} svmKernelParams (@var{fcn}, @var{scale}, @var{order})
 ##
 ## Build the @qcode{KernelParameters} structure of an SVM model.
 ##

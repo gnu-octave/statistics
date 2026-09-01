@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{Ypm} =} svmPlusMinus (@var{Y}, @var{ClassNames})
+## @deftypefn {Private Function} {@var{Ypm} =} svmPlusMinus (@var{Y}, @var{ClassNames})
 ##
 ## Response of a two-class support vector machine in @math{+1/-1} coding.
 ##

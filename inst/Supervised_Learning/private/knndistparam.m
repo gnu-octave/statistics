@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{p} =} knndistparam (@var{Distance}, @var{X}, @var{standardized})
+## @deftypefn {Private Function} {@var{p} =} knndistparam (@var{Distance}, @var{X}, @var{standardized})
 ##
 ## Distance parameter a nearest-neighbour metric implies.
 ##

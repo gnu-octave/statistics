@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{Coeffs} =} discrimcoeffs (@var{Mu}, @var{Sigma}, @var{LogDetSigma}, @var{Prior}, @var{DiscrimType}, @var{Delta}, @var{ClassNames})
+## @deftypefn {Private Function} {@var{Coeffs} =} discrimcoeffs (@var{Mu}, @var{Sigma}, @var{LogDetSigma}, @var{Prior}, @var{DiscrimType}, @var{Delta}, @var{ClassNames})
 ##
 ## Pairwise boundary coefficients of a discriminant, a @math{KxK} structure
 ## whose @math{(i,j)} entry separates class @math{i} from class @math{j}.

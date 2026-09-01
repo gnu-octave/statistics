@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{J} =} nlfun_jacobian (@var{modelfun}, @var{beta}, @var{X}, @var{derivstep})
+## @deftypefn {Private Function} {@var{J} =} nlfun_jacobian (@var{modelfun}, @var{beta}, @var{X}, @var{derivstep})
 ##
 ## Numeric Jacobian of @var{modelfun} with respect to @var{beta} by forward
 ## differences, evaluated at @var{X}.  Internal helper shared by @code{nlinfit}

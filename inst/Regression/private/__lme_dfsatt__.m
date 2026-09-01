@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {private} {@var{df} =} __lme_dfsatt__ (@var{X}, @var{y}, @var{Zx}, @var{qk}, @var{nlev}, @var{Psi}, @var{sigma2}, @var{method}, @var{L})
+## @deftypefn {Private Function} {@var{df} =} __lme_dfsatt__ (@var{X}, @var{y}, @var{Zx}, @var{qk}, @var{nlev}, @var{Psi}, @var{sigma2}, @var{method}, @var{L})
 ##
 ## Satterthwaite denominator degrees of freedom for the single-row contrasts in
 ## the rows of @var{L}.  Undocumented internal helper for

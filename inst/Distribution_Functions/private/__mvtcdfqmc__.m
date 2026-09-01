@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} __mvtcdfqmc__ (@var{fname}, @var{A}, @var{B}, @var{Rho}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun})
-## @deftypefnx {statistics} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun}, @var{MaxFunEvals})
-## @deftypefnx {statistics} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
-## @deftypefnx {statistics} {[@var{p}, @var{err}] =} __mvtcdfqmc__ (@dots{})
-## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} __mvtcdfqmc__ (@dots{})
+## @deftypefn  {Private Function} {@var{p} =} __mvtcdfqmc__ (@var{fname}, @var{A}, @var{B}, @var{Rho}, @var{df})
+## @deftypefnx {Private Function} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun})
+## @deftypefnx {Private Function} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun}, @var{MaxFunEvals})
+## @deftypefnx {Private Function} {@var{p} =} __mvtcdfqmc__ (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
+## @deftypefnx {Private Function} {[@var{p}, @var{err}] =} __mvtcdfqmc__ (@dots{})
+## @deftypefnx {Private Function} {[@var{p}, @var{err}, @var{FunEvals}] =} __mvtcdfqmc__ (@dots{})
 ##
 ## Quasi-Monte-Carlo computation of the multivariate Student's T CDF.
 ##

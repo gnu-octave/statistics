@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {[@var{Sigma}, @var{LogDetSigma}, @var{Gamma}] =} discrimderive (@var{Base}, @var{DiscrimType}, @var{Gamma}, @var{MinGamma})
+## @deftypefn {Private Function} {[@var{Sigma}, @var{LogDetSigma}, @var{Gamma}] =} discrimderive (@var{Base}, @var{DiscrimType}, @var{Gamma}, @var{MinGamma})
 ##
 ## Derive a discriminant's covariance from the covariance its fit estimated.
 ##

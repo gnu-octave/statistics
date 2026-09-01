@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {[@var{f}, @var{dw}] =} parseDistanceWeight (@var{DistanceWeight}, @var{classname})
+## @deftypefn {Private Function} {[@var{f}, @var{dw}] =} parseDistanceWeight (@var{DistanceWeight}, @var{classname})
 ##
 ## Parse a nearest-neighbour distance weight.
 ##

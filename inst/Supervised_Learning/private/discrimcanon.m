@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{t} =} discrimcanon (@var{str})
-## @deftypefnx {statistics} {[@var{t}, @var{fam}] =} discrimcanon (@var{str})
+## @deftypefn  {Private Function} {@var{t} =} discrimcanon (@var{str})
+## @deftypefnx {Private Function} {[@var{t}, @var{fam}] =} discrimcanon (@var{str})
 ##
 ## Canonical spelling and family of a discriminant type.
 ##

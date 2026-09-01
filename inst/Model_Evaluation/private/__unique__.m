@@ -24,14 +24,14 @@
 ########################################################################
 
 ## -*- texinfo -*-
-## @deftypefn  {} {@var{y} =} unique (@var{x})
-## @deftypefnx {} {@var{y} =} unique (@var{x}, "rows")
-## @deftypefnx {} {@var{y} =} unique (@dots{}, "sorted")
-## @deftypefnx {} {@var{y} =} unique (@dots{}, "stable")
-## @deftypefnx {} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{})
-## @deftypefnx {} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{}, "first")
-## @deftypefnx {} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{}, "last")
-## @deftypefnx {} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{}, "legacy")
+## @deftypefn  {Private Function} {@var{y} =} unique (@var{x})
+## @deftypefnx {Private Function} {@var{y} =} unique (@var{x}, "rows")
+## @deftypefnx {Private Function} {@var{y} =} unique (@dots{}, "sorted")
+## @deftypefnx {Private Function} {@var{y} =} unique (@dots{}, "stable")
+## @deftypefnx {Private Function} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{})
+## @deftypefnx {Private Function} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{}, "first")
+## @deftypefnx {Private Function} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{}, "last")
+## @deftypefnx {Private Function} {[@var{y}, @var{i}, @var{j}] =} unique (@dots{}, "legacy")
 ## Return the unique elements of @var{x}.
 ##
 ## If the input @var{x} is a column vector then return a column vector;

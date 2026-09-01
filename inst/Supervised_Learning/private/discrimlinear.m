@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {[@var{Z}, @var{b}, @var{DeltaPredictor}] =} discrimlinear (@var{Mu}, @var{Sigma}, @var{Prior}, @var{DiscrimType}, @var{Delta})
+## @deftypefn {Private Function} {[@var{Z}, @var{b}, @var{DeltaPredictor}] =} discrimlinear (@var{Mu}, @var{Sigma}, @var{Prior}, @var{DiscrimType}, @var{Delta})
 ##
 ## Per-class linear coefficients of a discriminant, after @var{Delta}.
 ##

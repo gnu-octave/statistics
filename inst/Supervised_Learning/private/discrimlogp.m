@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{lp} =} discrimlogp (@var{X}, @var{Mu}, @var{Sigma}, @var{LogDetSigma}, @var{Prior}, @var{DiscrimType})
+## @deftypefn {Private Function} {@var{lp} =} discrimlogp (@var{X}, @var{Mu}, @var{Sigma}, @var{LogDetSigma}, @var{Prior}, @var{DiscrimType})
 ##
 ## Log unconditional probability density of every row of @var{X} under a
 ## discriminant, returned as an @math{Nx1} vector.

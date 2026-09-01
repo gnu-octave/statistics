@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{indices}, @var{distances}] =} __search_kdtree__ (@var{node}, @var{query}, @var{k}, @var{X}, @var{dist}, @var{distparam}, @var{is_range})
-## @deftypefnx {statistics} {[@var{indices}, @var{distances}] =} __search_kdtree__ (@dots{}, @var{r})
+## @deftypefn  {Private Function} {[@var{indices}, @var{distances}] =} __search_kdtree__ (@var{node}, @var{query}, @var{k}, @var{X}, @var{dist}, @var{distparam}, @var{is_range})
+## @deftypefnx {Private Function} {[@var{indices}, @var{distances}] =} __search_kdtree__ (@dots{}, @var{r})
 ##
 ## Search a Kd-tree built by @code{__build_kdtree__} for one query point.
 ## Shared by @code{knnsearch}, @code{rangesearch} and @code{KDTreeSearcher}.

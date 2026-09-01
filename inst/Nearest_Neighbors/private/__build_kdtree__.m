@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{node} =} __build_kdtree__ (@var{indices}, @var{depth}, @var{X}, @var{bucket_size})
+## @deftypefn {Private Function} {@var{node} =} __build_kdtree__ (@var{indices}, @var{depth}, @var{X}, @var{bucket_size})
 ##
 ## Build a Kd-tree over the rows of @var{X} named by @var{indices}.  Shared by
 ## @code{knnsearch}, @code{rangesearch} and @code{KDTreeSearcher}.

@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{k} =} kernelpdf (@var{z}, @var{kernel})
+## @deftypefn {Private Function} {@var{k} =} kernelpdf (@var{z}, @var{kernel})
 ##
 ## Unit-variance smoothing kernel density @math{K(z)} evaluated at the
 ## standardized distances @var{z}.  For a named compact kernel @math{K(z) =

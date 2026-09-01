@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{W} =} edgeWeights (@var{args}, @var{Y}, @var{ClassNames}, @var{Prior}, @var{classname}, @var{caller})
+## @deftypefn {Private Function} {@var{W} =} edgeWeights (@var{args}, @var{Y}, @var{ClassNames}, @var{Prior}, @var{classname}, @var{caller})
 ##
 ## Normalized observation weights of an @code{edge} call.
 ##

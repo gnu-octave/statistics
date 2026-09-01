@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {private} {@var{M} =} __lmefit__ (@var{X}, @var{y}, @var{Z}, @var{G}, @var{method})
+## @deftypefn {Private Function} {@var{M} =} __lmefit__ (@var{X}, @var{y}, @var{Z}, @var{G}, @var{method})
 ##
 ## Estimation core for linear mixed-effects models.  Undocumented internal
 ## function for @code{fitlmematrix}/@code{fitlme}/@code{LinearMixedModel}.

@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{c} =} kernelcdf (@var{z}, @var{kernel})
+## @deftypefn {Private Function} {@var{c} =} kernelcdf (@var{z}, @var{kernel})
 ##
 ## Cumulative distribution function of the unit-variance smoothing kernel,
 ## evaluated at the standardized distances @var{z}.  For a named kernel this is

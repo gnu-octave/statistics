@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{s} =} kernelscale (@var{kernel})
+## @deftypefn {Private Function} {@var{s} =} kernelscale (@var{kernel})
 ##
 ## Standardized-distance scale of a named smoothing kernel, i.e. the standard
 ## deviation of its canonical form.  The compact kernels are rescaled by this
