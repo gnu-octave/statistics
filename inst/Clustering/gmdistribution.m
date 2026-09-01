@@ -123,8 +123,19 @@ classdef gmdistribution
         endif
       endfunction
 
-      ########################################
-      ## Cumulative distribution function for Gaussian mixture distribution
+      ## -*- texinfo -*-
+      ## @deftypefn {gmdistribution} {@var{c} =} cdf (@var{obj}, @var{X})
+      ##
+      ## Cumulative distribution function of a Gaussian mixture distribution.
+      ##
+      ## @var{X} is an n-by-d matrix of points at which the distribution is
+      ## evaluated, one point per row, where d is the number of variables of
+      ## @var{obj}.  @var{c} is an n-by-1 vector holding the value of the
+      ## cumulative distribution function at each of them, the components'
+      ## cumulative distributions summed with the mixing proportions in
+      ## @code{ComponentProportion} as weights.
+      ##
+      ## @end deftypefn
       function c = cdf (obj, X)
         X = checkX (obj, X, 'cdf');
         p_x_l = zeros (rows (X), obj.NumComponents);
@@ -148,8 +159,28 @@ classdef gmdistribution
         c = sum (p_x_l, 2);
       endfunction
 
-      ########################################
-      ## Construct clusters from Gaussian mixture distribution
+      ## -*- texinfo -*-
+      ## @deftypefn  {gmdistribution} {@var{idx} =} cluster (@var{obj}, @var{X})
+      ## @deftypefnx {gmdistribution} {[@var{idx}, @var{nlogl}] =} cluster (@var{obj}, @var{X})
+      ## @deftypefnx {gmdistribution} {[@var{idx}, @var{nlogl}, @var{P}] =} cluster (@var{obj}, @var{X})
+      ## @deftypefnx {gmdistribution} {[@var{idx}, @var{nlogl}, @var{P}, @var{logpdf}] =} cluster (@var{obj}, @var{X})
+      ## @deftypefnx {gmdistribution} {[@var{idx}, @var{nlogl}, @var{P}, @var{logpdf}, @var{M}] =} cluster (@var{obj}, @var{X})
+      ##
+      ## Assign each observation to a mixture component.
+      ##
+      ## @var{X} is an n-by-d matrix of observations, one per row, where d is
+      ## the number of variables of @var{obj}.  Each is assigned to the
+      ## component under which it is most probable.
+      ##
+      ## @var{idx} is an n-by-1 vector of component indices.  @var{nlogl} is
+      ## the negative log-likelihood of @var{X} under the mixture.  @var{P} is
+      ## an n-by-k matrix of posterior probabilities, one column per component,
+      ## whose rows sum to one.  @var{logpdf} is an n-by-1 vector holding the
+      ## logarithm of the mixture density at each observation.  @var{M} is an
+      ## n-by-k matrix of squared Mahalanobis distances from each observation
+      ## to each component mean.
+      ##
+      ## @end deftypefn
       function [idx, nlogl, P, logpdf, M] = cluster (obj,X)
         X = checkX (obj, X, 'cluster');
         [p_x_l, M] = componentProb (obj, X);
@@ -164,8 +195,107 @@ classdef gmdistribution
         endif
       endfunction
 
-      ########################################
-      ## Display Gaussian mixture distribution object
+
+      ## -*- texinfo -*-
+      ## @deftypefn {gmdistribution} {@var{D} =} mahal (@var{obj}, @var{X})
+      ##
+      ## Squared Mahalanobis distance to each mixture component.
+      ##
+      ## @var{X} is an n-by-d matrix of observations, one per row, where d is
+      ## the number of variables of @var{obj}.  @var{D} is an n-by-k matrix
+      ## holding the squared Mahalanobis distance from each observation to the
+      ## mean of each of the k components, measured in the covariance of the
+      ## component it is taken to.
+      ##
+      ## @end deftypefn
+      function D = mahal (obj,X)
+        X = checkX (obj, X, 'mahal');
+        [~, D] = componentProb (obj,X);
+      endfunction
+
+      ## -*- texinfo -*-
+      ## @deftypefn {gmdistribution} {@var{c} =} pdf (@var{obj}, @var{X})
+      ##
+      ## Probability density function of a Gaussian mixture distribution.
+      ##
+      ## @var{X} is an n-by-d matrix of points at which the density is
+      ## evaluated, one point per row, where d is the number of variables of
+      ## @var{obj}.  @var{c} is an n-by-1 vector holding the density at each of
+      ## them, the components' densities summed with the mixing proportions in
+      ## @code{ComponentProportion} as weights.
+      ##
+      ## @end deftypefn
+      function c = pdf (obj,X)
+        X = checkX (obj, X, 'pdf');
+        p_x_l = componentProb (obj, X);
+        c = sum (p_x_l, 2);
+      endfunction
+
+      ## -*- texinfo -*-
+      ## @deftypefn {gmdistribution} {@var{c} =} posterior (@var{obj}, @var{X})
+      ##
+      ## Posterior probability of each mixture component.
+      ##
+      ## @var{X} is an n-by-d matrix of observations, one per row, where d is
+      ## the number of variables of @var{obj}.  @var{c} is an n-by-k matrix
+      ## whose (i,j) element is the probability that observation i was drawn
+      ## from component j, so its rows sum to one.
+      ##
+      ## @end deftypefn
+      function c = posterior (obj,X)
+        X = checkX (obj, X, 'posterior');
+        p_x_l = componentProb (obj, X);
+        c = bsxfun (@rdivide, p_x_l, sum (p_x_l, 2));
+      endfunction
+
+      ## -*- texinfo -*-
+      ## @deftypefn  {gmdistribution} {@var{c} =} random (@var{obj})
+      ## @deftypefnx {gmdistribution} {@var{c} =} random (@var{obj}, @var{n})
+      ##
+      ## Random numbers from a Gaussian mixture distribution.
+      ##
+      ## @var{n} is the number of observations to draw and defaults to 1.
+      ## @var{c} is an @var{n}-by-d matrix holding one observation per row,
+      ## where d is the number of variables of @var{obj}.  Each row is drawn
+      ## from a component chosen with probability @code{ComponentProportion}.
+      ##
+      ## @end deftypefn
+      function c = random (obj,n)
+        if nargin == 1
+          n = 1;
+        endif
+        c = zeros (n, obj.NumVariables);
+        classes = randsample (obj.NumComponents, n, true, ...
+                              obj.ComponentProportion);
+        if (obj.SharedCovariance)
+          if (obj.DiagonalCovariance)
+            sig = diag (obj.Sigma);
+          else
+            sig = obj.Sigma;
+          endif
+        endif
+        for i = 1:obj.NumComponents
+          idx = (classes == i);
+          k = sum (idx);
+          if (k > 0)
+            if (! obj.SharedCovariance)
+              if (obj.DiagonalCovariance)
+                sig = diag (obj.Sigma(:,:,i));
+              else
+                sig = obj.Sigma(:,:,i);
+              endif
+            endif
+            # [sig] forces [sig] not to have class "diagonal",
+            # since mvnrnd uses automatic broadcast,
+            # which fails on structured matrices
+            c(idx,:) = mvnrnd ([obj.mu(i,:)], [sig], k);
+          endif
+        endfor
+      endfunction
+    endmethods
+
+    ########################################
+    methods (Hidden)
       function c = disp (obj)
         msg = ['Gaussian mixture distribution with %d ', ...
                "components in %d dimension(s)\n"];
@@ -206,74 +336,26 @@ classdef gmdistribution
         endif
       endfunction
 
-      ########################################
-      ## Display Gaussian mixture distribution object
       function c = display (obj)
         disp (obj);
-      endfunction
-
-      ########################################
-      ## Mahalanobis distance to component means
-      function D = mahal (obj,X)
-        X = checkX (obj, X, 'mahal');
-        [~, D] = componentProb (obj,X);
-      endfunction
-
-      ########################################
-      ## Probability density function for Gaussian mixture distribution
-      function c = pdf (obj,X)
-        X = checkX (obj, X, 'pdf');
-        p_x_l = componentProb (obj, X);
-        c = sum (p_x_l, 2);
-      endfunction
-
-      ########################################
-      ## Posterior probabilities of components
-      function c = posterior (obj,X)
-        X = checkX (obj, X, 'posterior');
-        p_x_l = componentProb (obj, X);
-        c = bsxfun (@rdivide, p_x_l, sum (p_x_l, 2));
-      endfunction
-
-      ########################################
-      ## Random numbers from Gaussian mixture distribution
-      function c = random (obj,n)
-        if nargin == 1
-          n = 1;
-        endif
-        c = zeros (n, obj.NumVariables);
-        classes = randsample (obj.NumComponents, n, true, ...
-                              obj.ComponentProportion);
-        if (obj.SharedCovariance)
-          if (obj.DiagonalCovariance)
-            sig = diag (obj.Sigma);
-          else
-            sig = obj.Sigma;
-          endif
-        endif
-        for i = 1:obj.NumComponents
-          idx = (classes == i);
-          k = sum (idx);
-          if (k > 0)
-            if (! obj.SharedCovariance)
-              if (obj.DiagonalCovariance)
-                sig = diag (obj.Sigma(:,:,i));
-              else
-                sig = obj.Sigma(:,:,i);
-              endif
-            endif
-            # [sig] forces [sig] not to have class "diagonal",
-            # since mvnrnd uses automatic broadcast,
-            # which fails on structured matrices
-            c(idx,:) = mvnrnd ([obj.mu(i,:)], [sig], k);
-          endif
-        endfor
       endfunction
     endmethods
 
     ########################################
     methods(Static)
-      ## Gaussian mixture parameter estimates
+      ## -*- texinfo -*-
+      ## @deftypefn  {gmdistribution} {@var{obj} =} fit (@var{X}, @var{k})
+      ## @deftypefnx {gmdistribution} {@var{obj} =} fit (@var{X}, @var{k}, @var{Name}, @var{Value})
+      ##
+      ## Fit a Gaussian mixture distribution to data.
+      ##
+      ## @var{X} is an n-by-d matrix of observations, one per row, and @var{k}
+      ## is the number of components to fit.  Any @var{Name}-@var{Value} pair
+      ## accepted by @code{fitgmdist} may follow, which is the function this
+      ## method calls and where the options are documented.  @var{obj} is the
+      ## fitted @code{gmdistribution} object.
+      ##
+      ## @end deftypefn
       function c = fit (X, k, varargin)
         c = fitgmdist (X, k, varargin{:});
       endfunction

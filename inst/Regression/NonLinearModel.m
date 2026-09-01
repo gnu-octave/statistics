@@ -144,10 +144,6 @@ classdef NonLinearModel
       endif
     endfunction
 
-  endmethods
-
-  methods (Access = public)
-
     ## Class specific subscripted reference.
     function varargout = subsref (this, s)
       chain_s = s(2:end);
@@ -180,6 +176,10 @@ classdef NonLinearModel
       endif
       varargout{1} = out;
     endfunction
+
+  endmethods
+
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn {NonLinearModel} {@var{mdl} =} NonLinearModel (@var{data}, @var{resp}, @var{modelfun}, @var{beta0})
