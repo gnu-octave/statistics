@@ -1,6 +1,7 @@
 %!demo
 %! ## Generate random samples from a t Location-Scale distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! samples = tlsrnd (0, 1, 5, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from t Location-Scale(mu=0, sigma=1, nu=5)")

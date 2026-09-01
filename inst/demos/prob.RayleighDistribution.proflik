@@ -1,7 +1,7 @@
 %!demo
 %! ## Compute and plot the profile likelihood for the scale parameter of a fitted
 %! ## Rayleigh distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! data = raylrnd (1, 1000, 1);
 %! pd_fitted = fitdist (data, "Rayleigh");
 %! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");

@@ -792,8 +792,11 @@ endfunction
 %! ## parameters mu = 0 and sigma = 1.  Fit a Lognormal distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ('Lognormal', 'mu', 0, 'sigma', 1)
-%! randn ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! pd_fitted = fitdist (data, 'Lognormal')
 %! plot (pd_fitted)

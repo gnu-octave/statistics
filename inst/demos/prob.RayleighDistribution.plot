@@ -1,6 +1,7 @@
 %!demo
 %! ## Create a Rayleigh distribution with fixed parameter sigma = 1 and plot its PDF.
 %!
+%! rng (42);
 %! data = raylrnd (1, 10000, 1);
 %! pd = fitdist (data, "Rayleigh");
 %! plot (pd)
@@ -12,7 +13,7 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data = raylrnd (1, 100, 1);
 %! pd_fitted = fitdist (data, "Rayleigh");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -28,7 +29,7 @@
 %! ## distribution with parameter sigma = 1. Display a probability
 %! ## plot for the Rayleigh distribution fit to the data.
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data = raylrnd (1, 200, 1);
 %! pd_fitted = fitdist (data, "Rayleigh");
 %! plot (pd_fitted, "PlotType", "probability")

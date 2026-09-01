@@ -1,5 +1,6 @@
 %!demo
 %! ## Create a Normal distribution with default parameters
+%! rng (42);
 %! data = randn (10000, 1);
 %! pd = fitdist (data, "Normal");
 %!

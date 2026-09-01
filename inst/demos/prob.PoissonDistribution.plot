@@ -1,5 +1,7 @@
 %!demo
 %! ## Create a Poisson distribution with fixed parameter lambda=5 and plot its PDF.
+%! rng (42);
+%! randp ('state', 42);
 %! data = poissrnd (5, 10000, 1);
 %! pd = fitdist (data, "Poisson");
 %! plot (pd)
@@ -9,7 +11,8 @@
 %! ## Generate a data set of 100 random samples from a Poisson distribution with
 %! ## lambda=5. Fit a Poisson distribution to this data and plot its CDF superimposed
 %! ## over an empirical CDF.
-%! rand ("seed", 21);
+%! rng (42);
+%! randp ('state', 42);
 %! data = poissrnd (5, 100, 1);
 %! pd_fitted = fitdist (data, "Poisson");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -23,7 +26,8 @@
 %!demo
 %! ## Generate a data set of 200 random samples from a Poisson distribution with
 %! ## lambda=5. Display a probability plot for the Poisson distribution fit to the data.
-%! rand ("seed", 21);
+%! rng (42);
+%! randp ('state', 42);
 %! data = poissrnd (5, 200, 1);
 %! pd_fitted = fitdist (data, "Poisson");
 %! plot (pd_fitted, "PlotType", "probability")

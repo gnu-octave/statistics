@@ -1,6 +1,7 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted t Location-Scale distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data = tlsrnd (0, 1, 5, 100, 1);
 %! pd_fitted = fitdist (data, "tLocationScale");
 %! params = [pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu];

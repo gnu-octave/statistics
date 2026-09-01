@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various PDFs from the Nakagami distribution
+%! randg ('state', 42);
 %! x = -1:0.01:5;
 %! data1 = nakarnd (0.6, 1, 10000, 1);
 %! data2 = nakarnd (1, 1, 10000, 1);

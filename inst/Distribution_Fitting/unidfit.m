@@ -100,9 +100,8 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different discrete uniform distributions
-%! rand ('seed', 1);    # for reproducibility
+%! rng (42);
 %! r1 = unidrnd (5, 1000, 1);
-%! rand ('seed', 2);    # for reproducibility
 %! r2 = unidrnd (9, 1000, 1);
 %! r = [r1, r2];
 %!

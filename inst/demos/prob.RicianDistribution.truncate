@@ -2,7 +2,9 @@
 %! ## Plot the PDF of a Rician distribution, with parameters s = 1 and sigma = 1,
 %! ## truncated at [0.5, 3] intervals. Generate 10000 random samples from this
 %! ## truncated distribution and superimpose a histogram scaled accordingly
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data_all = ricernd (1, 1, [20000, 1]);
 %! data = data_all(data_all >= 0.5 & data_all <= 3);
 %! data = data(1:10000);

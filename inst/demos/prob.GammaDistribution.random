@@ -1,7 +1,10 @@
 %!demo
 %! ## Generate random samples from a Gamma distribution
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Gamma", "a", 2, "b", 1)
-%! rand ("seed", 21);
 %! samples = random (pd, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Gamma(a=2, b=1)")

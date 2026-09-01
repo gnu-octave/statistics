@@ -1,7 +1,8 @@
 %!demo
 %! ## Compute and plot the profile likelihood for the shape parameter of a fitted
 %! ## Weibull distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 1000, 1);
 %! pd_fitted = fitdist (data, "Weibull");
 %! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");

@@ -553,8 +553,11 @@ endfunction
 %! ## parameters Lower = 1 and Upper = 10.  Plot a PDF of the distribution superimposed
 %! ## on a histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ('Loguniform', 'Lower', 1, 'Upper', 10);
-%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! plot (pd_fixed)
 %! hold on

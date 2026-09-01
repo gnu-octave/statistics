@@ -1,6 +1,7 @@
 %!demo
 %! ## Generate random samples from a Weibull distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! rande ('state', 42);
 %! samples = wblrnd (1, 1, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Weibull(lambda=1, k=1)")

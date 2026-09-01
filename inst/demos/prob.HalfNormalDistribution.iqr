@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the interquartile range for a Half-normal distribution
+%! rng (42);
 %! data = abs (randn (10000, 1));
 %! pd = fitdist (data, "HalfNormal");
 %! iqr_value = iqr (pd)

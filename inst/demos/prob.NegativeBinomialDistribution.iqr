@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the interquartile range for a Negative Binomial distribution
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = nbinrnd(5, 0.5, 10000, 1);
 %! pd = fitdist (data, "NegativeBinomial");
 %! iqr_value = iqr (pd)

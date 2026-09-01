@@ -215,8 +215,8 @@ endfunction
 
 %!demo
 %! ## Create some random points in two dimensions
+%! rng (42);
 %! n = 10;
-%! randn ('seed', 1);
 %! X = normrnd (0, 1, [n, 2]);
 %!
 %! ## Those same points, rotated, scaled, translated, plus some noise

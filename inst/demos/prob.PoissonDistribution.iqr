@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the interquartile range for a Poisson distribution
+%! rng (42);
+%! randp ('state', 42);
 %! data = poissrnd (5, 10000, 1);
 %! pd = fitdist (data, "Poisson");
 %! iqr_value = iqr (pd)

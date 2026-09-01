@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Weibull distribution
+%! rande ('state', 42);
 %! p = 0.001:0.001:0.999;
 %! data1 = wblrnd (1, 0.5, 10000, 1);
 %! data2 = wblrnd (1, 1, 10000, 1);

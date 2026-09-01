@@ -251,9 +251,10 @@ endfunction
 
 %!demo
 %! ## Define function to sample
+%! rng (42);
+%! rande ('state', 42);
 %! d = 2;
 %! mu = [-1; 2];
-%! rand ('seed', 5)  # for reproducibility
 %! Sigma = rand (d);
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d)*abs (eigs (Sigma, 1, 'sa')) * 1.1;
@@ -264,7 +265,6 @@ endfunction
 %! nsamples = 500;
 %! K = 500;
 %! m = 10;
-%! rande ('seed', 4);  rand ('seed', 5)  # for reproducibility
 %! [smpl, accept] = slicesample (start, nsamples, 'pdf', pdf, 'burnin', K, 'thin', m, 'width', [20, 30]);
 %! figure;
 %! hold on;
@@ -285,9 +285,10 @@ endfunction
 
 %!demo
 %! ## Integrate truncated normal distribution to find normalization constant
+%! rng (42);
+%! rande ('state', 42);
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
-%! rande ('seed', 4);  rand ('seed', 5)  # for reproducibility
 %! [smpl, accept] = slicesample (1, nsamples, 'pdf', pdf, 'thin', 4);
 %! f = @(x) exp (-.5 * x .^ 2) .* (x >= -2 & x <= 2);
 %! x = linspace (-3, 3, 1000);

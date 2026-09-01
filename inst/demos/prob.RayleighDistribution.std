@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the standard deviation for a Rayleigh distribution
+%! rng (42);
 %! data = raylrnd (1, 10000, 1);
 %! pd = fitdist (data, "Rayleigh");
 %! std_value = std (pd)

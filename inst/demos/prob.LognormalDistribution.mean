@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the mean for different Lognormal distributions
+%! rng (42);
 %! data1 = lognrnd (0, 0.5, 10000, 1);
 %! data2 = lognrnd (0, 1.0, 10000, 1);
 %! pd1 = fitdist (data1, "Lognormal");

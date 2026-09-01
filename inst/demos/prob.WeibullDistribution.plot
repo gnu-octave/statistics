@@ -2,6 +2,7 @@
 %! ## Create a Weibull distribution with fixed parameters lambda = 1 and
 %! ## k = 1 and plot its PDF.
 %!
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 10000, 1);
 %! pd = fitdist (data, "Weibull");
 %! plot (pd)
@@ -12,7 +13,8 @@
 %! ## with parameters lambda = 1 and k = 1. Fit a Weibull distribution to
 %! ## this data and plot its CDF superimposed over an empirical CDF.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Weibull");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -28,7 +30,8 @@
 %! ## with parameters lambda = 1 and k = 1. Display a probability plot for
 %! ## the Weibull distribution fit to the data.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 200, 1);
 %! pd_fitted = fitdist (data, "Weibull");
 %! plot (pd_fitted, "PlotType", "probability")

@@ -245,9 +245,8 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from 2 different exponential distributions
-%! rand ('seed', 1);   # for reproducibility
+%! rng (42);
 %! r1 = gevrnd (-0.5, 1, 2, 5000, 1);
-%! rand ('seed', 2);   # for reproducibility
 %! r2 = gevrnd (0, 1, -4, 5000, 1);
 %! r = [r1, r2];
 %!

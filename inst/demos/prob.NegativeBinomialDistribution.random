@@ -1,6 +1,8 @@
 %!demo
 %! ## Generate random samples from a Negative Binomial distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! samples = random (NegativeBinomialDistribution(5, 0.5), 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from NegativeBinomial(R=5, P=0.5)")

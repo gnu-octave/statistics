@@ -351,6 +351,7 @@ endfunction
 
 %!demo
 %! ## Cluster three noisy blobs and mark the medoids.
+%! rng (42);
 %! X = [randn(20,2)*0.4 + 3; randn(20,2)*0.4; randn(20,2)*0.4 + [3 -3]];
 %! [idx, C] = kmedoids (X, 3);
 %! gscatter (X(:,1), X(:,2), idx);

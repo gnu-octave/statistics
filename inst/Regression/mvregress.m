@@ -270,6 +270,7 @@ endfunction
 
 %!demo
 %! ## Two correlated responses regressed on a common predictor.
+%! rng (42);
 %! X = [ones(30,1), (1:30)'/30];
 %! B = [1 -1; 2 0.5];
 %! E = [0.3 0.1; 0.1 0.2];

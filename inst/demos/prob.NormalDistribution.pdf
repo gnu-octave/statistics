@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various PDFs from the Normal distribution
+%! rng (42);
 %! x = -5:0.01:5;
 %! data1 = 0 + 0.5 * randn (10000, 1);
 %! data2 = 0 + 1.0 * randn (10000, 1);

@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the standard deviation for a Normal distribution
+%! rng (42);
 %! data = randn (10000, 1);
 %! pd = fitdist (data, "Normal");
 %! std_value = std (pd)

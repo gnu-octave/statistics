@@ -1,5 +1,7 @@
 %!demo
 %! ## Create a Negative Binomial distribution with default parameters
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = nbinrnd(5, 0.5, 10000, 1);
 %! pd = fitdist (data, "NegativeBinomial");
 %!

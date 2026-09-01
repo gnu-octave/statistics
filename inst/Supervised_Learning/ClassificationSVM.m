@@ -2114,7 +2114,6 @@ endclassdef
 %! ## Create a Support Vector Machine classifier and determine margin for test
 %! ## data.
 %! load fisheriris
-%! rng (1);  ## For reproducibility
 %!
 %! ## Select indices of the non-setosa species
 %! inds = ! strcmp (species, 'setosa');
@@ -2146,7 +2145,6 @@ endclassdef
 %! ## Create a Support Vector Machine classifier and determine loss for test
 %! ## data.
 %! load fisheriris
-%! rng (1);  ## For reproducibility
 %!
 %!  ## Select indices of the non-setosa species
 %! inds = ! strcmp (species, 'setosa');

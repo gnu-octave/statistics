@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the interquartile range for a Weibull distribution
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 10000, 1);
 %! pd = fitdist (data, "Weibull");
 %! iqr_value = iqr (pd)

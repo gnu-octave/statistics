@@ -204,8 +204,7 @@ endfunction
 %!demo
 %! ## 4. A network recovers a curve a straight line cannot
 %!
-%! rand ('seed', 7);
-%! randn ('seed', 7);
+%! rng (42);
 %! x = linspace (-3, 3, 120)';
 %! y = sin (x) + randn (120, 1) * 0.1;
 %! Mdl = fitrnet (x, y, 'LayerSizes', [16, 16], 'IterationLimit', 800);

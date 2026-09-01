@@ -192,6 +192,7 @@ function obj = fitrgam (X, Y, varargin)
 endfunction
 
 %!demo
+%! rng (42);
 %! # Train a RegressionGAM Model for synthetic values
 %!
 %! f1 = @(x) cos (3 *x);

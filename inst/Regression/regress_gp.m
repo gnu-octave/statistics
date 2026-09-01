@@ -345,9 +345,8 @@ endfunction
 
 %!demo
 %! ## Linear fitting of 1D Data
-%! rand ('seed', 125);
+%! rng (42);
 %! X = 2 * rand (5, 1) - 1;
-%! randn ('seed', 25);
 %! Y = 2 * X - 1 + 0.3 * randn (5, 1);
 %!
 %! ## Points for interpolation/extrapolation
@@ -362,9 +361,8 @@ endfunction
 
 %!demo
 %! ## Linear fitting of 2D Data
-%! rand ('seed', 135);
+%! rng (42);
 %! X = 2 * rand (4, 2) - 1;
-%! randn ('seed', 35);
 %! Y = 2 * X(:,1) - 3 * X(:,2) - 1 + 1 * randn (4, 1);
 %!
 %! ## Mesh for interpolation/extrapolation
@@ -393,11 +391,10 @@ endfunction
 
 %!demo
 %! ## Projection over basis function with linear kernel
+%! rng (42);
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -427,11 +424,10 @@ endfunction
 
 %!demo
 %! ## Projection over basis function with linear kernel
+%! rng (42);
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -457,11 +453,10 @@ endfunction
 
 %!demo
 %! ## Projection over basis function with rbf kernel
+%! rng (42);
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -488,11 +483,10 @@ endfunction
 
 %!demo
 %! ## Projection over basis function with rbf kernel
+%! rng (42);
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -567,6 +561,7 @@ endfunction
 
 %!demo
 %! ## RBF fitting on noiseless 1D Data
+%! rng (42);
 %! x = [0:2*pi/7:2*pi]';
 %! y = 5 * sin (x);
 %!
@@ -591,6 +586,7 @@ endfunction
 
 %!demo
 %! ## RBF fitting on noisy 1D Data
+%! rng (42);
 %! x = [0:2*pi/7:2*pi]';
 %! x = [x; x];
 %! y = 5 * sin (x) + randn (size (x));

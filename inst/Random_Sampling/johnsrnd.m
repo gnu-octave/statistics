@@ -162,10 +162,12 @@ endfunction
 
 %!demo
 %! ## Fit a Johnson distribution to four quantiles and identify its type
+%! rng (42);
 %! [r, type, coefs] = johnsrnd ([-1, -0.25, 0.75, 3])
 
 %!demo
 %! ## Draw a sample and check its shape
+%! rng (42);
 %! r = johnsrnd ([-1, -0.25, 0.75, 3], 1, 1000);
 %! hist (r, 50);
 

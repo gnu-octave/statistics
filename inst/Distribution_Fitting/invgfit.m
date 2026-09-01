@@ -168,11 +168,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different inverse Gaussian distributions
-%! rand ('seed', 5); randn ('seed', 5);   # for reproducibility
+%! rng (42);
 %! r1 = invgrnd (1, 0.2, 2000, 1);
-%! rand ('seed', 2); randn ('seed', 2);   # for reproducibility
 %! r2 = invgrnd (1, 3, 2000, 1);
-%! rand ('seed', 7); randn ('seed', 7);   # for reproducibility
 %! r3 = invgrnd (3, 1, 2000, 1);
 %! r = [r1, r2, r3];
 %!

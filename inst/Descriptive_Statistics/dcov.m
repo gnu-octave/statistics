@@ -91,6 +91,7 @@ function [dCor, dCov, dVarX, dVarY] = dcov (x, y)
 endfunction
 
 %!demo
+%! rng (42);
 %! base=@(x) (x- min (x))./(max (x)-min (x));
 %! N = 5e2;
 %! x = randn (N,1); x = base(x);

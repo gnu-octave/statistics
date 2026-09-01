@@ -264,10 +264,9 @@ endfunction
 %!demo
 %! ## Sample 2 populations from different generalized Pareto distributions
 %! ## Assume location parameter θ is known
+%! rng (42);
 %! theta = 0;
-%! rand ('seed', 5);    # for reproducibility
 %! r1 = gprnd (1, 2, theta, 20000, 1);
-%! rand ('seed', 2);    # for reproducibility
 %! r2 = gprnd (3, 1, theta, 20000, 1);
 %! r = [r1, r2];
 %!

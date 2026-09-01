@@ -207,11 +207,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different exponential distributions
-%! rande ('seed', 1);   # for reproducibility
+%! rande ('state', 42);
 %! r1 = exprnd (2, 4000, 1);
-%! rande ('seed', 2);   # for reproducibility
 %! r2 = exprnd (5, 4000, 1);
-%! rande ('seed', 3);   # for reproducibility
 %! r3 = exprnd (12, 4000, 1);
 %! r = [r1, r2, r3];
 %!

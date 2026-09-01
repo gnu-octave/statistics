@@ -1,5 +1,6 @@
 %!demo
 %! ## Create a Weibull distribution with default parameters
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 10000, 1);
 %! pd = fitdist (data, "Weibull");
 %!

@@ -285,9 +285,9 @@ endfunction
 
 %!demo
 %! ## Define function to sample
+%! rng (42);
 %! d = 2;
 %! mu = [-1; 2];
-%! rand ('seed', 5)  # for reproducibility
 %! Sigma = rand (d);
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d) * abs (eigs (Sigma, 1, 'sa')) * 1.1;
@@ -298,7 +298,6 @@ endfunction
 %! sym = true;
 %! K = 500;
 %! m = 10;
-%! rand ('seed', 8)  # for reproducibility
 %! proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
 %! [smpl, accept] = mhsample (start, nsamples, 'pdf', pdf, 'proprnd', proprnd, ...
 %!                            'symmetric', sym, 'burnin', K, 'thin', m);
@@ -320,9 +319,9 @@ endfunction
 
 %!demo
 %! ## Integrate truncated normal distribution to find normalization constant
+%! rng (42);
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
-%! rand ('seed', 5)  # for reproducibility
 %! proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
 %! [smpl, accept] = mhsample (1, nsamples, 'pdf', pdf, 'proprnd', proprnd, ...
 %!                            'symmetric', true, 'thin', 4);

@@ -182,6 +182,7 @@ endfunction
 
 %!demo
 %! ## Cluster a set of points with two dense blobs and scattered noise.
+%! rng (42);
 %! X = [randn(30,2)*0.3 + 2; randn(30,2)*0.3 - 2; 5*(rand(6,2)-0.5)];
 %! idx = dbscan (X, 0.6, 4);
 %! gscatter (X(:,1), X(:,2), idx);

@@ -245,10 +245,14 @@ endfunction
 
 %!demo
 %! ## Identify the Pearson type matching a set of moments
+%! rng (42);
+%! randg ('state', 42);
 %! [r, type, coefs] = pearsrnd (0, 1, 0.75, 4)
 
 %!demo
 %! ## Draw a sample with a target mean, sd, skewness, and kurtosis
+%! rng (42);
+%! randg ('state', 42);
 %! r = pearsrnd (10, 2, 1, 5, 1, 1000);
 %! [mean(r), std(r)]
 

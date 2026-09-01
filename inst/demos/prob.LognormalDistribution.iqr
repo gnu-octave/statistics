@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the interquartile range for a Lognormal distribution
+%! rng (42);
 %! data = lognrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Lognormal");
 %! iqr_value = iqr (pd)

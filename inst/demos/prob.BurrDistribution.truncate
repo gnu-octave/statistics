@@ -3,9 +3,12 @@
 %! ## truncated at [0.5, 2.5] intervals. Generate 10000 random samples from this
 %! ## truncated distribution and superimpose a histogram scaled accordingly
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
 %! t = truncate (pd, 0.5, 2.5)
-%! rand ("seed", 21);
 %! data = random (t, 10000, 1);
 %!
 %! ## Plot histogram and fitted PDF

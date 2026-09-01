@@ -98,11 +98,10 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Poisson distributions
-%! randp ('seed', 2);    # for reproducibility
+%! rng (42);
+%! randp ('state', 42);
 %! r1 = poissrnd (1, 1000, 1);
-%! randp ('seed', 2);    # for reproducibility
 %! r2 = poissrnd (4, 1000, 1);
-%! randp ('seed', 3);    # for reproducibility
 %! r3 = poissrnd (10, 1000, 1);
 %! r = [r1, r2, r3];
 %!

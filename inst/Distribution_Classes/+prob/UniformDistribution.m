@@ -549,8 +549,11 @@ endfunction
 %! ## parameters Lower = 0 and Upper = 10. Create a Uniform distribution with these
 %! ## parameters and plot its PDF superimposed on a histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ('Uniform', 'Lower', 0, 'Upper', 10);
-%! rand ('seed', 21);
 %! data = random (pd, 5000, 1);
 %! 
 %! x = linspace (pd.Lower - 1, pd.Upper + 1, 500);

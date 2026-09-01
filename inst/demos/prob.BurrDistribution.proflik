@@ -1,8 +1,11 @@
 %!demo
 %! ## Compute and plot the profile likelihood for the first shape parameter of a
 %! ## fitted Burr distribution
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
-%! rand ("seed", 21);
 %! data = random (pd, 1000, 1);
 %! pd_fitted = fitdist (data, "Burr")
 %! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");

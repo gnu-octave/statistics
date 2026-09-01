@@ -11,8 +11,11 @@
 %! ## with parameters N = 10 and p = 0.3. Fit a Binomial distribution to this
 %! ## data and plot its CDF superimposed over an empirical CDF of the data
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Binomial", "N", 10, "p", 0.3)
-%! rand ("seed", 22);
 %! data = random (pd, 100, 1);
 %! pd = fitdist (data, "Binomial", "ntrials", 10)
 %! plot (pd, "PlotType", "cdf", "Discrete", true)
@@ -28,8 +31,11 @@
 %! ## with parameters N = 10 and p = 0.3. Display a probability plot for the
 %! ## Binomial distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Binomial", "N", 10, "p", 0.3)
-%! rand ("seed", 22);
 %! data = random (pd, 200, 1);
 %! pd = fitdist (data, "Binomial", "ntrials", 10)
 %! plot (pd, "PlotType", "probability", "Discrete", true)

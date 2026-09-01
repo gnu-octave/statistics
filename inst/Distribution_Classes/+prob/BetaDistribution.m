@@ -796,8 +796,11 @@ endfunction
 %! ## parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)
-%! randg ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! pd_fitted = fitdist (data, 'Beta')
 %! plot (pd_fitted)

@@ -298,11 +298,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different extreme value distributions
-%! rand ('seed', 1);    # for reproducibility
+%! rng (42);
 %! r1 = evrnd (2, 5, 400, 1);
-%! rand ('seed', 12);    # for reproducibility
 %! r2 = evrnd (-5, 3, 400, 1);
-%! rand ('seed', 13);    # for reproducibility
 %! r3 = evrnd (14, 8, 400, 1);
 %! r = [r1, r2, r3];
 %!

@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the variance for a Rayleigh distribution
+%! rng (42);
 %! data = raylrnd (1, 10000, 1);
 %! pd = fitdist (data, "Rayleigh");
 %! var_value = var (pd)

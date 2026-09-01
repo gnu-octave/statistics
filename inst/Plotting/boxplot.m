@@ -888,21 +888,18 @@ function f = fillbox (quartile_y, quartile_x, bcolor)
 endfunction
 
 %!demo
+%! rng (42);
 %! axis ([0, 3]);
-%! randn ('seed', 1);    # for reproducibility
 %! girls = randn (10, 1) * 5 + 140;
-%! randn ('seed', 2);    # for reproducibility
 %! boys = randn (13, 1) * 8 + 135;
 %! boxplot ({girls, boys});
 %! set (gca (), 'xtick', [1 2], 'xticklabel', {'girls', 'boys'})
 %! title ('Grade 3 heights');
 
 %!demo
-%! randn ('seed', 7);    # for reproducibility
+%! rng (42);
 %! A = randn (10, 1) * 5 + 140;
-%! randn ('seed', 8);    # for reproducibility
 %! B = randn (25, 1) * 8 + 135;
-%! randn ('seed', 9);    # for reproducibility
 %! C = randn (20, 1) * 6 + 165;
 %! data = [A; B; C];
 %! groups = [(ones (10, 1)); (ones (25, 1) * 2); (ones (20, 1) * 3)];
@@ -913,14 +910,14 @@ endfunction
 %! title ('Example of Group splitting with paired vectors');
 
 %!demo
-%! randn ('seed', 1);    # for reproducibility
+%! rng (42);
 %! data = randn (100, 9);
 %! boxplot (data, 'notch', 'on', 'boxstyle', 'filled', ...
 %!          'colors', 'ygcwkmb', 'whisker', 1.2);
 %! title ('Example of different colors specified with characters');
 
 %!demo
-%! randn ('seed', 5);    # for reproducibility
+%! rng (42);
 %! data = randn (100, 13);
 %! colors = [0.7 0.7 0.7; ...
 %!           0.0 0.4 0.9; ...
@@ -934,7 +931,7 @@ endfunction
 %! title ('Example of different colors specified as RGB values');
 
 %!demo
-%! randn ('seed', 11); # for reproducibility
+%! rng (42);
 %! data = randn (30, 1);
 %! ## Using modern string arrays
 %! str_groups = string (repmat (['Control'; 'TreatmentA'; 'TreatmentB'], 10, 1));
@@ -942,7 +939,7 @@ endfunction
 %! title ('Example using modern string arrays for grouping');
 
 %!demo
-%! randn ('seed', 10); # for reproducibility
+%! rng (42);
 %! data = randn (40, 1) * 5 + 50;
 %! ## Create two different grouping variables
 %! group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);

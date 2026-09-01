@@ -1,8 +1,11 @@
 %!demo
 %! ## Compute confidence intervals for parameters of a fitted Generalized Pareto
 %! ## distribution
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
-%! rand ("seed", 21);
 %! data = random (pd, 1000, 1);
 %! [phat, ci] = gpfit (data, 0, 0.05, []);
 %! disp ("Estimated parameters (k, sigma, theta):"), disp (phat)

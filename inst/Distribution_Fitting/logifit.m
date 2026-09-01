@@ -167,11 +167,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different logistic distributions
-%! rand ('seed', 5)  # for reproducibility
+%! rng (42);
 %! r1 = logirnd (2, 1, 2000, 1);
-%! rand ('seed', 2)   # for reproducibility
 %! r2 = logirnd (5, 2, 2000, 1);
-%! rand ('seed', 7)   # for reproducibility
 %! r3 = logirnd (9, 4, 2000, 1);
 %! r = [r1, r2, r3];
 %!

@@ -1,6 +1,7 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Nakagami distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data = nakarnd (1, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Nakagami");
 %! params = [pd_fitted.mu, pd_fitted.omega];

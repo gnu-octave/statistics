@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the median for different Weibull distributions
+%! rande ('state', 42);
 %! data1 = wblrnd (1, 0.5, 10000, 1);
 %! data2 = wblrnd (1, 2, 10000, 1);
 %! pd1 = fitdist (data1, "Weibull");

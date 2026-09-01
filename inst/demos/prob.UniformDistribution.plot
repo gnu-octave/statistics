@@ -12,7 +12,10 @@
 %! ## Generate a data set of 100 random samples from a Uniform distribution
 %! ## with parameters Lower = 0 and Upper = 5. Fit a Uniform distribution to this
 %! ## data and plot its CDF superimposed over an empirical CDF.
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Uniform", "Lower", 0, "Upper", 5);
 %! data = random (pd_fixed, 100, 1);
 %!

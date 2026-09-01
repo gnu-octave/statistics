@@ -12,8 +12,11 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("InverseGaussian", "mu", 1, "lambda", 2)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "InverseGaussian")
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,8 +32,11 @@
 %! ## distribution with parameters μ = 1 and λ = 2. Display a probability
 %! ## plot for the Inverse Gaussian distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("InverseGaussian", "mu", 1, "lambda", 2)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = fitdist (data, "InverseGaussian")
 %! plot (pd_fitted, "PlotType", "probability")

@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various CDFs from the Half-normal distribution
+%! rng (42);
 %! x = -1:0.01:5;
 %! data1 = 0.5 * abs (randn (10000, 1));
 %! data2 = 1.0 * abs (randn (10000, 1));

@@ -1,5 +1,7 @@
 %!demo
 %! ## Plot various iCDFs from the Negative Binomial distribution
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! p = 0.001:0.001:0.999;
 %! data1 = nbinrnd(5, 0.3, 10000, 1);
 %! data2 = nbinrnd(5, 0.5, 10000, 1);

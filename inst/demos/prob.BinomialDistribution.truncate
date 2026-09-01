@@ -4,9 +4,12 @@
 %! ## from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Binomial", "N", 10, "p", 0.3)
 %! t = truncate (pd, 2, 8)
-%! rand ("seed", 22);
 %! data = random (t, 10000, 1);
 %!
 %! ## Histogram data for range 2 to 8

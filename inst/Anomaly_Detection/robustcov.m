@@ -415,6 +415,7 @@ endfunction
 
 %!demo
 %! ## Robust covariance is unaffected by a cluster of outliers.
+%! rng (42);
 %! X = [randn(80,2); 8 + randn(10,2)];
 %! [sig, mu, mah, outliers] = robustcov (X);
 %! gscatter (X(:,1), X(:,2), outliers);

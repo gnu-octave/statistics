@@ -293,17 +293,13 @@ endfunction
 %!demo
 %! ## Generate 100 random 2D points from each of five distinct multivariate
 %! ## normal distributions that form five separate classes
+%! rng (42);
 %! N = 100;
 %! d = 10;
-%! randn ('seed', 5);
 %! X1 = mvnrnd (d * [0, 0], eye (2), N);
-%! randn ('seed', 6);
 %! X2 = mvnrnd (d * [1, 1], eye (2), N);
-%! randn ('seed', 7);
 %! X3 = mvnrnd (d * [-1, -1], eye (2), N);
-%! randn ('seed', 8);
 %! X4 = mvnrnd (d * [1, -1], eye (2), N);
-%! randn ('seed', 8);
 %! X5 = mvnrnd (d * [-1, 1], eye (2), N);
 %! X = [X1; X2; X3; X4; X5];
 %!

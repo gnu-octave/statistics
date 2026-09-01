@@ -328,7 +328,7 @@ function leafOrder = optimalleaforder ( varargin )
 endfunction
 
 %!demo
-%! randn ('seed', 5)  # for reproducibility
+%! rng (42);
 %! X = randn (10, 2);
 %! D = pdist (X);
 %! tree = linkage (D, 'average');

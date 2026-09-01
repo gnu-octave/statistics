@@ -170,12 +170,16 @@ function [varargout] = histfit (varargin)
 endfunction
 
 %!demo
+%! rng (42);
 %! histfit (randn (100, 1))
 
 %!demo
+%! rng (42);
+%! randp ('state', 42);
 %! histfit (poissrnd (2, 1000, 1), 10, 'Poisson')
 
 %!demo
+%! randg ('state', 42);
 %! histfit (betarnd (3, 10, 1000, 1), 10, 'beta')
 
 ## Test plotting

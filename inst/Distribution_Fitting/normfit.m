@@ -388,11 +388,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different normal distributions
-%! randn ('seed', 1);    # for reproducibility
+%! rng (42);
 %! r1 = normrnd (2, 5, 5000, 1);
-%! randn ('seed', 2);    # for reproducibility
 %! r2 = normrnd (5, 2, 5000, 1);
-%! randn ('seed', 3);    # for reproducibility
 %! r3 = normrnd (9, 4, 5000, 1);
 %! r = [r1, r2, r3];
 %!

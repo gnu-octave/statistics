@@ -125,9 +125,8 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different half-normal distributions
-%! rand ('seed', 1);   # for reproducibility
+%! rng (42);
 %! r1 = hnrnd (0, 5, 5000, 1);
-%! rand ('seed', 2);   # for reproducibility
 %! r2 = hnrnd (0, 2, 5000, 1);
 %! r = [r1, r2];
 %!

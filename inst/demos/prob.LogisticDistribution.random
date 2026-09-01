@@ -1,7 +1,10 @@
 %!demo
 %! ## Generate random samples from a Logistic distribution
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
-%! rand ("seed", 21);
 %! samples = random (pd, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Logistic(mu=0, sigma=1)")

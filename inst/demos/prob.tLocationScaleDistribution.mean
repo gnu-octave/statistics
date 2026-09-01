@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the mean for different t Location-Scale distributions
+%! rng (42);
+%! randg ('state', 42);
 %! data1 = tlsrnd (0, 0.5, 5, 10000, 1);
 %! data2 = tlsrnd (0, 1, 5, 10000, 1);
 %! pd1 = fitdist (data1, "tLocationScale");

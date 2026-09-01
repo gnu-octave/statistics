@@ -96,6 +96,7 @@ endfunction
 
 %!demo
 %! ## Flag a handful of outliers around a Gaussian cluster.
+%! rng (42);
 %! X = [randn(200,2); 5 + randn(10,2)];
 %! [Mdl, tf, scores] = ocsvm (X, "KernelScale", 2, ...
 %!                            "ContaminationFraction", 0.05);

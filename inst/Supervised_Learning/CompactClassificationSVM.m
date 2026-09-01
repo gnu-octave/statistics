@@ -944,6 +944,7 @@ endclassdef
 
 %!demo
 %! ## Create a support vectors machine classifier and its compact version
+%! rng (42);
 %! # and compare their size
 %!
 %! load fisheriris

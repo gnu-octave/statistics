@@ -460,6 +460,7 @@ endfunction
 
 %!demo
 %! ## Embed a small five-dimensional data set into two dimensions.
+%! rng (42);
 %! X = [randn(20, 5); randn(20, 5) + 5];
 %! Y = tsne (X, "Perplexity", 10);
 %! plot (Y(1:20,1), Y(1:20,2), "bo", Y(21:end,1), Y(21:end,2), "rx");

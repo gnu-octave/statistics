@@ -305,11 +305,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Burr type XII distributions
-%! rand ('seed', 4);    # for reproducibility
+%! rng (42);
 %! r1 = burrrnd (3.5, 2, 2.5, 10000, 1);
-%! rand ('seed', 2);    # for reproducibility
 %! r2 = burrrnd (1, 3, 1, 10000, 1);
-%! rand ('seed', 9);    # for reproducibility
 %! r3 = burrrnd (0.5, 2, 3, 10000, 1);
 %! r = [r1, r2, r3];
 %!

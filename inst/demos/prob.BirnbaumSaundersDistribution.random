@@ -1,7 +1,10 @@
 %!demo
 %! ## Generate random samples from a Birnbaum-Saunders distribution
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
-%! randg ("seed", 21);
 %! samples = random (pd, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Birnbaum-Saunders(beta=1, gamma=0.5)")

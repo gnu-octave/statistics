@@ -1,8 +1,11 @@
 %!demo
 %! ## Compute and plot the profile likelihood for the mean parameter of a fitted
 %! ## Exponential distribution
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("Exponential", "mu", 2)
-%! rand ("seed", 5);
 %! data = random (pd, 1000, 1);
 %! pd_fitted = fitdist (data, "Exponential")
 %! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");

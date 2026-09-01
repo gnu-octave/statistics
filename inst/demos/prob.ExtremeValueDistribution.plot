@@ -12,8 +12,11 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("ExtremeValue", "mu", 0, "sigma", 1)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "ExtremeValue")
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,8 +32,11 @@
 %! ## distribution with parameters mu = 0 and sigma = 1. Display a probability
 %! ## plot for the Extreme Value distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("ExtremeValue", "mu", 0, "sigma", 1)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = fitdist (data, "ExtremeValue")
 %! plot (pd_fitted, "PlotType", "probability")

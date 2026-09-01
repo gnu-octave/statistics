@@ -1,6 +1,7 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Poisson distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randp ('state', 42);
 %! data = poissrnd (5, 100, 1);
 %! pd_fitted = fitdist (data, "Poisson");
 %! nlogL = negloglik (pd_fitted)

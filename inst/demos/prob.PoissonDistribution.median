@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the median for different Poisson distributions
+%! rng (42);
+%! randp ('state', 42);
 %! data1 = poissrnd (2, 10000, 1);
 %! data2 = poissrnd (5, 10000, 1);
 %! pd1 = fitdist (data1, "Poisson");

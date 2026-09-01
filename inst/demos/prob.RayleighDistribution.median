@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the median for different Rayleigh distributions
+%! rng (42);
 %! data1 = raylrnd (0.5, 10000, 1);
 %! data2 = raylrnd (1.0, 10000, 1);
 %! pd1 = fitdist (data1, "Rayleigh");

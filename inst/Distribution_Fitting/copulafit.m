@@ -212,11 +212,15 @@ endfunction
 
 %!demo
 %! ## Fit a Clayton copula to data and recover a confidence interval
+%! rng (42);
+%! randg ('state', 42);
 %! u = copularnd ("Clayton", 2, 500);
 %! [alpha, ci] = copulafit ("Clayton", u)
 
 %!demo
 %! ## Fit a Gaussian copula and report the correlation matrix
+%! rng (42);
+%! randg ('state', 42);
 %! u = copularnd ("Gaussian", 0.6, 500);
 %! rho = copulafit ("Gaussian", u)
 

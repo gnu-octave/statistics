@@ -119,7 +119,7 @@ function [c, d] = cophenet (Z, y)
 endfunction
 
 %!demo
-%! randn ('seed', 5)  # for reproducibility
+%! rng (42);
 %! X = randn (10,2);
 %! y = pdist (X);
 %! Z = linkage (y, 'average');

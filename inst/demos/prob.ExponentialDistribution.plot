@@ -11,8 +11,11 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Exponential", "mu", 2)
-%! rand ("seed", 5);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "Exponential")
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -28,8 +31,11 @@
 %! ## distribution with parameter mu = 2. Display a probability
 %! ## plot for the Exponential distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Exponential", "mu", 2)
-%! rand ("seed", 5);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = fitdist (data, "Exponential")
 %! plot (pd_fitted, "PlotType", "probability")

@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Rayleigh distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! samples = raylrnd (1, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Rayleigh(sigma=1)")

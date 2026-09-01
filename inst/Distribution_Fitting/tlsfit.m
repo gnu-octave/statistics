@@ -172,14 +172,10 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different location-scale T distributions
-%! randn ('seed', 1);    # for reproducibility
-%! randg ('seed', 2);    # for reproducibility
+%! rng (42);
+%! randg ('state', 42);
 %! r1 = tlsrnd (-4, 3, 1, 2000, 1);
-%! randn ('seed', 3);    # for reproducibility
-%! randg ('seed', 4);    # for reproducibility
 %! r2 = tlsrnd (0, 3, 1, 2000, 1);
-%! randn ('seed', 5);    # for reproducibility
-%! randg ('seed', 6);    # for reproducibility
 %! r3 = tlsrnd (5, 5, 4, 2000, 1);
 %! r = [r1, r2, r3];
 %!

@@ -2,7 +2,10 @@
 %! ## Plot the PDF of a Triangular distribution with parameters A=0, B=1, C=2,
 %! ## truncated at [0.5, 1.5] intervals. Generate 10000 random samples from this
 %! ## truncated distribution and superimpose a histogram scaled accordingly.
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! data_all = trirnd (0, 1, 2, 20000, 1);
 %! data = data_all(data_all >= 0.5 & data_all <= 1.5);
 %! data = data(1:10000);

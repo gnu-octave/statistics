@@ -606,9 +606,12 @@ endfunction
 %! ## with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create
 %! ## the distribution and plot the PDF superimposed on a histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
 %! pd = makedist ('Multinomial', 'Probabilities', probs);
-%! rand ('seed', 2);
 %! data = random (pd, 5000, 1);
 %! hist (data, length (probs));
 %! hold on

@@ -82,6 +82,7 @@ endfunction
 
 %!demo
 %! ## Flag a handful of outliers around a Gaussian cluster.
+%! rng (42);
 %! X = [randn(200,2); 6 + randn(10,2)];
 %! [Mdl, tf, scores] = iforest (X, "ContaminationFraction", 0.05);
 %! gscatter (X(:,1), X(:,2), tf);

@@ -3,7 +3,7 @@
 %! ## Generate 10000 random samples from this truncated distribution and
 %! ## superimpose a histogram.
 %! 
-%! rand ("seed", 21);
+%! rng (42);
 %! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
 %! t = truncate (pd, 2, 5);
 %! data_all = random (pd, 20000, 1);

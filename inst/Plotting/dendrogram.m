@@ -349,6 +349,7 @@ endfunction
 
 %!demo
 %! ## another simple dendrogram
+%! rng (42);
 %! v = 2 * rand (30, 1) - 1;
 %! d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
 %! y = linkage (squareform (d, 'tovector'));
@@ -357,6 +358,7 @@ endfunction
 
 %!demo
 %! ## collapsed tree, find all the leaves of node 5
+%! rng (42);
 %! X = randn (60, 2);
 %! D = pdist (X);
 %! y = linkage (D, 'average');
@@ -370,6 +372,7 @@ endfunction
 
 %!demo
 %! ## optimal leaf order
+%! rng (42);
 %! X = randn (30, 2);
 %! D = pdist (X);
 %! y = linkage (D, 'average');
@@ -383,6 +386,7 @@ endfunction
 
 %!demo
 %! ## horizontal orientation and labels
+%! rng (42);
 %! X = randn (8, 2);
 %! D = pdist (X);
 %! L = ['Snow White'; 'Doc'; 'Grumpy'; 'Happy'; 'Sleepy'; 'Bashful'; ...

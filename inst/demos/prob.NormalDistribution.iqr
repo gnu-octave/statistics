@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the interquartile range for a Normal distribution
+%! rng (42);
 %! data = randn (10000, 1);
 %! pd = fitdist (data, "Normal");
 %! iqr_value = iqr (pd)

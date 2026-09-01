@@ -9,7 +9,8 @@
 
 %!demo
 %! ## Generate a data set and plot the CDF of a fitted t Location-Scale distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data = tlsrnd (0, 1, 5, 100, 1);
 %! pd_fitted = fitdist (data, "tLocationScale");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -22,7 +23,8 @@
 
 %!demo
 %! ## Generate a data set and display a probability plot for a fitted t Location-Scale distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data = tlsrnd (0, 1, 5, 200, 1);
 %! pd_fitted = fitdist (data, "tLocationScale");
 %! plot (pd_fitted, "PlotType", "probability")

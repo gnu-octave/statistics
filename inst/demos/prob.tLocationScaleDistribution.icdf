@@ -1,5 +1,7 @@
 %!demo
 %! ## Plot various iCDFs from the t Location-Scale distribution
+%! rng (42);
+%! randg ('state', 42);
 %! p = 0.001:0.001:0.999;
 %! data1 = tlsrnd (0, 0.5, 5, 10000, 1);
 %! data2 = tlsrnd (0, 1, 5, 10000, 1);

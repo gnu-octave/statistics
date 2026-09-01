@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the variance for a Normal distribution
+%! rng (42);
 %! data = randn (10000, 1);
 %! pd = fitdist (data, "Normal");
 %! var_value = var (pd)

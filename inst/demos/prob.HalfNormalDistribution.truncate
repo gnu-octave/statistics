@@ -4,7 +4,7 @@
 %! ## samples from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data_all = abs (randn (20000, 1));
 %! data = data_all(data_all >= 0.5 & data_all <= 2);
 %! data = data(1:10000);

@@ -164,8 +164,7 @@ endfunction
 %!demo
 %! ## 3. A radial kernel fits a curve a linear one cannot
 %!
-%! rand ('seed', 7);
-%! randn ('seed', 7);
+%! rng (42);
 %! x = linspace (-3, 3, 120)';
 %! y = sin (x) + randn (120, 1) * 0.1;
 %! lin = fitrsvm (x, y);

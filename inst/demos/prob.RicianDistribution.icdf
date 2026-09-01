@@ -1,5 +1,7 @@
 %!demo
 %! ## Plot various iCDFs from the Rician distribution
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! p = 0.001:0.001:0.999;
 %! data1 = ricernd (1, 0.5, [10000, 1]);
 %! data2 = ricernd (1, 1, [10000, 1]);

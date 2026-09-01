@@ -359,7 +359,7 @@ endfunction
 
 %!demo
 %! ## Lasso path drives coefficients to zero as the penalty grows
-%! rand ("seed", 1);
+%! rng (42);
 %! X = rand (50, 6);
 %! b = [3; 0; -2; 0; 1.5; 0];
 %! y = X * b + 0.1 * randn (50, 1);

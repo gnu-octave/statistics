@@ -1,7 +1,7 @@
 %!demo
 %! ## Compute confidence intervals for parameters of a fitted Half-normal
 %! ## distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! data = abs (randn (1000, 1));
 %! pd_fitted = fitdist (data, "HalfNormal");
 %! ci = paramci (pd_fitted, "Alpha", 0.05)

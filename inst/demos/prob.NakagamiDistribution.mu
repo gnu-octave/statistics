@@ -1,5 +1,6 @@
 %!demo
 %! ## Create a Nakagami distribution with default parameters
+%! randg ('state', 42);
 %! data = nakarnd (1, 1, 10000, 1);
 %! pd = fitdist (data, "Nakagami");
 %!

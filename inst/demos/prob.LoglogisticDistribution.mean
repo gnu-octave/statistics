@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the mean for different Log-logistic distributions
+%! rng (42);
 %! data1 = loglrnd (0, 0.5, 10000, 1);
 %! data2 = loglrnd (0, 1, 10000, 1);
 %! pd1 = fitdist (data1, "Loglogistic");

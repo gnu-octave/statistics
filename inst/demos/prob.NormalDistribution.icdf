@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Normal distribution
+%! rng (42);
 %! p = 0.001:0.001:0.999;
 %! data1 = 0 + 0.5 * randn (10000, 1);
 %! data2 = 0 + 1.0 * randn (10000, 1);

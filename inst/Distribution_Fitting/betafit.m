@@ -218,9 +218,8 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different Beta distributions
-%! randg ('seed', 1);   # for reproducibility
+%! randg ('state', 42);
 %! r1 = betarnd (2, 5, 500, 1);
-%! randg ('seed', 2);   # for reproducibility
 %! r2 = betarnd (2, 2, 500, 1);
 %! r = [r1, r2];
 %!

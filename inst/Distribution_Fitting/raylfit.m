@@ -119,11 +119,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Rayleigh distributions
-%! rand ('seed', 2);    # for reproducibility
+%! rng (42);
 %! r1 = raylrnd (1, 1000, 1);
-%! rand ('seed', 2);    # for reproducibility
 %! r2 = raylrnd (2, 1000, 1);
-%! rand ('seed', 3);    # for reproducibility
 %! r3 = raylrnd (4, 1000, 1);
 %! r = [r1, r2, r3];
 %!

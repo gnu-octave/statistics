@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the median for different Rician distributions
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data1 = ricernd (1, 0.5, [10000, 1]);
 %! data2 = ricernd (1, 1, [10000, 1]);
 %! pd1 = fitdist (data1, "Rician");

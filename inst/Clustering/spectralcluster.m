@@ -311,6 +311,7 @@ endfunction
 %!demo
 %! ## Two concentric rings are not separable by kmeans but are by spectral
 %! ## clustering.
+%! rng (42);
 %! t = linspace (0, 2*pi, 100)';
 %! Xin  = [cos(t), sin(t)] + randn (100, 2) * 0.05;
 %! Xout = 4 * [cos(t), sin(t)] + randn (100, 2) * 0.05;

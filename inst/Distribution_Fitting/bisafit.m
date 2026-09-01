@@ -164,11 +164,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Birnbaum-Saunders distributions
-%! rand ('seed', 5);    # for reproducibility
+%! rng (42);
 %! r1 = bisarnd (1, 0.5, 2000, 1);
-%! rand ('seed', 2);    # for reproducibility
 %! r2 = bisarnd (2, 0.3, 2000, 1);
-%! rand ('seed', 7);    # for reproducibility
 %! r3 = bisarnd (4, 0.5, 2000, 1);
 %! r = [r1, r2, r3];
 %!

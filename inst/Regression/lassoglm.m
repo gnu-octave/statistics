@@ -534,8 +534,7 @@ endfunction
 %! ## Here only the first two of eight predictors truly drive the response, so a
 %! ## good fit should keep few nonzero coefficients.  The fold assignment is
 %! ## random; the seed below just makes the printed numbers reproducible.
-%! rand ('seed', 42);
-%! randn ('seed', 42);
+%! rng (42);
 %! X = randn (60, 8);
 %! beta = [1.5; -2; zeros(6, 1)];
 %! y = double (rand (60, 1) < 1 ./ (1 + exp (- X * beta)));

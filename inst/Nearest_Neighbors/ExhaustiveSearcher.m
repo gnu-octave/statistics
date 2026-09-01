@@ -767,7 +767,6 @@ endclassdef
 %!demo
 %! ## Demo to verify implementation using fisheriris dataset
 %! load fisheriris
-%! rng ('default');
 %! numSamples = size (meas, 1);
 %! queryIndices = [20, 95, 123, 136, 138];
 %! dataPoints = meas(! ismember (1:numSamples, queryIndices), :);

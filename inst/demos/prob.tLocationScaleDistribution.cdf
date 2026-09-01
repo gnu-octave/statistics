@@ -1,5 +1,7 @@
 %!demo
 %! ## Plot various CDFs from the t Location-Scale distribution
+%! rng (42);
+%! randg ('state', 42);
 %! x = -5:0.01:5;
 %! data1 = tlsrnd (0, 0.5, 5, 10000, 1);
 %! data2 = tlsrnd (0, 1, 5, 10000, 1);

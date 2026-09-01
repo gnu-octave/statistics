@@ -1,6 +1,7 @@
 %!demo
 %! ## Generate random samples from a Poisson distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randp ('state', 42);
 %! samples = poissrnd (5, 500, 1);
 %! hist (samples, 20)
 %! title ("Histogram of 500 random samples from Poisson(lambda=5)")

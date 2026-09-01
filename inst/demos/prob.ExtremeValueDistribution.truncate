@@ -4,9 +4,12 @@
 %! ## samples from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)
 %! t = truncate (pd, 0.5, 4)
-%! rand ("seed", 21);
 %! data = random (t, 10000, 1);
 %!
 %! ## Plot histogram and fitted PDF

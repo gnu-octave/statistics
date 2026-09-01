@@ -195,14 +195,10 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Gamma distributions
-%! randg ('seed', 5);    # for reproducibility
-%! randp ('seed', 6);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! r1 = ricernd (1, 2, 3000, 1);
-%! randg ('seed', 2);    # for reproducibility
-%! randp ('seed', 8);
 %! r2 = ricernd (2, 4, 3000, 1);
-%! randg ('seed', 7);    # for reproducibility
-%! randp ('seed', 9);
 %! r3 = ricernd (7.5, 1, 3000, 1);
 %! r = [r1, r2, r3];
 %!

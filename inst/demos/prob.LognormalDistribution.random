@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Lognormal distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! samples = lognrnd (0, 1, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Lognormal(mu=0, sigma=1)")

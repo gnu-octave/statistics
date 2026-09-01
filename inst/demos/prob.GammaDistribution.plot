@@ -12,8 +12,11 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Gamma", "a", 2, "b", 1)
-%! rand ("seed", 21);
 %! data = gamrnd (2, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Gamma")
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,8 +32,11 @@
 %! ## distribution with parameters a = 2 and b = 1. Display a probability
 %! ## plot for the Gamma distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Gamma", "a", 2, "b", 1)
-%! rand ("seed", 21);
 %! data = gamrnd (2, 1, 200, 1);
 %! pd_fitted = fitdist (data, "Gamma")
 %! plot (pd_fitted, "PlotType", "probability")

@@ -527,6 +527,7 @@ endfunction
 
 %!demo
 %! ## Generate a two-cluster problem
+%! rng (42);
 %! C1 = randn (100, 2) + 2;
 %! C2 = randn (100, 2) - 2;
 %! data = [C1; C2];
@@ -542,6 +543,7 @@ endfunction
 %! contour (reshape (GMModel.pdf (bbins), size (heights)));
 
 %!demo
+%! rng (42);
 %! Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
 %! nbOrientations = 2;
 %! initial_orientations = [38.0; 18.0];

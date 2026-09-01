@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various PDFs from the Lognormal distribution
+%! rng (42);
 %! x = 0:0.01:10;
 %! data1 = lognrnd (0, 0.5, 10000, 1);
 %! data2 = lognrnd (0, 1.0, 10000, 1);

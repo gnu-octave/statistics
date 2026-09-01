@@ -12,8 +12,11 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
-%! randg ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "BirnbaumSaunders")
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,8 +32,11 @@
 %! ## distribution with parameters β = 1 and γ = 0.5. Display a probability
 %! ## plot for the Birnbaum-Saunders distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
-%! randg ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = fitdist (data, "BirnbaumSaunders")
 %! plot (pd_fitted, "PlotType", "probability")

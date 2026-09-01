@@ -127,6 +127,7 @@ endfunction
 
 %!demo
 %! ## Negative log-likelihood of a two-response regression at the true params.
+%! rng (42);
 %! X = [ones(20,1), (1:20)'/20];
 %! B = [1 -2; 0.5 3];
 %! Y = X * B + 0.3 * randn (20, 2);

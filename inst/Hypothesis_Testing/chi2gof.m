@@ -411,11 +411,13 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
 endfunction
 
 %!demo
+%! rng (42);
 %! x = normrnd (50, 5, 100, 1);
 %! [h, p, stats] = chi2gof (x)
 %! [h, p, stats] = chi2gof (x, 'cdf', @(x)normcdf (x, mean (x), std (x)))
 %! [h, p, stats] = chi2gof (x, 'cdf', {@normcdf, mean(x), std(x)})
 %!demo
+%! rng (42);
 %! x = rand (100,1 );
 %! n = length (x);
 %! binedges = linspace (0, 1, 11);

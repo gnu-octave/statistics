@@ -129,9 +129,8 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different continuous uniform distributions
-%! rand ('seed', 5);    # for reproducibility
+%! rng (42);
 %! r1 = unifrnd (2, 5, 2000, 1);
-%! rand ('seed', 6);    # for reproducibility
 %! r2 = unifrnd (3, 9, 2000, 1);
 %! r = [r1, r2];
 %!

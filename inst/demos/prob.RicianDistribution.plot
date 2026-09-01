@@ -12,7 +12,9 @@
 %! ## Generate a data set of 100 random samples from a Rician distribution
 %! ## with parameters s = 1 and sigma = 1. Fit a Rician distribution to this
 %! ## data and plot its CDF superimposed over an empirical CDF.
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = ricernd (1, 1, [100, 1]);
 %! pd_fitted = fitdist (data, "Rician");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -27,7 +29,9 @@
 %! ## Generate a data set of 200 random samples from a Rician distribution
 %! ## with parameters s = 1 and sigma = 1. Display a probability plot for the
 %! ## Rician distribution fit to the data.
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = ricernd (1, 1, [200, 1]);
 %! pd_fitted = fitdist (data, "Rician");
 %! plot (pd_fitted, "PlotType", "probability")

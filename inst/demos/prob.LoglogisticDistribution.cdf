@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various CDFs from the Log-logistic distribution
+%! rng (42);
 %! x = 0:0.01:10;
 %! data1 = loglrnd (0, 0.5, 10000, 1);
 %! data2 = loglrnd (0, 1, 10000, 1);

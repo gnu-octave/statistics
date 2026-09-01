@@ -24,15 +24,15 @@
 %! ## `random` adds its noise with `randn`, so reproducibility comes from
 %! ## seeding `randn` itself, not `rand`. Resetting to the same state
 %! ## before each call gives back the exact same simulated values.
+%! rng (42);
+%! randg ('state', 42);
 %! Temp = [60;65;70;75;80;85;90];
 %! Sales = [200;230;260;300;340;370;410];
 %! mdl = fitlm (Temp, Sales);
 %! Xnew = [72; 88];
 %!
 %! ## Two calls from the same seed give identical simulated responses.
-%! randn ('state', 42);
 %! ysimA = random (mdl, Xnew);
-%! randn ('state', 42);
 %! ysimB = random (mdl, Xnew);
 %! same_seed_matches = isequal (ysimA, ysimB)
 
@@ -43,6 +43,8 @@
 %! ## The deterministic quadratic fit gives a smooth predicted curve;
 %! ## `random` adds noise scaled by the model's own MSE to produce
 %! ## plausible individual readings a new car of that weight might show.
+%! rng (42);
+%! randg ('state', 42);
 %! load carsmall
 %! X = Weight;
 %! y = MPG;
@@ -53,7 +55,6 @@
 %! ypred = predict (mdl, Xsub)
 %!
 %! ## Simulated readings for the same five cars, with noise added.
-%! randn ('state', 7);
 %! ysim = random (mdl, Xsub)
 
 %!demo
@@ -63,6 +64,8 @@
 %! ## `compact` discards the training data but keeps everything `random`
 %! ## needs; reseeding identically before each call confirms the compact
 %! ## model simulates exactly the same values as the original.
+%! rng (42);
+%! randg ('state', 42);
 %! Temp = [60;65;70;75;80;85;90];
 %! Sales = [200;230;260;300;340;370;410];
 %! mdl  = fitlm (Temp, Sales);
@@ -70,8 +73,6 @@
 %! Xnew = [72; 88];
 %!
 %! ## Same seed, same simulated draw from either model.
-%! randn ('state', 99);
 %! ysim_full = random (mdl, Xnew);
-%! randn ('state', 99);
 %! ysim_compact = random (cmdl, Xnew);
 %! compact_matches_full = isequal (ysim_full, ysim_compact)

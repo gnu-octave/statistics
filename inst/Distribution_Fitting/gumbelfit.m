@@ -160,11 +160,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Gumbel distributions
-%! rand ('seed', 1);    # for reproducibility
+%! rng (42);
 %! r1 = gumbelrnd (2, 5, 400, 1);
-%! rand ('seed', 11);    # for reproducibility
 %! r2 = gumbelrnd (-5, 3, 400, 1);
-%! rand ('seed', 16);    # for reproducibility
 %! r3 = gumbelrnd (14, 8, 400, 1);
 %! r = [r1, r2, r3];
 %!

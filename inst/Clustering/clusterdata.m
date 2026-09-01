@@ -99,9 +99,8 @@ function T = clusterdata (X, varargin)
 endfunction
 
 %!demo
-%! randn ('seed', 1)  # for reproducibility
+%! rng (42);
 %! r1 = randn (10, 2) * 0.25 + 1;
-%! randn ('seed', 5)  # for reproducibility
 %! r2 = randn (20, 2) * 0.5 - 1;
 %! X = [r1; r2];
 %!

@@ -1,5 +1,6 @@
 %!demo
 %! ## Create a Lognormal distribution with default parameters
+%! rng (42);
 %! data = lognrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Lognormal");
 %!

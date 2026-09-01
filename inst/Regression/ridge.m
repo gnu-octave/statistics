@@ -158,13 +158,13 @@ endfunction
 %!
 %!demo
 %!
+%! rng (42);
 %! load carbig
 %! X = [Acceleration Weight Displacement Horsepower];
 %! y = MPG;
 %!
 %! n = length (y);
 %!
-%! rand ('seed',1); % For reproducibility
 %!
 %! c = cvpartition (n,'HoldOut',0.3);
 %! idxTrain = training(c,1);

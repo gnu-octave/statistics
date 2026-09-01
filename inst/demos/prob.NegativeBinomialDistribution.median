@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the median for different Negative Binomial distributions
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data1 = nbinrnd(5, 0.3, 10000, 1);
 %! data2 = nbinrnd(5, 0.5, 10000, 1);
 %! pd1 = fitdist (data1, "NegativeBinomial");

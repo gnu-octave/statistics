@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the variance for a Weibull distribution
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 10000, 1);
 %! pd = fitdist (data, "Weibull");
 %! var_value = var (pd)

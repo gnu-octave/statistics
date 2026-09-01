@@ -2,6 +2,7 @@
 %! ## Create a Half-normal distribution with fixed parameters mu = 0 and
 %! ## sigma = 1 and plot its PDF.
 %!
+%! rng (42);
 %! data = abs (randn (10000, 1));
 %! pd = fitdist (data, "HalfNormal");
 %! plot (pd)
@@ -13,7 +14,7 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data = abs (randn (100, 1));
 %! pd_fitted = fitdist (data, "HalfNormal");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,7 +30,7 @@
 %! ## distribution with parameters mu = 0 and sigma = 1. Display a probability
 %! ## plot for the Half-normal distribution fit to the data.
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data = abs (randn (200, 1));
 %! pd_fitted = fitdist (data, "HalfNormal");
 %! plot (pd_fitted, "PlotType", "probability")

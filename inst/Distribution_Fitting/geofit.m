@@ -102,9 +102,8 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different geometric distributions
-%! rande ('seed', 1);    # for reproducibility
+%! rande ('state', 42);
 %! r1 = geornd (0.15, 1000, 1);
-%! rande ('seed', 2);    # for reproducibility
 %! r2 = geornd (0.5, 1000, 1);
 %! r = [r1, r2];
 %!

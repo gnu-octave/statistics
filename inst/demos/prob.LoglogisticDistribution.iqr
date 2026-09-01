@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the interquartile range for a Log-logistic distribution
+%! rng (42);
 %! data = loglrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Loglogistic");
 %! iqr_value = iqr (pd)

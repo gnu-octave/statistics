@@ -139,6 +139,7 @@ endfunction
 %!demo
 %! ## Histogram (density estimate) from the empirical cdf of a random sample.
 %!
+%! rng (42);
 %! x = randn (100, 1);
 %! [f, xx] = ecdf (x);
 %! ecdfhist (f, xx);
@@ -147,6 +148,7 @@ endfunction
 %!demo
 %! ## Compare the empirical density with a finer set of bins.
 %!
+%! rande ('state', 42);
 %! x = exprnd (2, 200, 1);
 %! [f, xx] = ecdf (x);
 %! ecdfhist (f, xx, 20);

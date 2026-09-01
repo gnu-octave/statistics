@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the median for different Nakagami distributions
+%! randg ('state', 42);
 %! data1 = nakarnd (0.6, 1, 10000, 1);
 %! data2 = nakarnd (1, 1, 10000, 1);
 %! pd1 = fitdist (data1, "Nakagami");

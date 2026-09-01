@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Triangular distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! samples = trirnd (0, 1, 2, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Triangular(A=0, B=1, C=2)")

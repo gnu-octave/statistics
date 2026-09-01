@@ -591,7 +591,8 @@ endfunction
 %! ## Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution,
 %! ## and plot the PDF superimposed on a histogram of the data.
 %!
-%! randg ('seed', 2);
+%! rng (42);
+%! randg ('state', 42);
 %! data = betarnd (2, 5, 5000, 1) * 10;
 %! [f, x] = ecdf (data);
 %! f = f(1:5:end);

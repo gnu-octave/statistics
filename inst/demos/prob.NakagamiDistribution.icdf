@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Nakagami distribution
+%! randg ('state', 42);
 %! p = 0.001:0.001:0.999;
 %! data1 = nakarnd (0.6, 1, 10000, 1);
 %! data2 = nakarnd (1, 1, 10000, 1);

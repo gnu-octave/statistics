@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the interquartile range for a Rayleigh distribution
+%! rng (42);
 %! data = raylrnd (1, 10000, 1);
 %! pd = fitdist (data, "Rayleigh");
 %! iqr_value = iqr (pd)

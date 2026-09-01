@@ -1,5 +1,6 @@
 %!demo
 %! ## Compute the variance for a Lognormal distribution
+%! rng (42);
 %! data = lognrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Lognormal");
 %! var_value = var (pd)

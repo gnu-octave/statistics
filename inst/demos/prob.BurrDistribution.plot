@@ -11,8 +11,11 @@
 %! ## parameters alpha = 1, c = 2, k = 1. Fit a Burr distribution to this data
 %! ## and plot its CDF superimposed over an empirical CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "Burr")
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -28,8 +31,11 @@
 %! ## parameters alpha = 1, c = 2, k = 1. Display a probability plot for the
 %! ## Burr distribution fit to the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = fitdist (data, "Burr")
 %! plot (pd_fitted, "PlotType", "probability")

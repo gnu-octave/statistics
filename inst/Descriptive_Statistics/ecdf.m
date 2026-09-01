@@ -265,6 +265,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
 endfunction
 
 %!demo
+%! rande ('state', 42);
 %! y = exprnd (10, 50, 1);    ## random failure times are exponential(10)
 %! d = exprnd (20, 50, 1);    ## drop-out times are exponential(20)
 %! t = min (y, d);            ## we observe the minimum of these times
@@ -281,6 +282,7 @@ endfunction
 %! hold off;
 
 %!demo
+%! rande ('state', 42);
 %! R = wblrnd (100, 2, 100, 1);
 %! ecdf (R, 'Function', 'survivor', 'Alpha', 0.01, 'Bounds', 'on');
 %! hold on

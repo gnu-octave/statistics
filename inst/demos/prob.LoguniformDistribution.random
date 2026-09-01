@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Log-uniform distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! pd = LoguniformDistribution (1, 10);
 %! samples = random (pd, 500, 1);
 %! hist (samples, 50)

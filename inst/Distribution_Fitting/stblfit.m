@@ -236,7 +236,7 @@ endfunction
 
 %!demo
 %! ## Fit a stable distribution to simulated data
-%! rand ("seed", 42);
+%! rng (42);
 %! x = stblrnd (1.5, 0.5, 2, 1, 150, 1);
 %! [paramhat, paramci] = stblfit (x)
 

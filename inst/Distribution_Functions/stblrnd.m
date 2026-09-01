@@ -96,6 +96,7 @@ endfunction
 
 %!demo
 %! ## Draw a large stable sample and overlay the theoretical density
+%! rng (42);
 %! r = stblrnd (1.5, 0.5, 1, 0, 1, 1e5);
 %! r = r(abs (r) < 15);
 %! hist (r, 100, 1);

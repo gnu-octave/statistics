@@ -1,6 +1,8 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Negative Binomial distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = nbinrnd(5, 0.5, 100, 1);
 %! pd_fitted = fitdist (data, "NegativeBinomial");
 %! params = [pd_fitted.R, pd_fitted.P];

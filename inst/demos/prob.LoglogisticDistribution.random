@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Log-logistic distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! samples = loglrnd (0, 1, 500, 1);
 %! hist (samples, 50)
 %! p99 = prctile (samples, 99);

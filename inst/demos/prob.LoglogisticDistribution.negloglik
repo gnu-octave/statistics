@@ -1,6 +1,6 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Log-logistic distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! data = loglrnd (0, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Loglogistic");
 %! nlogL = negloglik (pd_fitted)

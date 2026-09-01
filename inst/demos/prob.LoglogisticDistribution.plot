@@ -2,6 +2,7 @@
 %! ## Create a Log-logistic distribution with fixed parameters mu = 0 and
 %! ## sigma = 1 and plot its PDF.
 %!
+%! rng (42);
 %! data = loglrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Loglogistic");
 %! x = linspace (0.01, 20, 1000);
@@ -18,7 +19,7 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data = loglrnd (0, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Loglogistic");
 %! ecdf (data);
@@ -42,7 +43,7 @@
 %! ## distribution with parameters mu = 0 and sigma = 1. Display a probability
 %! ## plot for the Log-logistic distribution fit to the data.
 %!
-%! rand ("seed", 21);
+%! rng (42);
 %! data = loglrnd (0, 1, 200, 1);
 %! pd_fitted = fitdist (data, "Loglogistic");
 %! plot (pd_fitted, "PlotType", "probability")

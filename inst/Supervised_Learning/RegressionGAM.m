@@ -2157,6 +2157,7 @@ endfunction
 
 %!demo
 %! ## Train a RegressionGAM Model for synthetic values
+%! rng (42);
 %! f1 = @(x) cos (3 * x);
 %! f2 = @(x) x .^ 3;
 %! x1 = 2 * rand (50, 1) - 1;
@@ -2168,6 +2169,7 @@ endfunction
 
 %!demo
 %! ## Declare two different functions
+%! rng (42);
 %! f1 = @(x) cos (3 * x);
 %! f2 = @(x) x .^ 3;
 %!
@@ -2177,7 +2179,6 @@ endfunction
 %! X2 = f2(x);
 %!
 %! ## Create a synthetic response by adding noise
-%! rand ('seed', 3);
 %! Ytrue = X1 + X2;
 %! Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);
 %!

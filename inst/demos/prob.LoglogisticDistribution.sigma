@@ -1,5 +1,6 @@
 %!demo
 %! ## Create a Log-logistic distribution with default parameters
+%! rng (42);
 %! data = loglrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Loglogistic");
 %!

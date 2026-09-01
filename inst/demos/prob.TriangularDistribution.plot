@@ -11,7 +11,10 @@
 %!demo
 %! ## Generate a data set of 100 random samples from a Triangular distribution
 %! ## with parameters A=0, B=1, C=2. Plot its CDF.
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! data = trirnd (0, 1, 2, 100, 1);
 %! pd = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
 %! plot (pd, "PlotType", "cdf")

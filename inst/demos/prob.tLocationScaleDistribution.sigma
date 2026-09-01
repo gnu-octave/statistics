@@ -1,5 +1,7 @@
 %!demo
 %! ## Create a t Location-Scale distribution with fitted parameters
+%! rng (42);
+%! randg ('state', 42);
 %! data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
 %! pd = fitdist (data, "tLocationScale");
 %!

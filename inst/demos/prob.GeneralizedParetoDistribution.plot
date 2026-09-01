@@ -12,8 +12,11 @@
 %! ## distribution to this data (fixing theta=0) and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = GeneralizedParetoDistribution.fit (data, 0)
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,8 +32,11 @@
 %! ## distribution with parameters k = 0.5, sigma = 1, theta = 0. Display a probability
 %! ## plot for the Generalized Pareto distribution fit to the data (fixing theta=0).
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
-%! rand ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = GeneralizedParetoDistribution.fit (data, 0)
 %! plot (pd_fitted, "PlotType", "probability")

@@ -4,9 +4,12 @@
 %! ## samples from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
 %! t = truncate (pd, 0.5, 2)
-%! randg ("seed", 21);
 %! data = random (t, 10000, 1);
 %!
 %! ## Plot histogram and fitted PDF

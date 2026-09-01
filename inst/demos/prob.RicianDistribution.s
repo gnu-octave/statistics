@@ -1,5 +1,7 @@
 %!demo
 %! ## Create a Rician distribution by fitting to data
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = ricernd (1, 1, [10000, 1]);  % Generate data with s=1, sigma=1
 %! pd = fitdist (data, "Rician");
 %!

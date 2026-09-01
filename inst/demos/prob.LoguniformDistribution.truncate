@@ -3,7 +3,7 @@
 %! ## and Upper=10, truncated at [2, 5] intervals. Generate 10000 random
 %! ## samples from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
-%! rand ("seed", 21);
+%! rng (42);
 %! data_all = exp (unifrnd (log (1), log (10), 20000, 1));
 %! data = data_all(data_all >= 2 & data_all <= 5);
 %! data = data(1:7500);

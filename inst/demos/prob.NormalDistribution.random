@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Normal distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! samples = randn (500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Normal(mu=0, sigma=1)")

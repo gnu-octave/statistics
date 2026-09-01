@@ -1,6 +1,7 @@
 %!demo
 %! ## Generate random samples from a Nakagami distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! samples = nakarnd (1, 1, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Nakagami(mu=1, omega=1)")

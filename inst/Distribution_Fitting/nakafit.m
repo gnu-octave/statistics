@@ -154,11 +154,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Nakagami distributions
-%! randg ('seed', 5)  # for reproducibility
+%! randg ('state', 42);
 %! r1 = nakarnd (0.5, 1, 2000, 1);
-%! randg ('seed', 2)   # for reproducibility
 %! r2 = nakarnd (5, 1, 2000, 1);
-%! randg ('seed', 7)   # for reproducibility
 %! r3 = nakarnd (2, 2, 2000, 1);
 %! r = [r1, r2, r3];
 %!

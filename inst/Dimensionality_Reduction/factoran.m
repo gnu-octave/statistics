@@ -507,7 +507,7 @@ endfunction
 %! ## Six measured variables built from two underlying factors, plus noise.
 %! ## Factor analysis recovers the structure without being told it: the first
 %! ## three variables load on one factor and the last three on the other.
-%! randn ("seed", 42);
+%! rng (42);
 %! F = randn (300, 2);
 %! X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
 %!     + 0.6 * randn (300, 6);
@@ -520,7 +520,7 @@ endfunction
 %! ## stats answers it.  These data were built from two factors, and the test
 %! ## rejects one factor while accepting two.  Three factors leave no degrees
 %! ## of freedom, so there is nothing left to test with.
-%! randn ("seed", 42);
+%! rng (42);
 %! F = randn (300, 2);
 %! X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
 %!     + 0.6 * randn (300, 6);
@@ -540,7 +540,7 @@ endfunction
 %! ## unrotated solution puts most of the variance on a general first factor;
 %! ## varimax turns it so each variable loads mainly on one factor, which is
 %! ## easier to read.  The specific variances are untouched either way.
-%! randn ("seed", 42);
+%! rng (42);
 %! F = randn (300, 2);
 %! X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
 %!     + 0.6 * randn (300, 6);
@@ -558,7 +558,7 @@ endfunction
 %! ## plotted or used as inputs downstream.  The two predictors optimise
 %! ## different things and are not equal, but they agree closely on the
 %! ## ordering of observations.
-%! randn ("seed", 42);
+%! rng (42);
 %! F = randn (300, 2);
 %! X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
 %!     + 0.6 * randn (300, 6);
@@ -577,7 +577,7 @@ endfunction
 %! ## extension that assumes no distribution.  They agree closely when the
 %! ## model fits, so a large gap between them is a warning about the fit.
 %! ## Only maximum likelihood carries a test.
-%! randn ("seed", 42);
+%! rng (42);
 %! F = randn (300, 2);
 %! X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
 %!     + 0.6 * randn (300, 6);

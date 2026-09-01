@@ -485,14 +485,12 @@ endfunction
 
 %!demo
 %! ## Generate a two-cluster problem
-%! randn ('seed', 31)  # for reproducibility
+%! rng (42);
 %! C1 = randn (100, 2) + 1;
-%! randn ('seed', 32)  # for reproducibility
 %! C2 = randn (100, 2) - 1;
 %! data = [C1; C2];
 %!
 %! ## Perform clustering
-%! rand ('seed', 1)  # for reproducibility
 %! [idx, centers] = kmeans (data, 2);
 %!
 %! ## Plot the result
@@ -509,6 +507,7 @@ endfunction
 %! ## Load Fisher's iris data set and use the petal lengths and widths as
 %! ## predictors
 %!
+%! rng (42);
 %! load fisheriris
 %! X = meas(:,3:4);
 %!
@@ -518,7 +517,6 @@ endfunction
 %! ylabel ('Petal Widths (cm)');
 %!
 %! ## Cluster the data. Specify k = 3 clusters
-%! rand ('seed', 1)  # for reproducibility
 %! [idx, C] = kmeans (X, 3);
 %! x1 = min (X(:,1)):0.01:max (X(:,1));
 %! x2 = min (X(:,2)):0.01:max (X(:,2));
@@ -540,15 +538,13 @@ endfunction
 %!demo
 %! ## Partition Data into Two Clusters
 %!
-%! randn ('seed', 1)  # for reproducibility
+%! rng (42);
 %! r1 = randn (100, 2) * 0.75 + ones (100, 2);
-%! randn ('seed', 2)  # for reproducibility
 %! r2 = randn (100, 2) * 0.5 - ones (100, 2);
 %! X = [r1; r2];
 %!
 %! plot (X(:,1), X(:,2), '.');
 %! title ('Randomly Generated Data');
-%! rand ('seed', 1)  # for reproducibility
 %! [idx, C] = kmeans (X, 2, 'Distance', 'cityblock', ...
 %!                          'Replicates', 5, 'Display', 'final');
 %! figure;
@@ -564,17 +560,14 @@ endfunction
 %! ## Assign New Data to Existing Clusters
 %!
 %! ## Generate a training data set using three distributions
-%! randn ('seed', 5)  # for reproducibility
+%! rng (42);
 %! r1 = randn (100, 2) * 0.75 + ones (100, 2);
-%! randn ('seed', 7)  # for reproducibility
 %! r2 = randn (100, 2) * 0.5 - ones (100, 2);
-%! randn ('seed', 9)  # for reproducibility
 %! r3 = randn (100, 2) * 0.75;
 %! X = [r1; r2; r3];
 %!
 %! ## Partition the training data into three clusters by using kmeans
 %!
-%! rand ('seed', 1)  # for reproducibility
 %! [idx, C] = kmeans (X, 3);
 %!
 %! ## Plot the clusters and the cluster centroids
@@ -585,11 +578,8 @@ endfunction
 %! legend ('Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster Centroid')
 %!
 %! ## Generate a test data set
-%! randn ('seed', 25)  # for reproducibility
 %! r1 = randn (100, 2) * 0.75 + ones (100, 2);
-%! randn ('seed', 27)  # for reproducibility
 %! r2 = randn (100, 2) * 0.5 - ones (100, 2);
-%! randn ('seed', 29)  # for reproducibility
 %! r3 = randn (100, 2) * 0.75;
 %! Xtest = [r1; r2; r3];
 %!

@@ -223,6 +223,9 @@ endfunction
 
 %!demo
 %! ## Poisson mixed model with a random intercept per group.
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! g = reshape (repmat (1:6, 7, 1), [], 1);
 %! x = randn (42, 1);
 %! y = poissrnd (exp (0.3 + 0.5 * x + 0.2 * reshape (repmat (randn (1, 6), 7, 1), [], 1)));

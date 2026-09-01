@@ -1,5 +1,7 @@
 %!demo
 %! ## Plot various CDFs from the Poisson distribution
+%! rng (42);
+%! randp ('state', 42);
 %! x = 0:20;
 %! data1 = poissrnd (2, 10000, 1);
 %! data2 = poissrnd (5, 10000, 1);

@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Multinomial distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! pd = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
 %! samples = random (pd, 500, 1);
 %! hist (samples, 6)

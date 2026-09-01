@@ -323,6 +323,7 @@ function varargout = to_cell (varargin)
 endfunction
 
 %!demo
+%! rng (42);
 %! clf
 %! x = zeros (9e2, 10);
 %! for i=1:10
@@ -336,6 +337,7 @@ endfunction
 %! ylabel ('Values')
 
 %!demo
+%! rng (42);
 %! clf
 %! data = {randn(100,1)*5+140, randn(130,1)*8+135};
 %! subplot (1,2,1)
@@ -351,24 +353,32 @@ endfunction
 %! axis tight
 
 %!demo
+%! rng (42);
+%! rande ('state', 42);
 %! clf
 %! data = exprnd (0.1, 500,4);
 %! violin (data, 'nbins', {5,10,50,100});
 %! axis ([0 5 0 max(data(:))])
 
 %!demo
+%! rng (42);
+%! rande ('state', 42);
 %! clf
 %! data = exprnd (0.1, 500,4);
 %! violin (data, 'color', jet (4));
 %! axis ([0 5 0 max(data(:))])
 
 %!demo
+%! rng (42);
+%! rande ('state', 42);
 %! clf
 %! data = repmat (exprnd (0.1, 500,1), 1, 4);
 %! violin (data, 'width', linspace (0.1,0.5,4));
 %! axis ([0 5 0 max(data(:))])
 
 %!demo
+%! rng (42);
+%! rande ('state', 42);
 %! clf
 %! data = repmat (exprnd (0.1, 500,1), 1, 4);
 %! violin (data, 'nbins', [5,10,50,100], 'smoothfactor', [4 4 8 10]);

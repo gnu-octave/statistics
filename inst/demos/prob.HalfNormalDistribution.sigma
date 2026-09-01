@@ -1,5 +1,6 @@
 %!demo
 %! ## Create a Half-normal distribution with default parameters
+%! rng (42);
 %! data = abs (randn (10000, 1));
 %! pd = fitdist (data, "HalfNormal");
 %!

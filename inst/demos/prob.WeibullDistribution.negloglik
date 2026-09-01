@@ -1,6 +1,7 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Weibull distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! rande ('state', 42);
 %! data = wblrnd (1, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Weibull");
 %! params = [pd_fitted.lambda, pd_fitted.k];

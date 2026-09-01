@@ -1,5 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Rayleigh distribution
+%! rng (42);
 %! p = 0.001:0.001:0.999;
 %! data1 = raylrnd (0.5, 10000, 1);
 %! data2 = raylrnd (1.0, 10000, 1);

@@ -1,5 +1,7 @@
 %!demo
 %! ## Compute the interquartile range for a t Location-Scale distribution
+%! rng (42);
+%! randg ('state', 42);
 %! data = tlsrnd (0, 1, 5, 10000, 1);
 %! pd = fitdist (data, "tLocationScale");
 %! iqr_value = iqr (pd)

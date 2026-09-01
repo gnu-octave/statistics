@@ -141,7 +141,7 @@ endfunction
 
 %!demo
 %! ## Negative log-likelihood of a stable fit to simulated data
-%! rand ("seed", 42);
+%! rng (42);
 %! x = stblrnd (1.5, 0.5, 1, 0, 150, 1);
 %! phat = stblfit (x);
 %! nlogL = stbllike (phat, x)

@@ -2,6 +2,7 @@
 %! ## Create a Nakagami distribution with fixed parameters mu = 1 and
 %! ## omega = 1 and plot its PDF.
 %!
+%! randg ('state', 42);
 %! data = nakarnd (1, 1, 10000, 1);
 %! pd = fitdist (data, "Nakagami");
 %! plot (pd)
@@ -13,7 +14,8 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data = nakarnd (1, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Nakagami");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,7 +31,8 @@
 %! ## distribution with parameters mu = 1 and omega = 1. Display a probability
 %! ## plot for the Nakagami distribution fit to the data.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data = nakarnd (1, 1, 200, 1);
 %! pd_fitted = fitdist (data, "Nakagami");
 %! plot (pd_fitted, "PlotType", "probability")

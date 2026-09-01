@@ -1,6 +1,5 @@
 %!demo
 %! ## 1. Basic Usage
-%! rng (1, "twister");
 %!
 %! ## Create simple numeric labels
 %! labels = [ones(10, 1); 2 * ones(10, 1)];
@@ -9,8 +8,8 @@
 
 %!demo
 %! ## 2. Grouped K-Fold Partition
-%! rng (101, "twister");
 %!
+%! rng (42);
 %! Region = repelem ({'North'; 'South'; 'East'; 'West'}, [20; 15; 15; 20]);
 %! Success = repelem ({'Success'; 'Fail'}, [49;  21]);
 %! Success = Success(randperm (70));
@@ -24,8 +23,8 @@
 
 %!demo
 %! ## 3. Stratified K-Fold Partition
-%! rng (202, "twister");
 %!
+%! rng (42);
 %! Success = repelem ({'ClassA'; 'ClassB'}, [25; 25]);
 %! Success = Success(randperm (50));
 %! Tbl = table (Success);
@@ -38,7 +37,6 @@
 
 %!demo
 %! ## 4. Handling Missing Values (NaN) in Stratification
-%! rng (404, "twister");
 %!
 %! ## Create data with missing values (NaN)
 %! labels = [ones(10, 1); 2 * ones(10, 1); NaN(5, 1)];
@@ -51,8 +49,8 @@
 
 %!demo
 %! ## 5. Filtering Summary
-%! rng (303, "twister");
 %!
+%! rng (42);
 %! Success = repelem ({'Yes'; 'No'}, [20; 10]);
 %! Success = Success(randperm (30));
 %!
@@ -69,8 +67,8 @@
 
 %!demo
 %! ## 6. Unstacking
-%! rng (505, "twister");
 %!
+%! rng (42);
 %! Success = repelem ({'Yes'; 'No'}, [20; 10]);
 %! Success = Success(randperm (30));
 %!

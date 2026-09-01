@@ -836,8 +836,11 @@ endfunction
 %! ## distribution to this data and plot a PDF of the fitted distribution
 %! ## superimposed on a histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
-%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! pd_fitted = fitdist (data, 'tLocationScale');
 %! plot (pd_fitted);

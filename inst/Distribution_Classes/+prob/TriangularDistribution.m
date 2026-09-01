@@ -583,8 +583,11 @@ endfunction
 %! ## this data and plot a PDF of the fitted distribution superimposed on a
 %! ## histogram of the data.
 %!
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd_fixed = makedist ('Triangular', 'A', 0, 'B', 1, 'C', 2);
-%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! A = min (data);
 %! C = mean (data);

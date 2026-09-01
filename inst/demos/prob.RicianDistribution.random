@@ -1,6 +1,8 @@
 %!demo
 %! ## Generate random samples from a Rician distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! samples = ricernd (1, 1, [500, 1]);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Rician(s=1, sigma=1)")

@@ -213,9 +213,9 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different negative binomial distributions
-%! randp ('seed', 5); randg ('seed', 5);    # for reproducibility
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! r1 = nbinrnd (2, 0.15, 5000, 1);
-%! randp ('seed', 8); randg ('seed', 8);    # for reproducibility
 %! r2 = nbinrnd (5, 0.2, 5000, 1);
 %! r = [r1, r2];
 %!

@@ -3,7 +3,8 @@
 %! ## intervals. Generate 10000 random samples from this truncated distribution
 %! ## and superimpose a histogram scaled accordingly.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! randp ('state', 42);
 %! data_all = poissrnd (5, 20000, 1);
 %! data = data_all(data_all >= 2 & data_all <= 10);
 %! data = data(1:10000);

@@ -188,6 +188,7 @@ endfunction
 
 %!demo
 %! ## Bivariate kernel density estimate over a grid, drawn as a contour plot.
+%! rng (42);
 %! x = [randn(60, 2); randn(40, 2) + 3];
 %! [gx, gy] = meshgrid (linspace (-4, 7, 60));
 %! f = mvksdensity (x, [gx(:), gy(:)]);

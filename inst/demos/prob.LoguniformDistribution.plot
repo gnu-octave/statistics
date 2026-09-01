@@ -8,7 +8,7 @@
 %!demo
 %! ## Generate a data set of 100 random samples from a Log-uniform
 %! ## distribution with parameters Lower=1 and Upper=10. Plot its CDF.
-%! rand ("seed", 21);
+%! rng (42);
 %! data = exp (unifrnd (log (1), log (10), 100, 1));
 %! pd = LoguniformDistribution (1, 10);
 %! plot (pd, "PlotType", "cdf")

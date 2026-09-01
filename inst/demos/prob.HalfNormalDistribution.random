@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Half-normal distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! samples = abs (randn (500, 1));
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Half-normal(mu=0, sigma=1)")

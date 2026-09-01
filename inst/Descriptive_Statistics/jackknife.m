@@ -127,8 +127,8 @@ endfunction
 
 
 %!demo
+%! rng (42);
 %! for k = 1:1000
-%!   rand ('seed', k);  # for reproducibility
 %!   x = rand (10, 1);
 %!   s(k) = std (x);
 %!   jackstat = jackknife (@std, x);
@@ -138,10 +138,9 @@ endfunction
 %! hist ([s', j'], 0:sqrt (1/12)/10:2*sqrt (1/12))
 
 %!demo
+%! rng (42);
 %! for k = 1:1000
-%!   randn ('seed', k); # for reproducibility
 %!   x = randn (1, 50);
-%!   rand ('seed', k);  # for reproducibility
 %!   y = rand (1, 50);
 %!   jackstat = jackknife (@(x) std (x{1})/std (x{2}), y, x);
 %!   j(k) = 50 * std (y) / std (x) - 49 * mean (jackstat);

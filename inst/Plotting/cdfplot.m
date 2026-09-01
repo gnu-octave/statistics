@@ -85,6 +85,7 @@ function [hCDF, stats] = cdfplot (x)
 endfunction
 
 %!demo
+%! rng (42);
 %! x = randn (100,1);
 %! cdfplot (x);
 

@@ -3,9 +3,12 @@
 %! ## k = 0, sigma = 1, mu = 0, truncated at [0, 2] intervals. Generate 10000
 %! ## random samples from this truncated distribution and superimpose a histogram
 %! ## scaled accordingly
+%! rng (42);
+%! randg ('state', 42);
+%! rande ('state', 42);
+%! randp ('state', 42);
 %! pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
 %! t = truncate (pd, 0, 2)
-%! rand ("seed", 21);
 %! data = random (t, 10000, 1);
 %!
 %! ## Plot histogram and fitted PDF

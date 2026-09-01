@@ -1,6 +1,6 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Normal distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! data = randn (100, 1);
 %! pd_fitted = fitdist (data, "Normal");
 %! params = [pd_fitted.mu, pd_fitted.sigma];

@@ -2,6 +2,8 @@
 %! ## Create a Negative Binomial distribution with fixed parameters R=5 and
 %! ## P=0.5 and plot its PDF.
 %!
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = nbinrnd(5, 0.5, 10000, 1);
 %! pd = fitdist (data, "NegativeBinomial");
 %! plot (pd)
@@ -13,7 +15,9 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = nbinrnd(5, 0.5, 100, 1);
 %! pd_fitted = fitdist (data, "NegativeBinomial");
 %! plot (pd_fitted, "PlotType", "cdf")
@@ -29,7 +33,9 @@
 %! ## distribution with parameters R=5 and P=0.5. Display a probability
 %! ## plot for the Negative Binomial distribution fit to the data.
 %!
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
 %! data = nbinrnd(5, 0.5, 200, 1);
 %! pd_fitted = fitdist (data, "NegativeBinomial");
 %! plot (pd_fitted, "PlotType", "probability")

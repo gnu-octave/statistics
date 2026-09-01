@@ -1,6 +1,7 @@
 %!demo
 %! ## Plot the PDF of a truncated t Location-Scale distribution
-%! rand ("seed", 21);
+%! rng (42);
+%! randg ('state', 42);
 %! data_all = tlsrnd (0, 1, 5, 20000, 1);
 %! data = data_all(data_all >= -1 & data_all <= 1);
 %! data = data(1:10000);

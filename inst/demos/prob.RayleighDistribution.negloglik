@@ -1,6 +1,6 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Rayleigh distribution
-%! rand ("seed", 21);
+%! rng (42);
 %! data = raylrnd (1, 100, 1);
 %! pd_fitted = fitdist (data, "Rayleigh");
 %! nlogL = negloglik (pd_fitted)

@@ -135,11 +135,9 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different log-normal distributions
-%! randn ('seed', 1);    # for reproducibility
+%! rng (42);
 %! r1 = lognrnd (0, 0.25, 1000, 1);
-%! randn ('seed', 2);    # for reproducibility
 %! r2 = lognrnd (0, 0.5, 1000, 1);
-%! randn ('seed', 3);    # for reproducibility
 %! r3 = lognrnd (0, 1, 1000, 1);
 %! r = [r1, r2, r3];
 %!

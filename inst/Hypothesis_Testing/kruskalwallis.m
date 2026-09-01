@@ -241,16 +241,19 @@ endfunction
 
 
 %!demo
+%! rng (42);
 %! x = meshgrid (1:6);
 %! x = x + normrnd (0, 1, 6, 6);
 %! kruskalwallis (x, [], 'off');
 
 %!demo
+%! rng (42);
 %! x = meshgrid (1:6);
 %! x = x + normrnd (0, 1, 6, 6);
 %! [p, atab] = kruskalwallis (x);
 
 %!demo
+%! rng (42);
 %! x = ones (30, 4) .* [-2, 0, 1, 5];
 %! x = x + normrnd (0, 2, 30, 4);
 %! group = {'A', 'B', 'C', 'D'};
