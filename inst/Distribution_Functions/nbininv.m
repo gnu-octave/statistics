@@ -102,13 +102,18 @@ function x = nbininv (p, r, ps)
   k = find ((p >= 0) & (p < 1) & (r > 0) & (r < Inf)
             & (ps > 0) & (ps <= 1));
   if (! isempty (k))
-    p = p(k);
-    m = zeros (size (k));
+    pk = p(k)(:);
     if (isscalar (r) && isscalar (ps))
-      [m, unfinished] = scalar_nbininv (p(:), r, ps);
-      m(unfinished) = bin_search_nbininv (p(unfinished), r, ps);
+      [m, unfinished] = scalar_nbininv (pk, r, ps);
+      if (! isempty (unfinished))
+        m(unfinished) = bin_search_nbininv (pk(unfinished), r, ps);
+      endif
+      m = tie_correct (m, pk, r, ps);
     else
-      m = bin_search_nbininv (p, r(k), ps(k));
+      rk = r(k)(:);
+      psk = ps(k)(:);
+      m = bin_search_nbininv (pk, rk, psk);
+      m = tie_correct (m, pk, rk, psk);
     endif
     x(k) = m;
   endif
@@ -170,6 +175,37 @@ function m = bin_search_nbininv (p, r, ps)
 
 endfunction
 
+## Step the answer back onto M-1 wherever P lies within the error of the CDF
+## there.  The lower tail is a sum of M+1 densities, so its error grows with
+## the answer, and an exactly attained probability reads short and sends the
+## search past it: nbincdf (100, 101, 0.5) is 215 eps below the 0.5 that the
+## symmetry of a fair coin makes exact, and the shortfall reaches 5616 eps by
+## 2001 successes.  The slack is capped at half the probability of M so that
+## it can never cross a real step of the distribution and round P to the wrong
+## side of one.
+function m = tie_correct (m, p, r, ps)
+
+  j = find (m > 0);
+  if (isempty (j))
+    return;
+  endif
+  mj = m(j);
+  if (isscalar (r))
+    rj = r;
+  else
+    rj = r(j);
+  endif
+  if (isscalar (ps))
+    psj = ps;
+  else
+    psj = ps(j);
+  endif
+  lo = nbincdf (mj - 1, rj, psj);
+  tol = min (32 .* (mj + 1) .* eps (lo), 0.5 .* nbinpdf (mj, rj, psj));
+  m(j(p(j) <= lo + tol)) -= 1;
+
+endfunction
+
 %!demo
 %! ## Plot various iCDFs from the negative binomial distribution
 %! p = 0.001:0.001:0.999;
@@ -210,6 +246,19 @@ endfunction
 %!assert_equal (nbininv (nbincdf (1:10, 3, 0.1), 3, 0.1), 1:10, tol)
 %!assert_equal (nbininv (nbincdf (1:10, 3./(1:10), 0.1), 3./(1:10), 0.1), 1:10, tol)
 %!assert_equal (nbininv (nbincdf (y, 3./y, 1./y), 3./y, 1./y), y, tol)
+
+## Test an exactly attained probability, where the CDF reads short.  For r
+## successes at ps = 0.5 the median is r-1 exactly, a fair coin over 2r-1
+## trials giving at least r successes half the time.
+%!assert_equal (nbininv (0.5, 26, 0.5), 25)
+%!assert_equal (nbininv (0.5, 101, 0.5), 100)
+%!assert_equal (nbininv (0.5, 251, 0.5), 250)
+%!assert_equal (nbininv (0.5, 2001, 0.5), 2000)
+%!assert_equal (nbininv ([0.5, 0.9], 101, 0.5), [100, 120])
+%!assert_equal (nbininv ([0.5; 0.9], 101, 0.5), [100; 120])
+%!assert_equal (nbininv ([0.5, 0.5], [101, 251], 0.5), [100, 250])
+%!assert_equal (nbininv ([NaN, 0.5], 101, 0.5), [NaN, 100])
+%!assert_equal (nbininv ([2, 0.5], [101, 101], [0.5, 0.5]), [NaN, 100])
 
 ## Test input validation
 %!error<nbininv: function called with too few input arguments.> nbininv ()
