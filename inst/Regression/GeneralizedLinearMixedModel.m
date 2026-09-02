@@ -38,47 +38,168 @@ classdef GeneralizedLinearMixedModel
 
   properties (GetAccess = public, SetAccess = protected)
 
-    ## Response distribution ("binomial", "poisson", or "normal").
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} Distribution
+    ##
+    ## Response distribution
+    ##
+    ## A character vector naming the distribution of the response, one of
+    ## @qcode{'binomial'}, @qcode{'poisson'} and @qcode{'normal'}.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     Distribution = "";
 
-    ## Link function ("logit", "log", or "identity").
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} Link
+    ##
+    ## Link function
+    ##
+    ## A character vector naming the link, one of @qcode{'logit'},
+    ## @qcode{'log'} and @qcode{'identity'}.  This property is read-only.
+    ##
+    ## @end deftp
     Link = "";
 
-    ## Fitting method ("MPL", "REMPL", "Laplace", or "ApproximateLaplace").
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} FitMethod
+    ##
+    ## Estimation method
+    ##
+    ## A character vector naming the method that fitted the model, one of
+    ## @qcode{'MPL'}, @qcode{'REMPL'}, @qcode{'Laplace'} and
+    ## @qcode{'ApproximateLaplace'}.  This property is read-only.
+    ##
+    ## @end deftp
     FitMethod = "";
 
-    ## Estimated dispersion parameter (1 for binomial and poisson).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} Dispersion
+    ##
+    ## Dispersion parameter
+    ##
+    ## A positive scalar.  It is estimated for a normal response and fixed at
+    ## 1 for a binomial or Poisson one.  This property is read-only.
+    ##
+    ## @end deftp
     Dispersion = [];
 
-    ## Number of observations used in the fit.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer counting the observations used for the fit.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     NumObservations = [];
 
-    ## Number of fixed-effects coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} NumCoefficients
+    ##
+    ## Number of fixed-effects coefficients
+    ##
+    ## A positive integer counting the fixed-effects coefficients of the
+    ## model.  This property is read-only.
+    ##
+    ## @end deftp
     NumCoefficients = [];
 
-    ## Table of the fixed-effects estimates (Estimate, SE, tStat, DF, pValue,
-    ## Lower, Upper), one row per coefficient.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} Coefficients
+    ##
+    ## Fixed-effects estimates and their statistics
+    ##
+    ## A table with one row per fixed-effects coefficient, its row names taken
+    ## from @qcode{CoefficientNames}, and the variables @qcode{Estimate},
+    ## @qcode{SE}, @qcode{tStat}, @qcode{DF}, @qcode{pValue}, @qcode{Lower}
+    ## and @qcode{Upper}.  @qcode{Lower} and @qcode{Upper} bound a 95%
+    ## confidence interval.  This property is read-only.
+    ##
+    ## @end deftp
     Coefficients = [];
 
-    ## Covariance matrix of the fixed-effects estimates.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} CoefficientCovariance
+    ##
+    ## Covariance of the fixed-effects estimates
+    ##
+    ## A square numeric matrix, one row and column per fixed-effects
+    ## coefficient, holding the estimated covariance of the estimates in
+    ## @qcode{Coefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientCovariance = [];
 
-    ## Names of the fixed-effects coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} CoefficientNames
+    ##
+    ## Names of the fixed-effects coefficients
+    ##
+    ## A cell array of character vectors with one name per fixed-effects
+    ## coefficient.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientNames = {};
 
-    ## Maximised (pseudo- or Laplace-approximated) log-likelihood.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} LogLikelihood
+    ##
+    ## Log-likelihood of the fitted model
+    ##
+    ## A scalar.  It is a pseudo log-likelihood when @qcode{FitMethod} is
+    ## @qcode{'MPL'} or @qcode{'REMPL'}, and a Laplace approximation to the
+    ## log-likelihood otherwise.  This property is read-only.
+    ##
+    ## @end deftp
     LogLikelihood = [];
 
-    ## Struct of information criteria: AIC, BIC, LogLikelihood, and Deviance.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} ModelCriterion
+    ##
+    ## Information criteria
+    ##
+    ## A scalar structure with the fields @qcode{AIC}, @qcode{BIC},
+    ## @qcode{LogLikelihood} and @qcode{Deviance}.  The parameter count behind
+    ## @qcode{AIC} and @qcode{BIC} holds the fixed-effects coefficients, the
+    ## covariance parameters and the dispersion.  This property is read-only.
+    ##
+    ## @end deftp
     ModelCriterion = [];
 
-    ## Residual (error) degrees of freedom, NumObservations - NumCoefficients.
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} DFE
+    ##
+    ## Residual degrees of freedom
+    ##
+    ## A nonnegative integer, @qcode{NumObservations} less
+    ## @qcode{NumCoefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     DFE = [];
 
-    ## Model formula (empty for matrix-input fits).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} Formula
+    ##
+    ## Model formula
+    ##
+    ## A character vector describing the model.  It is empty for a fit built
+    ## from design matrices, which carries no formula.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     Formula = "";
 
-    ## Response variable name (empty for matrix-input fits).
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedLinearMixedModel} {property} ResponseName
+    ##
+    ## Name of the response variable
+    ##
+    ## A character vector naming the response.  It is empty for a fit built
+    ## from design matrices.  This property is read-only.
+    ##
+    ## @end deftp
     ResponseName = "";
 
   endproperties
