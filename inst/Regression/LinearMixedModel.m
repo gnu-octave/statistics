@@ -47,57 +47,206 @@ classdef LinearMixedModel
 
   properties (GetAccess = public, SetAccess = protected)
 
-    ## Estimation method, "ML" or "REML".
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} FitMethod
+    ##
+    ## Estimation method
+    ##
+    ## A character vector, either @qcode{'ML'} for maximum likelihood or
+    ## @qcode{'REML'} for restricted maximum likelihood, naming the method
+    ## that fitted the model.  This property is read-only.
+    ##
+    ## @end deftp
     FitMethod = "";
 
-    ## Number of observations used in the fit.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer counting the observations used for the fit.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     NumObservations = [];
 
-    ## Number of fixed-effects coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} NumCoefficients
+    ##
+    ## Number of fixed-effects coefficients
+    ##
+    ## A positive integer counting the fixed-effects coefficients of the
+    ## model.  This property is read-only.
+    ##
+    ## @end deftp
     NumCoefficients = [];
 
-    ## Number of estimated fixed-effects coefficients (= NumCoefficients).
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} NumEstimatedCoefficients
+    ##
+    ## Number of estimated fixed-effects coefficients
+    ##
+    ## A positive integer counting the fixed-effects coefficients estimated
+    ## from the data.  Every coefficient the model carries is estimated, so
+    ## this equals @qcode{NumCoefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     NumEstimatedCoefficients = [];
 
-    ## Table of the fixed-effects estimates with columns Estimate, SE, tStat,
-    ## DF, pValue, Lower, and Upper, one row per coefficient.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} Coefficients
+    ##
+    ## Fixed-effects estimates and their statistics
+    ##
+    ## A table with one row per fixed-effects coefficient, its row names
+    ## taken from @qcode{CoefficientNames}, and the variables
+    ## @qcode{Estimate}, @qcode{SE}, @qcode{tStat}, @qcode{DF},
+    ## @qcode{pValue}, @qcode{Lower} and @qcode{Upper}.  @qcode{Lower} and
+    ## @qcode{Upper} bound a 95% confidence interval.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     Coefficients = [];
 
-    ## Covariance matrix of the fixed-effects estimates.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} CoefficientCovariance
+    ##
+    ## Covariance of the fixed-effects estimates
+    ##
+    ## A square numeric matrix, one row and column per fixed-effects
+    ## coefficient, holding the estimated covariance of the estimates in
+    ## @qcode{Coefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientCovariance = [];
 
-    ## Names of the fixed-effects coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} CoefficientNames
+    ##
+    ## Names of the fixed-effects coefficients
+    ##
+    ## A cell array of character vectors with one name per fixed-effects
+    ## coefficient.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientNames = {};
 
-    ## Maximised log-likelihood (restricted log-likelihood when FitMethod is
-    ## "REML").
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} LogLikelihood
+    ##
+    ## Log-likelihood of the fitted model
+    ##
+    ## A scalar, the maximised log-likelihood, or the maximised restricted
+    ## log-likelihood when @qcode{FitMethod} is @qcode{'REML'}.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     LogLikelihood = [];
 
-    ## Struct of information criteria: AIC, BIC, LogLikelihood, and Deviance.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} ModelCriterion
+    ##
+    ## Information criteria
+    ##
+    ## A scalar structure with the fields @qcode{AIC}, @qcode{BIC},
+    ## @qcode{LogLikelihood} and @qcode{Deviance}.  The parameter count
+    ## behind @qcode{AIC} and @qcode{BIC} holds the fixed-effects
+    ## coefficients, the covariance parameters and the residual variance.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ModelCriterion = [];
 
-    ## Struct with the Ordinary and Adjusted R-squared statistics.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} Rsquared
+    ##
+    ## Coefficient of determination
+    ##
+    ## A scalar structure with the fields @qcode{Ordinary} and
+    ## @qcode{Adjusted}.  @qcode{Ordinary} is one less the ratio of
+    ## @qcode{SSE} to @qcode{SST}, and @qcode{Adjusted} corrects that ratio
+    ## for the error degrees of freedom.  This property is read-only.
+    ##
+    ## @end deftp
     Rsquared = [];
 
-    ## Error (residual) sum of squares, sum ((y - conditional fit) .^ 2).
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} SSE
+    ##
+    ## Error sum of squares
+    ##
+    ## A nonnegative scalar, the sum of the squared differences between the
+    ## response and the conditional fit.  This property is read-only.
+    ##
+    ## @end deftp
     SSE = [];
 
-    ## Regression sum of squares, sum ((conditional fit - mean (y)) .^ 2).
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} SSR
+    ##
+    ## Regression sum of squares
+    ##
+    ## A nonnegative scalar, the sum of the squared deviations of the
+    ## conditional fit about the mean of the response.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     SSR = [];
 
-    ## Total sum of squares, SSE + SSR.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} SST
+    ##
+    ## Total sum of squares
+    ##
+    ## A nonnegative scalar, @qcode{SSE} plus @qcode{SSR}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     SST = [];
 
-    ## Residual variance estimate (sigma2).
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} MSE
+    ##
+    ## Residual variance estimate
+    ##
+    ## A positive scalar, the estimate of the error variance.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
     MSE = [];
 
-    ## Residual (error) degrees of freedom, NumObservations - NumCoefficients.
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} DFE
+    ##
+    ## Residual degrees of freedom
+    ##
+    ## A nonnegative integer, @qcode{NumObservations} less
+    ## @qcode{NumCoefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     DFE = [];
 
-    ## Model formula as a character vector (empty for matrix-input fits).
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} Formula
+    ##
+    ## Model formula
+    ##
+    ## A character vector describing the model.  It is empty for a fit built
+    ## from design matrices, which carries no formula.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     Formula = "";
 
-    ## Response variable name (empty for matrix-input fits).
+    ## -*- texinfo -*-
+    ## @deftp {LinearMixedModel} {property} ResponseName
+    ##
+    ## Name of the response variable
+    ##
+    ## A character vector naming the response.  It is empty for a fit built
+    ## from design matrices.  This property is read-only.
+    ##
+    ## @end deftp
     ResponseName = "";
 
   endproperties
