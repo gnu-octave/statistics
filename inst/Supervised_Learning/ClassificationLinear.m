@@ -266,13 +266,6 @@ classdef ClassificationLinear
 
   methods (Access = public)
 
-    ## Custom setter, so that assigning a name or a handle updates both the
-    ## text the property reports and the callable predict uses.
-    function this = set.ScoreTransform (this, val)
-      [this.STfun, this.ScoreTransform] = ...
-                     parseScoreTransform (val, 'ClassificationLinear');
-    endfunction
-
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationLinear} {@var{obj} =} ClassificationLinear (@var{X}, @var{Y})
     ## @deftypefnx {ClassificationLinear} {@var{obj} =} ClassificationLinear (@dots{}, @var{name}, @var{value})
@@ -1273,6 +1266,13 @@ classdef ClassificationLinear
     ## What the fit reported, which fitclinear returns as its second output.
     function S = fitInfo_ (this)
       S = this.FitInfo_;
+    endfunction
+
+    ## Custom setter, so that assigning a name or a handle updates both the
+    ## text the property reports and the callable predict uses.
+    function this = set.ScoreTransform (this, val)
+      [this.STfun, this.ScoreTransform] = ...
+                     parseScoreTransform (val, 'ClassificationLinear');
     endfunction
 
   endmethods

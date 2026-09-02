@@ -232,13 +232,6 @@ classdef RegressionLinear
 
   methods (Access = public)
 
-    ## Custom setter, so that assigning a name or a handle updates both the
-    ## text the property reports and the callable predict uses.
-    function this = set.ResponseTransform (this, val)
-      [this.RTfun, this.ResponseTransform] = ...
-                     parseResponseTransform (val, 'RegressionLinear');
-    endfunction
-
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionLinear} {@var{obj} =} RegressionLinear (@var{X}, @var{Y})
     ## @deftypefnx {RegressionLinear} {@var{obj} =} RegressionLinear (@dots{}, @var{name}, @var{value})
@@ -1118,6 +1111,13 @@ classdef RegressionLinear
     ## What the fit reported, which fitrlinear returns as its second output.
     function S = fitInfo_ (this)
       S = this.FitInfo_;
+    endfunction
+
+    ## Custom setter, so that assigning a name or a handle updates both the
+    ## text the property reports and the callable predict uses.
+    function this = set.ResponseTransform (this, val)
+      [this.RTfun, this.ResponseTransform] = ...
+                     parseResponseTransform (val, 'RegressionLinear');
     endfunction
 
   endmethods

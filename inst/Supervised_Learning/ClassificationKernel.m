@@ -309,13 +309,6 @@ classdef ClassificationKernel
 
   methods (Access = public)
 
-    ## Custom setter, so that assigning a name or a handle updates both the
-    ## text the property reports and the callable predict uses.
-    function this = set.ScoreTransform (this, val)
-      [this.STfun, this.ScoreTransform] = ...
-                     parseScoreTransform (val, 'ClassificationKernel');
-    endfunction
-
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationKernel} {@var{obj} =} ClassificationKernel (@var{X}, @var{Y})
     ## @deftypefnx {ClassificationKernel} {@var{obj} =} ClassificationKernel (@dots{}, @var{name}, @var{value})
@@ -1120,6 +1113,13 @@ classdef ClassificationKernel
     ## What the fit reported, which fitckernel returns as its second output.
     function S = fitInfo_ (this)
       S = this.FitInfo_;
+    endfunction
+
+    ## Custom setter, so that assigning a name or a handle updates both the
+    ## text the property reports and the callable predict uses.
+    function this = set.ScoreTransform (this, val)
+      [this.STfun, this.ScoreTransform] = ...
+                     parseScoreTransform (val, 'ClassificationKernel');
     endfunction
 
   endmethods

@@ -246,11 +246,6 @@ classdef CompactRegressionGP
 
   methods (Access = public)
 
-    function this = set.ResponseTransform (this, val)
-      [this.RTfun, this.ResponseTransform] = ...
-                     parseResponseTransform (val, 'CompactRegressionGP');
-    endfunction
-
     ## Class constructor
     function this = CompactRegressionGP (Mdl)
 
@@ -504,6 +499,11 @@ classdef CompactRegressionGP
       printf ("%25s: '%s'\n", 'PredictMethod', this.PredictMethod);
       printf ("%25s: %g\n", 'Sigma', this.Sigma);
       printf ("\n");
+    endfunction
+
+    function this = set.ResponseTransform (this, val)
+      [this.RTfun, this.ResponseTransform] = ...
+                     parseResponseTransform (val, 'CompactRegressionGP');
     endfunction
 
   endmethods

@@ -275,13 +275,6 @@ classdef RegressionKernel
 
   methods (Access = public)
 
-    ## Custom setter, so that assigning a name or a handle updates both the
-    ## text the property reports and the callable predict uses.
-    function this = set.ResponseTransform (this, val)
-      [this.RTfun, this.ResponseTransform] = ...
-                     parseResponseTransform (val, 'RegressionKernel');
-    endfunction
-
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionKernel} {@var{obj} =} RegressionKernel (@var{X}, @var{Y})
     ## @deftypefnx {RegressionKernel} {@var{obj} =} RegressionKernel (@dots{}, @var{name}, @var{value})
@@ -1053,6 +1046,13 @@ classdef RegressionKernel
     ## What the fit reported, which fitrkernel returns as its second output.
     function S = fitInfo_ (this)
       S = this.FitInfo_;
+    endfunction
+
+    ## Custom setter, so that assigning a name or a handle updates both the
+    ## text the property reports and the callable predict uses.
+    function this = set.ResponseTransform (this, val)
+      [this.RTfun, this.ResponseTransform] = ...
+                     parseResponseTransform (val, 'RegressionKernel');
     endfunction
 
   endmethods

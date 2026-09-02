@@ -541,13 +541,6 @@ classdef RegressionGP
 
   methods (Access = public)
 
-    ## Custom setter, so that assigning a name or a handle updates both the
-    ## text the property reports and the callable predict uses.
-    function this = set.ResponseTransform (this, val)
-      [this.RTfun, this.ResponseTransform] = ...
-                     parseResponseTransform (val, 'RegressionGP');
-    endfunction
-
     ## Class constructor
     function this = RegressionGP (X, Y, varargin)
 
@@ -1296,6 +1289,13 @@ classdef RegressionGP
                   'BasisFunction', this.BasisFunction, 'Beta', this.Beta, ...
                   'Sigma', this.Sigma, 'Location', this.PredictorLocation, ...
                   'Scale', this.PredictorScale, 'CIAlpha', CIAlpha);
+    endfunction
+
+    ## Custom setter, so that assigning a name or a handle updates both the
+    ## text the property reports and the callable predict uses.
+    function this = set.ResponseTransform (this, val)
+      [this.RTfun, this.ResponseTransform] = ...
+                     parseResponseTransform (val, 'RegressionGP');
     endfunction
 
   endmethods
