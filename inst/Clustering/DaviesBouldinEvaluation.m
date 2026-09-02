@@ -43,7 +43,34 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
 
   methods(Access = public)
 
-    ## constructor
+    ## -*- texinfo -*-
+    ## @deftypefn {statistics} {@var{obj} =} DaviesBouldinEvaluation (@var{x}, @var{clust}, @var{KList})
+    ##
+    ## Construct a @code{DaviesBouldinEvaluation} object to evaluate clustering
+    ## solutions with the Davies-Bouldin criterion.
+    ##
+    ## @code{@var{obj} = DaviesBouldinEvaluation (@var{x}, @var{clust},
+    ## @var{KList})} clusters the data in @var{x} for every cluster count in
+    ## @var{KList} and evaluates each solution.  The evaluation runs at
+    ## construction, so @var{obj} arrives with its @code{CriterionValues} and
+    ## @code{OptimalK} already set.
+    ##
+    ## @itemize
+    ## @item @var{x} is an @math{N*P} numeric matrix of observations (rows)
+    ## and predictors (columns).  A row holding a @qcode{NaN} is left out of
+    ## @code{NumObservations}.
+    ## @item @var{clust} names the clustering method, one of
+    ## @qcode{'kmeans'}, @qcode{'linkage'} and @qcode{'gmdistribution'}; or a
+    ## function handle that clusters the data; or an @math{N*M} numeric matrix
+    ## of clustering solutions computed elsewhere, one column per cluster
+    ## count, in which case @code{ClusteringFunction} is left empty.
+    ## @item @var{KList} is a vector of positive integers, the cluster counts
+    ## to inspect.
+    ## @end itemize
+    ##
+    ## @code{evalclusters} is the usual way to create one of these objects.
+    ##
+    ## @end deftypefn
     function this = DaviesBouldinEvaluation (x, clust, KList)
       this@ClusterCriterion (x, clust, KList);
 
@@ -99,12 +126,6 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
       hold off;
     endfunction
 
-    ## -*- texinfo -*-
-    ## @deftypefn  {DaviesBouldinEvaluation} {@var{obj} =} compact (@var{obj})
-    ##
-    ## Return a compact DaviesBouldinEvaluation object (not implemented).
-    ##
-    ## @end deftypefn
   endmethods
 
   methods(Access = protected)

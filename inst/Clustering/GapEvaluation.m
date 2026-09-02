@@ -165,7 +165,6 @@ classdef GapEvaluation < ClusterCriterion
 
   methods(Access = public)
 
-    ## constructor
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList})
     ## @deftypefnx {statistics} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList}, @var{B})
@@ -327,15 +326,6 @@ classdef GapEvaluation < ClusterCriterion
       hold off;
     endfunction
 
-    ## -*- texinfo -*-
-    ## @deftypefn {GapEvaluation} {@var{obj} =} compact (@var{obj})
-    ##
-    ## Return a compact GapEvaluation object
-    ##
-    ## Return a compact representation of the @code{GapEvaluation} object.
-    ## Currently not implemented; calling this method will issue a warning.
-    ##
-    ## @end deftypefn
   endmethods
 
   methods(Access = protected)

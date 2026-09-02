@@ -111,7 +111,6 @@ classdef SilhouetteEvaluation < ClusterCriterion
 
   methods(Access = public)
 
-    ## constructor
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} SilhouetteEvaluation (@var{x}, @var{clust}, @var{KList})
     ## @deftypefnx {statistics} {@var{obj} =} SilhouetteEvaluation (@dots{}, @var{Name}, @var{Value})
@@ -259,12 +258,6 @@ classdef SilhouetteEvaluation < ClusterCriterion
       hold off;
     endfunction
 
-    ## -*- texinfo -*-
-    ## @deftypefn {SilhouetteEvaluation} {@var{obj} =} compact (@var{obj})
-    ##
-    ## Return a compact SilhouetteEvaluation object (not implemented yet).
-    ##
-    ## @end deftypefn
   endmethods
 
   methods(Access = protected)

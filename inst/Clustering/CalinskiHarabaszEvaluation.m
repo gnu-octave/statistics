@@ -44,7 +44,34 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
 
   methods(Access = public)
 
-    ## constructor
+    ## -*- texinfo -*-
+    ## @deftypefn {statistics} {@var{obj} =} CalinskiHarabaszEvaluation (@var{x}, @var{clust}, @var{KList})
+    ##
+    ## Construct a @code{CalinskiHarabaszEvaluation} object to evaluate
+    ## clustering solutions with the Calinski-Harabasz criterion.
+    ##
+    ## @code{@var{obj} = CalinskiHarabaszEvaluation (@var{x}, @var{clust},
+    ## @var{KList})} clusters the data in @var{x} for every cluster count in
+    ## @var{KList} and evaluates each solution.  The evaluation runs at
+    ## construction, so @var{obj} arrives with its @code{CriterionValues} and
+    ## @code{OptimalK} already set.
+    ##
+    ## @itemize
+    ## @item @var{x} is an @math{N*P} numeric matrix of observations (rows)
+    ## and predictors (columns).  A row holding a @qcode{NaN} is left out of
+    ## @code{NumObservations}.
+    ## @item @var{clust} names the clustering method, one of
+    ## @qcode{'kmeans'}, @qcode{'linkage'} and @qcode{'gmdistribution'}; or a
+    ## function handle that clusters the data; or an @math{N*M} numeric matrix
+    ## of clustering solutions computed elsewhere, one column per cluster
+    ## count, in which case @code{ClusteringFunction} is left empty.
+    ## @item @var{KList} is a vector of positive integers, the cluster counts
+    ## to inspect.
+    ## @end itemize
+    ##
+    ## @code{evalclusters} is the usual way to create one of these objects.
+    ##
+    ## @end deftypefn
     function this = CalinskiHarabaszEvaluation (x, clust, KList)
       this@ClusterCriterion (x, clust, KList);
 
@@ -109,16 +136,6 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
       hold off;
     endfunction
 
-    ## -*- texinfo -*-
-    ## @deftypefn {CalinskiHarabaszEvaluation} {@var{obj} =} compact (@var{obj})
-    ##
-    ## Create a compact clustering evaluation object.
-    ##
-    ## This method is not yet implemented for
-    ## @code{CalinskiHarabaszEvaluation} objects.
-    ##
-    ## @seealso{CalinskiHarabaszEvaluation, evalclusters}
-    ## @end deftypefn
   endmethods
 
   methods(Access = protected)
