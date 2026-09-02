@@ -305,6 +305,160 @@ classdef ConfusionMatrixChart < handle
         class (this.ClassLabels));
     endfunction
 
+    ## Set functions
+    function set.XLabel (this, string)
+      if (! ischar (string))
+        close (this.Parent);
+        error ("confusionchart: XLabel must be a string.");
+      endif
+
+      this.XLabel = updateAxesProperties (this, 'xlabel', string);
+    endfunction
+
+    function set.YLabel (this, string)
+      if (! ischar (string))
+        close (this.Parent);
+        error ("confusionchart: YLabel must be a string.");
+      endif
+
+      this.YLabel = updateAxesProperties (this, 'ylabel', string);
+    endfunction
+
+    function set.Title (this, string)
+      if (! ischar (string))
+        close (this.Parent);
+        error ("confusionchart: Title must be a string.");
+      endif
+
+      this.Title = updateAxesProperties (this, 'title', string);
+    endfunction
+
+    function set.FontName (this, string)
+      if (! ischar (string))
+        close (this.Parent);
+        error ("confusionchart: FontName must be a string.");
+      endif
+
+      this.FontName = updateTextProperties (this, 'fontname', string);
+    endfunction
+
+    function set.FontSize (this, value)
+      if (! isnumeric (value))
+        close (this.Parent);
+        error ("confusionchart: FontSize must be numeric.");
+      endif
+
+      this.FontSize = updateTextProperties (this, 'fontsize', value);
+    endfunction
+
+    function set.DiagonalColor (this, color)
+      if (ischar (color))
+        color = this.convertNamedColor (color);
+      endif
+
+      if (! (isvector (color) && length (color) == 3 ))
+        close (this.Parent);
+        error ("confusionchart: DiagonalColor must be a color.");
+      endif
+
+      this.DiagonalColor = color;
+      updateColorMap (this);
+    endfunction
+
+    function set.OffDiagonalColor (this, color)
+      if (ischar (color))
+        color = this.convertNamedColor (color);
+      endif
+
+      if (! (isvector (color) && length (color) == 3))
+        close (this.Parent);
+        error ("confusionchart: OffDiagonalColor must be a color.");
+      endif
+
+      this.OffDiagonalColor = color;
+      updateColorMap (this);
+    endfunction
+
+    function set.Normalization (this, string)
+      if (! any (strcmp (string, {'absolute', 'column-normalized',...
+        'row-normalized', 'total-normalized'})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for Normalization.");
+      endif
+
+      this.Normalization = string;
+      updateChart (this);
+    endfunction
+
+    function set.ColumnSummary (this, string)
+      if (! any (strcmp (string, {'off', 'absolute', 'column-normalized',...
+        'total-normalized'})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for ColumnSummary.");
+      endif
+
+      this.ColumnSummary = string;
+      updateChart (this);
+    endfunction
+
+    function set.RowSummary (this, string)
+      if (! any (strcmp (string, {'off', 'absolute', 'row-normalized',...
+        'total-normalized'})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for RowSummary.");
+      endif
+
+      this.RowSummary = string;
+      updateChart (this);
+    endfunction
+
+    function set.GridVisible (this, string)
+      if (! any (strcmp (string, {'off', 'on'})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for GridVisible.");
+      endif
+
+      this.GridVisible = string;
+      setGridVisibility (this);
+    endfunction
+
+    function set.HandleVisibility (this, string)
+      if (! any (strcmp (string, {'off', 'on', 'callback'})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for HandleVisibility");
+      endif
+
+      set (this.hax, 'handlevisibility', string);
+    endfunction
+
+    function set.OuterPosition (this, vector)
+      if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
+        close (this.Parent);
+        error ("confusionchart: invalid value for OuterPosition");
+      endif
+
+      set (this.hax, 'outerposition', vector);
+    endfunction
+
+    function set.Position (this, vector)
+      if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
+        close (this.Parent);
+        error ("confusionchart: invalid value for Position");
+      endif
+
+      set (this.hax, 'position', vector);
+    endfunction
+
+    function set.Units (this, string)
+      if (! any (strcmp (string, {'centimeters', 'characters', 'inches', ...
+                                  'normalized', 'pixels', 'points'})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for Units");
+      endif
+
+      set (this.hax, 'units', string);
+    endfunction
+
   endmethods
 
   methods(Access = public)
@@ -463,160 +617,6 @@ classdef ConfusionMatrixChart < handle
 
       ## init the color map
       updateColorMap (this);
-    endfunction
-
-    ## Set functions
-    function set.XLabel (this, string)
-      if (! ischar (string))
-        close (this.Parent);
-        error ("confusionchart: XLabel must be a string.");
-      endif
-
-      this.XLabel = updateAxesProperties (this, 'xlabel', string);
-    endfunction
-
-    function set.YLabel (this, string)
-      if (! ischar (string))
-        close (this.Parent);
-        error ("confusionchart: YLabel must be a string.");
-      endif
-
-      this.YLabel = updateAxesProperties (this, 'ylabel', string);
-    endfunction
-
-    function set.Title (this, string)
-      if (! ischar (string))
-        close (this.Parent);
-        error ("confusionchart: Title must be a string.");
-      endif
-
-      this.Title = updateAxesProperties (this, 'title', string);
-    endfunction
-
-    function set.FontName (this, string)
-      if (! ischar (string))
-        close (this.Parent);
-        error ("confusionchart: FontName must be a string.");
-      endif
-
-      this.FontName = updateTextProperties (this, 'fontname', string);
-    endfunction
-
-    function set.FontSize (this, value)
-      if (! isnumeric (value))
-        close (this.Parent);
-        error ("confusionchart: FontSize must be numeric.");
-      endif
-
-      this.FontSize = updateTextProperties (this, 'fontsize', value);
-    endfunction
-
-    function set.DiagonalColor (this, color)
-      if (ischar (color))
-        color = this.convertNamedColor (color);
-      endif
-
-      if (! (isvector (color) && length (color) == 3 ))
-        close (this.Parent);
-        error ("confusionchart: DiagonalColor must be a color.");
-      endif
-
-      this.DiagonalColor = color;
-      updateColorMap (this);
-    endfunction
-
-    function set.OffDiagonalColor (this, color)
-      if (ischar (color))
-        color = this.convertNamedColor (color);
-      endif
-
-      if (! (isvector (color) && length (color) == 3))
-        close (this.Parent);
-        error ("confusionchart: OffDiagonalColor must be a color.");
-      endif
-
-      this.OffDiagonalColor = color;
-      updateColorMap (this);
-    endfunction
-
-    function set.Normalization (this, string)
-      if (! any (strcmp (string, {'absolute', 'column-normalized',...
-        'row-normalized', 'total-normalized'})))
-        close (this.Parent);
-        error ("confusionchart: invalid value for Normalization.");
-      endif
-
-      this.Normalization = string;
-      updateChart (this);
-    endfunction
-
-    function set.ColumnSummary (this, string)
-      if (! any (strcmp (string, {'off', 'absolute', 'column-normalized',...
-        'total-normalized'})))
-        close (this.Parent);
-        error ("confusionchart: invalid value for ColumnSummary.");
-      endif
-
-      this.ColumnSummary = string;
-      updateChart (this);
-    endfunction
-
-    function set.RowSummary (this, string)
-      if (! any (strcmp (string, {'off', 'absolute', 'row-normalized',...
-        'total-normalized'})))
-        close (this.Parent);
-        error ("confusionchart: invalid value for RowSummary.");
-      endif
-
-      this.RowSummary = string;
-      updateChart (this);
-    endfunction
-
-    function set.GridVisible (this, string)
-      if (! any (strcmp (string, {'off', 'on'})))
-        close (this.Parent);
-        error ("confusionchart: invalid value for GridVisible.");
-      endif
-
-      this.GridVisible = string;
-      setGridVisibility (this);
-    endfunction
-
-    function set.HandleVisibility (this, string)
-      if (! any (strcmp (string, {'off', 'on', 'callback'})))
-        close (this.Parent);
-        error ("confusionchart: invalid value for HandleVisibility");
-      endif
-
-      set (this.hax, 'handlevisibility', string);
-    endfunction
-
-    function set.OuterPosition (this, vector)
-      if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
-        close (this.Parent);
-        error ("confusionchart: invalid value for OuterPosition");
-      endif
-
-      set (this.hax, 'outerposition', vector);
-    endfunction
-
-    function set.Position (this, vector)
-      if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
-        close (this.Parent);
-        error ("confusionchart: invalid value for Position");
-      endif
-
-      set (this.hax, 'position', vector);
-    endfunction
-
-    function set.Units (this, string)
-      if (! any (strcmp (string, {'centimeters', 'characters', 'inches', ...
-                                  'normalized', 'pixels', 'points'})))
-        close (this.Parent);
-        error ("confusionchart: invalid value for Units");
-      endif
-
-      set (this.hax, 'units', string);
     endfunction
 
     ## -*- texinfo -*-
