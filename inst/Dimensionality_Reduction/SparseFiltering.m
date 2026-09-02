@@ -24,33 +24,6 @@
 ## @code{sparsefilt} for extracting features from data.  Create one with
 ## @code{sparsefilt}; apply it to data with the @code{transform} method.
 ##
-## An object of this class has the following properties:
-##
-## @itemize
-## @item @qcode{TransformWeights}: the @math{P * Q} matrix of learned
-## transformation weights.
-## @item @qcode{Mu}, @qcode{Sigma}: the per-predictor mean and standard
-## deviation used when @qcode{'Standardize'} is @qcode{true} (empty otherwise),
-## each a column vector with one entry per predictor.
-## @item @qcode{FitInfo}: a structure with the @qcode{Iteration} indices of
-## the fit and the @qcode{Objective} value at each of them, both column
-## vectors of the same length.  @qcode{Iteration} counts from zero and
-## @qcode{Objective(1)} is the objective at the starting weights, so the last
-## entry of each is the solution the fit returned.
-##
-## The values along that trajectory are this implementation's own.  Under the
-## default @qcode{'quasinewton'} solver the minimisation runs through Octave's
-## @code{fminunc}; @qcode{'Solver', 'lbfgs'} selects the limited-memory BFGS
-## solver MATLAB uses.  Either way the steps taken from the same starting
-## weights differ from MATLAB's, so the length of the history and the
-## iteration counts differ, and on an objective this far from convex the
-## optimum reached need not be MATLAB's either.
-## @item @qcode{ModelParameters}: a structure of the options used for the fit.
-## @item @qcode{NumPredictors}, @qcode{NumLearnedFeatures}: the input dimension
-## @math{P} and the number of learned features @math{Q}.
-## @item @qcode{InitialTransformWeights}: the starting weights used by the fit.
-## @end itemize
-##
 ## @seealso{sparsefilt, rica}
 ## @end deftp
 
