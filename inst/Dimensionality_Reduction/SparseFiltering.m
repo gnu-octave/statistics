@@ -57,14 +57,113 @@
 classdef SparseFiltering
 
   properties (SetAccess = protected)
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} ModelParameters
+    ##
+    ## Options the fit used
+    ##
+    ## A scalar structure holding the options the fit ran with:
+    ## @qcode{IterationLimit}, @qcode{Lambda}, @qcode{Standardize},
+    ## @qcode{InitialTransformWeights}, @qcode{GradientTolerance},
+    ## @qcode{StepTolerance} and @qcode{Solver}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ModelParameters = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} NumPredictors
+    ##
+    ## Number of input predictors
+    ##
+    ## A positive integer @math{P}, the number of columns of the training
+    ## data.  This property is read-only.
+    ##
+    ## @end deftp
     NumPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} NumLearnedFeatures
+    ##
+    ## Number of learned features
+    ##
+    ## A positive integer @math{Q}, the number of features the learned
+    ## transformation produces.  This property is read-only.
+    ##
+    ## @end deftp
     NumLearnedFeatures = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} Mu
+    ##
+    ## Predictor means used when standardizing
+    ##
+    ## A column vector with one entry per predictor, the mean of each
+    ## column of the training data.  It is empty unless @qcode{'Standardize'}
+    ## was true.  This property is read-only.
+    ##
+    ## @end deftp
     Mu = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} Sigma
+    ##
+    ## Predictor standard deviations used when standardizing
+    ##
+    ## A column vector with one entry per predictor, the standard deviation
+    ## of each column of the training data.  It is empty unless
+    ## @qcode{'Standardize'} was true.  This property is read-only.
+    ##
+    ## @end deftp
     Sigma = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} FitInfo
+    ##
+    ## History of the fit
+    ##
+    ## A scalar structure with the fields @qcode{Iteration} and
+    ## @qcode{Objective}, both column vectors of the same length.
+    ## @qcode{Iteration} counts from zero and @qcode{Objective(1)} is the
+    ## objective at the starting weights, so the last entry of each is the
+    ## solution the fit returned.  This property is read-only.
+    ##
+    ## The trajectory is this implementation's own.  The default
+    ## @qcode{'quasinewton'} solver minimises through Octave's @code{fminunc},
+    ## and @qcode{'Solver', 'lbfgs'} selects the limited-memory BFGS solver
+    ## MATLAB uses.  Either way the steps taken from the same starting weights
+    ## differ from MATLAB's, so the length of the history and the iteration
+    ## counts differ, and on an objective this far from convex the optimum
+    ## reached need not be MATLAB's either.
+    ##
+    ## @end deftp
     FitInfo = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} TransformWeights
+    ##
+    ## Learned feature transformation weights
+    ##
+    ## A @math{P}-by-@math{Q} matrix of learned weights.  The @code{transform}
+    ## method applies it to data.  This property is read-only.
+    ##
+    ## @end deftp
     TransformWeights = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {SparseFiltering} {property} InitialTransformWeights
+    ##
+    ## Starting feature transformation weights
+    ##
+    ## A @math{P}-by-@math{Q} matrix, the weights the fit started from.  It
+    ## is the matrix given as @qcode{'InitialTransformWeights'} when one was
+    ## given, and the random start the fit drew otherwise.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     InitialTransformWeights = [];
+
   endproperties
 
   methods
