@@ -14,7 +14,7 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
+
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} {@var{L} =} labelsFromIndex (@var{C}, @var{idx})
 ## Pick class labels out of a @code{ClassNames} by index, in its own type.

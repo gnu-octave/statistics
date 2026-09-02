@@ -14,8 +14,7 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
-##
+
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} {[@var{gY}, @var{errmsg}] =} labelIndices (@var{C}, @var{Y})
 ## The class each observation of a response belongs to, for the whole response.

@@ -14,8 +14,7 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
-##
+
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} {@var{tf} =} classMembers (@var{Y}, @var{C}, @var{i})
 ## Which observations of a response belong to the @var{i}th class.
