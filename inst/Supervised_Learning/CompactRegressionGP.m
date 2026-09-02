@@ -17,15 +17,16 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{CMdl} =} CompactRegressionGP (@var{Mdl})
+## @deftp {statistics} CompactRegressionGP
 ##
-## Create a @qcode{CompactRegressionGP} object containing a Gaussian process
-## regression model without its training data.
+## Compact Gaussian process regression
 ##
-## @code{@var{CMdl} = CompactRegressionGP (@var{Mdl})} returns the compact form
-## of the @qcode{RegressionGP} model @var{Mdl}, keeping what is needed to
-## predict and dropping the rest.  It is what @code{compact} returns, and it is
-## not usually constructed directly.
+## A @code{CompactRegressionGP} object holds a Gaussian process regression
+## model without its training data, keeping what is needed to predict and
+## dropping the rest.
+##
+## Create a @code{CompactRegressionGP} object by using the @code{compact}
+## method of a @code{RegressionGP} object.
 ##
 ## A compact model keeps the active set it predicts from, the prediction
 ## weights, the covariance function and its parameters, the explicit basis and
@@ -40,7 +41,7 @@
 ## training predictors and the factorization can be rebuilt from it.
 ##
 ## @seealso{RegressionGP, fitrgp}
-## @end deftypefn
+## @end deftp
 
 classdef CompactRegressionGP
 
@@ -245,38 +246,6 @@ classdef CompactRegressionGP
   endproperties
 
   methods (Access = public)
-
-    ## Class constructor
-    function this = CompactRegressionGP (Mdl)
-
-      if (nargin < 1)
-        error ("CompactRegressionGP: too few input arguments.");
-      endif
-      if (! isa (Mdl, 'RegressionGP'))
-        error (strcat ("CompactRegressionGP: MDL must be a RegressionGP", ...
-                       " object."));
-      endif
-
-      this.PredictorNames = Mdl.PredictorNames;
-      this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
-      this.ResponseName = Mdl.ResponseName;
-      this.CategoricalPredictors = Mdl.CategoricalPredictors;
-      this.FitMethod = Mdl.FitMethod;
-      this.BasisFunction = Mdl.BasisFunction;
-      this.Beta = Mdl.Beta;
-      this.Sigma = Mdl.Sigma;
-      this.KernelFunction = Mdl.KernelFunction;
-      this.KernelInformation = Mdl.KernelInformation;
-      this.PredictMethod = Mdl.PredictMethod;
-      this.Alpha = Mdl.Alpha;
-      this.ActiveSetVectors = Mdl.ActiveSetVectors;
-      this.ActiveSetMethod = Mdl.ActiveSetMethod;
-      this.ActiveSetSize = Mdl.ActiveSetSize;
-      this.PredictorLocation = Mdl.PredictorLocation;
-      this.PredictorScale = Mdl.PredictorScale;
-      this.ResponseTransform = Mdl.ResponseTransform;
-
-    endfunction
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactRegressionGP} {@var{yFit} =} predict (@var{obj}, @var{XC})
@@ -504,6 +473,38 @@ classdef CompactRegressionGP
     function this = set.ResponseTransform (this, val)
       [this.RTfun, this.ResponseTransform] = ...
                      parseResponseTransform (val, 'CompactRegressionGP');
+    endfunction
+
+    ## Class constructor
+    function this = CompactRegressionGP (Mdl)
+
+      if (nargin < 1)
+        error ("CompactRegressionGP: too few input arguments.");
+      endif
+      if (! isa (Mdl, 'RegressionGP'))
+        error (strcat ("CompactRegressionGP: MDL must be a RegressionGP", ...
+                       " object."));
+      endif
+
+      this.PredictorNames = Mdl.PredictorNames;
+      this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
+      this.ResponseName = Mdl.ResponseName;
+      this.CategoricalPredictors = Mdl.CategoricalPredictors;
+      this.FitMethod = Mdl.FitMethod;
+      this.BasisFunction = Mdl.BasisFunction;
+      this.Beta = Mdl.Beta;
+      this.Sigma = Mdl.Sigma;
+      this.KernelFunction = Mdl.KernelFunction;
+      this.KernelInformation = Mdl.KernelInformation;
+      this.PredictMethod = Mdl.PredictMethod;
+      this.Alpha = Mdl.Alpha;
+      this.ActiveSetVectors = Mdl.ActiveSetVectors;
+      this.ActiveSetMethod = Mdl.ActiveSetMethod;
+      this.ActiveSetSize = Mdl.ActiveSetSize;
+      this.PredictorLocation = Mdl.PredictorLocation;
+      this.PredictorScale = Mdl.PredictorScale;
+      this.ResponseTransform = Mdl.ResponseTransform;
+
     endfunction
 
   endmethods

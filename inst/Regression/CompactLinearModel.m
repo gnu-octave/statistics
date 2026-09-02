@@ -106,8 +106,7 @@ classdef CompactLinearModel
   ## @end multitable
   ##
   ## Create a @code{CompactLinearModel} object by using the @code{compact}
-  ## method of a fitted @code{LinearModel} object, or the class constructor
-  ## directly.
+  ## method of a fitted @code{LinearModel} object.
   ##
   ## @seealso{LinearModel, compact}
   ## @end deftp
@@ -546,10 +545,6 @@ classdef CompactLinearModel
       varargout{1} = out;
     endfunction
 
-  endmethods
-
-  methods(Access = public)
-
     ## -*- texinfo -*-
     ## @deftypefn  {CompactLinearModel} {@var{cmdl} =} CompactLinearModel ()
     ## @deftypefnx {CompactLinearModel} {@var{cmdl} =} CompactLinearModel (@var{mdl})
@@ -621,6 +616,10 @@ classdef CompactLinearModel
       this.ModelFitVsNullModel  = mdl.ModelFitVsNullModel;
 
     endfunction
+
+  endmethods
+
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactLinearModel} {@var{ci} =} coefCI (@var{mdl})

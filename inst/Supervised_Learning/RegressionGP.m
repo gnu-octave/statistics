@@ -541,7 +541,23 @@ classdef RegressionGP
 
   methods (Access = public)
 
-    ## Class constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGP} {@var{obj} =} RegressionGP (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@dots{}, @var{name}, @var{value})
+    ##
+    ## Fit a Gaussian process regression model.
+    ##
+    ## @var{X} is an @math{N*P} numeric matrix of predictor data, one
+    ## observation per row, and @var{Y} is the continuous response of those
+    ## @math{N} observations.  The fit runs at construction, so @var{obj}
+    ## arrives fitted.
+    ##
+    ## The @var{name}/@var{value} pairs the fit accepts, and the validation
+    ## each one is held to, are listed in @code{help RegressionGP}.
+    ## @code{fitrgp} is the documented way to reach this constructor and
+    ## takes the same pairs.
+    ##
+    ## @end deftypefn
     function this = RegressionGP (X, Y, varargin)
 
       ## Check for sufficient number of input arguments

@@ -301,10 +301,6 @@ classdef CompactClassificationNaiveBayes
       fprintf ('\n');
     endfunction
 
-  endmethods
-
-  methods (Access = public)
-
     ## -*- texinfo -*-
     ## @deftypefn {CompactClassificationNaiveBayes} {@var{obj} =} CompactClassificationNaiveBayes (@var{Mdl})
     ##
@@ -344,6 +340,10 @@ classdef CompactClassificationNaiveBayes
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
+
+  endmethods
+
+  methods (Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationNaiveBayes} {@var{label} =} predict (@var{obj}, @var{XC})

@@ -602,7 +602,23 @@ classdef RegressionGAM
 
   methods (Access = public)
 
-    ## Class object constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {@var{obj} =} RegressionGAM (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionGAM} {@var{obj} =} RegressionGAM (@dots{}, @var{name}, @var{value})
+    ##
+    ## Fit a generalized additive model for regression.
+    ##
+    ## @var{X} is an @math{N*P} numeric matrix of predictor data, one
+    ## observation per row, and @var{Y} is the continuous response of those
+    ## @math{N} observations.  The fit runs at construction, so @var{obj}
+    ## arrives fitted.
+    ##
+    ## The @var{name}/@var{value} pairs the fit accepts, and the validation
+    ## each one is held to, are listed in @code{help RegressionGAM}.
+    ## @code{fitrgam} is the documented way to reach this constructor and
+    ## takes the same pairs.
+    ##
+    ## @end deftypefn
     function this = RegressionGAM (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)

@@ -17,14 +17,15 @@
 
 classdef CompactRegressionSVM
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{obj} =} CompactRegressionSVM (@var{Mdl})
+## @deftp {statistics} CompactRegressionSVM
 ##
-## Create a @qcode{CompactRegressionSVM} object, a support vector regression
+## Compact Support Vector Machine regression
+##
+## A @code{CompactRegressionSVM} object holds a support vector regression
 ## model that has dropped its training data.
 ##
-## @code{@var{obj} = CompactRegressionSVM (@var{Mdl})} returns the compact
-## form of the @qcode{RegressionSVM} object @var{Mdl}.  It is normally reached
-## through @code{compact (@var{Mdl})} rather than called directly.
+## Create a @code{CompactRegressionSVM} object by using the @code{compact}
+## method of a @code{RegressionSVM} object.
 ##
 ## The compact model keeps what is needed to answer about new data, the
 ## support vectors and their coefficients, the intercept, the kernel, the
@@ -36,7 +37,7 @@ classdef CompactRegressionSVM
 ## not exist here, there being no training data left to resubstitute.
 ##
 ## @seealso{RegressionSVM, fitrsvm}
-## @end deftypefn
+## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-

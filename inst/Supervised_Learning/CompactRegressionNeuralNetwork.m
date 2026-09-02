@@ -16,15 +16,15 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{obj} =} CompactRegressionNeuralNetwork (@var{Mdl})
+## @deftp {statistics} CompactRegressionNeuralNetwork
 ##
-## Create a @qcode{CompactRegressionNeuralNetwork} object, a neural network
+## Compact neural network regression
+##
+## A @code{CompactRegressionNeuralNetwork} object holds a neural network
 ## regression model that has dropped its training data.
 ##
-## @code{@var{obj} = CompactRegressionNeuralNetwork (@var{Mdl})} returns the
-## compact form of the @qcode{RegressionNeuralNetwork} object @var{Mdl}.  It is
-## normally reached through @code{compact (@var{Mdl})} rather than called
-## directly.
+## Create a @code{CompactRegressionNeuralNetwork} object by using the
+## @code{compact} method of a @code{RegressionNeuralNetwork} object.
 ##
 ## The compact model keeps what is needed to answer about new data, the layer
 ## weights and biases, the activations, the standardization and the response
@@ -36,7 +36,7 @@
 ## training data left to resubstitute.
 ##
 ## @seealso{RegressionNeuralNetwork, fitrnet}
-## @end deftypefn
+## @end deftp
 
 classdef CompactRegressionNeuralNetwork
 
