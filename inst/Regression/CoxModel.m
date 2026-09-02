@@ -76,58 +76,192 @@ classdef CoxModel
 
   properties (GetAccess = public, SetAccess = protected)
 
-    ## Table of coefficient estimates, standard errors, z-statistics, and
-    ## p-values, with one row per encoded predictor column.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} Coefficients
+    ##
+    ## Coefficient estimates and their statistics
+    ##
+    ## A table with one row per encoded predictor column, its row names the
+    ## encoded column names, and the variables @qcode{Beta}, @qcode{SE},
+    ## @qcode{zStat} and @qcode{pValue}.  This property is read-only.
+    ##
+    ## @end deftp
     Coefficients = [];
 
-    ## Number of predictors in the model.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer counting the predictor variables of the model,
+    ## before any categorical predictor is encoded.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     NumPredictors = [];
 
-    ## Maximized Cox partial log-likelihood.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} LogLikelihood
+    ##
+    ## Log-likelihood of the fitted model
+    ##
+    ## A scalar, the maximised Cox partial log-likelihood.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     LogLikelihood = [];
 
-    ## Estimated baseline cumulative hazard: a two-column matrix of event times
-    ## and cumulative hazard, gaining a third column of stratum labels for a
-    ## stratified model.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} Hazard
+    ##
+    ## Estimated baseline cumulative hazard
+    ##
+    ## A numeric matrix of event times in its first column and the cumulative
+    ## hazard at them in its second.  A stratified model adds a third column
+    ## holding the stratum each row belongs to.  This property is read-only.
+    ##
+    ## @end deftp
     Hazard = [];
 
-    ## Cell array of predictor variable names.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} PredictorNames
+    ##
+    ## Names of the predictor variables
+    ##
+    ## A cell array of character vectors with one name per predictor.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     PredictorNames = {};
 
-    ## Name of the response variable.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} ResponseName
+    ##
+    ## Name of the response variable
+    ##
+    ## A character vector naming the response, which is the survival time.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ResponseName = 'y';
 
-    ## LinearFormula object describing the model formula.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} Formula
+    ##
+    ## Model formula
+    ##
+    ## A @code{LinearFormula} object describing the terms of the model.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     Formula = [];
 
-    ## Predictor values at which the baseline hazard is evaluated.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} Baseline
+    ##
+    ## Predictor values the baseline hazard is evaluated at
+    ##
+    ## The baseline the fit used, one row per stratum.  It is reported as it
+    ## was given when @code{fitcox} was given one, a scalar staying a scalar,
+    ## and otherwise holds the rows the fit was centred on.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     Baseline = [];
 
-    ## Distinct stratification levels used in the fit; empty when the model is
-    ## not stratified.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} Stratification
+    ##
+    ## Stratification levels used in the fit
+    ##
+    ## The distinct levels of the stratification variable.  It is empty when
+    ## the model is not stratified.  This property is read-only.
+    ##
+    ## @end deftp
     Stratification = [];
 
-    ## Estimated covariance matrix of the coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} CoefficientCovariance
+    ##
+    ## Estimated covariance of the coefficients
+    ##
+    ## A square numeric matrix, one row and column per encoded predictor
+    ## column, holding the estimated covariance of the estimates in
+    ## @qcode{Coefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientCovariance = [];
 
-    ## Standard errors of the coefficients.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} StandardError
+    ##
+    ## Standard errors of the coefficients
+    ##
+    ## A numeric column vector, the square roots of the diagonal of
+    ## @qcode{CoefficientCovariance}, which is column @qcode{SE} of
+    ## @qcode{Coefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     StandardError = [];
 
-    ## Table of residuals (CoxSnell, Deviance, Martingale, Schoenfeld,
-    ## ScaledSchoenfeld, Score, ScaledScore), one row per observation.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} Residuals
+    ##
+    ## Residuals of the fitted model
+    ##
+    ## A table with one row per observation and the variables
+    ## @qcode{CoxSnell}, @qcode{Deviance}, @qcode{Martingale},
+    ## @qcode{Schoenfeld}, @qcode{ScaledSchoenfeld}, @qcode{Score} and
+    ## @qcode{ScaledScore}.  This property is read-only.
+    ##
+    ## @end deftp
     Residuals = [];
 
-    ## P-value per predictor for the proportional hazards assumption.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} ProportionalHazardsPValue
+    ##
+    ## Proportional hazards test, one predictor at a time
+    ##
+    ## A numeric vector with one @math{p} value per predictor, testing whether
+    ## that predictor's effect is constant over time.  A small value is
+    ## evidence against the proportional hazards assumption.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ProportionalHazardsPValue = [];
 
-    ## P-value for the proportional hazards assumption over the whole model.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} ProportionalHazardsPValueGlobal
+    ##
+    ## Proportional hazards test over the whole model
+    ##
+    ## A scalar @math{p} value testing the proportional hazards assumption for
+    ## all predictors at once.  This property is read-only.
+    ##
+    ## @end deftp
     ProportionalHazardsPValueGlobal = [];
 
-    ## P-value of the likelihood ratio test against the model with no
-    ## predictors.
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} LikelihoodRatioTestPValue
+    ##
+    ## Likelihood ratio test against the null model
+    ##
+    ## A scalar @math{p} value comparing the fitted model with the model that
+    ## carries no predictors.  This property is read-only.
+    ##
+    ## @end deftp
     LikelihoodRatioTestPValue = [];
 
-    ## Table of per-variable information (class, range, in-model, categorical).
+    ## -*- texinfo -*-
+    ## @deftp {CoxModel} {property} VariableInfo
+    ##
+    ## Information about the variables
+    ##
+    ## A table with one row per variable, its row names the variable names,
+    ## and the variables @qcode{Class}, @qcode{Range}, @qcode{InModel} and
+    ## @qcode{IsCategorical}.  This property is read-only.
+    ##
+    ## @end deftp
     VariableInfo = [];
 
   endproperties
