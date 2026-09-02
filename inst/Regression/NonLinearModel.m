@@ -61,30 +61,297 @@
 classdef NonLinearModel
 
   properties (GetAccess = public, SetAccess = protected)
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} Coefficients
+    ##
+    ## Coefficient estimates and their statistics
+    ##
+    ## A table with one row per coefficient, its row names taken from
+    ## @qcode{CoefficientNames}, and the variables @qcode{Estimate},
+    ## @qcode{SE}, @qcode{tStat} and @qcode{pValue}.  @qcode{tStat} is the
+    ## estimate divided by its standard error and @qcode{pValue} is the
+    ## two-sided @math{t} test of a zero coefficient on @qcode{DFE} degrees
+    ## of freedom.  This property is read-only.
+    ##
+    ## @end deftp
     Coefficients = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} CoefficientNames
+    ##
+    ## Names of the coefficients
+    ##
+    ## A cell array of character vectors with one name per coefficient, in
+    ## the order the model function expects them.  The names default to
+    ## @qcode{'b1'}, @qcode{'b2'} and so on, unless @code{fitnlm} was given a
+    ## list of its own.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientNames = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} CoefficientCovariance
+    ##
+    ## Estimated covariance of the coefficients
+    ##
+    ## A square numeric matrix, one row and column per coefficient, holding
+    ## the estimated covariance of the estimates in @qcode{Coefficients}.
+    ## The square roots of its diagonal are the standard errors reported in
+    ## column @qcode{SE} of that table.  This property is read-only.
+    ##
+    ## @end deftp
     CoefficientCovariance = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} NumCoefficients
+    ##
+    ## Number of coefficients
+    ##
+    ## A positive integer counting the coefficients of the model, which is
+    ## the number of elements of the starting vector handed to
+    ## @code{fitnlm}.  This property is read-only.
+    ##
+    ## @end deftp
     NumCoefficients = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} NumEstimatedCoefficients
+    ##
+    ## Number of estimated coefficients
+    ##
+    ## A positive integer counting the coefficients estimated from the data.
+    ## A nonlinear fit estimates every coefficient it carries, so this equals
+    ## @qcode{NumCoefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     NumEstimatedCoefficients = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer counting the predictor variables, that is the
+    ## columns of the predictor matrix used for the fit.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     NumPredictors = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer counting the observations used for the fit, after
+    ## the rows named by @qcode{'Exclude'} and the rows carrying missing
+    ## values have been dropped.  This property is read-only.
+    ##
+    ## @end deftp
     NumObservations = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} DFE
+    ##
+    ## Error degrees of freedom
+    ##
+    ## A nonnegative integer, @qcode{NumObservations} less
+    ## @qcode{NumCoefficients}.  This property is read-only.
+    ##
+    ## @end deftp
     DFE = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} MSE
+    ##
+    ## Mean squared error
+    ##
+    ## A positive scalar holding the estimated variance of the error term.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     MSE = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} RMSE
+    ##
+    ## Root mean squared error
+    ##
+    ## A positive scalar, the square root of @qcode{MSE}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     RMSE = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} SSE
+    ##
+    ## Error sum of squares
+    ##
+    ## A nonnegative scalar, the sum of the squared residuals weighted by the
+    ## observation weights.  This property is read-only.
+    ##
+    ## @end deftp
     SSE = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} SST
+    ##
+    ## Total sum of squares
+    ##
+    ## A nonnegative scalar, the weighted sum of squared deviations of the
+    ## response about its weighted mean.  Because the model is nonlinear,
+    ## @qcode{SST} does not in general equal @qcode{SSR} plus @qcode{SSE}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     SST = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} SSR
+    ##
+    ## Regression sum of squares
+    ##
+    ## A nonnegative scalar, the weighted sum of squared deviations of the
+    ## fitted values about the weighted mean of the response.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
     SSR = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} LogLikelihood
+    ##
+    ## Log-likelihood of the fitted model
+    ##
+    ## A scalar, the Gaussian log-likelihood at the estimates, formed with
+    ## the maximum-likelihood error variance @qcode{SSE} divided by
+    ## @qcode{NumObservations}.  This property is read-only.
+    ##
+    ## @end deftp
     LogLikelihood = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} ModelCriterion
+    ##
+    ## Information criteria
+    ##
+    ## A scalar structure with the fields @qcode{AIC}, @qcode{AICc},
+    ## @qcode{BIC} and @qcode{CAIC}.  All four count the coefficients as the
+    ## only parameters; the error variance is not counted.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ModelCriterion = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} Rsquared
+    ##
+    ## Coefficient of determination
+    ##
+    ## A scalar structure with the fields @qcode{Ordinary} and
+    ## @qcode{Adjusted}.  @qcode{Ordinary} is one less the ratio of
+    ## @qcode{SSE} to @qcode{SST}, and @qcode{Adjusted} corrects that ratio
+    ## for the error degrees of freedom.  This property is read-only.
+    ##
+    ## @end deftp
     Rsquared = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} Residuals
+    ##
+    ## Residuals of the fitted model
+    ##
+    ## A table with one row per observation used for the fit and the
+    ## variables @qcode{Raw}, @qcode{Pearson}, @qcode{Standardized} and
+    ## @qcode{Studentized}.  This property is read-only.
+    ##
+    ## @end deftp
     Residuals = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} Fitted
+    ##
+    ## Fitted response values
+    ##
+    ## A numeric column vector with one fitted value per observation used for
+    ## the fit.  This property is read-only.
+    ##
+    ## @end deftp
     Fitted = [];
-    ErrorModelInfo = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} Robust
+    ##
+    ## Robust fitting options
+    ##
+    ## Empty when the model was fitted by ordinary least squares.  When
+    ## @code{fitnlm} was given a robust weight function, a scalar structure
+    ## whose field @qcode{RobustWgtFun} names it.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     Robust = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} Formula
+    ##
+    ## Model formula
+    ##
+    ## A character vector showing the fitted model, built from the model
+    ## function together with the coefficient names and the response name.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Formula = '';
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} ResponseName
+    ##
+    ## Name of the response variable
+    ##
+    ## A character vector naming the response.  It defaults to @qcode{'y'}
+    ## for a fit from matrices and is the name of the response column for a
+    ## fit from a table.  This property is read-only.
+    ##
+    ## @end deftp
     ResponseName = 'y';
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} PredictorNames
+    ##
+    ## Names of the predictor variables
+    ##
+    ## A cell array of character vectors with one name per predictor.  The
+    ## names default to @qcode{'x1'}, @qcode{'x2'} and so on for a fit from
+    ## matrices, and are the column names for a fit from a table.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     PredictorNames = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {NonLinearModel} {property} VariableNames
+    ##
+    ## Names of all variables
+    ##
+    ## A cell array of character vectors holding @qcode{PredictorNames}
+    ## followed by @qcode{ResponseName}.  This property is read-only.
+    ##
+    ## @end deftp
     VariableNames = {};
+
+  endproperties
+
+  ## Kept out of the documented surface.  MATLAB carries the same information
+  ## on its own class and does not expose it, so reading it here is an
+  ## extension of ours.
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+
+    ## The error model information that @code{nlinfit} returns for the fit.
+    ErrorModelInfo = [];
+
   endproperties
 
   properties (Access = private, Hidden)
