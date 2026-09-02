@@ -51,24 +51,183 @@ classdef gmdistribution
    ## @end deftypefn
 
    properties
-      mu                        ## means
-      Sigma                     ## covariances
-      ComponentProportion       ## mixing proportions
-      DistributionName          ## "gaussian mixture distribution"
-      NumComponents             ## Number of mixture components
-      NumVariables              ## Dimension d of each Gaussian component
 
-      CovarianceType            ## 'diagonal' if DiagonalCovariance, 'full' othw
-      SharedCovariance          ## true if all components have equal covariance
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} mu
+      ##
+      ## Component means
+      ##
+      ## A k-by-d matrix holding the mean of each of the k components, one
+      ## per row, where d is the number of variables.  This property is
+      ## read-only.
+      ##
+      ## @end deftp
+      mu
 
-      ## Set by a call to gmdistribution.fit  or  fitgmdist
-      AIC                       ## Akaike Information Criterion
-      BIC                       ## Bayes Information Criterion
-      Converged                 ## true  if algorithm converged by MaxIter
-      NegativeLogLikelihood     ## Negative of log-likelihood
-      NlogL                     ## Negative of log-likelihood
-      NumIterations             ## Number of iterations
-      RegularizationValue       ## const added to diag of cov to make +ve def
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} Sigma
+      ##
+      ## Component covariances
+      ##
+      ## The covariances of the components, in the form they were given in.
+      ## A full covariance per component is d-by-d-by-k, a diagonal one per
+      ## component 1-by-d-by-k, a full covariance shared by every component
+      ## d-by-d, and a shared diagonal one 1-by-d.  This property is
+      ## read-only.
+      ##
+      ## @end deftp
+      Sigma
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} ComponentProportion
+      ##
+      ## Mixing proportions
+      ##
+      ## A 1-by-k row vector holding the proportion of each component.  The
+      ## proportions are scaled to sum to 1, and are all equal when none was
+      ## given.  This property is read-only.
+      ##
+      ## @end deftp
+      ComponentProportion
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} DistributionName
+      ##
+      ## Name of the distribution
+      ##
+      ## The character vector @qcode{'gaussian mixture distribution'}.  This
+      ## property is read-only.
+      ##
+      ## @end deftp
+      DistributionName
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} NumComponents
+      ##
+      ## Number of mixture components
+      ##
+      ## A positive integer, the number of rows of @code{mu}.  This property
+      ## is read-only.
+      ##
+      ## @end deftp
+      NumComponents
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} NumVariables
+      ##
+      ## Number of variables
+      ##
+      ## A positive integer, the dimension of each component, which is the
+      ## number of columns of @code{mu}.  This property is read-only.
+      ##
+      ## @end deftp
+      NumVariables
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} CovarianceType
+      ##
+      ## Form of the component covariances
+      ##
+      ## A character vector, @qcode{'diagonal'} when each covariance was
+      ## given as a row of variances and @qcode{'full'} when it was given as
+      ## a matrix.  This property is read-only.
+      ##
+      ## @end deftp
+      CovarianceType
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} SharedCovariance
+      ##
+      ## Whether the components share one covariance
+      ##
+      ## A logical scalar, true when a single covariance was given for every
+      ## component and false when one was given per component.  This property
+      ## is read-only.
+      ##
+      ## @end deftp
+      SharedCovariance
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} AIC
+      ##
+      ## Akaike information criterion
+      ##
+      ## A scalar, twice the negative log-likelihood plus twice the number of
+      ## estimated parameters.  It is empty unless the object came from
+      ## @code{fitgmdist}.  This property is read-only.
+      ##
+      ## @end deftp
+      AIC
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} BIC
+      ##
+      ## Bayesian information criterion
+      ##
+      ## A scalar, twice the negative log-likelihood plus the number of
+      ## estimated parameters times the log of the number of observations.
+      ## It is empty unless the object came from @code{fitgmdist}.  This
+      ## property is read-only.
+      ##
+      ## @end deftp
+      BIC
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} Converged
+      ##
+      ## Whether the fit converged
+      ##
+      ## A logical scalar, true when the fit reached its tolerance within the
+      ## iteration limit.  It is empty unless the object came from
+      ## @code{fitgmdist}.  This property is read-only.
+      ##
+      ## @end deftp
+      Converged
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} NegativeLogLikelihood
+      ##
+      ## Negative log-likelihood at the fit
+      ##
+      ## A scalar, the negative of the log-likelihood of the data under the
+      ## fitted mixture.  It is empty unless the object came from
+      ## @code{fitgmdist}.  This property is read-only.
+      ##
+      ## @end deftp
+      NegativeLogLikelihood
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} NumIterations
+      ##
+      ## Iterations the fit took
+      ##
+      ## A positive integer.  It is empty unless the object came from
+      ## @code{fitgmdist}.  This property is read-only.
+      ##
+      ## @end deftp
+      NumIterations
+
+      ## -*- texinfo -*-
+      ## @deftp {gmdistribution} {property} RegularizationValue
+      ##
+      ## Regularization added to the covariance diagonal
+      ##
+      ## A nonnegative scalar added to the diagonal of each covariance to
+      ## keep it positive definite.  It is empty unless the object came from
+      ## @code{fitgmdist}.  This property is read-only.
+      ##
+      ## @end deftp
+      RegularizationValue
+
+   endproperties
+
+   ## Kept out of the documented surface.  MATLAB carries the same alias and
+   ## hides it, along with eight other legacy names this class does not have.
+   properties (Hidden)
+
+      ## A second name for NegativeLogLikelihood, holding the same value.
+      NlogL
+
    endproperties
 
    properties(Access = private)
@@ -76,8 +235,33 @@ classdef gmdistribution
    endproperties
 
    methods
-      ########################################
-      ## Constructor
+      ## -*- texinfo -*-
+      ## @deftypefn  {gmdistribution} {@var{obj} =} gmdistribution (@var{mu}, @var{Sigma})
+      ## @deftypefnx {gmdistribution} {@var{obj} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p})
+      ## @deftypefnx {gmdistribution} {@var{obj} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
+      ##
+      ## Create a Gaussian mixture distribution.
+      ##
+      ## @var{mu} is a k-by-d matrix holding the mean of each of the k
+      ## components, one per row, where d is the number of variables.
+      ##
+      ## @var{Sigma} holds the covariances in one of four forms.  A full
+      ## covariance per component is d-by-d-by-k and a diagonal one per
+      ## component is 1-by-d-by-k, while a single d-by-d matrix or a single
+      ## 1-by-d row of variances is shared by every component.  The form given
+      ## sets @code{CovarianceType} and @code{SharedCovariance}.
+      ##
+      ## @var{p} is a vector of k mixing proportions, scaled to sum to 1.  A
+      ## proportion may not be negative and they may not all be zero.  When
+      ## @var{p} is omitted or empty the components are equally weighted.
+      ##
+      ## @var{extra} carries the results of a fit and is passed by
+      ## @code{fitgmdist}.  It fills @code{AIC}, @code{BIC},
+      ## @code{Converged}, @code{NegativeLogLikelihood},
+      ## @code{NumIterations} and @code{RegularizationValue}, which stay
+      ## empty for an object built by hand.
+      ##
+      ## @end deftypefn
       function obj = gmdistribution (mu,sigma,p = [],extra = [])
         obj.DistributionName = 'gaussian mixture distribution';
         obj.mu = mu;
