@@ -332,7 +332,21 @@ classdef CompactClassificationSVM
       end_try_catch
     endfunction
 
-    ## constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationSVM} {@var{obj} =} CompactClassificationSVM (@var{Mdl})
+    ## @deftypefnx {CompactClassificationSVM} {@var{obj} =} CompactClassificationSVM ()
+    ##
+    ## Create a @code{CompactClassificationSVM} object.
+    ##
+    ## @var{Mdl} is the @code{ClassificationSVM} object to
+    ## compact.  The documented way to reach this constructor is the
+    ## @code{compact} method.
+    ##
+    ## Called with no arguments it returns an object with its properties
+    ## empty, which is how a saved model is rebuilt before its values are
+    ## filled in.
+    ##
+    ## @end deftypefn
     function this = CompactClassificationSVM (Mdl = [])
 
       ## Check for appropriate class

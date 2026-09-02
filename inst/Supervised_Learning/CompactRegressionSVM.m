@@ -237,7 +237,21 @@ classdef CompactRegressionSVM
       [this.RTfun, this.ResponseTransform] = parseResponseTransform (val, name);
     endfunction
 
-    ## constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactRegressionSVM} {@var{obj} =} CompactRegressionSVM (@var{Mdl})
+    ## @deftypefnx {CompactRegressionSVM} {@var{obj} =} CompactRegressionSVM ()
+    ##
+    ## Create a @code{CompactRegressionSVM} object.
+    ##
+    ## @var{Mdl} is the @code{RegressionSVM} object to
+    ## compact.  The documented way to reach this constructor is the
+    ## @code{compact} method.
+    ##
+    ## Called with no arguments it returns an object with its properties
+    ## empty, which is how a saved model is rebuilt before its values are
+    ## filled in.
+    ##
+    ## @end deftypefn
     function this = CompactRegressionSVM (Mdl = [])
 
       ## Check for appropriate class

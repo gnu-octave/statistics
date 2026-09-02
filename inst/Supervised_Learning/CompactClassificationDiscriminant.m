@@ -610,7 +610,21 @@ classdef CompactClassificationDiscriminant
       endif
     endfunction
 
-    ## Constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationDiscriminant} {@var{obj} =} CompactClassificationDiscriminant (@var{Mdl})
+    ## @deftypefnx {CompactClassificationDiscriminant} {@var{obj} =} CompactClassificationDiscriminant ()
+    ##
+    ## Create a @code{CompactClassificationDiscriminant} object.
+    ##
+    ## @var{Mdl} is the @code{ClassificationDiscriminant} object to
+    ## compact.  The documented way to reach this constructor is the
+    ## @code{compact} method.
+    ##
+    ## Called with no arguments it returns an object with its properties
+    ## empty, which is how a saved model is rebuilt before its values are
+    ## filled in.
+    ##
+    ## @end deftypefn
     function this = CompactClassificationDiscriminant (Mdl = [])
 
       ## Check for appropriate class

@@ -386,7 +386,21 @@ classdef CompactClassificationGAM
       this.STfun = f;
     endfunction
 
-    ## Class object constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationGAM} {@var{obj} =} CompactClassificationGAM (@var{Mdl})
+    ## @deftypefnx {CompactClassificationGAM} {@var{obj} =} CompactClassificationGAM ()
+    ##
+    ## Create a @code{CompactClassificationGAM} object.
+    ##
+    ## @var{Mdl} is the @code{ClassificationGAM} object to
+    ## compact.  The documented way to reach this constructor is the
+    ## @code{compact} method.
+    ##
+    ## Called with no arguments it returns an object with its properties
+    ## empty, which is how a saved model is rebuilt before its values are
+    ## filled in.
+    ##
+    ## @end deftypefn
     function this = CompactClassificationGAM (Mdl = [])
 
       ## Check for appropriate class

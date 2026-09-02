@@ -475,7 +475,17 @@ classdef CompactRegressionGP
                      parseResponseTransform (val, 'CompactRegressionGP');
     endfunction
 
-    ## Class constructor
+    ## -*- texinfo -*-
+    ## @deftypefn {CompactRegressionGP} {@var{obj} =} CompactRegressionGP (@var{Mdl})
+    ##
+    ## Create a @code{CompactRegressionGP} object.
+    ##
+    ## @var{Mdl} is the @code{RegressionGP} object to
+    ## compact, and is required: the compact model has no training data to
+    ## build itself from.  The documented way to reach this constructor is
+    ## the @code{compact} method.
+    ##
+    ## @end deftypefn
     function this = CompactRegressionGP (Mdl)
 
       if (nargin < 1)
