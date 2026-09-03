@@ -1122,6 +1122,11 @@
     `randg`, `rande` and `randp` separately, and the legacy `('seed', N)` form
     selects a different generator, so many demos that looked seeded were not.
 
+    The 29 `+prob` distribution class constructors answer `help`: each carried
+    no help text at all and now gives its call signature, names its parameters
+    and states their defaults.  They stay hidden, `makedist` being the usual
+    way to create a distribution object.
+
  ** johnsrnd:
     `quantiles` may be given as a 2-by-4 matrix, the first row four strictly
     increasing, evenly spaced standard normal quantiles and the second row the
