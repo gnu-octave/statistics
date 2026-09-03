@@ -1011,3 +1011,143 @@
     member documented outside texinfo made the class renderer fail and fall
     back silently; both are rendered as classes again, restoring 105 and 72
     documented members.
+
+ Summary of important user-visible changes for statistics 1.9.2:
+-------------------------------------------------------------------
+
+ New functions and methods:
+ ==========================
+
+ ** rica, ReconstructionICA:
+    a `'NonGaussianityIndicator'` name-value pair, and the read-only property
+    of the same name, giving one sign per learned feature: `+1` seeks a
+    super-Gaussian feature and `-1` a sub-Gaussian one.  It sets the sign that
+    feature's contrast term carries in the objective, so it moves the fit.  The
+    default is all `+1`, which is the fit as it stood.
+
+ Improvements:
+ =============
+
+ ** binoinv:
+    an exactly attained probability is reached rather than stepped past, so
+    the median of a symmetric binomial is right: `binoinv (0.5, 5, 0.5)`
+    returned 3 and `binoinv (0.5, 2001, 0.5)` returned 1001.  A `p` of 1
+    returns `n` rather than wherever the CDF first saturates, which was 206
+    for 500 trials at 0.25.  An answer above 500 no longer errors on a row
+    vector, on a vector `n`, or with a NaN among the probabilities.
+
+ ** prob.BinomialDistribution:
+    `median` and `icdf` at 0.5 follow the `binoinv` fix, so
+    `median (prob.BinomialDistribution (5, 0.5))` is 2 rather than 3 on
+    platforms whose `betainc` is less accurate.
+
+ ** nbinpdf:
+    a density is returned wherever one exists.  The three factors of the
+    formula left the range of a double before their product did, so
+    `nbinpdf (1000, 1001, 0.5)` was `Inf` where the density peaks at 0.0089,
+    and `NaN` past the mode.
+
+ ** nbincdf:
+    follows the `nbinpdf` fix.  The lower tail sums the density, so it read 1
+    from 308 failures on for 1001 successes, where the value is 4.2e-39, `NaN`
+    past the mode, and was not monotone.
+
+ ** nbininv:
+    an exactly attained probability is reached rather than stepped past.  For
+    `r` successes at a probability of 0.5 the median is exactly `r-1`, and
+    `nbininv (0.5, r, 0.5)` returned `r` for 188 of the 399 values of `r` from
+    2 to 400, `nbininv (0.5, 101, 0.5)` among them.
+
+ ** prob.NegativeBinomialDistribution:
+    `median` and `icdf` follow the `nbininv` fix, so
+    `median (prob.NegativeBinomialDistribution (101, 0.5))` is 100 rather
+    than 101.
+
+ ** documentation:
+    `disp` and `display` are hidden on every class that defines one, which was
+    already true of 141 of the 147 and is now true of all of them.  They no
+    longer appear in `methods (CLASS)` or in the online pages for `anova`,
+    `paretotails`, `NonLinearModel`, `ConfusionMatrixChart`, `gmdistribution`
+    and `rocmetrics`.  Calling them is unaffected, and `NonLinearModel`'s
+    `subsref` is hidden with them.
+
+    `gmdistribution`'s methods are documented: `cdf`, `cluster`, `mahal`,
+    `pdf`, `posterior`, `random` and the static `fit` carried no help text at
+    all and now answer `help gmdistribution.METHOD`.
+
+    `help` headings name the package rather than a category that does not
+    exist: `copularnd`, `createns` and `normplot` were headed `Function File`,
+    and `loadmodel` was headed `ClassificationSVM`, a class it is not part of.
+
+    `NonLinearModel` and `LinearMixedModel` document their properties: all 23
+    and all 17 carried no help text at all and now answer
+    `help CLASS.PROPERTY`.  `NonLinearModel`'s `ErrorModelInfo` is hidden,
+    MATLAB not carrying it in its public interface, so
+    `properties ('NonLinearModel')` lists 23 names rather than 24; reading
+    `MDL.ErrorModelInfo` is unaffected.
+
+    `CoxModel`, `GeneralizedLinearMixedModel` and `gmdistribution` document
+    their properties: all 16, all 14 and all 14 carried no help text and now
+    answer `help CLASS.PROPERTY`, and `gmdistribution`'s constructor is
+    documented.  `gmdistribution`'s `NlogL` is hidden, MATLAB hiding the same
+    alias, so `properties ('gmdistribution')` lists 14 names rather than 15;
+    reading `OBJ.NlogL` is unaffected and `NegativeLogLikelihood` carries the
+    same value.
+
+    `ConfusionMatrixChart`'s fifteen property set methods move into a hidden
+    block, so `set.XLabel` and its fourteen siblings no longer appear as
+    methods in the online pages.  Assigning the properties is unaffected.
+
+    `ReconstructionICA` and `SparseFiltering` document their properties: the
+    same eight on each carried no help text and now answer
+    `help CLASS.PROPERTY`.  `FitInfo` states that the fitting trajectory is
+    this implementation's own, so its length and its iteration counts differ
+    from MATLAB's under either solver.
+
+    Six more property set methods move into hidden blocks, in
+    `ClassificationKernel`, `ClassificationLinear`, `RegressionKernel`,
+    `RegressionLinear`, `RegressionGP` and `CompactRegressionGP`, so
+    `set.ScoreTransform` and `set.ResponseTransform` no longer appear as
+    methods in the online pages.  Assigning the properties is unaffected.
+
+    `RegressionGP` and `RegressionGAM` document their constructors, and every
+    compact class answers `help CLASS.CLASS` with real text where eight of the
+    ten had returned a one-word source comment.  All ten hide the constructor,
+    as MATLAB does, so `methods` no longer lists it; `compact` is named in
+    every one of their class descriptions as the way to create one.
+
+    Every demo that draws random numbers seeds each generator stream it uses,
+    so `demo` gives the same result twice and a rebuild of the online pages
+    diffs only where something really changed.  Octave seeds `rand`/`randn`,
+    `randg`, `rande` and `randp` separately, and the legacy `('seed', N)` form
+    selects a different generator, so many demos that looked seeded were not.
+
+ ** johnsrnd:
+    `quantiles` may be given as a 2-by-4 matrix, the first row four strictly
+    increasing, evenly spaced standard normal quantiles and the second row the
+    data quantiles at them; a four-element vector still means the fixed
+    `[-1.5, -0.5, 0.5, 1.5]` points.  The `SL` family returned a curve of the
+    wrong sign whenever `delta` was negative, `lambda` having been fixed at 1
+    rather than taken as `sign (delta)`.  A `NaN` among the quantiles is
+    refused instead of being carried into the fit.
+
+ ** fitclinear, fitrlinear:
+    a fit that stops because the line search cannot improve the objective says
+    so, reporting `TerminationCode` -11 and `'Unable to find a step decreasing
+    the objective.'` as MATLAB does.  Every exit but three was reported as
+    `'Iteration limit exceeded.'`, so a fit that gave up after 59 iterations of
+    a limit of 1000 claimed to have run out of iterations.
+
+ ** lasso:
+    `'Standardize'` is forced to false, with a warning, when `'Intercept'` is
+    false.  The two were accepted together and the predictors were standardised
+    anyway.
+
+ ** mixed effects models:
+    `fitlme`, `fitlmematrix`, `fitglme`, `LinearMixedModel` and
+    `GeneralizedLinearMixedModel` fit markedly more accurately.  Both profiled
+    deviances are now optimised with their closed form gradients rather than by
+    finite differences, every matrix is symmetrised before it is factored, and
+    the fitting path forms no explicit inverse.  On a balanced one-way fixture,
+    where REML must equal the ANOVA estimate exactly, the variance component
+    was 6.9e-07 out and is now 1.4e-09.
