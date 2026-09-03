@@ -62,7 +62,7 @@ function v = nanvar (x, w, dim)
   if (! isnumeric (x) && ! islogical (x))
     error ("nanvar: X must be numeric.");
   endif
-  if (isempty (x))
+  if ((nargin < 2 || (nargin == 2 && isempty (w))) && isempty (x) && ndims (x) == 2 && size (x, 1) == 0 && size (x, 2) == 0)
     v = NaN;
     return;
   endif
