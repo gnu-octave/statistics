@@ -1210,7 +1210,7 @@ partialcorr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2325
+# length: 2609
 statistics: rho = partialcorr ( x )
 statistics: rho = partialcorr ( x , z )
 statistics: rho = partialcorr ( x , y , z )
@@ -1239,6 +1239,11 @@ correlation between x (:,i) and y (:,j) .
 [ rho , pval ] = partialcorr (&hellip;) also returns pval ,
 a matrix of p-values for testing the hypothesis of no partial correlation
 against the alternative selected by 'Tail' .
+
+A coefficient is NaN where the controlling variables explain either
+of the two variables completely, since the partial correlation is then
+undefined: no variation is left to correlate. This covers a controlling
+variable that duplicates one of them and any set of them that spans it.
 
 The following Name / Value pairs are accepted:
 
