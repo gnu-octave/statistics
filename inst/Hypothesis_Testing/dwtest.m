@@ -60,6 +60,13 @@
 ## @code{[@var{p}, @var{d}] = dwtest (@dots{})} also returns the Durbin-Watson
 ## statistic @var{d}.
 ##
+## If @var{x} has rank equal to the number of observations, no residual degrees
+## of freedom remain and @var{d} has no null distribution.  In that case
+## @var{p} is 0 for @qcode{'right'} and @qcode{'both'} and 1 for
+## @qcode{'left'} with the exact method, and @qcode{NaN} with the approximate
+## method.  A @var{p} of exactly 0 or 1 signals this rather than strong
+## evidence.
+##
 ## @seealso{regress, fitlm, runstest}
 ## @end deftypefn
 
@@ -121,28 +128,39 @@ function [pval, d] = dwtest (r, x, varargin)
   A(n,n) = 1;
   A -= diag (ones (n-1, 1), 1) + diag (ones (n-1, 1), -1);
 
-  ## Lower-tail probability P(D <= d) under the null hypothesis
-  if (n - p <= 0)
-    ## No residual degrees of freedom: the null distribution of D collapses
-    ## to a point, so any observed D is treated as arbitrarily extreme
-    plow = 0;
-  elseif (strcmp (method, "exact"))
-    M = eye (n) - Q * Q';
-    MAM = M * A * M;
-    nu = sort (eig ((MAM + MAM') / 2), "descend");
-    nu = nu(1:n - p);                    ## n - p nonzero eigenvalues of M*A*M
-    plow = dwtest_imhof_ (nu, d);
+  ## Lower-tail probability P(D <= d) under the null hypothesis.  With no
+  ## residual degrees of freedom M is the zero matrix and D has no null
+  ## distribution; the exact method reports 0 there and the approximate one
+  ## NaN, as MATLAB does.
+  if (strcmp (method, "exact"))
+    if (n - p <= 0)
+      plow = 0;
+    else
+      M = eye (n) - Q * Q';
+      MAM = M * A * M;
+      nu = sort (eig ((MAM + MAM') / 2), "descend");
+      nu = nu(1:n - p);                  ## n - p nonzero eigenvalues of M*A*M
+      plow = dwtest_imhof_ (nu, d);
+    endif
+    plow = min (max (plow, 0), 1);       ## an undefined D maps to 0 or 1 here
   else
-    ## Mean and variance of D from traces, avoiding the eigendecomposition
-    AQ = A * Q;
-    QtAQ = Q' * A * Q;
-    sumnu  = (2 * n - 2) - trace (QtAQ);              ## tr (M*A)
-    sumnu2 = (6 * n - 8) - 2 * sum (AQ(:) .^ 2) + sum (QtAQ(:) .^ 2); ## tr((M*A)^2)
-    m1 = sumnu / (n - p);
-    s2 = 2 * (sumnu2 - sumnu ^ 2 / (n - p)) / ((n - p) * (n - p + 2));
-    plow = normcdf ((d - m1) / sqrt (s2));
+    if (n - p <= 0)
+      plow = NaN;
+    else
+      ## Mean and variance of D from traces, avoiding the eigendecomposition
+      AQ = A * Q;
+      QtAQ = Q' * A * Q;
+      ## tr (M*A) and tr ((M*A) ^ 2)
+      sumnu  = (2 * n - 2) - trace (QtAQ);
+      sumnu2 = (6 * n - 8) - 2 * sum (AQ(:) .^ 2) + sum (QtAQ(:) .^ 2);
+      m1 = sumnu / (n - p);
+      s2 = 2 * (sumnu2 - sumnu ^ 2 / (n - p)) / ((n - p) * (n - p + 2));
+      plow = normcdf ((d - m1) / sqrt (s2));
+    endif
+    if (! isnan (plow))                  ## an undefined D stays NaN here
+      plow = min (max (plow, 0), 1);
+    endif
   endif
-  plow = min (max (plow, 0), 1);
 
   ## Alternative hypothesis: 'right' -> positive autocorrelation (small D),
   ## 'left' -> negative autocorrelation (large D)
@@ -154,7 +172,9 @@ function [pval, d] = dwtest (r, x, varargin)
     case "both"
       pval = 2 * min (plow, 1 - plow);
   endswitch
-  pval = min (max (pval, 0), 1);
+  if (! isnan (pval))
+    pval = min (max (pval, 0), 1);
+  endif
 
 endfunction
 
@@ -230,6 +250,17 @@ endfunction
 %! assert_equal (dwtest (r, x, "Tail", "right"), 0);
 %! assert_equal (dwtest (r, x, "Tail", "left"), 1);
 %! assert_equal (dwtest (r, x, "Tail", "both"), 0);
+
+%!test  # zero residual degrees of freedom, approximate method
+%! x = [1 0 0; 0 1 0; 0 0 1];
+%! r = [0.5; -0.3; 0.8];
+%! assert_equal (isnan (dwtest (r, x, "Method", "approximate")), true);
+
+%!test  # the statistic is returned with no residual degrees of freedom
+%! x = [1 0 0; 0 1 0; 0 0 1];
+%! r = [0.5; -0.3; 0.8];
+%! [p, d] = dwtest (r, x);
+%! assert_equal (d, 1.8878, 1e-4);
 
 ## Test input validation
 %!error <Invalid call to dwtest> dwtest (1)

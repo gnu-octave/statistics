@@ -1684,7 +1684,7 @@ dwtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1523
+# length: 1829
 statistics: p = dwtest ( r , x )
 statistics: p = dwtest ( r , x , name , value )
 statistics: [ p , d ] = dwtest (&hellip;)
@@ -1718,6 +1718,13 @@ autocorrelation, or 'left' for a negative autocorrelation.
 
 [ p , d ] = dwtest (&hellip;) also returns the Durbin-Watson
 statistic d .
+
+If x has rank equal to the number of observations, no residual degrees
+of freedom remain and d has no null distribution. In that case
+p is 0 for 'right' and 'both' and 1 for
+'left' with the exact method, and NaN with the approximate
+method. A p of exactly 0 or 1 signals this rather than strong
+evidence.
 
 See also:
 regress,
