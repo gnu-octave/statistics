@@ -76,7 +76,10 @@ function M = __lmefit__ (X, y, Z, G, method)
   ## covariance D_k = L_k*L_k' (Psi_k = sigma2*D_k) per term, concatenated.
   theta0 = init_theta (qk);
 
-  obj = @(th) profiled_deviance (th, X, y, Zx, qk, nlev, n, p, is_reml);
+  ## Every cross product the objective needs is free of theta, so it is formed
+  ## once here rather than n-by-n matrices being rebuilt on every evaluation.
+  CP = cross_products (X, y, Zx);
+  obj = @(th) profiled_deviance (th, CP, qk, nlev, n, p, is_reml);
 
   ## The profiled deviance is differentiable in theta and the gradient is
   ## closed form, so give it to the optimiser rather than let it difference.
@@ -88,35 +91,37 @@ function M = __lmefit__ (X, y, Z, G, method)
                    "MaxIter", 1000, "Display", "off", "GradObj", "on");
   [theta, dev] = fminunc (obj, theta0, opts);
 
-  ## Recover everything at the optimum.
-  Dfull = build_Dfull (theta, qk, nlev);
-  ## Zx * Dfull * Zx' is symmetric in exact arithmetic but not bitwise, since
-  ## the two products are separate BLAS calls.  'chol' reads one triangle, so
+  ## Recover everything at the optimum, through the same q-by-q factorisation
+  ## the objective used.  K is symmetric in exact arithmetic but not bitwise,
+  ## the two products being separate calls, and 'chol' reads one triangle, so
   ## which one it reads decides the factor and a threaded or blocked BLAS can
   ## disagree with a reference one.  Symmetrise before every factorisation.
-  Mrel = eye (n) + Zx * Dfull * Zx';
-  Mrel = (Mrel + Mrel') / 2;
-  Rc = chol (Mrel);
-  ## Whitened once, as in profiled_deviance above.  Mir is still formed in
-  ## full because the BLUPs need inv (Mrel)*r and not just its norm.
-  W = Rc' \ X;
-  z = Rc' \ y;
-  XtMiX = W' * W;
-  beta = W \ z;
-  r = y - X * beta;
-  u = Rc' \ r;
-  Mir = Rc \ u;
-  rMir = u' * u;
+  Lf = build_Lfull (theta, qk, nlev);
+  K = eye (columns (CP.ZtZ)) + Lf' * CP.ZtZ * Lf;
+  K = (K + K') / 2;
+  Rk = chol (K);
+  Xt = Rk' \ (Lf' * CP.ZtX);
+  yt = Rk' \ (Lf' * CP.Zty);
+  XtMiX = CP.XtX - Xt' * Xt;
+  XtMiX = (XtMiX + XtMiX') / 2;
+  XtMiy = CP.Xty - Xt' * yt;
+  beta = XtMiX \ XtMiy;
+  rMir = (CP.yty - yt' * yt) - XtMiy' * beta;
   if (is_reml)
     sigma2 = rMir / (n - p);
   else
     sigma2 = rMir / n;
   endif
 
-  ## BLUPs and covariance of the fixed effects.  The covariance is genuinely
-  ## an inverse, but XtMiX is symmetric positive definite and W'*W already
-  ## has its factor, so take it from there rather than from a general inverse.
-  b = Dfull * (Zx' * Mir);
+  ## BLUPs and covariance of the fixed effects.  The BLUPs need Zx'*inv (M)*r
+  ## rather than inv (M)*r itself, and Woodbury turns that into the random
+  ## effects dimension too: with g = Zx'*r, inv (M)*r is r - Zx*L*inv (K)*L'*g,
+  ## so Zx'*inv (M)*r is g - (Zx'*Zx)*L*inv (K)*L'*g and the n-vector is never
+  ## formed.  The covariance is genuinely an inverse, but XtMiX is symmetric
+  ## positive definite, so take it from a factor rather than a general inverse.
+  g = CP.Zty - CP.ZtX * beta;
+  w = Rk \ (Rk' \ (Lf' * g));
+  b = Lf * (Lf' * (g - CP.ZtZ * (Lf * w)));
   Rx = chol (XtMiX);
   covbeta = sigma2 * (Rx \ (Rx' \ eye (p)));
   loglik = -0.5 * dev;
@@ -160,34 +165,44 @@ endfunction
 ## term differentiates through dM/dtheta = Zx*(dD/dtheta)*Zx'.  Because beta
 ## is the GLS minimiser, its own dependence on theta drops out.  Every
 ## derivative then contracts to the random effects dimension: with
-## V = Rc'\Zx, the three quantities needed are V'*V, V'*u and V'*W, and since
 ## D = L*L' gives dD = E_ij*L' + L*E_ij', each gradient entry is 2*(S*L)(i,j)
 ## for the matching accumulated S.
-function [dev, grad] = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, ...
-                                          is_reml)
-  Dfull = build_Dfull (theta, qk, nlev);
-  Mrel = eye (n) + Zx * Dfull * Zx';
-  Mrel = (Mrel + Mrel') / 2;
-  [Rc, flag] = chol (Mrel);
+##
+## Nothing here works in the observation dimension.  With A = Zx*L and
+## K = I_q + A'*A, the Woodbury identity gives inv (M) = I - A*inv (K)*A' and
+## the matrix determinant lemma gives logdet (M) = logdet (K), so a q-by-q
+## factorisation replaces the n-by-n one.  Every quantity the deviance and its
+## gradient need has the form P'*inv (M)*Q, which is P'*Q - (Rk'\(A'*P))' *
+## (Rk'\(A'*Q)); each P'*Q and A'*P reduces to a cross product free of theta,
+## so the caller forms those once and the evaluation costs q cubed rather than
+## n cubed.
+function [dev, grad] = profiled_deviance (theta, CP, qk, nlev, n, p, is_reml)
+  Lf = build_Lfull (theta, qk, nlev);
+  ## Lf is sparse block diagonal, which keeps both products inside the block
+  ## structure instead of costing a dense q cubed.  Symmetrise before
+  ## factorising for the same reason the n-by-n form did: the two products are
+  ## separate calls and chol reads one triangle.
+  K = eye (columns (CP.ZtZ)) + Lf' * CP.ZtZ * Lf;
+  K = (K + K') / 2;
+  [Rk, flag] = chol (K);
   if (flag != 0)
     dev = Inf;
     grad = zeros (size (theta));
     return;
   endif
-  ## Whiten once rather than solving twice.  Mrel is Rc'*Rc, so
-  ## X'*inv (Mrel)*X is (Rc'\X)'*(Rc'\X): three triangular solves here where
-  ## six were needed, and XtMiX comes out symmetric to the last bit by
-  ## construction rather than needing to be symmetrised.  beta is then the
-  ## least squares solution of the whitened system, which avoids forming the
-  ## normal equations and squaring the condition number with them.
-  W = Rc' \ X;
-  z = Rc' \ y;
-  XtMiX = W' * W;
-  beta = W \ z;
-  r = y - X * beta;
-  u = Rc' \ r;
-  rMir = u' * u;
-  logdetM = 2 * sum (log (diag (Rc)));
+  Xt = Rk' \ (Lf' * CP.ZtX);
+  yt = Rk' \ (Lf' * CP.Zty);
+  XtMiX = CP.XtX - Xt' * Xt;
+  XtMiX = (XtMiX + XtMiX') / 2;
+  XtMiy = CP.Xty - Xt' * yt;
+  ytMiy = CP.yty - yt' * yt;
+  ## beta is the GLS minimiser, so r'*inv (M)*r collapses to one inner product
+  ## once it is in hand.  Solving p normal equations is what the whitened
+  ## n-by-n form avoided; p is the fixed-effects count and small, and the
+  ## deviance depends on beta only to second order because beta minimises it.
+  beta = XtMiX \ XtMiy;
+  rMir = ytMiy - XtMiy' * beta;
+  logdetM = 2 * sum (log (diag (Rk)));
   if (is_reml)
     nu = n - p;
     Rx = chol (XtMiX);
@@ -201,12 +216,12 @@ function [dev, grad] = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, ...
     return;
   endif
 
-  ## One further triangular solve carries the whole gradient: V'*V is
-  ## Zx'*inv (M)*Zx, V'*u is Zx'*inv (M)*r, and V'*W is Zx'*inv (M)*X, so
-  ## nothing works in the observation dimension beyond this point.
-  V = Rc' \ Zx;
-  c = V' * u;
-  B = V' * W;
+  ## One further triangular solve carries the whole gradient: ZtMiZ is
+  ## Zx'*inv (M)*Zx, c is Zx'*inv (M)*r and B is Zx'*inv (M)*X.
+  Zt = Rk' \ (Lf' * CP.ZtZ);
+  ZtMiZ = CP.ZtZ - Zt' * Zt;
+  B = CP.ZtX - Zt' * Xt;
+  c = (CP.Zty - Zt' * yt) - B * beta;
   if (is_reml)
     T = Rx' \ B';
   endif
@@ -223,8 +238,7 @@ function [dev, grad] = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, ...
     for l = 1:nlev(k)
       S = col + (1:q);
       col += q;
-      Vs = V(:,S);
-      Sa += Vs' * Vs;
+      Sa += ZtMiZ(S,S);
       cs = c(S);
       Sc += cs * cs';
       if (is_reml)
@@ -253,20 +267,31 @@ function [dev, grad] = profiled_deviance (theta, X, y, Zx, qk, nlev, n, p, ...
   endfor
 endfunction
 
-## Block-diagonal relative covariance: D_k repeated over the nlev_k levels.
-function Dfull = build_Dfull (theta, qk, nlev)
+## The cross products the profiled deviance needs.  All are free of theta, so
+## they are formed once per fit and the optimiser never touches X, y or Zx.
+function CP = cross_products (X, y, Zx)
+  CP.ZtZ = Zx' * Zx;
+  CP.ZtX = Zx' * X;
+  CP.Zty = Zx' * y;
+  CP.XtX = X' * X;
+  CP.Xty = X' * y;
+  CP.yty = y' * y;
+endfunction
+
+## Block-diagonal relative factor: L_k repeated over the nlev_k levels, held
+## sparse so that products against it stay inside the block structure.
+function Lf = build_Lfull (theta, qk, nlev)
   blocks = {};
   off = 0;
   for k = 1:numel (qk)
     m = qk(k)*(qk(k)+1)/2;
-    Lk = tril_from_theta (theta(off+(1:m)), qk(k));
-    Dk = Lk * Lk';
+    Lk = sparse (tril_from_theta (theta(off+(1:m)), qk(k)));
     for l = 1:nlev(k)
-      blocks{end+1} = Dk;
+      blocks{end+1} = Lk;
     endfor
     off += m;
   endfor
-  Dfull = blkdiag (blocks{:});
+  Lf = blkdiag (blocks{:});
 endfunction
 
 ## Lower-triangular q-by-q factor from its q*(q+1)/2 entries (column-major

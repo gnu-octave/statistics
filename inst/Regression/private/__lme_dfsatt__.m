@@ -47,8 +47,17 @@ function df = __lme_dfsatt__ (X, y, Zx, qk, nlev, Psi, sigma2, method, L)
   eta = [eta; sigma2];
   ne = numel (eta);
 
-  dev = @(e) reml_deviance (e, qk, nlev, X, y, Zx, n, p, is_reml);
-  cov = @(e) fixed_cov (e, qk, nlev, X, Zx, n);
+  ## Every cross product below is free of eta, and the finite differences ask
+  ## for O(ne^2) deviances, so forming them once is what keeps the whole
+  ## Satterthwaite calculation out of the observation dimension.
+  CP.ZtZ = Zx' * Zx;
+  CP.ZtX = Zx' * X;
+  CP.Zty = Zx' * y;
+  CP.XtX = X' * X;
+  CP.Xty = X' * y;
+  CP.yty = y' * y;
+  dev = @(e) reml_deviance (e, qk, nlev, CP, n, p, is_reml);
+  cov = @(e) fixed_cov (e, qk, nlev, CP);
 
   ## Asymptotic covariance of eta: 2 * inv (Hessian of the -2 log-likelihood).
   hs = 1e-4 * max (abs (eta), 1);
@@ -90,8 +99,21 @@ function v = vech_lower (A)
   endfor
 endfunction
 
-## Rebuild the marginal covariance V = Zx*Dabs*Zx' + sigma2*I from eta.
-function V = build_V (eta, qk, nlev, Zx, n)
+## The block-diagonal random-effects covariance P and the residual variance,
+## read out of eta.  V is sigma2*I + Zx*P*Zx', which is never formed: with
+## G = Zx'*Zx the identity
+##
+##   inv (V) = I/s - Zx*P*inv (I + G*P/s)*Zx'/s^2
+##
+## and its determinant counterpart det (V) = s^n * det (I + P*G/s) take every
+## quantity into the random effects dimension.  Note that this parameterises
+## by the covariance rather than by a factor of it, and a finite difference
+## drives a small variance component negative, so P is routinely indefinite
+## here and no Cholesky of it exists.  The eigenvalues of P*G are real, P and
+## G being symmetric with G positive semidefinite, and they carry both the
+## log-determinant and the test that replaces the old chol of V: V is positive
+## definite exactly when s > 0 and every 1 + lambda/s is.
+function [P, s] = build_P (eta, qk, nlev)
   blocks = {};
   off = 0;
   for k = 1:numel (qk)
@@ -111,24 +133,45 @@ function V = build_V (eta, qk, nlev, Zx, n)
     endfor
     off += m;
   endfor
-  sigma2 = eta(end);
-  V = Zx * blkdiag (blocks{:}) * Zx' + sigma2 * eye (n);
+  P = blkdiag (blocks{:});
+  s = eta(end);
 endfunction
 
-function d = reml_deviance (eta, qk, nlev, X, y, Zx, n, p, is_reml)
-  V = build_V (eta, qk, nlev, Zx, n);
-  [Rc, flag] = chol (V);
-  if (flag != 0)
+## X'*inv (V)*X, X'*inv (V)*y, y'*inv (V)*y and logdet (V), all in the random
+## effects dimension.  ok is false where the old code's chol of V would have
+## set the flag.
+function [XtViX, XtViy, ytViy, logdetV, ok] = vquad (eta, qk, nlev, CP, n)
+  [P, s] = build_P (eta, qk, nlev);
+  XtViX = XtViy = ytViy = logdetV = [];
+  ok = false;
+  if (s <= 0)
+    return;
+  endif
+  PG = P * CP.ZtZ;
+  lam = real (eig (PG));
+  if (any (1 + lam / s <= 0))
+    return;
+  endif
+  ok = true;
+  logdetV = n * log (s) + sum (log (1 + lam / s));
+  ## G*P is the transpose of P*G, both factors being symmetric.
+  Wq = eye (columns (CP.ZtZ)) + PG' / s;
+  Ax = P * (Wq \ CP.ZtX);
+  Ay = P * (Wq \ CP.Zty);
+  XtViX = CP.XtX / s - (CP.ZtX' * Ax) / s^2;
+  XtViX = (XtViX + XtViX') / 2;
+  XtViy = CP.Xty / s - (CP.ZtX' * Ay) / s^2;
+  ytViy = CP.yty / s - (CP.Zty' * Ay) / s^2;
+endfunction
+
+function d = reml_deviance (eta, qk, nlev, CP, n, p, is_reml)
+  [XtViX, XtViy, ytViy, logdetV, ok] = vquad (eta, qk, nlev, CP, n);
+  if (! ok)
     d = Inf;
     return;
   endif
-  ViX = Rc \ (Rc' \ X);
-  Viy = Rc \ (Rc' \ y);
-  XtViX = X' * ViX;
-  beta = XtViX \ (X' * Viy);
-  r = y - X * beta;
-  rVir = r' * (Rc \ (Rc' \ r));
-  logdetV = 2 * sum (log (diag (Rc)));
+  beta = XtViX \ XtViy;
+  rVir = ytViy - XtViy' * beta;
   if (is_reml)
     d = logdetV + rVir + 2*sum (log (diag (chol (XtViX)))) + (n-p)*log (2*pi);
   else
@@ -136,7 +179,7 @@ function d = reml_deviance (eta, qk, nlev, X, y, Zx, n, p, is_reml)
   endif
 endfunction
 
-function C = fixed_cov (eta, qk, nlev, X, Zx, n)
-  V = build_V (eta, qk, nlev, Zx, n);
-  C = inv (X' * (V \ X));
+function C = fixed_cov (eta, qk, nlev, CP)
+  XtViX = vquad (eta, qk, nlev, CP, 1);
+  C = inv (XtViX);
 endfunction

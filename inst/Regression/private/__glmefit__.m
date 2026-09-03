@@ -63,8 +63,8 @@ function M = __glmefit__ (X, y, Z, G, distr, link, method)
     ## inner weighted (RE)ML fit of the pseudo-response zt, Var(e)=disp/w
     [theta, disp0] = inner_fit (theta, X, zt, Zx, qk, nlev, w, isreml, ...
                                 fixed_disp);
-    [beta_n, b, Psi, covbeta, V] = inner_solve (theta, X, zt, Zx, qk, nlev, ...
-                                                 w, disp0);
+    [beta_n, b, Psi, covbeta] = inner_solve (theta, X, zt, Zx, qk, nlev, ...
+                                             w, disp0);
     if (max (abs (beta_n - beta)) < 1e-8)
       beta = beta_n;
       break;
@@ -83,7 +83,8 @@ function M = __glmefit__ (X, y, Z, G, distr, link, method)
   ## (REML uses n - p in place of n in the constant term).
   if (isreml), ndf = n - p; else, ndf = n; endif
   pll = -0.5 * (ndf * log (2*pi) ...
-                + weighted_dev (theta, X, zt, Zx, qk, nlev, w, isreml, disp0));
+                + weighted_dev (theta, weighted_cross (X, zt, Zx, w), qk, ...
+                                nlev, n, p, isreml, disp0));
   if (any (strcmp (method, {"laplace", "approximatelaplace"})))
     loglik = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, link);
   else
@@ -175,7 +176,13 @@ endfunction
 ## ---- weighted mixed-model inner solver / objective ----
 function [theta, disp0] = inner_fit (theta0, X, z, Zx, qk, nlev, w, ...
                                      isreml, fixed_disp)
-  obj = @(th) weighted_dev (th, X, z, Zx, qk, nlev, w, isreml, 1);
+  ## The weights are fixed for the whole inner fit, so every cross product the
+  ## objective needs is formed once here rather than n-by-n matrices being
+  ## rebuilt on each of its evaluations.
+  CP = weighted_cross (X, z, Zx, w);
+  n = rows (X);
+  p = columns (X);
+  obj = @(th) weighted_dev (th, CP, qk, nlev, n, p, isreml, 1);
   ## The weighted deviance is differentiable in theta and its gradient is
   ## closed form, so hand it over rather than let the optimiser difference an
   ## objective whose curvature in the variance components is far below the
@@ -187,7 +194,7 @@ function [theta, disp0] = inner_fit (theta0, X, z, Zx, qk, nlev, w, ...
   if (fixed_disp)
     disp0 = 1;
   else
-    disp0 = profile_dispersion (theta, X, z, Zx, qk, nlev, w, isreml);
+    disp0 = profile_dispersion (theta, CP, qk, nlev, n, p, isreml);
   endif
 endfunction
 
@@ -197,27 +204,17 @@ endfunction
 ## D = L*L' gives dD = E_ij*L' + L*E_ij', so every entry is 2*(S*L)(i,j) for
 ## the matching accumulated S.  The dispersion is held at one here and
 ## profiled afterwards, so there is no scale term to differentiate through.
-function [dev, grad] = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, ...
-                                     disp0)
-  n = rows (X);  p = columns (X);
-  V = build_V (theta, qk, nlev, Zx, w, disp0);
-  [Rc, flag] = chol (V);
-  if (flag != 0)
+function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, disp0)
+  S = wquad (theta, CP, qk, nlev, n, disp0);
+  if (! S.ok)
     dev = Inf;
     grad = zeros (size (theta));
     return;
   endif
-  ## V is Rc'*Rc, so X'*inv (V)*X is (Rc'\X)'*(Rc'\X): whitening once halves
-  ## the triangular solves and makes XtViX symmetric by construction.
-  W = Rc' \ X;
-  zz = Rc' \ z;
-  XtViX = W' * W;
-  beta = W \ zz;
-  r = z - X * beta;
-  u = Rc' \ r;
-  dev = 2*sum (log (diag (Rc))) + u' * u;
+  beta = S.XtViX \ S.XtViz;
+  dev = S.logdetV + (S.ztViz - S.XtViz' * beta);
   if (isreml)
-    Rx = chol (XtViX);
+    Rx = chol (S.XtViX);
     dev += 2 * sum (log (diag (Rx)));
   endif
   if (nargout < 2)
@@ -225,11 +222,12 @@ function [dev, grad] = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, ...
   endif
 
   ## One further solve carries the gradient, all of it in the random effects
-  ## dimension: Vv'*Vv is Zx'*inv (V)*Zx, Vv'*u is Zx'*inv (V)*r, Vv'*W is
+  ## dimension: ZtViZ is Zx'*inv (V)*Zx, c is Zx'*inv (V)*r and B is
   ## Zx'*inv (V)*X.
-  Vv = Rc' \ Zx;
-  c = Vv' * u;
-  B = Vv' * W;
+  Zt = S.Rk' \ (S.Lf' * CP.ZtZ / disp0);
+  ZtViZ = CP.ZtZ / disp0 - Zt' * Zt;
+  B = CP.ZtX / disp0 - Zt' * S.Xt;
+  c = (CP.Ztz / disp0 - Zt' * S.zt) - B * beta;
   if (isreml)
     T = Rx' \ B';
   endif
@@ -246,8 +244,7 @@ function [dev, grad] = weighted_dev (theta, X, z, Zx, qk, nlev, w, isreml, ...
     for l = 1:nlev(k)
       sel = col + (1:q);
       col += q;
-      Vs = Vv(:,sel);
-      Sa += Vs' * Vs;
+      Sa += ZtViZ(sel,sel);
       cs = c(sel);
       Sc += cs * cs';
       if (isreml)
@@ -276,41 +273,35 @@ endfunction
 ## The dispersion at the fitted covariance parameters: the weighted residual
 ## sum of squares over its degrees of freedom.  Whitened, as weighted_dev is,
 ## rather than through an explicit inverse of V.
-function d = profile_dispersion (theta, X, z, Zx, qk, nlev, w, isreml)
-  n = rows (X);  p = columns (X);
-  V = build_V (theta, qk, nlev, Zx, w, 1);
-  Rc = chol (V);
-  W = Rc' \ X;
-  zz = Rc' \ z;
-  beta = W \ zz;
-  r = z - X * beta;
-  u = Rc' \ r;
+function d = profile_dispersion (theta, CP, qk, nlev, n, p, isreml)
+  S = wquad (theta, CP, qk, nlev, n, 1);
+  beta = S.XtViX \ S.XtViz;
+  rVir = S.ztViz - S.XtViz' * beta;
   if (isreml)
-    d = (u' * u) / (n - p);
+    d = rVir / (n - p);
   else
-    d = (u' * u) / n;
+    d = rVir / n;
   endif
 endfunction
 
-function [beta, b, Psi, covbeta, V] = inner_solve (theta, X, z, Zx, qk, ...
-                                                   nlev, w, disp0)
-  V = build_V (theta, qk, nlev, Zx, w, disp0);
-  ## Whitened, as weighted_dev and profile_dispersion are: V is Rc'*Rc, so
-  ## X'*inv (V)*X is (Rc'\X)'*(Rc'\X) and beta is the least squares solution
-  ## of the whitened system.  inv (V) is never formed; the BLUPs need
-  ## inv (V)*r in full, which is the one place both solves are used.
-  Rc = chol (V);
-  W = Rc' \ X;
-  zz = Rc' \ z;
-  XtViX = W' * W;
-  beta = W \ zz;
-  Dfull = build_Dfull (theta, qk, nlev);
-  Vir = Rc \ (Rc' \ (z - X * beta));
-  b = Dfull * (Zx' * Vir);
+function [beta, b, Psi, covbeta] = inner_solve (theta, X, z, Zx, qk, ...
+                                               nlev, w, disp0)
+  n = rows (X);
+  p = columns (X);
+  CP = weighted_cross (X, z, Zx, w);
+  S = wquad (theta, CP, qk, nlev, n, disp0);
+  beta = S.XtViX \ S.XtViz;
+  ## The BLUPs need Zx'*inv (V)*r rather than inv (V)*r itself, and that stays
+  ## in the random effects dimension: with g = Zx'*inv (Dg)*r, it is
+  ## g - Zt'*(Rk'\(L'*g)), so the n-vector is never formed.
+  g = (CP.Ztz - CP.ZtX * beta) / disp0;
+  Zt = S.Rk' \ (S.Lf' * CP.ZtZ / disp0);
+  ZtVir = g - Zt' * (S.Rk' \ (S.Lf' * g));
+  b = S.Lf * (S.Lf' * ZtVir);
   ## The covariance of the fixed effects is genuinely an inverse, but it is
   ## the inverse of a matrix already factored, so take it from the factor.
-  Rx = chol (XtViX);
-  covbeta = Rx \ (Rx' \ eye (columns (X)));
+  Rx = chol (S.XtViX);
+  covbeta = Rx \ (Rx' \ eye (p));
   ## per-term covariance matrices
   Psi = cell (1, numel (qk));  off = 0;
   for k = 1:numel (qk)
@@ -321,28 +312,58 @@ function [beta, b, Psi, covbeta, V] = inner_solve (theta, X, z, Zx, qk, ...
   endfor
 endfunction
 
-## V = Zx * blkdiag(Psi) * Zx' + disp * diag(1/w)
-function V = build_V (theta, qk, nlev, Zx, w, disp0)
-  n = rows (Zx);
-  Dfull = build_Dfull (theta, qk, nlev);
-  ## Zx * Dfull * Zx' is symmetric in exact arithmetic but not bitwise, since
-  ## the two products are separate BLAS calls.  'chol' reads one triangle, so
-  ## a threaded or blocked BLAS can disagree with a reference one on which
-  ## factor comes out.  Symmetrise before it is handed to 'chol'.
-  V = Zx * Dfull * Zx' + disp0 * diag (1 ./ w);
-  V = (V + V') / 2;
+## The weighted cross products the inner fit needs.  All are free of theta and
+## of the dispersion, so they survive every evaluation of the objective.
+function CP = weighted_cross (X, z, Zx, w)
+  w = w(:);
+  Zw = Zx .* w;
+  CP.ZtZ = Zw' * Zx;
+  CP.ZtX = Zw' * X;
+  CP.Ztz = Zw' * z;
+  CP.XtX = (X .* w)' * X;
+  CP.Xtz = (X .* w)' * z;
+  CP.ztz = (z .* w)' * z;
+  CP.logw = sum (log (w));
 endfunction
 
-function Dfull = build_Dfull (theta, qk, nlev)
+## X'*inv (V)*X, X'*inv (V)*z, z'*inv (V)*z and logdet (V) for
+## V = Zx*L*L'*Zx' + disp*diag (1./w), none of them formed in the observation
+## dimension.  The leading term is diagonal rather than a multiple of the
+## identity, so inv (Dg) is diag (w)/disp and the Woodbury capacitance is
+## K = I_q + L'*(Zx'*diag (w)*Zx)*L/disp.  K is symmetric in exact arithmetic
+## but not bitwise, the two products being separate calls, and 'chol' reads one
+## triangle, so symmetrise before it is handed over.
+function S = wquad (theta, CP, qk, nlev, n, disp0)
+  S.Lf = build_Lfull (theta, qk, nlev);
+  K = eye (columns (CP.ZtZ)) + (S.Lf' * CP.ZtZ * S.Lf) / disp0;
+  K = (K + K') / 2;
+  [S.Rk, flag] = chol (K);
+  S.ok = (flag == 0);
+  if (! S.ok)
+    return;
+  endif
+  S.Xt = S.Rk' \ (S.Lf' * CP.ZtX / disp0);
+  S.zt = S.Rk' \ (S.Lf' * CP.Ztz / disp0);
+  S.XtViX = CP.XtX / disp0 - S.Xt' * S.Xt;
+  S.XtViX = (S.XtViX + S.XtViX') / 2;
+  S.XtViz = CP.Xtz / disp0 - S.Xt' * S.zt;
+  S.ztViz = CP.ztz / disp0 - S.zt' * S.zt;
+  S.logdetV = n * log (disp0) - CP.logw + 2 * sum (log (diag (S.Rk)));
+endfunction
+
+## Block-diagonal relative factor: L_k repeated over the nlev_k levels, held
+## sparse so that products against it stay inside the block structure.
+function Lf = build_Lfull (theta, qk, nlev)
   blocks = {};  off = 0;
   for k = 1:numel (qk)
     m = qk(k)*(qk(k)+1)/2;
-    Lk = tril_from_theta (theta(off+(1:m)), qk(k));
-    Dk = Lk * Lk';
-    for l = 1:nlev(k), blocks{end+1} = Dk; endfor
+    Lk = sparse (tril_from_theta (theta(off+(1:m)), qk(k)));
+    for l = 1:nlev(k)
+      blocks{end+1} = Lk;
+    endfor
     off += m;
   endfor
-  Dfull = blkdiag (blocks{:});
+  Lf = blkdiag (blocks{:});
 endfunction
 
 function L = tril_from_theta (th, q)
