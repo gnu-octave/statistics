@@ -66,7 +66,7 @@ function y = nanmean (x, dim)
     print_usage ();
   elseif (! isnumeric (x))
     error ("nanmean: X must be numeric.");
-  elseif (isempty (x))
+  elseif (nargin < 2 && isempty (x) && ndims (x) == 2 && size (x, 1) == 0 && size (x, 2) == 0)
     y = NaN;
   else
     ## Determine the first nonsingleton dimension to operate on
