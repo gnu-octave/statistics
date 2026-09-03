@@ -122,7 +122,11 @@ function [pval, d] = dwtest (r, x, varargin)
   A -= diag (ones (n-1, 1), 1) + diag (ones (n-1, 1), -1);
 
   ## Lower-tail probability P(D <= d) under the null hypothesis
-  if (strcmp (method, "exact"))
+  if (n - p <= 0)
+    ## No residual degrees of freedom: the null distribution of D collapses
+    ## to a point, so any observed D is treated as arbitrarily extreme
+    plow = 0;
+  elseif (strcmp (method, "exact"))
     M = eye (n) - Q * Q';
     MAM = M * A * M;
     nu = sort (eig ((MAM + MAM') / 2), "descend");
@@ -219,6 +223,13 @@ endfunction
 %! x = [ones(20, 1), (1:20)'];
 %! r = (-1) .^ (1:20)';
 %! assert_equal (dwtest (r, x, "Tail", "left") < 0.05, true);
+
+%!test  # zero residual degrees of freedom (n == rank(x))
+%! x = [1 0 0; 0 1 0; 0 0 1];
+%! r = [0.5; -0.3; 0.8];
+%! assert_equal (dwtest (r, x, "Tail", "right"), 0);
+%! assert_equal (dwtest (r, x, "Tail", "left"), 1);
+%! assert_equal (dwtest (r, x, "Tail", "both"), 0);
 
 ## Test input validation
 %!error <Invalid call to dwtest> dwtest (1)
