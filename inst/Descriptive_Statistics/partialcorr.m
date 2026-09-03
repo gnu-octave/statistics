@@ -234,7 +234,9 @@ function [r, nu] = resid_partial (a, b, C, Type, Rows, completerows)
   rb = b - M * (M \ b);
   sa = sqrt (sum (ra .^ 2));
   sb = sqrt (sum (rb .^ 2));
-  if (sa == 0 || sb == 0)
+  tol_a = m * eps (max (abs (a)));
+  tol_b = m * eps (max (abs (b)));
+  if (sa <= tol_a || sb <= tol_b)
     r = NaN;
   else
     r = sum (ra .* rb) / (sa * sb);
@@ -346,6 +348,17 @@ endfunction
 %! assert_equal (rc, [-0.0116; -0.5849], 1e-4);
 %! assert_equal (rp, [-0.0116; -0.5273], 1e-4);
 %! assert_equal (pp, [0.9764; 0.1173], 1e-4);
+
+## a controlling variable that perfectly explains a column of X collapses
+## its residual variance, so rho and pval are NaN
+%!test
+%! X = [1 2; 3 4; 5 5];
+%! Z = [2; 4; 6];
+%! [rho, pval] = partialcorr (X, Z);
+%! assert_equal (isnan (rho(1,:)), [true, true]);
+%! assert_equal (isnan (rho(:,1)), [true; true]);
+%! assert_equal (rho(2,2), 1);
+%! assert_equal (all (isnan (pval(:))), true);
 
 ## input validation
 %!error <partialcorr: invalid number of input matrices.> ...
