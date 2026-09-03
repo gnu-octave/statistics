@@ -45,6 +45,11 @@
 ## a matrix of p-values for testing the hypothesis of no partial correlation
 ## against the alternative selected by @qcode{'Tail'}.
 ##
+## A coefficient is @code{NaN} where the controlling variables explain either
+## of the two variables completely, since the partial correlation is then
+## undefined: no variation is left to correlate.  This covers a controlling
+## variable that duplicates one of them and any set of them that spans it.
+##
 ## The following @var{Name}/@var{Value} pairs are accepted:
 ##
 ## @table @asis
@@ -234,8 +239,11 @@ function [r, nu] = resid_partial (a, b, C, Type, Rows, completerows)
   rb = b - M * (M \ b);
   sa = sqrt (sum (ra .^ 2));
   sb = sqrt (sum (rb .^ 2));
-  tol_a = m * eps (max (abs (a)));
-  tol_b = m * eps (max (abs (b)));
+  ## A residual at or below the precision the column is held in counts as
+  ## zero.  Scale by the vector's magnitude, not one element of it, so a large
+  ## constant offset raises the tolerance as it raises the rounding error.
+  tol_a = m * eps (norm (a));
+  tol_b = m * eps (norm (b));
   if (sa <= tol_a || sb <= tol_b)
     r = NaN;
   else
@@ -359,6 +367,29 @@ endfunction
 %! assert_equal (isnan (rho(:,1)), [true; true]);
 %! assert_equal (rho(2,2), 1);
 %! assert_equal (all (isnan (pval(:))), true);
+
+## the tolerance keeps a residual that is small but genuinely resolvable
+%!test
+%! Z = [1; 2; 3; 4; 5; 6];
+%! X = [Z + 1e-12 * [1; -2; 1; 0; 0; 0], [3; 1; 4; 1; 5; 9]];
+%! rho = partialcorr (X, Z);
+%! assert_equal (isnan (rho(1,2)), false);
+
+## and discards one that is below the precision the data is held in
+%!test
+%! Z = [1; 2; 3; 4; 5; 6];
+%! X = [Z + 1e-16 * [1; -2; 1; 0; 0; 0], [3; 1; 4; 1; 5; 9]];
+%! rho = partialcorr (X, Z);
+%! assert_equal (isnan (rho(1,2)), true);
+
+## the tolerance follows the data, so a constant offset large enough to cost
+## the column its low-order bits collapses the residual with it
+%!test
+%! Z = [1; 2; 3; 4; 5; 6];
+%! v = 1e-3 * [1; -2; 1; 0; 0; 0];
+%! Y = [3; 1; 4; 1; 5; 9];
+%! assert_equal (isnan (partialcorr ([Z + v, Y], Z)(1,2)), false);
+%! assert_equal (isnan (partialcorr ([1e12 + Z + v, Y], Z)(1,2)), true);
 
 ## input validation
 %!error <partialcorr: invalid number of input matrices.> ...

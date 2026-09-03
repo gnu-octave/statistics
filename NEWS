@@ -1143,6 +1143,15 @@
     `'Iteration limit exceeded.'`, so a fit that gave up after 59 iterations of
     a limit of 1000 claimed to have run out of iterations.
 
+ ** partialcorr:
+    a coefficient is NaN where the controlling variables explain either of the
+    two variables completely, as MATLAB returns.  The residual variance was
+    tested against exact zero, which floating-point arithmetic does not
+    produce, so the coefficient was computed from rounding error and was not
+    reproducible between builds: `partialcorr ([1 2; 3 4; 5 5], [2; 4; 6])`
+    gave an off-diagonal of -0.13 here and -0.089 elsewhere, where MATLAB gives
+    NaN.
+
  ** lasso:
     `'Standardize'` is forced to false, with a warning, when `'Intercept'` is
     false.  The two were accepted together and the predictors were standardised
