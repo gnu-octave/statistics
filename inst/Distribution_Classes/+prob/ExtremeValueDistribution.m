@@ -234,6 +234,19 @@ classdef ExtremeValueDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.ExtremeValueDistribution} {@var{pd} =} ExtremeValueDistribution (@var{mu}, @var{sigma})
+    ## @deftypefnx {prob.ExtremeValueDistribution} {@var{pd} =} ExtremeValueDistribution ()
+    ##
+    ## Create a @code{prob.ExtremeValueDistribution} object.
+    ##
+    ## @var{mu} and @var{sigma} are the distribution parameters, which the class
+    ## help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{mu} 0 and @var{sigma} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = ExtremeValueDistribution (mu, sigma)
       if (nargin == 0)
         mu = 0;

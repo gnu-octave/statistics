@@ -232,6 +232,19 @@ classdef BetaDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.BetaDistribution} {@var{pd} =} BetaDistribution (@var{a}, @var{b})
+    ## @deftypefnx {prob.BetaDistribution} {@var{pd} =} BetaDistribution ()
+    ##
+    ## Create a @code{prob.BetaDistribution} object.
+    ##
+    ## @var{a} and @var{b} are the distribution parameters, which the class help
+    ## describes.  Called with no arguments the parameters take their defaults,
+    ## @var{a} 1 and @var{b} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = BetaDistribution (a, b)
       if (nargin == 0)
         a = 1;

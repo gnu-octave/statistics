@@ -230,6 +230,19 @@ classdef BinomialDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.BinomialDistribution} {@var{pd} =} BinomialDistribution (@var{N}, @var{p})
+    ## @deftypefnx {prob.BinomialDistribution} {@var{pd} =} BinomialDistribution ()
+    ##
+    ## Create a @code{prob.BinomialDistribution} object.
+    ##
+    ## @var{N} and @var{p} are the distribution parameters, which the class help
+    ## describes.  Called with no arguments the parameters take their defaults,
+    ## @var{N} 1 and @var{p} 0.5.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = BinomialDistribution (N, p)
       if (nargin == 0)
         N = 1;

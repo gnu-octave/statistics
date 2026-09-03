@@ -249,6 +249,19 @@ classdef GeneralizedParetoDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.GeneralizedParetoDistribution} {@var{pd} =} GeneralizedParetoDistribution (@var{k}, @var{sigma}, @var{theta})
+    ## @deftypefnx {prob.GeneralizedParetoDistribution} {@var{pd} =} GeneralizedParetoDistribution ()
+    ##
+    ## Create a @code{prob.GeneralizedParetoDistribution} object.
+    ##
+    ## @var{k}, @var{sigma} and @var{theta} are the distribution parameters,
+    ## which the class help describes.  Called with no arguments the parameters
+    ## take their defaults, @var{k} 1, @var{sigma} 1 and @var{theta} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = GeneralizedParetoDistribution (k, sigma, theta)
       if (nargin == 0)
         k = 1;

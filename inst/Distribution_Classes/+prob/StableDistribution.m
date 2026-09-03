@@ -243,6 +243,20 @@ classdef StableDistribution < prob.ProbabilityDistribution
 
   methods (Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.StableDistribution} {@var{pd} =} StableDistribution (@var{alpha}, @var{beta}, @var{gam}, @var{delta})
+    ## @deftypefnx {prob.StableDistribution} {@var{pd} =} StableDistribution ()
+    ##
+    ## Create a @code{prob.StableDistribution} object.
+    ##
+    ## @var{alpha}, @var{beta}, @var{gam} and @var{delta} are the distribution
+    ## parameters, which the class help describes.  Called with no arguments the
+    ## parameters take their defaults, @var{alpha} 2, @var{beta} 0, @var{gam} 1
+    ## and @var{delta} 0.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = StableDistribution (alpha, beta, gam, delta)
       if (nargin == 0)
         alpha = 2;

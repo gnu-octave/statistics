@@ -225,6 +225,18 @@ classdef RayleighDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.RayleighDistribution} {@var{pd} =} RayleighDistribution (@var{B})
+    ## @deftypefnx {prob.RayleighDistribution} {@var{pd} =} RayleighDistribution ()
+    ##
+    ## Create a @code{prob.RayleighDistribution} object.
+    ##
+    ## @var{B} is the distribution parameter, which the class help describes.
+    ## Called with no arguments the parameter takes its default, @var{B} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = RayleighDistribution (B)
       if (nargin == 0)
         B = 1;

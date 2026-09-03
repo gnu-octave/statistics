@@ -215,6 +215,19 @@ classdef PoissonDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.PoissonDistribution} {@var{pd} =} PoissonDistribution (@var{lambda})
+    ## @deftypefnx {prob.PoissonDistribution} {@var{pd} =} PoissonDistribution ()
+    ##
+    ## Create a @code{prob.PoissonDistribution} object.
+    ##
+    ## @var{lambda} is the distribution parameter, which the class help
+    ## describes.  Called with no arguments the parameter takes its default,
+    ## @var{lambda} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = PoissonDistribution (lambda)
       if (nargin == 0)
         lambda = 1;

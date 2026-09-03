@@ -233,6 +233,19 @@ classdef NakagamiDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.NakagamiDistribution} {@var{pd} =} NakagamiDistribution (@var{mu}, @var{omega})
+    ## @deftypefnx {prob.NakagamiDistribution} {@var{pd} =} NakagamiDistribution ()
+    ##
+    ## Create a @code{prob.NakagamiDistribution} object.
+    ##
+    ## @var{mu} and @var{omega} are the distribution parameters, which the class
+    ## help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{mu} 1 and @var{omega} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = NakagamiDistribution (mu, omega)
       if (nargin == 0)
         mu = 1;

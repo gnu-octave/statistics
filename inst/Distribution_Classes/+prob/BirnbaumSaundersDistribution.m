@@ -237,6 +237,19 @@ classdef BirnbaumSaundersDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.BirnbaumSaundersDistribution} {@var{pd} =} BirnbaumSaundersDistribution (@var{beta}, @var{gamma})
+    ## @deftypefnx {prob.BirnbaumSaundersDistribution} {@var{pd} =} BirnbaumSaundersDistribution ()
+    ##
+    ## Create a @code{prob.BirnbaumSaundersDistribution} object.
+    ##
+    ## @var{beta} and @var{gamma} are the distribution parameters, which the
+    ## class help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{beta} 1 and @var{gamma} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = BirnbaumSaundersDistribution (beta, gamma)
       if (nargin == 0)
         beta = 1;

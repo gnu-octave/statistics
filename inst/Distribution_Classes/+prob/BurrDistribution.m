@@ -244,6 +244,19 @@ classdef BurrDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.BurrDistribution} {@var{pd} =} BurrDistribution (@var{alpha}, @var{c}, @var{k})
+    ## @deftypefnx {prob.BurrDistribution} {@var{pd} =} BurrDistribution ()
+    ##
+    ## Create a @code{prob.BurrDistribution} object.
+    ##
+    ## @var{alpha}, @var{c} and @var{k} are the distribution parameters, which
+    ## the class help describes.  Called with no arguments the parameters take
+    ## their defaults, @var{alpha} 1, @var{c} 1 and @var{k} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = BurrDistribution (alpha, c, k)
       if (nargin == 0)
         alpha = 1;

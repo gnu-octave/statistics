@@ -186,6 +186,19 @@ classdef TriangularDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.TriangularDistribution} {@var{pd} =} TriangularDistribution (@var{A}, @var{B}, @var{C})
+    ## @deftypefnx {prob.TriangularDistribution} {@var{pd} =} TriangularDistribution ()
+    ##
+    ## Create a @code{prob.TriangularDistribution} object.
+    ##
+    ## @var{A}, @var{B} and @var{C} are the distribution parameters, which the
+    ## class help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{A} 0, @var{B} 0.5 and @var{C} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = TriangularDistribution (A, B, C)
       if (nargin == 0)
         A = 0;

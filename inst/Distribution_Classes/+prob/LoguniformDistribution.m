@@ -170,6 +170,19 @@ classdef LoguniformDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.LoguniformDistribution} {@var{pd} =} LoguniformDistribution (@var{Lower}, @var{Upper})
+    ## @deftypefnx {prob.LoguniformDistribution} {@var{pd} =} LoguniformDistribution ()
+    ##
+    ## Create a @code{prob.LoguniformDistribution} object.
+    ##
+    ## @var{Lower} and @var{Upper} are the distribution parameters, which the
+    ## class help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{Lower} 1 and @var{Upper} 4.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = LoguniformDistribution (Lower, Upper)
       if (nargin == 0)
         Lower = 1;

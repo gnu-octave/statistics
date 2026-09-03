@@ -238,6 +238,19 @@ classdef WeibullDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.WeibullDistribution} {@var{pd} =} WeibullDistribution (@var{A}, @var{B})
+    ## @deftypefnx {prob.WeibullDistribution} {@var{pd} =} WeibullDistribution ()
+    ##
+    ## Create a @code{prob.WeibullDistribution} object.
+    ##
+    ## @var{A} and @var{B} are the distribution parameters, which the class help
+    ## describes.  Called with no arguments the parameters take their defaults,
+    ## @var{A} 1 and @var{B} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = WeibullDistribution (A, B)
       if (nargin == 0)
         A = 1;

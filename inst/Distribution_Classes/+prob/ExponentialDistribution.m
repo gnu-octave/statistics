@@ -218,6 +218,18 @@ classdef ExponentialDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.ExponentialDistribution} {@var{pd} =} ExponentialDistribution (@var{mu})
+    ## @deftypefnx {prob.ExponentialDistribution} {@var{pd} =} ExponentialDistribution ()
+    ##
+    ## Create a @code{prob.ExponentialDistribution} object.
+    ##
+    ## @var{mu} is the distribution parameter, which the class help describes.
+    ## Called with no arguments the parameter takes its default, @var{mu} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = ExponentialDistribution (mu)
       if (nargin == 0)
         mu = 1;

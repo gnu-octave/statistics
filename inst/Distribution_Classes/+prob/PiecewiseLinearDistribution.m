@@ -169,6 +169,19 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.PiecewiseLinearDistribution} {@var{pd} =} PiecewiseLinearDistribution (@var{x}, @var{Fx})
+    ## @deftypefnx {prob.PiecewiseLinearDistribution} {@var{pd} =} PiecewiseLinearDistribution ()
+    ##
+    ## Create a @code{prob.PiecewiseLinearDistribution} object.
+    ##
+    ## @var{x} and @var{Fx} are the distribution parameters, which the class
+    ## help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{x} @code{[0; 1]} and @var{Fx} @code{[0; 1]}.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = PiecewiseLinearDistribution (x, Fx)
       if (nargin == 0)
         x = [0; 1];

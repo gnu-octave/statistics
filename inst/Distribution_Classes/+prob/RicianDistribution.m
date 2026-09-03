@@ -232,6 +232,19 @@ classdef RicianDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.RicianDistribution} {@var{pd} =} RicianDistribution (@var{s}, @var{sigma})
+    ## @deftypefnx {prob.RicianDistribution} {@var{pd} =} RicianDistribution ()
+    ##
+    ## Create a @code{prob.RicianDistribution} object.
+    ##
+    ## @var{s} and @var{sigma} are the distribution parameters, which the class
+    ## help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{s} 1 and @var{sigma} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = RicianDistribution (s, sigma)
       if (nargin == 0)
         s = 1;

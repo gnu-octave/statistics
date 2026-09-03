@@ -235,6 +235,19 @@ classdef InverseGaussianDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.InverseGaussianDistribution} {@var{pd} =} InverseGaussianDistribution (@var{mu}, @var{lambda})
+    ## @deftypefnx {prob.InverseGaussianDistribution} {@var{pd} =} InverseGaussianDistribution ()
+    ##
+    ## Create a @code{prob.InverseGaussianDistribution} object.
+    ##
+    ## @var{mu} and @var{lambda} are the distribution parameters, which the
+    ## class help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{mu} 1 and @var{lambda} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = InverseGaussianDistribution (mu, lambda)
       if (nargin == 0)
         mu = 1;

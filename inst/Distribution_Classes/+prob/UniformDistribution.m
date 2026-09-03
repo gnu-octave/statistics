@@ -172,6 +172,19 @@ classdef UniformDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.UniformDistribution} {@var{pd} =} UniformDistribution (@var{Lower}, @var{Upper})
+    ## @deftypefnx {prob.UniformDistribution} {@var{pd} =} UniformDistribution ()
+    ##
+    ## Create a @code{prob.UniformDistribution} object.
+    ##
+    ## @var{Lower} and @var{Upper} are the distribution parameters, which the
+    ## class help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{Lower} 0 and @var{Upper} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = UniformDistribution (Lower, Upper)
       if (nargin == 0)
         Lower = 0;

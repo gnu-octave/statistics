@@ -157,6 +157,19 @@ classdef MultinomialDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.MultinomialDistribution} {@var{pd} =} MultinomialDistribution (@var{Probabilities})
+    ## @deftypefnx {prob.MultinomialDistribution} {@var{pd} =} MultinomialDistribution ()
+    ##
+    ## Create a @code{prob.MultinomialDistribution} object.
+    ##
+    ## @var{Probabilities} is the distribution parameter, which the class help
+    ## describes.  Called with no arguments the parameter takes its default,
+    ## @var{Probabilities} @code{[0.5, 0.5]}.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = MultinomialDistribution (Probabilities)
       if (nargin == 0)
         Probabilities = [0.5, 0.5];

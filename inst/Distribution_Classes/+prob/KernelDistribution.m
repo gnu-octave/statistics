@@ -160,6 +160,20 @@ classdef KernelDistribution < prob.ProbabilityDistribution
 
   methods (Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.KernelDistribution} {@var{pd} =} KernelDistribution (@var{data}, @var{kernel}, @var{bw}, @var{support}, @var{freq})
+    ## @deftypefnx {prob.KernelDistribution} {@var{pd} =} KernelDistribution ()
+    ##
+    ## Create a @code{prob.KernelDistribution} object.
+    ##
+    ## @var{data}, @var{kernel}, @var{bw}, @var{support} and @var{freq} are the
+    ## distribution parameters, which the class help describes.  Called with no
+    ## arguments it fits the data @code{[0; 1]} with a normal kernel over an
+    ## unbounded support, taking the bandwidth from the data.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = KernelDistribution (data, kernel, bw, support, freq)
       if (nargin == 0)
         data = [0; 1];

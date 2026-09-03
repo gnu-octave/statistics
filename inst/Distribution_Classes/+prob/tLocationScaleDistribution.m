@@ -249,6 +249,19 @@ classdef tLocationScaleDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.tLocationScaleDistribution} {@var{pd} =} tLocationScaleDistribution (@var{mu}, @var{sigma}, @var{nu})
+    ## @deftypefnx {prob.tLocationScaleDistribution} {@var{pd} =} tLocationScaleDistribution ()
+    ##
+    ## Create a @code{prob.tLocationScaleDistribution} object.
+    ##
+    ## @var{mu}, @var{sigma} and @var{nu} are the distribution parameters, which
+    ## the class help describes.  Called with no arguments the parameters take
+    ## their defaults, @var{mu} 0, @var{sigma} 1 and @var{nu} 5.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = tLocationScaleDistribution (mu, sigma, nu)
       if (nargin == 0)
         mu = 0;

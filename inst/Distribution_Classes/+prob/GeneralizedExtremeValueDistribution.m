@@ -249,6 +249,19 @@ classdef GeneralizedExtremeValueDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.GeneralizedExtremeValueDistribution} {@var{pd} =} GeneralizedExtremeValueDistribution (@var{k}, @var{sigma}, @var{mu})
+    ## @deftypefnx {prob.GeneralizedExtremeValueDistribution} {@var{pd} =} GeneralizedExtremeValueDistribution ()
+    ##
+    ## Create a @code{prob.GeneralizedExtremeValueDistribution} object.
+    ##
+    ## @var{k}, @var{sigma} and @var{mu} are the distribution parameters, which
+    ## the class help describes.  Called with no arguments the parameters take
+    ## their defaults, @var{k} 0, @var{sigma} 1 and @var{mu} 0.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = GeneralizedExtremeValueDistribution (k, sigma, mu)
       if (nargin == 0)
         k = 0;

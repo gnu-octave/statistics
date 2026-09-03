@@ -238,6 +238,19 @@ classdef NegativeBinomialDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.NegativeBinomialDistribution} {@var{pd} =} NegativeBinomialDistribution (@var{R}, @var{P})
+    ## @deftypefnx {prob.NegativeBinomialDistribution} {@var{pd} =} NegativeBinomialDistribution ()
+    ##
+    ## Create a @code{prob.NegativeBinomialDistribution} object.
+    ##
+    ## @var{R} and @var{P} are the distribution parameters, which the class help
+    ## describes.  Called with no arguments the parameters take their defaults,
+    ## @var{R} 1 and @var{P} 0.5.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = NegativeBinomialDistribution (R, P)
       if (nargin == 0)
         R = 1;

@@ -235,6 +235,19 @@ classdef LogisticDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.LogisticDistribution} {@var{pd} =} LogisticDistribution (@var{mu}, @var{sigma})
+    ## @deftypefnx {prob.LogisticDistribution} {@var{pd} =} LogisticDistribution ()
+    ##
+    ## Create a @code{prob.LogisticDistribution} object.
+    ##
+    ## @var{mu} and @var{sigma} are the distribution parameters, which the class
+    ## help describes.  Called with no arguments the parameters take their
+    ## defaults, @var{mu} 0 and @var{sigma} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = LogisticDistribution (mu, sigma)
       if (nargin == 0)
         mu = 0;

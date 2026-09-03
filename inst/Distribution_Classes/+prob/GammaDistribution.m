@@ -233,6 +233,19 @@ classdef GammaDistribution < prob.ProbabilityDistribution
 
   methods(Hidden)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {prob.GammaDistribution} {@var{pd} =} GammaDistribution (@var{a}, @var{b})
+    ## @deftypefnx {prob.GammaDistribution} {@var{pd} =} GammaDistribution ()
+    ##
+    ## Create a @code{prob.GammaDistribution} object.
+    ##
+    ## @var{a} and @var{b} are the distribution parameters, which the class help
+    ## describes.  Called with no arguments the parameters take their defaults,
+    ## @var{a} 1 and @var{b} 1.
+    ##
+    ## @code{makedist} is the usual way to create a distribution object.
+    ##
+    ## @end deftypefn
     function this = GammaDistribution (a, b)
       if (nargin == 0)
         a = 1;
