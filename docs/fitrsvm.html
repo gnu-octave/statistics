@@ -1144,8 +1144,7 @@
                 <ol>
                   <li>A radial kernel fits a curve a linear one cannot</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 7);
- randn ('seed', 7);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  x = linspace (-3, 3, 120)';
  y = sin (x) + randn (120, 1) * 0.1;
  lin = fitrsvm (x, y);

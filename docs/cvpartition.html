@@ -1584,7 +1584,6 @@ training
                 <ol>
                   <li>Basic Usage</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (1, "twister");</pre>
                 <p>Create simple numeric labels</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> labels = [ones(10, 1); 2 * ones(10, 1)];
  c = cvpartition (labels, 'KFold', 2);
@@ -1628,7 +1627,7 @@ training
                 <ol>
                   <li>Grouped K-Fold Partition</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (101, "twister");
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  Region = repelem ({'North'; 'South'; 'East'; 'West'}, [20; 15; 15; 20]);
  Success = repelem ({'Success'; 'Fail'}, [49;  21]);
  Success = Success(randperm (70));
@@ -1656,12 +1655,12 @@ training
     "test1"          20    "East"                 0               0    
     "test1"          20    "West"                 0               0    
     "train2"         55    "North"               20         36.3636    
-    "train2"         55    "South"                0               0    
-    "train2"         55    "East"                15         27.2727    
+    "train2"         55    "South"               15         27.2727    
+    "train2"         55    "East"                 0               0    
     "train2"         55    "West"                20         36.3636    
     "test2"          15    "North"                0               0    
-    "test2"          15    "South"               15             100    
-    "test2"          15    "East"                 0               0    
+    "test2"          15    "South"                0               0    
+    "test2"          15    "East"                15             100    
     "test2"          15    "West"                 0               0    
     "train3"         50    "North"               20              40    
     "train3"         50    "South"               15              30    
@@ -1672,12 +1671,12 @@ training
     "test3"          20    "East"                 0               0    
     "test3"          20    "West"                20             100    
     "train4"         55    "North"               20         36.3636    
-    "train4"         55    "South"               15         27.2727    
-    "train4"         55    "East"                 0               0    
+    "train4"         55    "South"                0               0    
+    "train4"         55    "East"                15         27.2727    
     "train4"         55    "West"                20         36.3636    
     "test4"          15    "North"                0               0    
-    "test4"          15    "South"                0               0    
-    "test4"          15    "East"                15             100    
+    "test4"          15    "South"               15             100    
+    "test4"          15    "East"                 0               0    
     "test4"          15    "West"                 0               0</pre>
 
             </div>
@@ -1702,7 +1701,7 @@ training
                 <ol>
                   <li>Stratified K-Fold Partition</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (202, "twister");
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  Success = repelem ({'ClassA'; 'ClassB'}, [25; 25]);
  Success = Success(randperm (50));
  Tbl = table (Success);</pre>
@@ -1761,7 +1760,6 @@ training
                 <ol>
                   <li>Handling Missing Values (NaN) in Stratification</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (404, "twister");</pre>
                 <p>Create data with missing values (NaN)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> labels = [ones(10, 1); 2 * ones(10, 1); NaN(5, 1)];</pre>
                 <p>Create partition</p>
@@ -1807,7 +1805,7 @@ training
                 <ol>
                   <li>Filtering Summary</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (303, "twister");
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  Success = repelem ({'Yes'; 'No'}, [20; 10]);
  Success = Success(randperm (30));</pre>
                 <p>Create Partition and Summary</p>
@@ -1861,7 +1859,7 @@ training
                 <ol>
                   <li>Unstacking</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (505, "twister");
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  Success = repelem ({'Yes'; 'No'}, [20; 10]);
  Success = Success(randperm (30));</pre>
                 <p>Create Partition and Summary</p>

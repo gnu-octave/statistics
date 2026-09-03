@@ -2008,7 +2008,11 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Generalized Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Generalized Extreme Value
 
@@ -2016,18 +2020,17 @@ Compute the negative loglikelihood of a probability distribution.
         k = 0
     sigma = 1
        mu = 0</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 100, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Generalized Extreme Value
 
   Generalized Extreme Value distribution
-        k = -0.0864934   [-0.192267, 0.0192802]
-    sigma =    1.01922   [0.884038, 1.17508]
-       mu = 0.00794034   [-0.206979, 0.222859]</pre>
+        k = 0.0896895   [-0.0614972, 0.240876]
+    sigma =  0.964953   [0.816986, 1.13972]
+       mu = -0.105427   [-0.319244, 0.10839]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 154.21</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 159.39</pre>
                 <p>This is useful for assessing the fit of a GEV distribution to data, lower values indicate a better fit.</p>
 
             </div>
@@ -2104,7 +2107,11 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Generalized Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Generalized Extreme Value
 
@@ -2112,21 +2119,20 @@ Compute the confidence intervals for probability distribution parameters.
         k = -0.5
     sigma =    1
        mu =    2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 1);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Generalized Extreme Value
 
   Generalized Extreme Value distribution
-        k = -0.505978   [-0.520806, -0.491149]
-    sigma =   1.00491   [0.982564, 1.02776]
-       mu =   2.00433   [1.97453, 2.03414]</pre>
+        k = -0.490835   [-0.505254, -0.476417]
+    sigma =  0.987337   [0.965702, 1.00946]
+       mu =   2.00364   [1.97436, 2.03293]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-  -0.5208   0.9826   1.9745
-  -0.4911   1.0278   2.0341</pre>
+  -0.5053   0.9657   1.9744
+  -0.4764   1.0095   2.0329</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (k, sigma, mu), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2319,7 +2325,11 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Generalized Extreme Value distribution with parameters k = 0, sigma = 1, mu = 0. Fit a GEV distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Generalized Extreme Value
 
@@ -2327,16 +2337,15 @@ Plot a probability distribution object.
         k = 0
     sigma = 1
        mu = 0</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd_fixed, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 100, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Generalized Extreme Value
 
   Generalized Extreme Value distribution
-        k = -0.0864934   [-0.192267, 0.0192802]
-    sigma =    1.01922   [0.884038, 1.17508]
-       mu = 0.00794034   [-0.206979, 0.222859]</pre>
+        k = 0.0896895   [-0.0614972, 0.240876]
+    sigma =  0.964953   [0.816986, 1.13972]
+       mu = -0.105427   [-0.319244, 0.10839]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "cdf")
  txt = "Fitted Generalized Extreme Value distribution with k = %0.2f, sigma = %0.2f, mu = %0.2f";
  title (sprintf (txt, pd_fitted.k, pd_fitted.sigma, pd_fitted.mu))
@@ -2366,7 +2375,11 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Generalized Extreme Value distribution with parameters k = 0, sigma = 1, mu = 0. Display a probability plot for the GEV distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Generalized Extreme Value
 
@@ -2374,16 +2387,15 @@ Plot a probability distribution object.
         k = 0
     sigma = 1
        mu = 0</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd_fixed, 200, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 200, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Generalized Extreme Value
 
   Generalized Extreme Value distribution
-        k = -0.0763523   [-0.162043, 0.00933863]
-    sigma =    1.03437   [0.932539, 1.14731]
-       mu =   0.066184   [-0.0895762, 0.221944]</pre>
+        k =  0.0562564   [-0.0392384, 0.151751]
+    sigma =   0.995932   [0.887261, 1.11791]
+       mu = -0.0752391   [-0.231471, 0.0809923]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "probability")
  txt = strcat ("Probability plot of fitted Generalized Extreme Value", ...
                " distribution with k = %0.2f, sigma = %0.2f, mu = %0.2f");
@@ -2486,7 +2498,11 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the shape parameter of a fitted Generalized Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Generalized Extreme Value
 
@@ -2494,16 +2510,15 @@ Profile likelihood function for a probability distribution object.
         k = -0.5
     sigma =    1
        mu =    2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 1);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Generalized Extreme Value
 
   Generalized Extreme Value distribution
-        k = -0.505978   [-0.520806, -0.491149]
-    sigma =   1.00491   [0.982564, 1.02776]
-       mu =   2.00433   [1.97453, 2.03414]</pre>
+        k = -0.490835   [-0.505254, -0.476417]
+    sigma =  0.987337   [0.965702, 1.00946]
+       mu =   2.00364   [1.97436, 2.03293]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");</pre>
                 <div class="text-center">
                   <img src="assets/prob.GeneralizedExtremeValueDistribution.proflik-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
@@ -2571,7 +2586,11 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Generalized Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Generalized Extreme Value
 
@@ -2579,8 +2598,7 @@ Generate random arrays from the probability distribution object.
         k = 0
     sigma = 1
        mu = 0</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- samples = random (pd, 500, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> samples = random (pd, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from Generalized Extreme Value(k=0, sigma=1, mu=0)")
  xlabel ("Value")
@@ -2711,7 +2729,11 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_GeneralizedExtremeValueDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Generalized Extreme Value distribution, with parameters k = 0, sigma = 1, mu = 0, truncated at [0, 2] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Generalized Extreme Value
 
@@ -2728,8 +2750,7 @@ Truncate a probability distribution.
     sigma = 1
        mu = 0
   Truncated to the interval [0, 2]</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (t, 10000, 1);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (t, 10000, 1);</pre>
                 <p>Plot histogram and fitted PDF</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (t)
  hold on

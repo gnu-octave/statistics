@@ -2227,9 +2227,9 @@ Classify new data points into categories using the neural network
         Label           setosa       versicolor      virginica     
     ______________    ___________    ___________    ___________    
 
-    {'setosa'    }              1    2.31255e-08    2.13353e-32    
-    {'versicolor'}    3.20796e-09              1    1.86129e-09    
-    {'virginica' }    6.48333e-36    4.27951e-09              1</pre>
+    {'setosa'    }              1    1.22989e-10    1.13478e-34    
+    {'versicolor'}    8.00133e-11              1    1.86131e-09    
+    {'virginica' }    4.30507e-42     4.2799e-09              1</pre>
 
             </div>
           </div>
@@ -2492,10 +2492,10 @@ predict
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
   1x3 table
 
-    Smallest     Median    Largest    
-    _________    ______    _______    
+    Smallest      Median     Largest    
+    _________    ________    _______    
 
-    -0.735257         1          1</pre>
+    -0.801674    0.999999          1</pre>
 
             </div>
           </div>
@@ -2875,7 +2875,7 @@ margin
     Correct    Wrong    
     _______    _____    
 
-        148        2</pre>
+        147        3</pre>
 
             </div>
           </div>
@@ -2974,7 +2974,7 @@ edge
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [resubEdge(mdl), mean(resubMargin (mdl))]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
 
-   0.9663   0.9663</pre>
+   0.9508   0.9508</pre>
 
             </div>
           </div>
@@ -3282,7 +3282,7 @@ Cross Validate a Neural Network classification object.
                 <p>Leaveout fits as many models as there are observations, so it is the most expensive choice and the least biased</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cv = crossval (mdl, 'Leaveout', 'on');
  kfoldLoss (cv, 'LossFun', 'classiferror')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.044444</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.022222</pre>
 
             </div>
           </div>

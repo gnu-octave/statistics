@@ -1050,7 +1050,8 @@ isanomaly,
           <div class="collapse show" id="ocsvm-example1">
             <div class="card-body">
                 <p>Flag a handful of outliers around a Gaussian cluster.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [randn(200,2); 5 + randn(10,2)];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(200,2); 5 + randn(10,2)];
  [Mdl, tf, scores] = ocsvm (X, "KernelScale", 2, ...
                             "ContaminationFraction", 0.05);</pre>
                 <div class="text-center">

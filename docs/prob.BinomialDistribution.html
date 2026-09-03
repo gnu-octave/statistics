@@ -1895,24 +1895,27 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_BinomialDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Binomial distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =  10
         p = 0.3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- data = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 100, 1);
  pd_fitted = fitdist (data, "Binomial", "ntrials", 10)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Binomial
 
   binomial distribution
         N =    10
-        p = 0.317   [0.288235, 0.346847]</pre>
+        p = 0.295   [0.266873, 0.32434]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 181.52</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 183.66</pre>
                 <p>This is useful for assessing the fit of a binomial distribution to data, lower values indicate a better fit.</p>
 
             </div>
@@ -1989,27 +1992,30 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_BinomialDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Binomial distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =  10
         p = 0.3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "Binomial", "ntrials", 10)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Binomial
 
   binomial distribution
         N =     10
-        p = 0.3027   [0.293704, 0.311811]</pre>
+        p = 0.2964   [0.28746, 0.305459]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   10.0000    0.2937
-   10.0000    0.3118</pre>
+   10.0000    0.2875
+   10.0000    0.3055</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters, providing a range of plausible values for p given the data.</p>
 
             </div>
@@ -2200,22 +2206,25 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_BinomialDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Binomial distribution with parameters N = 10 and p = 0.3. Fit a Binomial distribution to this data and plot its CDF superimposed over an empirical CDF of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =  10
         p = 0.3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- data = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 100, 1);
  pd = fitdist (data, "Binomial", "ntrials", 10)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =    10
-        p = 0.317   [0.288235, 0.346847]</pre>
+        p = 0.295   [0.266873, 0.32434]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd, "PlotType", "cdf", "Discrete", true)
  title (sprintf ("Fitted Binomial distribution with N = %d and p = %0.2f", ...
                   pd.N, pd.p))
@@ -2245,22 +2254,25 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_BinomialDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Binomial distribution with parameters N = 10 and p = 0.3. Display a probability plot for the Binomial distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =  10
         p = 0.3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- data = random (pd, 200, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 200, 1);
  pd = fitdist (data, "Binomial", "ntrials", 10)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
-        N =    10
-        p = 0.301   [0.280951, 0.321634]</pre>
+        N =     10
+        p = 0.2905   [0.270672, 0.310944]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd, "PlotType", "probability", "Discrete", true)
  title (sprintf (["Probability plot of fitted Binomial distribution with " ...
                   "N = %d and p = %0.2f"], pd.N, pd.p));
@@ -2361,22 +2373,25 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_BinomialDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the probability parameter of a fitted Binomial distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =  10
         p = 0.3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "Binomial", "ntrials", 10)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Binomial
 
   binomial distribution
         N =     10
-        p = 0.3027   [0.293704, 0.311811]</pre>
+        p = 0.2964   [0.28746, 0.305459]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
                 <div class="text-center">
                   <img src="assets/prob.BinomialDistribution.proflik-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
@@ -2444,15 +2459,18 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_BinomialDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Binomial distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
   binomial distribution
         N =  10
         p = 0.3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- samples = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> samples = random (pd, 100, 1);
  hist (samples, 0:10)
  title ("Histogram of 100 random samples from Binomial(N=10, p=0.3)")
  xlabel ("Number of successes")
@@ -2582,7 +2600,11 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_BinomialDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Binomial distribution, with parameters N = 10 and p = 0.3, truncated at [2, 8] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Binomial", "N", 10, "p", 0.3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Binomial
 
@@ -2597,8 +2619,7 @@ Truncate a probability distribution.
         N =  10
         p = 0.3
   Truncated to the interval [2, 8]</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 22);
- data = random (t, 10000, 1);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (t, 10000, 1);</pre>
                 <p>Histogram data for range 2 to 8</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> edges = 1.5:1:8.5;
  centers = 2:8;

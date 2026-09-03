@@ -1061,7 +1061,8 @@
           <div class="collapse show" id="kmedoids-example1">
             <div class="card-body">
                 <p>Cluster three noisy blobs and mark the medoids.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [randn(20,2)*0.4 + 3; randn(20,2)*0.4; randn(20,2)*0.4 + [3 -3]];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(20,2)*0.4 + 3; randn(20,2)*0.4; randn(20,2)*0.4 + [3 -3]];
  [idx, C] = kmedoids (X, 3);
  gscatter (X(:,1), X(:,2), idx);
  hold on;

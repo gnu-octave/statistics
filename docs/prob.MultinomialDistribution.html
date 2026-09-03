@@ -1161,9 +1161,12 @@ Probability distribution name
           <div class="collapse" id="prob_MultinomialDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -1227,9 +1230,12 @@ Number of parameters
           <div class="collapse" id="prob_MultinomialDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -1293,9 +1299,12 @@ Names of parameters
           <div class="collapse" id="prob_MultinomialDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -1360,9 +1369,12 @@ Description of parameters
           <div class="collapse" id="prob_MultinomialDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -1428,9 +1440,12 @@ Distribution parameter values
           <div class="collapse" id="prob_MultinomialDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -1497,9 +1512,12 @@ Truncation interval
           <div class="collapse" id="prob_MultinomialDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -1563,9 +1581,12 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_MultinomialDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on
@@ -2185,7 +2206,7 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_MultinomialDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Multinomial distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  pd = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">error: 'MultinomialDistribution' undefined near line 1, column 7
 
@@ -2315,7 +2336,7 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_MultinomialDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Multinomial distribution truncated at [2, 5] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">error: 'MultinomialDistribution' undefined near line 1, column 7
 
@@ -2425,9 +2446,12 @@ Generate a data set of 5000 random samples from a Multinomial distribution with 
           </div>
           <div class="collapse multi-collapse" id="prob_MultinomialDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
  pd = makedist ('Multinomial', 'Probabilities', probs);
- rand ('seed', 2);
  data = random (pd, 5000, 1);
  hist (data, length (probs));
  hold on

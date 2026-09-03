@@ -1128,7 +1128,7 @@
           <div class="collapse show" id="factoran-example1">
             <div class="card-body">
                 <p>Six measured variables built from two underlying factors, plus noise. Factor analysis recovers the structure without being told it: the first three variables load on one factor and the last three on the other.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ("seed", 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  F = randn (300, 2);
  X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
      + 0.6 * randn (300, 6);
@@ -1136,12 +1136,12 @@
  printf ("loadings on the two rotated factors:\n");</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">loadings on the two rotated factors:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (round (lambda * 1000) / 1000);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   0.060000   0.815000
-   0.149000   0.743000
-   0.163000   0.726000
-   0.805000   0.090000
-   0.802000   0.195000
-   0.785000   0.109000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   0.863000   0.077000
+   0.699000   0.264000
+   0.749000   0.148000
+   0.189000   0.798000
+   0.290000   0.701000
+   0.040000   0.819000</pre>
 
             </div>
           </div>
@@ -1163,7 +1163,7 @@
           <div class="collapse show" id="factoran-example2">
             <div class="card-body">
                 <p>How many factors do the data support?  The likelihood ratio test in stats answers it.  These data were built from two factors, and the test rejects one factor while accepting two.  Three factors leave no degrees of freedom, so there is nothing left to test with.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ("seed", 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  F = randn (300, 2);
  X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
      + 0.6 * randn (300, 6);
@@ -1177,8 +1177,8 @@
              m, stats.dfe);
    endif
  endfor</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">1 factor(s): chisq =  275.780, dfe = 9, p = 0.0000
-2 factor(s): chisq =    6.417, dfe = 4, p = 0.1701
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">1 factor(s): chisq =  287.486, dfe = 9, p = 0.0000
+2 factor(s): chisq =    3.645, dfe = 4, p = 0.4561
 warning: factoran: some specific variances are at their lower bound; the fit is a Heywood case.
 warning: called from
     factoran at line 309 column 5
@@ -1210,7 +1210,7 @@ warning: called from
           <div class="collapse show" id="factoran-example3">
             <div class="card-body">
                 <p>Rotation decides how a fit is presented, not how good it is.  The unrotated solution puts most of the variance on a general first factor; varimax turns it so each variable loads mainly on one factor, which is easier to read.  The specific variances are untouched either way.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ("seed", 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  F = randn (300, 2);
  X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
      + 0.6 * randn (300, 6);
@@ -1218,20 +1218,20 @@ warning: called from
  [Lvari, psi_vari, T] = factoran (X, 2, "Rotate", "varimax");
  printf ("unrotated:\n");  disp (round (Lnone * 100) / 100);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">unrotated:
-   0.5300   0.6200
-   0.5600   0.5100
-   0.5600   0.4900
-   0.7000  -0.4000
-   0.7600  -0.3100
-   0.7000  -0.3700</pre>
+   0.6900  -0.5300
+   0.6900  -0.2800
+   0.6500  -0.4000
+   0.6800   0.4600
+   0.6900   0.3200
+   0.5800   0.5800</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("varimax:\n");    disp (round (Lvari * 100) / 100);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">varimax:
-   0.060000   0.810000
-   0.150000   0.740000
-   0.160000   0.730000
-   0.810000   0.090000
-   0.800000   0.190000
-   0.780000   0.110000</pre>
+   0.860000   0.080000
+   0.700000   0.260000
+   0.750000   0.150000
+   0.190000   0.800000
+   0.290000   0.700000
+   0.040000   0.820000</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("the rotation matrix takes one to the other: %d\n", ...
          max (max (abs (Lnone * T - Lvari))) &lt; 1e-10);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">the rotation matrix takes one to the other: 1</pre>
@@ -1259,7 +1259,7 @@ warning: called from
           <div class="collapse show" id="factoran-example4">
             <div class="card-body">
                 <p>Factor scores place each observation on the factors, so they can be plotted or used as inputs downstream.  The two predictors optimise different things and are not equal, but they agree closely on the ordering of observations.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ("seed", 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  F = randn (300, 2);
  X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
      + 0.6 * randn (300, 6);
@@ -1268,18 +1268,18 @@ warning: called from
  printf ("first three observations, weighted least squares:\n");</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">first three observations, weighted least squares:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (round (Fwls(1:3,:) * 1000) / 1000);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  -0.335000   1.273000
-   2.403000   0.125000
-  -0.591000   0.032000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  -0.603000  -0.996000
+  -0.319000   0.097000
+  -1.115000   1.357000</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("first three observations, regression:\n");</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">first three observations, regression:</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (round (Freg(1:3,:) * 1000) / 1000);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  -2.2300e-01   1.0160e+00
-   2.0230e+00   2.1100e-01
-  -4.9400e-01  -1.0000e-03</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  -0.555000  -0.855000
+  -0.262000   0.064000
+  -0.864000   1.066000</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("the two agree on factor 1 to a correlation of %.4f\n", ...
          corr (Fwls(:,1), Freg(:,1)));</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">the two agree on factor 1 to a correlation of 0.9985</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">the two agree on factor 1 to a correlation of 0.9981</pre>
 
             </div>
           </div>
@@ -1301,7 +1301,7 @@ warning: called from
           <div class="collapse show" id="factoran-example5">
             <div class="card-body">
                 <p>Two ways to estimate the same model.  Maximum likelihood is the default and is what MATLAB does; principal axis factoring is an Octave extension that assumes no distribution.  They agree closely when the model fits, so a large gap between them is a warning about the fit. Only maximum likelihood carries a test.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ("seed", 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  F = randn (300, 2);
  X = F * [0.8 0.1; 0.7 0.2; 0.75 0.15; 0.15 0.8; 0.2 0.7; 0.1 0.75]' ...
      + 0.6 * randn (300, 6);
@@ -1309,7 +1309,7 @@ warning: called from
  Lpaf = factoran (X, 2, "Extraction", "paf");
  printf ("largest loading difference between the extractions: %.4f\n", ...
          max (abs (abs (Lml(:)) - abs (Lpaf(:)))));</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">largest loading difference between the extractions: 0.0035</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">largest loading difference between the extractions: 0.0047</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [~, ~, ~, sml] = factoran (X, 2, "Extraction", "ml");
  [~, ~, ~, spaf] = factoran (X, 2, "Extraction", "paf");
  printf ("ml  reports: %s\n", strjoin (fieldnames (sml)', ", "));</pre>

@@ -1053,7 +1053,8 @@
           <div class="collapse show" id="dbscan-example1">
             <div class="card-body">
                 <p>Cluster a set of points with two dense blobs and scattered noise.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [randn(30,2)*0.3 + 2; randn(30,2)*0.3 - 2; 5*(rand(6,2)-0.5)];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(30,2)*0.3 + 2; randn(30,2)*0.3 - 2; 5*(rand(6,2)-0.5)];
  idx = dbscan (X, 0.6, 4);
  gscatter (X(:,1), X(:,2), idx);
  title ("dbscan: clusters (&gt;=0) and noise (-1)");</pre>

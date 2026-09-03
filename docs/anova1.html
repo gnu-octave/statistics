@@ -1077,8 +1077,8 @@
           </div>
           <div class="collapse show" id="anova1-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = meshgrid (1:6);
- randn ('seed', 15);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = meshgrid (1:6);
  x = x + normrnd (0, 1, 6, 6);
  anova1 (x, [], 'off');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
@@ -1086,9 +1086,9 @@
 
 Source        SS      df        MS       F      Prob&gt;F
 ------------------------------------------------------
-Groups     96.8124     5    19.3625    31.76    0.0000
-Error      18.2881    30     0.6096
-Total     115.1004    35</pre>
+Groups    111.9398     5    22.3880    18.42    0.0000
+Error      36.4629    30     1.2154
+Total     148.4027    35</pre>
 
             </div>
           </div>
@@ -1109,8 +1109,8 @@ Total     115.1004    35</pre>
           </div>
           <div class="collapse show" id="anova1-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = meshgrid (1:6);
- randn ('seed', 15);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = meshgrid (1:6);
  x = x + normrnd (0, 1, 6, 6);
  [p, atab] = anova1 (x);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
@@ -1118,9 +1118,9 @@ Total     115.1004    35</pre>
 
 Source        SS      df        MS       F      Prob&gt;F
 ------------------------------------------------------
-Groups     96.8124     5    19.3625    31.76    0.0000
-Error      18.2881    30     0.6096
-Total     115.1004    35</pre>
+Groups    111.9398     5    22.3880    18.42    0.0000
+Error      36.4629    30     1.2154
+Total     148.4027    35</pre>
                 <div class="text-center">
                   <img src="assets/anova1-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -1144,8 +1144,8 @@ Total     115.1004    35</pre>
           </div>
           <div class="collapse show" id="anova1-example3">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = ones (50, 4) .* [-2, 0, 1, 5];
- randn ('seed', 13);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = ones (50, 4) .* [-2, 0, 1, 5];
  x = x + normrnd (0, 2, 50, 4);
  groups = {'A', 'B', 'C', 'D'};
  anova1 (x, groups);</pre>
@@ -1154,9 +1154,9 @@ Total     115.1004    35</pre>
 
 Source        SS      df        MS       F      Prob&gt;F
 ------------------------------------------------------
-Groups   1392.4448     3   464.1483   105.41    0.0000
-Error     863.0487   196     4.4033
-Total    2255.4935   199</pre>
+Groups   1037.3570     3   345.7857    81.63    0.0000
+Error     830.2136   196     4.2358
+Total    1867.5706   199</pre>
                 <div class="text-center">
                   <img src="assets/anova1-301.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>

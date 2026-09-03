@@ -12608,8 +12608,8 @@ Simulate responses with random noise from a fitted linear regression
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ysim = random (mdl, Xnew)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ysim =
 
-   284.82
-   392.48</pre>
+   282.02
+   404.38</pre>
 
             </div>
           </div>
@@ -12631,17 +12631,17 @@ Simulate responses with random noise from a fitted linear regression
           <div class="collapse" id="LinearModel_random-example2">
             <div class="card-body">
                 <p>Reproducible simulated responses by seeding the generator that <code>random</code> actually draws from. <code>random</code> adds its noise with <code>randn</code>, so reproducibility comes from seeding <code>randn</code> itself, not <code>rand</code>. Resetting to the same state before each call gives back the exact same simulated values.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Temp = [60;65;70;75;80;85;90];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ Temp = [60;65;70;75;80;85;90];
  Sales = [200;230;260;300;340;370;410];
  mdl = fitlm (Temp, Sales);
  Xnew = [72; 88];</pre>
                 <p>Two calls from the same seed give identical simulated responses.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('state', 42);
- ysimA = random (mdl, Xnew);
- randn ('state', 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ysimA = random (mdl, Xnew);
  ysimB = random (mdl, Xnew);
  same_seed_matches = isequal (ysimA, ysimB)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">same_seed_matches = 1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">same_seed_matches = 0</pre>
 
             </div>
           </div>
@@ -12663,7 +12663,9 @@ Simulate responses with random noise from a fitted linear regression
           <div class="collapse" id="LinearModel_random-example3">
             <div class="card-body">
                 <p>Simulating noisy fuel-economy readings from a quadratic model of vehicle weight, using the <code>carsmall</code> data set. The deterministic quadratic fit gives a smooth predicted curve; <code>random</code> adds noise scaled by the model's own MSE to produce plausible individual readings a new car of that weight might show.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ load carsmall
  X = Weight;
  y = MPG;
  mdl = fitlm (X, y, 'quadratic');
@@ -12678,15 +12680,14 @@ Simulate responses with random noise from a fitted linear regression
    19.054
    18.926</pre>
                 <p>Simulated readings for the same five cars, with noise added.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('state', 7);
- ysim = random (mdl, Xsub)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ysim = random (mdl, Xsub)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ysim =
 
-   20.465
-   14.916
-   20.680
-   12.132
-   17.805</pre>
+   18.463
+   15.073
+   16.096
+   24.235
+   14.062</pre>
 
             </div>
           </div>
@@ -12708,18 +12709,18 @@ Simulate responses with random noise from a fitted linear regression
           <div class="collapse" id="LinearModel_random-example4">
             <div class="card-body">
                 <p><code>random</code> on a CompactLinearModel gives the same simulated draw as the original model, given the same seed. <code>compact</code> discards the training data but keeps everything <code>random</code> needs; reseeding identically before each call confirms the compact model simulates exactly the same values as the original.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Temp = [60;65;70;75;80;85;90];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ Temp = [60;65;70;75;80;85;90];
  Sales = [200;230;260;300;340;370;410];
  mdl  = fitlm (Temp, Sales);
  cmdl = compact (mdl);
  Xnew = [72; 88];</pre>
                 <p>Same seed, same simulated draw from either model.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('state', 99);
- ysim_full = random (mdl, Xnew);
- randn ('state', 99);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ysim_full = random (mdl, Xnew);
  ysim_compact = random (cmdl, Xnew);
  compact_matches_full = isequal (ysim_full, ysim_compact)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">compact_matches_full = 1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">compact_matches_full = 0</pre>
 
             </div>
           </div>

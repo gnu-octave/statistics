@@ -1043,14 +1043,10 @@
           <div class="collapse show" id="tlsfit-example1">
             <div class="card-body">
                 <p>Sample 3 populations from 3 different location-scale T distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 1);    # for reproducibility
- randg ('seed', 2);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  r1 = tlsrnd (-4, 3, 1, 2000, 1);
- randn ('seed', 3);    # for reproducibility
- randg ('seed', 4);    # for reproducibility
  r2 = tlsrnd (0, 3, 1, 2000, 1);
- randn ('seed', 5);    # for reproducibility
- randg ('seed', 6);    # for reproducibility
  r3 = tlsrnd (5, 5, 4, 2000, 1);
  r = [r1, r2, r3];</pre>
                 <p>Plot them normalized and fix their colors</p>

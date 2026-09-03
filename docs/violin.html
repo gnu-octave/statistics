@@ -1042,7 +1042,8 @@ hist
           </div>
           <div class="collapse show" id="violin-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ clf
  x = zeros (9e2, 10);
  for i=1:10
    x(:,i) = (0.1 * randn (3e2, 3) * (randn (3,1) + 1) + 2 * randn (1,3))(:);
@@ -1076,7 +1077,8 @@ hist
           </div>
           <div class="collapse show" id="violin-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ clf
  data = {randn(100,1)*5+140, randn(130,1)*8+135};
  subplot (1,2,1)
  title ('Grade 3 heights - vertical');
@@ -1111,7 +1113,9 @@ hist
           </div>
           <div class="collapse show" id="violin-example3">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
+ clf
  data = exprnd (0.1, 500,4);
  violin (data, 'nbins', {5,10,50,100});
  axis ([0 5 0 max(data(:))])</pre>
@@ -1138,7 +1142,9 @@ hist
           </div>
           <div class="collapse show" id="violin-example4">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
+ clf
  data = exprnd (0.1, 500,4);
  violin (data, 'color', jet (4));
  axis ([0 5 0 max(data(:))])</pre>
@@ -1165,7 +1171,9 @@ hist
           </div>
           <div class="collapse show" id="violin-example5">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
+ clf
  data = repmat (exprnd (0.1, 500,1), 1, 4);
  violin (data, 'width', linspace (0.1,0.5,4));
  axis ([0 5 0 max(data(:))])</pre>
@@ -1192,7 +1200,9 @@ hist
           </div>
           <div class="collapse show" id="violin-example6">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
+ clf
  data = repmat (exprnd (0.1, 500,1), 1, 4);
  violin (data, 'nbins', [5,10,50,100], 'smoothfactor', [4 4 8 10]);
  axis ([0 5 0 max(data(:))])</pre>

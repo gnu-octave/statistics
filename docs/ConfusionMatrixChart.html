@@ -2432,82 +2432,6 @@ ConfusionMatrixChart with properties:
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>disp</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-Display the properties of the ConfusionMatrixChart object.
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod1">
-            <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ConfusionMatrixChart: <b>disp</b> (<var>cmc</var>)</code></h5></dt>
-</dl>
-<p> </p>
-<p> <code>disp (<var>cmc</var>)</code> displays the main properties of the
- ConfusionMatrixChart object <var>cmc</var>, including the normalized values
- and class labels.
-</p>
-<p> <strong>See also: </strong>
-  <a href="ConfusionMatrixChart.html">ConfusionMatrixChart</a>
-</p>
-
-        <div class="card rounded my-4">
-          <div class="card-header card-header-mod">
-            <div class="row d-flex flex-wrap align-items-center">
-              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
-                  type="button" data-bs-toggle="collapse"
-                  data-bs-target="#ConfusionMatrixChart_disp-example1" aria-expanded="false"
-                  aria-controls="ConfusionMatrixChart_disp-example1">
-                Example: 1
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="collapse" id="ConfusionMatrixChart_disp-example1">
-            <div class="card-body">
-                <p>Create a simple ConfusionMatrixChart Object</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cm = ConfusionMatrixChart (gca, [1 2; 1 2], {'A','B'}, {'XLabel','LABEL A'})</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">cm =
-
-ConfusionMatrixChart with properties:
-
-	NormalizedValues: [ 2x2 double ]
-	ClassLabels: { 1x2 cell }</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> NormalizedValues = cm.NormalizedValues</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">NormalizedValues =
-
-   1   2
-   1   2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ClassLabels = cm.ClassLabels</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ClassLabels =
-  1x2 cell array
-
-    {'A'}    {'B'}</pre>
-                <div class="text-center">
-                  <img src="assets/ConfusionMatrixChart.disp-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
-                </div><p></p>
-
-            </div>
-          </div>
-        </div>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
-              aria-expanded="false" aria-controls="collapseMethod2">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
                     <b><code>sortClasses</code></b>
                   </h4>
                 </div>
@@ -2516,7 +2440,7 @@ Sort the classes in the confusion matrix chart.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
+          <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ConfusionMatrixChart: <b>sortClasses</b> (<var>cmc</var>, <var>order</var>)</code></h5></dt>

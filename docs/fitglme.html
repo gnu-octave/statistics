@@ -1020,7 +1020,10 @@
           <div class="collapse show" id="fitglme-example1">
             <div class="card-body">
                 <p>Poisson mixed model with a random intercept per group.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> g = reshape (repmat (1:6, 7, 1), [], 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
+ g = reshape (repmat (1:6, 7, 1), [], 1);
  x = randn (42, 1);
  y = poissrnd (exp (0.3 + 0.5 * x + 0.2 * reshape (repmat (randn (1, 6), 7, 1), [], 1)));
  tbl = table (y, x, g);
@@ -1028,11 +1031,11 @@
  disp (glme.Coefficients);</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x7 table
 
-                    Estimate         SE          tStat       DF      pValue         Lower       Upper      
-                   ___________    ________    ___________    __    ___________    _________    ________    
+                   Estimate       SE        tStat     DF      pValue        Lower       Upper      
+                   ________    ________    _______    __    __________    _________    ________    
 
-    (Intercept)    -0.00145707    0.175785    -0.00828894    40       0.993428    -0.356732    0.353818    
-    x                 0.733527    0.126022        5.82064    40    8.44656e-07     0.478828    0.988227</pre>
+    (Intercept)    0.154353    0.154085    1.00174    40       0.32249    -0.157063     0.46577    
+    x              0.626466    0.116139    5.39409    40    3.3487e-06     0.391739    0.861192</pre>
 
             </div>
           </div>

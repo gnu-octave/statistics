@@ -1060,7 +1060,8 @@
           <div class="collapse show" id="tsne-example1">
             <div class="card-body">
                 <p>Embed a small five-dimensional data set into two dimensions.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [randn(20, 5); randn(20, 5) + 5];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(20, 5); randn(20, 5) + 5];
  Y = tsne (X, "Perplexity", 10);
  plot (Y(1:20,1), Y(1:20,2), "bo", Y(21:end,1), Y(21:end,2), "rx");
  title ("t-SNE embedding");</pre>

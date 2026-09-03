@@ -1177,9 +1177,9 @@
  raw = fitrnet (X, MPG, 'IterationLimit', 400);
  std_ = fitrnet (X, MPG, 'Standardize', true, 'IterationLimit', 400);
  printf ('RMSE, raw predictors : %.2f\n', sqrt (resubLoss (raw)));</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE, raw predictors : 4.07</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE, raw predictors : 4.81</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ('RMSE, standardized   : %.2f\n', sqrt (resubLoss (std_)));</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE, standardized   : 4.05</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE, standardized   : 3.87</pre>
 
             </div>
           </div>
@@ -1203,8 +1203,7 @@
                 <ol>
                   <li>A network recovers a curve a straight line cannot</li>
                 </ol>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 7);
- randn ('seed', 7);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  x = linspace (-3, 3, 120)';
  y = sin (x) + randn (120, 1) * 0.1;
  Mdl = fitrnet (x, y, 'LayerSizes', [16, 16], 'IterationLimit', 800);

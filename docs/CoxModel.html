@@ -1032,13 +1032,101 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Coefficient estimates and their statistics
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>CoxModel.Coefficients</code></b> is not documented.
+
+<p> </p>
+<p> A table with one row per encoded predictor column, its row names the
+ encoded column names, and the variables <code>Beta</code>, <code>SE</code>,
+ <code>zStat</code> and <code>pValue</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Coefficients-example1" aria-expanded="false"
+                  aria-controls="CoxModel_Coefficients-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Coefficients-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Coefficients-example2" aria-expanded="false"
+                  aria-controls="CoxModel_Coefficients-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Coefficients-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1055,13 +1143,101 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>CoxModel.NumPredictors</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the predictor variables of the model,
+ before any categorical predictor is encoded.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_NumPredictors-example1" aria-expanded="false"
+                  aria-controls="CoxModel_NumPredictors-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_NumPredictors-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_NumPredictors-example2" aria-expanded="false"
+                  aria-controls="CoxModel_NumPredictors-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_NumPredictors-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1078,13 +1254,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Log-likelihood of the fitted model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>CoxModel.LogLikelihood</code></b> is not documented.
+
+<p> </p>
+<p> A scalar, the maximised Cox partial log-likelihood.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_LogLikelihood-example1" aria-expanded="false"
+                  aria-controls="CoxModel_LogLikelihood-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_LogLikelihood-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_LogLikelihood-example2" aria-expanded="false"
+                  aria-controls="CoxModel_LogLikelihood-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_LogLikelihood-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1101,13 +1364,101 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Estimated baseline cumulative hazard
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>CoxModel.Hazard</code></b> is not documented.
+
+<p> </p>
+<p> A numeric matrix of event times in its first column and the cumulative
+ hazard at them in its second.  A stratified model adds a third column
+ holding the stratum each row belongs to.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Hazard-example1" aria-expanded="false"
+                  aria-controls="CoxModel_Hazard-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Hazard-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Hazard-example2" aria-expanded="false"
+                  aria-controls="CoxModel_Hazard-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Hazard-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1124,13 +1475,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of the predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>CoxModel.PredictorNames</code></b> is not documented.
+
+<p> </p>
+<p> A cell array of character vectors with one name per predictor.  This
+ property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_PredictorNames-example1" aria-expanded="false"
+                  aria-controls="CoxModel_PredictorNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_PredictorNames-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_PredictorNames-example2" aria-expanded="false"
+                  aria-controls="CoxModel_PredictorNames-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_PredictorNames-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1147,13 +1585,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Name of the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>CoxModel.ResponseName</code></b> is not documented.
+
+<p> </p>
+<p> A character vector naming the response, which is the survival time.
+ This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_ResponseName-example1" aria-expanded="false"
+                  aria-controls="CoxModel_ResponseName-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_ResponseName-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_ResponseName-example2" aria-expanded="false"
+                  aria-controls="CoxModel_ResponseName-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_ResponseName-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1170,13 +1695,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Model formula
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>CoxModel.Formula</code></b> is not documented.
+
+<p> </p>
+<p> A <code>LinearFormula</code> object describing the terms of the model.  This
+ property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Formula-example1" aria-expanded="false"
+                  aria-controls="CoxModel_Formula-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Formula-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Formula-example2" aria-expanded="false"
+                  aria-controls="CoxModel_Formula-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Formula-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1193,13 +1805,102 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor values the baseline hazard is evaluated at
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>CoxModel.Baseline</code></b> is not documented.
+
+<p> </p>
+<p> The baseline the fit used, one row per stratum.  It is reported as it
+ was given when <code>fitcox</code> was given one, a scalar staying a scalar,
+ and otherwise holds the rows the fit was centred on.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Baseline-example1" aria-expanded="false"
+                  aria-controls="CoxModel_Baseline-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Baseline-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Baseline-example2" aria-expanded="false"
+                  aria-controls="CoxModel_Baseline-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Baseline-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1216,13 +1917,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Stratification levels used in the fit
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>CoxModel.Stratification</code></b> is not documented.
+
+<p> </p>
+<p> The distinct levels of the stratification variable.  It is empty when
+ the model is not stratified.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Stratification-example1" aria-expanded="false"
+                  aria-controls="CoxModel_Stratification-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Stratification-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Stratification-example2" aria-expanded="false"
+                  aria-controls="CoxModel_Stratification-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Stratification-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1239,13 +2027,101 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Estimated covariance of the coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>CoxModel.CoefficientCovariance</code></b> is not documented.
+
+<p> </p>
+<p> A square numeric matrix, one row and column per encoded predictor
+ column, holding the estimated covariance of the estimates in
+ <code>Coefficients</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_CoefficientCovariance-example1" aria-expanded="false"
+                  aria-controls="CoxModel_CoefficientCovariance-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_CoefficientCovariance-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_CoefficientCovariance-example2" aria-expanded="false"
+                  aria-controls="CoxModel_CoefficientCovariance-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_CoefficientCovariance-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1262,13 +2138,101 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Standard errors of the coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>CoxModel.StandardError</code></b> is not documented.
+
+<p> </p>
+<p> A numeric column vector, the square roots of the diagonal of
+ <code>CoefficientCovariance</code>, which is column <code>SE</code> of
+ <code>Coefficients</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_StandardError-example1" aria-expanded="false"
+                  aria-controls="CoxModel_StandardError-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_StandardError-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_StandardError-example2" aria-expanded="false"
+                  aria-controls="CoxModel_StandardError-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_StandardError-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1285,13 +2249,102 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Residuals of the fitted model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>CoxModel.Residuals</code></b> is not documented.
+
+<p> </p>
+<p> A table with one row per observation and the variables
+ <code>CoxSnell</code>, <code>Deviance</code>, <code>Martingale</code>,
+ <code>Schoenfeld</code>, <code>ScaledSchoenfeld</code>, <code>Score</code> and
+ <code>ScaledScore</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Residuals-example1" aria-expanded="false"
+                  aria-controls="CoxModel_Residuals-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Residuals-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_Residuals-example2" aria-expanded="false"
+                  aria-controls="CoxModel_Residuals-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_Residuals-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1308,13 +2361,102 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Proportional hazards test, one predictor at a time
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>CoxModel.ProportionalHazardsPValue</code></b> is not documented.
+
+<p> </p>
+<p> A numeric vector with one <em class="math">p</em> value per predictor, testing whether
+ that predictor&rsquo;s effect is constant over time.  A small value is
+ evidence against the proportional hazards assumption.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_ProportionalHazardsPValue-example1" aria-expanded="false"
+                  aria-controls="CoxModel_ProportionalHazardsPValue-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_ProportionalHazardsPValue-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_ProportionalHazardsPValue-example2" aria-expanded="false"
+                  aria-controls="CoxModel_ProportionalHazardsPValue-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_ProportionalHazardsPValue-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1331,13 +2473,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Proportional hazards test over the whole model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>CoxModel.ProportionalHazardsPValueGlobal</code></b> is not documented.
+
+<p> </p>
+<p> A scalar <em class="math">p</em> value testing the proportional hazards assumption for
+ all predictors at once.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_ProportionalHazardsPValueGlobal-example1" aria-expanded="false"
+                  aria-controls="CoxModel_ProportionalHazardsPValueGlobal-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_ProportionalHazardsPValueGlobal-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_ProportionalHazardsPValueGlobal-example2" aria-expanded="false"
+                  aria-controls="CoxModel_ProportionalHazardsPValueGlobal-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_ProportionalHazardsPValueGlobal-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1354,13 +2583,100 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Likelihood ratio test against the null model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>CoxModel.LikelihoodRatioTestPValue</code></b> is not documented.
+
+<p> </p>
+<p> A scalar <em class="math">p</em> value comparing the fitted model with the model that
+ carries no predictors.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_LikelihoodRatioTestPValue-example1" aria-expanded="false"
+                  aria-controls="CoxModel_LikelihoodRatioTestPValue-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_LikelihoodRatioTestPValue-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_LikelihoodRatioTestPValue-example2" aria-expanded="false"
+                  aria-controls="CoxModel_LikelihoodRatioTestPValue-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_LikelihoodRatioTestPValue-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1377,13 +2693,101 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Information about the variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>CoxModel.VariableInfo</code></b> is not documented.
+
+<p> </p>
+<p> A table with one row per variable, its row names the variable names,
+ and the variables <code>Class</code>, <code>Range</code>, <code>InModel</code> and
+ <code>IsCategorical</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_VariableInfo-example1" aria-expanded="false"
+                  aria-controls="CoxModel_VariableInfo-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_VariableInfo-example1">
+            <div class="card-body">
+                <p>Fit a Cox proportional hazards model and read its coefficients</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
+
+  Cox proportional hazards regression model:
+      y ~ X1 + X2
+
+  Coefficients:
+
+  2x4 table
+
+            Beta         SE        zStat       pValue      
+          ________    ________    ________    _________    
+
+    X1    -1.38861    0.527378    -2.63305    0.0084623    
+    X2     4.38144     1.85374     2.36357    0.0180998    
+
+
+Log-likelihood: -8.80696
+Likelihood ratio test vs. constant model: p-value = 0.001841</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CoxModel_VariableInfo-example2" aria-expanded="false"
+                  aria-controls="CoxModel_VariableInfo-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CoxModel_VariableInfo-example2">
+            <div class="card-body">
+                <p>The survival function at the model's baseline</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [2 0; 5 1; 3 0; 8 1; 4 0; 7 1; 6 0; 9 1; 5 0; 10 1];
+ T = [4; 6; 8; 11; 13; 16; 18; 21; 25; 30];
+ mdl = fitcox (X, T);
+ [s, t] = survival (mdl);
+ [t, s]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   4.0000e+00   1.0000e+00
+   4.0000e+00   9.8524e-01
+   6.0000e+00   9.6212e-01
+   8.0000e+00   8.7779e-01
+   1.1000e+01   7.0722e-01
+   1.3000e+01   5.5559e-01
+   1.6000e+01   3.7705e-01
+   1.8000e+01   7.8737e-02
+   2.1000e+01   1.2405e-02
+   2.5000e+01   1.1494e-03
+   3.0000e+01   4.3804e-18</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>

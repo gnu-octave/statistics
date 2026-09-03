@@ -1051,19 +1051,20 @@ Mean of logarithmic values
           <div class="collapse" id="prob_LoglogisticDistribution_mu-example1">
             <div class="card-body">
                 <p>Create a Log-logistic distribution with default parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = loglrnd (0, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = loglrnd (0, 1, 10000, 1);
  pd = fitdist (data, "Loglogistic");</pre>
                 <p>Query parameter 'mu' (mean of logarithmic values)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.mu</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.022913</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1.4978e-03</pre>
                 <p>Set parameter 'mu'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.mu = 1</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Log-Logistic
 
   Log-Logistic distribution
-       mu =        1
-    sigma = 0.990419</pre>
+       mu =       1
+    sigma = 0.99358</pre>
                 <p>Use this to initialize or modify the mean of the logarithmic values in a Log-logistic distribution. The mu parameter must be a nonnegative real scalar, often representing the location in log-space for modeling positive skewed data like survival times or income distributions.</p>
 
             </div>
@@ -1146,18 +1147,19 @@ Scale of logarithmic values
           <div class="collapse" id="prob_LoglogisticDistribution_sigma-example1">
             <div class="card-body">
                 <p>Create a Log-logistic distribution with default parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = loglrnd (0, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = loglrnd (0, 1, 10000, 1);
  pd = fitdist (data, "Loglogistic");</pre>
                 <p>Query parameter 'sigma' (scale of logarithmic values)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9959</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9936</pre>
                 <p>Set parameter 'sigma'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma = 2</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.00895226
+       mu = 0.00149777
     sigma =          2</pre>
                 <p>Use this to initialize or modify the scale of the logarithmic values in a Log-logistic distribution. The sigma parameter must be a positive real scalar, controlling the shape and tail heaviness of the distribution.</p>
 
@@ -1240,22 +1242,25 @@ Probability distribution name
           <div class="collapse" id="prob_LoglogisticDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1312,22 +1317,25 @@ Number of parameters
           <div class="collapse" id="prob_LoglogisticDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1384,22 +1392,25 @@ Names of parameters
           <div class="collapse" id="prob_LoglogisticDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1457,22 +1468,25 @@ Description of parameters
           <div class="collapse" id="prob_LoglogisticDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1531,22 +1545,25 @@ Distribution parameter values
           <div class="collapse" id="prob_LoglogisticDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1606,22 +1623,25 @@ Truncation interval
           <div class="collapse" id="prob_LoglogisticDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1678,22 +1698,25 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_LoglogisticDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1756,22 +1779,25 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_LoglogisticDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1830,22 +1856,25 @@ Flag for fixed parameters
           <div class="collapse" id="prob_LoglogisticDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1914,22 +1943,25 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_LoglogisticDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1.  Fit a Log-logistic distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>
@@ -1996,7 +2028,8 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse" id="prob_LoglogisticDistribution_cdf-example1">
             <div class="card-body">
                 <p>Plot various CDFs from the Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:10;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = 0:0.01:10;
  data1 = loglrnd (0, 0.5, 10000, 1);
  data2 = loglrnd (0, 1, 10000, 1);
  data3 = loglrnd (0, 2, 10000, 1);
@@ -2070,7 +2103,8 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse" id="prob_LoglogisticDistribution_icdf-example1">
             <div class="card-body">
                 <p>Plot various iCDFs from the Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.0001:0.001:0.95;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ p = 0.0001:0.001:0.95;
  data1 = loglrnd (0, 0.5, 10000, 1);
  data2 = loglrnd (0, 1, 10000, 1);
  data3 = loglrnd (0, 2, 10000, 1);
@@ -2143,10 +2177,11 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_iqr-example1">
             <div class="card-body">
                 <p>Compute the interquartile range for a Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = loglrnd (0, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = loglrnd (0, 1, 10000, 1);
  pd = fitdist (data, "Loglogistic");
  iqr_value = iqr (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 2.7680</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 2.6472</pre>
                 <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for understanding central variability in positive skewed data like lifetimes.</p>
 
             </div>
@@ -2200,14 +2235,15 @@ Compute the mean of a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_mean-example1">
             <div class="card-body">
                 <p>Compute the mean for different Log-logistic distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = loglrnd (0, 0.5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data1 = loglrnd (0, 0.5, 10000, 1);
  data2 = loglrnd (0, 1, 10000, 1);
  pd1 = fitdist (data1, "Loglogistic");
  pd2 = fitdist (data2, "Loglogistic");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.5704</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.5620</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 194.69</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = Inf</pre>
                 <p>This shows how to compute the expected value for Log-logistic distributions with different sigma parameters. Note that the mean may be infinite for sigma &lt;= 1, useful in heavy-tailed modeling.</p>
 
             </div>
@@ -2261,14 +2297,15 @@ Compute the median of a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_median-example1">
             <div class="card-body">
                 <p>Compute the median for different Log-logistic distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = loglrnd (0, 0.5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data1 = loglrnd (0, 0.5, 10000, 1);
  data2 = loglrnd (0, 1, 10000, 1);
  pd1 = fitdist (data1, "Loglogistic");
  pd2 = fitdist (data2, "Loglogistic");
  median1 = median (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 1.0009</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 1.0007</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 1.0078</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 1.0151</pre>
                 <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust to the heavy tails in Log-logistic data.</p>
 
             </div>
@@ -2322,11 +2359,11 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = loglrnd (0, 1, 100, 1);
  pd_fitted = fitdist (data, "Loglogistic");
  nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 187.83</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 198.91</pre>
                 <p>This is useful for assessing the fit of a Log-logistic distribution to data, with lower values indicating a better fit, often used in model selection or optimization.</p>
 
             </div>
@@ -2402,14 +2439,14 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_LoglogisticDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = loglrnd (0, 1, 1000, 1);
  pd_fitted = fitdist (data, "Loglogistic");
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-  -0.061636   0.938148
-   0.149957   1.041061</pre>
+  -0.032578   0.956817
+   0.183106   1.061581</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (mu and sigma), providing a range of plausible values given the data, especially useful in survival or reliability analysis.</p>
 
             </div>
@@ -2464,7 +2501,8 @@ Compute the probability distribution function (PDF).
           <div class="collapse" id="prob_LoglogisticDistribution_pdf-example1">
             <div class="card-body">
                 <p>Plot various PDFs from the Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:10;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = 0:0.01:10;
  data1 = loglrnd (0, 0.5, 10000, 1);
  data2 = loglrnd (0, 1, 10000, 1);
  data3 = loglrnd (0, 2, 10000, 1);
@@ -2570,7 +2608,8 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_LoglogisticDistribution_plot-example1">
             <div class="card-body">
                 <p>Create a Log-logistic distribution with fixed parameters mu = 0 and sigma = 1 and plot its PDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = loglrnd (0, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = loglrnd (0, 1, 10000, 1);
  pd = fitdist (data, "Loglogistic");
  x = linspace (0.01, 20, 1000);
  y = pdf (pd, x);
@@ -2603,7 +2642,7 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_LoglogisticDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1. Fit a Log-logistic distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = loglrnd (0, 1, 100, 1);
  pd_fitted = fitdist (data, "Loglogistic");
  ecdf (data);
@@ -2643,7 +2682,7 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_LoglogisticDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Log-logistic distribution with parameters mu = 0 and sigma = 1. Display a probability plot for the Log-logistic distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = loglrnd (0, 1, 200, 1);
  pd_fitted = fitdist (data, "Loglogistic");
  plot (pd_fitted, "PlotType", "probability")
@@ -2747,7 +2786,7 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_LoglogisticDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the sigma parameter of a fitted Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = loglrnd (0, 1, 1000, 1);
  pd_fitted = fitdist (data, "Loglogistic");
  [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
@@ -2817,7 +2856,7 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_LoglogisticDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  samples = loglrnd (0, 1, 500, 1);
  hist (samples, 50)
  p99 = prctile (samples, 99);
@@ -2881,10 +2920,11 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_std-example1">
             <div class="card-body">
                 <p>Compute the standard deviation for a Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = loglrnd (0, 0.4, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = loglrnd (0, 0.4, 10000, 1);
  pd = fitdist (data, "Loglogistic");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 1.5927</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 1.5578</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in the positive skewed values. Note it may be infinite for certain parameters.</p>
 
             </div>
@@ -2944,7 +2984,7 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Log-logistic distribution, with parameters mu = 0 and sigma = 1, truncated at [0.5, 5] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data_all = loglrnd (0, 1, 30000, 1);
  data = data_all(data_all &gt;= 0.5 &amp; data_all &lt;= 5);
  data = data(1:10000);
@@ -3016,10 +3056,11 @@ Compute the variance of a probability distribution.
           <div class="collapse" id="prob_LoglogisticDistribution_var-example1">
             <div class="card-body">
                 <p>Compute the variance for a Log-logistic distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = loglrnd (0, 0.4, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = loglrnd (0, 0.4, 10000, 1);
  pd = fitdist (data, "Loglogistic");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 2.4054</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 2.4268</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the positive skewed values. Note it may be infinite for sigma &lt;= 2.</p>
 
             </div>
@@ -3050,22 +3091,25 @@ Generate a data set of 5000 random samples from a Log-logistic distribution with
           </div>
           <div class="collapse multi-collapse" id="prob_LoglogisticDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Loglogistic', 'mu', 0, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Log-Logistic
 
   Log-Logistic distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Loglogistic')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Log-Logistic
 
   Log-Logistic distribution
-       mu = 0.0351959   [-0.0119722, 0.082364]
-    sigma =  0.978072   [0.955719, 1.00095]</pre>
+       mu = 0.00213154   [-0.0452855, 0.0495486]
+    sigma =   0.989237   [0.966546, 1.01246]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))</pre>

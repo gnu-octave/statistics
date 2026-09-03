@@ -1009,13 +1009,20 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Component means
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.mu</code></b> is not documented.
+
+<p> </p>
+<p> A k-by-d matrix holding the mean of each of the k components, one
+ per row, where d is the number of variables.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1032,13 +1039,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Component covariances
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.Sigma</code></b> is not documented.
+
+<p> </p>
+<p> The covariances of the components, in the form they were given in.
+ A full covariance per component is d-by-d-by-k, a diagonal one per
+ component 1-by-d-by-k, a full covariance shared by every component
+ d-by-d, and a shared diagonal one 1-by-d.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1055,13 +1071,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Mixing proportions
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.ComponentProportion</code></b> is not documented.
+
+<p> </p>
+<p> A 1-by-k row vector holding the proportion of each component.  The
+ proportions are scaled to sum to 1, and are all equal when none was
+ given.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1078,13 +1101,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Name of the distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.DistributionName</code></b> is not documented.
+
+<p> </p>
+<p> The character vector <code>'gaussian mixture distribution'</code>.  This
+ property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1101,13 +1130,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of mixture components
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.NumComponents</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer, the number of rows of <code>mu</code>.  This property
+ is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1124,13 +1159,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.NumVariables</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer, the dimension of each component, which is the
+ number of columns of <code>mu</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1147,13 +1188,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Form of the component covariances
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.CovarianceType</code></b> is not documented.
+
+<p> </p>
+<p> A character vector, <code>'diagonal'</code> when each covariance was
+ given as a row of variances and <code>'full'</code> when it was given as
+ a matrix.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1170,13 +1218,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Whether the components share one covariance
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.SharedCovariance</code></b> is not documented.
+
+<p> </p>
+<p> A logical scalar, true when a single covariance was given for every
+ component and false when one was given per component.  This property
+ is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1193,13 +1248,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Akaike information criterion
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.AIC</code></b> is not documented.
+
+<p> </p>
+<p> A scalar, twice the negative log-likelihood plus twice the number of
+ estimated parameters.  It is empty unless the object came from
+ <code>fitgmdist</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1216,13 +1278,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Bayesian information criterion
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.BIC</code></b> is not documented.
+
+<p> </p>
+<p> A scalar, twice the negative log-likelihood plus the number of
+ estimated parameters times the log of the number of observations.
+ It is empty unless the object came from <code>fitgmdist</code>.  This
+ property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1239,13 +1309,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Whether the fit converged
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.Converged</code></b> is not documented.
+
+<p> </p>
+<p> A logical scalar, true when the fit reached its tolerance within the
+ iteration limit.  It is empty unless the object came from
+ <code>fitgmdist</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1262,13 +1339,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Negative log-likelihood at the fit
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.NegativeLogLikelihood</code></b> is not documented.
+
+<p> </p>
+<p> A scalar, the negative of the log-likelihood of the data under the
+ fitted mixture.  It is empty unless the object came from
+ <code>fitgmdist</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1281,17 +1365,23 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NlogL</code></b>
+                    <b><code>NumIterations</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Iterations the fit took
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.NlogL</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer.  It is empty unless the object came from
+ <code>fitgmdist</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1304,45 +1394,78 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumIterations</code></b>
+                    <b><code>RegularizationValue</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Regularization added to the covariance diagonal
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.NumIterations</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>RegularizationValue</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-<b><code>gmdistribution.RegularizationValue</code></b> is not documented.
+<p> </p>
+<p> A nonnegative scalar added to the diagonal of each covariance to
+ keep it positive definite.  It is empty unless the object came from
+ <code>fitgmdist</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
 
         <p class="lead my-3">The <code>gmdistribution</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
+              aria-expanded="false" aria-controls="colapsibleConstructor">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>gmdistribution</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Create a Gaussian mixture distribution.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="colapsibleConstructor">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>, <var>p</var>, <var>extra</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>mu</var> is a k-by-d matrix holding the mean of each of the k
+ components, one per row, where d is the number of variables.
+</p>
+<p> <var>Sigma</var> holds the covariances in one of four forms.  A full
+ covariance per component is d-by-d-by-k and a diagonal one per
+ component is 1-by-d-by-k, while a single d-by-d matrix or a single
+ 1-by-d row of variances is shared by every component.  The form given
+ sets <code>CovarianceType</code> and <code>SharedCovariance</code>.
+</p>
+<p> <var>p</var> is a vector of k mixing proportions, scaled to sum to 1.  A
+ proportion may not be negative and they may not all be zero.  When
+ <var>p</var> is omitted or empty the components are equally weighted.
+</p>
+<p> <var>extra</var> carries the results of a fit and is passed by
+ <code>fitgmdist</code>.  It fills <code>AIC</code>, <code>BIC</code>,
+ <code>Converged</code>, <code>NegativeLogLikelihood</code>,
+ <code>NumIterations</code> and <code>RegularizationValue</code>, which stay
+ empty for an object built by hand.
+</p>
+
+
+            </div>
+          </div>
+        </div>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1356,13 +1479,25 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Cumulative distribution function of a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.cdf</code></b> is not documented.
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>cdf</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an n-by-d matrix of points at which the distribution is
+ evaluated, one point per row, where d is the number of variables of
+ <var>obj</var>.  <var>c</var> is an n-by-1 vector holding the value of the
+ cumulative distribution function at each of them, the components&rsquo;
+ cumulative distributions summed with the mixing proportions in
+ <code>ComponentProportion</code> as weights.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1379,13 +1514,34 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Assign each observation to a mixture component.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.cluster</code></b> is not documented.
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>idx</var> = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>, <var>logpdf</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>, <var>logpdf</var>, <var>M</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an n-by-d matrix of observations, one per row, where d is
+ the number of variables of <var>obj</var>.  Each is assigned to the
+ component under which it is most probable.
+</p>
+<p> <var>idx</var> is an n-by-1 vector of component indices.  <var>nlogl</var> is
+ the negative log-likelihood of <var>X</var> under the mixture.  <var>P</var> is
+ an n-by-k matrix of posterior probabilities, one column per component,
+ whose rows sum to one.  <var>logpdf</var> is an n-by-1 vector holding the
+ logarithm of the mixture density at each observation.  <var>M</var> is an
+ n-by-k matrix of squared Mahalanobis distances from each observation
+ to each component mean.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1398,17 +1554,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>disp</code></b>
+                    <b><code>mahal</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Squared Mahalanobis distance to each mixture component.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.disp</code></b> is not documented.
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>D</var> = <b>mahal</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an n-by-d matrix of observations, one per row, where d is
+ the number of variables of <var>obj</var>.  <var>D</var> is an n-by-k matrix
+ holding the squared Mahalanobis distance from each observation to the
+ mean of each of the k components, measured in the covariance of the
+ component it is taken to.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1421,17 +1588,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>display</code></b>
+                    <b><code>pdf</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability density function of a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.display</code></b> is not documented.
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>pdf</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an n-by-d matrix of points at which the density is
+ evaluated, one point per row, where d is the number of variables of
+ <var>obj</var>.  <var>c</var> is an n-by-1 vector holding the density at each of
+ them, the components&rsquo; densities summed with the mixing proportions in
+ <code>ComponentProportion</code> as weights.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1444,17 +1622,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>mahal</code></b>
+                    <b><code>posterior</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Posterior probability of each mixture component.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.mahal</code></b> is not documented.
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>posterior</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an n-by-d matrix of observations, one per row, where d is
+ the number of variables of <var>obj</var>.  <var>c</var> is an n-by-k matrix
+ whose (i,j) element is the probability that observation i was drawn
+ from component j, so its rows sum to one.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1467,17 +1655,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>pdf</code></b>
+                    <b><code>random</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Random numbers from a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod6">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.pdf</code></b> is not documented.
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>, <var>n</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>n</var> is the number of observations to draw and defaults to 1.
+ <var>c</var> is an <var>n</var>-by-d matrix holding one observation per row,
+ where d is the number of variables of <var>obj</var>.  Each row is drawn
+ from a component chosen with probability <code>ComponentProportion</code>.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1490,63 +1689,29 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>posterior</code></b>
+                    <b><code>fit</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Fit a Gaussian mixture distribution to data.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod7">
             <div class="border-bottom py-2">
-<b><code>gmdistribution.posterior</code></b> is not documented.
-            </div>
-          </div>
-        </div>
+<dl>
+<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an n-by-d matrix of observations, one per row, and <var>k</var>
+ is the number of components to fit.  Any <var>Name</var>-<var>Value</var> pair
+ accepted by <code>fitgmdist</code> may follow, which is the function this
+ method calls and where the options are documented.  <var>obj</var> is the
+ fitted <code>gmdistribution</code> object.
+</p>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
-              aria-expanded="false" aria-controls="collapseMethod8">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>random</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod8">
-            <div class="border-bottom py-2">
-<b><code>gmdistribution.random</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
-              aria-expanded="false" aria-controls="collapseMethod9">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>fit</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod9">
-            <div class="border-bottom py-2">
-<b><code>gmdistribution.fit</code></b> is not documented.
             </div>
           </div>
         </div>

@@ -1254,22 +1254,25 @@ Probability distribution name
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta =  1.00368   [0.990371, 1.01717]
-    gamma = 0.496978   [0.487332, 0.506814]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1326,22 +1329,25 @@ Number of parameters
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta =  0.99983   [0.986373, 1.01347]
-    gamma = 0.505024   [0.495223, 0.51502]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1398,22 +1404,25 @@ Names of parameters
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.997653   [0.984192, 1.0113]
-    gamma = 0.506377   [0.496549, 0.5164]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1471,22 +1480,25 @@ Description of parameters
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta =  1.00714   [0.993754, 1.0207]
-    gamma = 0.498168   [0.488499, 0.508028]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1545,22 +1557,25 @@ Distribution parameter values
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.994756   [0.981362, 1.00833]
-    gamma = 0.505258   [0.495452, 0.515259]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1620,22 +1635,25 @@ Truncation interval
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.994608   [0.981356, 1.00804]
-    gamma = 0.499583   [0.489886, 0.509471]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1692,22 +1710,25 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.992318   [0.978984, 1.00583]
-    gamma = 0.504148   [0.494363, 0.514127]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1770,22 +1791,25 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta =  1.00423   [0.990848, 1.01779]
-    gamma = 0.499588   [0.489891, 0.509476]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1844,22 +1868,25 @@ Flag for fixed parameters
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.996908   [0.98346, 1.01054]
-    gamma = 0.506236   [0.496411, 0.516256]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -1928,22 +1955,25 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.987358   [0.974115, 1.00078]
-    gamma = 0.503179   [0.493413, 0.513139]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>
@@ -2331,24 +2361,27 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Birnbaum-Saunders distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- data = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 100, 1);
  pd_fitted = fitdist (data, "BirnbaumSaunders")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.970671   [0.879466, 1.07133]
-    gamma = 0.521202   [0.453751, 0.598681]</pre>
+     beta = 0.981126   [0.88904, 1.08275]
+    gamma = 0.520551   [0.453183, 0.597932]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 70.806</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 71.027</pre>
                 <p>This is useful for assessing the fit of a Birnbaum-Saunders distribution to data, lower values indicate a better fit.</p>
 
             </div>
@@ -2425,27 +2458,30 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Birnbaum-Saunders distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "BirnbaumSaunders")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta =  1.00746   [0.977975, 1.03784]
-    gamma = 0.494505   [0.473301, 0.516659]</pre>
+     beta =  1.02566   [0.995014, 1.05725]
+    gamma = 0.505652   [0.483969, 0.528305]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   0.9780   0.4733
-   1.0378   0.5167</pre>
+   0.9950   0.4840
+   1.0573   0.5283</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (beta and gamma), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2636,22 +2672,25 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5. Fit a Birnbaum-Saunders distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- data = random (pd_fixed, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 100, 1);
  pd_fitted = fitdist (data, "BirnbaumSaunders")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.955751   [0.868082, 1.05227]
-    gamma = 0.507282   [0.441632, 0.582691]</pre>
+     beta = 0.981126   [0.88904, 1.08275]
+    gamma = 0.520551   [0.453183, 0.597932]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "cdf")
  txt = "Fitted Birnbaum-Saunders distribution with β = %0.2f and γ = %0.2f";
  title (sprintf (txt, pd_fitted.beta, pd_fitted.gamma))
@@ -2681,22 +2720,25 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Birnbaum-Saunders distribution with parameters β = 1 and γ = 0.5. Display a probability plot for the Birnbaum-Saunders distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- data = random (pd_fixed, 200, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 200, 1);
  pd_fitted = fitdist (data, "BirnbaumSaunders")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta =  1.01444   [0.946605, 1.08714]
-    gamma = 0.516678   [0.468447, 0.569876]</pre>
+     beta = 0.985513   [0.919018, 1.05682]
+    gamma = 0.521873   [0.473156, 0.575605]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "probability")
  txt = strcat ("Probability plot of fitted Birnbaum-Saunders", ...
                " distribution with β = %0.2f and γ = %0.2f");
@@ -2798,22 +2840,25 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the shape parameter of a fitted Birnbaum-Saunders distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "BirnbaumSaunders")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 0.999365   [0.971208, 1.02834]
-    gamma = 0.474532   [0.454184, 0.495791]</pre>
+     beta =  1.02566   [0.995014, 1.05725]
+    gamma = 0.505652   [0.483969, 0.528305]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
                 <div class="text-center">
                   <img src="assets/prob.BirnbaumSaundersDistribution.proflik-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
@@ -2881,15 +2926,18 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Birnbaum-Saunders distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- samples = random (pd, 500, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> samples = random (pd, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from Birnbaum-Saunders(beta=1, gamma=0.5)")
  xlabel ("Time to failure")
@@ -3019,7 +3067,11 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_BirnbaumSaundersDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Birnbaum-Saunders distribution, with parameters beta = 1 and gamma = 0.5, truncated at [0.5, 2] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Birnbaum-Saunders
 
@@ -3034,8 +3086,7 @@ Truncate a probability distribution.
      beta =   1
     gamma = 0.5
   Truncated to the interval [0.5, 2]</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ("seed", 21);
- data = random (t, 10000, 1);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (t, 10000, 1);</pre>
                 <p>Plot histogram and fitted PDF</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (t)
  hold on
@@ -3138,22 +3189,25 @@ Generate a data set of 5000 random samples from a Birnbaum-Saunders distribution
           </div>
           <div class="collapse multi-collapse" id="prob_BirnbaumSaundersDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
      beta =   1
     gamma = 0.5</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 21);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'BirnbaumSaunders')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Birnbaum-Saunders
 
   Birnbaum-Saunders distribution
-     beta = 1.00396   [0.990513, 1.01759]
-    gamma = 0.50243   [0.492678, 0.512375]</pre>
+     beta =  1.00274   [0.989452, 1.01621]
+    gamma = 0.496806   [0.487163, 0.506639]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
  title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))</pre>

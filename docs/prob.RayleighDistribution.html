@@ -1055,20 +1055,23 @@ Scale parameter
           <div class="collapse" id="prob_RayleighDistribution_B-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1125,20 +1128,23 @@ Probability distribution name
           <div class="collapse" id="prob_RayleighDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1195,20 +1201,23 @@ Number of parameters
           <div class="collapse" id="prob_RayleighDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1265,20 +1274,23 @@ Names of parameters
           <div class="collapse" id="prob_RayleighDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1336,20 +1348,23 @@ Description of parameters
           <div class="collapse" id="prob_RayleighDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1408,20 +1423,23 @@ Distribution parameter values
           <div class="collapse" id="prob_RayleighDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1481,20 +1499,23 @@ Truncation interval
           <div class="collapse" id="prob_RayleighDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1551,20 +1572,23 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_RayleighDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1627,20 +1651,23 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_RayleighDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1699,20 +1726,23 @@ Flag for fixed parameters
           <div class="collapse" id="prob_RayleighDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1781,20 +1811,23 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_RayleighDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rayleigh distribution with parameter B = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>
@@ -1861,7 +1894,8 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse" id="prob_RayleighDistribution_cdf-example1">
             <div class="card-body">
                 <p>Plot various CDFs from the Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -1:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = -1:0.01:5;
  data1 = raylrnd (0.5, 10000, 1);
  data2 = raylrnd (1.0, 10000, 1);
  data3 = raylrnd (2.0, 10000, 1);
@@ -1935,7 +1969,8 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse" id="prob_RayleighDistribution_icdf-example1">
             <div class="card-body">
                 <p>Plot various iCDFs from the Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ p = 0.001:0.001:0.999;
  data1 = raylrnd (0.5, 10000, 1);
  data2 = raylrnd (1.0, 10000, 1);
  data3 = raylrnd (2.0, 10000, 1);
@@ -2008,10 +2043,11 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_iqr-example1">
             <div class="card-body">
                 <p>Compute the interquartile range for a Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = raylrnd (1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = raylrnd (1, 10000, 1);
  pd = fitdist (data, "Rayleigh");
  iqr_value = iqr (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 0.8966</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 0.9064</pre>
                 <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for understanding central variability in nonnegative data.</p>
 
             </div>
@@ -2065,14 +2101,15 @@ Compute the mean of a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_mean-example1">
             <div class="card-body">
                 <p>Compute the mean for different Rayleigh distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = raylrnd (0.5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data1 = raylrnd (0.5, 10000, 1);
  data2 = raylrnd (1.0, 10000, 1);
  pd1 = fitdist (data1, "Rayleigh");
  pd2 = fitdist (data2, "Rayleigh");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 0.6249</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 0.6265</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 1.2451</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 1.2569</pre>
                 <p>This shows how to compute the expected value for Rayleigh distributions with different scale parameters, representing average magnitude in applications like acoustics.</p>
 
             </div>
@@ -2126,14 +2163,15 @@ Compute the median of a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_median-example1">
             <div class="card-body">
                 <p>Compute the median for different Rayleigh distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = raylrnd (0.5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data1 = raylrnd (0.5, 10000, 1);
  data2 = raylrnd (1.0, 10000, 1);
  pd1 = fitdist (data1, "Rayleigh");
  pd2 = fitdist (data2, "Rayleigh");
  median1 = median (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.5889</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.5886</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 1.1794</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 1.1808</pre>
                 <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust to skewness in nonnegative data.</p>
 
             </div>
@@ -2187,11 +2225,11 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = raylrnd (1, 100, 1);
  pd_fitted = fitdist (data, "Rayleigh");
  nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 91.102</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 96.882</pre>
                 <p>This is useful for assessing the fit of a Rayleigh distribution to data, with lower values indicating a better fit, often used in model comparison.</p>
 
             </div>
@@ -2267,14 +2305,14 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_RayleighDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = raylrnd (1, 1000, 1);
  pd_fitted = fitdist (data, "Rayleigh");
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   0.9788
-   1.0414</pre>
+   0.9963
+   1.0600</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameter (sigma), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2329,7 +2367,8 @@ Compute the probability distribution function (PDF).
           <div class="collapse" id="prob_RayleighDistribution_pdf-example1">
             <div class="card-body">
                 <p>Plot various PDFs from the Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -1:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = -1:0.01:5;
  data1 = raylrnd (0.5, 10000, 1);
  data2 = raylrnd (1.0, 10000, 1);
  data3 = raylrnd (2.0, 10000, 1);
@@ -2435,7 +2474,8 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_RayleighDistribution_plot-example1">
             <div class="card-body">
                 <p>Create a Rayleigh distribution with fixed parameter sigma = 1 and plot its PDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = raylrnd (1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = raylrnd (1, 10000, 1);
  pd = fitdist (data, "Rayleigh");
  plot (pd)
  title ("Fixed Rayleigh distribution with sigma = 1")</pre>
@@ -2463,7 +2503,7 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_RayleighDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Rayleigh distribution with parameter sigma = 1. Fit a Rayleigh distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = raylrnd (1, 100, 1);
  pd_fitted = fitdist (data, "Rayleigh");
  plot (pd_fitted, "PlotType", "cdf")
@@ -2496,7 +2536,7 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_RayleighDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Rayleigh distribution with parameter sigma = 1. Display a probability plot for the Rayleigh distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = raylrnd (1, 200, 1);
  pd_fitted = fitdist (data, "Rayleigh");
  plot (pd_fitted, "PlotType", "probability")
@@ -2600,7 +2640,7 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_RayleighDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the scale parameter of a fitted Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = raylrnd (1, 1000, 1);
  pd_fitted = fitdist (data, "Rayleigh");
  [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");</pre>
@@ -2670,7 +2710,7 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_RayleighDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  samples = raylrnd (1, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from Rayleigh(sigma=1)")
@@ -2732,10 +2772,11 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_std-example1">
             <div class="card-body">
                 <p>Compute the standard deviation for a Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = raylrnd (1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = raylrnd (1, 10000, 1);
  pd = fitdist (data, "Rayleigh");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.6546</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.6550</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in the nonnegative values of the distribution.</p>
 
             </div>
@@ -2795,7 +2836,7 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Rayleigh distribution, with parameter sigma = 1, truncated at [0.5, 2] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data_all = raylrnd (1, 20000, 1);
  data = data_all(data_all &gt;= 0.5 &amp; data_all &lt;= 2);
  data = data(1:10000);
@@ -2867,10 +2908,11 @@ Compute the variance of a probability distribution.
           <div class="collapse" id="prob_RayleighDistribution_var-example1">
             <div class="card-body">
                 <p>Compute the variance for a Rayleigh distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = raylrnd (1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = raylrnd (1, 10000, 1);
  pd = fitdist (data, "Rayleigh");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.4250</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.4290</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the nonnegative values in the distribution.</p>
 
             </div>
@@ -2901,20 +2943,23 @@ Generate a data set of 5000 random samples from a Rayleigh distribution with par
           </div>
           <div class="collapse multi-collapse" id="prob_RayleighDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rayleigh', 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rayleigh
 
   Rayleigh distribution
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rayleigh')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rayleigh
 
   Rayleigh distribution
-        B = 1.97536   [1.94836, 2.00313]</pre>
+        B = 2.00134   [1.97398, 2.02946]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rayleigh distribution with B = %0.2f';
  title (sprintf (msg, pd_fitted.B))</pre>

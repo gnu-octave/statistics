@@ -1056,22 +1056,25 @@ Scale parameter
           <div class="collapse" id="prob_WeibullDistribution_A-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 1.00604   [0.991734, 1.02054]
-        B = 2.03805   [1.99451, 2.08255]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1129,22 +1132,25 @@ Shape parameter
           <div class="collapse" id="prob_WeibullDistribution_B-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.994679   [0.980113, 1.00946]
-        B =   1.9777   [1.93518, 2.02115]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1201,22 +1207,25 @@ Probability distribution name
           <div class="collapse" id="prob_WeibullDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 1.00388   [0.989606, 1.01835]
-        B =  2.0384   [1.99488, 2.08287]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1273,22 +1282,25 @@ Number of parameters
           <div class="collapse" id="prob_WeibullDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.997008   [0.98269, 1.01153]
-        B =  2.01808   [1.97508, 2.06201]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1345,22 +1357,25 @@ Names of parameters
           <div class="collapse" id="prob_WeibullDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.993437   [0.978623, 1.00848]
-        B =   1.9431   [1.90167, 1.98544]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1418,22 +1433,25 @@ Description of parameters
           <div class="collapse" id="prob_WeibullDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 1.00566   [0.99128, 1.02024]
-        B = 2.02618   [1.98257, 2.07076]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1492,22 +1510,25 @@ Distribution parameter values
           <div class="collapse" id="prob_WeibullDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 1.00988   [0.995325, 1.02466]
-        B = 2.00916   [1.96617, 2.05309]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1567,22 +1588,25 @@ Truncation interval
           <div class="collapse" id="prob_WeibullDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.996907   [0.982724, 1.0113]
-        B =  2.03714   [1.99364, 2.08158]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1639,22 +1663,25 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_WeibullDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.996899   [0.982332, 1.01168]
-        B =  1.98258   [1.94026, 2.02583]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1717,22 +1744,25 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_WeibullDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 1.00193   [0.987636, 1.01644]
-        B = 2.03121   [1.98782, 2.07555]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1791,22 +1821,25 @@ Flag for fixed parameters
           <div class="collapse" id="prob_WeibullDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 1.00069   [0.986088, 1.01551]
-        B = 1.98479   [1.9422, 2.02831]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1875,22 +1908,25 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_WeibullDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Weibull distribution with parameters A = 1 and B = 2.  Fit a Weibull distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of a data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.999476   [0.984906, 1.01426]
-        B =    1.987   [1.94442, 2.03052]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>
@@ -1957,7 +1993,8 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse" id="prob_WeibullDistribution_cdf-example1">
             <div class="card-body">
                 <p>Plot various CDFs from the Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ x = 0:0.01:5;
  data1 = wblrnd (1, 0.5, 10000, 1);
  data2 = wblrnd (1, 1, 10000, 1);
  data3 = wblrnd (1, 2, 10000, 1);
@@ -2031,7 +2068,8 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse" id="prob_WeibullDistribution_icdf-example1">
             <div class="card-body">
                 <p>Plot various iCDFs from the Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ p = 0.001:0.001:0.999;
  data1 = wblrnd (1, 0.5, 10000, 1);
  data2 = wblrnd (1, 1, 10000, 1);
  data3 = wblrnd (1, 2, 10000, 1);
@@ -2104,10 +2142,11 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_iqr-example1">
             <div class="card-body">
                 <p>Compute the interquartile range for a Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = wblrnd (1, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ data = wblrnd (1, 1, 10000, 1);
  pd = fitdist (data, "Weibull");
  iqr_value = iqr (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 1.1092</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 1.0867</pre>
                 <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for understanding variability in lifetime data.</p>
 
             </div>
@@ -2161,14 +2200,15 @@ Compute the mean of a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_mean-example1">
             <div class="card-body">
                 <p>Compute the mean for different Weibull distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = wblrnd (1, 0.5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ data1 = wblrnd (1, 0.5, 10000, 1);
  data2 = wblrnd (1, 2, 10000, 1);
  pd1 = fitdist (data1, "Weibull");
  pd2 = fitdist (data2, "Weibull");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.9676</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.9537</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 0.8884</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 0.8870</pre>
                 <p>This shows how to compute the expected value for Weibull distributions with different shape parameters, representing average lifetime or duration.</p>
 
             </div>
@@ -2222,14 +2262,15 @@ Compute the median of a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_median-example1">
             <div class="card-body">
                 <p>Compute the median for different Weibull distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = wblrnd (1, 0.5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ data1 = wblrnd (1, 0.5, 10000, 1);
  data2 = wblrnd (1, 2, 10000, 1);
  pd1 = fitdist (data1, "Weibull");
  pd2 = fitdist (data2, "Weibull");
  median1 = median (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.4773</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.4747</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 0.8276</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 0.8350</pre>
                 <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust to skewness in positive lifetime data.</p>
 
             </div>
@@ -2283,7 +2324,8 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  data = wblrnd (1, 1, 100, 1);
  pd_fitted = fitdist (data, "Weibull");
  params = [pd_fitted.lambda, pd_fitted.k];</pre>
@@ -2364,14 +2406,15 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_WeibullDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  data = wblrnd (1, 1, 1000, 1);
  pd_fitted = fitdist (data, "Weibull");
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   0.9395   0.9679
-   1.0683   1.0664</pre>
+   0.9476   0.9439
+   1.0811   1.0391</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (lambda and k), providing a range of plausible values given the data, essential in uncertainty quantification for failure models.</p>
 
             </div>
@@ -2426,7 +2469,8 @@ Compute the probability distribution function (PDF).
           <div class="collapse" id="prob_WeibullDistribution_pdf-example1">
             <div class="card-body">
                 <p>Plot various PDFs from the Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ x = 0:0.01:5;
  data1 = wblrnd (1, 0.5, 10000, 1);
  data2 = wblrnd (1, 1, 10000, 1);
  data3 = wblrnd (1, 2, 10000, 1);
@@ -2532,7 +2576,8 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_WeibullDistribution_plot-example1">
             <div class="card-body">
                 <p>Create a Weibull distribution with fixed parameters lambda = 1 and k = 1 and plot its PDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = wblrnd (1, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ data = wblrnd (1, 1, 10000, 1);
  pd = fitdist (data, "Weibull");
  plot (pd)
  title ("Fixed Weibull distribution with lambda = 1 and k = 1")</pre>
@@ -2560,7 +2605,8 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_WeibullDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Weibull distribution with parameters lambda = 1 and k = 1. Fit a Weibull distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  data = wblrnd (1, 1, 100, 1);
  pd_fitted = fitdist (data, "Weibull");
  plot (pd_fitted, "PlotType", "cdf")
@@ -2593,7 +2639,8 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_WeibullDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Weibull distribution with parameters lambda = 1 and k = 1. Display a probability plot for the Weibull distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  data = wblrnd (1, 1, 200, 1);
  pd_fitted = fitdist (data, "Weibull");
  plot (pd_fitted, "PlotType", "probability")
@@ -2698,7 +2745,8 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_WeibullDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the shape parameter of a fitted Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  data = wblrnd (1, 1, 1000, 1);
  pd_fitted = fitdist (data, "Weibull");
  [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
@@ -2768,7 +2816,8 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_WeibullDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  samples = wblrnd (1, 1, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from Weibull(lambda=1, k=1)")
@@ -2830,10 +2879,11 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_std-example1">
             <div class="card-body">
                 <p>Compute the standard deviation for a Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = wblrnd (1, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ data = wblrnd (1, 1, 10000, 1);
  pd = fitdist (data, "Weibull");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.9999</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.9862</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in lifetime or positive data modeled by Weibull.</p>
 
             </div>
@@ -2893,7 +2943,8 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Weibull distribution, with parameters lambda = 1 and k = 1, truncated at [0.5, 2] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
  data_all = wblrnd (1, 1, 20000, 1);
  data = data_all(data_all &gt;= 0.5 &amp; data_all &lt;= 2);
  data = data(1:9000);
@@ -2965,10 +3016,11 @@ Compute the variance of a probability distribution.
           <div class="collapse" id="prob_WeibullDistribution_var-example1">
             <div class="card-body">
                 <p>Compute the variance for a Weibull distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = wblrnd (1, 1, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ data = wblrnd (1, 1, 10000, 1);
  pd = fitdist (data, "Weibull");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 1.0403</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.9726</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the positive values in lifetime or reliability data.</p>
 
             </div>
@@ -2999,22 +3051,25 @@ Generate a data set of 5000 random samples from a Weibull distribution with para
           </div>
           <div class="collapse multi-collapse" id="prob_WeibullDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Weibull', 'A', 1, 'B', 2)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Weibull
 
   Weibull distribution
         A = 1
         B = 2</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Weibull')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Weibull
 
   Weibull distribution
-        A = 0.994694   [0.980112, 1.00949]
-        B =  1.97642   [1.93419, 2.01956]</pre>
+        A = 0.996802   [0.982418, 1.0114]
+        B =  2.00847   [1.96554, 2.05233]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Weibull distribution with A = %0.2f and B = %0.2f';
  title (sprintf (msg, pd_fitted.A, pd_fitted.B))</pre>

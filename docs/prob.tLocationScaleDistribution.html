@@ -1055,11 +1055,13 @@ Location parameter
           <div class="collapse" id="prob_tLocationScaleDistribution_mu-example1">
             <div class="card-body">
                 <p>Create a t Location-Scale distribution by fitting to data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
  pd = fitdist (data, "tLocationScale");</pre>
                 <p>Query parameter 'mu' (location parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.mu</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = -0.010022</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.017922</pre>
                 <p>Set parameter 'mu'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.mu = 1</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
@@ -1067,8 +1069,8 @@ Location parameter
 
   t Location-Scale distribution
        mu =       1
-    sigma = 1.00423
-       nu =  4.8639</pre>
+    sigma = 1.01727
+       nu = 5.56199</pre>
                 <p>Use this to initialize or modify the location parameter of a t Location-Scale distribution. The location parameter (mu) is a real scalar that shifts the distribution, useful for modeling data centered around a specific value.</p>
 
             </div>
@@ -1151,20 +1153,22 @@ Scale parameter
           <div class="collapse" id="prob_tLocationScaleDistribution_sigma-example1">
             <div class="card-body">
                 <p>Create a t Location-Scale distribution with fitted parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
  pd = fitdist (data, "tLocationScale");</pre>
                 <p>Query parameter 'sigma' (scale parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9966</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1.0173</pre>
                 <p>Set parameter 'sigma'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma = 2</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   t Location-Scale
 
   t Location-Scale distribution
-       mu = -0.0145975
-    sigma =          2
-       nu =    5.12103</pre>
+       mu = 0.0179218
+    sigma =         2
+       nu =   5.56199</pre>
                 <p>Use this to initialize or modify the scale parameter, which controls the spread of the t Location-Scale distribution. Sigma must be a positive real scalar, useful for modeling variability in data like financial returns.</p>
 
             </div>
@@ -1247,19 +1251,21 @@ Degrees of freedom
           <div class="collapse" id="prob_tLocationScaleDistribution_nu-example1">
             <div class="card-body">
                 <p>Create a t Location-Scale distribution with fitted parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
  pd = fitdist (data, "tLocationScale");</pre>
                 <p>Query parameter 'nu' (degrees of freedom)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.nu</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 5.2969</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 5.5620</pre>
                 <p>Set parameter 'nu'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.nu = 10</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   t Location-Scale
 
   t Location-Scale distribution
-       mu = 0.0151766
-    sigma =   1.01386
+       mu = 0.0179218
+    sigma =   1.01727
        nu =        10</pre>
                 <p>Use this to initialize or modify the degrees of freedom, which controls the tail heaviness of the t Location-Scale distribution. Nu must be a positive real scalar, useful for modeling heavy-tailed data like stock returns.</p>
 
@@ -1342,8 +1348,11 @@ Probability distribution name
           <div class="collapse" id="prob_tLocationScaleDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1402,8 +1411,11 @@ Number of parameters
           <div class="collapse" id="prob_tLocationScaleDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1462,8 +1474,11 @@ Names of parameters
           <div class="collapse" id="prob_tLocationScaleDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1523,8 +1538,11 @@ Description of parameters
           <div class="collapse" id="prob_tLocationScaleDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1585,8 +1603,11 @@ Distribution parameter values
           <div class="collapse" id="prob_tLocationScaleDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1648,8 +1669,11 @@ Truncation interval
           <div class="collapse" id="prob_tLocationScaleDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1708,8 +1732,11 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_tLocationScaleDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1774,8 +1801,11 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_tLocationScaleDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1836,8 +1866,11 @@ Flag for fixed parameters
           <div class="collapse" id="prob_tLocationScaleDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1908,8 +1941,11 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_tLocationScaleDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);
@@ -1978,7 +2014,9 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse" id="prob_tLocationScaleDistribution_cdf-example1">
             <div class="card-body">
                 <p>Plot various CDFs from the t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -5:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ x = -5:0.01:5;
  data1 = tlsrnd (0, 0.5, 5, 10000, 1);
  data2 = tlsrnd (0, 1, 5, 10000, 1);
  data3 = tlsrnd (0, 2, 5, 10000, 1);
@@ -2052,7 +2090,9 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse" id="prob_tLocationScaleDistribution_icdf-example1">
             <div class="card-body">
                 <p>Plot various iCDFs from the t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ p = 0.001:0.001:0.999;
  data1 = tlsrnd (0, 0.5, 5, 10000, 1);
  data2 = tlsrnd (0, 1, 5, 10000, 1);
  data3 = tlsrnd (0, 2, 5, 10000, 1);
@@ -2125,10 +2165,12 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_iqr-example1">
             <div class="card-body">
                 <p>Compute the interquartile range for a t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = tlsrnd (0, 1, 5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data = tlsrnd (0, 1, 5, 10000, 1);
  pd = fitdist (data, "tLocationScale");
  iqr_value = iqr (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 1.4608</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 1.4672</pre>
                 <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for assessing central variability.</p>
 
             </div>
@@ -2182,14 +2224,16 @@ Compute the mean of a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_mean-example1">
             <div class="card-body">
                 <p>Compute the mean for different t Location-Scale distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
  data2 = tlsrnd (0, 1, 5, 10000, 1);
  pd1 = fitdist (data1, "tLocationScale");
  pd2 = fitdist (data2, "tLocationScale");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = -0.011139</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 8.9609e-03</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 0.010108</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = -0.017261</pre>
                 <p>This shows how to compute the expected value for t Location-Scale distributions, representing the average value, useful in financial modeling or quality control.</p>
 
             </div>
@@ -2243,14 +2287,16 @@ Compute the median of a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_median-example1">
             <div class="card-body">
                 <p>Compute the median for different t Location-Scale distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
  data2 = tlsrnd (0, 1, 5, 10000, 1);
  pd1 = fitdist (data1, "tLocationScale");
  pd2 = fitdist (data2, "tLocationScale");
  median1 = median (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 4.6161e-03</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 8.9609e-03</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = -8.4371e-03</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = -0.017261</pre>
                 <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust to heavy-tailed data.</p>
 
             </div>
@@ -2304,12 +2350,13 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = tlsrnd (0, 1, 5, 100, 1);
  pd_fitted = fitdist (data, "tLocationScale");
  params = [pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu];
  nlogL_tlslike = tlslike (params, data)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL_tlslike = 152.34</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL_tlslike = 176.33</pre>
                 <p>This is useful for assessing the fit of a t Location-Scale distribution to data, with lower values indicating a better fit, often used in model comparison.</p>
 
             </div>
@@ -2385,14 +2432,15 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_tLocationScaleDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = tlsrnd (0, 1, 5, 1000, 1);
  pd_fitted = fitdist (data, "tLocationScale");
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-  -9.3327e-03   8.9439e-01   3.4946e+00
-   1.3003e-01   1.0349e+00   5.9995e+00</pre>
+  -0.086437   0.926957   4.111803
+   0.054836   1.076189   8.309944</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (mu, sigma, nu), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2447,7 +2495,9 @@ Compute the probability distribution function (PDF).
           <div class="collapse" id="prob_tLocationScaleDistribution_pdf-example1">
             <div class="card-body">
                 <p>Plot various PDFs from the t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -5:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ x = -5:0.01:5;
  data1 = tlsrnd (0, 0.5, 5, 10000, 1);
  data2 = tlsrnd (0, 1, 5, 10000, 1);
  data3 = tlsrnd (0, 2, 5, 10000, 1);
@@ -2583,7 +2633,8 @@ implemented.</pre>
           <div class="collapse" id="prob_tLocationScaleDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set and plot the CDF of a fitted t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = tlsrnd (0, 1, 5, 100, 1);
  pd_fitted = fitdist (data, "tLocationScale");
  plot (pd_fitted, "PlotType", "cdf")
@@ -2615,7 +2666,8 @@ implemented.</pre>
           <div class="collapse" id="prob_tLocationScaleDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set and display a probability plot for a fitted t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = tlsrnd (0, 1, 5, 200, 1);
  pd_fitted = fitdist (data, "tLocationScale");
  plot (pd_fitted, "PlotType", "probability")
@@ -2720,7 +2772,8 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_tLocationScaleDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the scale parameter</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = tlsrnd (0, 1, 5, 1000, 1);
  pd_fitted = fitdist (data, "tLocationScale");
  [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
@@ -2790,7 +2843,8 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_tLocationScaleDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  samples = tlsrnd (0, 1, 5, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from t Location-Scale(mu=0, sigma=1, nu=5)")
@@ -2852,10 +2906,12 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_std-example1">
             <div class="card-body">
                 <p>Compute the standard deviation for a t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = tlsrnd (0, 1, 5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data = tlsrnd (0, 1, 5, 10000, 1);
  pd = fitdist (data, "tLocationScale");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 1.2711</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 1.2603</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in the distribution, useful for understanding data dispersion.</p>
 
             </div>
@@ -2915,7 +2971,8 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a truncated t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data_all = tlsrnd (0, 1, 5, 20000, 1);
  data = data_all(data_all &gt;= -1 &amp; data_all &lt;= 1);
  data = data(1:10000);
@@ -2987,10 +3044,12 @@ Compute the variance of a probability distribution.
           <div class="collapse" id="prob_tLocationScaleDistribution_var-example1">
             <div class="card-body">
                 <p>Compute the variance for a t Location-Scale distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = tlsrnd (0, 1, 5, 10000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ data = tlsrnd (0, 1, 5, 10000, 1);
  pd = fitdist (data, "tLocationScale");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 1.6537</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 1.5885</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the distribution, useful for statistical analysis of variability.</p>
 
             </div>
@@ -3021,8 +3080,11 @@ Generate a data set of 5000 random samples from a t Location-Scale distribution 
           </div>
           <div class="collapse multi-collapse" id="prob_tLocationScaleDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
- rand ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
  data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'tLocationScale');
  plot (pd_fitted);

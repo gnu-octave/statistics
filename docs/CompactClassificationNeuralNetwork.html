@@ -2453,6 +2453,101 @@ Transformation function for classification scores
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
+              aria-expanded="false" aria-controls="colapsibleConstructor">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CompactClassificationNeuralNetwork</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Create a <code>CompactClassificationNeuralNetwork</code> object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="colapsibleConstructor">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: <var>obj</var> = <b>CompactClassificationNeuralNetwork</b> (<var>Mdl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: <var>obj</var> = <b>CompactClassificationNeuralNetwork</b> ()</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>Mdl</var> is the <code>ClassificationNeuralNetwork</code> object to
+ compact.  The documented way to reach this constructor is the
+ <code>compact</code> method.
+</p>
+<p> Called with no arguments it returns an object with its properties
+ empty, which is how a saved model is rebuilt before its values are
+ filled in.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationNeuralNetwork_CompactClassificationNeuralNetwork-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationNeuralNetwork_CompactClassificationNeuralNetwork-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationNeuralNetwork_CompactClassificationNeuralNetwork-example1">
+            <div class="card-body">
+                <p>Train a neural network classifier and take its compact version, which drops the training data but predicts identically.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ Mdl = fitcnet (X, Y, 'IterationLimit', 100)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Mdl =
+
+  ClassificationNeuralNetwork
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+               LayerSizes: [10]
+              Activations: 'relu'
+    OutputLayerActivation: 'softmax'
+                   Solver: 'LBFGS'</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CMdl = compact (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  CompactClassificationNeuralNetwork
+
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+            NumPredictors: 4
+               LayerSizes: [10]
+              Activations: 'relu'
+    OutputLayerActivation: 'softmax'</pre>
+                <p>The compact model keeps no training data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> isprop (Mdl, 'X')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> isprop (CMdl, 'X')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0</pre>
+                <p>and predicts the same labels</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> isequal (predict (Mdl, X), predict (CMdl, X))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
               aria-expanded="false" aria-controls="collapseMethod1">
               <div class="row align-items-center">

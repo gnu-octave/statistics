@@ -1898,24 +1898,27 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_ExtremeValueDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Extreme Value
 
   extreme value distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 100, 1);
  pd_fitted = fitdist (data, "ExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Extreme Value
 
   extreme value distribution
-       mu = 0.0386064   [-0.170277, 0.247489]
-    sigma =   1.00962   [0.873423, 1.16706]</pre>
+       mu = 0.0573001   [-0.148346, 0.262946]
+    sigma =  0.999863   [0.85492, 1.16938]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 155.24</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 160.17</pre>
                 <p>This is useful for assessing the fit of an Extreme Value distribution to data, lower values indicate a better fit.</p>
 
             </div>
@@ -1992,27 +1995,30 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_ExtremeValueDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Extreme Value
 
   extreme value distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "ExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Extreme Value
 
   extreme value distribution
-       mu = -0.0296144   [-0.0952865, 0.0360578]
-    sigma =    1.00604   [0.95888, 1.05551]</pre>
+       mu = -0.0522572   [-0.11901, 0.0144959]
+    sigma =    1.02392   [0.975577, 1.07466]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-  -0.095286   0.958880
-   0.036058   1.055512</pre>
+  -0.119010   0.975577
+   0.014496   1.074657</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (mu and sigma), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2203,22 +2209,25 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_ExtremeValueDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from an Extreme Value distribution with parameters mu = 0 and sigma = 1. Fit an Extreme Value distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Extreme Value
 
   extreme value distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd_fixed, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 100, 1);
  pd_fitted = fitdist (data, "ExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Extreme Value
 
   extreme value distribution
-       mu = 0.0386064   [-0.170277, 0.247489]
-    sigma =   1.00962   [0.873423, 1.16706]</pre>
+       mu = 0.0573001   [-0.148346, 0.262946]
+    sigma =  0.999863   [0.85492, 1.16938]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "cdf")
  txt = "Fitted Extreme Value distribution with mu = %0.2f and sigma = %0.2f";
  title (sprintf (txt, pd_fitted.mu, pd_fitted.sigma))
@@ -2248,22 +2257,25 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_ExtremeValueDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from an Extreme Value distribution with parameters mu = 0 and sigma = 1. Display a probability plot for the Extreme Value distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Extreme Value
 
   extreme value distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd_fixed, 200, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 200, 1);
  pd_fitted = fitdist (data, "ExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Extreme Value
 
   extreme value distribution
-       mu = -0.0245873   [-0.173577, 0.124402]
-    sigma =    1.01892   [0.917514, 1.13153]</pre>
+       mu = 0.0444538   [-0.103267, 0.192175]
+    sigma =   1.01504   [0.909973, 1.13225]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "probability")
  txt = strcat ("Probability plot of fitted Extreme Value", ...
                " distribution with mu = %0.2f and sigma = %0.2f");
@@ -2365,22 +2377,25 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_ExtremeValueDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the scale parameter of a fitted Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Extreme Value
 
   extreme value distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "ExtremeValue")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Extreme Value
 
   extreme value distribution
-       mu = -0.0296144   [-0.0952865, 0.0360578]
-    sigma =    1.00604   [0.95888, 1.05551]</pre>
+       mu = -0.0522572   [-0.11901, 0.0144959]
+    sigma =    1.02392   [0.975577, 1.07466]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
                 <div class="text-center">
                   <img src="assets/prob.ExtremeValueDistribution.proflik-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
@@ -2448,15 +2463,18 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_ExtremeValueDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from an Extreme Value distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Extreme Value
 
   extreme value distribution
        mu = 0
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- samples = random (pd, 500, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> samples = random (pd, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from ExtremeValue(mu=0, sigma=1)")
  xlabel ("Values")
@@ -2586,7 +2604,11 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_ExtremeValueDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of an Extreme Value distribution, with parameters mu = 0 and sigma = 1, truncated at [-2, 2] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Extreme Value
 
@@ -2601,8 +2623,7 @@ Truncate a probability distribution.
        mu = 0
     sigma = 1
   Truncated to the interval [0.5, 4]</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (t, 10000, 1);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (t, 10000, 1);</pre>
                 <p>Plot histogram and fitted PDF</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (t)
  hold on

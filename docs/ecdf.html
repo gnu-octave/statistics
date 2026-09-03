@@ -1032,7 +1032,8 @@
           </div>
           <div class="collapse show" id="ecdf-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = exprnd (10, 50, 1);    ## random failure times are exponential(10)
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ y = exprnd (10, 50, 1);    ## random failure times are exponential(10)
  d = exprnd (20, 50, 1);    ## drop-out times are exponential(20)
  t = min (y, d);            ## we observe the minimum of these times
  censored = (y &gt; d);        ## we also observe whether the subject failed</pre>
@@ -1067,7 +1068,8 @@
           </div>
           <div class="collapse show" id="ecdf-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> R = wblrnd (100, 2, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ R = wblrnd (100, 2, 100, 1);
  ecdf (R, 'Function', 'survivor', 'Alpha', 0.01, 'Bounds', 'on');
  hold on
  x = 1:1:250;

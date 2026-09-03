@@ -1136,10 +1136,9 @@
           </div>
           <div class="collapse show" id="boxplot-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> axis ([0, 3]);
- randn ('seed', 1);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ axis ([0, 3]);
  girls = randn (10, 1) * 5 + 140;
- randn ('seed', 2);    # for reproducibility
  boys = randn (13, 1) * 8 + 135;
  boxplot ({girls, boys});
  set (gca (), 'xtick', [1 2], 'xticklabel', {'girls', 'boys'})
@@ -1167,11 +1166,9 @@
           </div>
           <div class="collapse show" id="boxplot-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 7);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  A = randn (10, 1) * 5 + 140;
- randn ('seed', 8);    # for reproducibility
  B = randn (25, 1) * 8 + 135;
- randn ('seed', 9);    # for reproducibility
  C = randn (20, 1) * 6 + 165;
  data = [A; B; C];
  groups = [(ones (10, 1)); (ones (25, 1) * 2); (ones (20, 1) * 3)];
@@ -1203,7 +1200,7 @@
           </div>
           <div class="collapse show" id="boxplot-example3">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 1);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = randn (100, 9);
  boxplot (data, 'notch', 'on', 'boxstyle', 'filled', ...
           'colors', 'ygcwkmb', 'whisker', 1.2);
@@ -1231,7 +1228,7 @@
           </div>
           <div class="collapse show" id="boxplot-example4">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 5);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = randn (100, 13);
  colors = [0.7 0.7 0.7; ...
            0.0 0.4 0.9; ...
@@ -1266,7 +1263,7 @@
           </div>
           <div class="collapse show" id="boxplot-example5">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 11); # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = randn (30, 1);</pre>
                 <p>Using modern string arrays</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> str_groups = string (repmat (['Control'; 'TreatmentA'; 'TreatmentB'], 10, 1));
@@ -1295,7 +1292,7 @@
           </div>
           <div class="collapse show" id="boxplot-example6">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 10); # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = randn (40, 1) * 5 + 50;</pre>
                 <p>Create two different grouping variables</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);

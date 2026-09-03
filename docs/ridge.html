@@ -1060,11 +1060,11 @@
           </div>
           <div class="collapse show" id="ridge-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carbig
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ load carbig
  X = [Acceleration Weight Displacement Horsepower];
  y = MPG;
  n = length (y);
- rand ('seed',1); % For reproducibility
  c = cvpartition (n,'HoldOut',0.3);
  idxTrain = training(c,1);
  idxTest = ! idxTrain;

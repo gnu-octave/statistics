@@ -1148,7 +1148,8 @@ Predictor data
           <div class="collapse" id="RegressionGAM_X-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -1164,7 +1165,7 @@ Predictor data
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.205796
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -1189,15 +1190,15 @@ Predictor data
           <div class="collapse" id="RegressionGAM_X-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -1289,7 +1290,8 @@ Response data
           <div class="collapse" id="RegressionGAM_Y-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -1305,7 +1307,7 @@ Response data
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -1330,15 +1332,15 @@ Response data
           <div class="collapse" id="RegressionGAM_Y-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -1431,7 +1433,8 @@ Number of observations
           <div class="collapse" id="RegressionGAM_NumObservations-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -1447,7 +1450,7 @@ Number of observations
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -1472,15 +1475,15 @@ Number of observations
           <div class="collapse" id="RegressionGAM_NumObservations-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -1575,7 +1578,8 @@ Rows used for fitting
           <div class="collapse" id="RegressionGAM_RowsUsed-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -1591,7 +1595,7 @@ Rows used for fitting
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -1616,15 +1620,15 @@ Rows used for fitting
           <div class="collapse" id="RegressionGAM_RowsUsed-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -1716,7 +1720,8 @@ Number of predictors
           <div class="collapse" id="RegressionGAM_NumPredictors-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -1732,7 +1737,7 @@ Number of predictors
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -1757,15 +1762,15 @@ Number of predictors
           <div class="collapse" id="RegressionGAM_NumPredictors-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -1857,7 +1862,8 @@ Names of the predictor variables
           <div class="collapse" id="RegressionGAM_PredictorNames-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -1873,7 +1879,7 @@ Names of the predictor variables
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -1898,15 +1904,15 @@ Names of the predictor variables
           <div class="collapse" id="RegressionGAM_PredictorNames-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -1998,7 +2004,8 @@ Response variable name
           <div class="collapse" id="RegressionGAM_ResponseName-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2014,7 +2021,7 @@ Response variable name
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2039,15 +2046,15 @@ Response variable name
           <div class="collapse" id="RegressionGAM_ResponseName-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2139,7 +2146,8 @@ Indices of the categorical predictors
           <div class="collapse" id="RegressionGAM_CategoricalPredictors-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2155,7 +2163,7 @@ Indices of the categorical predictors
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2180,15 +2188,15 @@ Indices of the categorical predictors
           <div class="collapse" id="RegressionGAM_CategoricalPredictors-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2282,7 +2290,8 @@ Names of the expanded predictor variables
           <div class="collapse" id="RegressionGAM_ExpandedPredictorNames-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2298,7 +2307,7 @@ Names of the expanded predictor variables
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2323,15 +2332,15 @@ Names of the expanded predictor variables
           <div class="collapse" id="RegressionGAM_ExpandedPredictorNames-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2423,7 +2432,8 @@ Observation weights
           <div class="collapse" id="RegressionGAM_W-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2439,7 +2449,7 @@ Observation weights
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2464,15 +2474,15 @@ Observation weights
           <div class="collapse" id="RegressionGAM_W-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2564,7 +2574,8 @@ Intercept of the fitted model
           <div class="collapse" id="RegressionGAM_Intercept-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2580,7 +2591,7 @@ Intercept of the fitted model
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2605,15 +2616,15 @@ Intercept of the fitted model
           <div class="collapse" id="RegressionGAM_Intercept-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2706,7 +2717,8 @@ Formula of the model
           <div class="collapse" id="RegressionGAM_Formula-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2722,7 +2734,7 @@ Formula of the model
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2747,15 +2759,15 @@ Formula of the model
           <div class="collapse" id="RegressionGAM_Formula-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2854,7 +2866,8 @@ Two-way interaction terms of the fitted model
           <div class="collapse" id="RegressionGAM_Interactions-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -2870,7 +2883,7 @@ Two-way interaction terms of the fitted model
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -2895,15 +2908,15 @@ Two-way interaction terms of the fitted model
           <div class="collapse" id="RegressionGAM_Interactions-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -2996,7 +3009,8 @@ Knots of the spline fitting
           <div class="collapse" id="RegressionGAM_Knots-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3012,7 +3026,7 @@ Knots of the spline fitting
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3037,15 +3051,15 @@ Knots of the spline fitting
           <div class="collapse" id="RegressionGAM_Knots-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3137,7 +3151,8 @@ Order of the spline fitting
           <div class="collapse" id="RegressionGAM_Order-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3153,7 +3168,7 @@ Order of the spline fitting
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3178,15 +3193,15 @@ Order of the spline fitting
           <div class="collapse" id="RegressionGAM_Order-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3278,7 +3293,8 @@ Degrees of freedom of the spline fitting
           <div class="collapse" id="RegressionGAM_DoF-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3294,7 +3310,7 @@ Degrees of freedom of the spline fitting
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3319,15 +3335,15 @@ Degrees of freedom of the spline fitting
           <div class="collapse" id="RegressionGAM_DoF-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3420,7 +3436,8 @@ Tolerance for convergence
           <div class="collapse" id="RegressionGAM_Tol-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3436,7 +3453,7 @@ Tolerance for convergence
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3461,15 +3478,15 @@ Tolerance for convergence
           <div class="collapse" id="RegressionGAM_Tol-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3562,7 +3579,8 @@ Flag for a fitted standard deviation model
           <div class="collapse" id="RegressionGAM_IsStandardDeviationFit-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3578,7 +3596,7 @@ Flag for a fitted standard deviation model
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3603,15 +3621,15 @@ Flag for a fitted standard deviation model
           <div class="collapse" id="RegressionGAM_IsStandardDeviationFit-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3705,7 +3723,8 @@ Model without interaction terms
           <div class="collapse" id="RegressionGAM_BaseModel-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3721,7 +3740,7 @@ Model without interaction terms
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3746,15 +3765,15 @@ Model without interaction terms
           <div class="collapse" id="RegressionGAM_BaseModel-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3847,7 +3866,8 @@ Model with interaction terms
           <div class="collapse" id="RegressionGAM_ModelwInt-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -3863,7 +3883,7 @@ Model with interaction terms
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -3888,15 +3908,15 @@ Model with interaction terms
           <div class="collapse" id="RegressionGAM_ModelwInt-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -3995,7 +4015,8 @@ Every term the model fits
           <div class="collapse" id="RegressionGAM_IntMatrix-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4011,7 +4032,7 @@ Every term the model fits
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4036,15 +4057,15 @@ Every term the model fits
           <div class="collapse" id="RegressionGAM_IntMatrix-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -4142,7 +4163,8 @@ Bin edges of the predictors
           <div class="collapse" id="RegressionGAM_BinEdges-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4158,7 +4180,7 @@ Bin edges of the predictors
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4183,15 +4205,15 @@ Bin edges of the predictors
           <div class="collapse" id="RegressionGAM_BinEdges-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -4289,7 +4311,8 @@ Bin edges used to detect interactions
           <div class="collapse" id="RegressionGAM_PairDetectionBinEdges-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4305,7 +4328,7 @@ Bin edges used to detect interactions
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4330,15 +4353,15 @@ Bin edges used to detect interactions
           <div class="collapse" id="RegressionGAM_PairDetectionBinEdges-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -4434,7 +4457,8 @@ Parameters the model was fitted with
           <div class="collapse" id="RegressionGAM_ModelParameters-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4450,7 +4474,7 @@ Parameters the model was fitted with
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4475,15 +4499,15 @@ Parameters the model was fitted with
           <div class="collapse" id="RegressionGAM_ModelParameters-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -4579,7 +4603,8 @@ Why each fitting phase stopped
           <div class="collapse" id="RegressionGAM_ReasonForTermination-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4595,7 +4620,7 @@ Why each fitting phase stopped
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4620,15 +4645,15 @@ Why each fitting phase stopped
           <div class="collapse" id="RegressionGAM_ReasonForTermination-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -4727,7 +4752,8 @@ Which engine fitted the model
           <div class="collapse" id="RegressionGAM_FitMethod-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4743,7 +4769,7 @@ Which engine fitted the model
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4768,15 +4794,15 @@ Which engine fitted the model
           <div class="collapse" id="RegressionGAM_FitMethod-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -4873,7 +4899,8 @@ The fitted shape functions and interaction surfaces
           <div class="collapse" id="RegressionGAM_TreeModel-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -4889,7 +4916,7 @@ The fitted shape functions and interaction surfaces
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -4914,15 +4941,15 @@ The fitted shape functions and interaction surfaces
           <div class="collapse" id="RegressionGAM_TreeModel-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -5016,7 +5043,8 @@ Results of the hyperparameter optimization
           <div class="collapse" id="RegressionGAM_HyperparameterOptimizationResults-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -5032,7 +5060,7 @@ Results of the hyperparameter optimization
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -5057,15 +5085,15 @@ Results of the hyperparameter optimization
           <div class="collapse" id="RegressionGAM_HyperparameterOptimizationResults-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -5160,7 +5188,8 @@ Transformation applied to the predicted response
           <div class="collapse" id="RegressionGAM_ResponseTransform-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -5176,7 +5205,7 @@ Transformation applied to the predicted response
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -5201,15 +5230,15 @@ Transformation applied to the predicted response
           <div class="collapse" id="RegressionGAM_ResponseTransform-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -5262,6 +5291,158 @@ Transformation applied to the predicted response
         </div>
 
         <p class="lead my-3">The <code>RegressionGAM</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
+              aria-expanded="false" aria-controls="colapsibleConstructor">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>RegressionGAM</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit a generalized additive model for regression.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="colapsibleConstructor">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">RegressionGAM: <var>obj</var> = <b>RegressionGAM</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RegressionGAM: <var>obj</var> = <b>RegressionGAM</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>X</var> is an <em class="math">N&times;P</em> numeric matrix of predictor data, one
+ observation per row, and <var>Y</var> is the continuous response of those
+ <em class="math">N</em> observations.  The fit runs at construction, so <var>obj</var>
+ arrives fitted.
+</p>
+<p> The <var>name</var>/<var>value</var> pairs the fit accepts, and the validation
+ each one is held to, are listed in <code>help RegressionGAM</code>.
+ <code>fitrgam</code> is the documented way to reach this constructor and
+ takes the same pairs.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RegressionGAM_RegressionGAM-example1" aria-expanded="false"
+                  aria-controls="RegressionGAM_RegressionGAM-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RegressionGAM_RegressionGAM-example1">
+            <div class="card-body">
+                <p>Train a RegressionGAM Model for synthetic values</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;
+ x1 = 2 * rand (50, 1) - 1;
+ x2 = 2 * rand (50, 1) - 1;
+ y = f1(x1) + f2(x2);
+ y = y + y .* 0.2 .* rand (50,1);
+ X = [x1, x2];
+ a = fitrgam (X, y)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">a =
+
+  RegressionGAM
+
+             ResponseName: 'Y'
+          NumObservations: 50
+            NumPredictors: 2
+        ResponseTransform: 'none'
+                Intercept: 0.0671178
+                    Knots: []
+                    Order: []
+                      Tol:</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RegressionGAM_RegressionGAM-example2" aria-expanded="false"
+                  aria-controls="RegressionGAM_RegressionGAM-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RegressionGAM_RegressionGAM-example2">
+            <div class="card-body">
+                <p>Declare two different functions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;</pre>
+                <p>Generate 80 samples for f1 and f2</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
+ X1 = f1(x);
+ X2 = f2(x);</pre>
+                <p>Create a synthetic response by adding noise</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
+ Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
+                <p>Assemble predictor data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
+                <p>Train the GAM and test on the same data A standard deviation and a prediction interval come from the spline engine, which fits one; the boosted-tree engine reports none.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> a = fitrgam (X, Y, 'FitMethod', 'splines', 'order', [5, 5]);
+ [ypred, ySDsd, yInt] = predict (a, X);</pre>
+                <p>Plot the results</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ [sortedY, indY] = sort (Ytrue);
+ plot (sortedY, 'r-');
+ xlim ([0, 80]);
+ hold on
+ plot (ypred(indY), 'g+')
+ plot (yInt(indY,1), 'k:')
+ plot (yInt(indY,2), 'k:')
+ xlabel ('Predictor samples');
+ ylabel ('Response');
+ title ('actual vs predicted values for function f1(x) = cos (3x) ');
+ legend ({'Theoretical Response', 'Predicted Response', 'Prediction Intervals'});</pre>
+                <p>Use 30% Holdout partitioning for training and testing data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> C = cvpartition (80, 'HoldOut', 0.3);
+ [ypred, ySDsd, yInt] = predict (a, X(test (C),:));</pre>
+                <div class="text-center">
+                  <img src="assets/RegressionGAM.RegressionGAM-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+                <p>Plot the results</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ [sortedY, indY] = sort (Ytrue(test (C)));
+ plot (sortedY, 'r-');
+ xlim ([0, sum(test(C))]);
+ hold on
+ plot (ypred(indY), 'g+')
+ plot (yInt(indY,1),'k:')
+ plot (yInt(indY,2),'k:')
+ xlabel ('Predictor samples');
+ ylabel ('Response');
+ title ('actual vs predicted values for function f1(x) = cos (3x) ');
+ legend ({'Theoretical Response', 'Predicted Response', 'Prediction Intervals'});</pre>
+                <div class="text-center">
+                  <img src="assets/RegressionGAM.RegressionGAM-202.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -5327,7 +5508,8 @@ Add interaction terms to a fitted model.
           <div class="collapse" id="RegressionGAM_addInteractions-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -5343,7 +5525,7 @@ Add interaction terms to a fitted model.
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -5368,15 +5550,15 @@ Add interaction terms to a fitted model.
           <div class="collapse" id="RegressionGAM_addInteractions-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -5519,7 +5701,8 @@ Predict new data points using generalized additive model regression
           <div class="collapse" id="RegressionGAM_predict-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -5535,7 +5718,7 @@ Predict new data points using generalized additive model regression
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -5560,15 +5743,15 @@ Predict new data points using generalized additive model regression
           <div class="collapse" id="RegressionGAM_predict-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -5814,7 +5997,8 @@ predict
           <div class="collapse" id="RegressionGAM_resubPredict-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -5830,7 +6014,7 @@ predict
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -5855,15 +6039,15 @@ predict
           <div class="collapse" id="RegressionGAM_resubPredict-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -5964,7 +6148,8 @@ loss
           <div class="collapse" id="RegressionGAM_resubLoss-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -5980,7 +6165,7 @@ loss
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -6005,15 +6190,15 @@ loss
           <div class="collapse" id="RegressionGAM_resubLoss-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -6137,7 +6322,8 @@ Cross validate a Generalized Additive Model regression object.
           <div class="collapse" id="RegressionGAM_crossval-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -6153,7 +6339,7 @@ Cross validate a Generalized Additive Model regression object.
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -6178,15 +6364,15 @@ Cross validate a Generalized Additive Model regression object.
           <div class="collapse" id="RegressionGAM_crossval-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -6285,7 +6471,8 @@ Create a <code>CompactRegressionGAM</code> object.
           <div class="collapse" id="RegressionGAM_compact-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -6301,7 +6488,7 @@ Create a <code>CompactRegressionGAM</code> object.
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -6326,15 +6513,15 @@ Create a <code>CompactRegressionGAM</code> object.
           <div class="collapse" id="RegressionGAM_compact-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -6433,7 +6620,8 @@ Save a RegressionGAM object.
           <div class="collapse" id="RegressionGAM_savemodel-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -6449,7 +6637,7 @@ Save a RegressionGAM object.
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -6474,15 +6662,15 @@ Save a RegressionGAM object.
           <div class="collapse" id="RegressionGAM_savemodel-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -6595,7 +6783,8 @@ addInteractions
           <div class="collapse" id="RegressionGAM_resume-example1">
             <div class="card-body">
                 <p>Train a RegressionGAM Model for synthetic values</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -6611,7 +6800,7 @@ addInteractions
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -6636,15 +6825,15 @@ addInteractions
           <div class="collapse" id="RegressionGAM_resume-example2">
             <div class="card-body">
                 <p>Declare two different functions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
@@ -6715,7 +6904,8 @@ Train a RegressionGAM Model for synthetic values
           </div>
           <div class="collapse multi-collapse" id="RegressionGAM-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
@@ -6731,7 +6921,7 @@ Train a RegressionGAM Model for synthetic values
           NumObservations: 50
             NumPredictors: 2
         ResponseTransform: 'none'
-                Intercept: 0.184002
+                Intercept: 0.0671178
                     Knots: []
                     Order: []
                       Tol:</pre>
@@ -6756,15 +6946,15 @@ Declare two different functions
           </div>
           <div class="collapse multi-collapse" id="RegressionGAM-example2">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;</pre>
                 <p>Generate 80 samples for f1 and f2</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
  X1 = f1(x);
  X2 = f2(x);</pre>
                 <p>Create a synthetic response by adding noise</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
- Ytrue = X1 + X2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Ytrue = X1 + X2;
  Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
                 <p>Assemble predictor data</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>

@@ -1056,7 +1056,8 @@
           <div class="collapse show" id="fitgmdist-example1">
             <div class="card-body">
                 <p>Generate a two-cluster problem</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> C1 = randn (100, 2) + 2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ C1 = randn (100, 2) + 2;
  C2 = randn (100, 2) - 2;
  data = [C1; C2];</pre>
                 <p>Perform clustering</p>
@@ -1090,7 +1091,8 @@
           </div>
           <div class="collapse show" id="fitgmdist-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
  nbOrientations = 2;
  initial_orientations = [38.0; 18.0];
  initial_weights = ones (1, nbOrientations) / nbOrientations;
@@ -1100,13 +1102,13 @@
  GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, 'Start', start , ...
                             'RegularizationValue', 0.0001)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Gaussian mixture distribution with 2 components in 1 dimension(s)
-Clust 1: weight 0.822044
-	Mean: 46.9461 
-	Variance:169.39
-Clust 2: weight 0.177956
-	Mean: 12.5558 
-	Variance:24.949
-AIC=178.778 BIC=183.756 NLogL=84.3888 Iter=8 Cged=1 Reg=0.0001</pre>
+Clust 1: weight 0.784877
+	Mean: 52.9345 
+	Variance:260.64
+Clust 2: weight 0.215123
+	Mean: 20.9954 
+	Variance:7.0620
+AIC=179.36 BIC=184.338 NLogL=84.6798 Iter=9 Cged=1 Reg=0.0001</pre>
 
             </div>
           </div>

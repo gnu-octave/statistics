@@ -1050,7 +1050,8 @@ Location parameter
           <div class="collapse" id="prob_HalfNormalDistribution_mu-example1">
             <div class="card-body">
                 <p>Create a Half-normal distribution with default parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = abs (randn (10000, 1));
  pd = fitdist (data, "HalfNormal");</pre>
                 <p>Query parameter 'mu' (location parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.mu</pre>
@@ -1061,8 +1062,8 @@ Location parameter
   Half Normal
 
   Half-normal distribution
-       mu =       1
-    sigma = 1.01253</pre>
+       mu =        1
+    sigma = 0.994378</pre>
                 <p>Use this to initialize or modify the location parameter of a Half-normal distribution. The location parameter must be a real scalar, often set to 0 for modeling positive deviations from zero, such as measurement errors.</p>
 
             </div>
@@ -1145,11 +1146,12 @@ Scale parameter
           <div class="collapse" id="prob_HalfNormalDistribution_sigma-example1">
             <div class="card-body">
                 <p>Create a Half-normal distribution with default parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = abs (randn (10000, 1));
  pd = fitdist (data, "HalfNormal");</pre>
                 <p>Query parameter 'sigma' (scale parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9995</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9944</pre>
                 <p>Set parameter 'sigma'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma = 2</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
@@ -1565,7 +1567,8 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse" id="prob_HalfNormalDistribution_cdf-example1">
             <div class="card-body">
                 <p>Plot various CDFs from the Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -1:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = -1:0.01:5;
  data1 = 0.5 * abs (randn (10000, 1));
  data2 = 1.0 * abs (randn (10000, 1));
  data3 = 2.0 * abs (randn (10000, 1));
@@ -1639,7 +1642,8 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse" id="prob_HalfNormalDistribution_icdf-example1">
             <div class="card-body">
                 <p>Plot various iCDFs from the Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ p = 0.001:0.001:0.999;
  data1 = 0.5 * abs (randn (10000, 1));
  data2 = 1.0 * abs (randn (10000, 1));
  data3 = 2.0 * abs (randn (10000, 1));
@@ -1712,10 +1716,11 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_iqr-example1">
             <div class="card-body">
                 <p>Compute the interquartile range for a Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = abs (randn (10000, 1));
  pd = fitdist (data, "HalfNormal");
  iqr_value = iqr (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 0.8298</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 0.8270</pre>
                 <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for understanding central variability in positive data.</p>
 
             </div>
@@ -1769,14 +1774,15 @@ Compute the mean of a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_mean-example1">
             <div class="card-body">
                 <p>Compute the mean for different Half-normal distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = 0.5 * abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data1 = 0.5 * abs (randn (10000, 1));
  data2 = 1.0 * abs (randn (10000, 1));
  pd1 = fitdist (data1, "HalfNormal");
  pd2 = fitdist (data2, "HalfNormal");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 0.3981</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 0.3967</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 0.7956</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 0.7941</pre>
                 <p>This shows how to compute the expected value for Half-normal distributions with different scale parameters, representing average deviation or magnitude.</p>
 
             </div>
@@ -1830,14 +1836,15 @@ Compute the median of a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_median-example1">
             <div class="card-body">
                 <p>Compute the median for different Half-normal distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = 0.5 * abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data1 = 0.5 * abs (randn (10000, 1));
  data2 = 1.0 * abs (randn (10000, 1));
  pd1 = fitdist (data1, "HalfNormal");
  pd2 = fitdist (data2, "HalfNormal");
  median1 = median (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.3416</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 0.3353</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 0.6767</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 0.6713</pre>
                 <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust to skewness in positive data.</p>
 
             </div>
@@ -1891,12 +1898,12 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = abs (randn (100, 1));
  pd_fitted = fitdist (data, "HalfNormal");
  params = [pd_fitted.mu, pd_fitted.sigma];
  nlogL_hnlike = hnlike (params, data)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL_hnlike = 76.847</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL_hnlike = 84.636</pre>
                 <p>This is useful for assessing the fit of a Half-normal distribution to data, with lower values indicating a better fit, often used in model comparison.</p>
 
             </div>
@@ -1972,14 +1979,14 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_HalfNormalDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = abs (randn (1000, 1));
  pd_fitted = fitdist (data, "HalfNormal");
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-        0   0.9681
-        0   1.0569</pre>
+        0   0.9290
+        0   1.0142</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (mu fixed, sigma estimated), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2034,7 +2041,8 @@ Compute the probability distribution function (PDF).
           <div class="collapse" id="prob_HalfNormalDistribution_pdf-example1">
             <div class="card-body">
                 <p>Plot various PDFs from the Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -1:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = -1:0.01:5;
  data1 = 0.5 * abs (randn (10000, 1));
  data2 = 1.0 * abs (randn (10000, 1));
  data3 = 2.0 * abs (randn (10000, 1));
@@ -2140,7 +2148,8 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_HalfNormalDistribution_plot-example1">
             <div class="card-body">
                 <p>Create a Half-normal distribution with fixed parameters mu = 0 and sigma = 1 and plot its PDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = abs (randn (10000, 1));
  pd = fitdist (data, "HalfNormal");
  plot (pd)
  title ("Fixed Half-normal distribution with mu = 0 and sigma = 1")</pre>
@@ -2168,7 +2177,7 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_HalfNormalDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Half-normal distribution with parameters mu = 0 and sigma = 1. Fit a Half-normal distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = abs (randn (100, 1));
  pd_fitted = fitdist (data, "HalfNormal");
  plot (pd_fitted, "PlotType", "cdf")
@@ -2200,7 +2209,7 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_HalfNormalDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Half-normal distribution with parameters mu = 0 and sigma = 1. Display a probability plot for the Half-normal distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = abs (randn (200, 1));
  pd_fitted = fitdist (data, "HalfNormal");
  plot (pd_fitted, "PlotType", "probability")
@@ -2304,7 +2313,7 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_HalfNormalDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the scale parameter of a fitted Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data = abs (randn (1000, 1));
  pd_fitted = fitdist (data, "HalfNormal");
  [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
@@ -2374,7 +2383,7 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_HalfNormalDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  samples = abs (randn (500, 1));
  hist (samples, 50)
  title ("Histogram of 500 random samples from Half-normal(mu=0, sigma=1)")
@@ -2436,10 +2445,11 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_std-example1">
             <div class="card-body">
                 <p>Compute the standard deviation for a Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = abs (randn (10000, 1));
  pd = fitdist (data, "HalfNormal");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.5999</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.5994</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in the positive values of the distribution.</p>
 
             </div>
@@ -2499,7 +2509,7 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Half-normal distribution, with parameters mu = 0 and sigma = 1, truncated at [0.5, 2] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  data_all = abs (randn (20000, 1));
  data = data_all(data_all &gt;= 0.5 &amp; data_all &lt;= 2);
  data = data(1:10000);
@@ -2568,10 +2578,11 @@ Compute the variance of a probability distribution.
           <div class="collapse" id="prob_HalfNormalDistribution_var-example1">
             <div class="card-body">
                 <p>Compute the variance for a Half-normal distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = abs (randn (10000, 1));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ data = abs (randn (10000, 1));
  pd = fitdist (data, "HalfNormal");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.3565</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.3593</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the positive values in the distribution.</p>
 
             </div>

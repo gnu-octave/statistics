@@ -1054,9 +1054,10 @@ rand,
           <div class="collapse show" id="slicesample-example1">
             <div class="card-body">
                 <p>Define function to sample</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> d = 2;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
+ d = 2;
  mu = [-1; 2];
- rand ('seed', 5)  # for reproducibility
  Sigma = rand (d);
  Sigma = (Sigma + Sigma');
  Sigma += eye (d)*abs (eigs (Sigma, 1, 'sa')) * 1.1;
@@ -1066,7 +1067,6 @@ rand,
  nsamples = 500;
  K = 500;
  m = 10;
- rande ('seed', 4);  rand ('seed', 5)  # for reproducibility
  [smpl, accept] = slicesample (start, nsamples, 'pdf', pdf, 'burnin', K, 'thin', m, 'width', [20, 30]);
  figure;
  hold on;
@@ -1080,11 +1080,11 @@ rand,
  errest = std (f(smpl) ./ pdf (smpl)) / nsamples^.5;
  trueerr = abs (2/3*pi*.25^(3/2)-int);
  fprintf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral estimate int f(x) dx = 0.228408</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral estimate int f(x) dx = 0.264438</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> fprintf ("Monte Carlo integral error estimate %f\n", errest);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral error estimate 0.029831</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral error estimate 0.037561</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> fprintf ("The actual error %f\n", trueerr);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">The actual error 0.033392</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">The actual error 0.002638</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mesh (x,y,reshape (f([x(:), y(:)]), size (x)), 'facecolor', 'None');</pre>
                 <div class="text-center">
                   <img src="assets/slicesample-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
@@ -1110,9 +1110,10 @@ rand,
           <div class="collapse show" id="slicesample-example2">
             <div class="card-body">
                 <p>Integrate truncated normal distribution to find normalization constant</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ rande ('state', 42);
+ pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
  nsamples = 1e3;
- rande ('seed', 4);  rand ('seed', 5)  # for reproducibility
  [smpl, accept] = slicesample (1, nsamples, 'pdf', pdf, 'thin', 4);
  f = @(x) exp (-.5 * x .^ 2) .* (x &gt;= -2 &amp; x &lt;= 2);
  x = linspace (-3, 3, 1000);
@@ -1123,11 +1124,11 @@ rand,
  errest = std (f(smpl) ./ pdf (smpl)) / nsamples ^ 0.5;
  trueerr = abs (erf (2 ^ 0.5) * 2 ^ 0.5 * pi ^ 0.5 - int);
  fprintf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral estimate int f(x) dx = 2.376284</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral estimate int f(x) dx = 2.386310</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> fprintf ("Monte Carlo integral error estimate %f\n", errest);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral error estimate 0.017608</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral error estimate 0.016953</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> fprintf ("The actual error %f\n", trueerr);</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">The actual error 0.016292</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">The actual error 0.006266</pre>
                 <div class="text-center">
                   <img src="assets/slicesample-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>

@@ -1165,7 +1165,8 @@ Probability distribution name
           <div class="collapse" id="prob_PiecewiseLinearDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -1234,7 +1235,8 @@ Number of parameters
           <div class="collapse" id="prob_PiecewiseLinearDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -1303,7 +1305,8 @@ Names of parameters
           <div class="collapse" id="prob_PiecewiseLinearDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -1373,7 +1376,8 @@ Description of parameters
           <div class="collapse" id="prob_PiecewiseLinearDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -1444,7 +1448,8 @@ Distribution parameter values
           <div class="collapse" id="prob_PiecewiseLinearDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -1516,7 +1521,8 @@ Truncation interval
           <div class="collapse" id="prob_PiecewiseLinearDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -1585,7 +1591,8 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_PiecewiseLinearDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create prob.PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);
@@ -2455,7 +2462,8 @@ Generate a data set of 5000 random samples from a Beta distribution with paramet
           </div>
           <div class="collapse multi-collapse" id="prob_PiecewiseLinearDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
  data = betarnd (2, 5, 5000, 1) * 10;
  [f, x] = ecdf (data);
  f = f(1:5:end);

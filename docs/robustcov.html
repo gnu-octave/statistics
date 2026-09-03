@@ -1043,7 +1043,8 @@ mad,
           <div class="collapse show" id="robustcov-example1">
             <div class="card-body">
                 <p>Robust covariance is unaffected by a cluster of outliers.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [randn(80,2); 8 + randn(10,2)];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(80,2); 8 + randn(10,2)];
  [sig, mu, mah, outliers] = robustcov (X);</pre>
                 <div class="text-center">
                   <img src="assets/robustcov-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">

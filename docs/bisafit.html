@@ -1041,11 +1041,9 @@
           <div class="collapse show" id="bisafit-example1">
             <div class="card-body">
                 <p>Sample 3 populations from different Birnbaum-Saunders distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 5);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  r1 = bisarnd (1, 0.5, 2000, 1);
- rand ('seed', 2);    # for reproducibility
  r2 = bisarnd (2, 0.3, 2000, 1);
- rand ('seed', 7);    # for reproducibility
  r3 = bisarnd (4, 0.5, 2000, 1);
  r = [r1, r2, r3];</pre>
                 <p>Plot them normalized and fix their colors</p>

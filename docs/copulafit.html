@@ -1031,12 +1031,14 @@
           <div class="collapse show" id="copulafit-example1">
             <div class="card-body">
                 <p>Fit a Clayton copula to data and recover a confidence interval</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> u = copularnd ("Clayton", 2, 500);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ u = copularnd ("Clayton", 2, 500);
  [alpha, ci] = copulafit ("Clayton", u)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">alpha = 1.9558
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">alpha = 2.0546
 ci =
 
-   1.7192   2.1923</pre>
+   1.8116   2.2975</pre>
 
             </div>
           </div>
@@ -1058,12 +1060,14 @@ ci =
           <div class="collapse show" id="copulafit-example2">
             <div class="card-body">
                 <p>Fit a Gaussian copula and report the correlation matrix</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> u = copularnd ("Gaussian", 0.6, 500);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ u = copularnd ("Gaussian", 0.6, 500);
  rho = copulafit ("Gaussian", u)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">rho =
 
-   1.0000   0.6291
-   0.6291   1.0000</pre>
+   1.0000   0.6153
+   0.6153   1.0000</pre>
 
             </div>
           </div>

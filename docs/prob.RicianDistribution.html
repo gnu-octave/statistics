@@ -1050,19 +1050,21 @@ Noncentrality parameter
           <div class="collapse" id="prob_RicianDistribution_s-example1">
             <div class="card-body">
                 <p>Create a Rician distribution by fitting to data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = ricernd (1, 1, [10000, 1]);  % Generate data with s=1, sigma=1
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data = ricernd (1, 1, [10000, 1]);  % Generate data with s=1, sigma=1
  pd = fitdist (data, "Rician");</pre>
                 <p>Query parameter 's' (noncentrality parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.s</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9961</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9733</pre>
                 <p>Set parameter 's'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.s = 1.5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Rician
 
   Rician distribution
-        s =      1.5
-    sigma = 0.991959</pre>
+        s =    1.5
+    sigma = 1.0203</pre>
                 <p>Use this to initialize or modify the noncentrality parameter of a Rician distribution. The noncentrality parameter 's' must be a non-negative real scalar, representing the magnitude of the signal in the presence of noise.</p>
 
             </div>
@@ -1145,19 +1147,21 @@ Scale parameter
           <div class="collapse" id="prob_RicianDistribution_sigma-example1">
             <div class="card-body">
                 <p>Create a Rician distribution with fitted parameters</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = ricernd (1, 1, [10000, 1]);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data = ricernd (1, 1, [10000, 1]);
  pd = fitdist (data, "Rician");</pre>
                 <p>Query parameter 'sigma' (scale parameter)</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.9968</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1.0203</pre>
                 <p>Set parameter 'sigma'</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.sigma = 1.2</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Rician
 
   Rician distribution
-        s = 1.00956
-    sigma =     1.2</pre>
+        s = 0.973292
+    sigma =      1.2</pre>
                 <p>Use this to initialize or modify the scale parameter in a Rician distribution. The scale parameter 'sigma' must be a positive real scalar, controlling the spread due to Gaussian noise.</p>
 
             </div>
@@ -1270,22 +1274,25 @@ Probability distribution name
           <div class="collapse" id="prob_RicianDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s =  2.0021   [1.97138, 2.0333]
-    sigma = 1.02634   [1.00064, 1.0527]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1342,22 +1349,25 @@ Number of parameters
           <div class="collapse" id="prob_RicianDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s =  1.99158   [1.96213, 2.02148]
-    sigma = 0.989847   [0.965576, 1.01473]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1414,22 +1424,25 @@ Names of parameters
           <div class="collapse" id="prob_RicianDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s =  1.98681   [1.95764, 2.01642]
-    sigma = 0.981217   [0.957198, 1.00584]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1487,22 +1500,25 @@ Description of parameters
           <div class="collapse" id="prob_RicianDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s = 2.01482   [1.98466, 2.04544]
-    sigma = 1.01169   [0.986732, 1.03729]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1561,22 +1577,25 @@ Distribution parameter values
           <div class="collapse" id="prob_RicianDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s =    1.97   [1.93974, 2.00073]
-    sigma = 1.01089   [0.985597, 1.03682]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1636,22 +1655,25 @@ Truncation interval
           <div class="collapse" id="prob_RicianDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s =  1.99779   [1.96805, 2.02799]
-    sigma = 0.998365   [0.97375, 1.0236]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1708,22 +1730,25 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_RicianDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s = 1.97916   [1.94888, 2.00992]
-    sigma = 1.01218   [0.986857, 1.03815]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1786,22 +1811,25 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_RicianDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s = 2.00016   [1.97021, 2.03058]
-    sigma = 1.00456   [0.979677, 1.03007]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1860,22 +1888,25 @@ Flag for fixed parameters
           <div class="collapse" id="prob_RicianDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s =  1.98384   [1.95462, 2.01349]
-    sigma = 0.982419   [0.958398, 1.00704]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -1944,22 +1975,25 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_RicianDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s = 2.02174   [1.99159, 2.05234]
-    sigma = 1.01176   [0.986877, 1.03726]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>
@@ -2026,7 +2060,9 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse" id="prob_RicianDistribution_cdf-example1">
             <div class="card-body">
                 <p>Plot various CDFs from the Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ x = 0:0.01:5;
  data1 = ricernd (1, 0.5, [10000, 1]);
  data2 = ricernd (1, 1, [10000, 1]);
  data3 = ricernd (1, 2, [10000, 1]);
@@ -2100,7 +2136,9 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse" id="prob_RicianDistribution_icdf-example1">
             <div class="card-body">
                 <p>Plot various iCDFs from the Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ p = 0.001:0.001:0.999;
  data1 = ricernd (1, 0.5, [10000, 1]);
  data2 = ricernd (1, 1, [10000, 1]);
  data3 = ricernd (1, 2, [10000, 1]);
@@ -2173,10 +2211,12 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_iqr-example1">
             <div class="card-body">
                 <p>Compute the interquartile range for a Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = ricernd (1, 1, [10000, 1]);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data = ricernd (1, 1, [10000, 1]);
  pd = fitdist (data, "Rician");
  iqr_value = iqr (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 1.0877</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 1.0982</pre>
                 <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for understanding variability in signal magnitudes.</p>
 
             </div>
@@ -2230,14 +2270,16 @@ Compute the mean of a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_mean-example1">
             <div class="card-body">
                 <p>Compute the mean for different Rician distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = ricernd (1, 0.5, [10000, 1]);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data1 = ricernd (1, 0.5, [10000, 1]);
  data2 = ricernd (1, 1, [10000, 1]);
  pd1 = fitdist (data1, "Rician");
  pd2 = fitdist (data2, "Rician");
  mean1 = mean (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.1299</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1.1376</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 1.5530</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 1.5532</pre>
                 <p>This shows how to compute the expected value for Rician distributions with different scale parameters, representing the average signal magnitude.</p>
 
             </div>
@@ -2291,14 +2333,16 @@ Compute the median of a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_median-example1">
             <div class="card-body">
                 <p>Compute the median for different Rician distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data1 = ricernd (1, 0.5, [10000, 1]);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data1 = ricernd (1, 0.5, [10000, 1]);
  data2 = ricernd (1, 1, [10000, 1]);
  pd1 = fitdist (data1, "Rician");
  pd2 = fitdist (data2, "Rician");
  median1 = median (pd1)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 1.1223</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 1.1255</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 1.4710</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 1.4777</pre>
                 <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust to skewness in signal data.</p>
 
             </div>
@@ -2352,11 +2396,13 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  data = ricernd (1, 1, [100, 1]);
  pd_fitted = fitdist (data, "Rician");
  nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 117.84</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 102.72</pre>
                 <p>This is useful for assessing the fit of a Rician distribution to data, with lower values indicating a better fit, often used in model comparison.</p>
 
             </div>
@@ -2432,14 +2478,16 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_RicianDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  data = ricernd (1, 1, [1000, 1]);
  pd_fitted = fitdist (data, "Rician");
  ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   0.9023   0.8535
-   1.0617   1.0463</pre>
+   0.9912   0.8744
+   1.1479   1.0573</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (s and sigma), providing a range of plausible values given the data.</p>
 
             </div>
@@ -2494,7 +2542,9 @@ Compute the probability distribution function (PDF).
           <div class="collapse" id="prob_RicianDistribution_pdf-example1">
             <div class="card-body">
                 <p>Plot various PDFs from the Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:5;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ x = 0:0.01:5;
  data1 = ricernd (1, 0.5, [10000, 1]);
  data2 = ricernd (1, 1, [10000, 1]);
  data3 = ricernd (1, 2, [10000, 1]);
@@ -2630,7 +2680,9 @@ implemented.</pre>
           <div class="collapse" id="prob_RicianDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Rician distribution with parameters s = 1 and sigma = 1. Fit a Rician distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  data = ricernd (1, 1, [100, 1]);
  pd_fitted = fitdist (data, "Rician");
  plot (pd_fitted, "PlotType", "cdf")
@@ -2662,7 +2714,9 @@ implemented.</pre>
           <div class="collapse" id="prob_RicianDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Rician distribution with parameters s = 1 and sigma = 1. Display a probability plot for the Rician distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  data = ricernd (1, 1, [200, 1]);
  pd_fitted = fitdist (data, "Rician");
  plot (pd_fitted, "PlotType", "probability")
@@ -2766,7 +2820,9 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_RicianDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the scale parameter of a fitted Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  data = ricernd (1, 1, [1000, 1]);
  pd_fitted = fitdist (data, "Rician");
  [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
@@ -2836,7 +2892,9 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_RicianDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  samples = ricernd (1, 1, [500, 1]);
  hist (samples, 50)
  title ("Histogram of 500 random samples from Rician(s=1, sigma=1)")
@@ -2898,10 +2956,12 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_std-example1">
             <div class="card-body">
                 <p>Compute the standard deviation for a Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = ricernd (1, 1, [10000, 1]);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data = ricernd (1, 1, [10000, 1]);
  pd = fitdist (data, "Rician");
  std_value = std (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.7766</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.7833</pre>
                 <p>Use this to calculate the standard deviation, which measures the variability in the signal magnitudes of the distribution.</p>
 
             </div>
@@ -2961,7 +3021,9 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Rician distribution, with parameters s = 1 and sigma = 1, truncated at [0.5, 3] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
  data_all = ricernd (1, 1, [20000, 1]);
  data = data_all(data_all &gt;= 0.5 &amp; data_all &lt;= 3);
  data = data(1:10000);
@@ -3033,10 +3095,12 @@ Compute the variance of a probability distribution.
           <div class="collapse" id="prob_RicianDistribution_var-example1">
             <div class="card-body">
                 <p>Compute the variance for a Rician distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = ricernd (1, 1, [10000, 1]);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
+ randp ('state', 42);
+ data = ricernd (1, 1, [10000, 1]);
  pd = fitdist (data, "Rician");
  var_value = var (pd)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.6110</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.6135</pre>
                 <p>Use this to calculate the variance, which quantifies the spread of the signal magnitudes in the distribution.</p>
 
             </div>
@@ -3067,22 +3131,25 @@ Generate a data set of 5000 random samples from a Rician distribution with param
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Rician
 
   Rician distribution
         s = 2
     sigma = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 2);
- data = random (pd_fixed, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 5000, 1);
  pd_fitted = fitdist (data, 'Rician')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Rician
 
   Rician distribution
-        s = 1.98869   [1.95778, 2.02008]
-    sigma = 1.03031   [1.00426, 1.05704]</pre>
+        s =  2.00806   [1.9789, 2.03765]
+    sigma = 0.982446   [0.958568, 1.00692]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted)
  msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
  title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre>

@@ -1073,67 +1073,68 @@
           </div>
           <div class="collapse show" id="chi2gof-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = normrnd (50, 5, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = normrnd (50, 5, 100, 1);
  [h, p, stats] = chi2gof (x)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
-p = 0.5464
+p = 0.1140
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 4.0212
-    df = 5
+    chi2stat = 7.4481
+    df = 4
     edges =
 
-       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
+       31.297   41.009   44.247   47.484   50.722   53.960   57.197   63.672
 
     O =
 
-        9    7    9   22   17   14   10   12
+        2   11   21   26   13   17   10
 
     E =
 
-        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544</pre>
+        5.2916    9.4894   16.9752   22.1003   20.9421   14.4436   10.7578</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [h, p, stats] = chi2gof (x, 'cdf', @(x)normcdf (x, mean (x), std (x)))</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
-p = 0.5464
+p = 0.1140
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 4.0212
-    df = 5
+    chi2stat = 7.4481
+    df = 4
     edges =
 
-       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
+       31.297   41.009   44.247   47.484   50.722   53.960   57.197   63.672
 
     O =
 
-        9    7    9   22   17   14   10   12
+        2   11   21   26   13   17   10
 
     E =
 
-        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544</pre>
+        5.2916    9.4894   16.9752   22.1003   20.9421   14.4436   10.7578</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [h, p, stats] = chi2gof (x, 'cdf', {@normcdf, mean(x), std(x)})</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
-p = 0.5464
+p = 0.1140
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 4.0212
-    df = 5
+    chi2stat = 7.4481
+    df = 4
     edges =
 
-       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
+       31.297   41.009   44.247   47.484   50.722   53.960   57.197   63.672
 
     O =
 
-        9    7    9   22   17   14   10   12
+        2   11   21   26   13   17   10
 
     E =
 
-        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544</pre>
+        5.2916    9.4894   16.9752   22.1003   20.9421   14.4436   10.7578</pre>
 
             </div>
           </div>
@@ -1154,32 +1155,33 @@ stats =
           </div>
           <div class="collapse show" id="chi2gof-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = rand (100,1 );
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = rand (100,1 );
  n = length (x);
  binedges = linspace (0, 1, 11);
  expectedCounts = n * diff (binedges);
  [h, p, stats] = chi2gof (x, 'binedges', binedges, 'expected', expectedCounts)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
-p = 0.3345
+p = 0.051942
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 10.200
+    chi2stat = 16.800
     df = 9
     edges =
 
      Columns 1 through 9:
 
-       3.4440e-03   1.0285e-01   2.0225e-01   3.0166e-01   4.0106e-01   5.0047e-01   5.9987e-01   6.9928e-01   7.9868e-01
+       6.4988e-03   1.0560e-01   2.0471e-01   3.0381e-01   4.0291e-01   5.0202e-01   6.0112e-01   7.0023e-01   7.9933e-01
 
      Columns 10 and 11:
 
-       8.9809e-01   9.9749e-01
+       8.9843e-01   9.9754e-01
 
     O =
 
-       15    4    8   12    8   14   12   10    7   10
+       14    5   17   11    3   11   13    6   11    9
 
     E =
 

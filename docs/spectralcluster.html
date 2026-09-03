@@ -1054,7 +1054,8 @@
           <div class="collapse show" id="spectralcluster-example1">
             <div class="card-body">
                 <p>Two concentric rings are not separable by kmeans but are by spectral clustering.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> t = linspace (0, 2*pi, 100)';
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ t = linspace (0, 2*pi, 100)';
  Xin  = [cos(t), sin(t)] + randn (100, 2) * 0.05;
  Xout = 4 * [cos(t), sin(t)] + randn (100, 2) * 0.05;
  X = [Xin; Xout];

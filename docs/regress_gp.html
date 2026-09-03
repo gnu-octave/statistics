@@ -1059,9 +1059,8 @@
           <div class="collapse show" id="regress_gp-example1">
             <div class="card-body">
                 <p>Linear fitting of 1D Data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 125);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  X = 2 * rand (5, 1) - 1;
- randn ('seed', 25);
  Y = 2 * X - 1 + 0.3 * randn (5, 1);</pre>
                 <p>Points for interpolation/extrapolation</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Xfit = linspace (-2, 2, 10)';</pre>
@@ -1094,9 +1093,8 @@
           <div class="collapse show" id="regress_gp-example2">
             <div class="card-body">
                 <p>Linear fitting of 2D Data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 135);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  X = 2 * rand (4, 2) - 1;
- randn ('seed', 35);
  Y = 2 * X(:,1) - 3 * X(:,2) - 1 + 1 * randn (4, 1);</pre>
                 <p>Mesh for interpolation/extrapolation</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [x1, x2] = meshgrid (linspace (-1, 1, 10));
@@ -1143,11 +1141,10 @@
           <div class="collapse show" id="regress_gp-example3">
             <div class="card-body">
                 <p>Projection over basis function with linear kernel</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ pp = [2, 2, 0.3, 1];
  n = 10;
- rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ('seed', 45);
  Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
                 <p>Powers</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
@@ -1193,11 +1190,10 @@
           <div class="collapse show" id="regress_gp-example4">
             <div class="card-body">
                 <p>Projection over basis function with linear kernel</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ pp = [2, 2, 0.3, 1];
  n = 10;
- rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ('seed', 45);
  Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
                 <p>Powers</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
@@ -1240,11 +1236,10 @@
           <div class="collapse show" id="regress_gp-example5">
             <div class="card-body">
                 <p>Projection over basis function with rbf kernel</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ pp = [2, 2, 0.3, 1];
  n = 10;
- rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ('seed', 45);
  Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
                 <p>Powers</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
@@ -1288,11 +1283,10 @@
           <div class="collapse show" id="regress_gp-example6">
             <div class="card-body">
                 <p>Projection over basis function with rbf kernel</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ pp = [2, 2, 0.3, 1];
  n = 10;
- rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ('seed', 45);
  Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
                 <p>Powers</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
@@ -1387,7 +1381,8 @@
           <div class="collapse show" id="regress_gp-example7">
             <div class="card-body">
                 <p>RBF fitting on noiseless 1D Data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [0:2*pi/7:2*pi]';
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = [0:2*pi/7:2*pi]';
  y = 5 * sin (x);</pre>
                 <p>Predictive grid of 500 equally spaced locations</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';</pre>
@@ -1429,7 +1424,8 @@
           <div class="collapse show" id="regress_gp-example8">
             <div class="card-body">
                 <p>RBF fitting on noisy 1D Data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [0:2*pi/7:2*pi]';
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = [0:2*pi/7:2*pi]';
  x = [x; x];
  y = 5 * sin (x) + randn (size (x));</pre>
                 <p>Predictive grid of 500 equally spaced locations</p>

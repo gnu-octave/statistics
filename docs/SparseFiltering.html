@@ -968,34 +968,6 @@
  <code>sparsefilt</code> for extracting features from data.  Create one with
  <code>sparsefilt</code>; apply it to data with the <code>transform</code> method.
 </p>
-<p> An object of this class has the following properties:
-</p>
-<ul>
-<li> <code>TransformWeights</code>: the <em class="math">P &times; Q</em> matrix of learned
- transformation weights.
-</li><li> <code>Mu</code>, <code>Sigma</code>: the per-predictor mean and standard
- deviation used when <code>'Standardize'</code> is <code>true</code> (empty otherwise),
- each a column vector with one entry per predictor.
-</li><li> <code>FitInfo</code>: a structure with the <code>Iteration</code> indices of
- the fit and the <code>Objective</code> value at each of them, both column
- vectors of the same length.  <code>Iteration</code> counts from zero and
- <code>Objective(1)</code> is the objective at the starting weights, so the last
- entry of each is the solution the fit returned.
-<p> The values along that trajectory are this implementation&rsquo;s own.  Under the
- default <code>'quasinewton'</code> solver the minimisation runs through Octave&rsquo;s
- <code>fminunc</code>; <code>'Solver', 'lbfgs'</code> selects the limited-memory BFGS
- solver MATLAB uses.  Either way the steps taken from the same starting
- weights differ from MATLAB&rsquo;s, so the length of the history and the
- iteration counts differ, and on an objective this far from convex the
- optimum reached need not be MATLAB&rsquo;s either.
-</p>
-
-</li><li> <code>ModelParameters</code>: a structure of the options used for the fit.
-</li><li> <code>NumPredictors</code>, <code>NumLearnedFeatures</code>: the input dimension
- <em class="math">P</em> and the number of learned features <em class="math">Q</em>.
-</li><li> <code>InitialTransformWeights</code>: the starting weights used by the fit.
-</li></ul>
-
 <p> <strong>See also: </strong>
   <a href="sparsefilt.html">sparsefilt</a>, 
   <a href="rica.html">rica</a>
@@ -1018,13 +990,22 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Options the fit used
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.ModelParameters</code></b> is not documented.
+
+<p> </p>
+<p> A scalar structure holding the options the fit ran with:
+ <code>IterationLimit</code>, <code>Lambda</code>, <code>Standardize</code>,
+ <code>InitialTransformWeights</code>, <code>GradientTolerance</code>,
+ <code>StepTolerance</code> and <code>Solver</code>.
+ This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1041,13 +1022,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of input predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.NumPredictors</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer <em class="math">P</em>, the number of columns of the training
+ data.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1064,13 +1051,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of learned features
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.NumLearnedFeatures</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer <em class="math">Q</em>, the number of features the learned
+ transformation produces.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1087,13 +1080,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor means used when standardizing
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.Mu</code></b> is not documented.
+
+<p> </p>
+<p> A column vector with one entry per predictor, the mean of each
+ column of the training data.  It is empty unless <code>'Standardize'</code>
+ was true.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1110,13 +1110,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor standard deviations used when standardizing
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.Sigma</code></b> is not documented.
+
+<p> </p>
+<p> A column vector with one entry per predictor, the standard deviation
+ of each column of the training data.  It is empty unless
+ <code>'Standardize'</code> was true.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1133,13 +1140,30 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+History of the fit
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.FitInfo</code></b> is not documented.
+
+<p> </p>
+<p> A scalar structure with the fields <code>Iteration</code> and
+ <code>Objective</code>, both column vectors of the same length.
+ <code>Iteration</code> counts from zero and <code>Objective(1)</code> is the
+ objective at the starting weights, so the last entry of each is the
+ solution the fit returned.  This property is read-only.
+</p>
+<p> The trajectory is this implementation&rsquo;s own.  The default
+ <code>'quasinewton'</code> solver minimises through Octave&rsquo;s <code>fminunc</code>,
+ and <code>'Solver', 'lbfgs'</code> selects the limited-memory BFGS solver
+ MATLAB uses.  Either way the steps taken from the same starting weights
+ differ from MATLAB&rsquo;s, so the length of the history and the iteration
+ counts differ, and on an objective this far from convex the optimum
+ reached need not be MATLAB&rsquo;s either.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1156,13 +1180,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Learned feature transformation weights
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.TransformWeights</code></b> is not documented.
+
+<p> </p>
+<p> A <em class="math">P</em>-by-<em class="math">Q</em> matrix of learned weights.  The <code>transform</code>
+ method applies it to data.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1179,13 +1209,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Starting feature transformation weights
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>SparseFiltering.InitialTransformWeights</code></b> is not documented.
+
+<p> </p>
+<p> A <em class="math">P</em>-by-<em class="math">Q</em> matrix, the weights the fit started from.  It
+ is the matrix given as <code>'InitialTransformWeights'</code> when one was
+ given, and the random start the fit drew otherwise.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>

@@ -1047,11 +1047,9 @@
           <div class="collapse show" id="evfit-example1">
             <div class="card-body">
                 <p>Sample 3 populations from different extreme value distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 1);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  r1 = evrnd (2, 5, 400, 1);
- rand ('seed', 12);    # for reproducibility
  r2 = evrnd (-5, 3, 400, 1);
- rand ('seed', 13);    # for reproducibility
  r3 = evrnd (14, 8, 400, 1);
  r = [r1, r2, r3];</pre>
                 <p>Plot them normalized and fix their colors</p>

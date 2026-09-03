@@ -1013,11 +1013,12 @@
           <div class="collapse show" id="mvregresslike-example1">
             <div class="card-body">
                 <p>Negative log-likelihood of a two-response regression at the true params.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [ones(20,1), (1:20)'/20];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [ones(20,1), (1:20)'/20];
  B = [1 -2; 0.5 3];
  Y = X * B + 0.3 * randn (20, 2);
  nll = mvregresslike (X, Y, B, cov (Y - X*B))</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nll = 5.3688</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nll = 11.351</pre>
 
             </div>
           </div>

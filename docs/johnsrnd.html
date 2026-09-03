@@ -978,6 +978,10 @@
  curve passing through these four points using the quantile method of Slifker
  and Shapiro.
 </p>
+<p> <var>quantiles</var> may also be a 2-by-4 numeric matrix, whose first row holds
+ four strictly increasing, evenly spaced standard normal quantiles and whose
+ second row holds the corresponding strictly increasing data quantiles.
+</p>
 <p> <code>johnsrnd (<var>quantiles</var>, <var>m</var>, <var>n</var>, &hellip;)</code> or
  <code>johnsrnd (<var>quantiles</var>, [<var>m</var>, <var>n</var>, &hellip;])</code> returns an
  <var>m</var>-by-<var>n</var>-by-&hellip; array of random values, following the size
@@ -1018,8 +1022,9 @@ randn
           <div class="collapse show" id="johnsrnd-example1">
             <div class="card-body">
                 <p>Fit a Johnson distribution to four quantiles and identify its type</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [r, type, coefs] = johnsrnd ([-1, -0.25, 0.75, 3])</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">r = 0.1541
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ [r, type, coefs] = johnsrnd ([-1, -0.25, 0.75, 3])</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">r = 0.1645
 type = SU
 coefs =
 
@@ -1045,7 +1050,8 @@ coefs =
           <div class="collapse show" id="johnsrnd-example2">
             <div class="card-body">
                 <p>Draw a sample and check its shape</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> r = johnsrnd ([-1, -0.25, 0.75, 3], 1, 1000);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ r = johnsrnd ([-1, -0.25, 0.75, 3], 1, 1000);
  hist (r, 50);</pre>
                 <div class="text-center">
                   <img src="assets/johnsrnd-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">

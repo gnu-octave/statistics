@@ -961,13 +961,14 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: CompactRegressionSVM</h5></code></dl>
-<p> Create a <code>CompactRegressionSVM</code> object, a support vector regression
- model that has dropped its training data.
+<p> Compact Support Vector Machine regression
 </p>
 <div class="ms-5">
-<p> <code><var>obj</var> = CompactRegressionSVM (<var>Mdl</var>)</code> returns the compact
- form of the <code>RegressionSVM</code> object <var>Mdl</var>.  It is normally reached
- through <code>compact (<var>Mdl</var>)</code> rather than called directly.
+<p> A <code>CompactRegressionSVM</code> object holds a support vector regression
+ model that has dropped its training data.
+</p>
+<p> Create a <code>CompactRegressionSVM</code> object by using the <code>compact</code>
+ method of a <code>RegressionSVM</code> object.
 </p>
 <p> The compact model keeps what is needed to answer about new data, the
  support vectors and their coefficients, the intercept, the kernel, the
@@ -1399,6 +1400,43 @@ Transformation applied to the predicted response
         </div>
 
         <p class="lead my-3">The <code>CompactRegressionSVM</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
+              aria-expanded="false" aria-controls="colapsibleConstructor">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CompactRegressionSVM</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Create a <code>CompactRegressionSVM</code> object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="colapsibleConstructor">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">CompactRegressionSVM: <var>obj</var> = <b>CompactRegressionSVM</b> (<var>Mdl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactRegressionSVM: <var>obj</var> = <b>CompactRegressionSVM</b> ()</code></h5></dt>
+</dl>
+<p> </p>
+<p> <var>Mdl</var> is the <code>RegressionSVM</code> object to
+ compact.  The documented way to reach this constructor is the
+ <code>compact</code> method.
+</p>
+<p> Called with no arguments it returns an object with its properties
+ empty, which is how a saved model is rebuilt before its values are
+ filled in.
+</p>
+
+
+            </div>
+          </div>
+        </div>
 
         <div class="container-xl my-1">
           <div class="row">

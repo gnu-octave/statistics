@@ -1061,10 +1061,9 @@
           <div class="collapse show" id="gpfit-example1">
             <div class="card-body">
                 <p>Sample 2 populations from different generalized Pareto distributions Assume location parameter θ is known</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> theta = 0;
- rand ('seed', 5);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ theta = 0;
  r1 = gprnd (1, 2, theta, 20000, 1);
- rand ('seed', 2);    # for reproducibility
  r2 = gprnd (3, 1, theta, 20000, 1);
  r = [r1, r2];</pre>
                 <p>Plot them normalized and fix their colors</p>

@@ -1049,17 +1049,17 @@
           <div class="collapse show" id="stblfit-example1">
             <div class="card-body">
                 <p>Fit a stable distribution to simulated data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  x = stblrnd (1.5, 0.5, 2, 1, 150, 1);
  [paramhat, paramci] = stblfit (x)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">paramhat =
 
-   1.5422   0.3029   1.8256   1.2572
+   1.4791   0.2263   2.1102   1.0271
 
 paramci =
 
-   1.3078  -0.1665   1.5150   0.7443
-   1.7767   0.7723   2.1363   1.7700</pre>
+   1.2013  -0.2764   1.7553   0.4195
+   1.7569   0.7291   2.4652   1.6347</pre>
 
             </div>
           </div>

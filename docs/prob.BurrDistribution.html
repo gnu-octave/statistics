@@ -1357,7 +1357,11 @@ Probability distribution name
           <div class="collapse" id="prob_BurrDistribution_DistributionName-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1365,16 +1369,15 @@ Probability distribution name
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1432,7 +1435,11 @@ Number of parameters
           <div class="collapse" id="prob_BurrDistribution_NumParameters-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1440,16 +1447,15 @@ Number of parameters
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1507,7 +1513,11 @@ Names of parameters
           <div class="collapse" id="prob_BurrDistribution_ParameterNames-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1515,16 +1525,15 @@ Names of parameters
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1583,7 +1592,11 @@ Description of parameters
           <div class="collapse" id="prob_BurrDistribution_ParameterDescription-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1591,16 +1604,15 @@ Description of parameters
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1660,7 +1672,11 @@ Distribution parameter values
           <div class="collapse" id="prob_BurrDistribution_ParameterValues-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1668,16 +1684,15 @@ Distribution parameter values
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1738,7 +1753,11 @@ Truncation interval
           <div class="collapse" id="prob_BurrDistribution_Truncation-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1746,16 +1765,15 @@ Truncation interval
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1813,7 +1831,11 @@ Flag for truncated probability distribution
           <div class="collapse" id="prob_BurrDistribution_IsTruncated-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1821,16 +1843,15 @@ Flag for truncated probability distribution
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1894,7 +1915,11 @@ Covariance matrix of the parameter estimates
           <div class="collapse" id="prob_BurrDistribution_ParameterCovariance-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1902,16 +1927,15 @@ Covariance matrix of the parameter estimates
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -1971,7 +1995,11 @@ Flag for fixed parameters
           <div class="collapse" id="prob_BurrDistribution_ParameterIsFixed-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -1979,16 +2007,15 @@ Flag for fixed parameters
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -2056,7 +2083,11 @@ Data used for fitting a probability distribution
           <div class="collapse" id="prob_BurrDistribution_InputData-example1">
             <div class="card-body">
                 <p>Generate a data set of 5000 random samples from a Burr type XII distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type XII distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -2064,16 +2095,15 @@ Data used for fitting a probability distribution
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -2463,7 +2493,11 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse" id="prob_BurrDistribution_negloglik-example1">
             <div class="card-body">
                 <p>Compute the negative loglikelihood for a fitted Burr distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -2471,18 +2505,17 @@ Compute the negative loglikelihood of a probability distribution.
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 100, 1);
  pd_fitted = fitdist (data, "Burr")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Burr
 
   Burr distribution
-    alpha = 1.18986   [1.01271, 1.39799]
-        c = 1.91252   [1.62314, 2.25348]
-        k = 1.30385   [0.625566, 2.71757]</pre>
+    alpha = 0.738032   [0.619754, 0.878883]
+        c =  2.18378   [1.84809, 2.58045]
+        k = 0.719222   [0.382344, 1.35292]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nlogL = negloglik (pd_fitted)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 123.35</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nlogL = 131.53</pre>
                 <p>This is useful for assessing the fit of a Burr distribution to data; lower values indicate a better fit, e.g., for income modeling.</p>
 
             </div>
@@ -2559,7 +2592,11 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse" id="prob_BurrDistribution_paramci-example1">
             <div class="card-body">
                 <p>Compute confidence intervals for parameters of a fitted Burr distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -2567,21 +2604,20 @@ Compute the confidence intervals for probability distribution parameters.
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "Burr")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Burr
 
   Burr distribution
-    alpha =  1.00315   [0.951509, 1.0576]
-        c =  2.04261   [1.93888, 2.1519]
-        k = 0.974629   [0.777103, 1.22236]</pre>
+    alpha = 0.929094   [0.880499, 0.980371]
+        c =  2.09968   [1.99264, 2.21246]
+        k = 0.859061   [0.698577, 1.05641]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ci = paramci (pd_fitted, "Alpha", 0.05)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ci =
 
-   0.9515   1.9389   0.7771
-   1.0576   2.1519   1.2224</pre>
+   0.8805   1.9926   0.6986
+   0.9804   2.2125   1.0564</pre>
                 <p>Use this to obtain confidence intervals for the estimated parameters (alpha, c, k), providing a range of plausible values given the data, e.g., for uncertainty in income distribution parameters.</p>
 
             </div>
@@ -2773,7 +2809,11 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_BurrDistribution_plot-example2">
             <div class="card-body">
                 <p>Generate a data set of 100 random samples from a Burr distribution with parameters alpha = 1, c = 2, k = 1. Fit a Burr distribution to this data and plot its CDF superimposed over an empirical CDF.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Burr
 
@@ -2781,18 +2821,27 @@ Plot a probability distribution object.
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd_fixed, 100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 100, 1);
  pd_fitted = fitdist (data, "Burr")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Burr
 
   Burr distribution
-    alpha = 1.18986   [1.01271, 1.39799]
-        c = 1.91252   [1.62314, 2.25348]
-        k = 1.30385   [0.625566, 2.71757]</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "cdf")
- txt = "Fitted Burr distribution with alpha = %0.2f, c = %0.2f, k = %0.2f";
+    alpha = 0.738032   [0.619754, 0.878883]
+        c =  2.18378   [1.84809, 2.58045]
+        k = 0.719222   [0.382344, 1.35292]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "cdf")</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: imaginary part of complex colon arguments is ignored
+warning: called from
+    plot_cdf at line 750 column 7
+    __plot__ at line 303 column 11
+    plot at line 593 column 7
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 395 column 9
+    package_texi2html at line 334 column 9</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> txt = "Fitted Burr distribution with alpha = %0.2f, c = %0.2f, k = %0.2f";
  title (sprintf (txt, pd_fitted.alpha, pd_fitted.c, pd_fitted.k))
  legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")</pre>
                 <div class="text-center">
@@ -2820,7 +2869,11 @@ Plot a probability distribution object.
           <div class="collapse" id="prob_BurrDistribution_plot-example3">
             <div class="card-body">
                 <p>Generate a data set of 200 random samples from a Burr distribution with parameters alpha = 1, c = 2, k = 1. Display a probability plot for the Burr distribution fit to the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd_fixed = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fixed =
   Burr
 
@@ -2828,16 +2881,15 @@ Plot a probability distribution object.
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd_fixed, 200, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd_fixed, 200, 1);
  pd_fitted = fitdist (data, "Burr")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Burr
 
   Burr distribution
-    alpha = 1.23729   [1.10047, 1.39113]
-        c = 1.88943   [1.68443, 2.11939]
-        k = 1.27534   [0.720502, 2.25744]</pre>
+    alpha = 0.778514   [0.688147, 0.880748]
+        c =  2.13438   [1.89722, 2.40118]
+        k = 0.760011   [0.485149, 1.19059]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd_fitted, "PlotType", "probability")
  txt = strcat ("Probability plot of fitted Burr distribution with ", ...
                "alpha = %0.2f, c = %0.2f, k = %0.2f");
@@ -2939,7 +2991,11 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse" id="prob_BurrDistribution_proflik-example1">
             <div class="card-body">
                 <p>Compute and plot the profile likelihood for the first shape parameter of a fitted Burr distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -2947,16 +3003,15 @@ Profile likelihood function for a probability distribution object.
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (pd, 1000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 1000, 1);
  pd_fitted = fitdist (data, "Burr")</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd_fitted =
   Burr
 
   Burr distribution
-    alpha =  1.00315   [0.951509, 1.0576]
-        c =  2.04261   [1.93888, 2.1519]
-        k = 0.974629   [0.777103, 1.22236]</pre>
+    alpha = 0.929094   [0.880499, 0.980371]
+        c =  2.09968   [1.99264, 2.21246]
+        k = 0.859061   [0.698577, 1.05641]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");</pre>
                 <div class="text-center">
                   <img src="assets/prob.BurrDistribution.proflik-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
@@ -3024,7 +3079,11 @@ Generate random arrays from the probability distribution object.
           <div class="collapse" id="prob_BurrDistribution_random-example1">
             <div class="card-body">
                 <p>Generate random samples from a Burr distribution</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 3)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -3032,8 +3091,7 @@ Generate random arrays from the probability distribution object.
     alpha = 1
         c = 2
         k = 3</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- samples = random (pd, 50, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> samples = random (pd, 50, 1);
  hist (samples, 90)
  title ("Histogram of 50 random samples from Burr(alpha=1, c=2, k=3)")
  xlabel ("values in x")
@@ -3164,7 +3222,11 @@ Truncate a probability distribution.
           <div class="collapse" id="prob_BurrDistribution_truncate-example1">
             <div class="card-body">
                 <p>Plot the PDF of a Burr distribution, with parameters alpha = 1, c = 2, k = 1, truncated at [0.5, 2.5] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -3181,8 +3243,7 @@ Truncate a probability distribution.
         c = 2
         k = 1
   Truncated to the interval [0.5, 2.5]</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
- data = random (t, 10000, 1);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (t, 10000, 1);</pre>
                 <p>Plot histogram and fitted PDF</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (t)
  hold on
@@ -3286,7 +3347,11 @@ Generate a data set of 5000 random samples from a Burr type XII distribution wit
           </div>
           <div class="collapse multi-collapse" id="prob_BurrDistribution-example1">
             <div class="border-bottom py-2">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ rande ('state', 42);
+ randp ('state', 42);
+ pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
@@ -3294,16 +3359,15 @@ Generate a data set of 5000 random samples from a Burr type XII distribution wit
     alpha = 1
         c = 2
         k = 1</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 21);
- data = random (pd, 5000, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = random (pd, 5000, 1);
  pd = fitdist (data, 'Burr')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   Burr
 
   Burr distribution
-    alpha = 0.943213   [0.920634, 0.966345]
-        c =  2.01899   [1.9726, 2.06648]
-        k = 0.946371   [0.857098, 1.04494]</pre>
+    alpha = 0.951091   [0.92883, 0.973885]
+        c =  2.07318   [2.02547, 2.12201]
+        k = 0.932315   [0.846945, 1.02629]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (pd)
  msg = strcat ("Fitted Burr type XII distribution with", ...
                " alpha = %0.2f, c =  %0.2f, and k = %0.2f");

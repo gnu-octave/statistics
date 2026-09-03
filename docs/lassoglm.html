@@ -1179,24 +1179,23 @@ FitInfo =
             <div class="card-body">
                 <p>Choosing the penalty by cross-validation.  Passing a 'CV' fold count makes lassoglm cross-validate the deviance along the lambda path.  It then reports the lambda with the lowest mean deviance (LambdaMinDeviance) and the largest lambda within one standard error of it (Lambda1SE) -- the sparser "one-standard-error" model that is often preferred.</p>
                 <p>Here only the first two of eight predictors truly drive the response, so a good fit should keep few nonzero coefficients.  The fold assignment is random; the seed below just makes the printed numbers reproducible.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 42);
- randn ('seed', 42);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  X = randn (60, 8);
  beta = [1.5; -2; zeros(6, 1)];
  y = double (rand (60, 1) &lt; 1 ./ (1 + exp (- X * beta)));
  [B, FitInfo] = lassoglm (X, y, 'binomial', 'CV', 5);
  printf ('LambdaMinDeviance = %.4f (%d nonzero)\n', ...
          FitInfo.LambdaMinDeviance, FitInfo.DF(FitInfo.IndexMinDeviance));</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">LambdaMinDeviance = 0.0426 (2 nonzero)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">LambdaMinDeviance = 0.0525 (6 nonzero)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ('Lambda1SE         = %.4f (%d nonzero)\n', ...
          FitInfo.Lambda1SE, FitInfo.DF(FitInfo.Index1SE));</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Lambda1SE         = 0.0896 (2 nonzero)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Lambda1SE         = 0.1007 (2 nonzero)</pre>
                 <p>Coefficients of the one-standard-error model.</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> coef_1SE = B(:, FitInfo.Index1SE)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">coef_1SE =
 
-   1.1220
-  -0.7655
+   0.2269
+  -0.7506
         0
         0
         0

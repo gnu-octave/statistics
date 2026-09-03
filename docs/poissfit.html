@@ -1017,11 +1017,10 @@
           <div class="collapse show" id="poissfit-example1">
             <div class="card-body">
                 <p>Sample 3 populations from 3 different Poisson distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randp ('seed', 2);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randp ('state', 42);
  r1 = poissrnd (1, 1000, 1);
- randp ('seed', 2);    # for reproducibility
  r2 = poissrnd (4, 1000, 1);
- randp ('seed', 3);    # for reproducibility
  r3 = poissrnd (10, 1000, 1);
  r = [r1, r2, r3];</pre>
                 <p>Plot them normalized and fix their colors</p>

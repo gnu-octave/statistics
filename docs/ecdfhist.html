@@ -1020,7 +1020,8 @@ histogram
           <div class="collapse show" id="ecdfhist-example1">
             <div class="card-body">
                 <p>Histogram (density estimate) from the empirical cdf of a random sample.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = randn (100, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ x = randn (100, 1);
  [f, xx] = ecdf (x);
  ecdfhist (f, xx);
  title ("ecdfhist of a standard normal sample");</pre>
@@ -1048,7 +1049,8 @@ histogram
           <div class="collapse show" id="ecdfhist-example2">
             <div class="card-body">
                 <p>Compare the empirical density with a finer set of bins.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = exprnd (2, 200, 1);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
+ x = exprnd (2, 200, 1);
  [f, xx] = ecdf (x);
  ecdfhist (f, xx, 20);
  title ("ecdfhist of an exponential sample (20 bins)");</pre>

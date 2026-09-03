@@ -1144,8 +1144,9 @@
           <div class="collapse show" id="multcompare-example1">
             <div class="card-body">
                 <p>Demonstration using balanced one-way ANOVA from anova1</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = ones (50, 4) .* [-2, 0, 1, 5];
- randn ('seed', 1);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ x = ones (50, 4) .* [-2, 0, 1, 5];
  x = x + normrnd (0, 2, 50, 4);
  groups = {'A', 'B', 'C', 'D'};
  [p, tbl, stats] = anova1 (x, groups, 'off');
@@ -1155,12 +1156,12 @@
 
 Group ID  Group ID   LBoundDiff   EstimatedDiff   UBoundDiff   p-value
 ----------------------------------------------------------------------
-    1         2         -2.789        -2.009         -1.228      &lt;.001
-    1         3         -2.489        -1.709         -0.928      &lt;.001
-    1         4         -7.365        -6.585         -5.804      &lt;.001
-    2         3         -0.480         0.300          1.081       .449
-    2         4         -5.356        -4.576         -3.795      &lt;.001
-    3         4         -5.656        -4.876         -4.095      &lt;.001</pre>
+    1         2         -3.026        -2.214         -1.402      &lt;.001
+    1         3         -3.962        -3.150         -2.338      &lt;.001
+    1         4         -7.148        -6.336         -5.524      &lt;.001
+    2         3         -1.748        -0.936         -0.124       .024
+    2         4         -4.934        -4.122         -3.310      &lt;.001
+    3         4         -3.998        -3.186         -2.374      &lt;.001</pre>
                 <div class="text-center">
                   <img src="assets/multcompare-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
@@ -1379,21 +1380,21 @@ GNAMES =
 
 Group ID  Group ID   LBoundDiff   EstimatedDiff   UBoundDiff   p-value
 ----------------------------------------------------------------------
-    1         2        -42.084       -26.750        -11.416      &lt;.001
-    1         3        -26.795       -14.125         -1.455       .027
-    2         3         -5.225        12.625         30.475       .199
+    1         2        -42.102       -26.750        -11.398      &lt;.001
+    1         3        -26.810       -14.125         -1.440       .028
+    2         3         -5.245        12.625         30.495       .198
 
 C =
 
-   1.0000e+00   2.0000e+00  -4.2084e+01  -2.6750e+01  -1.1416e+01   7.0600e-04  -4.3716e+00   2.1000e+01
-   1.0000e+00   3.0000e+00  -2.6795e+01  -1.4125e+01  -1.4549e+00   2.7127e-02  -2.7937e+00   2.1000e+01
-   2.0000e+00   3.0000e+00  -5.2245e+00   1.2625e+01   3.0475e+01   1.9879e-01   1.7725e+00   2.1000e+01
+   1.0000e+00   2.0000e+00  -4.2102e+01  -2.6750e+01  -1.1398e+01   7.4600e-04  -4.3716e+00   2.1000e+01
+   1.0000e+00   3.0000e+00  -2.6810e+01  -1.4125e+01  -1.4402e+00   2.7682e-02  -2.7937e+00   2.1000e+01
+   2.0000e+00   3.0000e+00  -5.2452e+00   1.2625e+01   3.0495e+01   1.9850e-01   1.7725e+00   2.1000e+01
 
 M =
 
-    9.7500    2.4770    5.3607   14.1393
-   36.5000    5.5953   26.5852   46.4148
-   23.8750    4.4076   16.0647   31.6853</pre>
+    9.7500    2.4770    5.3557   14.1443
+   36.5000    5.5953   26.5738   46.4262
+   23.8750    4.4076   16.0557   31.6943</pre>
                 <div class="text-center">
                   <img src="assets/multcompare-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>

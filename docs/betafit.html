@@ -1039,9 +1039,8 @@
           <div class="collapse show" id="betafit-example1">
             <div class="card-body">
                 <p>Sample 2 populations from different Beta distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('seed', 1);   # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randg ('state', 42);
  r1 = betarnd (2, 5, 500, 1);
- randg ('seed', 2);   # for reproducibility
  r2 = betarnd (2, 2, 500, 1);
  r = [r1, r2];</pre>
                 <p>Plot them normalized and fix their colors</p>

@@ -1002,7 +1002,8 @@ cov
           </div>
           <div class="collapse show" id="dcov-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> base=@(x) (x- min (x))./(max (x)-min (x));
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ base=@(x) (x- min (x))./(max (x)-min (x));
  N = 5e2;
  x = randn (N,1); x = base(x);
  z = randn (N,1); z = base(z);</pre>

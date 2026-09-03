@@ -1043,11 +1043,9 @@
           <div class="collapse show" id="wblfit-example1">
             <div class="card-body">
                 <p>Sample 3 populations from 3 different Weibull distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('seed', 1);    # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rande ('state', 42);
  r1 = wblrnd (2, 4, 2000, 1);
- rande ('seed', 2);    # for reproducibility
  r2 = wblrnd (5, 2, 2000, 1);
- rande ('seed', 5);    # for reproducibility
  r3 = wblrnd (1, 5, 2000, 1);
  r = [r1, r2, r3];</pre>
                 <p>Plot them normalized and fix their colors</p>

@@ -1109,17 +1109,13 @@
           <div class="collapse show" id="rangesearch-example1">
             <div class="card-body">
                 <p>Generate 100 random 2D points from each of five distinct multivariate normal distributions that form five separate classes</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> N = 100;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ N = 100;
  d = 10;
- randn ('seed', 5);
  X1 = mvnrnd (d * [0, 0], eye (2), N);
- randn ('seed', 6);
  X2 = mvnrnd (d * [1, 1], eye (2), N);
- randn ('seed', 7);
  X3 = mvnrnd (d * [-1, -1], eye (2), N);
- randn ('seed', 8);
  X4 = mvnrnd (d * [1, -1], eye (2), N);
- randn ('seed', 8);
  X5 = mvnrnd (d * [-1, 1], eye (2), N);
  X = [X1; X2; X3; X4; X5];</pre>
                 <p>For each point in X, find the points in X that are within a radius d away from the points in X.</p>

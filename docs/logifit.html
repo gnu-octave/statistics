@@ -1039,11 +1039,9 @@
           <div class="collapse show" id="logifit-example1">
             <div class="card-body">
                 <p>Sample 3 populations from different logistic distributions</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 5)  # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
  r1 = logirnd (2, 1, 2000, 1);
- rand ('seed', 2)   # for reproducibility
  r2 = logirnd (5, 2, 2000, 1);
- rand ('seed', 7)   # for reproducibility
  r3 = logirnd (9, 4, 2000, 1);
  r = [r1, r2, r3];</pre>
                 <p>Plot them normalized and fix their colors</p>

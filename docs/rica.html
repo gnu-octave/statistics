@@ -1002,6 +1002,11 @@
  <em class="math">sqrt (z^2 + 1e-8)</em>, a smooth stand-in for <em class="math">abs (z)</em>.</dd>
 <dt> <code>'InitialTransformWeights'</code></dt>
 <dd> A <em class="math">P &times; <var>Q</var></em> initial value for the weights.  The default is random.</dd>
+<dt> <code>'NonGaussianityIndicator'</code></dt>
+<dd> A <var>Q</var>-element vector of <em class="math">+1</em> and <em class="math">-1</em>, one per learned
+ feature, setting the sign its contrast term carries in the objective:
+ <em class="math">+1</em> seeks a super-Gaussian (sparse) feature and <em class="math">-1</em> a
+ sub-Gaussian (spread) one.  The default is all <em class="math">+1</em>.</dd>
 <dt> <code>'GradientTolerance'</code>, <code>'StepTolerance'</code></dt>
 <dd> Stop once the gradient&rsquo;s or the step&rsquo;s infinity norm falls to or below the
  given value (default <code>1e-6</code> each).  They govern the fit only under
@@ -1055,11 +1060,11 @@
  Z = transform (Mdl, X)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Z =
 
-  -5.4695   0.1853
-  -7.3347  -0.3226
-  -1.7392   1.2012
-  -3.9338  -3.3743
-  -3.4565   1.3492</pre>
+   0.1853  -5.4695
+  -0.3226  -7.3347
+   1.2012  -1.7392
+  -3.3743  -3.9338
+   1.3492  -3.4565</pre>
 
             </div>
           </div>

@@ -1025,13 +1025,58 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Coefficient estimates and their statistics
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.Coefficients</code></b> is not documented.
+
+<p> </p>
+<p> A table with one row per coefficient, its row names taken from
+ <code>CoefficientNames</code>, and the variables <code>Estimate</code>,
+ <code>SE</code>, <code>tStat</code> and <code>pValue</code>.  <code>tStat</code> is the
+ estimate divided by its standard error and <code>pValue</code> is the
+ two-sided <em class="math">t</em> test of a zero coefficient on <code>DFE</code> degrees
+ of freedom.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_Coefficients-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_Coefficients-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_Coefficients-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1048,13 +1093,56 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of the coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.CoefficientNames</code></b> is not documented.
+
+<p> </p>
+<p> A cell array of character vectors with one name per coefficient, in
+ the order the model function expects them.  The names default to
+ <code>'b1'</code>, <code>'b2'</code> and so on, unless <code>fitnlm</code> was given a
+ list of its own.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_CoefficientNames-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_CoefficientNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_CoefficientNames-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1071,13 +1159,56 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Estimated covariance of the coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.CoefficientCovariance</code></b> is not documented.
+
+<p> </p>
+<p> A square numeric matrix, one row and column per coefficient, holding
+ the estimated covariance of the estimates in <code>Coefficients</code>.
+ The square roots of its diagonal are the standard errors reported in
+ column <code>SE</code> of that table.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_CoefficientCovariance-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_CoefficientCovariance-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_CoefficientCovariance-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1094,13 +1225,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.NumCoefficients</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the coefficients of the model, which is
+ the number of elements of the starting vector handed to
+ <code>fitnlm</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_NumCoefficients-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_NumCoefficients-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_NumCoefficients-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1117,13 +1290,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of estimated coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.NumEstimatedCoefficients</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the coefficients estimated from the data.
+ A nonlinear fit estimates every coefficient it carries, so this equals
+ <code>NumCoefficients</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_NumEstimatedCoefficients-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_NumEstimatedCoefficients-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_NumEstimatedCoefficients-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1140,13 +1355,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.NumPredictors</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the predictor variables, that is the
+ columns of the predictor matrix used for the fit.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_NumPredictors-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_NumPredictors-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_NumPredictors-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1163,13 +1420,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of observations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.NumObservations</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the observations used for the fit, after
+ the rows named by <code>'Exclude'</code> and the rows carrying missing
+ values have been dropped.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_NumObservations-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_NumObservations-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_NumObservations-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1186,13 +1485,54 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Error degrees of freedom
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.DFE</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative integer, <code>NumObservations</code> less
+ <code>NumCoefficients</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_DFE-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_DFE-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_DFE-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1209,13 +1549,54 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Mean squared error
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.MSE</code></b> is not documented.
+
+<p> </p>
+<p> A positive scalar holding the estimated variance of the error term.
+ This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_MSE-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_MSE-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_MSE-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1232,13 +1613,54 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Root mean squared error
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.RMSE</code></b> is not documented.
+
+<p> </p>
+<p> A positive scalar, the square root of <code>MSE</code>.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_RMSE-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_RMSE-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_RMSE-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1255,13 +1677,54 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Error sum of squares
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.SSE</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative scalar, the sum of the squared residuals weighted by the
+ observation weights.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_SSE-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_SSE-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_SSE-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1278,13 +1741,56 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Total sum of squares
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.SST</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative scalar, the weighted sum of squared deviations of the
+ response about its weighted mean.  Because the model is nonlinear,
+ <code>SST</code> does not in general equal <code>SSR</code> plus <code>SSE</code>.
+ This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_SST-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_SST-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_SST-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1301,13 +1807,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Regression sum of squares
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.SSR</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative scalar, the weighted sum of squared deviations of the
+ fitted values about the weighted mean of the response.  This property
+ is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_SSR-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_SSR-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_SSR-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1324,13 +1872,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Log-likelihood of the fitted model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.LogLikelihood</code></b> is not documented.
+
+<p> </p>
+<p> A scalar, the Gaussian log-likelihood at the estimates, formed with
+ the maximum-likelihood error variance <code>SSE</code> divided by
+ <code>NumObservations</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_LogLikelihood-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_LogLikelihood-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_LogLikelihood-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1347,13 +1937,56 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Information criteria
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.ModelCriterion</code></b> is not documented.
+
+<p> </p>
+<p> A scalar structure with the fields <code>AIC</code>, <code>AICc</code>,
+ <code>BIC</code> and <code>CAIC</code>.  All four count the coefficients as the
+ only parameters; the error variance is not counted.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_ModelCriterion-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_ModelCriterion-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_ModelCriterion-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1370,13 +2003,56 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Coefficient of determination
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.Rsquared</code></b> is not documented.
+
+<p> </p>
+<p> A scalar structure with the fields <code>Ordinary</code> and
+ <code>Adjusted</code>.  <code>Ordinary</code> is one less the ratio of
+ <code>SSE</code> to <code>SST</code>, and <code>Adjusted</code> corrects that ratio
+ for the error degrees of freedom.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_Rsquared-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_Rsquared-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_Rsquared-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1393,13 +2069,55 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Residuals of the fitted model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.Residuals</code></b> is not documented.
+
+<p> </p>
+<p> A table with one row per observation used for the fit and the
+ variables <code>Raw</code>, <code>Pearson</code>, <code>Standardized</code> and
+ <code>Studentized</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_Residuals-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_Residuals-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_Residuals-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1416,13 +2134,54 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Fitted response values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.Fitted</code></b> is not documented.
+
+<p> </p>
+<p> A numeric column vector with one fitted value per observation used for
+ the fit.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_Fitted-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_Fitted-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_Fitted-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1435,17 +2194,60 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ErrorModelInfo</code></b>
+                    <b><code>Robust</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Robust fitting options
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.ErrorModelInfo</code></b> is not documented.
+
+<p> </p>
+<p> Empty when the model was fitted by ordinary least squares.  When
+ <code>fitnlm</code> was given a robust weight function, a scalar structure
+ whose field <code>RobustWgtFun</code> names it.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_Robust-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_Robust-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_Robust-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1458,17 +2260,59 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Robust</code></b>
+                    <b><code>Formula</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Model formula
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty20">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.Robust</code></b> is not documented.
+
+<p> </p>
+<p> A character vector showing the fitted model, built from the model
+ function together with the coefficient names and the response name.
+ This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_Formula-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_Formula-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_Formula-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1481,17 +2325,59 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Formula</code></b>
+                    <b><code>ResponseName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Name of the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty21">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.Formula</code></b> is not documented.
+
+<p> </p>
+<p> A character vector naming the response.  It defaults to <code>'y'</code>
+ for a fit from matrices and is the name of the response column for a
+ fit from a table.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_ResponseName-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_ResponseName-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_ResponseName-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1504,17 +2390,60 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ResponseName</code></b>
+                    <b><code>PredictorNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of the predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty22">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.ResponseName</code></b> is not documented.
+
+<p> </p>
+<p> A cell array of character vectors with one name per predictor.  The
+ names default to <code>'x1'</code>, <code>'x2'</code> and so on for a fit from
+ matrices, and are the column names for a fit from a table.  This
+ property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_PredictorNames-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_PredictorNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_PredictorNames-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1527,40 +2456,58 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>PredictorNames</code></b>
+                    <b><code>VariableNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of all variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty23">
             <div class="border-bottom py-2">
-<b><code>NonLinearModel.PredictorNames</code></b> is not documented.
+
+<p> </p>
+<p> A cell array of character vectors holding <code>PredictorNames</code>
+ followed by <code>ResponseName</code>.  This property is read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#NonLinearModel_VariableNames-example1" aria-expanded="false"
+                  aria-controls="NonLinearModel_VariableNames-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="NonLinearModel_VariableNames-example1">
+            <div class="card-body">
+                <p>Fit an exponential growth model y = b1 <em> exp (b2 </em> x) and inspect it.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = (1:10)';
+ y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+ modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+ mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+ disp (mdl.Coefficients)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x4 table
+
+          Estimate        SE         tStat       pValue       
+          ________    __________    _______    ___________    
+
+    b1     1.68375     0.0351945    47.8412    4.03037e-11    
+    b2    0.286911    0.00235084    122.046    2.27082e-14</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">RMSE = 0.170943,  R^2 = 0.999689</pre>
+
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty24"
-              aria-expanded="false" aria-controls="collapseProperty24">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>VariableNames</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty24">
-            <div class="border-bottom py-2">
-<b><code>NonLinearModel.VariableNames</code></b> is not documented.
+
             </div>
           </div>
         </div>
@@ -1640,75 +2587,6 @@ Fit a nonlinear regression model.  Prefer the <code>fitnlm</code> function,
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>display</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod1">
-            <div class="border-bottom py-2">
-<b><code>NonLinearModel.display</code></b> is not documented.
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
-              aria-expanded="false" aria-controls="collapseMethod2">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>disp</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
-            <div class="border-bottom py-2">
-<b><code>NonLinearModel.disp</code></b> is not documented.
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
-              aria-expanded="false" aria-controls="collapseMethod3">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>subsref</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod3">
-            <div class="border-bottom py-2">
-<b><code>NonLinearModel.subsref</code></b> is not documented.
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
-              aria-expanded="false" aria-controls="collapseMethod4">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
                     <b><code>predict</code></b>
                   </h4>
                 </div>
@@ -1721,7 +2599,7 @@ Predict responses of the nonlinear model <var>mdl</var> at the new predictor
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod4">
+          <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
@@ -1773,8 +2651,8 @@ Predict responses of the nonlinear model <var>mdl</var> at the new predictor
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
-              aria-expanded="false" aria-controls="collapseMethod5">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
+              aria-expanded="false" aria-controls="collapseMethod2">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1788,7 +2666,7 @@ Evaluate the fitted model at the predictor values <var>X</var>, given either
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod5">
+          <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></h5></dt>
@@ -1838,8 +2716,8 @@ Evaluate the fitted model at the predictor values <var>X</var>, given either
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
-              aria-expanded="false" aria-controls="collapseMethod6">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
+              aria-expanded="false" aria-controls="collapseMethod3">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1853,7 +2731,7 @@ Simulate responses from the fitted model at <var>Xnew</var> (default: the
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod6">
+          <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
@@ -1903,8 +2781,8 @@ Simulate responses from the fitted model at <var>Xnew</var> (default: the
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
-              aria-expanded="false" aria-controls="collapseMethod7">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
+              aria-expanded="false" aria-controls="collapseMethod4">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1917,7 +2795,7 @@ Confidence intervals for the coefficients at level
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod7">
+          <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
@@ -1968,8 +2846,8 @@ Confidence intervals for the coefficients at level
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
-              aria-expanded="false" aria-controls="collapseMethod8">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
+              aria-expanded="false" aria-controls="collapseMethod5">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1986,7 +2864,7 @@ Wald test of a linear hypothesis on the coefficients.  With no <var>H</var> it
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod8">
+          <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: [<var>p</var>, <var>F</var>, <var>df</var>] = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
@@ -2037,8 +2915,8 @@ Wald test of a linear hypothesis on the coefficients.  With no <var>H</var> it
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
-              aria-expanded="false" aria-controls="collapseMethod9">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
+              aria-expanded="false" aria-controls="collapseMethod6">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2052,7 +2930,7 @@ Plot the model residuals.  <var>plottype</var> is <code>'histogram'</code>
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod9">
+          <div class="collapse multi-collapse" id="collapseMethod6">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></h5></dt>
@@ -2103,8 +2981,8 @@ Plot the model residuals.  <var>plottype</var> is <code>'histogram'</code>
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod10"
-              aria-expanded="false" aria-controls="collapseMethod10">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
+              aria-expanded="false" aria-controls="collapseMethod7">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2117,7 +2995,7 @@ Plot fit diagnostics.  <var>plottype</var> is <code>'leverage'</code> (default) 
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod10">
+          <div class="collapse multi-collapse" id="collapseMethod7">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></h5></dt>
@@ -2168,8 +3046,8 @@ Plot fit diagnostics.  <var>plottype</var> is <code>'leverage'</code> (default) 
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod11"
-              aria-expanded="false" aria-controls="collapseMethod11">
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
+              aria-expanded="false" aria-controls="collapseMethod8">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2182,7 +3060,7 @@ Plot the fitted response as each predictor is varied over its observed
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod11">
+          <div class="collapse multi-collapse" id="collapseMethod8">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">NonLinearModel: <var>h</var> = <b>plotSlice</b> (<var>mdl</var>)</code></h5></dt>

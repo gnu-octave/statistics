@@ -1000,13 +1000,20 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Estimation method
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.FitMethod</code></b> is not documented.
+
+<p> </p>
+<p> A character vector, either <code>'ML'</code> for maximum likelihood or
+ <code>'REML'</code> for restricted maximum likelihood, naming the method
+ that fitted the model.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1023,13 +1030,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of observations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.NumObservations</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the observations used for the fit.  This
+ property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1046,13 +1059,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of fixed-effects coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.NumCoefficients</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the fixed-effects coefficients of the
+ model.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1069,13 +1088,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of estimated fixed-effects coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.NumEstimatedCoefficients</code></b> is not documented.
+
+<p> </p>
+<p> A positive integer counting the fixed-effects coefficients estimated
+ from the data.  Every coefficient the model carries is estimated, so
+ this equals <code>NumCoefficients</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1092,13 +1118,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Fixed-effects estimates and their statistics
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.Coefficients</code></b> is not documented.
+
+<p> </p>
+<p> A table with one row per fixed-effects coefficient, its row names
+ taken from <code>CoefficientNames</code>, and the variables
+ <code>Estimate</code>, <code>SE</code>, <code>tStat</code>, <code>DF</code>,
+ <code>pValue</code>, <code>Lower</code> and <code>Upper</code>.  <code>Lower</code> and
+ <code>Upper</code> bound a 95% confidence interval.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1115,13 +1151,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Covariance of the fixed-effects estimates
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.CoefficientCovariance</code></b> is not documented.
+
+<p> </p>
+<p> A square numeric matrix, one row and column per fixed-effects
+ coefficient, holding the estimated covariance of the estimates in
+ <code>Coefficients</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1138,13 +1181,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of the fixed-effects coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.CoefficientNames</code></b> is not documented.
+
+<p> </p>
+<p> A cell array of character vectors with one name per fixed-effects
+ coefficient.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1161,13 +1210,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Log-likelihood of the fitted model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.LogLikelihood</code></b> is not documented.
+
+<p> </p>
+<p> A scalar, the maximised log-likelihood, or the maximised restricted
+ log-likelihood when <code>FitMethod</code> is <code>'REML'</code>.  This
+ property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1184,13 +1240,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Information criteria
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.ModelCriterion</code></b> is not documented.
+
+<p> </p>
+<p> A scalar structure with the fields <code>AIC</code>, <code>BIC</code>,
+ <code>LogLikelihood</code> and <code>Deviance</code>.  The parameter count
+ behind <code>AIC</code> and <code>BIC</code> holds the fixed-effects
+ coefficients, the covariance parameters and the residual variance.
+ This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1207,13 +1272,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Coefficient of determination
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.Rsquared</code></b> is not documented.
+
+<p> </p>
+<p> A scalar structure with the fields <code>Ordinary</code> and
+ <code>Adjusted</code>.  <code>Ordinary</code> is one less the ratio of
+ <code>SSE</code> to <code>SST</code>, and <code>Adjusted</code> corrects that ratio
+ for the error degrees of freedom.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1230,13 +1303,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Error sum of squares
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.SSE</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative scalar, the sum of the squared differences between the
+ response and the conditional fit.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1253,13 +1332,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Regression sum of squares
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.SSR</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative scalar, the sum of the squared deviations of the
+ conditional fit about the mean of the response.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1276,13 +1362,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Total sum of squares
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.SST</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative scalar, <code>SSE</code> plus <code>SSR</code>.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1299,13 +1391,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Residual variance estimate
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.MSE</code></b> is not documented.
+
+<p> </p>
+<p> A positive scalar, the estimate of the error variance.  This property
+ is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1322,13 +1420,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Residual degrees of freedom
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.DFE</code></b> is not documented.
+
+<p> </p>
+<p> A nonnegative integer, <code>NumObservations</code> less
+ <code>NumCoefficients</code>.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1345,13 +1449,20 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Model formula
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.Formula</code></b> is not documented.
+
+<p> </p>
+<p> A character vector describing the model.  It is empty for a fit built
+ from design matrices, which carries no formula.  This property is
+ read-only.
+</p>
+
+
             </div>
           </div>
         </div>
@@ -1368,13 +1479,19 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Name of the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
-<b><code>LinearMixedModel.ResponseName</code></b> is not documented.
+
+<p> </p>
+<p> A character vector naming the response.  It is empty for a fit built
+ from design matrices.  This property is read-only.
+</p>
+
+
             </div>
           </div>
         </div>

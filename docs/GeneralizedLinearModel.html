@@ -1053,13 +1053,12 @@ Coefficient values
 </li><li> <code>pValue</code> - p-value of that statistic
 </li></ul>
 
-<p> the dispersion is fixed, as it is for the binomial and Poisson families,
- and to a
+<p> The statistic is referred to the normal distribution where the dispersion
+ is fixed, as it is for the binomial and Poisson families, and to a
  <em class="math">t</em>-distribution on <code>DFE</code> degrees of freedom where it is
- estimated. Coefficients dropped as rank deficient have <code>Estimate =
- 0</code>,
- <code>SE = 0</code>, and <code>NaN</code> for both statistics.  Row names are the
- coefficient names.
+ estimated.  Coefficients dropped as rank deficient have
+ <code>Estimate = 0</code>, <code>SE = 0</code>, and <code>NaN</code> for both statistics.
+ Row names are the coefficient names.
 </p>
 <p> This property is read-only.
 </p>
@@ -2022,6 +2021,8 @@ Residuals for the fitted model
    contribution to <code>Deviance</code>
 </li></ul>
 
+<p> Rows not used in the fit contain <code>NaN</code>.
+</p>
 <p> This property is read-only.
 </p>
 

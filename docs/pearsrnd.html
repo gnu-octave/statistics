@@ -1019,8 +1019,10 @@ randn
           <div class="collapse show" id="pearsrnd-example1">
             <div class="card-body">
                 <p>Identify the Pearson type matching a set of moments</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [r, type, coefs] = pearsrnd (0, 1, 0.75, 4)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">r = 1.1583
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ [r, type, coefs] = pearsrnd (0, 1, 0.75, 4)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">r = 0.2435
 type = 6
 coefs =
 
@@ -1046,11 +1048,13 @@ coefs =
           <div class="collapse show" id="pearsrnd-example2">
             <div class="card-body">
                 <p>Draw a sample with a target mean, sd, skewness, and kurtosis</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> r = pearsrnd (10, 2, 1, 5, 1, 1000);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ r = pearsrnd (10, 2, 1, 5, 1, 1000);
  [mean(r), std(r)]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
 
-   10.0632    2.0653</pre>
+   10.1105    2.1072</pre>
 
             </div>
           </div>

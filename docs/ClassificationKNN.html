@@ -7972,10 +7972,10 @@ Distance weighting function
  function, which can be any of the following values:
 </p>
 <ul>
-<li> <code>'equal'</code>, which corresponds to <code>(d) d</code>.
-</li><li> <code>'inverse'</code>, which corresponds to <code>(d) 1/d</code>.
-</li><li> <code>'squaredinverse'</code>, which corresponds to <code>(d) 1/d.^2</code>.
-</li><li> <code></code>, which is a function handle that accepts a matrix of
+<li> <code>'equal'</code>, which corresponds to <code>@(d) d</code>.
+</li><li> <code>'inverse'</code>, which corresponds to <code>@(d) 1/d</code>.
+</li><li> <code>'squaredinverse'</code>, which corresponds to <code>@(d) 1/d.^2</code>.
+</li><li> <code>@fcn</code>, which is a function handle that accepts a matrix of
  nonnegative distances, and returns a matrix the same size containing
  nonnegative distance weights.
 </li></ul>

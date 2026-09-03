@@ -1044,8 +1044,8 @@
           </div>
           <div class="collapse show" id="jackknife-example1">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> for k = 1:1000
-   rand ('seed', k);  # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ for k = 1:1000
    x = rand (10, 1);
    s(k) = std (x);
    jackstat = jackknife (@std, x);
@@ -1076,10 +1076,9 @@
           </div>
           <div class="collapse show" id="jackknife-example2">
             <div class="card-body">
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> for k = 1:1000
-   randn ('seed', k); # for reproducibility
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ for k = 1:1000
    x = randn (1, 50);
-   rand ('seed', k);  # for reproducibility
    y = rand (1, 50);
    jackstat = jackknife (@(x) std (x{1})/std (x{2}), y, x);
    j(k) = 50 * std (y) / std (x) - 49 * mean (jackstat);
