@@ -39,7 +39,8 @@ classdef ReconstructionICA
     ## A scalar structure holding the options the fit ran with:
     ## @qcode{IterationLimit}, @qcode{Lambda}, @qcode{Standardize},
     ## @qcode{ContrastFcn}, @qcode{InitialTransformWeights},
-    ## @qcode{GradientTolerance}, @qcode{StepTolerance} and @qcode{Solver}.
+    ## @qcode{GradientTolerance}, @qcode{StepTolerance}, @qcode{Solver} and
+    ## @qcode{NonGaussianityIndicator}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -138,6 +139,22 @@ classdef ReconstructionICA
     ## @end deftp
     InitialTransformWeights = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ReconstructionICA} {property} NonGaussianityIndicator
+    ##
+    ## Non-Gaussianity of each learned feature
+    ##
+    ## A @math{Q}-by-1 vector of @math{+1} and @math{-1}, one per learned
+    ## feature: @math{+1} where the feature is taken to be super-Gaussian and
+    ## @math{-1} where it is taken to be sub-Gaussian.  The entry sets the
+    ## sign its feature's contrast term carries in the objective, so the fit
+    ## seeks a sparse feature where the entry is @math{+1} and a spread one
+    ## where it is @math{-1}.  The default is all @math{+1}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    NonGaussianityIndicator = [];
+
   endproperties
 
   methods
@@ -160,7 +177,8 @@ classdef ReconstructionICA
                      "Standardize", false, "ContrastFcn", "logcosh", ...
                      "InitialTransformWeights", [], ...
                      "GradientTolerance", 1e-6, "StepTolerance", 1e-6, ...
-                     "Solver", "quasinewton");
+                     "Solver", "quasinewton", ...
+                     "NonGaussianityIndicator", []);
       for k = 1:2:numel (varargin)
         name = varargin{k};
         val = varargin{k+1};
@@ -179,6 +197,8 @@ classdef ReconstructionICA
             opts.GradientTolerance = val;
           case 'steptolerance'
             opts.StepTolerance = val;
+          case 'nongaussianityindicator'
+            opts.NonGaussianityIndicator = val;
           case 'solver'
             if (! ischar (val) || ...
                 ! any (strcmpi (val, {'quasinewton', 'lbfgs'})))
@@ -192,6 +212,19 @@ classdef ReconstructionICA
 
       if (! any (strcmp (opts.ContrastFcn, {'logcosh', 'exp', 'sqrt'})))
         error ("rica: 'ContrastFcn' must be 'logcosh', 'exp', or 'sqrt'.");
+      endif
+
+      ## One sign per learned feature, all of them super-Gaussian by default
+      if (isempty (opts.NonGaussianityIndicator))
+        opts.NonGaussianityIndicator = ones (Q, 1);
+      else
+        sigma = opts.NonGaussianityIndicator;
+        if (! (isnumeric (sigma) && isreal (sigma) && isvector (sigma)
+               && numel (sigma) == Q && all (abs (sigma(:)) == 1)))
+          error (strcat ("rica: 'NonGaussianityIndicator' must be a real", ...
+                         " vector of Q elements, each +1 or -1."));
+        endif
+        opts.NonGaussianityIndicator = sigma(:);
       endif
 
       ## Standardize (center and scale) the data if requested
@@ -215,7 +248,9 @@ classdef ReconstructionICA
 
       ## Minimize the RICA objective
       lambda = opts.Lambda;
-      ofun = @(wv) __rica_objective__ (wv, X, p, Q, lambda, opts.ContrastFcn);
+      sigma = opts.NonGaussianityIndicator;
+      ofun = @(wv) __rica_objective__ (wv, X, p, Q, lambda, ...
+                                       opts.ContrastFcn, sigma);
       if (strcmpi (opts.Solver, 'lbfgs'))
         ## LossTolerance is switched off because MATLAB has no such option
         ## here: the fit stops on the gradient or the step, never on the
@@ -251,6 +286,7 @@ classdef ReconstructionICA
 
       this.NumPredictors = p;
       this.NumLearnedFeatures = Q;
+      this.NonGaussianityIndicator = opts.NonGaussianityIndicator;
       ## MATLAB reports the whole trajectory: a column with the objective at
       ## the starting weights first, one entry per iteration after it, and
       ## Iteration the matching 0-based index.  fminunc does not call its
@@ -289,7 +325,7 @@ endclassdef
 ## SQRT_EPS smooths abs (z) at the origin for the 'sqrt' contrast; the value is
 ## MATLAB's own, measured on R2024a against a fixture carrying a zero, which is
 ## the only place it is visible.
-function [f, g] = __rica_objective__ (wv, X, p, Q, lambda, contrast)
+function [f, g] = __rica_objective__ (wv, X, p, Q, lambda, contrast, sigma)
 
   SQRT_EPS = 1e-8;
 
@@ -307,7 +343,7 @@ function [f, g] = __rica_objective__ (wv, X, p, Q, lambda, contrast)
     case 'sqrt'
       C = sqrt (Z .^ 2 + SQRT_EPS);
   endswitch
-  f = lambda * sum (E(:) .^ 2) + sum (C(:));
+  f = lambda * sum (E(:) .^ 2) + sum (C * sigma);
 
   if (nargout > 1)
     switch (contrast)
@@ -318,7 +354,7 @@ function [f, g] = __rica_objective__ (wv, X, p, Q, lambda, contrast)
       case 'sqrt'
         dC = Z ./ sqrt (Z .^ 2 + SQRT_EPS);
     endswitch
-    gWn = lambda * 2 * (X' * E * Wn + E' * X * Wn) + X' * dC;
+    gWn = lambda * 2 * (X' * E * Wn + E' * X * Wn) + X' * (dC .* sigma');
     g = zeros (p, Q);
     for j = 1:Q
       wnj = Wn(:,j);
@@ -372,6 +408,56 @@ endfunction
 %! ## The default constructor returns an empty model.
 %! Mdl = ReconstructionICA ();
 %! assert_equal (isempty (Mdl.TransformWeights), true);
+
+%!test
+%! ## NonGaussianityIndicator defaults to one per feature, all +1.
+%! Mdl = ReconstructionICA (X, 3, "InitialTransformWeights", W0, ...
+%!                          "IterationLimit", 100);
+%! assert_equal (Mdl.NonGaussianityIndicator, [1; 1; 1]);
+
+%!test
+%! ## A given indicator is held as a column, whatever shape it arrives in.
+%! Mdl = ReconstructionICA (X, 3, "InitialTransformWeights", W0, ...
+%!                          "IterationLimit", 100, ...
+%!                          "NonGaussianityIndicator", [1, -1, 1]);
+%! assert_equal (Mdl.NonGaussianityIndicator, [1; -1; 1]);
+
+%!test
+%! ## The indicator signs each feature's contrast term, so it moves the fit.
+%! args = {"InitialTransformWeights", W0, "IterationLimit", 200};
+%! Mdl = ReconstructionICA (X, 3, args{:});
+%! Neg = ReconstructionICA (X, 3, args{:}, ...
+%!                          "NonGaussianityIndicator", [-1; 1; 1]);
+%! assert_equal (isequal (Mdl.TransformWeights, Neg.TransformWeights), false);
+
+%!test
+%! ## All +1 is the default, so it must reproduce the default fit exactly.
+%! args = {"InitialTransformWeights", W0, "IterationLimit", 200};
+%! Mdl = ReconstructionICA (X, 3, args{:});
+%! Pos = ReconstructionICA (X, 3, args{:}, ...
+%!                          "NonGaussianityIndicator", [1; 1; 1]);
+%! assert_equal (Pos.TransformWeights, Mdl.TransformWeights);
+
+%!test
+%! ## Objective against MATLAB R2024a: 801.1816174574 and 197.5588279632.
+%! t = (1:80)';
+%! Xr = double ([mod(t*7,11)-5, mod(t*13,17)-8, mod(t*5,7)-3]);
+%! args = {"InitialTransformWeights", [1, 0; 0, 1; 1, 1], "Lambda", 1, ...
+%!         "ContrastFcn", "logcosh", "IterationLimit", 1000, ...
+%!         "Solver", "lbfgs", "GradientTolerance", 1e-10, ...
+%!         "StepTolerance", 1e-10};
+%! Mdl = ReconstructionICA (Xr, 2, args{:});
+%! Neg = ReconstructionICA (Xr, 2, args{:}, ...
+%!                          "NonGaussianityIndicator", [-1; 1]);
+%! assert_equal (Mdl.FitInfo.Objective(end), 801.1816174574, 1e-6);
+%! assert_equal (Neg.FitInfo.Objective(end), 197.5588279632, 1e-6);
+
+%!error<rica: 'NonGaussianityIndicator' must be a real vector of Q elements, each \+1 or -1.> ...
+%! ReconstructionICA (ones (6, 5), 2, "NonGaussianityIndicator", [1; 1; 1])
+%!error<rica: 'NonGaussianityIndicator' must be a real vector of Q elements, each \+1 or -1.> ...
+%! ReconstructionICA (ones (6, 5), 2, "NonGaussianityIndicator", [1; 0])
+%!error<rica: 'NonGaussianityIndicator' must be a real vector of Q elements, each \+1 or -1.> ...
+%! ReconstructionICA (ones (6, 5), 2, "NonGaussianityIndicator", {1, -1})
 
 %!error<rica: 'ContrastFcn' must be 'logcosh', 'exp', or 'sqrt'.> ...
 %! ReconstructionICA (ones (6, 5), 2, "ContrastFcn", "bogus")

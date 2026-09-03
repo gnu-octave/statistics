@@ -63,6 +63,12 @@
 ## @item @qcode{'InitialTransformWeights'}
 ## A @math{P * @var{Q}} initial value for the weights.  The default is random.
 ##
+## @item @qcode{'NonGaussianityIndicator'}
+## A @var{Q}-element vector of @math{+1} and @math{-1}, one per learned
+## feature, setting the sign its contrast term carries in the objective:
+## @math{+1} seeks a super-Gaussian (sparse) feature and @math{-1} a
+## sub-Gaussian (spread) one.  The default is all @math{+1}.
+##
 ## @item @qcode{'GradientTolerance'}, @qcode{'StepTolerance'}
 ## Stop once the gradient's or the step's infinity norm falls to or below the
 ## given value (default @qcode{1e-6} each).  They govern the fit only under
@@ -268,6 +274,12 @@ endfunction
 %!error<rica: Q must be a positive integer.> rica (ones (5, 3), 1.5)
 %!error<rica: 'InitialTransformWeights' must be a 5-by-2 matrix.> ...
 %! rica (ones (4, 5), 2, "InitialTransformWeights", ones (3, 3))
+%!test
+%! ## The NonGaussianityIndicator pair reaches the model through rica.
+%! Mdl = rica (X, 3, "InitialTransformWeights", W0, "IterationLimit", 100, ...
+%!             "NonGaussianityIndicator", [1; -1; 1]);
+%! assert_equal (Mdl.NonGaussianityIndicator, [1; -1; 1]);
+
 %!error<rica: 'ContrastFcn' must be 'logcosh', 'exp', or 'sqrt'.> ...
 %! rica (ones (4, 5), 2, "ContrastFcn", "bogus", "InitialTransformWeights", ones (5, 2))
 %!error<rica: unknown parameter name 'bogus'.> ...
