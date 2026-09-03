@@ -136,6 +136,8 @@ function [Y, e] = cmdscale (D, p)
 
   if (n_pos == n)
     n_pos = n - 1;
+  elseif (n_pos == 0)
+    n_pos = 1;
   endif
 
   if (nargin > 1 && ! isempty (p))
@@ -238,6 +240,19 @@ endfunction
 %! [Y1, e1] = cmdscale (D);
 %! [Y2, e2] = cmdscale (D, n_points);
 %! assert_equal (size (Y1, 2), size (Y2, 2));
+%!test
+%! ## Test that all coincident points (n_pos == 0) still give a single
+%! ## zero-filled column instead of an n-by-0 empty matrix
+%! D = zeros (4, 4);
+%! [Y, e] = cmdscale (D);
+%! assert_equal (size (Y), [4, 1]);
+%! assert_equal (Y, zeros (4, 1));
+%! assert_equal (e, zeros (4, 1));
+%!test
+%! ## Same boundary case at the smallest possible input, a single point
+%! [Y, e] = cmdscale (0);
+%! assert_equal (Y, zeros (2, 1));
+%! assert_equal (e, zeros (2, 1));
 %!error <cmdscale: input must be a numeric vector or matrix.> cmdscale ({'not', 'a', 'matrix'})
 %!error <matrix input must be square symmetric> cmdscale (rand (3, 4))
 %!error <entries must be nonnegative> cmdscale (-ones (3))
@@ -246,4 +261,3 @@ endfunction
 %!error <p must be an integer> cmdscale (eye (3), 1.5)
 %!error <p must be an integer> cmdscale (eye (3), [1, 2])
 %!error <p must be an integer> cmdscale (eye (3), 2 + 1i)
-
