@@ -715,7 +715,7 @@ cmdscale
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2898
+# length: 3070
 statistics: Y = cmdscale ( D )
 statistics: [ Y , e ] = cmdscale ( D )
 statistics: Y = cmdscale ( D , p )
@@ -731,7 +731,8 @@ the eigenvalues e of
 B = -1/2 * J * ( D .^2) * J , where
 J = eye( n ) - ones( n , n )/ n . p , the number
 of columns of Y , is equal to the number of positive real eigenvalues of
-B .
+B . If B has no positive eigenvalues, which is the case when
+every point in D is coincident, Y is a single column of zeros.
 
 The optional argument p is a positive integer between 1 and n
 that specifies the maximum dimensionality of the desired embedding Y .
@@ -766,9 +767,10 @@ strain .
 The returned Y is an n by p matrix showing possible
 coordinates of the points in p dimensional space
 ( p < n ). The columns correspond to the positive
-eigenvalues of B in descending order. A translation, rotation, or
-reflection of the coordinates given by Y will satisfy the same distance
-matrix up to the limits of machine precision.
+eigenvalues of B in descending order, or, when B has none, to
+its single zero eigenvalue. A translation, rotation, or reflection of the
+coordinates given by Y will satisfy the same distance matrix up to the
+limits of machine precision.
 
 For any k <= p , if the largest k positive
 eigenvalues of B are significantly greater in absolute magnitude than

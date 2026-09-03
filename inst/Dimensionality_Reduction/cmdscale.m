@@ -32,7 +32,8 @@
 ## @code{@var{B} = -1/2 * @var{J} * (@var{D}.^2) * @var{J}}, where
 ## @code{J = eye(@var{n}) - ones(@var{n},@var{n})/@var{n}}. @var{p}, the number
 ## of columns of @var{Y}, is equal to the number of positive real eigenvalues of
-## @var{B}.
+## @var{B}. If @var{B} has no positive eigenvalues, which is the case when
+## every point in @var{D} is coincident, @var{Y} is a single column of zeros.
 ##
 ## The optional argument @var{p} is a positive integer between 1 and @var{n}
 ## that specifies the maximum dimensionality of the desired embedding @var{Y}.
@@ -67,9 +68,10 @@
 ## The returned @var{Y} is an @var{n} by @var{p} matrix showing possible
 ## coordinates of the points in @var{p} dimensional space
 ## (@code{@var{p} < @var{n}}). The columns correspond to the positive
-## eigenvalues of @var{B} in descending order. A translation, rotation, or
-## reflection of the coordinates given by @var{Y} will satisfy the same distance
-## matrix up to the limits of machine precision.
+## eigenvalues of @var{B} in descending order, or, when @var{B} has none, to
+## its single zero eigenvalue. A translation, rotation, or reflection of the
+## coordinates given by @var{Y} will satisfy the same distance matrix up to the
+## limits of machine precision.
 ##
 ## For any @code{@var{k} <= @var{p}}, if the largest @var{k} positive
 ## eigenvalues of @var{B} are significantly greater in absolute magnitude than
@@ -253,6 +255,16 @@ endfunction
 %! [Y, e] = cmdscale (0);
 %! assert_equal (Y, zeros (2, 1));
 %! assert_equal (e, zeros (2, 1));
+%!test
+%! ## Coincident points give one column whatever p asks for
+%! [Y, e] = cmdscale (zeros (4, 4), 2);
+%! assert_equal (size (Y), [4, 1]);
+%! assert_equal (size (e), [2, 1]);
+%!test
+%! ## A similarity matrix of all ones is coincident after conversion
+%! [Y, e] = cmdscale (ones (3, 3));
+%! assert_equal (Y, zeros (3, 1));
+%! assert_equal (e, zeros (3, 1));
 %!error <cmdscale: input must be a numeric vector or matrix.> cmdscale ({'not', 'a', 'matrix'})
 %!error <matrix input must be square symmetric> cmdscale (rand (3, 4))
 %!error <entries must be nonnegative> cmdscale (-ones (3))
