@@ -13,22 +13,29 @@ betastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 597
- -- statistics: [M, V] = betastat (A, B)
+# length: 551
+statistics: [ m , v ] = betastat ( a , b )
 
-     Compute statistics of the Beta distribution.
+Compute statistics of the Beta distribution.
 
-     ‘[M, V] = betastat (A, B)’ returns the mean and variance of the Beta
-     distribution with shape parameters A and B.
+[ m , v ] = betastat ( a , b ) returns the mean
+and variance of the Beta distribution with shape parameters a and
+b .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the Beta distribution can be found at
-     <https://en.wikipedia.org/wiki/Beta_distribution>
+Further information about the Beta distribution can be found at
+https://en.wikipedia.org/wiki/Beta_distribution
 
-     See also: betacdf, betainv, betapdf, betarnd, betafit, betalike.
+See also:
+betacdf,
+betainv,
+betapdf,
+betarnd,
+betafit,
+betalike
 
 
 # name: <cell-element>
@@ -49,23 +56,31 @@ binostat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 695
- -- statistics: [M, V] = binostat (N, PS)
+# length: 644
+statistics: [ m , v ] = binostat ( n , ps )
 
-     Compute statistics of the binomial distribution.
+Compute statistics of the binomial distribution.
 
-     ‘[M, V] = binostat (N, PS)’ returns the mean and variance of the binomial
-     distribution with parameters N and PS, where N is the number of trials and
-     PS is the probability of success.
+[ m , v ] = binostat ( n , ps ) returns the mean and
+variance of the binomial distribution with parameters n and ps ,
+where n is the number of trials and ps is the probability of
+success.
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the binomial distribution can be found at
-     <https://en.wikipedia.org/wiki/Binomial_distribution>
+Further information about the binomial distribution can be found at
+https://en.wikipedia.org/wiki/Binomial_distribution
 
-     See also: binocdf, binoinv, binopdf, binornd, binofit, binolike, binotest.
+See also:
+binocdf,
+binoinv,
+binopdf,
+binornd,
+binofit,
+binolike,
+binotest
 
 
 # name: <cell-element>
@@ -86,23 +101,29 @@ bisastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 698
- -- statistics: [M, V] = bisastat (BETA, GAMMA)
+# length: 647
+statistics: [ m , v ] = bisastat ( beta , gamma )
 
-     Compute statistics of the Birnbaum-Saunders distribution.
+Compute statistics of the Birnbaum-Saunders distribution.
 
-     ‘[M, V] = bisastat (BETA, GAMMA)’ returns the mean and variance of the
-     Birnbaum-Saunders distribution with scale parameter BETA and shape
-     parameter GAMMA.
+[ m , v ] = bisastat ( beta , gamma ) returns the
+mean and variance of the Birnbaum-Saunders distribution with scale parameter
+beta and shape parameter gamma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the Birnbaum-Saunders distribution can be found
-     at <https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution>
+Further information about the Birnbaum-Saunders distribution can be found at
+https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution
 
-     See also: bisacdf, bisainv, bisapdf, bisarnd, bisafit, bisalike.
+See also:
+bisacdf,
+bisainv,
+bisapdf,
+bisarnd,
+bisafit,
+bisalike
 
 
 # name: <cell-element>
@@ -123,23 +144,30 @@ burrstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 683
- -- statistics: [M, V] = burrstat (LAMBDA, C, K)
+# length: 636
+statistics: [ m , v ] = burrstat ( lambda , c , k )
 
-     Compute statistics of the Burr type XII distribution.
+Compute statistics of the Burr type XII distribution.
 
-     ‘[M, V] = burrstat (LAMBDA, C, K)’ returns the mean and variance of the
-     Burr type XII distribution with scale parameter LAMBDA, first shape
-     parameter C, and second shape parameter K.
+[ m , v ] = burrstat ( lambda , c , k ) returns
+the mean and variance of the Burr type XII distribution with scale parameter
+lambda , first shape parameter c , and second shape parameter
+k .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the same
+size as the other inputs.
 
-     Further information about the Burr distribution can be found at
-     <https://en.wikipedia.org/wiki/Burr_distribution>
+Further information about the Burr distribution can be found at
+https://en.wikipedia.org/wiki/Burr_distribution
 
-     See also: gevcdf, gevinv, gevpdf, gevrnd, gevfit, gevlike.
+See also:
+gevcdf,
+gevinv,
+gevpdf,
+gevrnd,
+gevfit,
+gevlike
 
 
 # name: <cell-element>
@@ -160,21 +188,25 @@ chi2stat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 506
- -- statistics: [M, V] = chi2stat (DF)
+# length: 463
+statistics: [ m , v ] = chi2stat ( df )
 
-     Compute statistics of the chi-squared distribution.
+Compute statistics of the chi-squared distribution.
 
-     ‘[M, V] = chi2stat (DF)’ returns the mean and variance of the chi-squared
-     distribution with DF degrees of freedom.
+[ m , v ] = chi2stat ( df ) returns the mean and
+variance of the chi-squared distribution with df degrees of freedom.
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     Further information about the chi-squared distribution can be found at
-     <https://en.wikipedia.org/wiki/Chi-squared_distribution>
+Further information about the chi-squared distribution can be found at
+https://en.wikipedia.org/wiki/Chi-squared_distribution
 
-     See also: chi2cdf, chi2inv, chi2pdf, chi2rnd.
+See also:
+chi2cdf,
+chi2inv,
+chi2pdf,
+chi2rnd
 
 
 # name: <cell-element>
@@ -195,47 +227,56 @@ copulaparam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2265
- -- statistics: PARAM = copulaparam (FAMILY, R)
- -- statistics: PARAM = copulaparam (..., "type", TYPE)
+# length: 2130
+statistics: param = copulaparam ( family , r )
+statistics: param = copulaparam (&hellip;, "type" , type )
 
-     Copula parameter as a function of rank correlation.
+Copula parameter as a function of rank correlation.
 
-     ‘PARAM = copulaparam (FAMILY, R)’ returns the linear or copula parameter
-     PARAM corresponding to a copula of the family FAMILY that has Kendall's
-     rank correlation R.  It is the inverse of ‘copulastat’.
+param = copulaparam ( family , r ) returns the linear
+or copula parameter param corresponding to a copula of the family
+family that has Kendall&rsquo;s rank correlation r . It is the inverse
+of copulastat .
 
-     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
-     family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, "Frank" for the Frank family,
-     "AMH" for the Ali-Mikhail-Haq family, or "FGM" for the
-     Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
-     MATLAB does not provide, and are treated as bivariate.  Neither reaches the
-     whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
-     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
-     family one in ‘[-2/9, 2/9]’.
+family is the copula family name. It can be "Gaussian" for the
+Gaussian family, "t" for the Student&rsquo;s t family, "Clayton"
+for the Clayton family, "Gumbel" for the Gumbel-Hougaard family,
+"Frank" for the Frank family, "AMH" for the Ali-Mikhail-Haq
+family, or "FGM" for the Farlie-Gumbel-Morgenstern family. The last
+two are Octave extensions that MATLAB does not provide, and are treated as
+bivariate. Neither reaches the whole range of either rank correlation: the
+Ali-Mikhail-Haq family covers a Kendall&rsquo;s tau in
+[(5-8*log (2))/3, 1/3] and the Farlie-Gumbel-Morgenstern family one
+in [-2/9, 2/9] .
 
-     For the Gaussian and Student's t families, R is a scalar rank correlation
-     or a matrix of pairwise rank correlations, and PARAM is the corresponding
-     linear correlation of the same size.  For the Clayton, Gumbel-Hougaard, and
-     Frank families, R is a scalar rank correlation and PARAM is the scalar
-     copula parameter.  The Gumbel-Hougaard family models positive dependence
-     only, so R must be non-negative for that family.
+For the Gaussian and Student&rsquo;s t families, r is a scalar rank
+correlation or a matrix of pairwise rank correlations, and param is the
+corresponding linear correlation of the same size. For the Clayton,
+Gumbel-Hougaard, and Frank families, r is a scalar rank correlation and
+param is the scalar copula parameter. The Gumbel-Hougaard family
+models positive dependence only, so r must be non-negative for that
+family.
 
-     ‘PARAM = copulaparam (..., "type", TYPE)’ selects the measure of rank
-     correlation given in R.  TYPE can be "Kendall" (the default) for Kendall's
-     tau, or "Spearman" for Spearman's rho.
+param = copulaparam (&hellip;, "type" , type )
+selects the measure of rank correlation given in r . type can be
+"Kendall" (the default) for Kendall&rsquo;s tau, or "Spearman" for
+Spearman&rsquo;s rho.
 
-     The Gaussian and Student's t families and the Kendall's tau of the Clayton
-     and Gumbel-Hougaard families are inverted in closed form.  The remaining
-     cases are inverted numerically from ‘copulastat’.
+The Gaussian and Student&rsquo;s t families and the Kendall&rsquo;s tau of the Clayton
+and Gumbel-Hougaard families are inverted in closed form. The remaining
+cases are inverted numerically from copulastat .
 
-     *Note:* for the Archimedean families with "Spearman", the underlying
-     relationship is computed by exact numerical integration rather than the
-     interpolated table used by MATLAB, so results may differ from MATLAB by up
-     to about 10^{-4}.  See ‘copulastat’.
+Note: for the Archimedean families with "Spearman" , the
+underlying relationship is computed by exact numerical integration rather
+than the interpolated table used by MATLAB , so results may differ from
+MATLAB by up to about 10^{-4} . See copulastat .
 
-     See also: copulastat, copulafit, copulacdf, copulapdf, copularnd.
+See also:
+copulastat,
+copulafit,
+copulacdf,
+copulapdf,
+copularnd
 
 
 # name: <cell-element>
@@ -256,50 +297,58 @@ copulastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2362
- -- statistics: R = copulastat (FAMILY, PARAM)
- -- statistics: R = copulastat (..., "type", TYPE)
+# length: 2252
+statistics: r = copulastat ( family , param )
+statistics: r = copulastat (&hellip;, "type" , type )
 
-     Rank correlation for a copula family.
+Rank correlation for a copula family.
 
-     ‘R = copulastat (FAMILY, PARAM)’ returns Kendall's rank correlation R
-     corresponding to a copula of the family FAMILY with linear or copula
-     parameter PARAM.
+r = copulastat ( family , param ) returns Kendall&rsquo;s
+rank correlation r corresponding to a copula of the family
+family with linear or copula parameter param .
 
-     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
-     family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, "Frank" for the Frank family,
-     "AMH" for the Ali-Mikhail-Haq family, or "FGM" for the
-     Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
-     MATLAB does not provide, and are treated as bivariate.  Neither reaches the
-     whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
-     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
-     family one in ‘[-2/9, 2/9]’.
+family is the copula family name. It can be "Gaussian" for the
+Gaussian family, "t" for the Student&rsquo;s t family, "Clayton"
+for the Clayton family, "Gumbel" for the Gumbel-Hougaard family,
+"Frank" for the Frank family, "AMH" for the Ali-Mikhail-Haq
+family, or "FGM" for the Farlie-Gumbel-Morgenstern family. The last
+two are Octave extensions that MATLAB does not provide, and are treated as
+bivariate. Neither reaches the whole range of either rank correlation: the
+Ali-Mikhail-Haq family covers a Kendall&rsquo;s tau in
+[(5-8*log (2))/3, 1/3] and the Farlie-Gumbel-Morgenstern family one
+in [-2/9, 2/9] .
 
-     For the Gaussian and Student's t families, PARAM is a linear correlation
-     coefficient RHO in the range [-1,1], or a p-by-p correlation matrix, in
-     which case R has the same size and each element is computed elementwise.
-     For the Clayton, Gumbel-Hougaard, and Frank families, PARAM is the scalar
-     copula parameter.
+For the Gaussian and Student&rsquo;s t families, param is a linear
+correlation coefficient rho in the range [-1,1] , or a
+p -by- p correlation matrix, in which case r has the same
+size and each element is computed elementwise. For the Clayton,
+Gumbel-Hougaard, and Frank families, param is the scalar copula
+parameter.
 
-     ‘R = copulastat (..., "type", TYPE)’ selects the measure of rank
-     correlation.  TYPE can be "Kendall" (the default) for Kendall's tau, or
-     "Spearman" for Spearman's rho.
+r = copulastat (&hellip;, "type" , type ) selects the
+measure of rank correlation. type can be "Kendall" (the
+default) for Kendall&rsquo;s tau, or "Spearman" for Spearman&rsquo;s rho.
 
-     The relationships are closed form for the Gaussian and Student's t families
-     (r = 2 \arcsin(\rho) / \pi for Kendall's tau and r = 6 \arcsin(\rho/2) /
-     \pi for Spearman's rho) and for the Kendall's tau of the Archimedean
-     families.  Spearman's rho of the Archimedean families has no closed form
-     and is computed by accurate numerical integration of the copula.
+The relationships are closed form for the Gaussian and Student&rsquo;s t families
+( r = 2 \arcsin(\rho) / \pi for Kendall&rsquo;s tau and
+r = 6 \arcsin(\rho/2) / \pi for Spearman&rsquo;s rho) and for the Kendall&rsquo;s
+tau of the Archimedean families. Spearman&rsquo;s rho of the Archimedean families
+has no closed form and is computed by accurate numerical integration of the
+copula.
 
-     *Note:* MATLAB returns the Archimedean Spearman's rho by interpolating an
-     internal precomputed table, whose values deviate from the true relationship
-     by up to about 10^{-4}.  This implementation returns the mathematically
-     exact value instead, so results for ‘copulastat (FAMILY, PARAM, "type",
-     "Spearman")’ with an Archimedean FAMILY may differ from MATLAB at that
-     level.
+Note: MATLAB returns the Archimedean Spearman&rsquo;s rho by
+interpolating an internal precomputed table, whose values deviate from the
+true relationship by up to about 10^{-4} . This implementation returns
+the mathematically exact value instead, so results for
+copulastat ( family , param , "type", "Spearman") with an
+Archimedean family may differ from MATLAB at that level.
 
-     See also: copulaparam, copulafit, copulacdf, copulapdf, copularnd.
+See also:
+copulaparam,
+copulafit,
+copulacdf,
+copulapdf,
+copularnd
 
 
 # name: <cell-element>
@@ -320,30 +369,36 @@ evstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1061
- -- statistics: [M, V] = evstat (MU, SIGMA)
+# length: 974
+statistics: [ m , v ] = evstat ( mu , sigma )
 
-     Compute statistics of the extreme value distribution.
+Compute statistics of the extreme value distribution.
 
-     ‘[M, V] = evstat (MU, SIGMA)’ returns the mean and variance of the extreme
-     value distribution (also known as the Gumbel or the type I generalized
-     extreme value distribution) with location parameter MU and scale parameter
-     SIGMA.
+[ m , v ] = evstat ( mu , sigma ) returns the mean
+and variance of the extreme value distribution (also known as the Gumbel
+or the type I generalized extreme value distribution) with location parameter
+mu and scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     The type 1 extreme value distribution is also known as the Gumbel
-     distribution.  This version is suitable for modeling minima.  The mirror
-     image of this distribution can be used to model maxima by negating X.  If Y
-     has a Weibull distribution, then ‘X = log (Y)’ has the type 1 extreme value
-     distribution.
+The type 1 extreme value distribution is also known as the Gumbel
+distribution. This version is suitable for modeling minima. The mirror image
+of this distribution can be used to model maxima by negating x . If
+y has a Weibull distribution, then x = log ( y ) has
+the type 1 extreme value distribution.
 
-     Further information about the Gumbel distribution can be found at
-     <https://en.wikipedia.org/wiki/Gumbel_distribution>
+Further information about the Gumbel distribution can be found at
+https://en.wikipedia.org/wiki/Gumbel_distribution
 
-     See also: evcdf, evinv, evpdf, evrnd, evfit, evlike.
+See also:
+evcdf,
+evinv,
+evpdf,
+evrnd,
+evfit,
+evlike
 
 
 # name: <cell-element>
@@ -364,26 +419,33 @@ expstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 813
- -- statistics: [M, V] = expstat (MU)
+# length: 751
+statistics: [ m , v ] = expstat ( mu )
 
-     Compute statistics of the exponential distribution.
+Compute statistics of the exponential distribution.
 
-     ‘[M, V] = expstat (MU)’ returns the mean and variance of the exponential
-     distribution with mean parameter MU.
+[ m , v ] = expstat ( mu ) returns the mean and
+variance of the exponential distribution with mean parameter mu .
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     A common alternative parameterization of the exponential distribution is to
-     use the parameter λ defined as the mean number of events in an interval as
-     opposed to the parameter μ, which is the mean wait time for an event to
-     occur.  λ and μ are reciprocals, i.e.  μ = 1 / λ.
+A common alternative parameterization of the exponential distribution is to
+use the parameter λ defined as the mean number of events in an
+interval as opposed to the parameter μ , which is the mean wait time
+for an event to occur. λ and μ are reciprocals,
+i.e. μ = 1 / λ .
 
-     Further information about the exponential distribution can be found at
-     <https://en.wikipedia.org/wiki/Exponential_distribution>
+Further information about the exponential distribution can be found at
+https://en.wikipedia.org/wiki/Exponential_distribution
 
-     See also: expcdf, expinv, exppdf, exprnd, expfit, explike.
+See also:
+expcdf,
+expinv,
+exppdf,
+exprnd,
+expfit,
+explike
 
 
 # name: <cell-element>
@@ -404,22 +466,27 @@ fstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 562
- -- statistics: [M, V] = fstat (DF1, DF2)
+# length: 518
+statistics: [ m , v ] = fstat ( df1 , df2 )
 
-     Compute statistics of the F-distribution.
+Compute statistics of the F -distribution.
 
-     ‘[M, V] = fstat (DF1, DF2)’ returns the mean and variance of the
-     F-distribution with DF1 and DF2 degrees of freedom.
+[ m , v ] = fstat ( df1 , df2 ) returns the mean and
+variance of the F -distribution with df1 and df2 degrees
+of freedom.
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the F-distribution can be found at
-     <https://en.wikipedia.org/wiki/F-distribution>
+Further information about the F -distribution can be found at
+https://en.wikipedia.org/wiki/F-distribution
 
-     See also: fcdf, finv, fpdf, frnd.
+See also:
+fcdf,
+finv,
+fpdf,
+frnd
 
 
 # name: <cell-element>
@@ -440,29 +507,36 @@ gamstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1034
- -- statistics: [M, V] = gamstat (A, B)
+# length: 959
+statistics: [ m , v ] = gamstat ( a , b )
 
-     Compute statistics of the Gamma distribution.
+Compute statistics of the Gamma distribution.
 
-     ‘[M, V] = gamstat (A, B)’ returns the mean and variance of the Gamma
-     distribution with shape parameter A and scale parameter B.
+[ m , v ] = gamstat ( a , b ) returns the mean
+and variance of the Gamma distribution with shape parameter a and
+scale parameter b .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     OCTAVE/MATLAB use the alternative parameterization given by the pair α, β,
-     i.e.  shape A and scale B.  In Wikipedia, the two common parameterizations
-     use the pairs k, θ, as shape and scale, and α, β, as shape and rate,
-     respectively.  The parameter names A and B used here (for MATLAB
-     compatibility) correspond to the parameter notation k, θ instead of the α,
-     β as reported in Wikipedia.
+OCTAVE/MATLAB use the alternative parameterization given by the pair
+α, β , i.e. shape a and scale b . In Wikipedia, the two
+common parameterizations use the pairs k, θ , as shape and scale, and
+α, β , as shape and rate, respectively. The parameter names a
+and b used here (for MATLAB compatibility) correspond to the parameter
+notation k, θ instead of the α, β as reported in Wikipedia.
 
-     Further information about the Gamma distribution can be found at
-     <https://en.wikipedia.org/wiki/Gamma_distribution>
+Further information about the Gamma distribution can be found at
+https://en.wikipedia.org/wiki/Gamma_distribution
 
-     See also: gamcdf, gaminv, gampdf, gamrnd, gamfit, gamlike.
+See also:
+gamcdf,
+gaminv,
+gampdf,
+gamrnd,
+gamfit,
+gamlike
 
 
 # name: <cell-element>
@@ -483,21 +557,27 @@ geostat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 514
- -- statistics: [M, V] = geostat (PS)
+# length: 472
+statistics: [ m , v ] = geostat ( ps )
 
-     Compute statistics of the geometric distribution.
+Compute statistics of the geometric distribution.
 
-     ‘[M, V] = geostat (PS)’ returns the mean and variance of the geometric
-     distribution with probability of success parameter PS.
+[ m , v ] = geostat ( ps ) returns the mean and
+variance of the geometric distribution with probability of success parameter
+ps .
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     Further information about the geometric distribution can be found at
-     <https://en.wikipedia.org/wiki/Geometric_distribution>
+Further information about the geometric distribution can be found at
+https://en.wikipedia.org/wiki/Geometric_distribution
 
-     See also: geocdf, geoinv, geopdf, geornd, geofit.
+See also:
+geocdf,
+geoinv,
+geopdf,
+geornd,
+geofit
 
 
 # name: <cell-element>
@@ -518,28 +598,36 @@ gevstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 965
- -- statistics: [M, V] = gevstat (K, SIGMA, MU)
+# length: 902
+statistics: [ m , v ] = gevstat ( k , sigma , mu )
 
-     Compute statistics of the generalized extreme value distribution.
+Compute statistics of the generalized extreme value distribution.
 
-     ‘[M, V] = gevstat (K, SIGMA, MU)’ returns the mean and variance of the
-     generalized extreme value distribution with shape parameter K, scale
-     parameter SIGMA, and location parameter MU.
+[ m , v ] = gevstat ( k , sigma , mu ) returns
+the mean and variance of the generalized extreme value distribution with
+shape parameter k , scale parameter sigma , and location parameter
+mu .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     The mean of the GEV distribution is not finite when K >= 1, and the
-     variance is not finite when K >= 1/2.  The GEV distribution has positive
-     density only for values of X such that K * (X - MU) / SIGMA > -1.
+The mean of the GEV distribution is not finite when k >= 1 , and
+the variance is not finite when k >= 1/2 . The GEV distribution
+has positive density only for values of x such that
+k * ( x - mu ) / sigma > -1 .
 
-     Further information about the generalized extreme value distribution can be
-     found at
-     <https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution>
+Further information about the generalized extreme value distribution can be
+found at
+https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution
 
-     See also: gevcdf, gevinv, gevpdf, gevrnd, gevfit, gevlike.
+See also:
+gevcdf,
+gevinv,
+gevpdf,
+gevrnd,
+gevfit,
+gevlike
 
 
 # name: <cell-element>
@@ -560,31 +648,40 @@ gpstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1279
- -- statistics: [M, V] = gpstat (K, SIGMA, THETA)
+# length: 1156
+statistics: [ m , v ] = gpstat ( k , sigma , theta )
 
-     Compute statistics of the generalized Pareto distribution.
+Compute statistics of the generalized Pareto distribution.
 
-     ‘[M, V] = gpstat (K, SIGMA, THETA)’ returns the mean and variance of the
-     generalized Pareto distribution with shape parameter K, scale parameter
-     SIGMA, and location parameter THETA.
+[ m , v ] = gpstat ( k , sigma , theta )
+returns the mean and variance of the generalized Pareto distribution with
+shape parameter k , scale parameter sigma , and location parameter
+theta .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     When K = 0 and THETA = 0, the generalized Pareto distribution is equivalent
-     to the exponential distribution.  When ‘K > 0’ and ‘THETA = SIGMA / K’, the
-     generalized Pareto distribution is equivalent to the Pareto distribution.
-     The mean of the generalized Pareto distribution is not finite when ‘K >=
-     1’, and the variance is not finite when ‘K >= 1/2’.  When ‘K >= 0’, the
-     generalized Pareto distribution has positive density for ‘X > THETA’, or,
-     when ‘K < 0’, for ‘0 <= (X - THETA) / SIGMA <= -1 / K’.
+When k = 0 and theta = 0, the generalized Pareto distribution is
+equivalent to the exponential distribution. When k > 0 and
+theta = sigma / k , the generalized Pareto
+distribution is equivalent to the Pareto distribution. The mean of the
+generalized Pareto distribution is not finite when k >= 1 , and
+the variance is not finite when k >= 1/2 . When
+k >= 0 , the generalized Pareto distribution has positive density
+for x > theta , or, when k < 0 , for
+0 <= ( x - theta ) / sigma <= -1 / k .
 
-     Further information about the generalized Pareto distribution can be found
-     at <https://en.wikipedia.org/wiki/Generalized_Pareto_distribution>
+Further information about the generalized Pareto distribution can be found at
+https://en.wikipedia.org/wiki/Generalized_Pareto_distribution
 
-     See also: gpcdf, gpinv, gppdf, gprnd, gpfit, gplike.
+See also:
+gpcdf,
+gpinv,
+gppdf,
+gprnd,
+gpfit,
+gplike
 
 
 # name: <cell-element>
@@ -605,23 +702,29 @@ hnstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 664
- -- statistics: [M, V] = hnstat (MU, SIGMA)
+# length: 613
+statistics: [ m , v ] = hnstat ( mu , sigma )
 
-     Compute statistics of the half-normal distribution.
+Compute statistics of the half-normal distribution.
 
-     ‘[M, V] = hnstat (MU, SIGMA)’ returns the mean and variance of the
-     half-normal distribution with non-centrality (distance) parameter MU and
-     scale parameter SIGMA.
+[ m , v ] = hnstat ( mu , sigma ) returns the mean
+and variance of the half-normal distribution with non-centrality (distance)
+parameter mu and scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the half-normal distribution can be found at
-     <https://en.wikipedia.org/wiki/Half-normal_distribution>
+Further information about the half-normal distribution can be found at
+https://en.wikipedia.org/wiki/Half-normal_distribution
 
-     See also: hncdf, hninv, hnpdf, hnrnd, hnfit, hnlike.
+See also:
+hncdf,
+hninv,
+hnpdf,
+hnrnd,
+hnfit,
+hnlike
 
 
 # name: <cell-element>
@@ -642,31 +745,36 @@ hygestat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1049
- -- statistics: [MN, V] = hygestat (M, K, N)
+# length: 940
+statistics: [ mn , v ] = hygestat ( m , k , n )
 
-     Compute statistics of the hypergeometric distribution.
+Compute statistics of the hypergeometric distribution.
 
-     ‘[MN, V] = hygestat (M, K, N)’ returns the mean and variance of the
-     hypergeometric distribution parameters M, K, and N.
+[ mn , v ] = hygestat ( m , k , n ) returns the
+mean and variance of the hypergeometric distribution parameters m ,
+k , and n .
 
-        • M is the total size of the population of the hypergeometric
-          distribution.  The elements of M must be positive natural numbers.
+m is the total size of the population of the hypergeometric
+distribution. The elements of m must be positive natural numbers.
 
-        • K is the number of marked items of the hypergeometric distribution.
-          The elements of K must be natural numbers.
+k is the number of marked items of the hypergeometric distribution.
+The elements of k must be natural numbers.
 
-        • N is the size of the drawn sample of the hypergeometric distribution.
-          The elements of N must be positive natural numbers.
+n is the size of the drawn sample of the hypergeometric
+distribution. The elements of n must be positive natural numbers.
 
-     The size of MN (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of mn (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the hypergeometric distribution can be found at
-     <https://en.wikipedia.org/wiki/Hypergeometric_distribution>
+Further information about the hypergeometric distribution can be found at
+https://en.wikipedia.org/wiki/Hypergeometric_distribution
 
-     See also: hygecdf, hygeinv, hygepdf, hygernd.
+See also:
+hygecdf,
+hygeinv,
+hygepdf,
+hygernd
 
 
 # name: <cell-element>
@@ -687,23 +795,29 @@ invgstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 682
- -- statistics: [M, V] = invgstat (MU, LAMBDA)
+# length: 631
+statistics: [ m , v ] = invgstat ( mu , lambda )
 
-     Compute statistics of the inverse Gaussian distribution.
+Compute statistics of the inverse Gaussian distribution.
 
-     ‘[M, V] = invgstat (MU, LAMBDA)’ returns the mean and variance of the
-     inverse Gaussian distribution with mean parameter MU and shape parameter
-     LAMBDA.
+[ m , v ] = invgstat ( mu , lambda ) returns the
+mean and variance of the inverse Gaussian distribution with mean parameter
+mu and shape parameter lambda .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the inverse Gaussian distribution can be found at
-     <https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution>
+Further information about the inverse Gaussian distribution can be found at
+https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution
 
-     See also: invgcdf, invginv, invgpdf, invgrnd, invgfit, invglike.
+See also:
+invgcdf,
+invginv,
+invgpdf,
+invgrnd,
+invgfit,
+invglike
 
 
 # name: <cell-element>
@@ -724,22 +838,29 @@ logistat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 642
- -- statistics: [M, V] = logistat (MU, SIGMA)
+# length: 596
+statistics: [ m , v ] = logistat ( mu , sigma )
 
-     Compute statistics of the logistic distribution.
+Compute statistics of the logistic distribution.
 
-     ‘[M, V] = logistat (MU, SIGMA)’ returns the mean and variance of the
-     logistic distribution with mean parameter MU and scale parameter SIGMA.
+[ m , v ] = logistat ( mu , sigma ) returns the mean
+and variance of the logistic distribution with mean parameter mu and
+scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the logistic distribution can be found at
-     <https://en.wikipedia.org/wiki/Logistic_distribution>
+Further information about the logistic distribution can be found at
+https://en.wikipedia.org/wiki/Logistic_distribution
 
-     See also: logicdf, logiinv, logipdf, logirnd, logifit, logilike.
+See also:
+logicdf,
+logiinv,
+logipdf,
+logirnd,
+logifit,
+logilike
 
 
 # name: <cell-element>
@@ -760,29 +881,37 @@ loglstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 940
- -- statistics: [M, V] = loglstat (MU, SIGMA)
+# length: 857
+statistics: [ m , v ] = loglstat ( mu , sigma )
 
-     Compute statistics of the loglogistic distribution.
+Compute statistics of the loglogistic distribution.
 
-     ‘[M, V] = loglstat (MU, SIGMA)’ returns the mean and variance of the
-     loglogistic distribution with mean parameter MU and scale parameter SIGMA.
+[ m , v ] = loglstat ( mu , sigma ) returns the mean
+and variance of the loglogistic distribution with mean parameter mu and
+scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the loglogistic distribution can be found at
-     <https://en.wikipedia.org/wiki/Log-logistic_distribution>
+Further information about the loglogistic distribution can be found at
+https://en.wikipedia.org/wiki/Log-logistic_distribution
 
-     OCTAVE/MATLAB use an alternative parameterization given by the pair μ, σ,
-     i.e.  MU and SIGMA, in analogy with the logistic distribution.  Their
-     relation to the α and b parameters used in Wikipedia are given below:
+OCTAVE/MATLAB use an alternative parameterization given by the pair
+μ, σ , i.e. mu and sigma , in analogy with the logistic
+distribution. Their relation to the α and b parameters used
+in Wikipedia are given below:
 
-        • MU = log (A)
-        • SIGMA = 1 / A
+mu = log ( a )
+sigma = 1 / a
 
-     See also: logncdf, logninv, lognpdf, lognrnd, lognfit, lognlike.
+See also:
+logncdf,
+logninv,
+lognpdf,
+lognrnd,
+lognfit,
+lognlike
 
 
 # name: <cell-element>
@@ -803,23 +932,30 @@ lognstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 723
- -- statistics: [M, V] = lognstat (MU, SIGMA)
+# length: 672
+statistics: [ m , v ] = lognstat ( mu , sigma )
 
-     Compute statistics of the lognormal distribution.
+Compute statistics of the lognormal distribution.
 
-     ‘[M, V] = lognstat (MU, SIGMA)’ returns the mean and variance of the
-     lognormal distribution with mean parameter MU and standard deviation
-     parameter SIGMA, each corresponding to the associated normal distribution.
+[ m , v ] = lognstat ( mu , sigma ) returns the mean
+and variance of the lognormal distribution with mean parameter mu and
+standard deviation parameter sigma , each corresponding to the
+associated normal distribution.
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the lognormal distribution can be found at
-     <https://en.wikipedia.org/wiki/Log-normal_distribution>
+Further information about the lognormal distribution can be found at
+https://en.wikipedia.org/wiki/Log-normal_distribution
 
-     See also: logncdf, logninv, lognpdf, lognrnd, lognfit, lognlike.
+See also:
+logncdf,
+logninv,
+lognpdf,
+lognrnd,
+lognfit,
+lognlike
 
 
 # name: <cell-element>
@@ -840,22 +976,29 @@ nakastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 642
- -- statistics: [M, V] = nakastat (MU, OMEGA)
+# length: 596
+statistics: [ m , v ] = nakastat ( mu , omega )
 
-     Compute statistics of the Nakagami distribution.
+Compute statistics of the Nakagami distribution.
 
-     ‘[M, V] = nakastat (MU, OMEGA)’ returns the mean and variance of the
-     Nakagami distribution with shape parameter MU and spread parameter OMEGA.
+[ m , v ] = nakastat ( mu , omega ) returns the mean
+and variance of the Nakagami distribution with shape parameter mu and
+spread parameter omega .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the Nakagami distribution can be found at
-     <https://en.wikipedia.org/wiki/Normal_distribution>
+Further information about the Nakagami distribution can be found at
+https://en.wikipedia.org/wiki/Normal_distribution
 
-     See also: nakacdf, nakainv, nakapdf, nakarnd, nakafit, nakalike.
+See also:
+nakacdf,
+nakainv,
+nakapdf,
+nakarnd,
+nakafit,
+nakalike
 
 
 # name: <cell-element>
@@ -876,24 +1019,31 @@ nbinstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 815
- -- statistics: [M, V] = nbinstat (R, PS)
+# length: 760
+statistics: [ m , v ] = nbinstat ( r , ps )
 
-     Compute statistics of the negative binomial distribution.
+Compute statistics of the negative binomial distribution.
 
-     ‘[M, V] = nbinstat (R, PS)’ returns the mean and variance of the negative
-     binomial distribution with parameters R and PS, where R is the number of
-     successes until the experiment is stopped and PS is the probability of
-     success in each experiment, given the number of failures in X.
+[ m , v ] = nbinstat ( r , ps ) returns the mean
+and variance of the negative binomial distribution with parameters r
+and ps , where r is the number of successes until the experiment
+is stopped and ps is the probability of success in each experiment,
+given the number of failures in x .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the negative binomial distribution can be found
-     at <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
+Further information about the negative binomial distribution can be found at
+https://en.wikipedia.org/wiki/Negative_binomial_distribution
 
-     See also: nbincdf, nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike.
+See also:
+nbincdf,
+nbininv,
+nbinpdf,
+nbinrnd,
+nbinfit,
+nbinlike
 
 
 # name: <cell-element>
@@ -914,23 +1064,29 @@ ncfstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 682
- -- statistics: [M, V] = ncfstat (DF1, DF1, LAMBDA)
+# length: 636
+statistics: [ m , v ] = ncfstat ( df1 , df1 , lambda )
 
-     Compute statistics for the noncentral F-distribution.
+Compute statistics for the noncentral F -distribution.
 
-     ‘[M, V] = ncfstat (DF1, DF1, LAMBDA)’ returns the mean and variance of the
-     noncentral F-distribution with DF1 and DF2 degrees of freedom and
-     noncentrality parameter LAMBDA.
+[ m , v ] = ncfstat ( df1 , df1 , lambda )
+returns the mean and variance of the noncentral F -distribution with
+df1 and df2 degrees of freedom and noncentrality parameter
+lambda .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the same
+size as the other inputs.
 
-     Further information about the noncentral F-distribution can be found at
-     <https://en.wikipedia.org/wiki/Noncentral_F-distribution>
+Further information about the noncentral F -distribution can be found
+at https://en.wikipedia.org/wiki/Noncentral_F-distribution
 
-     See also: ncfcdf, ncfinv, ncfpdf, ncfrnd, fstat.
+See also:
+ncfcdf,
+ncfinv,
+ncfpdf,
+ncfrnd,
+fstat
 
 
 # name: <cell-element>
@@ -951,22 +1107,28 @@ nctstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 644
- -- statistics: [M, V] = nctstat (DF, MU)
+# length: 601
+statistics: [ m , v ] = nctstat ( df , mu )
 
-     Compute statistics for the noncentral t-distribution.
+Compute statistics for the noncentral t -distribution.
 
-     ‘[M, V] = nctstat (DF, MU)’ returns the mean and variance of the noncentral
-     t-distribution with DF degrees of freedom and noncentrality parameter MU.
+[ m , v ] = nctstat ( df , mu ) returns the mean
+and variance of the noncentral t -distribution with df degrees
+of freedom and noncentrality parameter mu .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the same
+size as the other inputs.
 
-     Further information about the noncentral t-distribution can be found at
-     <https://en.wikipedia.org/wiki/Noncentral_t-distribution>
+Further information about the noncentral t -distribution can be found
+at https://en.wikipedia.org/wiki/Noncentral_t-distribution
 
-     See also: nctcdf, nctinv, nctpdf, nctrnd, tstat.
+See also:
+nctcdf,
+nctinv,
+nctpdf,
+nctrnd,
+tstat
 
 
 # name: <cell-element>
@@ -987,24 +1149,28 @@ ncx2stat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 705
- -- statistics: [M, V] = ncx2stat (DF, LAMBDA)
+# length: 649
+statistics: [ m , v ] = ncx2stat ( df , lambda )
 
-     Compute statistics for the noncentral chi-squared distribution.
+Compute statistics for the noncentral chi-squared distribution.
 
-     ‘[M, V] = ncx2stat (DF, LAMBDA)’ returns the mean and variance of the
-     noncentral chi-squared distribution with DF degrees of freedom and
-     noncentrality parameter LAMBDA.
+[ m , v ] = ncx2stat ( df , lambda ) returns the
+mean and variance of the noncentral chi-squared distribution with df
+degrees of freedom and noncentrality parameter lambda .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the noncentral chi-squared distribution can be
-     found at
-     <https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution>
+Further information about the noncentral chi-squared distribution can be
+found at
+https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution
 
-     See also: ncx2cdf, ncx2inv, ncx2pdf, ncx2rnd.
+See also:
+ncx2cdf,
+ncx2inv,
+ncx2pdf,
+ncx2rnd
 
 
 # name: <cell-element>
@@ -1025,23 +1191,29 @@ normstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 660
- -- statistics: [M, V] = normstat (MU, SIGMA)
+# length: 609
+statistics: [ m , v ] = normstat ( mu , sigma )
 
-     Compute statistics of the normal distribution.
+Compute statistics of the normal distribution.
 
-     ‘[M, V] = normstat (MU, SIGMA)’ returns the mean and variance of the normal
-     distribution with non-centrality (distance) parameter MU and scale
-     parameter SIGMA.
+[ m , v ] = normstat ( mu , sigma ) returns the mean
+and variance of the normal distribution with non-centrality (distance)
+parameter mu and scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the normal distribution can be found at
-     <https://en.wikipedia.org/wiki/Normal_distribution>
+Further information about the normal distribution can be found at
+https://en.wikipedia.org/wiki/Normal_distribution
 
-     See also: normcdf, norminv, normpdf, normrnd, normfit, normlike.
+See also:
+normcdf,
+norminv,
+normpdf,
+normrnd,
+normfit,
+normlike
 
 
 # name: <cell-element>
@@ -1062,21 +1234,25 @@ plstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 623
- -- statistics: [M, V] = plstat (X, FX)
+# length: 579
+statistics: [ m , v ] = plstat ( x , Fx )
 
-     Compute statistics of the piecewise linear distribution.
+Compute statistics of the piecewise linear distribution.
 
-     ‘[M, V] = plstat (X, FX)’ returns the mean, M, and variance, V, of the
-     piecewise linear distribution with a vector of X values at which the CDF
-     changes slope and a vector of CDF values FX that correspond to each value
-     in X.  Both X and FX must be vectors of the same size and at least
-     2-elements long.
+[ m , v ] = plstat ( x , Fx ) returns the mean,
+m , and variance, v , of the piecewise linear distribution with a
+vector of x values at which the CDF changes slope and a vector of CDF
+values Fx that correspond to each value in x . Both x and
+Fx must be vectors of the same size and at least 2-elements long.
 
-     Further information about the piecewise linear distribution can be found at
-     <https://en.wikipedia.org/wiki/Piecewise_linear_function>
+Further information about the piecewise linear distribution can be found at
+https://en.wikipedia.org/wiki/Piecewise_linear_function
 
-     See also: plcdf, plinv, plpdf, plrnd.
+See also:
+plcdf,
+plinv,
+plpdf,
+plrnd
 
 
 # name: <cell-element>
@@ -1097,21 +1273,27 @@ poisstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 523
- -- statistics: [M, V] = poisstat (LAMBDA)
+# length: 481
+statistics: [ m , v ] = poisstat ( lambda )
 
-     Compute statistics of the Poisson distribution.
+Compute statistics of the Poisson distribution.
 
-     ‘[M, V] = poisstat (LAMBDA)’ returns the mean and variance of the Poisson
-     distribution with rate parameter LAMBDA.
+[ m , v ] = poisstat ( lambda ) returns the mean and
+variance of the Poisson distribution with rate parameter lambda .
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     Further information about the Poisson distribution can be found at
-     <https://en.wikipedia.org/wiki/Poisson_distribution>
+Further information about the Poisson distribution can be found at
+https://en.wikipedia.org/wiki/Poisson_distribution
 
-     See also: poisscdf, poissinv, poisspdf, poissrnd, poissfit, poisslike.
+See also:
+poisscdf,
+poissinv,
+poisspdf,
+poissrnd,
+poissfit,
+poisslike
 
 
 # name: <cell-element>
@@ -1132,24 +1314,30 @@ raylstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 615
- -- statistics: [M, V] = raylstat (SIGMA)
+# length: 558
+statistics: [ m , v ] = raylstat ( sigma )
 
-     Compute statistics of the Rayleigh distribution.
+Compute statistics of the Rayleigh distribution.
 
-     ‘[M, V] = raylstat (SIGMA)’ returns the mean and variance of the Rayleigh
-     distribution with scale parameter SIGMA.
+[ m , v ] = raylstat ( sigma ) returns the mean and
+variance of the Rayleigh distribution with scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     Further information about the Rayleigh distribution can be found at
-     <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+Further information about the Rayleigh distribution can be found at
+https://en.wikipedia.org/wiki/Rayleigh_distribution
 
-     The ‘prob.RayleighDistribution’ class names this same parameter B, after
-     MATLAB.
+The prob.RayleighDistribution class names this same parameter
+B , after MATLAB.
 
-     See also: raylcdf, raylinv, raylpdf, raylrnd, raylfit, rayllike.
+See also:
+raylcdf,
+raylinv,
+raylpdf,
+raylrnd,
+raylfit,
+rayllike
 
 
 # name: <cell-element>
@@ -1170,23 +1358,29 @@ ricestat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 655
- -- statistics: [M, V] = ricestat (S, SIGMA)
+# length: 604
+statistics: [ m , v ] = ricestat ( s , sigma )
 
-     Compute statistics of the Rician distribution.
+Compute statistics of the Rician distribution.
 
-     ‘[M, V] = ricestat (S, SIGMA)’ returns the mean and variance of the Rician
-     distribution with non-centrality (distance) parameter S and scale parameter
-     SIGMA.
+[ m , v ] = ricestat ( s , sigma ) returns the mean
+and variance of the Rician distribution with non-centrality (distance)
+parameter s and scale parameter sigma .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the Rician distribution can be found at
-     <https://en.wikipedia.org/wiki/Rice_distribution>
+Further information about the Rician distribution can be found at
+https://en.wikipedia.org/wiki/Rice_distribution
 
-     See also: ricecdf, riceinv, ricepdf, ricernd, ricefit, ricelike.
+See also:
+ricecdf,
+riceinv,
+ricepdf,
+ricernd,
+ricefit,
+ricelike
 
 
 # name: <cell-element>
@@ -1207,24 +1401,31 @@ tlsstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 769
- -- statistics: [M, V] = tlsstat (MU, SIGMA, NU)
+# length: 734
+statistics: [ m , v ] = tlsstat ( mu , sigma , nu )
 
-     Compute statistics of the location-scale Student's T distribution.
+Compute statistics of the location-scale Student&rsquo;s T distribution.
 
-     ‘[M, V] = tlsstat (MU, SIGMA, NU)’ returns the mean and variance of the
-     location-scale Student's T distribution with location parameter MU, scale
-     parameter SIGMA, and NU degrees of freedom.
+[ m , v ] = tlsstat ( mu , sigma , nu ) returns
+the mean and variance of the location-scale Student&rsquo;s T distribution with
+location parameter mu , scale parameter sigma , and nu
+degrees of freedom.
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the location-scale Student's T distribution can
-     be found at
-     <https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution>
+Further information about the location-scale Student&rsquo;s T distribution can be
+found at
+https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution
 
-     See also: tlscdf, tlsinv, tlspdf, tlsrnd, tlsfit, tlslike.
+See also:
+tlscdf,
+tlsinv,
+tlspdf,
+tlsrnd,
+tlsfit,
+tlslike
 
 
 # name: <cell-element>
@@ -1245,31 +1446,36 @@ tristat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1161
- -- statistics: [M, V] = tristat (A, B, C)
+# length: 1077
+statistics: [ m , v ] = tristat ( a , b , c )
 
-     Compute statistics of the Triangular distribution.
+Compute statistics of the Triangular distribution.
 
-     ‘[M, V] = tristat (A, B, C)’ returns the mean and variance of the
-     Triangular distribution with lower limit parameter A, peak location (mode)
-     parameter B, and upper limit parameter C.
+[ m , v ] = tristat ( a , b , c ) returns the
+mean and variance of the Triangular distribution with lower limit parameter
+a , peak location (mode) parameter b , and upper limit parameter
+c .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Note that the order of the parameter input arguments has been changed after
-     statistics version 1.6.3 in order to be MATLAB compatible with the
-     parameters used in the TriangularDistribution probability distribution
-     object.  More specifically, the positions of the parameters B and C have
-     been swapped.  As a result, the naming conventions no longer coincide with
-     those used in Wikipedia, in which b denotes the upper limit and c denotes
-     the mode or peak parameter.
+Note that the order of the parameter input arguments has been changed after
+statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+used in the TriangularDistribution probability distribution object. More
+specifically, the positions of the parameters b and c have been
+swapped. As a result, the naming conventions no longer coincide with those
+used in Wikipedia, in which b denotes the upper limit and c
+denotes the mode or peak parameter.
 
-     Further information about the triangular distribution can be found at
-     <https://en.wikipedia.org/wiki/Triangular_distribution>
+Further information about the triangular distribution can be found at
+https://en.wikipedia.org/wiki/Triangular_distribution
 
-     See also: tcdf, tinv, tpdf, trnd.
+See also:
+tcdf,
+tinv,
+tpdf,
+trnd
 
 
 # name: <cell-element>
@@ -1290,21 +1496,25 @@ tstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 490
- -- statistics: [M, V] = tstat (DF)
+# length: 465
+statistics: [ m , v ] = tstat ( df )
 
-     Compute statistics of the Student's T distribution.
+Compute statistics of the Student&rsquo;s T distribution.
 
-     ‘[M, V] = tstat (DF)’ returns the mean and variance of the Student's T
-     distribution with DF degrees of freedom.
+[ m , v ] = tstat ( df ) returns the mean and variance of
+the Student&rsquo;s T distribution with df degrees of freedom.
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     Further information about the Student's T distribution can be found at
-     <https://en.wikipedia.org/wiki/Student%27s_t-distribution>
+Further information about the Student&rsquo;s T distribution can be found at
+https://en.wikipedia.org/wiki/Student%27s_t-distribution
 
-     See also: tcdf, tinv, tpdf, trnd.
+See also:
+tcdf,
+tinv,
+tpdf,
+trnd
 
 
 # name: <cell-element>
@@ -1325,22 +1535,28 @@ unidstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 641
- -- statistics: [M, V] = unidstat (DF)
+# length: 594
+statistics: [ m , v ] = unidstat ( df )
 
-     Compute statistics of the discrete uniform cumulative distribution.
+Compute statistics of the discrete uniform cumulative distribution.
 
-     ‘[M, V] = unidstat (DF)’ returns the mean and variance of the discrete
-     uniform cumulative distribution with parameter N, which corresponds to the
-     maximum observable value and must be a positive natural number.
+[ m , v ] = unidstat ( df ) returns the mean and variance
+of the discrete uniform cumulative distribution with parameter N , which
+corresponds to the maximum observable value and must be a positive natural
+number.
 
-     The size of M (mean) and V (variance) is the same size of the input
-     argument.
+The size of m (mean) and v (variance) is the same size of the
+input argument.
 
-     Further information about the discrete uniform distribution can be found at
-     <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
+Further information about the discrete uniform distribution can be found at
+https://en.wikipedia.org/wiki/Discrete_uniform_distribution
 
-     See also: unidcdf, unidinv, unidpdf, unidrnd, unidfit.
+See also:
+unidcdf,
+unidinv,
+unidpdf,
+unidrnd,
+unidfit
 
 
 # name: <cell-element>
@@ -1361,23 +1577,29 @@ unifstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 723
- -- statistics: [M, V] = unifstat (DF)
+# length: 674
+statistics: [ m , v ] = unifstat ( df )
 
-     Compute statistics of the continuous uniform cumulative distribution.
+Compute statistics of the continuous uniform cumulative distribution.
 
-     ‘[M, V] = unifstat (DF)’ returns the mean and variance of the continuous
-     uniform cumulative distribution with parameters A and B, which define the
-     lower and upper bounds of the interval [A, B].
+[ m , v ] = unifstat ( df ) returns the mean and variance
+of the continuous uniform cumulative distribution with parameters a and
+b , which define the lower and upper bounds of the interval
+[ a , b ] .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the continuous uniform distribution can be found
-     at <https://en.wikipedia.org/wiki/Continuous_uniform_distribution>
+Further information about the continuous uniform distribution can be found at
+https://en.wikipedia.org/wiki/Continuous_uniform_distribution
 
-     See also: unifcdf, unifinv, unifpdf, unifrnd, unifit.
+See also:
+unifcdf,
+unifinv,
+unifpdf,
+unifrnd,
+unifit
 
 
 # name: <cell-element>
@@ -1398,25 +1620,34 @@ wblstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 779
- -- statistics: [M, V] = wblstat (LAMBDA, K)
+# length: 719
+statistics: [ m , v ] = wblstat ( lambda , k )
 
-     Compute statistics of the Weibull distribution.
+Compute statistics of the Weibull distribution.
 
-     ‘[M, V] = wblstat (LAMBDA, K)’ returns the mean and variance of the Weibull
-     distribution with scale parameter LAMBDA and shape parameter K.
+[ m , v ] = wblstat ( lambda , k ) returns the mean
+and variance of the Weibull distribution with scale parameter lambda
+and shape parameter k .
 
-     The size of M (mean) and V (variance) is the common size of the input
-     arguments.  A scalar input functions as a constant matrix of the same size
-     as the other inputs.
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
-     Further information about the Weibull distribution can be found at
-     <https://en.wikipedia.org/wiki/Weibull_distribution>
+Further information about the Weibull distribution can be found at
+https://en.wikipedia.org/wiki/Weibull_distribution
 
-     The ‘prob.WeibullDistribution’ class names these same two parameters A and
-     B, after MATLAB. LAMBDA is its A and K is its B.
+The prob.WeibullDistribution class names these same two parameters
+A and B , after MATLAB. lambda is its A and
+k is its B .
 
-     See also: wblcdf, wblinv, wblpdf, wblrnd, wblfit, wbllike, wblplot.
+See also:
+wblcdf,
+wblinv,
+wblpdf,
+wblrnd,
+wblfit,
+wbllike,
+wblplot
 
 
 # name: <cell-element>

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 7
+# columns: 52
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13,26 +13,27 @@ ConfusionMatrixChart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 849
- -- statistics: ConfusionMatrixChart
+# length: 759
+statistics: ConfusionMatrixChart
 
-     Confusion matrix chart for classification results
+Confusion matrix chart for classification results
 
-     The ‘ConfusionMatrixChart’ class implements a confusion matrix chart
-     object, which displays the classification performance of a classifier by
-     showing the counts of true positive, true negative, false positive, and
-     false negative predictions.
+The ConfusionMatrixChart class implements a confusion matrix chart
+object, which displays the classification performance of a classifier by
+showing the counts of true positive, true negative, false positive, and
+false negative predictions.
 
-     A confusion matrix chart is a visual representation of the performance of a
-     classification algorithm.  The rows represent the true classes and the
-     columns represent the predicted classes.  The diagonal elements represent
-     the correctly classified observations, while the off-diagonal elements
-     represent the misclassified observations.
+A confusion matrix chart is a visual representation of the performance of
+a classification algorithm. The rows represent the true classes and the
+columns represent the predicted classes. The diagonal elements represent
+the correctly classified observations, while the off-diagonal elements
+represent the misclassified observations.
 
-     Create a ‘ConfusionMatrixChart’ object by using the ‘confusionchart’
-     function.
+Create a ConfusionMatrixChart object by using the
+confusionchart function.
 
-     See also: confusionchart.
+See also:
+confusionchart
 
 
 # name: <cell-element>
@@ -46,6 +47,651 @@ Confusion matrix chart for classification results
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 32
+ConfusionMatrixChart.ClassLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 177
+ConfusionMatrixChart: property ClassLabels
+
+Class labels
+
+A cell array of character vectors containing the class labels used in
+the confusion matrix. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+Class labels
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ConfusionMatrixChart.ColumnSummary
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 352
+ConfusionMatrixChart: property ColumnSummary
+
+Column summary display
+
+A character vector specifying whether and how to display column
+summaries. Supported values are:
+
+'off' - Do not display column summary (default)
+'absolute' - Display absolute counts
+'column-normalized' - Display normalized by column
+'total-normalized' - Display normalized by total
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Column summary display
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+ConfusionMatrixChart.ConfusionMatrixChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2805
+statistics: cmc = ConfusionMatrixChart ( hax , cm , cl )
+statistics: cmc = ConfusionMatrixChart (&hellip;, name , value )
+
+Create a ConfusionMatrixChart object for visualizing
+classification performance.
+
+cmc = ConfusionMatrixChart ( hax , cm , cl )
+returns a ConfusionMatrixChart object with parent axes hax ,
+confusion matrix cm , and class labels cl .
+
+hax must be a valid axes handle where the chart will be displayed.
+
+cm must be a square numeric matrix containing the confusion matrix
+values, where rows represent true classes and columns represent predicted
+classes.
+
+cl must be a cell array of character vectors containing the class
+labels. The number of labels must match the size of the confusion matrix.
+
+cmc = ConfusionMatrixChart (&hellip;, name ,
+value )
+returns a ConfusionMatrixChart object with additional parameters
+specified by name , value paired arguments:
+
+Name Value
+'XLabel' A character vector specifying the
+x-axis label. Default is "Predicted Class".
+'YLabel' A character vector specifying the
+y-axis label. Default is "True Class".
+'Title' A character vector specifying the chart
+title. Default is empty string.
+'FontName' A character vector specifying the
+font name for text elements. Default is the axes font name.
+'FontSize' A numeric scalar specifying the
+font size for text elements. Default is the axes font size.
+'DiagonalColor' A 1x3 RGB vector specifying
+the color for diagonal elements (correct classifications). Default is
+[0.0, 0.4471, 0.7412].
+'OffDiagonalColor' A 1x3 RGB vector specifying
+the color for off-diagonal elements (misclassifications). Default is
+[0.8510, 0.3255, 0.0980].
+'Normalization' A character vector specifying
+the normalization method. Supported values are 'absolute' ,
+'column-normalized' , 'row-normalized' , and
+'total-normalized' . Default is 'absolute' .
+'ColumnSummary' A character vector specifying
+whether and how to display column summaries. Supported values are
+'off' , 'absolute' , 'column-normalized' , and
+'total-normalized' . Default is 'off' .
+'RowSummary' A character vector specifying
+whether and how to display row summaries. Supported values are
+'off' , 'absolute' , 'row-normalized' , and
+'total-normalized' . Default is 'off' .
+'GridVisible' A character vector specifying
+whether to display grid lines. Supported values are 'on' and
+'off' . Default is 'on' .
+'HandleVisibility' A character vector specifying
+the handle visibility. Supported values are 'on' , 'off' ,
+and 'callback' .
+'OuterPosition' A 1x4 numeric vector specifying
+the outer position of the chart.
+'Position' A 1x4 numeric vector specifying
+the position of the chart.
+'Units' A character vector specifying the
+position units. Supported values are 'centimeters' ,
+'characters' , 'inches' , 'normalized' ,
+'pixels' , and 'points' .
+
+See also:
+confusionchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Create a ConfusionMatrixChart object for visualizing classification performance.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ConfusionMatrixChart.DiagonalColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 238
+ConfusionMatrixChart: property DiagonalColor
+
+Color for diagonal elements
+
+A 1x3 RGB vector specifying the color for the diagonal elements of the
+confusion matrix, which represent correct classifications. Default is
+[0.0, 0.4471, 0.7412].
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Color for diagonal elements
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+ConfusionMatrixChart.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 210
+ConfusionMatrixChart: property FontName
+
+Font name for text elements
+
+A character vector specifying the font name used for all text elements
+in the chart. Default is empty string, which uses the axes font name.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Font name for text elements
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+ConfusionMatrixChart.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 197
+ConfusionMatrixChart: property FontSize
+
+Font size for text elements
+
+A numeric scalar specifying the font size used for all text elements
+in the chart. Default is 0, which uses the axes font size.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Font size for text elements
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+ConfusionMatrixChart.GridVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 228
+ConfusionMatrixChart: property GridVisible
+
+Grid visibility
+
+A character vector specifying whether to display grid lines in the
+confusion matrix. Supported values are:
+
+'on' - Display grid lines (default)
+'off' - Hide grid lines
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+Grid visibility
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+ConfusionMatrixChart.HandleVisibility
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 195
+ConfusionMatrixChart: property HandleVisibility
+
+Handle visibility
+
+A character vector specifying the visibility of the object&rsquo;s handle.
+Supported values are 'on' , 'off' , and 'callback' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Handle visibility
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ConfusionMatrixChart.Normalization
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 396
+ConfusionMatrixChart: property Normalization
+
+Normalization method for confusion matrix values
+
+A character vector specifying how to normalize the confusion matrix
+values. Supported values are:
+
+'absolute' - Display absolute counts (default)
+'column-normalized' - Normalize by column totals
+'row-normalized' - Normalize by row totals
+'total-normalized' - Normalize by total number of
+observations
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+Normalization method for confusion matrix values
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+ConfusionMatrixChart.NormalizedValues
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 227
+ConfusionMatrixChart: property NormalizedValues
+
+Normalized confusion matrix values
+
+A numeric matrix containing the normalized confusion matrix values
+according to the current normalization setting. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Normalized confusion matrix values
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+ConfusionMatrixChart.OffDiagonalColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 247
+ConfusionMatrixChart: property OffDiagonalColor
+
+Color for off-diagonal elements
+
+A 1x3 RGB vector specifying the color for the off-diagonal elements of
+the confusion matrix, which represent misclassifications. Default is
+[0.8510, 0.3255, 0.0980].
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Color for off-diagonal elements
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ConfusionMatrixChart.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 183
+ConfusionMatrixChart: property OuterPosition
+
+Outer position of the chart
+
+A 1x4 numeric vector specifying the outer position of the chart in the
+format [left, bottom, width, height].
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Outer position of the chart
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ConfusionMatrixChart.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 132
+ConfusionMatrixChart: property Parent
+
+Parent object
+
+A handle to the parent figure or container object. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+Parent object
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+ConfusionMatrixChart.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 166
+ConfusionMatrixChart: property Position
+
+Position of the chart
+
+A 1x4 numeric vector specifying the position of the chart in the
+format [left, bottom, width, height].
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Position of the chart
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ConfusionMatrixChart.RowSummary
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 334
+ConfusionMatrixChart: property RowSummary
+
+Row summary display
+
+A character vector specifying whether and how to display row summaries.
+Supported values are:
+
+'off' - Do not display row summary (default)
+'absolute' - Display absolute counts
+'row-normalized' - Display normalized by row
+'total-normalized' - Display normalized by total
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Row summary display
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ConfusionMatrixChart.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 146
+ConfusionMatrixChart: property Title
+
+Chart title
+
+A character vector specifying the title of the confusion matrix chart.
+Default is empty string.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+Chart title
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ConfusionMatrixChart.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 226
+ConfusionMatrixChart: property Units
+
+Position units
+
+A character vector specifying the units for the position properties.
+Supported values are 'centimeters' , 'characters' ,
+'inches' , 'normalized' , 'pixels' , and
+'points' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+Position units
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ConfusionMatrixChart.XLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 138
+ConfusionMatrixChart: property XLabel
+
+X-axis label
+
+A character vector specifying the label for the x-axis. Default is
+"Predicted Class".
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+X-axis label
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ConfusionMatrixChart.YLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 133
+ConfusionMatrixChart: property YLabel
+
+Y-axis label
+
+A character vector specifying the label for the y-axis. Default is
+"True Class".
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+Y-axis label
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+ConfusionMatrixChart.sortClasses
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 689
+ConfusionMatrixChart: sortClasses ( cmc , order )
+
+Sort the classes in the confusion matrix chart.
+
+sortClasses ( cmc , order ) sorts the classes in the
+confusion matrix chart cmc according to the specified order .
+
+order can be:
+
+A cell array of class labels in the desired order
+'auto' - Sort class labels alphabetically
+'ascending-diagonal' - Sort by ascending diagonal values
+'descending-diagonal' - Sort by descending diagonal values
+'cluster' - Sort using hierarchical clustering
+
+When using 'cluster' , the classes are grouped based on similarity
+using hierarchical clustering, which can help identify groups of
+frequently confused classes.
+
+See also:
+confusionchart,
+linkage,
+pdist
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Sort the classes in the confusion matrix chart.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 14
 confusionchart
 
@@ -53,51 +699,55 @@ confusionchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1892
- -- statistics: confusionchart (TRUELABELS, PREDICTEDLABELS)
- -- statistics: confusionchart (M)
- -- statistics: confusionchart (M, CLASSLABELS)
- -- statistics: confusionchart (PARENT, ...)
- -- statistics: confusionchart (..., PROP, VAL, ...)
- -- statistics: CM = confusionchart (...)
+# length: 1675
+statistics: confusionchart ( trueLabels , predictedLabels )
+statistics: confusionchart ( m )
+statistics: confusionchart ( m , classLabels )
+statistics: confusionchart ( parent , &hellip;)
+statistics: confusionchart (&hellip;, prop , val , &hellip;)
+statistics: cm = confusionchart (&hellip;)
 
-     Display a chart of a confusion matrix.
+Display a chart of a confusion matrix.
 
-     The two vectors of values TRUELABELS and PREDICTEDLABELS, which are used to
-     compute the confusion matrix, must be defined with the same format as the
-     inputs of ‘confusionmat’.  Otherwise a confusion matrix M as computed by
-     ‘confusionmat’ can be given.
+The two vectors of values trueLabels and predictedLabels , which
+are used to compute the confusion matrix, must be defined with the same
+format as the inputs of confusionmat .
+Otherwise a confusion matrix m as computed by confusionmat can
+be given.
 
-     CLASSLABELS is an array of labels, i.e.  the list of the class names.
+classLabels is an array of labels, i.e. the list of the class names.
 
-     If the first argument is a handle to a ‘figure’ or to a ‘uipanel’, then the
-     confusion matrix chart is displayed inside that object.
+If the first argument is a handle to a figure or to a uipanel ,
+then the confusion matrix chart is displayed inside that object.
 
-     Optional property/value pairs are passed directly to the underlying
-     objects, e.g.  'xlabel', 'ylabel', 'title', 'fontname', 'fontsize' etc.
+Optional property/value pairs are passed directly to the underlying objects,
+e.g. 'xlabel' , 'ylabel' , 'title' , 'fontname' ,
+'fontsize' etc.
 
-     The optional return value CM is a ‘ConfusionMatrixChart’ object.  Specific
-     properties of a ‘ConfusionMatrixChart’ object are:
-        • 'DiagonalColor' The color of the patches on the diagonal, default is
-          [0.0, 0.4471, 0.7412].
+The optional return value cm is a ConfusionMatrixChart object.
+Specific properties of a ConfusionMatrixChart object are:
 
-        • 'OffDiagonalColor' The color of the patches off the diagonal, default
-          is [0.851, 0.3255, 0.098].
+'DiagonalColor'
+The color of the patches on the diagonal, default is [0.0, 0.4471, 0.7412].
+'OffDiagonalColor'
+The color of the patches off the diagonal, default is [0.851, 0.3255, 0.098].
+'GridVisible'
+Available values: on (default), off .
+'Normalization'
+Available values: absolute (default), column-normalized ,
+row-normalized , total-normalized .
+'ColumnSummary'
+Available values: off (default), absolute ,
+column-normalized , total-normalized .
+'RowSummary'
+Available values: off (default), absolute ,
+row-normalized , total-normalized .
 
-        • 'GridVisible' Available values: on (default), off.
+Run demo confusionchart to see some examples.
 
-        • 'Normalization' Available values: absolute (default),
-          column-normalized, row-normalized, total-normalized.
-
-        • 'ColumnSummary' Available values: off (default), absolute,
-          column-normalized,total-normalized.
-
-        • 'RowSummary' Available values: off (default), absolute,
-          row-normalized, total-normalized.
-
-     Run ‘demo confusionchart’ to see some examples.
-
-     See also: confusionmat, sortClasses.
+See also:
+confusionmat,
+sortClasses
 
 
 # name: <cell-element>
@@ -118,33 +768,34 @@ confusionmat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1353
- -- statistics: C = confusionmat (GROUP, GROUPHAT)
- -- statistics: C = confusionmat (GROUP, GROUPHAT, "Order", GROUPORDER)
- -- statistics: [C, ORDER] = confusionmat (GROUP, GROUPHAT)
+# length: 1254
+statistics: C = confusionmat ( group , grouphat )
+statistics: C = confusionmat ( group , grouphat , "Order", grouporder )
+statistics: [ C , order ] = confusionmat ( group , grouphat )
 
-     Compute a confusion matrix for classification problems
+Compute a confusion matrix for classification problems
 
-     ‘confusionmat’ returns the confusion matrix C for the group of actual
-     values GROUP and the group of predicted values GROUPHAT.  The row indices
-     of the confusion matrix represent actual values, while the column indices
-     represent predicted values.  The indices are the same for both actual and
-     predicted values, so the confusion matrix is a square matrix.  Each element
-     of the matrix represents the number of matches between a given actual value
-     (row index) and a given predicted value (column index), hence correct
-     matches lie on the main diagonal of the matrix.  The order of the rows and
-     columns is returned in ORDER.
+confusionmat returns the confusion matrix C for the group of
+actual values group and the group of predicted values grouphat .
+The row indices of the confusion matrix represent actual values, while the
+column indices represent predicted values. The indices are the same for both
+actual and predicted values, so the confusion matrix is a square matrix.
+Each element of the matrix represents the number of matches between a given
+actual value (row index) and a given predicted value (column index), hence
+correct matches lie on the main diagonal of the matrix.
+The order of the rows and columns is returned in order .
 
-     GROUP and GROUPHAT must have the same number of observations and the same
-     data type.  Valid data types are numeric vectors, logical vectors,
-     character arrays, string arrays, cell arrays of strings, and categorical
-     arrays.
+group and grouphat must have the same number of observations
+and the same data type.
+Valid data types are numeric vectors, logical vectors, character arrays,
+string arrays, cell arrays of strings, and categorical arrays.
 
-     The order of the rows and columns can be specified by setting the
-     GROUPORDER variable.  The data type of GROUPORDER must be the same of GROUP
-     and GROUPHAT.
+The order of the rows and columns can be specified by setting the
+grouporder variable. The data type of grouporder must be the
+same of group and grouphat .
 
-     See also: crosstab.
+See also:
+crosstab
 
 
 # name: <cell-element>
@@ -165,61 +816,57 @@ crossval
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2164
- -- statistics: RESULTS = crossval (F, X, Y)
- -- statistics: RESULTS = crossval (F, X, Y, NAME, VALUE)
+# length: 1883
+statistics: results = crossval ( f , X , y )
+statistics: results = crossval ( f , X , y , name , value )
 
-     Perform cross validation on given data.
+Perform cross validation on given data.
 
-     F should be a function that takes 4 inputs XTRAIN, YTRAIN, XTEST, YTEST,
-     fits a model based on XTRAIN, YTRAIN, applies the fitted model to XTEST,
-     and returns a goodness of fit measure based on comparing the predicted and
-     actual YTEST.  ‘crossval’ returns an array containing the values returned
-     by F for every cross-validation fold or resampling applied to the given
-     data.
+f should be a function that takes 4 inputs xtrain , ytrain ,
+xtest , ytest , fits a model based on xtrain , ytrain ,
+applies the fitted model to xtest , and returns a goodness of fit
+measure based on comparing the predicted and actual ytest .
+crossval returns an array containing the values returned by f
+for every cross-validation fold or resampling applied to the given data.
 
-     X should be an N by M matrix of predictor values
+X should be an n by m matrix of predictor values
 
-     Y should be an N by 1 vector of predicand values
+y should be an n by 1 vector of predicand values
 
-     Optional arguments may include name-value pairs as follows:
+Optional arguments may include name-value pairs as follows:
 
-     'KFold'
-          Divide set into K equal-size subsets, using each one successively for
-          validation.
+'KFold'
+Divide set into k equal-size subsets, using each one successively
+for validation.
+'HoldOut'
+Divide set into two subsets, training and validation. If the value
+k is a fraction, that is the fraction of values put in the
+validation subset (by default k =0.1); if it is a positive integer,
+that is the number of values in the validation subset.
+'LeaveOut'
+Leave-one-out partition (each element is placed in its own subset).
+The value is ignored, but it is required.
+'Partition'
+The value should be a cvpartition object.
+'Given'
+The value should be an n by 1 vector specifying in which
+partition to put each element.
+'stratify'
+The value should be an n by 1 vector containing class
+designations for the elements, in which case the 'KFold' and
+'HoldOut' partitionings attempt to ensure each partition
+represents the classes proportionately.
+'mcreps'
+The value should be a positive integer specifying the number of times
+to resample based on different partitionings. Currently only works with
+the partition type 'HoldOut' .
 
-     'HoldOut'
-          Divide set into two subsets, training and validation.  If the value K
-          is a fraction, that is the fraction of values put in the validation
-          subset (by default K=0.1); if it is a positive integer, that is the
-          number of values in the validation subset.
+Only one of 'KFold' , 'HoldOut' , 'LeaveOut' ,
+'Given' , 'Partition' should be specified. If none is
+specified, the default is 'KFold' with k = 10.
 
-     'LeaveOut'
-          Leave-one-out partition (each element is placed in its own subset).
-          The value is ignored, but it is required.
-
-     'Partition'
-          The value should be a CVPARTITION object.
-
-     'Given'
-          The value should be an N by 1 vector specifying in which partition to
-          put each element.
-
-     'stratify'
-          The value should be an N by 1 vector containing class designations for
-          the elements, in which case the 'KFold' and 'HoldOut' partitionings
-          attempt to ensure each partition represents the classes
-          proportionately.
-
-     'mcreps'
-          The value should be a positive integer specifying the number of times
-          to resample based on different partitionings.  Currently only works
-          with the partition type 'HoldOut'.
-
-     Only one of 'KFold', 'HoldOut', 'LeaveOut', 'Given', 'Partition' should be
-     specified.  If none is specified, the default is 'KFold' with K = 10.
-
-     See also: cvpartition.
+See also:
+cvpartition
 
 
 # name: <cell-element>
@@ -240,16 +887,17 @@ cvpartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 292
- -- statistics: cvpartition
+# length: 256
+statistics: cvpartition
 
-     Partition data for cross-validation
+Partition data for cross-validation
 
-     The ‘cvpartition’ class generates a partitioning scheme on a dataset to
-     facilitate cross-validation of statistical models utilizing training and
-     testing subsets of the dataset.
+The cvpartition class generates a partitioning scheme on a dataset
+to facilitate cross-validation of statistical models utilizing training and
+testing subsets of the dataset.
 
-     See also: crossval.
+See also:
+crossval
 
 
 # name: <cell-element>
@@ -263,6 +911,652 @@ Partition data for cross-validation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 20
+cvpartition.IsCustom
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 220
+cvpartition: property IsCustom
+
+Flag for custom partition
+
+A logical scalar specifying whether the cvpartition object
+was created using custom partition partitioning ( true ) or
+not ( false ). This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Flag for custom partition
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+cvpartition.IsGrouped
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 211
+cvpartition: property IsGrouped
+
+Flag for grouped partition
+
+A logical scalar specifying whether the cvpartition object was
+created using grouping variables ( true ) or not ( false ).
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Flag for grouped partition
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+cvpartition.IsStratified
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 199
+cvpartition: property IsStratified
+
+Flag for stratified partition
+
+A logical scalar specifying whether the cvpartition object was
+created with a 'stratify' value of true .
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Flag for stratified partition
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+cvpartition.NumObservations
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 217
+cvpartition: property NumObservations
+
+Number of observations
+
+A positive integer scalar specifying the number of observations in the
+dataset (including any missing data, where applicable). This property
+is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Number of observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+cvpartition.NumTestSets
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 264
+cvpartition: property NumTestSets
+
+Number of test sets
+
+A positive integer scalar specifying the number of folds for partition
+types 'kfold' and 'leaveout' . When partition type is
+'holdout' and 'resubstitution' , then NumTestSets
+is 1. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Number of test sets
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+cvpartition.TestSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 313
+cvpartition: property TestSize
+
+Size of each test set
+
+A positive integer scalar specifying the size of the test set for
+partition types 'holdout' and 'resubstitution' or a
+vector of positive integers specifying the size of each testing set for
+partition types 'kfold' and 'leaveout' . This property
+is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Size of each test set
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+cvpartition.TrainSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 317
+cvpartition: property TrainSize
+
+Size of each train set
+
+A positive integer scalar specifying the size of the train set for
+partition types 'holdout' and 'resubstitution' or a
+vector of positive integers specifying the size of each training set for
+partition types 'kfold' and 'leaveout' . This property
+is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Size of each train set
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+cvpartition.Type
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 210
+cvpartition: property Type
+
+Type of validation partition
+
+A character vector specifying the type of the cvpartition object.
+It can be kfold , holdout , leaveout , or
+resubstitution . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Type of validation partition
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+cvpartition.cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7450
+cvpartition: C = cvpartition ( n , 'KFold' )
+cvpartition: C = cvpartition ( n , 'KFold' , k )
+cvpartition: C = cvpartition ( n , 'KFold' , k , 'GroupingVariables' , grpvars )
+cvpartition: C = cvpartition ( n , 'Holdout' )
+cvpartition: C = cvpartition ( n , 'Holdout' , p )
+cvpartition: C = cvpartition ( n , 'Holdout' , p , 'GroupingVariables' , grpvars )
+cvpartition: C = cvpartition ( n , 'Leaveout' )
+cvpartition: C = cvpartition ( n , 'Leaveout' , 'GroupingVariables' , grpvars )
+cvpartition: C = cvpartition ( n , 'Resubstitution' )
+cvpartition: C = cvpartition ( X , 'KFold' )
+cvpartition: C = cvpartition ( X , 'KFold' , k )
+cvpartition: C = cvpartition ( X , 'KFold' , k , 'Stratify' , opt )
+cvpartition: C = cvpartition ( X , 'Holdout' )
+cvpartition: C = cvpartition ( X , 'Holdout' , p )
+cvpartition: C = cvpartition ( X , 'Holdout' , p , 'Stratify' , opt )
+cvpartition: C = cvpartition ( 'CustomPartition' , testSets )
+
+Repartition data for cross-validation.
+
+C = cvpartition ( n , 'KFold' ) creates a
+cvpartition object C , which defines a random nonstratified
+partition for k-fold cross-validation on n observations with each
+fold (subsample) having approximately the same number of observations.
+The default number of folds is 10 for n >= 10 or equal to
+n otherwise.
+
+C = cvpartition ( n , 'KFold' , k ) also
+creates a nonstratified random partition for k-fold cross-validation with
+the number of folds defined by k , which must be a positive integer
+scalar smaller than the number of observations n .
+
+C = cvpartition ( n , 'KFold' , k ,
+'GroupingVariables' , grpvars ) creates a
+cvpartition
+object C that defines a random partition for k-fold
+cross-validation in which every observation sharing a group label, as
+defined by grpvars , is assigned to the same fold. No group is
+split between the training and test sets, so a fold holds out whole
+groups; this is the partition scikit-learn calls GroupKFold , and
+it is what you want when observations within a group are not
+independent, such as repeated measurements of one subject. It is not
+stratification: a fold does not contain a proportional mix of the group
+labels, and 'Stratify' is the option for that. The grouping
+variables specified in grpvars can be one of the following:
+
+A numeric vector, logical vector, categorical vector, character
+array, string array, or cell array of character vectors containing one
+grouping variable.
+A numeric matrix or cell array containing two or more grouping
+variables. Each column in the matrix or array must correspond to one
+grouping variable.
+
+'GroupingVariables' is an Octave extension: MATLAB&rsquo;s
+cvpartition has no such option. It follows the group-aware
+splitters of scikit-learn, and each partition type takes the analogue of
+its ungrouped self:
+
+Partition type scikit-learn analogue Effect
+'KFold' GroupKFold whole groups fill each
+fold
+'Holdout' GroupShuffleSplit whole groups
+are held out
+'Leaveout' LeaveOneGroupOut one whole
+group is held out at a time
+'Resubstitution' none an error: nothing can be
+held out of a partition that holds everything
+
+Given a stratification variable, 'GroupingVariables' may
+follow 'Stratify' , as in cvpartition ( y ,
+'KFold' , k , 'Stratify' , true,
+'GroupingVariables' , grpvars ) . Each group is then
+kept whole while the classes of y are spread as evenly over
+the folds as the groups allow, which is scikit-learn&rsquo;s
+StratifiedGroupKFold . The two demands conflict, since a
+group carries whatever class mix it has, so the balance is
+approximate: groups are placed largest first, each into the fold
+whose class counts it disturbs least.
+
+In every case an observation never appears in both the training and the
+test set as one of its group fellows, which is what makes grouping worth
+asking for when observations within a group are not independent.
+
+C = cvpartition ( n , 'Holdout' ) creates a
+cvpartition object C , which defines a random nonstratified
+partition for holdout validation on n observations. 90% of the
+observations are assigned to the training set and the remaining 10% to
+the test set.
+
+C = cvpartition ( n , 'Holdout' , p ) also
+creates a nonstratified random partition for holdout validation with the
+percentage of training and test sets defined by p , which can be a
+scalar value in the range (0,1) or a positive integer scalar in
+the range [1, n ) .
+
+C = cvpartition ( n , 'Leaveout' ) creates a
+cvpartition object C , which defines a random partition for
+leave-one-out cross-validation on n observations. This is a
+special case of k-fold cross-validation with the number of folds equal to
+the number of observations.
+
+C = cvpartition ( n , 'Resubstitution' ) creates
+a cvpartition object C without partitioning the data and
+both training and test sets containing all observations n .
+
+C = cvpartition ( X , 'KFold' ) creates a
+cvpartition object C , which defines a stratified random
+partition for k-fold cross-validation according to the class proportions
+in Χ . X can be a numeric, logical, categorical, or string
+vector, or a character array or a cell array of character vectors.
+Missing values in X are discarded. The default number of folds is
+10 for numel ( X ) >= 10 or equal to numel ( X )
+otherwise.
+
+C = cvpartition ( X , 'KFold' , k ) also
+creates a stratified random partition for k-fold cross-validation with
+the number of folds defined by k , which must be a positive integer
+scalar smaller than the number of observations in X .
+
+C = cvpartition ( X , 'KFold' , k ,
+'Stratify' , opt ) creates a random partition for k-fold
+cross-validation, which is stratified if opt is true , or
+nonstratified if opt is false .
+
+C = cvpartition ( X , 'Holdout' ) creates a
+cvpartition object C , which defines a stratified random
+partition for holdout validation while maintaining the class proportions
+in Χ . 90% of the observations are assigned to the training set and
+the remaining 10% to the test set.
+
+C = cvpartition ( X , 'Holdout' , p ) also
+creates a stratified random partition for holdout validation with the
+percentage of training and test sets defined by p , which can be a
+scalar value in the range (0,1) or a positive integer scalar in
+the range [1, n ) .
+
+C = cvpartition ( X , 'Holdout' , p ,
+'Stratify' , opt ) creates a random partition for holdout
+validation, which is stratified if opt is true , or
+nonstratified if opt is false .
+
+C = cvpartition ( 'CustomPartition' , testSets )
+creates a custom partition according to testSets , which can be a
+positive integer vector, a logical vector, or a logical matrix according
+to the following options:
+
+A positive integer vector of length N with values in the
+range [1,K] , where K < N , will specify a K-fold
+cross-validation partition, in which each value indicates the test set
+of each observation. Alternatively, the same vector with values in the
+range [1,N] will specify a leave-one-out cross-validation.
+A logical vector will specify a holdout validation, in which the
+true elements correspond to the test set and the false
+elements correspond to the training set.
+A logical matrix with K columns will specify a K-fold
+cross-validation partition, in which each column corresponds to a fold
+and each row to an observation. Alternatively, an N&times;N logical
+matrix will specify a leave-one-out cross-validation, where N is
+the number of observations. true elements correspond to the
+test set and the false elements correspond to the training set.
+
+See also:
+cvpartition,
+summary,
+test,
+training
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Repartition data for cross-validation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+cvpartition.repartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1361
+cvpartition: Cnew = repartition ( C )
+cvpartition: Cnew = repartition ( C , sval )
+cvpartition: Cnew = repartition ( C , 'legacy' )
+
+Repartition data for cross-validation.
+
+Cnew = repartition ( C ) creates a cvpartition
+object Cnew that defines a new random partition of the same type as
+the cvpartition C .
+
+Cnew = repartition ( C , sval ) also uses the value
+of sval to set the state of the random generator used in
+repartitioning C . If sval is a vector, then the random
+generator is set using the 'state' keyword as in
+rand ("state", sval ) . If sval is a scalar, then the
+'seed' keyword is used as in rand ("seed", sval ) to
+specify that old generators should be used.
+
+Seeding is confined to this call: the state of the random generator is
+saved beforehand and restored before repartition returns, so
+sval does not carry over into the random numbers the caller draws
+afterwards. sval is an Octave extension; MATLAB expects a
+RandStream object in this position, which Octave does not have.
+
+Cnew = repartition ( C , 'legacy' ) only applies
+to cvpartition objects C that use k-fold partitioning and
+it will repartition C in the same non-random manner that was
+previously used by the old-style cvpartition class of the
+statistics package. The 'legacy' option does not apply to
+stratified or grouped partitions.
+
+See also:
+cvpartition,
+summary,
+test,
+training
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Repartition data for cross-validation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+cvpartition.summary
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1431
+cvpartition: tbl = summary ( c )
+
+Summarize stratified or grouped cross-validation partitions.
+
+tbl = summary ( c ) returns a summary table tbl of
+the validation partition contained in the cvpartition object
+c .
+
+This method calculates the distribution of classes (if stratified) or
+groups (if grouped) across the entire dataset, as well as within every
+training and test set generated by the partition.
+
+Inputs
+
+c
+A cvpartition object. The object must satisfy two conditions:
+
+The partition type ( c.Type ) must be 'kfold' or
+'holdout' .
+The partition must be created with a stratification or grouping
+variable (i.e., c.IsStratified or c.IsGrouped must be
+true ).
+
+Outputs
+
+tbl
+A table object containing the summary statistics. The table
+contains one row for every unique label/group in every set (all, train,
+test). The columns are:
+
+Set
+The specific subset being described. Values include 'all' (the
+full dataset), 'train1' , 'test1' , etc.
+SetSize
+The total number of observations in that specific set.
+Label
+The class or group identifier. If c.IsStratified is true, this
+column is named StratificationLabel . If c.IsGrouped is
+true, it is named GroupLabel .
+Count
+The number of observations of that label within the set. If stratified,
+this column is named StratificationCount ; otherwise,
+GroupCount .
+PercentInSet
+The percentage of the set composed of that specific label.
+
+See also:
+cvpartition,
+repartition,
+test,
+training
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+Summarize stratified or grouped cross-validation partitions.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+cvpartition.test
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1079
+cvpartition: idx = test ( C )
+cvpartition: idx = test ( C , i )
+cvpartition: idx = test ( C , 'all' )
+
+Test indices for cross-validation.
+
+idx = test ( C ) returns a logical vector idx with
+true values indicating the elements corresponding to the test
+set defined in the cvpartition object C . For K-fold and
+leave-one-out partitions, the indices corresponding to the first test set
+are returned.
+
+idx = test ( C , i ) returns a logical vector or
+matrix with the indices of the test set indicated by i . If i
+is a scalar, then idx is a logical vector with the indices of the
+i-th set. If i is a vector, then idx is a logical
+matrix in which idx (:,j) specified the observations in the
+test set i (j) . The value(s) in i must not exceed the
+number of tests in the cvpartition object C .
+
+idx = test ( C , 'all' ) returns a logical vector
+or matrix for all test sets defined in the cvpartition object
+C . For holdout and resubstitution partition types, a vector is
+returned. For K-fold and leave-one-out, a matrix is returned.
+
+See also:
+cvpartition,
+repartition,
+summary,
+training
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Test indices for cross-validation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+cvpartition.training
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1123
+cvpartition: idx = training ( C )
+cvpartition: idx = training ( C , i )
+cvpartition: idx = training ( C , 'all' )
+
+Training indices for cross-validation.
+
+idx = training ( C ) returns a logical vector idx
+with true values indicating the elements corresponding to the
+training set defined in the cvpartition object C . For
+K-fold and leave-one-out partitions, the indices corresponding to the
+first training set are returned.
+
+idx = training ( C , i ) returns a logical vector
+or matrix with the indices of the training set indicated by i . If
+i is a scalar, then idx is a logical vector with the indices
+of the i-th set. If i is a vector, then idx is a
+logical matrix in which idx (:,j) specified the observations
+in the training set i (j) . The value(s) in i must not
+exceed the number of tests in the cvpartition object C .
+
+idx = training ( C , 'all' ) returns a logical
+vector or matrix for all training sets defined in the cvpartition
+object C . For holdout and resubstitution partition types, a vector
+is returned. For K-fold and leave-one-out, a matrix is returned.
+
+See also:
+cvpartition,
+repartition,
+summary,
+test
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Training indices for cross-validation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 9
 perfcurve
 
@@ -270,75 +1564,75 @@ perfcurve
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3176
- -- statistics: [X, Y] = perfcurve (LABELS, SCORES, POSCLASS)
- -- statistics: [X, Y, T, AUC, OPTROCPT] = perfcurve (...)
- -- statistics: [...] = perfcurve (..., NAME, VALUE)
+# length: 2519
+statistics: [ X , Y ] = perfcurve ( labels , scores , posclass )
+statistics: [ X , Y , T , AUC , OPTROCPT ] = perfcurve (&hellip;)
+statistics: [&hellip;] = perfcurve (&hellip;, Name , Value )
 
-     Receiver operating characteristic (ROC) and other classifier performance
-     curves.
+Receiver operating characteristic (ROC) and other classifier performance
+curves.
 
-     ‘[X, Y] = perfcurve (LABELS, SCORES, POSCLASS)’ returns the ROC curve for
-     the classifier scores in SCORES given the true class LABELS and the
-     positive class POSCLASS.  LABELS is a numeric vector or a cell array of
-     character vectors; SCORES is a numeric vector of the same length, where
-     larger values indicate stronger evidence for the positive class.  By
-     default X is the false positive rate and Y the true positive rate.
+[ X , Y ] = perfcurve ( labels , scores ,
+posclass ) returns the ROC curve for the classifier scores in
+scores given the true class labels and the positive class
+posclass . labels is a numeric vector or a cell array of
+character vectors; scores is a numeric vector of the same length, where
+larger values indicate stronger evidence for the positive class. By default
+X is the false positive rate and Y the true positive rate.
 
-     ‘[X, Y, T, AUC, OPTROCPT] = perfcurve (...)’ also returns the thresholds T
-     on the scores, the area AUC under the (X, Y) curve, and the optimal
-     operating point OPTROCPT ‘= [FPR, TPR]’ of the ROC curve.
+[ X , Y , T , AUC , OPTROCPT ] = perfcurve
+(&hellip;) also returns the thresholds T on the scores, the area
+AUC under the ( X , Y ) curve, and the optimal operating point
+OPTROCPT = [FPR, TPR] of the ROC curve.
 
-     The following Name-Value pairs are supported:
+The following Name-Value pairs are supported:
 
-     NAME           VALUE
-                    
-     ----------------------------------------------------------------------------------
-     'XCrit'        The criterion for X.  The default is 'FPR'.
-                    
-     'YCrit'        The criterion for Y.  The default is 'TPR'. Supported criteria
-                    are 'TPR' ('sens', 'reca'), 'FNR', 'FPR' ('fall'), 'TNR'
-                    ('spec'), 'PPV' ('prec'), 'NPV', 'accu', the counts 'TP', 'FN',
-                    'FP', 'TN', and the rates 'RPP', 'RNP'.
-                    
-     'NegClass'     The negative class(es).  The default, 'all', treats every label
-                    other than POSCLASS as negative.
-                    
-     'Weights'      A vector of non-negative observation weights.
-                    
-     'Cost'         A 2*2 misclassification-cost matrix ‘[C(P|P) C(N|P); C(P|N)
-                    C(N|N)]’ used for OPTROCPT.  The default is ‘[0 1; 1 0]’.
-                    
-     'XVals'        Values of the X criterion at which to return the curve.  'TVals'
-                    does the same for the thresholds.
-                    
-     'ProcessNaN'   How to treat ‘NaN’ scores: 'ignore' (default) or 'addtofalse'.
-                    
-     'NBoot'        Number of bootstrap replicates for confidence bounds on Y and
-                    AUC.  The default 0 computes no bounds.
-                    
-     'BootType'     The bootstrap interval: 'bca' (default, bias-corrected and
-                    accelerated), 'percentile', or 'normal'.
-                    
-     'Alpha'        The significance level for the bounds, so the confidence level
-                    is 1 - ALPHA.  The default is 0.05.
+Name Value
+'XCrit' The criterion for X . The default is
+'FPR' .
+'YCrit' The criterion for Y . The default is
+'TPR' . Supported criteria are 'TPR' ( 'sens' ,
+'reca' ), 'FNR' , 'FPR' ( 'fall' ), 'TNR'
+( 'spec' ), 'PPV' ( 'prec' ), 'NPV' ,
+'accu' , the counts 'TP' , 'FN' , 'FP' ,
+'TN' , and the rates 'RPP' , 'RNP' .
+'NegClass' The negative class(es). The default,
+'all' , treats every label other than posclass as negative.
+'Weights' A vector of non-negative observation weights.
+'Cost' A 2&times;2 misclassification-cost matrix
+[C(P|P) C(N|P); C(P|N) C(N|N)] used for OPTROCPT . The default
+is [0 1; 1 0] .
+'XVals' Values of the X criterion at which to return
+the curve. 'TVals' does the same for the thresholds.
+'ProcessNaN' How to treat NaN scores:
+'ignore' (default) or 'addtofalse' .
+'NBoot' Number of bootstrap replicates for confidence
+bounds on Y and AUC . The default 0 computes no bounds.
+'BootType' The bootstrap interval: 'bca' (default,
+bias-corrected and accelerated), 'percentile' , or 'normal' .
+'Alpha' The significance level for the bounds, so the
+confidence level is 1 - Alpha . The default is 0.05 .
 
-     With 'NBoot' greater than zero, Y is returned as an m*3 array ‘[Y, YLOW,
-     YHIGH]’ and AUC as ‘[AUC, AUCLOW, AUCHIGH]’.  The bootstrap uses an
-     independent random stream, so the bounds do not match MATLAB numerically.
-     ‘[..., SUBY, SUBYNAMES] = perfcurve (...)’ returns the Y values for each
-     negative subclass and their names.
+With 'NBoot' greater than zero, Y is returned as an
+m&times;3 array [ Y , Ylow , Yhigh ] and AUC as
+[ AUC , AUClow , AUChigh ] . The bootstrap uses an
+independent random stream, so the bounds do not match MATLAB numerically.
+[&hellip;, SUBY , SUBYNAMES ] = perfcurve (&hellip;) returns
+the Y values for each negative subclass and their names.
 
-     When called with no output arguments the curve is plotted.
+When called with no output arguments the curve is plotted.
 
-     See also: fitcsvm, fitcknn, glmfit.
+See also:
+fitcsvm,
+fitcknn,
+glmfit
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
 # length: 80
-Receiver operating characteristic (ROC) and other classifier performance curv...
+Receiver operating characteristic (ROC) and other classifier performance curves.
 
 
 
@@ -352,25 +1646,29 @@ rocmetrics
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 900
- -- statistics: rocmetrics
+# length: 793
+statistics: rocmetrics
 
-     Receiver operating characteristic (ROC) metrics for classifier output.
+Receiver operating characteristic (ROC) metrics for classifier output.
 
-     The ‘rocmetrics’ class evaluates a classifier's performance by computing,
-     for each class, a one-versus-all ROC curve together with a set of
-     threshold-dependent performance metrics.  It stores the results in the
-     ‘Metrics’ table and the per-class area under the curve in ‘AUC’, and
-     provides the ‘addMetrics’, ‘average’, and ‘plot’ methods for follow-up
-     analysis.
+The rocmetrics class evaluates a classifier&rsquo;s performance by
+computing, for each class, a one-versus-all ROC curve together with a set
+of threshold-dependent performance metrics. It stores the results in the
+Metrics table and the per-class area under the curve in AUC ,
+and provides the addMetrics , average , and plot
+methods for follow-up analysis.
 
-     For a problem with K classes and scores supplied as an N-by-K matrix, the
-     discriminant score used for class K is the one-versus-all margin
-     ‘Scores(:,k) - max (Scores(:,j))’ over ‘j != k’, matching MATLAB's
-     ‘rocmetrics’.  Every metric is evaluated at each distinct value of that
-     margin.
+For a problem with K classes and scores supplied as an
+N -by- K matrix, the discriminant score used for class
+k is the one-versus-all margin
+Scores(:,k) - max (Scores(:,j)) over j != k , matching
+MATLAB&rsquo;s rocmetrics . Every metric is evaluated at each distinct
+value of that margin.
 
-     See also: perfcurve, confusionmat, confusionchart.
+See also:
+perfcurve,
+confusionmat,
+confusionchart
 
 
 # name: <cell-element>
@@ -378,6 +1676,389 @@ rocmetrics
 # elements: 1
 # length: 70
 Receiver operating characteristic (ROC) metrics for classifier output.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+rocmetrics.AUC
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 179
+rocmetrics: property AUC
+
+Area under the ROC curve
+
+Row vector holding the area under the one-versus-all ROC curve for each
+class, in ClassNames order. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Area under the ROC curve
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+rocmetrics.ClassNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 157
+rocmetrics: property ClassNames
+
+Class names
+
+Class names for which the ROC metrics are computed, in the column order
+of Scores . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+Class names
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+rocmetrics.Cost
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 223
+rocmetrics: property Cost
+
+Misclassification cost matrix
+
+Square misclassification-cost matrix, with zero diagonal and unit
+off-diagonal entries by default. It is used by the ExpectedCost
+metric. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Misclassification cost matrix
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+rocmetrics.Labels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 141
+rocmetrics: property Labels
+
+Observation labels
+
+True class labels supplied at construction, one per observation. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Observation labels
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+rocmetrics.Metrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 389
+rocmetrics: property Metrics
+
+Performance metrics table
+
+Table of performance metrics, vertically concatenated across the classes
+in ClassNames order with one row per distinct threshold. The
+standard variables are ClassName , Threshold ,
+FalsePositiveRate , and TruePositiveRate , followed by one
+variable for each metric requested through 'AdditionalMetrics' .
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Performance metrics table
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+rocmetrics.Prior
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 160
+rocmetrics: property Prior
+
+Prior class probabilities
+
+Row vector of prior class probabilities, in ClassNames order,
+summing to one. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Prior class probabilities
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+rocmetrics.Scores
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 150
+rocmetrics: property Scores
+
+Classification scores
+
+Classification scores supplied at construction, as an
+N -by- K matrix. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Classification scores
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+rocmetrics.Weights
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 163
+rocmetrics: property Weights
+
+Observation weights
+
+Non-negative observation weights, one per observation. Defaults to a
+vector of ones. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Observation weights
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+rocmetrics.addMetrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 372
+rocmetrics: obj = addMetrics ( obj , metrics )
+
+Append additional performance metrics to an existing rocmetrics
+object.
+
+metrics is a metric name or a cell array of metric names, chosen
+from the list supported by the 'AdditionalMetrics' constructor
+argument. The named metrics are appended as new variables of the
+Metrics table; metrics already present are left unchanged.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 71
+Append additional performance metrics to an existing rocmetrics object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+rocmetrics.average
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 735
+rocmetrics: [ FPR , TPR , Thresholds , AUC ] = average ( obj , type )
+
+Compute an averaged ROC curve across the classes of a rocmetrics
+object.
+
+type selects the averaging method: 'macro' (unweighted
+mean of the per-class curves), 'micro' (a single curve pooling
+every one-versus-all instance), or 'weighted' (mean of the
+per-class curves weighted by Prior ). The function returns the
+averaged false and true positive rates FPR and TPR , the
+corresponding Thresholds , and the area AUC under the
+averaged curve.
+
+The averaged curve is evaluated on the union of the per-class
+thresholds. MATLAB inserts additional staircase points when building
+the averaged curve, so the exact rows and the averaged AUC may
+differ slightly from MATLAB.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 72
+Compute an averaged ROC curve across the classes of a rocmetrics object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+rocmetrics.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 265
+rocmetrics: plot ( obj )
+rocmetrics: h = plot ( obj )
+
+Plot the per-class ROC curves of a rocmetrics object.
+
+Each class in ClassNames contributes one true-positive-rate
+versus false-positive-rate curve. A handle to the line objects is
+returned in h when requested.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Plot the per-class ROC curves of a rocmetrics object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+rocmetrics.rocmetrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1861
+rocmetrics: obj = rocmetrics ( labels , scores , classnames )
+rocmetrics: obj = rocmetrics (&hellip;, Name , Value )
+
+Create a rocmetrics object from labels and classification scores.
+
+labels is a vector of true class labels with one element per
+observation; it may be numeric, logical, a character matrix, or a cell
+array of character vectors. scores is an N -by- K
+numeric matrix of classification scores, where scores(i,k) is the
+score of observation i for the class classnames(k) .
+classnames lists the K classes in the column order of
+scores .
+
+The following Name-Value pairs are supported:
+
+Name Value
+'AdditionalMetrics' A character vector or cell array
+of metric names to append to Metrics . Supported names are
+'TruePositives' , 'FalseNegatives' ,
+'FalsePositives' , 'TrueNegatives' ,
+'SumOfTrueAndFalsePositives' ,
+'RateOfPositivePredictions' ,
+'RateOfNegativePredictions' , 'Accuracy' ,
+'FalseNegativeRate' , 'TrueNegativeRate' ,
+'PositivePredictiveValue' , 'NegativePredictiveValue' ,
+'ExpectedCost' , and 'f1score' .
+'Prior' Prior class probabilities, given as
+'empirical' (default), 'uniform' , or a numeric vector
+with one value per class.
+'Cost' A K -by- K misclassification-cost
+matrix used by the ExpectedCost metric. The default has zero
+diagonal and unit off-diagonal entries.
+'Weights' A vector of non-negative observation
+weights. The default is a vector of ones.
+'NaNFlag' How to treat NaN scores:
+'omitnan' (default) drops the affected observations, while
+'includenan' treats them as always classified negative.
+'FixedMetricValues' 'all' (default) to use
+every distinct threshold, or a numeric vector of threshold values at
+which to report the curve (nearest actual thresholds are returned).
+
+Construction from a trained model object, the 'FixedMetric'
+grids other than thresholds, and bootstrap confidence intervals are not
+implemented.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+Create a rocmetrics object from labels and classification scores.
 
 
 

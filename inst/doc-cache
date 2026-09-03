@@ -13,38 +13,42 @@ cholcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1399
- -- statistics: T = cholcov (SIGMA)
- -- statistics: [T, P = cholcov (SIGMA)
- -- statistics: [...] = cholcov (SIGMA, FLAG)
+# length: 1299
+statistics: T = cholcov ( sigma )
+statistics: [ T , p = cholcov ( sigma )
+statistics: [&hellip;] = cholcov ( sigma , flag )
 
-     Cholesky-like decomposition for covariance matrix.
+Cholesky-like decomposition for covariance matrix.
 
-     ‘T = cholcov (SIGMA)’ computes matrix T such that SIGMA = T' T.  SIGMA must
-     be square, symmetric, and positive semi-definite.
+T = cholcov ( sigma ) computes matrix T such that
+sigma = T &rsquo; T . sigma must be square, symmetric, and
+positive semi-definite.
 
-     If SIGMA is positive definite, then T is the square, upper triangular
-     Cholesky factor.  If SIGMA is not positive definite, T is computed with an
-     eigenvalue decomposition of SIGMA, but in this case T is not necessarily
-     triangular or square.  Any eigenvectors whose corresponding eigenvalue is
-     close to zero (within a tolerance) are omitted.  If any remaining
-     eigenvalues are negative, T is empty.
+If sigma is positive definite, then T is the square, upper
+triangular Cholesky factor. If sigma is not positive definite, T
+is computed with an eigenvalue decomposition of sigma , but in this case
+T is not necessarily triangular or square. Any eigenvectors whose
+corresponding eigenvalue is close to zero (within a tolerance) are omitted.
+If any remaining eigenvalues are negative, T is empty.
 
-     The tolerance is calculated as ‘10 * eps (max (abs (diag (sigma))))’.
+The tolerance is calculated as 10 * eps (max (abs (diag (sigma)))) .
 
-     ‘[T, P = cholcov (SIGMA)’ returns in P the number of negative eigenvalues
-     of SIGMA.  If P > 0, then T is empty, whereas if P = 0, SIGMA) is positive
-     semi-definite.
+[ T , p = cholcov ( sigma ) returns in p the
+number of negative eigenvalues of sigma . If p > 0, then T
+is empty, whereas if p = 0, sigma ) is positive semi-definite.
 
-     If SIGMA is not square and symmetric, P is NaN and T is empty.
+If sigma is not square and symmetric, P is NaN and T is empty.
 
-     ‘[T, P = cholcov (SIGMA, 0)’ returns P = 0 if SIGMA is positive definite,
-     in which case T is the Cholesky factor.  If SIGMA is not positive definite,
-     P is a positive integer and T is empty.
+[ T , p = cholcov ( sigma , 0) returns p = 0 if
+sigma is positive definite, in which case T is the Cholesky
+factor. If sigma is not positive definite, p is a positive
+integer and T is empty.
 
-     ‘[...] = cholcov (SIGMA, 1)’ is equivalent to ‘ [...] = cholcov (SIGMA)’.
+[&hellip;] = cholcov ( sigma , 1) is equivalent to
+[&hellip;] = cholcov ( sigma ) .
 
-     See also: chov.
+See also:
+chov
 
 
 # name: <cell-element>
@@ -65,17 +69,23 @@ loadmodel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 435
- -- ClassificationSVM: OBJ = loadmodel (FILENAME)
+# length: 393
+statistics: obj = loadmodel ( filename )
 
-     Load a Classification or Regression model from a file.
+Load a Classification or Regression model from a file.
 
-     ‘OBJ = loadmodel (FILENAME)’ loads a Classification or Regression object,
-     OBJ, from a file defined in FILENAME.
+obj = loadmodel ( filename ) loads a Classification or
+Regression object, obj , from a file defined in filename .
 
-     See also: savemodel, ClassificationDiscriminant, ClassificationGAM,
-     ClassificationKNN, ClassificationNeuralNetwork,
-     ClassificationPartitionedModel, ClassificationSVM, RegressionGAM.
+See also:
+savemodel,
+ClassificationDiscriminant,
+ClassificationGAM,
+ClassificationKNN,
+ClassificationNeuralNetwork,
+ClassificationPartitionedModel,
+ClassificationSVM,
+RegressionGAM
 
 
 # name: <cell-element>
@@ -96,23 +106,24 @@ logit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 175
- -- statistics: X = logit (P)
+# length: 169
+statistics: x = logit ( p )
 
-     Compute the logit for each value of P
+Compute the logit for each value of p
 
-     The logit is defined as
+The logit is defined as
+$$ {\rm logit}(p) = \log\Big({p \over 1-p}\Big) $$
 
-          logit (P) = log (P / (1-P))
-
-     See also: probit, logicdf.
+See also:
+probit,
+logicdf
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
 # length: 37
-Compute the logit for each value of P
+Compute the logit for each value of p
 
 
 
@@ -126,51 +137,55 @@ makima
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1778
- -- statistics: YI = makima (X, Y, XQ)
- -- statistics: YI = makima (Y, XQ)
- -- statistics: YI = makima (..., 'extrap')
+# length: 1632
+statistics: yi = makima ( x , y , xq )
+statistics: yi = makima ( y , xq )
+statistics: yi = makima (&hellip;, 'extrap' )
 
-     Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of
-     sample data X and Y.
+Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of
+sample data x and y .
 
-     The Modified Akima (MAKIMA) algorithm generates a shape-preserving
-     piecewise cubic interpolant.  It differs from standard splines by avoiding
-     excessive local undulations and overshoots, and it connects collinear
-     points (flat regions) with straight lines.  It is particularly well-suited
-     for oscillatory data where ‘pchip’ might aggressively flatten local
-     extrema.
+The Modified Akima (MAKIMA) algorithm generates a shape-preserving
+piecewise cubic interpolant. It differs from standard splines by avoiding
+excessive local undulations and overshoots, and it connects collinear points
+(flat regions) with straight lines. It is particularly well-suited for
+oscillatory data where pchip might aggressively flatten local
+extrema.
 
-     The sample points X must be a vector of unique values.  If X is not sorted,
-     the function will automatically sort it and rearrange Y accordingly.
+The sample points x must be a vector of unique values. If x
+is not sorted, the function will automatically sort it and rearrange
+y accordingly.
 
-     The sample values Y can be a scalar, vector, or an N-dimensional array.  If
-     Y is an N-dimensional array, the interpolation is performed along its last
-     dimension, which must have the same length as X.  Complex values for Y are
-     supported.
+The sample values y can be a scalar, vector, or an N-dimensional
+array. If y is an N-dimensional array, the interpolation is
+performed along its last dimension, which must have the same length as
+x . Complex values for y are supported.
 
-     If query points XQ are provided, the function evaluates the interpolant and
-     returns the interpolated values YI.  By default, ‘makima’ uses the boundary
-     polynomials to extrapolate for points outside the range of X.  The optional
-     string argument 'extrap' is accepted for compatibility with other
-     interpolation functions.
+If query points xq are provided, the function evaluates the
+interpolant and returns the interpolated values yi . By default,
+makima uses the boundary polynomials to extrapolate for points
+outside the range of x . The optional string argument 'extrap'
+is accepted for compatibility with other interpolation functions.
 
-     If only X and Y are provided, the function returns a piecewise polynomial
-     structure PP that represents the interpolant.  This structure can be
-     evaluated later at specific query points using ‘ppval’.
+If only x and y are provided, the function returns a
+piecewise polynomial structure pp that represents the interpolant.
+This structure can be evaluated later at specific query points using
+ppval .
 
-     Evaluating the interpolant at query points outside the domain of X
-     automatically extrapolates using the boundary polynomials.
+Evaluating the interpolant at query points outside the domain of x
+automatically extrapolates using the boundary polynomials.
 
-     See also: interp1, pchip, spline.
+See also:
+interp1,
+pchip,
+spline
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 80
-Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of sample
-...
+# length: 90
+Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of sample data x and y.
 
 
 
@@ -184,15 +199,16 @@ probit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 184
- -- statistics: X = probit (P)
+# length: 162
+statistics: x = probit ( p )
 
-     Probit transformation
+Probit transformation
 
-     Return the probit (the quantile of the standard normal distribution) for
-     each element of P.
+Return the probit (the quantile of the standard normal distribution) for
+each element of p .
 
-     See also: logit.
+See also:
+logit
 
 
 # name: <cell-element>
@@ -213,29 +229,32 @@ statget
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1140
- -- statistics: VALUE = statget (OPTIONS, NAME)
- -- statistics: VALUE = statget (OPTIONS, NAME, DEFAULT)
+# length: 1036
+statistics: value = statget ( options , name )
+statistics: value = statget ( options , name , default )
 
-     Read one option out of a statistics options structure.
+Read one option out of a statistics options structure.
 
-     ‘VALUE = statget (OPTIONS, NAME)’ returns the value the option NAME carries
-     in OPTIONS, or ‘[]’ when that option is unset.  OPTIONS is a structure as
-     built by ‘statset’, although any structure is accepted.
+value = statget ( options , name ) returns the value
+the option name carries in options , or [] when that
+option is unset. options is a structure as built by statset ,
+although any structure is accepted.
 
-     ‘VALUE = statget (OPTIONS, NAME, DEFAULT)’ returns DEFAULT instead whenever
-     the option is unset, which is the form a calling function uses to fall back
-     on its own default.  Note that DEFAULT is returned when the option is
-     _empty_, not only when it is absent, since an empty option is precisely how
-     ‘statset’ spells "unset".
+value = statget ( options , name , default )
+returns default instead whenever the option is unset, which is the
+form a calling function uses to fall back on its own default. Note that
+default is returned when the option is empty , not only when it
+is absent, since an empty option is precisely how statset spells
+"unset" .
 
-     NAME is matched case-insensitively, and may be abbreviated to any leading
-     portion that singles out one option: ‘statget (OPTIONS, "MaxI")’ reads
-     "MaxIter".  An abbreviation matching more than one option raises, rather
-     than choosing between them; an exact match is taken as exact even where it
-     is also a prefix of a longer name.
+name is matched case-insensitively, and may be abbreviated to any
+leading portion that singles out one option: statget ( options ,
+"MaxI") reads "MaxIter" . An abbreviation matching more than one
+option raises, rather than choosing between them; an exact match is taken
+as exact even where it is also a prefix of a longer name.
 
-     See also: statset.
+See also:
+statset
 
 
 # name: <cell-element>
@@ -256,98 +275,119 @@ statset
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5439
- -- statistics: OPTIONS = statset ()
- -- statistics: OPTIONS = statset (FUNCNAME)
- -- statistics: OPTIONS = statset (NAME, VALUE, ...)
- -- statistics: OPTIONS = statset (OLDOPTS, NAME, VALUE, ...)
- -- statistics: OPTIONS = statset (OLDOPTS, NEWOPTS)
- -- statistics: statset ()
+# length: 4311
+statistics: options = statset ()
+statistics: options = statset ( funcname )
+statistics: options = statset ( name , value , &hellip;)
+statistics: options = statset ( oldopts , name , value , &hellip;)
+statistics: options = statset ( oldopts , newopts )
+statistics: statset ()
 
-     Create or modify an options structure for iterative statistics algorithms.
+Create or modify an options structure for iterative statistics algorithms.
 
-     ‘OPTIONS = statset ()’ returns a structure carrying every recognized option
-     name, each set to an empty value.  An empty option means "use the calling
-     function's own default", so an all-empty structure changes nothing wherever
-     it is passed.
+options = statset () returns a structure carrying every
+recognized option name, each set to an empty value. An empty option means
+"use the calling function's own default" , so an all-empty structure
+changes nothing wherever it is passed.
 
-     ‘OPTIONS = statset (FUNCNAME)’ returns the options that FUNCNAME uses by
-     default, with the remaining fields left empty.  FUNCNAME must name a
-     function of this package that documents an "Options" argument; see the list
-     below.  Unlike the name/value forms, this form takes no further arguments.
+options = statset ( funcname ) returns the options that
+funcname uses by default, with the remaining fields left empty.
+funcname must name a function of this package that documents an
+"Options" argument; see the list below. Unlike the name/value
+forms, this form takes no further arguments.
 
-     ‘OPTIONS = statset (NAME, VALUE, ...)’ returns an otherwise empty structure
-     with the named options set.  Option names are matched case-insensitively
-     and must be given in full.
+options = statset ( name , value , &hellip;) returns an
+otherwise empty structure with the named options set. Option names are
+matched case-insensitively and must be given in full.
 
-     ‘OPTIONS = statset (OLDOPTS, NAME, VALUE, ...)’ copies OLDOPTS and applies
-     the given name/value pairs to the copy.  OLDOPTS is left unchanged.
+options = statset ( oldopts , name , value ,
+&hellip;) copies oldopts and applies the given name/value pairs to the
+copy. oldopts is left unchanged.
 
-     ‘OPTIONS = statset (OLDOPTS, NEWOPTS)’ merges two structures: every
-     _non-empty_ field of NEWOPTS overrides its counterpart in OLDOPTS, while an
-     empty field of NEWOPTS leaves the OLDOPTS value in place.  Fields that are
-     not recognized option names are ignored in both structures.
+options = statset ( oldopts , newopts ) merges two
+structures: every non-empty field of newopts overrides its
+counterpart in oldopts , while an empty field of newopts leaves
+the oldopts value in place. Fields that are not recognized option
+names are ignored in both structures.
 
-     ‘statset ()’ called with no output argument displays the recognized option
-     names together with their permitted values, marking each default in braces.
+statset () called with no output argument displays the recognized
+option names together with their permitted values, marking each default
+in braces.
 
-     The recognized options are:
+The recognized options are:
 
-     Option               Description
-     ----------------------------------------------------------------------------------
-     "Display"            Level of reporting: "off", "final", or "iter".
-     "MaxFunEvals"        Maximum number of objective function evaluations, a
-                          positive scalar.
-     "MaxIter"            Maximum number of iterations, a positive scalar.
-     "TolBnd"             Positive scalar tolerance on parameter bounds.
-     "TolFun"             Positive scalar tolerance on the objective function value.
-     "TolTypeFun"         Whether "TolFun" is absolute, "abs", or relative, "rel".
-     "TolX"               Positive scalar tolerance on the parameters.
-     "TolTypeX"           Whether "TolX" is absolute, "abs", or relative, "rel".
-     "GradObj"            Whether the objective function returns a gradient, "off"
-                          or "on".
-     "Jacobian"           Whether the model function returns a Jacobian, "off" or
-                          "on".
-     "DerivStep"          Relative step size for finite-difference derivatives, a
-                          positive scalar or vector.
-     "FunValCheck"        Whether to check the objective function for invalid
-                          values, "off" or "on".
-     "Robust"             Whether to invoke a robust fit, "off" or "on".  Superseded
-                          by "RobustWgtFun".
-     "RobustWgtFun"       Weight function for robust fitting: one of "andrews",
-                          "bisquare", "cauchy", "fair", "huber", "logistic",
-                          "talwar", "welsch", a function handle, or empty for a
-                          non-robust fit.
-     "WgtFun"             Weight function used with "Robust".  Superseded by
-                          "RobustWgtFun".
-     "Tune"               Positive tuning constant for the robust weight function.
-                          Set automatically for a named weight function; required
-                          for a function handle.
-     "UseParallel"        Logical flag requesting parallel computation.
-     "UseSubstreams"      Logical flag requesting reproducible random substreams.
-     "Streams"            A random stream or a cell array of them.
-     "OutputFcn"          A function handle, or a cell array of them, called after
-                          each iteration.
+Option Description
+"Display" Level of reporting: "off" ,
+"final" , or "iter" .
+"MaxFunEvals" Maximum number of objective function
+evaluations, a positive scalar.
+"MaxIter" Maximum number of iterations, a positive scalar.
+"TolBnd" Positive scalar tolerance on parameter bounds.
+"TolFun" Positive scalar tolerance on the objective
+function value.
+"TolTypeFun" Whether "TolFun" is absolute,
+"abs" , or relative, "rel" .
+"TolX" Positive scalar tolerance on the parameters.
+"TolTypeX" Whether "TolX" is absolute,
+"abs" , or relative, "rel" .
+"GradObj" Whether the objective function returns a
+gradient, "off" or "on" .
+"Jacobian" Whether the model function returns a Jacobian,
+"off" or "on" .
+"DerivStep" Relative step size for finite-difference
+derivatives, a positive scalar or vector.
+"FunValCheck" Whether to check the objective function for
+invalid values, "off" or "on" .
+"Robust" Whether to invoke a robust fit, "off" or
+"on" . Superseded by "RobustWgtFun" .
+"RobustWgtFun" Weight function for robust fitting: one of
+"andrews" , "bisquare" , "cauchy" , "fair" ,
+"huber" , "logistic" , "talwar" , "welsch" , a
+function handle, or empty for a non-robust fit.
+"WgtFun" Weight function used with "Robust" .
+Superseded by "RobustWgtFun" .
+"Tune" Positive tuning constant for the robust weight
+function. Set automatically for a named weight function; required for a
+function handle.
+"UseParallel" Logical flag requesting parallel
+computation.
+"UseSubstreams" Logical flag requesting reproducible
+random substreams.
+"Streams" A random stream or a cell array of them.
+"OutputFcn" A function handle, or a cell array of them,
+called after each iteration.
 
-     FUNCNAME may name any of the following functions, each of which documents
-     an "Options" argument: ‘copulafit’, ‘coxphfit’, ‘crossval’, ‘evfit’,
-     ‘factoran’, ‘fitcox’, ‘fitglm’, ‘fitglme’, ‘fitlme’, ‘fitlmematrix’,
-     ‘fitnlm’, ‘gamfit’, ‘gevfit’, ‘glmfit’, ‘gmdistribution’, ‘gpfit’,
-     ‘kmeans’, ‘kmedoids’, ‘lasso’, ‘lassoglm’, ‘lognfit’, ‘mdscale’, ‘mlecov’,
-     ‘mlecustom’, ‘mvncdf’, ‘mvtcdf’, ‘nbinfit’, ‘nlinfit’, ‘nnmf’, ‘normfit’,
-     ‘pca’, ‘plsregress’, ‘ppca’, ‘rocmetrics’, ‘tsne’, ‘wblfit’,
-     ‘GeneralizedLinearMixedModel’, and ‘LinearMixedModel’.
+funcname may name any of the following functions, each of which
+documents an "Options" argument: copulafit , coxphfit ,
+crossval , evfit , factoran , fitcox ,
+fitglm , fitglme , fitlme ,
+fitlmematrix , fitnlm , gamfit , gevfit ,
+glmfit , gmdistribution , gpfit , kmeans ,
+kmedoids , lasso , lassoglm , lognfit ,
+mdscale , mlecov , mlecustom , mvncdf ,
+mvtcdf , nbinfit , nlinfit , nnmf , normfit ,
+pca , plsregress , ppca , rocmetrics , tsne ,
+wblfit , GeneralizedLinearMixedModel , and
+LinearMixedModel .
 
-     Any function accepting an "Options" argument also accepts a plain structure
-     carrying only the fields it needs, so ‘statset’ is a convenience rather
-     than a requirement.
+Any function accepting an "Options" argument also accepts a plain
+structure carrying only the fields it needs, so statset is a
+convenience rather than a requirement.
 
-     MATLAB's ‘statset’ additionally accepts the names of functions this package
-     does not provide.  Those names are rejected here rather than answered,
-     since returning options for an absent function would assert a capability
-     that does not exist.
+MATLAB&rsquo;s statset additionally accepts the names of functions this
+package does not provide. Those names are rejected here rather than
+answered, since returning options for an absent function would assert a
+capability that does not exist.
 
-     See also: statget, nlinfit, fitnlm, nnmf, mdscale, ppca, tsne, kmedoids.
+See also:
+statget,
+nlinfit,
+fitnlm,
+nnmf,
+mdscale,
+ppca,
+tsne,
+kmedoids
 
 
 # name: <cell-element>
