@@ -56,7 +56,8 @@ function m = nanmedian (x, dim)
   if (! isnumeric (x) && ! islogical (x))
     error ("nanmedian: X must be numeric.");
   endif
-  if (isempty (x))
+  ## 0 by 0 and no DIM given
+  if (nargin < 2 && isequal (size (x), [0, 0]))
     m = NaN;
     return;
   endif
@@ -149,6 +150,13 @@ endfunction
 
 ## Test output
 %!assert_equal (nanmedian ([]), NaN)
+%!assert_equal (nanmedian (zeros (0, 3)), [NaN, NaN, NaN])
+%!assert_equal (nanmedian (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (nanmedian ([], 1), zeros (1, 0))
+%!assert_equal (nanmedian ([], 2), zeros (0, 1))
+%!assert_equal (size (nanmedian (ones (2, 0, 3, 2), 2)), [2, 1, 3, 2])
+%!assert_equal (nanmedian (ones (2, 0, 3, 2), 'all'), NaN)
+%!assert_equal (size (nanmedian (ones (2, 0, 3, 2), [1, 2])), [1, 1, 3, 2])
 %!assert_equal (nanmedian (NaN), NaN)
 %!assert_equal (nanmedian (5), 5)
 %!assert_equal (nanmedian ([2, 4, NaN, 8]), 4)
