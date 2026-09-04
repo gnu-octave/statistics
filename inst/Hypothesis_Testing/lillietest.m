@@ -132,7 +132,7 @@ function [h, p, kstat, critval] = lillietest (x, varargin)
     ## standard error of the estimated p-value (at p = 0.5) is below MCTOL.
     reps = max (1000, ceil (0.25 / mctol ^ 2));
     sim = lillietest_simulate_ (n, distribution, reps);
-    p = (1 + sum (sim >= kstat)) / (reps + 1);
+    p = sum (sim >= kstat) / reps;
     critval = quantile (sim, 1 - alpha);
   else
     ## Interpolate the p-value and critical value from the embedded tables.
@@ -527,6 +527,12 @@ endfunction
 %! x = [1 3 2 5 4 7 6 9 8 11 10 13 12 15 14 17 16]';
 %! [~, ~, ~, cv] = lillietest (x);
 %! assert_equal (isfinite (cv) && cv > 0, true);
+
+%!test  # extreme statistic with few reps gives an exact zero p-value
+%! x = [zeros(1, 15), 100];
+%! [h, p, kstat] = lillietest (x, "MCTol", 0.05);
+%! assert_equal (p, 0);
+%! assert_equal (kstat, 0.5362, 5e-4);
 
 %!warning <greater than the largest tabulated value> ...
 %! lillietest (norminv ((1:20)' / 21));
