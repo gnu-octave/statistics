@@ -92,6 +92,11 @@ endfunction
 %!assert_equal (nanstd ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], 0, 2), ...
 %!        sqrt ([0.5; 2; 1; 1]), 1e-14)
 %!assert_equal (nanstd (NaN (2, 3)), [NaN, NaN, NaN])
+%!assert_equal (nanstd (zeros (0, 3)), [NaN, NaN, NaN])
+%!assert_equal (nanstd (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (nanstd ([], 1), NaN)
+%!assert_equal (nanstd ([], [], 1), zeros (1, 0))
+%!assert_equal (size (nanstd (ones (2, 0, 3, 2), 0, 2)), [2, 1, 3, 2])
 
 ## Test input validation
 %!error <Invalid call to nanstd> nanstd ()

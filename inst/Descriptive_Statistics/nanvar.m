@@ -62,7 +62,7 @@ function v = nanvar (x, w, dim)
   if (! isnumeric (x) && ! islogical (x))
     error ("nanvar: X must be numeric.");
   endif
-  if ((nargin < 2 || (nargin == 2 && isempty (w))) && isempty (x) && ndims (x) == 2 && size (x, 1) == 0 && size (x, 2) == 0)
+  if (nargin < 3 && isequal (size (x), [0, 0]))
     v = NaN;
     return;
   endif
@@ -184,6 +184,11 @@ endfunction
 %!assert_equal (nanvar ([1 2 NaN; 4 NaN 6; 7 8 9; 10 11 12], [1 2 3 4]'), ...
 %!        [9, 8.4375, 50/9], 1e-13)
 %!assert_equal (nanvar (NaN (2, 3)), [NaN, NaN, NaN])
+%!assert_equal (nanvar (zeros (0, 3)), [NaN, NaN, NaN])
+%!assert_equal (nanvar (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (nanvar ([], 1), NaN)
+%!assert_equal (nanvar ([], [], 1), zeros (1, 0))
+%!assert_equal (size (nanvar (ones (2, 0, 3, 2), 0, 2)), [2, 1, 3, 2])
 %!test
 %! x = reshape (1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
