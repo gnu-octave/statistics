@@ -268,11 +268,13 @@ endfunction
 %! jbtest (1:10);
 
 %!test  # a strongly non-normal sample is rejected
+%! warning ("off", "jbtest:pTooSmall", "local");
 %! x = [zeros(1, 20), 100];
 %! h = jbtest (x);
 %! assert_equal (h, 1);
 
 %!test  # NaNs are removed
+%! warning ("off", "jbtest:pTooBig", "local");
 %! assert_equal (jbtest ([1 2 3 4 5 6 7 8 9 10, NaN]), jbtest (1:10));
 
 %!test  # alpha controls the critical value
@@ -282,6 +284,7 @@ endfunction
 %! assert_equal (cv2 > cv1, true);
 
 %!test  # Monte-Carlo p-value runs and lies in (0,1]
+%! warning ("off", "jbtest:pTooBig", "local");
 %! x = [1 2 3 4 5 6 7 8 9 10];
 %! [h, p] = jbtest (x, 0.05, 0.05);
 %! assert_equal (p > 0 && p <= 1, true);
