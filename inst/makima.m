@@ -38,7 +38,9 @@
 ## The sample values @var{y} can be a scalar, vector, or an N-dimensional
 ## array. If @var{y} is an N-dimensional array, the interpolation is
 ## performed along its last dimension, which must have the same length as
-## @var{x}. Complex values for @var{y} are supported.
+## @var{x}. Complex values for @var{y} are supported.  Sample points where
+## @var{x} or @var{y} is @code{NaN} are dropped in pairs before the fit,
+## and a warning is issued.
 ##
 ## If query points @var{xq} are provided, the function evaluates the 
 ## interpolant and returns the interpolated values @var{yi}. By default,
@@ -99,6 +101,14 @@ function yi = makima (x, y, xq, varargin)
     y = permute (y, perm_order);
     nc = numel (y) / n;
     y = reshape (y, n, nc);
+  endif
+
+  bad = isnan (x) | any (isnan (y), 2);
+  if (any (bad))
+    warning ("makima: NaN entries in X or Y have been ignored.");
+    x = x(! bad);
+    y = y(! bad, :);
+    n = numel (x);
   endif
 
   if (iscomplex (y))
@@ -485,6 +495,20 @@ endfunction
 %! yi = makima (x, y, xi, 'extrap');
 %! assert_equal (all (isfinite (yi)), true);
 %! assert_equal (yi, [0; 20], 1e-12);
+
+%!test
+%! ## NaN entry in y is dropped before the fit.
+%! warning ("off")
+%! x = [1; 2; 3; 4; 5];
+%! y = [1; NaN; 3; 4; 5];
+%! xq = [1.5; 2.5; 3.5; 4.5];
+%! yi = makima (x, y, xq);
+%! assert_equal (yi, [1.5; 2.5; 3.5; 4.5], 1e-12);
+
+%!warning <makima: NaN entries in X or Y have been ignored.> ...
+%! makima ([1; 2; NaN; 4; 5], [1; 2; 3; 4; 5], 1.5);
+
+## Test input validation
 %!error <makima: the sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
 %!error <makima: invalid number of inputs> makima (1)
 %!error <makima: the first two inputs must have at least two elements.> makima (1, 2, 1.5)
