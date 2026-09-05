@@ -46,8 +46,8 @@
 ## @code{[@var{p}, @var{h}, @var{stats}] = ranksum (@var{x}, @var{y})} also
 ## returns the structure @var{stats} with information about the test statistic.
 ## It contains the field @code{ranksum} with the value of the rank sum test
-## statistic and if computed with the "approximate" method it also contains the
-## value of the z-statistic in the field @code{zval}.
+## statistic, and the field @code{zval} with the value of the z-statistic when
+## computed with the "approximate" method, or empty otherwise.
 ##
 ## @code{[@dots{}] = ranksum (@var{x}, @var{y}, @var{alpha})} or alternatively
 ## @code{[@dots{}] = ranksum (@var{x}, @var{y}, "alpha", @var{alpha})} returns
@@ -175,7 +175,10 @@ function [p, h, stats] = ranksum(x, y, varargin)
       endif
   endswitch
 
-  % Compute the rank sum statistic based on the smaller sample
+  ## Compute the rank sum statistic based on the smaller sample
+  if (nargout > 2)
+    stats.zval = [];
+  endif
   if nx <= ny
     [ranks, tieadj] = tiedrank ([x; y]);
     x_y = true;
@@ -325,3 +328,10 @@ endfunction
 %! assert_equal (p, 0.127343916432862, 1e-14);
 %! assert_equal (h, false);
 %! assert_equal (stats.ranksum, 837.5);
+
+%!test  # zval field always present, empty for the exact method
+%! x = 1:8;
+%! y = 9:16;
+%! [p, h, stats] = ranksum (x, y);
+%! assert_equal (isfield (stats, "zval"), true);
+%! assert_equal (isempty (stats.zval), true);
