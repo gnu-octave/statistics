@@ -36,9 +36,11 @@
 ## interval is @code{[@var{x0} - @var{dxlo}, @var{x0} + @var{dxup}]}.  The
 ## bounds follow Fieller's theorem and are therefore not symmetric about
 ## @var{x0}.  They are not simultaneous over the elements of @var{y0}, and
-## they need not be finite: when the slope is not significantly different from
-## zero at the requested level the interval is unbounded, and @var{dxlo} and
-## @var{dxup} are both @code{Inf}.
+## they need not be finite: when the slope is not significantly different
+## from zero at the requested level, the interval either covers the entire
+## real line, with @var{dxlo} and @var{dxup} both @code{Inf}, or it excludes
+## a finite range around the fitted line and extends to @code{Inf} on one
+## side only, with the other side of @var{dxlo}/@var{dxup} finite.
 ##
 ## @code{[@dots{}] = invpred (@dots{}, @var{name}, @var{value})} accepts the
 ## following name-value pairs:
@@ -142,7 +144,7 @@ function [x0, dxlo, dxup] = invpred (x, y, y0, varargin)
   ## distinguished from a horizontal one and the interval is unbounded.
   t_crit = tinv (1 - alpha / 2, n - 2);
   g = t_crit ^ 2 * s2 / (slope ^ 2 * sxx);
-  if (g >= 1)
+  if (g == 1)
     dxlo = Inf (size (y0));
     dxup = Inf (size (y0));
     return;
@@ -151,10 +153,24 @@ function [x0, dxlo, dxup] = invpred (x, y, y0, varargin)
   ## A new observation carries its own variance; a point on the curve does not
   extra = double (strcmpi (predopt, "observation"));
   centre = offset / (1 - g);
-  halfwidth = (t_crit * sqrt (s2) / (abs (slope) * (1 - g))) ...
-              .* sqrt (offset .^ 2 / sxx + (1 - g) * (1 / n + extra));
-  dxlo = x0 - (xbar + centre - halfwidth);
-  dxup = (xbar + centre + halfwidth) - x0;
+  term = offset .^ 2 / sxx + (1 - g) * (1 / n + extra);
+  halfwidth = (t_crit * sqrt (s2) / (abs (slope) * abs (1 - g))) ...
+              .* sqrt (max (term, 0));
+
+  if (g < 1)
+    dxlo = offset - centre + halfwidth;
+    dxup = centre + halfwidth - offset;
+  else
+    ## Outside the significance level for the slope: the confidence region
+    ## is the exterior of the two roots, so one side of x0 is unbounded.
+    dxlo = Inf (size (y0));
+    dxup = Inf (size (y0));
+    real_roots = term >= 0;
+    lower_ray = real_roots & (offset < centre);
+    upper_ray = real_roots & (offset >= centre);
+    dxup(lower_ray) = centre - halfwidth - offset(lower_ray);
+    dxlo(upper_ray) = offset(upper_ray) - centre - halfwidth;
+  endif
 
 endfunction
 
@@ -266,6 +282,14 @@ endfunction
 %! assert_equal (invpred (xn, y, 20), 5.967084254482929, 1e-12);
 %! yn = y; yn(4) = NaN;
 %! assert_equal (invpred (x, yn, 20), 5.988352745424295, 1e-12);
+
+## When the slope is not significant, one side of the interval may be
+## unbounded while the other stays finite.
+%!test
+%! [x0, dxlo, dxup] = invpred ((1:5)', [1; 5; 2; 8; 3], 100);
+%! assert_equal (x0, 140.42857142857144, 1e-12);
+%! assert_equal (dxlo, 111.30773209684287, 1e-12);
+%! assert_equal (dxup, Inf);
 
 %!error<Invalid call to invpred> invpred ((1:10)', (1:10)')
 %!error<invpred: X must be a vector of real values.> ...
