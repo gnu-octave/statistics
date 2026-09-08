@@ -75,6 +75,11 @@ function [pval, d] = dwtest (r, x, varargin)
   if (nargin < 2)
     print_usage ();
   endif
+  if (isempty (r))
+    pval = 0;
+    d = NaN;
+    return;
+  endif
   if (! (isnumeric (r) && isreal (r) && isvector (r)))
     error ("dwtest: R must be a real vector of residuals.");
   endif
@@ -222,6 +227,17 @@ endfunction
 %! assert_equal (d, sum (diff (r) .^ 2) / sum (r .^ 2), 1e-12);
 %! assert_equal (d, 20 / 6, 1e-12);
 %! assert_equal (p >= 0 && p <= 1, true);
+
+
+
+%!test
+%! ## Edge cases with empty arrays
+%! [p, d] = dwtest ([], []);
+%! assert (p == 0);
+%! assert (isnan (d));
+%! [p, d] = dwtest (zeros (0, 3), zeros (0, 3));
+%! assert (p == 0);
+%! assert (isnan (d));
 
 %!test  # exact and approximate methods give similar p-values
 %! x = [ones(30, 1), (1:30)', ((1:30)') .^ 2];

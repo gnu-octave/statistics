@@ -75,6 +75,16 @@ function [h, pval, stats] = runstest (x, v, varargin)
     print_usage;
   endif
 
+  if (isempty (x))
+    h = 0;
+    pval = 1;
+    stats.nruns = NaN;
+    stats.n1 = 0;
+    stats.n0 = 0;
+    stats.z = NaN;
+    return;
+  endif
+
   ## Check X being a vector of scalar values
   if (! isvector (x) || ! isnumeric (x))
     error ("runstest: X must be a vector a scalar values.");
@@ -326,6 +336,18 @@ endfunction
 %! assert_equal (stats.n1, 3);
 %! assert_equal (stats.n0, 3);
 %! assert_equal (stats.z, 0.456435464587638, 1e-14);
+
+%!test
+%! ## Edge cases with empty arrays
+%! [h, p, s] = runstest ([]);
+%! assert (h == 0);
+%! assert (p == 1);
+%! assert (isnan (s.nruns) && s.n1 == 0 && s.n0 == 0 && isnan (s.z));
+%! [h, p, s] = runstest (zeros (0, 3));
+%! assert (h == 0);
+%! assert (p == 1);
+%! assert (isnan (s.nruns) && s.n1 == 0 && s.n0 == 0 && isnan (s.z));
+
 %!test
 %! [h, p, stats] = runstest (x, [], 'method', 'approximate');
 %! assert_equal (h, 0);
