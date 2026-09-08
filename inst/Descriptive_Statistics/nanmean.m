@@ -66,7 +66,8 @@ function y = nanmean (x, dim)
     print_usage ();
   elseif (! isnumeric (x))
     error ("nanmean: X must be numeric.");
-  elseif (isempty (x))
+  ## 0 by 0 and no DIM given
+  elseif (nargin < 2 && isequal (size (x), [0, 0]))
     y = NaN;
   else
     ## Determine the first nonsingleton dimension to operate on
@@ -144,6 +145,11 @@ endfunction
 
 ## Test output
 %!assert_equal (nanmean ([]), NaN)
+%!assert_equal (nanmean (zeros (0, 3)), [NaN, NaN, NaN])
+%!assert_equal (nanmean (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (nanmean ([], 1), zeros (1, 0))
+%!assert_equal (nanmean ([], 2), zeros (0, 1))
+%!assert_equal (size (nanmean (ones (2, 0, 3, 2), 2)), [2, 1, 3, 2])
 %!assert_equal (nanmean (NaN), NaN)
 %!assert_equal (nanmean (NaN (3)), [NaN, NaN, NaN])
 %!assert_equal (nanmean ([3 2 NaN 7]), 4)
@@ -165,3 +171,10 @@ endfunction
 %! x([5:6, 20]) = NaN;
 %! assert_equal (squeeze (nanmean (x, [1, 2])), [25/6; 100/8; 144/7])
 %! assert_equal (nanmean (x, [2, 3]), [139/11; 13])
+
+## Test input validation
+%!error <Invalid call to nanmean> nanmean ()
+%!error <nanmean: X must be numeric.> nanmean ("str")
+%!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 0)
+%!error <nanmean: invalid option.> nanmean (ones (3), "invalid")
+%!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, -1])
