@@ -175,10 +175,11 @@ function [p, h, stats] = ranksum(x, y, varargin)
       endif
   endswitch
 
+  ## No z-statistic exists for the exact test, so the field is reported empty
+  ## rather than omitted, as R2026a does.
+  zval = [];
+
   ## Compute the rank sum statistic based on the smaller sample
-  if (nargout > 2)
-    stats.zval = [];
-  endif
   if nx <= ny
     [ranks, tieadj] = tiedrank ([x; y]);
     x_y = true;
@@ -285,10 +286,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
           endif
           p = normcdf (z);
       endswitch
-      ## For additional output argument
-      if (nargout > 2)
-        stats.zval = z;
-      endif
+      zval = z;
   endswitch
 
   ## For additional output arguments
@@ -300,6 +298,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
        else
          stats.ranksum = sum (ranks(ns+1:end));
        endif
+       stats.zval = zval;
      endif
   endif
 endfunction
@@ -333,5 +332,12 @@ endfunction
 %! x = 1:8;
 %! y = 9:16;
 %! [p, h, stats] = ranksum (x, y);
-%! assert_equal (isfield (stats, "zval"), true);
+%! assert_equal (fieldnames (stats), {'ranksum'; 'zval'});
 %! assert_equal (isempty (stats.zval), true);
+
+%!test  # zval is second for the approximate method too
+%! x = 1:8;
+%! y = 9:16;
+%! [p, h, stats] = ranksum (x, y, 'method', 'approximate');
+%! assert_equal (fieldnames (stats), {'ranksum'; 'zval'});
+%! assert_equal (stats.zval, -3.3082, 1e-4);
