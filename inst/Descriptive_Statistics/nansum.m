@@ -57,7 +57,8 @@ function s = nansum (x, dim)
     print_usage ();
   elseif (! isnumeric (x))
     error ("nansum: X must be numeric.");
-  elseif (isempty (x))
+  ## 0 by 0 and no DIM given
+  elseif (nargin < 2 && isequal (size (x), [0, 0]))
     s = 0;
   elseif (nargin == 1)
     nanvals = isnan (x);
@@ -164,6 +165,11 @@ endfunction
 
 ## Test output
 %!assert_equal (nansum ([]), 0)
+%!assert_equal (nansum (zeros (0, 3)), [0, 0, 0])
+%!assert_equal (nansum (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (nansum ([], 1), zeros (1, 0))
+%!assert_equal (nansum ([], 2), zeros (0, 1))
+%!assert_equal (size (nansum (ones (2, 0, 3, 2), 2)), [2, 1, 3, 2])
 %!assert_equal (nansum (NaN), 0)
 %!assert_equal (nansum (NaN (3)), [0, 0, 0])
 %!assert_equal (nansum ([2 4 NaN 7]), 13)
