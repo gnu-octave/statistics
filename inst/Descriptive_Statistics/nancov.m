@@ -75,6 +75,7 @@ function c = nancov (varargin)
 
   ## Remaining numeric arguments: an optional Y and/or a normalization flag
   y = [];
+  y_given = false;
   nrm = 0;
   if (numel (args) == 1)
     a = args{1};
@@ -82,9 +83,11 @@ function c = nancov (varargin)
       nrm = a;
     else
       y = a;
+      y_given = true;
     endif
   elseif (numel (args) == 2)
     y = args{1};
+    y_given = true;
     nrm = args{2};
     if (! (isscalar (nrm) && (nrm == 0 || nrm == 1)))
       error ("nancov: normalization flag must be 0 or 1.");
@@ -93,8 +96,16 @@ function c = nancov (varargin)
     error ("nancov: too many input arguments.");
   endif
 
+  if (ndims (x) > 2 || (y_given && ndims (y) > 2))
+    error ("nancov: Inputs must be 2-D.");
+  endif
+
   ## Assemble the data matrix (observations in rows, variables in columns)
-  if (! isempty (y))
+  if (y_given)
+    if (isequal (size (x), [0, 0]) && isequal (size (y), [0, 0]))
+      c = NaN;
+      return;
+    endif
     if (! (isnumeric (y) || islogical (y)) || ! isreal (y))
       error ("nancov: Y must be a real numeric matrix or vector.");
     endif
@@ -102,10 +113,16 @@ function c = nancov (varargin)
       error ("nancov: X and Y must have the same number of elements.");
     endif
     X = [x(:), y(:)];
-  elseif (isvector (x))
-    X = x(:);
   else
-    X = x;
+    if (isequal (size (x), [0, 0]))
+      c = NaN;
+      return;
+    endif
+    if (isvector (x))
+      X = x(:);
+    else
+      X = x;
+    endif
   endif
 
   p = columns (X);
@@ -187,3 +204,12 @@ endfunction
 %!error <nancov: X and Y must have the same number of elements.> ...
 %! nancov ([1 2 3], [1 2])
 %!error <nancov: too many input arguments.> nancov ([1 2], [3 4], 0, 1)
+
+## Test edge cases
+%!assert_equal (nancov ([]), NaN)
+%!assert_equal (nancov (zeros (0, 3)), NaN (3, 3))
+%!assert_equal (nancov (zeros (3, 0)), zeros (0, 0))
+%!assert_equal (nancov ([NaN, NaN, NaN]), NaN)
+%!assert_equal (nancov ([1, NaN, 3; NaN, NaN, NaN]), NaN (3, 3))
+%!assert_equal (nancov (zeros (0, 3), zeros (0, 3)), NaN (2, 2))
+%!error <nancov: Inputs must be 2-D.> nancov (ones (2, 0, 3, 2))
