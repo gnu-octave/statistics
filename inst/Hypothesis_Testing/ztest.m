@@ -121,11 +121,12 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   ## Find sample size for each group (if more than one)
   if (any (is_nan(:)))
     sz = sum (! is_nan, dim);
+    x(is_nan) = 0;
   else
     sz = size (x, dim);
   endif
   ## Calculate mean, standard error and z-value for each group
-  x_mean = sum (x(! is_nan), dim) ./ max (1, sz);
+  x_mean = sum (x, dim) ./ sz;
   stderr = sigma ./ sqrt (sz);
   zvalue = (x_mean - m) ./ stderr;
   ## Calculate p-value for the test and confidence intervals (if requested)
@@ -221,3 +222,9 @@ endfunction
 %! assert_equal (h, 0)
 %! assert_equal (pval, 0.7465, 1e-4)
 %! assert_equal (ci, [-Inf; 5.9508], 1e-4)    
+
+%!test
+%! ## Edge cases with empty arrays
+%! assert_equal (ztest ([], 0, 1), zeros (1, 0));
+%! assert_equal (ztest (zeros (0, 3), 0, 1), NaN (1, 3));
+%! assert_equal (ztest ([NaN; NaN], 0, 1), NaN);
