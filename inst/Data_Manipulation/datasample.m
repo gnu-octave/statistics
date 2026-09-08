@@ -153,7 +153,7 @@ function [y, idcs] = datasample (data, k, varargin)
       endfor
     else
       ## complex case
-      idcs = zeros (1, k);
+      idcs = zeros (k, 1);
       if (k > imax)
         error (strcat ("datasample: K must not exceed the number of", ...
                        " available elements when sampling without replacement."));
@@ -214,10 +214,14 @@ endfunction
 %!error datasample ();
 %!error datasample (1);
 %!error <data must be a vector or matrix> datasample ({1, 2, 3}, 1);
-%!error <k must be a non-negative integer scalar> datasample ([1 2], -1);
-%!error <k must be a non-negative integer scalar> datasample ([1 2], 1.5);
-%!error <k must be a non-negative integer scalar> datasample ([1 2], [1 1]);
-%!error <k must be a non-negative integer scalar> datasample ([1 2], 'g', [1 1]);
+%!error <datasample: k must be a non-negative integer scalar> ...
+%! datasample ([1 2], -1);
+%!error <datasample: k must be a non-negative integer scalar> ...
+%! datasample ([1 2], 1.5);
+%!error <datasample: k must be a non-negative integer scalar> ...
+%! datasample ([1 2], [1 1]);
+%!error <datasample: k must be a non-negative integer scalar> ...
+%! datasample ([1 2], 'g', [1 1]);
 %!error <DIM must be a positive integer scalar> datasample ([1 2], 1, -1);
 %!error <DIM must be a positive integer scalar> datasample ([1 2], 1, 1.5);
 %!error <DIM must be a positive integer scalar> datasample ([1 2], 1, [1 1]);
@@ -245,4 +249,13 @@ endfunction
 %! ## Edge cases with empty arrays and k=0
 %! assert_equal (datasample ([], 0), zeros (0, 0));
 %! assert_equal (datasample (zeros (0, 3), 0), zeros (0, 3));
+
+%!test
+%! ## k = 0 with weights, sampling with replacement
+%! assert_equal (datasample ([1 2 3], 0, 'Weights', [1 1 1]), zeros (1, 0));
+
+%!test
+%! ## k = 0 with weights, sampling without replacement
+%! assert_equal (datasample ([1 2 3], 0, 'Replace', false, ...
+%!                          'Weights', [1 1 1]), zeros (1, 0));
 
