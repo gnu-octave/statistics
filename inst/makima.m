@@ -498,7 +498,7 @@ endfunction
 
 %!test
 %! ## NaN entry in y is dropped before the fit.
-%! warning ("off")
+%! warning ("off", "local");
 %! x = [1; 2; 3; 4; 5];
 %! y = [1; NaN; 3; 4; 5];
 %! xq = [1.5; 2.5; 3.5; 4.5];
@@ -507,6 +507,16 @@ endfunction
 
 %!warning <makima: NaN entries in X or Y have been ignored.> ...
 %! makima ([1; 2; NaN; 4; 5], [1; 2; 3; 4; 5], 1.5);
+
+%!test
+%! ## A NaN in one series drops that sample point from every series, so a
+%! ## series with no NaN of its own is refitted without it.  Fitted alone,
+%! ## the first row would give 5.535714286 at both query points.
+%! warning ("off", "local");
+%! y = [0, 0, 10, 0, 0; 1, NaN, 3, 4, 5];
+%! yi = makima (1:5, y, [2.5, 3.5]);
+%! assert_equal (yi(1,:), [10.6399, 4.9887], 1e-4);
+%! assert_equal (yi(2,:), [2.5, 3.5], 1e-12);
 
 ## Test input validation
 %!error <makima: the sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
