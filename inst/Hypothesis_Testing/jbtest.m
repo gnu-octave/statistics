@@ -80,6 +80,10 @@
 ## an unavoidable consequence of the Monte-Carlo origin of both tables, not a
 ## difference in method.  Supply @var{mctol} for a direct Monte-Carlo p-value.
 ##
+## If @var{x} has zero variance (or is otherwise degenerate so that skewness
+## and kurtosis are undefined), @var{jbstat} is @qcode{NaN}; in this case
+## @var{p} is reported as @math{0} and @var{h} as @math{1}.
+##
 ## @seealso{kstest, adtest, lillietest}
 ## @end deftypefn
 
@@ -127,7 +131,9 @@ function [h, p, jbstat, critval] = jbtest (x, alpha, mctol)
       ## degrees of freedom
       p = 1 - chi2cdf (jbstat, 2);
       critval = chi2inv (1 - alpha, 2);
-      if (p < 0.001)
+      if (isnan (jbstat))
+        p = 0;
+      elseif (p < 0.001)
         warning ("jbtest:pTooSmall", ...
                  "jbtest: P is less than the smallest tabulated value; returning 0.001.");
         p = 0.001;
@@ -151,7 +157,9 @@ function [h, p, jbstat, critval] = jbtest (x, alpha, mctol)
                  "jbtest: ALPHA is outside the tabulated range [0.001, 0.5].");
       endif
       ## p-value by inverse interpolation into the table
-      if (jbstat > cvn(1))
+      if (isnan (jbstat))
+        p = 0;
+      elseif (jbstat > cvn(1))
         warning ("jbtest:pTooSmall", ...
                  "jbtest: P is less than the smallest tabulated value; returning 0.001.");
         p = talphas(1);
@@ -173,7 +181,7 @@ function [h, p, jbstat, critval] = jbtest (x, alpha, mctol)
     critval = quantile (jbsim, 1 - alpha);
   endif
 
-  h = double (jbstat > critval);
+  h = double (isnan (jbstat) || jbstat > critval);
 
 endfunction
 
@@ -260,11 +268,13 @@ endfunction
 %! jbtest (1:10);
 
 %!test  # a strongly non-normal sample is rejected
+%! warning ("off", "jbtest:pTooSmall", "local");
 %! x = [zeros(1, 20), 100];
 %! h = jbtest (x);
 %! assert_equal (h, 1);
 
 %!test  # NaNs are removed
+%! warning ("off", "jbtest:pTooBig", "local");
 %! assert_equal (jbtest ([1 2 3 4 5 6 7 8 9 10, NaN]), jbtest (1:10));
 
 %!test  # alpha controls the critical value
@@ -274,9 +284,16 @@ endfunction
 %! assert_equal (cv2 > cv1, true);
 
 %!test  # Monte-Carlo p-value runs and lies in (0,1]
+%! warning ("off", "jbtest:pTooBig", "local");
 %! x = [1 2 3 4 5 6 7 8 9 10];
 %! [h, p] = jbtest (x, 0.05, 0.05);
 %! assert_equal (p > 0 && p <= 1, true);
+
+%!test  # a degenerate (zero-variance) sample yields NaN jbstat, p=0, h=1
+%! [h, p, jbstat] = jbtest (ones (1, 10));
+%! assert_equal (h, 1);
+%! assert_equal (p, 0);
+%! assert_equal (isnan (jbstat), true);
 
 ## Test input validation
 %!error <Invalid call to jbtest> jbtest ()
