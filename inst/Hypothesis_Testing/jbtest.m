@@ -177,7 +177,7 @@ function [h, p, jbstat, critval] = jbtest (x, alpha, mctol)
     ## Monte-Carlo approximation of the null distribution of the statistic
     reps = max (1000, ceil (0.25 / mctol ^ 2));
     jbsim = jbtest_simulate_ (n, reps);
-    p = (1 + sum (jbsim >= jbstat)) / (reps + 1);
+    p = sum (jbsim >= jbstat) / reps;
     critval = quantile (jbsim, 1 - alpha);
   endif
 
@@ -288,6 +288,12 @@ endfunction
 %! x = [1 2 3 4 5 6 7 8 9 10];
 %! [h, p] = jbtest (x, 0.05, 0.05);
 %! assert_equal (p > 0 && p <= 1, true);
+
+%!test  # the Monte-Carlo p-value is unsmoothed and reaches exactly zero
+%! x = [zeros(1, 20), 100];
+%! [h, p] = jbtest (x, 0.05, 0.05);
+%! assert_equal (h, 1);
+%! assert_equal (p, 0);
 
 %!test  # a degenerate (zero-variance) sample yields NaN jbstat, p=0, h=1
 %! [h, p, jbstat] = jbtest (ones (1, 10));
