@@ -68,19 +68,25 @@ function [v, idx] = nanmin (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = Inf;
     [v, idx] = min (x);
-    v(all (nanvals)) = NaN;
+    if (! isempty (v))
+      v(all (nanvals)) = NaN;
+    endif
   elseif (nargin == 3 && strcmpi (dim, 'all') && isempty (y))
     x = x(:);
     nanvals = isnan (x);
     x(nanvals) = Inf;
     [v, idx] = min (x);
-    v(all (nanvals)) = NaN;
+    if (! isempty (v))
+      v(all (nanvals)) = NaN;
+    endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
       nanvals = isnan (x);
       x(nanvals) = Inf;
       [v, idx] = min (x, [], dim);
-      v(all (nanvals, dim)) = NaN;
+      if (! isempty (v))
+        v(all (nanvals, dim)) = NaN;
+      endif
     else
       vecdim = sort (dim);
       if (! all (diff (vecdim)))
@@ -108,7 +114,9 @@ function [v, idx] = nanmin (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = Inf;
           [v, idx] = min (x);
-          v(all (nanvals)) = NaN;
+          if (! isempty (v))
+            v(all (nanvals)) = NaN;
+          endif
 
         else
           ## Permute to push vecdims to back
@@ -124,7 +132,9 @@ function [v, idx] = nanmin (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = Inf;
           [v, idx] = min (x, [], dim);
-          v(all (nanvals, dim)) = NaN;
+          if (! isempty (v))
+            v(all (nanvals, dim)) = NaN;
+          endif
 
           ## Inverse permute back to correct dimensions
           v = ipermute (v, perm);
@@ -141,7 +151,9 @@ function [v, idx] = nanmin (x, y, dim)
     x(Xnan) = Inf;
     y(Ynan) = Inf;
     v = min (x, y);
-    v(Xnan & Ynan) = NaN;
+    if (! isempty (v))
+      v(Xnan & Ynan) = NaN;
+    endif
   endif
 endfunction
 
@@ -165,6 +177,17 @@ endfunction
 %! y = nanmin (x, [], 'all')
 
 ## Test output
+%!assert_equal (nanmin ([]), [])
+%!assert_equal (nanmin (zeros (0, 3)), zeros (0, 3))
+%!assert_equal (nanmin (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (size (nanmin (ones (2, 0, 3, 2))), [1, 0, 3, 2])
+%!assert_equal (nanmin ([], [], 1), [])
+%!assert_equal (nanmin ([], [], 2), [])
+%!assert_equal (size (nanmin (ones (2, 0, 3, 2), [], 1)), [1, 0, 3, 2])
+%!assert_equal (size (nanmin (ones (2, 0, 3, 2), [], 2)), [2, 0, 3, 2])
+%!assert_equal (size (nanmin (ones (2, 0, 3, 2), [], 'all')), [0, 1])
+%!assert_equal (size (nanmin (ones (2, 0, 3, 2), [], [1, 2])), [0, 1, 3, 2])
+%!assert_equal (nanmin ([NaN, NaN, NaN]), NaN)
 %!assert_equal (nanmin ([2, 4, NaN, 7]), 2)
 %!assert_equal (nanmin ([2, 4, NaN, -Inf]), -Inf)
 %!assert_equal (nanmin ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN]), [1, 5, 3])

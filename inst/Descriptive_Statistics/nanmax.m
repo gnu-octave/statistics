@@ -67,19 +67,25 @@ function [v, idx] = nanmax (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = -Inf;
     [v, idx] = max (x);
-    v(all (nanvals)) = NaN;
+    if (! isempty (v))
+      v(all (nanvals)) = NaN;
+    endif
   elseif (nargin == 3 && strcmpi (dim, 'all') && isempty (y))
     x = x(:);
     nanvals = isnan (x);
     x(nanvals) = -Inf;
     [v, idx] = max (x);
-    v(all (nanvals)) = NaN;
+    if (! isempty (v))
+      v(all (nanvals)) = NaN;
+    endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
       nanvals = isnan (x);
       x(nanvals) = -Inf;
       [v, idx] = max (x, [], dim);
-      v(all (nanvals, dim)) = NaN;
+      if (! isempty (v))
+        v(all (nanvals, dim)) = NaN;
+      endif
     else
       vecdim = sort (dim);
       if (! all (diff (vecdim)))
@@ -107,7 +113,9 @@ function [v, idx] = nanmax (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = -Inf;
           [v, idx] = max (x);
-          v(all (nanvals)) = NaN;
+          if (! isempty (v))
+            v(all (nanvals)) = NaN;
+          endif
 
         else
           ## Permute to push vecdims to back
@@ -123,7 +131,9 @@ function [v, idx] = nanmax (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = -Inf;
           [v, idx] = max (x, [], dim);
-          v(all (nanvals, dim)) = NaN;
+          if (! isempty (v))
+            v(all (nanvals, dim)) = NaN;
+          endif
 
           ## Inverse permute back to correct dimensions
           v = ipermute (v, perm);
@@ -140,7 +150,9 @@ function [v, idx] = nanmax (x, y, dim)
     x(Xnan) = -Inf;
     y(Ynan) = -Inf;
     v = max (x, y);
-    v(Xnan & Ynan) = NaN;
+    if (! isempty (v))
+      v(Xnan & Ynan) = NaN;
+    endif
   endif
 endfunction
 
@@ -164,6 +176,17 @@ endfunction
 %! y = nanmax (x, [], 'all')
 
 ## Test output
+%!assert_equal (nanmax ([]), [])
+%!assert_equal (nanmax (zeros (0, 3)), zeros (0, 3))
+%!assert_equal (nanmax (zeros (3, 0)), zeros (1, 0))
+%!assert_equal (size (nanmax (ones (2, 0, 3, 2))), [1, 0, 3, 2])
+%!assert_equal (nanmax ([], [], 1), [])
+%!assert_equal (nanmax ([], [], 2), [])
+%!assert_equal (size (nanmax (ones (2, 0, 3, 2), [], 1)), [1, 0, 3, 2])
+%!assert_equal (size (nanmax (ones (2, 0, 3, 2), [], 2)), [2, 0, 3, 2])
+%!assert_equal (size (nanmax (ones (2, 0, 3, 2), [], 'all')), [0, 1])
+%!assert_equal (size (nanmax (ones (2, 0, 3, 2), [], [1, 2])), [0, 1, 3, 2])
+%!assert_equal (nanmax ([NaN, NaN, NaN]), NaN)
 %!assert_equal (nanmax ([2, 4, NaN, 7]), 7)
 %!assert_equal (nanmax ([2, 4, NaN, Inf]), Inf)
 %!assert_equal (nanmax ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN]), [7, 8, 6])
