@@ -115,18 +115,14 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   ## Figure out which dimension mean will work along
   if (isempty (dim))
     dim = find (size (x) != 1, 1);
+    if (isempty (dim))
+      dim = 1;
+    endif
   endif
-  ## Replace all NaNs with zeros
-  is_nan = isnan (x);
-  ## Find sample size for each group (if more than one)
-  if (any (is_nan(:)))
-    sz = sum (! is_nan, dim);
-    x(is_nan) = 0;
-  else
-    sz = size (x, dim);
-  endif
+  ## Find sample size for each group, ignoring NaNs
+  sz = sum (! isnan (x), dim);
   ## Calculate mean, standard error and z-value for each group
-  x_mean = sum (x, dim) ./ sz;
+  x_mean = mean (x, dim, 'omitnan');
   stderr = sigma ./ sqrt (sz);
   zvalue = (x_mean - m) ./ stderr;
   ## Calculate p-value for the test and confidence intervals (if requested)
@@ -221,10 +217,57 @@ endfunction
 %! [h, pval, ci] = ztest (x, m, sigma, 'tail', 'left');
 %! assert_equal (h, 0)
 %! assert_equal (pval, 0.7465, 1e-4)
-%! assert_equal (ci, [-Inf; 5.9508], 1e-4)    
-
+%! assert_equal (ci, [-Inf; 5.9508], 1e-4)
 %!test
-%! ## Edge cases with empty arrays
-%! assert_equal (ztest ([], 0, 1), zeros (1, 0));
-%! assert_equal (ztest (zeros (0, 3), 0, 1), NaN (1, 3));
-%! assert_equal (ztest ([NaN; NaN], 0, 1), NaN);
+%! [h, pval, ci, zvalue] = ztest ([1, 2; 3, 4; 5, 6], 3, 1);
+%! assert_equal (h, [0, 0]);
+%! assert_equal (pval, [1, 0.0833], 1e-4);
+%! assert_equal (ci, [1.8684, 2.8684; 4.1316, 5.1316], 1e-4);
+%! assert_equal (zvalue, [0, 1.7321], 1e-4);
+%!test
+%! [h, pval, ci, zvalue] = ztest ([1, 2; NaN, 4; 5, 6], 3, 1);
+%! assert_equal (h, [0, 0]);
+%! assert_equal (pval, [1, 0.0833], 1e-4);
+%! assert_equal (ci, [1.6141, 2.8684; 4.3859, 5.1316], 1e-4);
+%! assert_equal (zvalue, [0, 1.7321], 1e-4);
+%!test
+%! h = ztest ([1, 2; NaN, 4; 5, 6], 3, 1, 'dim', 2);
+%! assert_equal (h, [1; 0; 1]);
+%!test
+%! h = ztest (reshape (1:12, 2, 3, 2), 3, 1);
+%! assert_equal (h, reshape ([1, 0, 1, 1, 1, 1], 1, 3, 2));
+%!test
+%! [h, pval, ci, zvalue] = ztest (5, 0, 1);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 5.7330e-07, 1e-11);
+%! assert_equal (ci, [3.0400; 6.9600], 1e-4);
+%! assert_equal (zvalue, 5);
+%!test
+%! assert_equal (ztest (NaN, 0, 1), NaN);
+%!test
+%! [h, pval, ci] = ztest ([], 0, 1);
+%! assert_equal (h, zeros (1, 0));
+%! assert_equal (pval, zeros (1, 0));
+%! assert_equal (ci, zeros (2, 0));
+%!test
+%! [h, pval, ci] = ztest (zeros (0, 3), 0, 1);
+%! assert_equal (h, NaN (1, 3));
+%! assert_equal (pval, NaN (1, 3));
+%! assert_equal (ci, NaN (2, 3));
+%!test
+%! [h, pval, ci] = ztest (zeros (3, 0), 0, 1);
+%! assert_equal (h, zeros (1, 0));
+%! assert_equal (pval, zeros (1, 0));
+%! assert_equal (ci, zeros (2, 0));
+%!test
+%! assert_equal (ztest (zeros (0, 0, 3), 0, 1), zeros (1, 0, 3));
+%!test
+%! [h, pval, ci] = ztest (zeros (1, 0), 0, 1);
+%! assert_equal (h, NaN);
+%! assert_equal (pval, NaN);
+%! assert_equal (ci, [NaN, NaN]);
+%!test
+%! [h, pval, ci] = ztest ([NaN; NaN], 0, 1);
+%! assert_equal (h, NaN);
+%! assert_equal (pval, NaN);
+%! assert_equal (ci, [NaN; NaN]);
