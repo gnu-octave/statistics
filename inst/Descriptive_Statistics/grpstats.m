@@ -20,6 +20,8 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{stats} =} grpstats (@var{x})
 ## @deftypefnx {statistics} {@var{stats} =} grpstats (@var{x}, @var{group})
+## @deftypefnx {statistics} {[@var{means}, @var{sem}, @var{counts}, @var{gname}] =} @
+## grpstats (@var{x}, @var{group})
 ## @deftypefnx {statistics} {[@var{stats1}, @dots{}, @var{statsN}] =} grpstats @
 ##(@var{x}, @var{group}, @var{whichstats})
 ## @deftypefnx {statistics} {[@var{stats1}, @dots{}, @var{statsN}] =} grpstats @
@@ -53,7 +55,17 @@
 ## vector specifying multiple grouping variables with each cell element
 ## containing any of the aforementioned supported grouping vectors.  If
 ## @var{group} is empty (@code{[]}), then input @var{x} is treated as a single
-## group.
+## group.  A group whose values are all missing is dropped, so a grouping
+## variable that is entirely missing leaves no groups at all.
+##
+## @code{[@var{means}, @var{sem}, @var{counts}, @var{gname}] = grpstats
+## (@var{x}, @var{group})} returns, without naming any statistic, the mean, the
+## standard error of the mean, the number of non-@qcode{NaN} values and the
+## group names, in that order.  Up to four outputs may be requested this way.
+##
+## An empty @var{x} produces empty output with as many columns as @var{x} and
+## no rows, one row per group being the general rule and an empty @var{x}
+## having no groups.
 ##
 ## @code{[@var{stats1}, @dots{}, @var{statsN}] = grpstats (@var{x}, @var{group},
 ## @var{whichstats})} calculates the summary statistics specified by the
@@ -166,10 +178,6 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
   if (ndims (x) != 2)
      error ("grpstats: X must be a matrix or a table.");
   endif
-  if (isempty (x))
-    [varargout] = repmat ({[]}, nargout, 1);
-    return;
-  endif
   if (! istable (x) && isvector (x))
     x = x(:);
   endif
@@ -184,8 +192,15 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
   no_group = true;
   if (isempty (group))
     grp_idx = ones (r, 1);
-    r_names = {'All'};
-    ngroups = 1;
+    if (r == 0)
+      r_names = cell (0, 1);
+      g_names = cell (0, 1);
+      ngroups = 0;
+    else
+      r_names = {'All'};
+      g_names = {'1'};
+      ngroups = 1;
+    endif
     no_group = false;
   endif
 
@@ -204,7 +219,13 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
 
   ## Parse statistical functions
   if (isempty (whichstats))
-    fcn_names = {'mean'};
+    ## Without WHICHSTATS the outputs are the mean, the standard error, the
+    ## group counts and the group names, in that order.
+    default_fcn = {'mean', 'sem', 'numel', 'gname'};
+    if (nargout > numel (default_fcn))
+      error ("grpstats: too many output arguments.");
+    endif
+    fcn_names = default_fcn(1:max (1, nargout));
   else
     if (ischar (whichstats) || isstring (whichstats))
       fcn_names = cellstr (whichstats);
@@ -291,6 +312,7 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
     endif
 
     ## Compute group count by default in tables
+    GroupCount = zeros (ngroups, 1);
     for idx = 1:ngroups
       GroupCount(idx,:) = sum (grp_idx == idx);
     endfor
@@ -484,14 +506,20 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
             all_g_names{g_idx} = tmp_g_names;
           endfor
         endif
-        ## Get combination of unique groups and their common index to X
-        [g_names_idx, ~, grp_idx] = unique (grp_idx, 'rows');
+        ## Get combination of unique groups and their common index to X.
+        ## Rows missing in any grouping variable belong to no group.
+        keep = ! any (isnan (grp_idx), 2);
+        [g_names_idx, ~, keep_idx] = unique (grp_idx(keep,:), 'rows');
+        grp_idx = NaN (r, 1);
+        grp_idx(keep) = keep_idx;
         ngroups = rows (g_names_idx);
         c_names = cell (ngroups, grp_vars);
-        for gvar_idx = 1:grp_vars
-          gn = all_g_names{gvar_idx};
-          c_names(:, gvar_idx) = gn(g_names_idx(:,gvar_idx));
-        endfor
+        if (ngroups > 0)
+          for gvar_idx = 1:grp_vars
+            gn = all_g_names{gvar_idx};
+            c_names(:, gvar_idx) = gn(g_names_idx(:,gvar_idx));
+          endfor
+        endif
         g_names = c_names;
       else
         [grp_idx, g_names] = grp2idx (group);
@@ -555,18 +583,21 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
     for fcn_idx = 1:fcn_num
       switch (fcn_names{fcn_idx})
         case 'mean'
+          group_mean = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_mean(idx,:) = mean (group_x, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_mean;
         case 'median'
+          group_mean = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_mean(idx,:) = median (group_x, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_mean;
         case 'sem'
+          group_sem = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_sem(idx,:) = std (group_x, 0, 1, 'omitnan') / ...
@@ -574,24 +605,28 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
           endfor
           varargout{fcn_idx} = group_sem;
         case 'std'
+          group_std = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_std(idx,:) = std (group_x, 0, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_std;
         case 'var'
+          group_var = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_var(idx,:) = var (group_x, 0, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_var;
         case 'min'
+          group_min = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_min(idx,:) = nanmin (group_x);
           endfor
           varargout{fcn_idx} = group_min;
         case 'max'
+          group_max = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_max(idx,:) = nanmax (group_x);
@@ -599,12 +634,14 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
           varargout{fcn_idx} = group_max;
         case 'range'
           func_handle = @(x) range (x, 1);
+          group_range = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_range(idx,:) = range (group_x, 1);
           endfor
           varargout{fcn_idx} = group_range;
         case 'numel'
+          group_numel = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_numel(idx,:) = size (group_x, 1) - sum (isnan (group_x), 1);
@@ -1462,6 +1499,87 @@ endfunction
 %! predci = grpstats (x, g, 'predci');
 %! assert_equal (predci, [-20.0078, 24.0078; 0.0317, 9.9683], 1e-4);
 
+%!test
+%! ## An empty X keeps its columns and has no groups
+%! assert_equal (grpstats (zeros (0, 3), zeros (0, 1)), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 1), zeros (0, 1)), zeros (0, 1));
+%! assert_equal (grpstats (zeros (0, 3)), zeros (0, 3));
+%! assert_equal (grpstats ([], []), []);
+%!test
+%! ## Every reducing statistic keeps the columns of an empty X
+%! g = zeros (0, 1);
+%! assert_equal (grpstats (zeros (0, 3), g, 'sem'), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), g, 'std'), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), g, 'var'), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), g, 'min'), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), g, 'max'), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), g, 'range'), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), g, 'numel'), zeros (0, 3));
+%!test
+%! ## meanci and predci of an empty X keep the columns and the bound pair
+%! g = zeros (0, 1);
+%! assert_equal (size (grpstats (zeros (0, 3), g, 'meanci')), [0, 3, 2]);
+%! assert_equal (size (grpstats (zeros (0, 3), g, 'predci')), [0, 3, 2]);
+%! assert_equal (size (grpstats (zeros (0, 1), g, 'meanci')), [0, 2]);
+%! assert_equal (size (grpstats ([], [], 'meanci')), [0, 0, 2]);
+%!test
+%! ## gname of an empty X is an empty cell column
+%! assert_equal (grpstats (zeros (0, 3), zeros (0, 1), 'gname'), cell (0, 1));
+%! assert_equal (grpstats ([], [], 'gname'), cell (0, 1));
+%!test
+%! ## Without a grouping variable X is a single group named '1'
+%! assert_equal (grpstats ([1; 2; 3], [], 'gname'), {'1'});
+%! assert_equal (grpstats ([1; 2; 3], [], 'mean'), 2);
+%!test
+%! ## A grouping variable that is entirely missing leaves no groups
+%! assert_equal (grpstats ([1; 2; 3], [NaN; NaN; NaN]), zeros (0, 1));
+%! assert_equal (grpstats ([1; 2; 3], [NaN; NaN; NaN], 'std'), zeros (0, 1));
+%! assert_equal (grpstats ([1; 2; 3], [NaN; NaN; NaN], 'gname'), cell (0, 1));
+%! assert_equal (grpstats ([1; 2; 3], {''; ''; ''}), zeros (0, 1));
+%!test
+%! ## A row missing in any of several grouping variables belongs to no group
+%! y = [1; 2; 3; 4];
+%! assert_equal (grpstats (y, {[NaN; 1; 2; 2], [1; 2; 1; 2]}), [2; 3; 4]);
+%! gone = {[NaN; NaN; NaN; NaN], [1; 2; 1; 2]};
+%! assert_equal (grpstats (y, gone), zeros (0, 1));
+%!test
+%! ## gname over several grouping variables has one column per variable
+%! y = [1; 2; 3; 4];
+%! gn = grpstats (y, {[NaN; NaN; NaN; NaN], [1; 2; 1; 2]}, 'gname');
+%! assert_equal (gn, cell (0, 2));
+%! gn = grpstats (y, {[1; 1; 2; 2], [1; 2; 1; 2]}, 'gname');
+%! assert_equal (gn, {'1', '1'; '1', '2'; '2', '1'; '2', '2'});
+%!test
+%! ## Several empty grouping variables keep the columns of X
+%! g = zeros (0, 1);
+%! assert_equal (grpstats (zeros (0, 3), {g, g}), zeros (0, 3));
+%! assert_equal (grpstats (zeros (0, 3), {g, g}, 'gname'), cell (0, 2));
+%!test
+%! ## Without WHICHSTATS the outputs are mean, sem, counts and names
+%! [m, s, n, g] = grpstats ([1; 2; 3; 4], [1; 1; 2; 2]);
+%! assert_equal (m, [1.5; 3.5]);
+%! assert_equal (s, [0.5; 0.5]);
+%! assert_equal (n, [2; 2]);
+%! assert_equal (g, {'1'; '2'});
+%!test
+%! ## The default counts and standard error ignore NaNs
+%! [m, s, n] = grpstats ([1; 2; NaN; 4], [1; 1; 2; 2]);
+%! assert_equal (m, [1.5; 4]);
+%! assert_equal (s, [0.5; 0]);
+%! assert_equal (n, [2; 1]);
+%!test
+%! ## The default outputs are computed column by column
+%! [m, s, n] = grpstats ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]);
+%! assert_equal (m, [2, 3; 6, 7]);
+%! assert_equal (s, [1, 1; 1, 1], 1e-14);
+%! assert_equal (n, [2, 2; 2, 2]);
+%!test
+%! ## The default outputs of an empty X keep its columns
+%! [m, s, n, g] = grpstats (zeros (0, 3), zeros (0, 1));
+%! assert_equal (m, zeros (0, 3));
+%! assert_equal (s, zeros (0, 3));
+%! assert_equal (n, zeros (0, 3));
+%! assert_equal (g, cell (0, 1));
 ## Test input validation
 %!error <grpstats: X must be a matrix or a table.> grpstats (ones (2, 2, 2))
 %!error <grpstats: only one output argument in allowed when X is a table.> ...
@@ -1492,3 +1610,5 @@ endfunction
 %!       grpstats ([1:5]', {'A'; 'B'; 'A'; 'B'})
 %!error <grpstats: inconsistent number of output arguments.> ...
 %!       m = grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, {'mean', 'std'})
+%!error <grpstats: too many output arguments.> ...
+%!       [a, b, c, d, e] = grpstats ([1; 2; 3; 4], [1; 1; 2; 2])
