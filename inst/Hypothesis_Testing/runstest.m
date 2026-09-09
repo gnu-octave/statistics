@@ -335,13 +335,21 @@ endfunction
 %!test
 %! ## Edge cases with empty arrays
 %! [h, p, s] = runstest ([]);
-%! assert (h == 0);
-%! assert (p == 1);
-%! assert (isnan (s.nruns) && s.n1 == 0 && s.n0 == 0 && isnan (s.z));
+%! assert_equal (h, 0);
+%! assert_equal (p, 1);
+%! assert_equal (isnan (s.nruns), true);
+%! assert_equal (s.n1, 0);
+%! assert_equal (s.n0, 0);
+%! assert_equal (isnan (s.z), true);
+
+%!test
 %! [h, p, s] = runstest (zeros (0, 3));
-%! assert (h == 0);
-%! assert (p == 1);
-%! assert (isnan (s.nruns) && s.n1 == 0 && s.n0 == 0 && isnan (s.z));
+%! assert_equal (h, 0);
+%! assert_equal (p, 1);
+%! assert_equal (isnan (s.nruns), true);
+%! assert_equal (s.n1, 0);
+%! assert_equal (s.n0, 0);
+%! assert_equal (isnan (s.z), true);
 
 %!test
 %! [h, p, stats] = runstest (x, [], 'method', 'approximate');
