@@ -26,6 +26,7 @@
 ##(@var{x}, @var{group}, @var{whichstats})
 ## @deftypefnx {statistics} {[@var{stats1}, @dots{}, @var{statsN}] =} grpstats @
 ## (@var{x}, @var{group}, @var{whichstats}, @qcode{'Alpha'}, @var{alpha})
+## @deftypefnx {statistics} {@var{tblstats} =} grpstats (@var{tbl})
 ## @deftypefnx {statistics} {@var{tblstats} =} grpstats (@var{tbl}, @var{groupvars})
 ## @deftypefnx {statistics} {@var{tblstats} =} grpstats (@var{tbl}, @var{groupvars}, @var{whichstats})
 ## @deftypefnx {statistics} {@var{tblstats} =} grpstats (@var{tbl}, @var{groupvars}, @
@@ -205,7 +206,8 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
   endif
 
   ## Check for plotting functional form with three input arguments
-  if (nargin == 3 && isscalar (whichstats) && whichstats > 0 && whichstats < 1)
+  if (nargin == 3 && isnumeric (whichstats) && isscalar (whichstats) ...
+      && whichstats > 0 && whichstats < 1)
     do_plot = true;
     alpha = whichstats;
     whichstats = [];
@@ -336,6 +338,9 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
       catch
         error ("grpstats: invalid 'DataVars' reference to table X.");
       end_try_catch
+    elseif (isempty (group))
+      ## No grouping variables, so every variable of the table gets used
+      work_tbl = x;
     else
       ## No specified DataVars, all table except grouping variables gets used
       work_tbl = removevars (x, group);
@@ -356,12 +361,10 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
         new_vdata = [];
         fcn_op = fcn_names{fcn_idx};
         if (is_function_handle (fcn_op))
-          fname = cellstr (fcn_op);
+          fname = {func2str(fcn_op)};
           new_vname = strcat (fname, '_', vname);
           try
-            for idx = 1:ngroups
-              new_vdata(idx,:) = fcn_op(vdata(grp_idx == idx, :));
-            endfor
+            new_vdata = applyhandle (vdata, grp_idx, ngroups, ncols, fcn_op);
           catch
             # no-op
           end_try_catch
@@ -587,6 +590,11 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
 
     ## From this point we can start applying functions on the entire array
     for fcn_idx = 1:fcn_num
+      if (is_function_handle (fcn_names{fcn_idx}))
+        varargout{fcn_idx} = applyhandle (x, grp_idx, ngroups, c, ...
+                                          fcn_names{fcn_idx});
+        continue;
+      endif
       switch (fcn_names{fcn_idx})
         case 'mean'
           group_mean = NaN (ngroups, c);
@@ -711,6 +719,26 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
       endswitch
     endfor
   endif
+
+endfunction
+
+## A function handle in WHICHSTATS is applied to each column of each group, on
+## the values of that column which are not NaN, and returns one value per call.
+function out = applyhandle (x, grp_idx, ngroups, c, fcn_op)
+
+  out = NaN (ngroups, c);
+  for idx = 1:ngroups
+    group_x = x(find (grp_idx == idx), :);
+    for col_idx = 1:c
+      col_x = group_x(:, col_idx);
+      value = fcn_op (col_x(! isnan (col_x)));
+      if (! isscalar (value))
+        error (strcat ("grpstats: function in WHICHSTATS must return", ...
+                       " a scalar for each column of each group."));
+      endif
+      out(idx, col_idx) = value;
+    endfor
+  endfor
 
 endfunction
 
@@ -1611,6 +1639,62 @@ endfunction
 %! G = {'a'; 'a'; 'b'; 'b'};
 %! tbl = grpstats (table (Y, G), 'G', 'mean');
 %! assert_equal (tbl.Properties.VariableNames, {'G', 'GroupCount', 'mean_Y'});
+%!test
+%! ## A function handle is applied to each column of each group
+%! assert_equal (grpstats ([1; 2; 3; 4], [1; 1; 2; 2], @mean), [1.5; 3.5]);
+%! x = [1, 10; 3, 20; 5, 30; 7, 40];
+%! assert_equal (grpstats (x, [1; 1; 2; 2], @mean), [2, 15; 6, 35]);
+%!test
+%! ## A function handle sees only the values that are not NaN
+%! assert_equal (grpstats ([1; 2; NaN; 4], [1; 1; 2; 2], @mean), [1.5; 4]);
+%! assert_equal (grpstats ([1; 2; NaN; 4], [1; 1; 2; 2], @numel), [2; 1]);
+%! x = [1, 10; 2, NaN; 3, 30; 4, 40];
+%! assert_equal (grpstats (x, [1; 1; 1; 1], @mean), [2.5, 80/3], 1e-14);
+%!test
+%! ## A function handle may be mixed with named statistics
+%! [m, s] = grpstats ([1; 2; 3; 4], [1; 1; 2; 2], {@mean, 'sem'});
+%! assert_equal (m, [1.5; 3.5]);
+%! assert_equal (s, [0.5; 0.5]);
+%!test
+%! ## An anonymous handle is applied like any other
+%! fcn = @(v) max (v) - min (v);
+%! assert_equal (grpstats ([1; 2; 3; 4], [1; 1; 2; 2], fcn), [1; 1]);
+%! assert_equal (size (grpstats (zeros (0, 3), zeros (0, 1), @mean)), [0, 3]);
+%!test
+%! ## A table variable takes the handle by its own name, NaNs removed
+%! Y = [1; 2; NaN; 4];
+%! G = {'a'; 'a'; 'b'; 'b'};
+%! tbl = grpstats (table (Y, G), 'G', @mean);
+%! assert_equal (tbl.Properties.VariableNames, {'G', 'GroupCount', 'mean_Y'});
+%! assert_equal (tbl.mean_Y, [1.5; 4]);
+%! tbl = grpstats (table (Y, G), 'G', @numel);
+%! assert_equal (tbl.numel_Y, [2; 1]);
+%!test
+%! ## A table with no grouping variable is a single group named 'All'
+%! tbl = grpstats (table ([1; 2; 3], 'VariableNames', {'v'}));
+%! assert_equal (tbl.Properties.VariableNames, {'GroupCount', 'mean_v'});
+%! assert_equal (tbl.Properties.RowNames, {'All'});
+%! assert_equal (tbl.GroupCount, 3);
+%! assert_equal (tbl.mean_v, 2);
+%!test
+%! ## Every variable of an ungrouped table is a data variable
+%! Y = [1; 2; 3; 4];
+%! Z = [10; 20; 30; 40];
+%! tbl = grpstats (table (Y, Z));
+%! assert_equal (tbl.Properties.VariableNames, ...
+%!               {'GroupCount', 'mean_Y', 'mean_Z'});
+%! assert_equal (tbl.mean_Y, 2.5);
+%! assert_equal (tbl.mean_Z, 25);
+%!test
+%! ## An ungrouped table takes WHICHSTATS and 'DataVars' as a grouped one does
+%! Y = [1; 2; 3; 4];
+%! Z = [10; 20; 30; 40];
+%! tbl = grpstats (table (Y, Z), [], {'mean', 'sem'});
+%! assert_equal (tbl.Properties.VariableNames, ...
+%!               {'GroupCount', 'mean_Y', 'sem_Y', 'mean_Z', 'sem_Z'});
+%! assert_equal (tbl.sem_Y, 0.6454972243679028, 1e-14);
+%! tbl = grpstats (table (Y, Z), [], 'mean', 'DataVars', 'Y');
+%! assert_equal (tbl.Properties.VariableNames, {'GroupCount', 'mean_Y'});
 ## Test input validation
 %!error <grpstats: X must be a matrix or a table.> grpstats (ones (2, 2, 2))
 %!error <grpstats: only one output argument in allowed when X is a table.> ...
@@ -1647,3 +1731,5 @@ endfunction
 %!       grpstats (zeros (0, 3), zeros (0, 1), 0.05)
 %!error <grpstats: no groups to plot.> ...
 %!       grpstats ([1; 2; 3], [NaN; NaN; NaN], 0.05)
+%!error <grpstats: function in WHICHSTATS must return a scalar for each column of each group.> ...
+%!       grpstats ([1; 2; 3; 4], [1; 1; 2; 2], @(v) [min(v), max(v)])
