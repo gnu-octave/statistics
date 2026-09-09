@@ -65,6 +65,10 @@
 ## @item @qcode{'right'} @tab right-tailed
 ## @end multitable
 ##
+## If @var{x} is empty, @var{h} is 0, @var{pval} is 1, and the statistic fields
+## are populated with their defaults (e.g. @qcode{NaN} or 0).
+## Character arrays are refused.
+##
 ## @seealso{signrank, signtest}
 ## @end deftypefn
 
@@ -76,10 +80,11 @@ function [h, pval, stats] = runstest (x, v, varargin)
   endif
 
   ## Check X being a vector of scalar values
-  if (! isvector (x) || ! isnumeric (x))
+  if (! ((isvector (x) || isempty (x)) && isnumeric (x)))
     error ("runstest: X must be a vector a scalar values.");
   else
     ## Remove missing values (NaNs)
+    x = x(:);
     x(isnan (x)) = [];
   endif
 
@@ -326,6 +331,26 @@ endfunction
 %! assert_equal (stats.n1, 3);
 %! assert_equal (stats.n0, 3);
 %! assert_equal (stats.z, 0.456435464587638, 1e-14);
+
+%!test
+%! ## Edge cases with empty arrays
+%! [h, p, s] = runstest ([]);
+%! assert_equal (h, 0);
+%! assert_equal (p, 1);
+%! assert_equal (isnan (s.nruns), true);
+%! assert_equal (s.n1, 0);
+%! assert_equal (s.n0, 0);
+%! assert_equal (isnan (s.z), true);
+
+%!test
+%! [h, p, s] = runstest (zeros (0, 3));
+%! assert_equal (h, 0);
+%! assert_equal (p, 1);
+%! assert_equal (isnan (s.nruns), true);
+%! assert_equal (s.n1, 0);
+%! assert_equal (s.n0, 0);
+%! assert_equal (isnan (s.z), true);
+
 %!test
 %! [h, p, stats] = runstest (x, [], 'method', 'approximate');
 %! assert_equal (h, 0);
