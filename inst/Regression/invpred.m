@@ -168,8 +168,10 @@ function [x0, dxlo, dxup] = invpred (x, y, y0, varargin)
     real_roots = term >= 0;
     lower_ray = real_roots & (offset < centre);
     upper_ray = real_roots & (offset >= centre);
-    dxup(lower_ray) = centre - halfwidth - offset(lower_ray);
-    dxlo(upper_ray) = offset(upper_ray) - centre - halfwidth;
+    dxup(lower_ray) = centre(lower_ray) - halfwidth(lower_ray) ...
+                       - offset(lower_ray);
+    dxlo(upper_ray) = offset(upper_ray) - centre(upper_ray) ...
+                       - halfwidth(upper_ray);
   endif
 
 endfunction
@@ -290,6 +292,19 @@ endfunction
 %! assert_equal (x0, 140.42857142857144, 1e-12);
 %! assert_equal (dxlo, 111.30773209684287, 1e-12);
 %! assert_equal (dxup, Inf);
+
+## Y0 may hold several values even when the interval is one-sided in
+## different directions for different elements.
+%!test
+%! [x0, dxlo, dxup] = invpred ((1:5)', [1; 5; 2; 8; 3], [-100; 100]);
+%! assert_equal (x0, [-145.28571428571428; 140.42857142857144], 1e-12);
+%! assert_equal (dxlo, [Inf; 111.30773209684287], 1e-12);
+%! assert_equal (dxup, [120.07306008453997; Inf], 1e-12);
+%!test
+%! [x0, dxlo, dxup] = invpred ((1:5)', [1; 5; 2; 8; 3], [100; 200]);
+%! assert_equal (x0, [140.42857142857144; 283.2857142857143], 1e-12);
+%! assert_equal (dxlo, [111.30773209684287; 226.72556884927243], 1e-12);
+%! assert_equal (dxup, [Inf; Inf], 1e-12);
 
 %!error<Invalid call to invpred> invpred ((1:10)', (1:10)')
 %!error<invpred: X must be a vector of real values.> ...
