@@ -480,7 +480,8 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
       if (numel (VarNames) != columns (g_names))
         error ("grpstats: 'VarNames' do not match expected variables.");
       endif
-      g_names - renamevars (g_names, VarNames);
+      g_names = renamevars (g_names, g_names.Properties.VariableNames, ...
+                            VarNames);
     endif
 
     varargout{1} = g_names;
@@ -532,7 +533,12 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
 
     ## Check for plot option
     if (do_plot)
+      if (ngroups == 0)
+        error ("grpstats: no groups to plot.");
+      endif
       ## Calculate mean and ci
+      mu = NaN (ngroups, c);
+      ci = NaN (ngroups, c);
       for idx = 1:ngroups
         group_x = x(find (grp_idx == idx), :);
         mu(idx,:) = mean (group_x, 1, 'omitnan');
@@ -600,7 +606,7 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
           group_sem = NaN (ngroups, c);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            group_sem(idx,:) = std (group_x, 0, 1, 'omitnan') / ...
+            group_sem(idx,:) = std (group_x, 0, 1, 'omitnan') ./ ...
                              sqrt (size (group_x, 1) - sum (isnan (group_x), 1));
           endfor
           varargout{fcn_idx} = group_sem;
@@ -1569,9 +1575,9 @@ endfunction
 %! assert_equal (n, [2; 1]);
 %!test
 %! ## The default outputs are computed column by column
-%! [m, s, n] = grpstats ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]);
-%! assert_equal (m, [2, 3; 6, 7]);
-%! assert_equal (s, [1, 1; 1, 1], 1e-14);
+%! [m, s, n] = grpstats ([1, 10; 3, 20; 5, 30; 7, 40], [1; 1; 2; 2]);
+%! assert_equal (m, [2, 15; 6, 35]);
+%! assert_equal (s, [1, 5; 1, 5], 1e-14);
 %! assert_equal (n, [2, 2; 2, 2]);
 %!test
 %! ## The default outputs of an empty X keep its columns
@@ -1580,6 +1586,31 @@ endfunction
 %! assert_equal (s, zeros (0, 3));
 %! assert_equal (n, zeros (0, 3));
 %! assert_equal (g, cell (0, 1));
+%!test
+%! ## The standard error is taken column by column
+%! assert_equal (grpstats ([1, 10; 2, 20; 3, 30], [1; 1; 1], 'sem'), ...
+%!               [0.5773502691896258, 5.773502691896258], 1e-14);
+%!test
+%! ## The standard error divides each column by its own count
+%! assert_equal (grpstats ([1, 10; 2, NaN; 3, 30], [1; 1; 1], 'sem'), ...
+%!               [0.5773502691896258, 10], 1e-14);
+%!test
+%! ## 'VarNames' renames every variable of the output table
+%! Y = [1; 2; 3; 4];
+%! Z = [10; 20; 30; 40];
+%! G = {'a'; 'a'; 'b'; 'b'};
+%! tbl = grpstats (table (Y, Z, G), 'G', 'mean', ...
+%!                 'VarNames', {'grp', 'n', 'avgY', 'avgZ'});
+%! assert_equal (tbl.Properties.VariableNames, {'grp', 'n', 'avgY', 'avgZ'});
+%! assert_equal (tbl.n, [2; 2]);
+%! assert_equal (tbl.avgY, [1.5; 3.5]);
+%! assert_equal (tbl.avgZ, [15; 35]);
+%!test
+%! ## Without 'VarNames' the output table keeps the default names
+%! Y = [1; 2; 3; 4];
+%! G = {'a'; 'a'; 'b'; 'b'};
+%! tbl = grpstats (table (Y, G), 'G', 'mean');
+%! assert_equal (tbl.Properties.VariableNames, {'G', 'GroupCount', 'mean_Y'});
 ## Test input validation
 %!error <grpstats: X must be a matrix or a table.> grpstats (ones (2, 2, 2))
 %!error <grpstats: only one output argument in allowed when X is a table.> ...
@@ -1612,3 +1643,7 @@ endfunction
 %!       m = grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, {'mean', 'std'})
 %!error <grpstats: too many output arguments.> ...
 %!       [a, b, c, d, e] = grpstats ([1; 2; 3; 4], [1; 1; 2; 2])
+%!error <grpstats: no groups to plot.> ...
+%!       grpstats (zeros (0, 3), zeros (0, 1), 0.05)
+%!error <grpstats: no groups to plot.> ...
+%!       grpstats ([1; 2; 3], [NaN; NaN; NaN], 0.05)
