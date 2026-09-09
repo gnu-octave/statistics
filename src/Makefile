@@ -5,7 +5,8 @@ OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            svmtrain.oct fcnntrain.oct fcnnpredict.oct \
            gamtrain.oct gampredict.oct gamboosttrain.oct gamboostpredict.oct \
            gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct \
-           __knnselect__.oct __knnbrute__.oct
+           __knnselect__.oct __knnbrute__.oct \
+           treetrain.oct treepredict.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -80,3 +81,11 @@ clean:
 # Declare targets that don't create files
 .PHONY: all clean
 
+# tree.cpp is #included by both, exactly as gam.cpp is, and for the same
+# reason: the engine is shared between the classification and the regression
+# learner, and an edit to it must rebuild both oct-files.
+treetrain.oct: treetrain.cc tree.cpp
+	$(MKOCTFILE) treetrain.cc
+
+treepredict.oct: treepredict.cc tree.cpp
+	$(MKOCTFILE) treepredict.cc

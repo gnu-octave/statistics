@@ -177,6 +177,8 @@ Supervised Learning
  RegressionSVM
  svmpredict
  svmtrain
+ treepredict
+ treetrain
 Clustering
  CalinskiHarabaszEvaluation
  cluster
