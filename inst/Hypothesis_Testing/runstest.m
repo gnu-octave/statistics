@@ -65,9 +65,11 @@
 ## @item @qcode{'right'} @tab right-tailed
 ## @end multitable
 ##
-## If @var{x} is empty, @var{h} is 0, @var{pval} is 1, and the statistic fields
-## are populated with their defaults (e.g. @qcode{NaN} or 0).
-## Character arrays are refused.
+## If @var{x} is empty, @var{h} is 0, @var{pval} is 1, and the fields of
+## @var{stats} are @code{nruns} and @code{z} both @qcode{NaN} and @code{n1} and
+## @code{n0} both 0, which is also what a sample that is empty after ties are
+## removed returns.  MATLAB accepts a character array as @var{x} and returns
+## the empty result for it; @var{x} must be numeric here.
 ##
 ## @seealso{signrank, signtest}
 ## @end deftypefn
@@ -364,6 +366,7 @@ endfunction
 
 %!error<runstest: X must be a vector a scalar values.> runstest (ones (2,20))
 %!error<runstest: X must be a vector a scalar values.> runstest (['asdasda'])
+%!error<runstest: X must be a vector a scalar values.> runstest ('')
 %!error<runstest: V must be either a scalar number or> ...
 %! runstest ([2 3 4 3 2 3 4], 'updown')
 %!error<runstest: invalid value for alpha.> ...

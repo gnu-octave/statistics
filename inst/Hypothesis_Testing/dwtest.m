@@ -67,9 +67,12 @@
 ## method.  A @var{p} of exactly 0 or 1 signals this rather than strong
 ## evidence.
 ##
-## If @var{r} is empty, @var{p} is 0 and @var{d} is @qcode{NaN}.  Note that
-## MATLAB returns @var{d} = 0 for empty arrays that are not vectors.
-## Character arrays are refused.
+## If @var{r} is empty, @var{p} is 0 and @var{d} is @qcode{NaN}.  MATLAB
+## returns @var{d} = 0 for some empty inputs, a @math{0*3} array among them,
+## and @qcode{NaN} for @code{[]} and for zero-length vectors; @var{d} is
+## @qcode{NaN} here for every empty @var{r}, the statistic being undefined in
+## all of them alike.  MATLAB also accepts a character array as @var{r} and
+## returns the empty result for it; @var{r} must be numeric here.
 ##
 ## @seealso{regress, fitlm, runstest}
 ## @end deftypefn
@@ -118,8 +121,9 @@ function [pval, d] = dwtest (r, x, varargin)
   endif
 
   ## With no observations D is undefined and has no null distribution.  MATLAB
-  ## returns d = 0 for an empty R that is not a vector; we return NaN for every
-  ## empty R, the statistic being undefined in all of them alike.
+  ## returns d = 0 for some empty inputs, a 0-by-3 array among them, and NaN
+  ## for [] and for zero-length vectors; we return NaN for every empty R, the
+  ## statistic being undefined in all of them alike.
   if (n == 0)
     pval = 0;
     d = NaN;
@@ -236,8 +240,6 @@ endfunction
 %! assert_equal (d, 20 / 6, 1e-12);
 %! assert_equal (p >= 0 && p <= 1, true);
 
-
-
 %!test
 %! ## Edge cases with empty arrays
 %! [p, d] = dwtest ([], []);
@@ -296,6 +298,7 @@ endfunction
 ## Test input validation
 %!error <Invalid call to dwtest> dwtest (1)
 %!error <dwtest: R must be a real vector of residuals.> dwtest (ones (3, 3), ones (3, 2))
+%!error <dwtest: R must be a real vector of residuals.> dwtest ('', [])
 %!error <dwtest: X must be a real matrix with one row per residual.> ...
 %! dwtest ([1;2;3], ones (2, 2))
 %!error <dwtest: optional arguments must be given as Name-Value pairs.> ...
