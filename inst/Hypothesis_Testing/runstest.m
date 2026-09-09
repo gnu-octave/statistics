@@ -65,6 +65,10 @@
 ## @item @qcode{'right'} @tab right-tailed
 ## @end multitable
 ##
+## If @var{x} is empty, @var{h} is 0, @var{pval} is 1, and the statistic fields
+## are populated with their defaults (e.g. @qcode{NaN} or 0).
+## Character arrays are refused.
+##
 ## @seealso{signrank, signtest}
 ## @end deftypefn
 
@@ -75,21 +79,12 @@ function [h, pval, stats] = runstest (x, v, varargin)
     print_usage;
   endif
 
-  if (isempty (x))
-    h = 0;
-    pval = 1;
-    stats.nruns = NaN;
-    stats.n1 = 0;
-    stats.n0 = 0;
-    stats.z = NaN;
-    return;
-  endif
-
   ## Check X being a vector of scalar values
-  if (! isvector (x) || ! isnumeric (x))
+  if (! ((isvector (x) || isempty (x)) && isnumeric (x)))
     error ("runstest: X must be a vector a scalar values.");
   else
     ## Remove missing values (NaNs)
+    x = x(:);
     x(isnan (x)) = [];
   endif
 

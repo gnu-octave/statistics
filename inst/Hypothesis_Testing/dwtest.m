@@ -67,6 +67,10 @@
 ## method.  A @var{p} of exactly 0 or 1 signals this rather than strong
 ## evidence.
 ##
+## If @var{r} is empty, @var{p} is 0 and @var{d} is @qcode{NaN}.  Note that
+## MATLAB returns @var{d} = 0 for empty arrays that are not vectors.
+## Character arrays are refused.
+##
 ## @seealso{regress, fitlm, runstest}
 ## @end deftypefn
 
@@ -75,12 +79,7 @@ function [pval, d] = dwtest (r, x, varargin)
   if (nargin < 2)
     print_usage ();
   endif
-  if (isempty (r))
-    pval = 0;
-    d = NaN;
-    return;
-  endif
-  if (! (isnumeric (r) && isreal (r) && isvector (r)))
+  if (! (isnumeric (r) && isreal (r) && (isvector (r) || isempty (r))))
     error ("dwtest: R must be a real vector of residuals.");
   endif
   r = r(:);
@@ -116,6 +115,15 @@ function [pval, d] = dwtest (r, x, varargin)
   endif
   if (! any (strcmp (tail, {"both", "right", "left"})))
     error ("dwtest: 'Tail' must be 'both', 'right', or 'left'.");
+  endif
+
+  ## With no observations D is undefined and has no null distribution.  MATLAB
+  ## returns d = 0 for an empty R that is not a vector; we return NaN for every
+  ## empty R, the statistic being undefined in all of them alike.
+  if (n == 0)
+    pval = 0;
+    d = NaN;
+    return;
   endif
 
   ## Durbin-Watson statistic
@@ -233,11 +241,18 @@ endfunction
 %!test
 %! ## Edge cases with empty arrays
 %! [p, d] = dwtest ([], []);
-%! assert (p == 0);
-%! assert (isnan (d));
+%! assert_equal (p, 0);
+%! assert_equal (isnan (d), true);
+
+%!test
 %! [p, d] = dwtest (zeros (0, 3), zeros (0, 3));
-%! assert (p == 0);
-%! assert (isnan (d));
+%! assert_equal (p, 0);
+%! assert_equal (isnan (d), true);
+
+%!test
+%! [p, d] = dwtest (zeros (0, 1), zeros (0, 2));
+%! assert_equal (p, 0);
+%! assert_equal (isnan (d), true);
 
 %!test  # exact and approximate methods give similar p-values
 %! x = [ones(30, 1), (1:30)', ((1:30)') .^ 2];
