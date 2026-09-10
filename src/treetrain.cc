@@ -157,6 +157,21 @@ children.\n\
 %!                              0, 0, 0, 0]);
 
 %!test
+%! ## A subtree that costs nothing to give up opens no level of the sequence
+%! ## The pair of leaves that merging would have removed survives here, and
+%! ## giving it up costs nothing, so the eleven node tree carries the merged
+%! ## tree's five alphas rather than six.  Measured on R2024a.
+%! load fisheriris
+%! y = grp2idx (species);
+%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'Prune', true);
+%! T = treetrain (meas, y, ones (150, 1) / 150, o);
+%! assert_equal (T.NumNodes, 11);
+%! assert_equal (T.PruneList', [4, 0, 3, 2, 0, 1, 0, 0, 0, 0, 0]);
+%! assert_equal (T.PruneAlpha', [0, 1/150, 2/150, 44/150, 50/150], 1e-12);
+
+%!test
 %! ## Prune off leaves the pruning sequence empty
 %! load fisheriris
 %! y = grp2idx (species);

@@ -666,6 +666,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
       std::vector<double> subrisk (out);
       std::vector<octave_idx_type> subleaves (out);
       std::vector<bool> reach (out);
+      // The branches given up at no cost, which are no part of the sequence
+      std::vector<bool> freed (out, false);
       std::vector<double> alphas;
       octave_idx_type level = 0;
 
@@ -716,22 +718,50 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           if (! any)
             break;
 
+          // A subtree that costs nothing to give up is no step of the
+          // sequence.  It is what merging leaves would have removed, and it
+          // survives to be seen here only when the caller asked for a
+          // sequence without a merge.  Such a branch is given up all the
+          // same, so that the branches above it are priced on what is left,
+          // but it opens no level and takes no alpha: measured on R2024a,
+          // where an unmerged iris tree of eleven nodes carries the merged
+          // tree's five alphas rather than six.
+          const double tol = GAIN_TIE_TOL * std::max (std::fabs (risk[0]), 1.0);
+          const bool free = (weakest <= tol);
+
           // Every branch whose link is the weakest goes at this level, not
           // just one of them, and links equal in exact arithmetic can differ
           // in their last bits here as split gains do.
-          level++;
-          alphas.push_back (weakest);
-          const double cut = weakest + std::fabs (weakest) * GAIN_TIE_TOL;
+          if (! free)
+            {
+              level++;
+              alphas.push_back (weakest);
+            }
+          const double cut = weakest + std::fabs (weakest) * GAIN_TIE_TOL + tol;
           for (octave_idx_type i = 0; i < out; i++)
             {
               if (kidl[i] == 0 || ! reach[i])
                 continue;
               if ((risk[i] - subrisk[i]) / (subleaves[i] - 1) <= cut)
                 {
-                  prunelist(i) = level;
+                  if (free)
+                    freed[i] = true;
+                  else
+                    prunelist(i) = level;
                   kidl[i] = kidr[i] = 0;
                 }
             }
+        }
+
+      // A branch inside a subtree given up at no cost is no part of the
+      // sequence either, its ancestor having left it at no level.  A parent
+      // always precedes its children, so one forward pass carries the mark
+      // down.
+      for (octave_idx_type i = 1; i < out; i++)
+        {
+          octave_idx_type a = static_cast<octave_idx_type> (parent(i));
+          if (a > 0 && freed[a - 1])
+            freed[i] = true;
         }
 
       // A branch that lost an ancestor never came up for pruning on its own
@@ -739,7 +769,7 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
       // that is the level it carries.
       for (octave_idx_type i = 0; i < out; i++)
         {
-          if (children(i, 0) == 0 || prunelist(i) != 0)
+          if (children(i, 0) == 0 || prunelist(i) != 0 || freed[i])
             continue;
           octave_idx_type a = static_cast<octave_idx_type> (parent(i));
           while (a > 0 && prunelist(a - 1) == 0)
