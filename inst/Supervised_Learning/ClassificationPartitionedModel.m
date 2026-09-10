@@ -379,14 +379,19 @@ classdef ClassificationPartitionedModel
       fprintf ("%+25s: '%s'\n\n", 'ScoreTransform', this.ScoreTransform);
     endfunction
 
-    ## MATLAB refuses this one on a cross-validated SVM alone, and so do we:
-    ## the SVM's costs enter its box constraint while it is being fitted, so a
-    ## model fitted under one cost matrix cannot be made to report another.
+    ## MATLAB refuses this one on the two backings whose costs are consumed
+    ## while they are fitted, and so do we: the SVM's enter its box
+    ## constraint and the tree's enter the split criterion as a prior
+    ## adjustment, so a model fitted under one cost matrix cannot be made to
+    ## report another.  Both measured on R2024a.
     function this = set.Cost (this, val)
-      if (this.Fitted && strcmp (this.CrossValidatedModel, 'SVM'))
+      consumes_cost = {'SVM', 'Tree'};
+      if (this.Fitted && any (strcmp (this.CrossValidatedModel, ...
+                                      consumes_cost)))
         error (strcat ("ClassificationPartitionedModel: cannot assign", ...
-                       " 'Cost' on a cross-validated ClassificationSVM,", ...
-                       " whose costs are consumed while it is fitted."));
+                       " 'Cost' on a cross-validated Classification%s,", ...
+                       " whose costs are consumed while it is fitted."), ...
+               this.CrossValidatedModel);
       endif
       gnY = this.ClassNames;
       if (isempty (val))
@@ -480,7 +485,8 @@ classdef ClassificationPartitionedModel
       ## Check for valid Classification object
       validTypes = {'ClassificationDiscriminant', 'ClassificationGAM', ...
                     'ClassificationKNN', 'ClassificationNaiveBayes', ...
-                    'ClassificationNeuralNetwork', 'ClassificationSVM'};
+                    'ClassificationNeuralNetwork', 'ClassificationSVM', ...
+                    'ClassificationTree'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
       endif
@@ -782,6 +788,50 @@ classdef ClassificationPartitionedModel
           ## The model's own, rather than the argument struct this branch
           ## assembled to refit the folds with.
 
+        case 'Tree'
+          ## Arguments to pass in fitctree.  ScoreTransform is deliberately
+          ## absent, as it is for the KNN above: the parent applies it to the
+          ## assembled scores, so a fold carrying it too would apply it twice.
+          args = {'PredictorNames', Mdl.PredictorNames, ...
+                  'ResponseName', Mdl.ResponseName, ...
+                  'ClassNames', Mdl.ClassNames, ...
+                  'Prior', Mdl.Prior, 'Cost', Mdl.Cost};
+
+          ## The growth parameters, from what the parent actually used.
+          ## MinParent is the value the fit settled on rather than the one
+          ## asked for, and passing it back beside MinLeaf reproduces it: the
+          ## constructor takes the larger of the two and the larger is
+          ## already there.
+          MP = Mdl.ModelParameters;
+          args = [args, {'SplitCriterion', MP.SplitCriterion, ...
+                         'MinParentSize', MP.MinParent, ...
+                         'MinLeafSize', MP.MinLeaf, ...
+                         'MergeLeaves', MP.MergeLeaves, ...
+                         'Prune', MP.Prune, ...
+                         'PruneCriterion', MP.PruneCriterion}];
+
+          ## MaxSplits defaults to one less than the number of observations,
+          ## so a fold works its own out; a budget the caller actually asked
+          ## for is passed on.
+          if (MP.MaxSplits != Mdl.NumObservations - 1)
+            args = [args, {'MaxNumSplits', MP.MaxSplits}];
+          endif
+
+          ## Train model according to partition object.  The fold is stored
+          ## compact, as MATLAB stores it: measured on R2024a, where
+          ## Trained{k} is a CompactClassificationTree.  The weights are
+          ## sliced per fold, this being the one backing whose constructor
+          ## takes them.
+          W = Mdl.RawWeights;
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            tmp = fitctree (this.X(idx, :), this.Y(idx,:), args{:}, ...
+                            'Weights', W(idx));
+            this.Trained{k} = compact (tmp);
+          endfor
+
+          ## The model's own, rather than a list of names restated here.
+
       endswitch
 
       ## The learner's parameters, under this class's own tags.  MATLAB
@@ -928,7 +978,10 @@ classdef ClassificationPartitionedModel
         ## posterior in its score, so the expected cost is formed here rather
         ## than asked of the fold.  MATLAB reports one for a network backing
         ## although its own network predict refuses the output.
-        no_cost_models = {'GAM', 'NeuralNetwork'};   # two-output predict
+        ## A tree's third output is the node an observation landed in, not
+        ## a cost, so its expected cost is formed here from the score as the
+        ## two-output backings' is.  MATLAB reports one for all three.
+        no_cost_models = {'GAM', 'NeuralNetwork', 'Tree'};
         if (any (strcmp (this.CrossValidatedModel, no_cost_models)))
           [predictedLabel, score] = predict (model, this.X(testIdx, :));
           if (nargout > 2)
@@ -1612,6 +1665,47 @@ endfunction
 %! load fisheriris
 %! CVMdl = crossval (fitcknn (meas, species), 'KFold', 5);
 %! assert_equal (CVMdl.CrossValidatedModel, "KNN");
+
+%!test  # MATLAB parity: a cross-validated tree, over compact folds
+%! load fisheriris
+%! a = fitctree (meas, species);
+%! cvModel = crossval (a, 'KFold', 5);
+%! assert_equal (class (cvModel), "ClassificationPartitionedModel");
+%! assert_equal (cvModel.CrossValidatedModel, "Tree");
+%! assert_equal (class (cvModel.Trained{1}), "CompactClassificationTree");
+%! assert_equal (cvModel.KFold, 5);
+%! assert_equal (cvModel.NumObservations, 150);
+%! assert_equal (cvModel.Prior, [1/3, 1/3, 1/3], 1e-15);
+%! assert_equal (cvModel.Cost, [0, 1, 1; 1, 0, 1; 1, 1, 0]);
+
+%!test  # A tree fold is grown with the parameters the parent was grown with
+%! load fisheriris
+%! a = fitctree (meas, species, 'SplitCriterion', 'deviance', ...
+%!               'MinLeafSize', 5, 'MaxNumSplits', 4);
+%! cvModel = crossval (a, 'KFold', 3);
+%! assert_equal (cvModel.ModelParameters.SplitCriterion, 'deviance');
+%! assert_equal (cvModel.ModelParameters.MinLeaf, 5);
+%! assert_equal (cvModel.ModelParameters.MaxSplits, 4);
+%! assert_equal (sum (cvModel.Trained{1}.IsBranchNode) <= 4, true);
+
+%!test  # A tree fold carries the parent's classes, prior and cost
+%! load fisheriris
+%! a = fitctree (meas, species, 'Weights', (1:150)', ...
+%!               'Cost', [0, 1, 10; 1, 0, 1; 10, 1, 0]);
+%! cvModel = crossval (a, 'KFold', 3);
+%! assert_equal (cvModel.Trained{1}.Prior, a.Prior, 1e-15);
+%! assert_equal (cvModel.Trained{1}.Cost, a.Cost);
+%! assert_equal (cvModel.Trained{1}.ClassNames, a.ClassNames);
+
+%!test  # MATLAB parity: kfoldPredict costs a tree from its score
+%! load fisheriris
+%! cvModel = crossval (fitctree (meas, species), 'KFold', 5);
+%! [label, score, cost] = kfoldPredict (cvModel);
+%! assert_equal (size (label), [150, 1]);
+%! assert_equal (cost, score * cvModel.Cost, 1e-14);
+%! assert_equal (sum (score, 2), ones (150, 1), 1e-14);
+%! assert_equal (kfoldLoss (cvModel) < 0.2, true);
+%! assert_equal (size (kfoldMargin (cvModel)), [150, 1]);
 
 ## Test input validation for ClassificationPartitionedModel
 ## Cross-validating a GAM rebuilds each fold from the term matrix, the
@@ -2428,3 +2522,8 @@ endfunction
 %!   n = [sum(b(tr) == 0), sum(b(tr) == 1)];
 %!   assert_equal (CVMdl.Trained{k}.Prior, n ./ sum (n), 1e-12);
 %! endfor
+
+%!error<ClassificationPartitionedModel: cannot assign 'Cost' on a cross-validated ClassificationTree, whose costs are consumed while it is fitted.>
+%! load fisheriris
+%! CVMdl = crossval (fitctree (meas, species), 'KFold', 3);
+%! CVMdl.Cost = [0, 2, 8; 3, 0, 1; 5, 4, 0];

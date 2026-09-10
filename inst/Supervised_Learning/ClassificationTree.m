@@ -1453,6 +1453,141 @@ classdef ClassificationTree
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn {ClassificationTree} {@var{CMdl} =} compact (@var{obj})
+    ##
+    ## Drop the training data from a trained model.
+    ##
+    ## @code{@var{CMdl} = compact (@var{obj})} returns a
+    ## @code{CompactClassificationTree} object carrying the tree and
+    ## everything @code{predict} needs, but not the observations the model
+    ## was fitted on.  It classifies new data identically and is far smaller
+    ## to keep or to ship.
+    ##
+    ## @seealso{CompactClassificationTree, ClassificationTree}
+    ## @end deftypefn
+    function CMdl = compact (this)
+
+      CMdl = CompactClassificationTree (this);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationTree} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationTree} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate a trained decision tree.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} partitions the training data
+    ## into ten folds, or into as many folds as there are observations when
+    ## there are fewer than ten, grows a tree on the training part of each
+    ## and returns them as a @code{ClassificationPartitionedModel}.
+    ##
+    ## @code{@var{CVMdl} = crossval (@dots{}, @var{name}, @var{value})} takes
+    ## one of the following, and one only.
+    ##
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KFold'} @tab An integer greater than 1, the number of
+    ## folds.
+    ##
+    ## @item @qcode{'Holdout'} @tab A value between 0 and 1, the fraction of
+    ## the data held out for testing, which gives a single fold.
+    ##
+    ## @item @qcode{'Leaveout'} @tab @qcode{'on'} or @qcode{'off'}, one fold
+    ## per observation.
+    ##
+    ## @item @qcode{'CVPartition'} @tab A @code{cvpartition} object.
+    ##
+    ## @end multitable
+    ##
+    ## Every fold is grown with the parent's class names, prior, cost and
+    ## observation weights rather than being left to re-derive them from its
+    ## own rows, so a fold reports the prior of the whole data and not its own
+    ## frequencies.
+    ##
+    ## @seealso{ClassificationPartitionedModel, ClassificationTree, cvpartition}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      ## Input validation
+      if (numel (varargin) == 1)
+        error (strcat ("ClassificationTree.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
+      elseif (numel (varargin) > 2)
+        error (strcat ("ClassificationTree.crossval: specify only one of", ...
+                       " the optional Name-Value paired arguments."));
+      endif
+
+      if (this.NumObservations < 10)
+        numFolds = this.NumObservations;
+      else
+        numFolds = 10;
+      endif
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin{1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && (numFolds == fix (numFolds)) && numFolds > 1))
+              error (strcat ("ClassificationTree.crossval: 'KFold' must", ...
+                             " be an integer value greater than 1."));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat ("ClassificationTree.crossval: 'Holdout' must", ...
+                             " be a numeric value between 0 and 1."));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && any (strcmpi (Leaveout, {'on', 'off'}))))
+              error (strcat ("ClassificationTree.crossval: 'Leaveout'", ...
+                             " must be either 'on' or 'off'."));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (! (isa (CVPartition, 'cvpartition')))
+              error (strcat ("ClassificationTree.crossval: 'CVPartition'", ...
+                             " must be a 'cvpartition' object."));
+            endif
+
+          otherwise
+            error (strcat ("ClassificationTree.crossval: invalid", ...
+                           " parameter name in optional paired arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## The partition covers the observations actually trained on: a row
+      ## dropped for a missing response is not one the folds can use.  The
+      ## response is passed rather than a count so the folds stay stratified.
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (this.Y, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (this.NumObservations, 'LeaveOut');
+      else
+        partition = cvpartition (this.Y, 'KFold', numFolds);
+      endif
+
+      CVMdl = ClassificationPartitionedModel (this, partition);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {ClassificationTree} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
     ## Classification margin on new data.
@@ -1817,35 +1952,14 @@ classdef ClassificationTree
         return;
       endif
 
-      cw = this.ClassShare .* this.Prior(:)';
-      nw = sum (cw, 2);
-      CP = zeros (size (cw));
-      nz = nw > 0;
-      CP(nz,:) = cw(nz,:) ./ nw(nz);
-      this.NodeProbability = nw;
-      this.ClassProbability = CP;
-
-      ## The class of least expected misclassification cost, the first of
-      ## the class names keeping a tie, which is what min returns
-      [err, k] = min (CP * this.Cost, [], 2);
-      this.NodeError = err;
-      names = classText (this.ClassNames);
-      this.NodeClass = names(k);
-
-      ## The risk is the impurity of the cost-adjusted distribution weighted
-      ## by the adjusted probability of reaching the node.  Under the default
-      ## cost every class is scaled alike and the adjustment falls away.
-      aw = cw .* sum (this.Cost, 2)';
-      anw = sum (aw, 2);
-      AP = zeros (size (aw));
-      nz = anw > 0;
-      AP(nz,:) = aw(nz,:) ./ anw(nz);
-      if (anw(1) > 0)
-        imp = nodeImpurity (AP, this.ModelParameters.SplitCriterion);
-        this.NodeRisk = (anw / anw(1)) .* imp;
-      else
-        this.NodeRisk = zeros (rows (aw), 1);
-      endif
+      S = treeNodeStats (this.ClassShare, this.Prior, this.Cost, ...
+                         this.ModelParameters.SplitCriterion, ...
+                         this.ClassNames);
+      this.NodeProbability = S.NodeProbability;
+      this.ClassProbability = S.ClassProbability;
+      this.NodeError = S.NodeError;
+      this.NodeClass = S.NodeClass;
+      this.NodeRisk = S.NodeRisk;
 
     endfunction
 
@@ -1853,28 +1967,10 @@ classdef ClassificationTree
     ## so that they cannot fall out of step with it.
     function this = fillCuts (this)
 
-      n = this.NumNodes;
-      this.IsBranchNode = this.Children(:,1) > 0;
-      cutname = repmat ({''}, n, 1);
-      cuttype = repmat ({''}, n, 1);
-      br = this.CutPredictorIndex > 0;
-      if (any (br))
-        cutname(br) = this.PredictorNames(this.CutPredictorIndex(br));
-        cuttype(br) = {'continuous'};
-      endif
-      this.CutPredictor = cutname;
-      this.CutType = cuttype;
-      this.CutCategories = repmat ({zeros(0, 0)}, n, 2);
-
-      ## Categorical predictors and surrogate splits are not implemented, and
-      ## these are the shapes MATLAB reports for a tree that has neither.
-      this.CategoricalSplit = cell (0, 0);
-      this.SurrogateCutCategories = cell (0, 0);
-      this.SurrogateCutFlip = cell (0, 0);
-      this.SurrogateCutPoint = cell (0, 0);
-      this.SurrogateCutType = cell (0, 0);
-      this.SurrogateCutPredictor = cell (0, 1);
-      this.SurrogatePredictorAssociation = cell (0, 0);
+      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames);
+      for [val, name] = S
+        this.(name) = val;
+      endfor
 
     endfunction
 
@@ -2084,20 +2180,6 @@ classdef ClassificationTree
 
 endclassdef
 
-## The class names as text, whatever type they are carried in, which is what
-## NodeClass reports and what view prints.
-function s = classText (C)
-
-  if (iscellstr (C))
-    s = C(:);
-  elseif (ischar (C))
-    s = cellstr (C);
-  else
-    s = arrayfun (@(v) num2str (v), C(:), 'UniformOutput', false);
-  endif
-
-endfunction
-
 ## The share of each class's total weight that reached each node.  Dividing
 ## by the root's row cancels whatever scaled the columns, the prior and the
 ## cost adjustment alike; a class with no weight at all divides by zero and
@@ -2108,21 +2190,6 @@ function S = classShareOf (CW)
   root = CW(1,:);
   nz = root > 0;
   S(:,nz) = CW(:,nz) ./ root(nz);
-
-endfunction
-
-## The impurity of a distribution, by the criterion the tree was grown
-## under.  The deviance is the entropy in bits halved, which is the scale
-## MATLAB reports NodeRisk on.
-function imp = nodeImpurity (P, crit)
-
-  if (strcmp (crit, 'gdi'))
-    imp = 1 - sum (P .^ 2, 2);
-  else
-    L = P;
-    L(L <= 0) = 1;      # a class of no weight contributes nothing
-    imp = -sum (P .* log2 (L), 2) / 2;
-  endif
 
 endfunction
 
@@ -2441,6 +2508,65 @@ endfunction
 %! assert_equal (resubLoss (Mdl), 1/30, 1e-14);
 %! assert_equal (resubEdge (Mdl), 0.914653784219002, 1e-14);
 
+%!test  # MATLAB parity: compact drops the data and answers identically
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! CMdl = compact (Mdl);
+%! assert_equal (class (CMdl), 'CompactClassificationTree');
+%! assert_equal (numel (properties (CMdl)), 33);
+%! assert_equal (predict (CMdl, meas), predict (Mdl, meas));
+%! assert_equal (CMdl.NodeRisk, Mdl.NodeRisk, 1e-15);
+
+%!test  # MATLAB parity: crossval returns a partitioned model over compacts
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! CVMdl = crossval (Mdl);
+%! assert_equal (class (CVMdl), 'ClassificationPartitionedModel');
+%! assert_equal (CVMdl.CrossValidatedModel, 'Tree');
+%! assert_equal (class (CVMdl.Trained{1}), 'CompactClassificationTree');
+%! assert_equal (CVMdl.KFold, 10);
+%! assert_equal (CVMdl.NumObservations, 150);
+%! assert_equal (CVMdl.Prior, Mdl.Prior, 1e-15);
+%! assert_equal (CVMdl.Cost, Mdl.Cost);
+
+%!test  # Each way of asking for a partition gives the folds it names
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! assert_equal (crossval (Mdl, 'KFold', 5).KFold, 5);
+%! assert_equal (crossval (Mdl, 'Holdout', 0.3).KFold, 1);
+%! assert_equal (crossval (Mdl, 'Leaveout', 'on').KFold, 150);
+%! assert_equal (crossval (Mdl, 'CVPartition', ...
+%!                         cvpartition (species, 'KFold', 4)).KFold, 4);
+
+%!test  # A fold is grown with the parent's prior, cost and weights
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species, 'Weights', (1:150)', ...
+%!                           'Cost', [0, 1, 10; 1, 0, 1; 10, 1, 0]);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.Trained{1}.Prior, Mdl.Prior, 1e-15);
+%! assert_equal (CVMdl.Trained{1}.Cost, Mdl.Cost);
+%! assert_equal (CVMdl.Trained{1}.ClassNames, Mdl.ClassNames);
+
+%!test  # A fold is grown with the parameters the parent was grown with
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species, 'SplitCriterion', 'deviance', ...
+%!                           'MinLeafSize', 7, 'MergeLeaves', 'off');
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.ModelParameters.SplitCriterion, 'deviance');
+%! assert_equal (CVMdl.ModelParameters.MinLeaf, 7);
+%! assert_equal (CVMdl.ModelParameters.MergeLeaves, 'off');
+
+%!test  # kfoldPredict scores every observation and costs them from the score
+%! load fisheriris
+%! CVMdl = crossval (ClassificationTree (meas, species), 'KFold', 5);
+%! [label, score, cost] = kfoldPredict (CVMdl);
+%! assert_equal (size (label), [150, 1]);
+%! assert_equal (size (score), [150, 3]);
+%! assert_equal (cost, score * CVMdl.Cost, 1e-14);
+%! assert_equal (sum (score, 2), ones (150, 1), 1e-14);
+%! assert_equal (kfoldLoss (CVMdl) < 0.2, true);
+%! assert_equal (size (kfoldMargin (CVMdl)), [150, 1]);
+
 ## Test input validation
 %!error<ClassificationTree: too few input arguments.> ClassificationTree ()
 %!error<ClassificationTree: too few input arguments.>
@@ -2552,6 +2678,21 @@ endfunction
 %! savemodel (ClassificationTree (ones (4, 2), [1; 1; 2; 2]))
 %!error<ClassificationTree.savemodel: FNAME must be a character vector.>
 %! savemodel (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 5)
+%!error<ClassificationTree.crossval: Name-Value arguments must be in pairs.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'KFold')
+%!error<ClassificationTree.crossval: specify only one of the optional Name-Value paired arguments.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'KFold', 2, ...
+%!           'Holdout', 0.3)
+%!error<ClassificationTree.crossval: 'KFold' must be an integer value greater than 1.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'KFold', 1)
+%!error<ClassificationTree.crossval: 'Holdout' must be a numeric value between 0 and 1.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'Holdout', 2)
+%!error<ClassificationTree.crossval: 'Leaveout' must be either 'on' or 'off'.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'Leaveout', 'x')
+%!error<ClassificationTree.crossval: 'CVPartition' must be a 'cvpartition' object.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'CVPartition', 5)
+%!error<ClassificationTree.crossval: invalid parameter name in optional paired arguments.>
+%! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'Bogus', 1)
 %!error<ClassificationTree.Prior: must have one element per class.>
 %! Mdl = ClassificationTree (ones (4, 2), [1; 1; 2; 2]);
 %! Mdl.Prior = [0.2, 0.3, 0.5];

@@ -141,6 +141,7 @@ Supervised Learning
  CompactClassificationNaiveBayes
  CompactClassificationNeuralNetwork
  CompactClassificationSVM
+ CompactClassificationTree
  CompactRegressionGAM
  CompactRegressionGP
  CompactRegressionNeuralNetwork

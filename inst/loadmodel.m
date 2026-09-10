@@ -95,6 +95,9 @@ function obj = loadmodel (filename)
     case 'ClassificationTree'
       obj = ClassificationTree.load_model (filename, data);
 
+    case 'CompactClassificationTree'
+      obj = CompactClassificationTree.load_model (filename, data);
+
     case 'CompactClassificationSVM'
       obj = CompactClassificationSVM.load_model (filename, data);
 
