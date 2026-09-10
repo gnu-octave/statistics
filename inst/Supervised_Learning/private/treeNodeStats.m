@@ -31,8 +31,10 @@
 ## or @qcode{'deviance'}, which is the impurity the risk is measured by.
 ##
 ## @var{S} is a structure carrying @qcode{NodeProbability},
-## @qcode{ClassProbability}, @qcode{NodeError}, @qcode{NodeClass} and
-## @qcode{NodeRisk}.
+## @qcode{ClassProbability}, @qcode{NodeError}, @qcode{NodeClass},
+## @qcode{NodeRisk} and @qcode{NodeProbAdj}, the last being the probability
+## of reaching each node measured on the cost-adjusted weights, which is the
+## scale @qcode{NodeRisk} lives on.
 ##
 ## The cost enters the risk and nothing else.  Measured on R2024a: a
 ## classification tree reports every other node statistic on the unadjusted
@@ -69,10 +71,11 @@ function S = treeNodeStats (ClassShare, Prior, Cost, crit, ClassNames)
   nz = anw > 0;
   AP(nz,:) = aw(nz,:) ./ anw(nz);
   if (anw(1) > 0)
-    S.NodeRisk = (anw / anw(1)) .* nodeImpurity (AP, crit);
+    S.NodeProbAdj = anw / anw(1);
   else
-    S.NodeRisk = zeros (rows (aw), 1);
+    S.NodeProbAdj = zeros (rows (aw), 1);
   endif
+  S.NodeRisk = S.NodeProbAdj .* nodeImpurity (AP, crit);
 
 endfunction
 

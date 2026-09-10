@@ -163,6 +163,7 @@ Supervised Learning
  fitrlinear
  fitrnet
  fitrsvm
+ fitrtree
  gamboostinter
  gamboostpairs
  gamboostpredict
@@ -178,6 +179,7 @@ Supervised Learning
  RegressionPartitionedLinear
  RegressionPartitionedModel
  RegressionSVM
+ RegressionTree
  svmpredict
  svmtrain
  treepredict

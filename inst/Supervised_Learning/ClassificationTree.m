@@ -595,6 +595,22 @@ classdef ClassificationTree
     ## assigned afterwards.
     ClassShare = [];
 
+    ## The risk each branch node carries on account of the observations that
+    ## stop there, missing the predictor it cuts on.  Those observations are
+    ## in neither child, so a subtree's risk is its children's plus this.  It
+    ## is zero at a leaf and zero throughout a tree fitted on data with no
+    ## missing values.
+    HeldRisk = [];
+
+    ## The same, on the scale NodeRisk lives on, which is the impurity of the
+    ## cost-adjusted distribution.  The two part company under a non-default
+    ## cost, and the pruning sequence wants the first while
+    ## predictorImportance wants this one.
+    HeldImpurity = [];
+
+    ## The probability of reaching each node on the cost-adjusted weights.
+    NodeProbAdj = [];
+
     ## The observation weights as they were given, before the prior scaled
     ## them.  Reassigning Prior re-derives W from these, which reassigning it
     ## from W could not do: W has already had a prior divided into it.
@@ -1156,6 +1172,7 @@ classdef ClassificationTree
       ## deriveNodes reads ModelParameters.SplitCriterion, so it follows the
       ## structure above rather than the node table it works on.
       this = deriveNodes (this);
+      this = deriveHeld (this);
 
       if (! plainCost && mergeOn)
         this = mergeLeaves (this);
@@ -1544,8 +1561,9 @@ classdef ClassificationTree
     ## branch nodes.  A predictor the tree never splits on scores zero.
     ##
     ## The drop at a branch node is its @code{NodeRisk} less the risk of its
-    ## two children, so a predictor that is chosen often, high up, and on
-    ## nodes it separates well, scores highest.  The numbers are comparable
+    ## two children and less what it holds back, so a predictor that is
+    ## chosen often, high up, and on nodes it separates well, scores
+    ## highest.  The numbers are comparable
     ## between predictors of one tree and not between trees.
     ##
     ## @seealso{ClassificationTree, fitctree, NodeRisk}
@@ -1560,8 +1578,11 @@ classdef ClassificationTree
       for ii = 1:numel (branch)
         b = branch(ii);
         kids = this.Children(b,:);
+        ## The rows that stop at the node are in neither child and are
+        ## answered the same whether it is split or not, so they are no part
+        ## of what the split buys.
         drop = this.NodeRisk(b) - this.NodeRisk(kids(1)) ...
-               - this.NodeRisk(kids(2));
+               - this.NodeRisk(kids(2)) - this.HeldImpurity(b);
         v = this.CutPredictorIndex(b);
         imp(v) = imp(v) + drop;
       endfor
@@ -1641,15 +1662,18 @@ classdef ClassificationTree
     ## @end deftypefn
     function view (this)
 
+      ## The node numbers are right aligned on the widest of them, which is
+      ## how MATLAB lays the listing out.
+      w = numel (sprintf ("%d", this.NumNodes));
       fprintf ("Decision tree for classification\n");
       for ii = 1:this.NumNodes
         if (this.Children(ii,1) == 0)
-          fprintf ("%d  class = %s\n", ii, this.NodeClass{ii});
+          fprintf ("%*d  class = %s\n", w, ii, this.NodeClass{ii});
         else
           v = this.PredictorNames{this.CutPredictorIndex(ii)};
-          c = num2str (this.CutPoint(ii));
-          fprintf ("%d  if %s<%s then node %d elseif %s>=%s then node", ...
-                   ii, v, c, this.Children(ii,1), v, c);
+          c = sprintf ("%g", this.CutPoint(ii));
+          fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
+                   w, ii, v, c, this.Children(ii,1), v, c);
           fprintf (" %d else %s\n", this.Children(ii,2), this.NodeClass{ii});
         endif
       endfor
@@ -2134,6 +2158,7 @@ classdef ClassificationTree
       ## The cut and node descriptions were not saved, being derived
       mdl = fillCuts (mdl);
       mdl = deriveNodes (mdl);
+      mdl = deriveHeld (mdl);
 
     endfunction
 
@@ -2164,6 +2189,7 @@ classdef ClassificationTree
       this.NodeError = S.NodeError;
       this.NodeClass = S.NodeClass;
       this.NodeRisk = S.NodeRisk;
+      this.NodeProbAdj = S.NodeProbAdj;
 
     endfunction
 
@@ -2201,46 +2227,57 @@ classdef ClassificationTree
     ## order, so a parent still precedes its children.
     function this = collapseNodes (this, nodes)
 
-      n = this.NumNodes;
-      kid = this.Children;
-      nodes = nodes(kid(nodes,1) > 0);
-      if (isempty (nodes))
+      if (isempty (nodes(this.Children(nodes,1) > 0)))
         return;
       endif
-      kid(nodes,:) = 0;
-
-      ## What is still reachable from the root.  A parent always carries a
-      ## lower number than its children, so one forward pass suffices.
-      keep = false (n, 1);
-      keep(1) = true;
-      for ii = 1:n
-        if (keep(ii) && kid(ii,1) > 0)
-          keep(kid(ii,1)) = true;
-          keep(kid(ii,2)) = true;
-        endif
-      endfor
-
-      idx = find (keep);
-      renum = zeros (n + 1, 1);
-      renum(idx + 1) = 1:numel (idx);
-      cutvar = this.CutPredictorIndex;
-      cutval = this.CutPoint;
-      cutvar(nodes) = 0;
-      cutval(nodes) = NaN;
-
-      this.NumNodes = numel (idx);
-      this.Children = reshape (renum(kid(idx,:) + 1), numel (idx), 2);
-      this.Parent = renum(this.Parent(idx) + 1);
-      this.CutPredictorIndex = cutvar(idx);
-      this.CutPoint = cutval(idx);
-      this.NodeSize = this.NodeSize(idx);
-      this.ClassCount = this.ClassCount(idx,:);
-      this.ClassShare = this.ClassShare(idx,:);
-      this.PruneList = zeros (numel (idx), 1);
+      S = treeCollapse (this.Children, this.Parent, ...
+                        this.CutPredictorIndex, this.CutPoint, nodes);
+      this.NumNodes = numel (S.keep);
+      this.Children = S.Children;
+      this.Parent = S.Parent;
+      this.CutPredictorIndex = S.CutPredictorIndex;
+      this.CutPoint = S.CutPoint;
+      this.NodeSize = this.NodeSize(S.keep);
+      this.ClassCount = this.ClassCount(S.keep,:);
+      this.ClassShare = this.ClassShare(S.keep,:);
+      this.PruneList = zeros (this.NumNodes, 1);
       this.PruneAlpha = [];
 
       this = fillCuts (this);
       this = deriveNodes (this);
+      ## A node that became a leaf now holds back nothing, so this is
+      ## re-derived rather than subset.
+      this = deriveHeld (this);
+
+    endfunction
+
+    ## The risk each branch node carries on account of the observations that
+    ## stop there, missing the predictor it cuts on.  Those observations are
+    ## in neither child, and MATLAB charges them the node's own error rather
+    ## than their own.  It is charged twice over, once on each of the two
+    ## scales a classification tree measures a node by: the pruning sequence
+    ## runs on the expected misclassification cost and predictorImportance
+    ## on the impurity, and under a non-default cost the weight held back is
+    ## itself a different fraction of the node on the two.  Both measured on
+    ## R2024a against an iris fit with a fifth of one predictor missing.
+    function this = deriveHeld (this)
+
+      this.HeldRisk = zeros (this.NumNodes, 1);
+      this.HeldImpurity = zeros (this.NumNodes, 1);
+      br = find (this.Children(:,1) > 0);
+      if (isempty (br))
+        return;
+      endif
+      kids = this.Children(br,:);
+      wheld = this.NodeProbability(br) - this.NodeProbability(kids(:,1)) ...
+              - this.NodeProbability(kids(:,2));
+      this.HeldRisk(br) = wheld .* this.NodeError(br);
+
+      aheld = this.NodeProbAdj(br) - this.NodeProbAdj(kids(:,1)) ...
+              - this.NodeProbAdj(kids(:,2));
+      nz = this.NodeProbAdj(br) > 0;
+      this.HeldImpurity(br(nz)) = aheld(nz) .* this.NodeRisk(br(nz)) ...
+                                  ./ this.NodeProbAdj(br(nz));
 
     endfunction
 
@@ -2256,8 +2293,9 @@ classdef ClassificationTree
         pair = find (! leaf);
         pair = pair(leaf(kid(pair,1)) & leaf(kid(pair,2)));
         R = costRisk (this);
-        tol = RISK_TIE_TOL () * R(1);
-        useless = pair(R(kid(pair,1)) + R(kid(pair,2)) >= R(pair) - tol);
+        tol = 1e-12 * R(1);
+        useless = pair(R(kid(pair,1)) + R(kid(pair,2)) ...
+                       + this.HeldRisk(pair) >= R(pair) - tol);
         if (! isempty (useless))
           this = collapseNodes (this, useless);
         endif
@@ -2277,106 +2315,16 @@ classdef ClassificationTree
 
     endfunction
 
-    ## The cost complexity pruning sequence, by weakest link.  A branch
-    ## node's link is the risk it would take on as a leaf, less the risk its
-    ## subtree carries now, spread over the leaves the subtree would give up.
-    ## The weakest link is pruned, the sequence repeats on what is left, and
-    ## the level a node is pruned at is its place in that sequence.
-    ##
-    ## This is the same rule the compiled engine applies, restated here
-    ## because the engine measures risk as misclassified weight while this
-    ## measures it as expected misclassification cost.  The two agree
-    ## exactly under the default cost and part company under any other.
+    ## The cost complexity pruning sequence, on the risk the cost defines.
+    ## The compiled engine measures risk as misclassified weight, which is
+    ## the expected misclassification cost only under the default cost, and
+    ## it opens a level for a subtree that costs nothing to give up where
+    ## MATLAB opens none, so the sequence is estimated here throughout.
     function this = pruneSequence (this)
 
-      n = this.NumNodes;
-      plist = zeros (n, 1);
-      alphas = [];
-      kidl = this.Children(:,1);
-      kidr = this.Children(:,2);
-      risk = costRisk (this);
-      level = 0;
-      ## The branches given up at no cost, which are no part of the sequence
-      free = false (n, 1);
-
-      while (kidl(1) != 0)
-
-        ## Only what is still reachable from the root can be a candidate: a
-        ## pruned branch takes its whole subtree with it, and orphans left in
-        ## would go on offering links and split one level into several.
-        reach = false (n, 1);
-        reach(1) = true;
-        for ii = 1:n
-          if (reach(ii) && kidl(ii) != 0)
-            reach(kidl(ii)) = true;
-            reach(kidr(ii)) = true;
-          endif
-        endfor
-
-        ## Subtree risk and leaf count, deepest first
-        subrisk = risk;
-        subleaf = ones (n, 1);
-        for ii = n:-1:1
-          if (kidl(ii) != 0)
-            subrisk(ii) = subrisk(kidl(ii)) + subrisk(kidr(ii));
-            subleaf(ii) = subleaf(kidl(ii)) + subleaf(kidr(ii));
-          endif
-        endfor
-
-        cand = find (reach & kidl != 0);
-        if (isempty (cand))
-          break;
-        endif
-        link = (risk(cand) - subrisk(cand)) ./ (subleaf(cand) - 1);
-        weakest = min (link);
-
-        ## Every branch whose link is the weakest goes at this level, not
-        ## just one of them, and links equal in exact arithmetic can differ
-        ## in their last bits as split gains do.
-        cut = weakest + abs (weakest) * RISK_TIE_TOL () + RISK_TIE_TOL ();
-        gone = cand(link <= cut);
-        if (weakest > RISK_TIE_TOL ())
-          ## A subtree that costs nothing to give up is no step of the
-          ## sequence: it is what merging leaves would have removed, and
-          ## MATLAB records neither a level nor an alpha for it.  Measured on
-          ## R2024a with MergeLeaves off, where such a subtree survives to be
-          ## seen: the tree carries eleven nodes and five alphas, the merged
-          ## tree's own, not six.
-          level++;
-          alphas(end+1, 1) = weakest;
-          plist(gone) = level;
-        else
-          free(gone) = true;
-        endif
-        kidl(gone) = 0;
-        kidr(gone) = 0;
-
-      endwhile
-
-      ## A branch inside a subtree given up at no cost is not part of the
-      ## sequence either, its ancestor having left it at no level.
-      for ii = 2:n
-        free(ii) = free(ii) || free(this.Parent(ii));
-      endfor
-
-      ## A branch that lost an ancestor never came up for pruning on its own
-      ## account, but it stopped being a branch when that ancestor went, and
-      ## that is the level it carries.
-      for ii = 1:n
-        if (this.Children(ii,1) == 0 || plist(ii) != 0 || free(ii))
-          continue;
-        endif
-        a = this.Parent(ii);
-        while (a > 0 && plist(a) == 0)
-          a = this.Parent(a);
-        endwhile
-        if (a > 0)
-          plist(ii) = plist(a);
-        endif
-      endfor
-
-      this.PruneList = plist;
-      this.PruneAlpha = [0; alphas];
+      [this.PruneList, this.PruneAlpha] = ...
+        treePruneSequence (this.Children, this.Parent, costRisk (this), ...
+                           this.HeldRisk);
 
     endfunction
 
@@ -2397,15 +2345,6 @@ function S = classShareOf (CW)
 
 endfunction
 
-## How close two risks must be to count as equal.  Links that are equal in
-## exact arithmetic differ in their last bits once they have been through a
-## division, and treating them as distinct would split one pruning level
-## into several.
-function t = RISK_TIE_TOL ()
-
-  t = 1e-12;
-
-endfunction
 
 ## Tests
 %!test  # MATLAB parity: the surface a default fit reports
@@ -2863,6 +2802,55 @@ endfunction
 %!   warning (ws);
 %! end_unwind_protect
 %! assert_equal (E', [0, 0.5], 1e-14);
+
+%!test  # MATLAB parity: a node that holds rows back pays for them
+%! ## Twenty rows have no fourth predictor, and the node that cuts on it
+%! ## sends them to neither child.  They are in no child's risk, so a
+%! ## subtree's risk is its children's plus what the node holds back, and
+%! ## leaving that out would overstate every link above it.
+%! load fisheriris
+%! x = meas;
+%! x(51:70, 4) = NaN;
+%! Mdl = ClassificationTree (x, species);
+%! assert_equal (Mdl.NumNodes, 9);
+%! assert_equal (Mdl.NodeSize', [150, 50, 100, 45, 55, 25, 1, 8, 46]);
+%! assert_equal (Mdl.NodeSize(4) - sum (Mdl.NodeSize(Mdl.Children(4,:))), 19);
+%! assert_equal (Mdl.PruneList', [4, 0, 3, 1, 2, 0, 0, 0, 0]);
+%! assert_equal (Mdl.PruneAlpha', [0, 0.00385185185185185, ...
+%!                                 0.00593939393939394, 0.286666666666666, ...
+%!                                 0.333333333333333], 1e-14);
+%! assert_equal (predictorImportance (Mdl), ...
+%!               [0, 0, 0.145589225589225, 0.00944980621616545], 1e-14);
+%! assert_equal (resubLoss (Mdl), 0.04, 1e-14);
+
+%!test  # MATLAB parity: held-back rows under a cost matrix
+%! ## The weight a node holds back is a different fraction of it on the two
+%! ## scales a classification tree is measured by, so the pruning sequence
+%! ## and the predictor importances discount different amounts.
+%! load fisheriris
+%! x = meas;
+%! x(51:80, 3) = NaN;
+%! Mdl = ClassificationTree (x, species, ...
+%!                           'Cost', [0, 1, 10; 1, 0, 1; 10, 1, 0]);
+%! assert_equal (Mdl.NumNodes, 7);
+%! assert_equal (Mdl.NodeSize', [150, 50, 70, 15, 55, 5, 50]);
+%! assert_equal (Mdl.NodeSize(1) - sum (Mdl.NodeSize(Mdl.Children(1,:))), 30);
+%! assert_equal (Mdl.PruneList', [3, 0, 2, 0, 1, 0, 0]);
+%! assert_equal (Mdl.PruneAlpha', [0, 0.02, 0.1, 0.4], 1e-14);
+%! assert_equal (predictorImportance (Mdl), ...
+%!               [0, 0, 0.17774350820443, 0], 1e-14);
+
+%!test  # MATLAB parity: held-back rows with the leaves left unmerged
+%! load fisheriris
+%! x = meas;
+%! x(51:70, 4) = NaN;
+%! Mdl = ClassificationTree (x, species, 'MergeLeaves', 'off');
+%! assert_equal (Mdl.NumNodes, 11);
+%! assert_equal (Mdl.NodeSize', [150, 50, 100, 45, 55, 25, 1, 8, 46, 3, 43]);
+%! assert_equal (Mdl.PruneList', [4, 0, 3, 1, 2, 0, 0, 0, 0, 0, 0]);
+%! assert_equal (Mdl.PruneAlpha', [0, 0.00385185185185185, ...
+%!                                 0.00593939393939394, 0.286666666666666, ...
+%!                                 0.333333333333333], 1e-14);
 
 ## Test input validation
 %!error<ClassificationTree: too few input arguments.> ClassificationTree ()
