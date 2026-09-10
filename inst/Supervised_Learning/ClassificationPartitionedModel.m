@@ -789,33 +789,8 @@ classdef ClassificationPartitionedModel
           ## assembled to refit the folds with.
 
         case 'Tree'
-          ## Arguments to pass in fitctree.  ScoreTransform is deliberately
-          ## absent, as it is for the KNN above: the parent applies it to the
-          ## assembled scores, so a fold carrying it too would apply it twice.
-          args = {'PredictorNames', Mdl.PredictorNames, ...
-                  'ResponseName', Mdl.ResponseName, ...
-                  'ClassNames', Mdl.ClassNames, ...
-                  'Prior', Mdl.Prior, 'Cost', Mdl.Cost};
-
-          ## The growth parameters, from what the parent actually used.
-          ## MinParent is the value the fit settled on rather than the one
-          ## asked for, and passing it back beside MinLeaf reproduces it: the
-          ## constructor takes the larger of the two and the larger is
-          ## already there.
-          MP = Mdl.ModelParameters;
-          args = [args, {'SplitCriterion', MP.SplitCriterion, ...
-                         'MinParentSize', MP.MinParent, ...
-                         'MinLeafSize', MP.MinLeaf, ...
-                         'MergeLeaves', MP.MergeLeaves, ...
-                         'Prune', MP.Prune, ...
-                         'PruneCriterion', MP.PruneCriterion}];
-
-          ## MaxSplits defaults to one less than the number of observations,
-          ## so a fold works its own out; a budget the caller actually asked
-          ## for is passed on.
-          if (MP.MaxSplits != Mdl.NumObservations - 1)
-            args = [args, {'MaxNumSplits', MP.MaxSplits}];
-          endif
+          ## The arguments a fold is grown with, which cvloss shares.
+          args = treeFoldArgs (Mdl);
 
           ## Train model according to partition object.  The fold is stored
           ## compact, as MATLAB stores it: measured on R2024a, where

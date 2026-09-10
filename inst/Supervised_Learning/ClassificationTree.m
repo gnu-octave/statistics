@@ -1330,6 +1330,210 @@ classdef ClassificationTree
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationTree} {@var{E} =} cvloss (@var{obj})
+    ## @deftypefnx {ClassificationTree} {[@var{E}, @var{SE}, @var{Nleaf}, @var{BestLevel}] =} cvloss (@var{obj})
+    ## @deftypefnx {ClassificationTree} {[@dots{}] =} cvloss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validated loss of a tree and of its subtrees.
+    ##
+    ## @code{@var{E} = cvloss (@var{obj})} partitions the training data into
+    ## ten stratified folds, grows a tree on the training part of each, and
+    ## returns the loss of the held-out part.
+    ##
+    ## @code{[@var{E}, @var{SE}, @var{Nleaf}, @var{BestLevel}] = cvloss
+    ## (@dots{})} also returns @var{SE}, the standard error of @var{E} over
+    ## the folds, @var{Nleaf}, the number of leaves each subtree holds, and
+    ## @var{BestLevel}, the pruning level chosen by @qcode{'TreeSize'}.  Each
+    ## has one element per subtree asked for.
+    ##
+    ## @code{[@dots{}] = cvloss (@dots{}, @var{name}, @var{value})} takes the
+    ## options below.
+    ##
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'SubTrees'} @tab A vector of pruning levels in ascending
+    ## order, or @qcode{'all'} for every level of the sequence.  The default
+    ## is 0, the unpruned tree.
+    ##
+    ## @item @qcode{'TreeSize'} @tab @qcode{'se'} (default), the smallest
+    ## subtree whose loss is within one standard error of the smallest loss,
+    ## or @qcode{'min'}, the smallest subtree of least loss.
+    ##
+    ## @item @qcode{'KFold'} @tab An integer greater than 1, the number of
+    ## folds.  The default is 10.  A value above the number of observations
+    ## is reduced to it.
+    ##
+    ## @end multitable
+    ##
+    ## A fold's tree is pruned to the level its own sequence gives for the
+    ## geometric mean of the parent's two neighbouring complexity parameters,
+    ## which is the classical way a fold is matched to a subtree of the whole
+    ## tree.  The last level takes every fold's tree back to its root.
+    ##
+    ## Every fold is grown with the parent's class names, prior, cost and
+    ## observation weights, and the loss is weighed by the model's own
+    ## weights.
+    ##
+    ## @strong{The standard error is not MATLAB's.}  This is the standard
+    ## error of the loss over the folds, which is what the name means and
+    ## which is zero when every fold answers alike, as MATLAB's is.  Its
+    ## value is not MATLAB's: on the iris tree MATLAB reports 0.019956 where
+    ## the folds give 0.024343, and no formula over the fold losses, the
+    ## observation losses or the loss itself reproduces MATLAB's number.
+    ## @var{E}, @var{Nleaf} and @var{BestLevel} are measured and match.
+    ##
+    ## @seealso{ClassificationTree, prune, crossval, loss}
+    ## @end deftypefn
+    function [E, SE, Nleaf, BestLevel] = cvloss (this, varargin)
+
+      ## Input validation
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationTree.cvloss: name-value arguments", ...
+                       " must be in pairs."));
+      endif
+      if (isempty (this.PruneAlpha))
+        error (strcat ("ClassificationTree.cvloss: the tree carries no", ...
+                       " pruning sequence; fit it with 'Prune' or", ...
+                       " 'MergeLeaves' on."));
+      endif
+
+      maxLevel = numel (this.PruneAlpha) - 1;
+      SubTrees = 0;
+      TreeSize = 'se';
+      KFold = 10;
+
+      while (numel (varargin) > 0)
+        Value = varargin{2};
+        switch (tolower (varargin{1}))
+
+          case 'subtrees'
+            if (ischar (Value) && strcmpi (Value, 'all'))
+              SubTrees = 0:maxLevel;
+            elseif (isnumeric (Value) && isreal (Value) && isvector (Value)
+                    && ! isempty (Value) && all (Value >= 0)
+                    && all (Value == fix (Value))
+                    && all (diff (Value(:)') > 0))
+              SubTrees = Value(:)';
+            else
+              error (strcat ("ClassificationTree.cvloss: 'SubTrees' must", ...
+                             " be 'all' or a vector of nonnegative", ...
+                             " integers in ascending order."));
+            endif
+
+          case 'treesize'
+            if (! (ischar (Value) && any (strcmpi (Value, {'se', 'min'}))))
+              error (strcat ("ClassificationTree.cvloss: 'TreeSize' must", ...
+                             " be either 'se' or 'min'."));
+            endif
+            TreeSize = tolower (Value);
+
+          case 'kfold'
+            KFold = Value;
+            if (! (isnumeric (KFold) && isscalar (KFold) && isreal (KFold)
+                   && KFold == fix (KFold) && KFold > 1))
+              error (strcat ("ClassificationTree.cvloss: 'KFold' must be", ...
+                             " an integer value greater than 1."));
+            endif
+
+          otherwise
+            error (strcat ("ClassificationTree.cvloss: invalid parameter", ...
+                           " name in optional pair arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      if (any (SubTrees > maxLevel))
+        error (strcat ("ClassificationTree.cvloss: 'SubTrees' must not", ...
+                       " exceed the largest pruning level, %d."), maxLevel);
+      endif
+      if (KFold > this.NumObservations)
+        warning (strcat ("ClassificationTree.cvloss: 'KFold' is greater", ...
+                         " than the number of observations and is reduced", ...
+                         " to %d."), this.NumObservations);
+        KFold = this.NumObservations;
+      endif
+
+      ## The complexity parameter each subtree is matched to in a fold: the
+      ## geometric mean of the two the parent's own sequence brackets it
+      ## with, and infinity for the last, which takes a fold back to its
+      ## root.  Measured on R2024a: matching a fold by level index or by the
+      ## parent's parameter itself both give different answers, and this one
+      ## reproduces every loss the oracle reports.
+      alpha = this.PruneAlpha(:)';
+      ## Formed outside the brackets: inside them the space before the paren
+      ## would split the call off into an element of its own.
+      geo = sqrt (alpha(1:end-1) .* alpha(2:end));
+      geo(end+1) = Inf;
+
+      nsub = numel (SubTrees);
+      n = this.NumObservations;
+      gY = labelIndices (this.ClassNames, this.Y);
+      partition = cvpartition (this.Y, 'KFold', KFold);
+      args = treeFoldArgs (this);
+
+      ## The loss of every observation, from the fold that did not train on it
+      L = zeros (n, nsub);
+      fold = zeros (n, 1);
+      for k = 1:KFold
+        tr = training (partition, k);
+        te = test (partition, k);
+        fold(te) = k;
+        ft = ClassificationTree (this.X(tr,:), this.Y(tr,:), args{:}, ...
+                                 'Weights', this.RawWeights(tr));
+        fa = ft.PruneAlpha(:)';
+        for j = 1:nsub
+          lv = sum (fa <= geo(SubTrees(j) + 1)) - 1;
+          ## The nodes are collapsed without re-estimating the fold's own
+          ## sequence, which prune would do and which nothing here reads.
+          sub = collapseNodes (ft, nodesAtLevel (ft, max (lv, 0), 'cvloss'));
+          [~, ~, ~, cnum] = predict (sub, this.X(te,:));
+          L(te,j) = this.Cost(sub2ind (size (this.Cost), gY(te), cnum));
+        endfor
+      endfor
+
+      ## The loss is weighed by the model's own weights, which sum to one.
+      ## Measured on R2024a, where a tree weighted 1 to 150 reports
+      ## 0.0537748344370861 and the unweighted mean of the same losses is
+      ## 0.0533333333333333.
+      W = this.W(:);
+      E = W' * L;
+
+      ## The standard error over the folds, each fold's loss being its
+      ## observations' share of the whole.
+      foldloss = zeros (KFold, nsub);
+      for k = 1:KFold
+        idx = fold == k;
+        sw = sum (W(idx));
+        if (sw > 0)
+          foldloss(k,:) = (W(idx)' * L(idx,:)) / sw;
+        endif
+      endfor
+      SE = std (foldloss, 0, 1) / sqrt (KFold);
+
+      ## The leaves each subtree of the whole tree holds
+      Nleaf = zeros (1, nsub);
+      for j = 1:nsub
+        Nleaf(j) = sum (! prune (this, 'Level', SubTrees(j)).IsBranchNode);
+      endfor
+
+      ## The smallest subtree the rule allows, which is the largest level
+      if (strcmp (TreeSize, 'min'))
+        best = find (E == min (E), 1, 'last');
+      else
+        [~, i] = min (E);
+        best = find (E <= E(i) + SE(i), 1, 'last');
+      endif
+      BestLevel = SubTrees(best);
+
+      E = E(:);
+      SE = SE(:);
+      Nleaf = Nleaf(:);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {ClassificationTree} {@var{imp} =} predictorImportance (@var{obj})
     ##
     ## Estimate the importance of each predictor.
@@ -2567,6 +2771,99 @@ endfunction
 %! assert_equal (kfoldLoss (CVMdl) < 0.2, true);
 %! assert_equal (size (kfoldMargin (CVMdl)), [150, 1]);
 
+%!test  # cvloss over a fixture whose folds all answer alike
+%! ## The two classes are separated by a gap no fold can straddle, so every
+%! ## fold grows the same tree and every quantity below is the same whatever
+%! ## partition is drawn.
+%! x = [(1:20)'; (101:120)'];
+%! y = [repmat({'a'}, 20, 1); repmat({'b'}, 20, 1)];
+%! Mdl = ClassificationTree (x, y);
+%! assert_equal (Mdl.NumNodes, 3);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', 'all');
+%! assert_equal (E', [0, 0.5], 1e-14);
+%! assert_equal (SE', [0, 0], 1e-14);
+%! assert_equal (Nleaf', [2, 1]);
+%! assert_equal (BestLevel, 0);
+
+%!test  # MATLAB parity: the leaf counts and the stable losses of the iris tree
+%! ## Only the losses no partition can move are asserted: a two-leaf tree
+%! ## separates setosa exactly, and a one-leaf tree carries a uniform prior
+%! ## and so answers the first class, whatever rows it was grown on.
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', 'all');
+%! assert_equal (size (E), [5, 1]);
+%! assert_equal (Nleaf', [5, 4, 3, 2, 1]);
+%! assert_equal (E(4), 1/3, 1e-14);
+%! assert_equal (E(5), 2/3, 1e-14);
+%! assert_equal (SE(4:5), [0; 0], 1e-12);
+%! assert_equal (BestLevel >= 0 && BestLevel <= 4, true);
+
+%!test  # cvloss defaults to the unpruned tree alone
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl);
+%! assert_equal (size (E), [1, 1]);
+%! assert_equal (Nleaf, 5);
+%! assert_equal (BestLevel, 0);
+%! assert_equal (E > 0 && E < 0.2, true);
+
+%!test  # A subset of the levels is answered in the order it was asked for
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', [0, 2, 4]);
+%! assert_equal (Nleaf', [5, 3, 1]);
+%! assert_equal (E(3), 2/3, 1e-14);
+%! assert_equal (any (BestLevel == [0, 2, 4]), true);
+
+%!test  # TreeSize picks the smallest tree the rule allows
+%! ## 'min' takes the smallest tree of least loss and 'se' the smallest whose
+%! ## loss is within one standard error of it, so 'se' never names a larger
+%! ## tree than 'min' does.
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! [E, SE] = cvloss (Mdl, 'SubTrees', 'all');
+%! [~, ~, ~, bmin] = cvloss (Mdl, 'SubTrees', 'all', 'TreeSize', 'min');
+%! [~, ~, ~, bse] = cvloss (Mdl, 'SubTrees', 'all', 'TreeSize', 'se');
+%! assert_equal (bmin >= 0 && bmin <= 4, true);
+%! assert_equal (bse >= 0 && bse <= 4, true);
+
+%!test  # The number of folds is the number asked for
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! [E, SE, Nleaf] = cvloss (Mdl, 'KFold', 5);
+%! assert_equal (size (E), [1, 1]);
+%! assert_equal (Nleaf, 5);
+%! assert_equal (E > 0 && E < 0.2, true);
+
+%!test  # cvloss weighs the loss as the fit weighed it
+%! ## A weighted fit whose folds all answer alike.  The three to one weights
+%! ## make the prior 0.25 and 0.75, so every fold's root answers the heavier
+%! ## class and the twenty rows of the lighter one are wrong.  Their weight
+%! ## is 0.25, where their share of the rows is 0.5.
+%! x = [(1:20)'; (101:120)'];
+%! y = [repmat({'a'}, 20, 1); repmat({'b'}, 20, 1)];
+%! Mdl = ClassificationTree (x, y, 'Weights', [ones(20, 1); 3 * ones(20, 1)]);
+%! assert_equal (Mdl.Prior, [0.25, 0.75], 1e-14);
+%! E = cvloss (Mdl, 'SubTrees', 'all');
+%! assert_equal (E(1), 0, 1e-14);
+%! assert_equal (E(2), 0.25, 1e-14);
+
+%!test  # More folds than observations are reduced to one fold each
+%! ## The reduction warns, and so does cvpartition about a fold that cannot
+%! ## hold every class, so the message is not what is asserted here; the
+%! ## answer is, and it is the one leaving each observation out in turn.
+%! x = [(1:20)'; (101:120)'];
+%! y = [repmat({'a'}, 20, 1); repmat({'b'}, 20, 1)];
+%! Mdl = ClassificationTree (x, y);
+%! ws = warning ('off', 'all');
+%! unwind_protect
+%!   E = cvloss (Mdl, 'KFold', 500, 'SubTrees', 'all');
+%! unwind_protect_cleanup
+%!   warning (ws);
+%! end_unwind_protect
+%! assert_equal (E', [0, 0.5], 1e-14);
+
 ## Test input validation
 %!error<ClassificationTree: too few input arguments.> ClassificationTree ()
 %!error<ClassificationTree: too few input arguments.>
@@ -2678,6 +2975,33 @@ endfunction
 %! savemodel (ClassificationTree (ones (4, 2), [1; 1; 2; 2]))
 %!error<ClassificationTree.savemodel: FNAME must be a character vector.>
 %! savemodel (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 5)
+%!error<ClassificationTree.cvloss: name-value arguments must be in pairs.>
+%! cvloss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'SubTrees')
+%!error<ClassificationTree.cvloss: 'SubTrees' must be 'all' or a vector of nonnegative integers in ascending order.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'SubTrees', -1)
+%!error<ClassificationTree.cvloss: 'SubTrees' must be 'all' or a vector of nonnegative integers in ascending order.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'SubTrees', [2, 1])
+%!error<ClassificationTree.cvloss: 'SubTrees' must be 'all' or a vector of nonnegative integers in ascending order.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'SubTrees', 'most')
+%!error<ClassificationTree.cvloss: 'SubTrees' must not exceed the largest pruning level, 4.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'SubTrees', 99)
+%!error<ClassificationTree.cvloss: 'TreeSize' must be either 'se' or 'min'.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'TreeSize', 'x')
+%!error<ClassificationTree.cvloss: 'KFold' must be an integer value greater than 1.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'KFold', 1)
+%!error<ClassificationTree.cvloss: invalid parameter name in optional pair arguments.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species), 'Bogus', 1)
+%!error<ClassificationTree.cvloss: the tree carries no pruning sequence; fit it with 'Prune' or 'MergeLeaves' on.>
+%! load fisheriris
+%! cvloss (ClassificationTree (meas, species, 'Prune', 'off', ...
+%!                             'MergeLeaves', 'off'))
 %!error<ClassificationTree.crossval: Name-Value arguments must be in pairs.>
 %! crossval (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), 'KFold')
 %!error<ClassificationTree.crossval: specify only one of the optional Name-Value paired arguments.>
