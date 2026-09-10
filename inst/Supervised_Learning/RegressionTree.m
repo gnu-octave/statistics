@@ -1189,6 +1189,206 @@ classdef RegressionTree
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionTree} {@var{E} =} cvloss (@var{obj})
+    ## @deftypefnx {RegressionTree} {[@var{E}, @var{SE}, @var{Nleaf}, @var{BestLevel}] =} cvloss (@var{obj})
+    ## @deftypefnx {RegressionTree} {[@dots{}] =} cvloss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validated loss of a tree and of its subtrees.
+    ##
+    ## @code{@var{E} = cvloss (@var{obj})} partitions the training data into
+    ## ten folds, grows a tree on the training part of each, and returns the
+    ## mean squared error of the held-out part.
+    ##
+    ## @code{[@var{E}, @var{SE}, @var{Nleaf}, @var{BestLevel}] = cvloss
+    ## (@dots{})} also returns @var{SE}, the standard error of @var{E} over
+    ## the folds, @var{Nleaf}, the number of leaves each subtree holds, and
+    ## @var{BestLevel}, the pruning level chosen by @qcode{'TreeSize'}.  Each
+    ## has one element per subtree asked for.
+    ##
+    ## @code{[@dots{}] = cvloss (@dots{}, @var{name}, @var{value})} takes the
+    ## options below.
+    ##
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'SubTrees'} @tab A vector of pruning levels in ascending
+    ## order, or @qcode{'all'} for every level of the sequence.  The default
+    ## is 0, the unpruned tree.
+    ##
+    ## @item @qcode{'TreeSize'} @tab @qcode{'se'} (default), the smallest
+    ## subtree whose loss is within one standard error of the smallest loss,
+    ## or @qcode{'min'}, the smallest subtree of least loss.
+    ##
+    ## @item @qcode{'KFold'} @tab An integer greater than 1, the number of
+    ## folds.  The default is 10.  A value above the number of observations
+    ## is reduced to it.
+    ##
+    ## @end multitable
+    ##
+    ## A fold's tree is pruned to the level its own sequence gives for the
+    ## geometric mean of the parent's two neighbouring complexity parameters,
+    ## which is the classical way a fold is matched to a subtree of the whole
+    ## tree.  The last level takes every fold's tree back to its root.  The
+    ## partition is drawn over the observations rather than over a response
+    ## there is nothing to stratify, and the loss is weighed by the model's
+    ## own weights.
+    ##
+    ## @strong{The standard error is not MATLAB's.}  This is the standard
+    ## error of the loss over the folds, which is what the name means.  Its
+    ## value is not MATLAB's, whose formula is not recoverable from what it
+    ## reports; @var{E}, @var{Nleaf} and @var{BestLevel} are measured and
+    ## match.
+    ##
+    ## @seealso{RegressionTree, prune, crossval, loss}
+    ## @end deftypefn
+    function [E, SE, Nleaf, BestLevel] = cvloss (this, varargin)
+
+      ## Input validation
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionTree.cvloss: name-value arguments must", ...
+                       " be in pairs."));
+      endif
+      if (isempty (this.PruneAlpha))
+        error (strcat ("RegressionTree.cvloss: the tree carries no pruning", ...
+                       " sequence; fit it with 'Prune' or 'MergeLeaves'", ...
+                       " on."));
+      endif
+
+      maxLevel = numel (this.PruneAlpha) - 1;
+      SubTrees = 0;
+      TreeSize = 'se';
+      KFold = 10;
+
+      while (numel (varargin) > 0)
+        Value = varargin{2};
+        switch (tolower (varargin{1}))
+
+          case 'subtrees'
+            if (ischar (Value) && strcmpi (Value, 'all'))
+              SubTrees = 0:maxLevel;
+            elseif (isnumeric (Value) && isreal (Value) && isvector (Value)
+                    && ! isempty (Value) && all (Value >= 0)
+                    && all (Value == fix (Value))
+                    && all (diff (Value(:)') > 0))
+              SubTrees = Value(:)';
+            else
+              error (strcat ("RegressionTree.cvloss: 'SubTrees' must be", ...
+                             " 'all' or a vector of nonnegative integers", ...
+                             " in ascending order."));
+            endif
+
+          case 'treesize'
+            if (! (ischar (Value) && any (strcmpi (Value, {'se', 'min'}))))
+              error (strcat ("RegressionTree.cvloss: 'TreeSize' must be", ...
+                             " either 'se' or 'min'."));
+            endif
+            TreeSize = tolower (Value);
+
+          case 'kfold'
+            KFold = Value;
+            if (! (isnumeric (KFold) && isscalar (KFold) && isreal (KFold)
+                   && KFold == fix (KFold) && KFold > 1))
+              error (strcat ("RegressionTree.cvloss: 'KFold' must be an", ...
+                             " integer value greater than 1."));
+            endif
+
+          otherwise
+            error (strcat ("RegressionTree.cvloss: invalid parameter name", ...
+                           " in optional pair arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      if (any (SubTrees > maxLevel))
+        error (strcat ("RegressionTree.cvloss: 'SubTrees' must not exceed", ...
+                       " the largest pruning level, %d."), maxLevel);
+      endif
+      if (KFold > this.NumObservations)
+        warning (strcat ("RegressionTree.cvloss: 'KFold' is greater than", ...
+                         " the number of observations and is reduced to", ...
+                         " %d."), this.NumObservations);
+        KFold = this.NumObservations;
+      endif
+
+      ## The complexity parameter each subtree is matched to in a fold: the
+      ## geometric mean of the two the parent's own sequence brackets it
+      ## with, and infinity for the last, which takes a fold back to its
+      ## root.  Measured on R2024a, which the classification tree measured
+      ## first and which holds here too: matching a fold by level index or
+      ## by the parent's parameter itself both give different answers.
+      alpha = this.PruneAlpha(:)';
+      ## Formed outside the brackets: inside them the space before the paren
+      ## would split the call off into an element of its own.
+      geo = sqrt (alpha(1:end-1) .* alpha(2:end));
+      geo(end+1) = Inf;
+
+      nsub = numel (SubTrees);
+      n = this.NumObservations;
+      partition = cvpartition (n, 'KFold', KFold);
+      args = treeFoldArgs (this);
+
+      ## The squared error of every observation, from the fold that did not
+      ## train on it
+      L = zeros (n, nsub);
+      fold = zeros (n, 1);
+      for k = 1:KFold
+        tr = training (partition, k);
+        te = test (partition, k);
+        fold(te) = k;
+        ft = RegressionTree (this.X(tr,:), this.Y(tr), args{:}, ...
+                             'Weights', this.RawWeights(tr));
+        fa = ft.PruneAlpha(:)';
+        for j = 1:nsub
+          lv = sum (fa <= geo(SubTrees(j) + 1)) - 1;
+          ## The nodes are collapsed without re-estimating the fold's own
+          ## sequence, which prune would do and which nothing here reads.
+          sub = collapseNodes (ft, nodesAtLevel (ft, max (lv, 0), 'cvloss'));
+          ## The fold carries no transform, so the parent's is applied here
+          ## rather than twice over.
+          yf = this.RTfun (predict (sub, this.X(te,:)));
+          L(te,j) = (this.Y(te) - yf) .^ 2;
+        endfor
+      endfor
+
+      ## The loss is weighed by the model's own weights, which sum to one.
+      W = this.W(:);
+      E = W' * L;
+
+      ## The standard error over the folds, each fold's loss being its
+      ## observations' share of the whole.
+      foldloss = zeros (KFold, nsub);
+      for k = 1:KFold
+        idx = fold == k;
+        sw = sum (W(idx));
+        if (sw > 0)
+          foldloss(k,:) = (W(idx)' * L(idx,:)) / sw;
+        endif
+      endfor
+      SE = std (foldloss, 0, 1) / sqrt (KFold);
+
+      ## The leaves each subtree of the whole tree holds
+      Nleaf = zeros (1, nsub);
+      for j = 1:nsub
+        Nleaf(j) = sum (! prune (this, 'Level', SubTrees(j)).IsBranchNode);
+      endfor
+
+      ## The smallest subtree the rule allows, which is the largest level
+      if (strcmp (TreeSize, 'min'))
+        best = find (E == min (E), 1, 'last');
+      else
+        [~, i] = min (E);
+        best = find (E <= E(i) + SE(i), 1, 'last');
+      endif
+      BestLevel = SubTrees(best);
+
+      E = E(:);
+      SE = SE(:);
+      Nleaf = Nleaf(:);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionTree} {@var{imp} =} predictorImportance (@var{obj})
     ##
     ## Estimate the importance of each predictor.
@@ -1955,6 +2155,86 @@ endclassdef
 %! assert_equal (any (isnan (yFit)), false);
 %! assert_equal (kfoldLoss (CVMdl) > 0, true);
 
+%!test  # cvloss over a fixture whose folds all answer alike
+%! ## The two groups are separated by a gap no fold can straddle, so every
+%! ## fold grows the same tree and answers the held-out row exactly.  Left
+%! ## with one leaf, a fold's tree answers the mean of the thirty-nine rows
+%! ## it saw, which is 200/39 away from whichever value was held out,
+%! ## whichever group that row came from.
+%! x = [(1:20)'; (101:120)'];
+%! y = [zeros(20, 1); 10 * ones(20, 1)];
+%! Mdl = RegressionTree (x, y);
+%! assert_equal (Mdl.NumNodes, 3);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', 'all', 'KFold', 40);
+%! assert_equal (E', [0, (200 / 39) ^ 2], 1e-12);
+%! assert_equal (SE', [0, 0], 1e-12);
+%! assert_equal (Nleaf', [2, 1]);
+%! assert_equal (BestLevel, 0);
+
+%!test  # cvloss reports one row per subtree asked for
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG, 'MinLeafSize', 15);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', 'all');
+%! assert_equal (size (E), [5, 1]);
+%! assert_equal (size (SE), [5, 1]);
+%! assert_equal (Nleaf', [5, 4, 3, 2, 1]);
+%! assert_equal (all (E > 0), true);
+%! assert_equal (BestLevel >= 0 && BestLevel <= 4, true);
+%! ## the root alone answers the mean, so it can do no better than the whole
+%! assert_equal (E(5) > E(1), true);
+
+%!test  # cvloss defaults to the unpruned tree alone
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG, 'MinLeafSize', 15);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl);
+%! assert_equal (size (E), [1, 1]);
+%! assert_equal (Nleaf, 5);
+%! assert_equal (BestLevel, 0);
+%! assert_equal (E > 0, true);
+
+%!test  # A subset of the levels is answered in the order it was asked for
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG, 'MinLeafSize', 15);
+%! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', [0, 2, 4]);
+%! assert_equal (Nleaf', [5, 3, 1]);
+%! assert_equal (any (BestLevel == [0, 2, 4]), true);
+
+%!test  # The fold count and the tree size rule are the ones asked for
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG, 'MinLeafSize', 15);
+%! assert_equal (size (cvloss (Mdl, 'KFold', 5)), [1, 1]);
+%! [~, ~, ~, bmin] = cvloss (Mdl, 'SubTrees', 'all', 'TreeSize', 'min');
+%! [~, ~, ~, bse] = cvloss (Mdl, 'SubTrees', 'all', 'TreeSize', 'se');
+%! assert_equal (bmin >= 0 && bmin <= 4, true);
+%! assert_equal (bse >= 0 && bse <= 4, true);
+
+%!test  # cvloss weighs the loss as the fit weighed it
+%! ## A weighted fit whose folds all answer alike.  The heavier group pulls
+%! ## the one-leaf answer towards itself, and the loss counts each row by
+%! ## its weight rather than by its share of the rows.
+%! x = [(1:20)'; (101:120)'];
+%! y = [zeros(20, 1); 10 * ones(20, 1)];
+%! Mdl = RegressionTree (x, y, 'Weights', [ones(20, 1); 3 * ones(20, 1)]);
+%! E = cvloss (Mdl, 'SubTrees', 'all', 'KFold', 40);
+%! assert_equal (E(1), 0, 1e-12);
+%! assert_equal (E(2) > 0 && E(2) < 100, true);
+
+%!test  # More folds than observations are reduced to one fold each
+%! x = [(1:20)'; (101:120)'];
+%! y = [zeros(20, 1); 10 * ones(20, 1)];
+%! Mdl = RegressionTree (x, y);
+%! ws = warning ('off', 'all');
+%! unwind_protect
+%!   E = cvloss (Mdl, 'KFold', 500, 'SubTrees', 'all');
+%! unwind_protect_cleanup
+%!   warning (ws);
+%! end_unwind_protect
+%! assert_equal (E', [0, (200 / 39) ^ 2], 1e-12);
+
 ## Test input validation
 %!error<RegressionTree: too few input arguments.> RegressionTree ()
 %!error<RegressionTree: too few input arguments.> RegressionTree (ones (4, 2))
@@ -2055,6 +2335,31 @@ endclassdef
 %! nodeVariableRange (RegressionTree (ones (4, 2), (1:4)'))
 %!error<RegressionTree.nodeVariableRange: NODE must be a positive integer no greater than the number of nodes in the tree.>
 %! nodeVariableRange (RegressionTree (ones (4, 2), (1:4)'), 999)
+%!error<RegressionTree.cvloss: name-value arguments must be in pairs.>
+%! cvloss (RegressionTree (ones (4, 2), (1:4)'), 'SubTrees')
+%!error<RegressionTree.cvloss: 'SubTrees' must be 'all' or a vector of nonnegative integers in ascending order.>
+%! load carsmall
+%! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'SubTrees', -1)
+%!error<RegressionTree.cvloss: 'SubTrees' must be 'all' or a vector of nonnegative integers in ascending order.>
+%! load carsmall
+%! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'SubTrees', [2, 1])
+%!error<RegressionTree.cvloss: 'SubTrees' must not exceed the largest pruning level, 4.>
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! cvloss (RegressionTree (X, MPG, 'MinLeafSize', 15), 'SubTrees', 99)
+%!error<RegressionTree.cvloss: 'TreeSize' must be either 'se' or 'min'.>
+%! load carsmall
+%! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'TreeSize', 'x')
+%!error<RegressionTree.cvloss: 'KFold' must be an integer value greater than 1.>
+%! load carsmall
+%! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'KFold', 1)
+%!error<RegressionTree.cvloss: invalid parameter name in optional pair arguments.>
+%! load carsmall
+%! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'Bogus', 1)
+%!error<RegressionTree.cvloss: the tree carries no pruning sequence; fit it with 'Prune' or 'MergeLeaves' on.>
+%! load carsmall
+%! cvloss (RegressionTree ([Weight, Cylinders], MPG, 'Prune', 'off', ...
+%!                         'MergeLeaves', 'off'))
 %!error<RegressionTree.crossval: Name-Value arguments must be in pairs.>
 %! crossval (RegressionTree (ones (4, 2), (1:4)'), 'KFold')
 %!error<RegressionTree.crossval: specify only one of the optional Name-Value paired arguments.>
