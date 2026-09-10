@@ -30,7 +30,7 @@
 ## isolation tree; the shorter its average path length across the ensemble, the
 ## higher an observation's anomaly score.
 ##
-## @seealso{iforest, isanomaly}
+## @seealso{iforest, IsolationForest.isanomaly}
 ## @end deftypefn
 
 classdef IsolationForest

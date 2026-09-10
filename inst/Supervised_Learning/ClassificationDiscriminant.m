@@ -2361,7 +2361,8 @@ classdef ClassificationDiscriminant
     ## runs and does not match MATLAB's; @var{gamma}, @var{delta} and
     ## @var{numpred} are deterministic and do.
     ##
-    ## @seealso{ClassificationDiscriminant, fitcdiscr, nLinearCoeffs}
+    ## @seealso{ClassificationDiscriminant, fitcdiscr,
+    ## ClassificationDiscriminant.nLinearCoeffs}
     ## @end deftypefn
 
     function [err, gamma, delta, numpred] = cvshrink (this, varargin)

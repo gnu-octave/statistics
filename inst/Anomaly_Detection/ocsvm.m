@@ -79,7 +79,7 @@
 ##
 ## Use the @code{isanomaly} method of @var{Mdl} to detect anomalies in new data.
 ##
-## @seealso{OneClassSVM, isanomaly, iforest, lof, fitcsvm}
+## @seealso{OneClassSVM, OneClassSVM.isanomaly, iforest, lof, fitcsvm}
 ## @end deftypefn
 
 function [Mdl, tf, scores] = ocsvm (X, varargin)

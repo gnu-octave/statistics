@@ -4647,7 +4647,7 @@ classdef LinearModel
     ## @code{step} is not available for a model fitted with robust
     ## regression.
     ##
-    ## @seealso{stepwiselm, addTerms, removeTerms}
+    ## @seealso{stepwiselm, LinearModel.addTerms, LinearModel.removeTerms}
     ## @end deftypefn
     function NewMdl = step (mdl, varargin)
       if (nargin < 1)

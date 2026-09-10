@@ -31,7 +31,7 @@
 ## above 1 indicates an outlier that lies in a sparser region than its
 ## neighbors.
 ##
-## @seealso{lof, isanomaly}
+## @seealso{lof, LocalOutlierFactor.isanomaly}
 ## @end deftypefn
 
 classdef LocalOutlierFactor

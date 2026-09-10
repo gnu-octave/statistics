@@ -505,8 +505,10 @@ classdef CompactClassificationNeuralNetwork
     ## A positive margin means the observation is classified correctly, and
     ## the larger it is the more confidently so.
     ##
-    ## @seealso{CompactClassificationNeuralNetwork,
-    ## ClassificationNeuralNetwork, edge, loss, predict}
+    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.edge,
+    ## CompactClassificationNeuralNetwork.loss,
+    ## CompactClassificationNeuralNetwork.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -550,8 +552,10 @@ classdef CompactClassificationNeuralNetwork
     ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
     ## weighted mean instead, with one weight per row of @var{X}.
     ##
-    ## @seealso{CompactClassificationNeuralNetwork,
-    ## ClassificationNeuralNetwork, margin, loss, predict}
+    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.margin,
+    ## CompactClassificationNeuralNetwork.loss,
+    ## CompactClassificationNeuralNetwork.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -610,8 +614,10 @@ classdef CompactClassificationNeuralNetwork
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{CompactClassificationNeuralNetwork,
-    ## ClassificationNeuralNetwork, margin, edge, predict}
+    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.margin,
+    ## CompactClassificationNeuralNetwork.edge,
+    ## CompactClassificationNeuralNetwork.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 

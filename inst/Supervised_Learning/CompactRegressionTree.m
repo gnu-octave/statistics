@@ -532,7 +532,7 @@ classdef CompactRegressionTree
     ## The numbers are comparable between predictors of one tree and not
     ## between trees.
     ##
-    ## @seealso{CompactRegressionTree, fitrtree, NodeRisk}
+    ## @seealso{CompactRegressionTree, fitrtree, CompactRegressionTree.NodeRisk}
     ## @end deftypefn
     function imp = predictorImportance (this)
 
@@ -673,7 +673,7 @@ classdef CompactRegressionTree
     ##
     ## @end multitable
     ##
-    ## @seealso{CompactRegressionTree, fitrtree, predict}
+    ## @seealso{CompactRegressionTree, fitrtree, CompactRegressionTree.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 

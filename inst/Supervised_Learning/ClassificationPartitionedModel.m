@@ -1036,7 +1036,8 @@ classdef ClassificationPartitionedModel
     ## loss to.  It defaults to every fold.
     ## @end multitable
     ##
-    ## @seealso{ClassificationPartitionedModel, kfoldPredict}
+    ## @seealso{ClassificationPartitionedModel,
+    ## ClassificationPartitionedModel.kfoldPredict}
     ## @end deftypefn
     function L = kfoldLoss (this, varargin)
 
@@ -1294,7 +1295,11 @@ classdef ClassificationPartitionedModel
     ## observations that fold was trained on, and @var{Xtest}, @var{Ytest} and
     ## @var{Wtest} those of the observations it held out.
     ##
-    ## @seealso{ClassificationPartitionedModel, kfoldPredict, kfoldLoss, kfoldMargin, kfoldEdge}
+    ## @seealso{ClassificationPartitionedModel,
+    ## ClassificationPartitionedModel.kfoldPredict,
+    ## ClassificationPartitionedModel.kfoldLoss,
+    ## ClassificationPartitionedModel.kfoldMargin,
+    ## ClassificationPartitionedModel.kfoldEdge}
     ## @end deftypefn
 
     function vals = kfoldfun (this, fun)

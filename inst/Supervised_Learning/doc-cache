@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 841
+# columns: 1031
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1180,7 +1180,7 @@ ClassificationDiscriminant.cvshrink
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1862
+# length: 1889
 ClassificationDiscriminant: err = cvshrink ( obj )
 ClassificationDiscriminant: [ err , gamma ] = cvshrink ( obj )
 ClassificationDiscriminant: [ err , gamma , delta ] = cvshrink ( obj )
@@ -1223,7 +1223,7 @@ numpred are deterministic and do.
 See also:
 ClassificationDiscriminant,
 fitcdiscr,
-nLinearCoeffs
+ClassificationDiscriminant.nLinearCoeffs
 
 
 # name: <cell-element>
@@ -3082,7 +3082,7 @@ ClassificationGAM.edge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 399
+# length: 453
 ClassificationGAM: e = edge ( obj , X , Y )
 ClassificationGAM: e = edge (&hellip;, "Weights" , w )
 
@@ -3096,9 +3096,9 @@ weighted mean instead, with one weight per row of X .
 
 See also:
 ClassificationGAM,
-margin,
-loss,
-predict
+ClassificationGAM.margin,
+ClassificationGAM.loss,
+ClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -3119,7 +3119,7 @@ ClassificationGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 898
+# length: 952
 ClassificationGAM: L = loss ( obj , X , Y )
 ClassificationGAM: L = loss (&hellip;, name , value )
 
@@ -3145,9 +3145,9 @@ sum to one before it is applied.
 
 See also:
 ClassificationGAM,
-margin,
-edge,
-predict
+ClassificationGAM.margin,
+ClassificationGAM.edge,
+ClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -3168,7 +3168,7 @@ ClassificationGAM.margin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 430
+# length: 484
 ClassificationGAM: m = margin ( obj , X , Y )
 
 Classification margin of a generalized additive model.
@@ -3181,9 +3181,9 @@ larger it is the more confidently so.
 
 See also:
 ClassificationGAM,
-edge,
-loss,
-predict
+ClassificationGAM.edge,
+ClassificationGAM.loss,
+ClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -3255,7 +3255,7 @@ ClassificationGAM.resubEdge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 150
+# length: 168
 ClassificationGAM: e = resubEdge ( obj )
 
 Classification edge of a generalized additive model on its training
@@ -3263,7 +3263,7 @@ data.
 
 See also:
 ClassificationGAM,
-edge
+ClassificationGAM.edge
 
 
 # name: <cell-element>
@@ -3284,7 +3284,7 @@ ClassificationGAM.resubLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 209
+# length: 227
 ClassificationGAM: L = resubLoss ( obj )
 ClassificationGAM: L = resubLoss (&hellip;, name , value )
 
@@ -3293,7 +3293,7 @@ data.
 
 See also:
 ClassificationGAM,
-loss
+ClassificationGAM.loss
 
 
 # name: <cell-element>
@@ -3314,7 +3314,7 @@ ClassificationGAM.resubMargin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 156
+# length: 174
 ClassificationGAM: m = resubMargin ( obj )
 
 Classification margin of a generalized additive model on its training
@@ -3322,7 +3322,7 @@ data.
 
 See also:
 ClassificationGAM,
-margin
+ClassificationGAM.margin
 
 
 # name: <cell-element>
@@ -3343,7 +3343,7 @@ ClassificationGAM.resubPredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 321
+# length: 339
 ClassificationGAM: label = resubPredict ( obj )
 ClassificationGAM: [ label , score ] = resubPredict ( obj )
 
@@ -3355,7 +3355,7 @@ to the observations the model was fitted on.
 
 See also:
 ClassificationGAM,
-predict
+ClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -3376,7 +3376,7 @@ ClassificationGAM.resume
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 939
+# length: 957
 ClassificationGAM: Mdl = resume ( obj , numTrees )
 
 Resume training a generalized additive model.
@@ -3401,7 +3401,7 @@ tolerance has no budget to extend.
 See also:
 ClassificationGAM,
 fitcgam,
-addInteractions
+ClassificationGAM.addInteractions
 
 
 # name: <cell-element>
@@ -9062,7 +9062,7 @@ ClassificationNeuralNetwork.edge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 499
+# length: 583
 ClassificationNeuralNetwork: e = edge ( obj , X , Y )
 ClassificationNeuralNetwork: e = edge (&hellip;, "Weights" , w )
 
@@ -9077,9 +9077,9 @@ The weights are normalised to sum to one before they are applied.
 
 See also:
 ClassificationNeuralNetwork,
-margin,
-loss,
-predict
+ClassificationNeuralNetwork.margin,
+ClassificationNeuralNetwork.loss,
+ClassificationNeuralNetwork.predict
 
 
 # name: <cell-element>
@@ -9100,7 +9100,7 @@ ClassificationNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1124
+# length: 1208
 ClassificationNeuralNetwork: L = loss ( obj , X , Y )
 ClassificationNeuralNetwork: L = loss (&hellip;, name , value )
 
@@ -9130,9 +9130,9 @@ sum to one before it is applied.
 
 See also:
 ClassificationNeuralNetwork,
-margin,
-edge,
-predict
+ClassificationNeuralNetwork.margin,
+ClassificationNeuralNetwork.edge,
+ClassificationNeuralNetwork.predict
 
 
 # name: <cell-element>
@@ -9153,7 +9153,7 @@ ClassificationNeuralNetwork.margin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 457
+# length: 541
 ClassificationNeuralNetwork: m = margin ( obj , X , Y )
 
 Classification margin of a neural network classifier.
@@ -9166,9 +9166,9 @@ the larger it is the more confidently so.
 
 See also:
 ClassificationNeuralNetwork,
-edge,
-loss,
-predict
+ClassificationNeuralNetwork.edge,
+ClassificationNeuralNetwork.loss,
+ClassificationNeuralNetwork.predict
 
 
 # name: <cell-element>
@@ -9241,7 +9241,7 @@ ClassificationNeuralNetwork.resubEdge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 273
+# length: 301
 ClassificationNeuralNetwork: e = resubEdge ( obj )
 
 Classification edge of a neural network classifier on its training
@@ -9252,7 +9252,7 @@ observations the model was fitted on, weighted by obj.W .
 
 See also:
 ClassificationNeuralNetwork,
-edge
+ClassificationNeuralNetwork.edge
 
 
 # name: <cell-element>
@@ -9273,7 +9273,7 @@ ClassificationNeuralNetwork.resubLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 387
+# length: 415
 ClassificationNeuralNetwork: L = resubLoss ( obj )
 ClassificationNeuralNetwork: L = resubLoss (&hellip;, name , value )
 
@@ -9286,7 +9286,7 @@ takes the same "LossFun" name-value pair.
 
 See also:
 ClassificationNeuralNetwork,
-loss
+ClassificationNeuralNetwork.loss
 
 
 # name: <cell-element>
@@ -9307,7 +9307,7 @@ ClassificationNeuralNetwork.resubMargin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 263
+# length: 291
 ClassificationNeuralNetwork: m = resubMargin ( obj )
 
 Classification margin of a neural network classifier on its training
@@ -9318,7 +9318,7 @@ the observations the model was fitted on.
 
 See also:
 ClassificationNeuralNetwork,
-margin
+ClassificationNeuralNetwork.margin
 
 
 # name: <cell-element>
@@ -11406,7 +11406,7 @@ ClassificationPartitionedModel.kfoldLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1073
+# length: 1104
 ClassificationPartitionedModel: L = kfoldLoss ( obj )
 ClassificationPartitionedModel: L = kfoldLoss (&hellip;, name , value )
 
@@ -11437,7 +11437,7 @@ loss to. It defaults to every fold.
 
 See also:
 ClassificationPartitionedModel,
-kfoldPredict
+ClassificationPartitionedModel.kfoldPredict
 
 
 # name: <cell-element>
@@ -11565,7 +11565,7 @@ ClassificationPartitionedModel.kfoldfun
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 806
+# length: 930
 ClassificationPartitionedModel: vals = kfoldfun ( obj , fun )
 
 Apply a function to each fold of a cross-validated model.
@@ -11588,10 +11588,10 @@ Wtest those of the observations it held out.
 
 See also:
 ClassificationPartitionedModel,
-kfoldPredict,
-kfoldLoss,
-kfoldMargin,
-kfoldEdge
+ClassificationPartitionedModel.kfoldPredict,
+ClassificationPartitionedModel.kfoldLoss,
+ClassificationPartitionedModel.kfoldMargin,
+ClassificationPartitionedModel.kfoldEdge
 
 
 # name: <cell-element>
@@ -13185,6 +13185,1981 @@ ClassificationSVM
 # elements: 1
 # length: 32
 Save a ClassificationSVM object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+ClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1550
+statistics: ClassificationTree
+
+Binary decision tree for classification
+
+The ClassificationTree class implements a CART binary decision
+tree. Growth splits each node on the single predictor and cut point
+that lower the impurity of the response the most, and stops when a node
+is pure, too small to be a parent, or has no split leaving enough
+observations on both sides. The grown tree is then optionally reduced,
+first by merging the leaves that buy no accuracy and then by cost
+complexity pruning, which orders the branch nodes by how little risk
+their subtrees remove and records that order so a subtree of any size
+can be recovered afterwards with prune .
+
+Create a ClassificationTree object by using the fitctree
+function or the class constructor.
+
+The fit is carried out by the compiled engine treetrain and
+predictions by treepredict , which the regression tree shares.
+
+An observation missing the predictor a node cuts on descends to neither
+child. It is counted in that node and in every node above it, and
+predict stops it there and gives it that node&rsquo;s answer, so a row
+is never sent down a branch on evidence it does not carry.
+
+What this class does not do yet. Categorical predictors,
+surrogate splits, predictor subsampling and the 'twoing' split
+criterion are not implemented, and an option asking for one of them is
+refused rather than quietly ignored. CategoricalSplit ,
+CutCategories and the six Surrogate properties are
+therefore always empty, as they are in MATLAB on numeric data.
+
+See also:
+fitctree,
+treetrain,
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Binary decision tree for classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.BinEdges
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 268
+ClassificationTree: property BinEdges
+
+Bin edges of the predictors
+
+A cell array with one column vector of bin edges per predictor, empty
+unless the predictors were binned before fitting. Binning is not
+implemented, so this is always empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Bin edges of the predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+ClassificationTree.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 273
+ClassificationTree: property CategoricalPredictors
+
+Indices of the categorical predictors
+
+A row vector of column indices into X , naming the predictors
+treated as categorical. Categorical predictors are not implemented,
+so this is always empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Indices of the categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+ClassificationTree.CategoricalSplit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 228
+ClassificationTree: property CategoricalSplit
+
+Categorical splits of the tree
+
+A Nx2 cell array with one row per categorical split.
+Categorical predictors are not implemented, so this is always empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categorical splits of the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.Children
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 201
+ClassificationTree: property Children
+
+Child nodes of each node
+
+A NumNodesx2 matrix naming the left and the right child of each
+node. A leaf carries a zero in both columns. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Child nodes of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+ClassificationTree.ClassCount
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 251
+ClassificationTree: property ClassCount
+
+Class counts at each node
+
+A NumNodesxK matrix holding how many training observations of
+each class reached each node. These are counts and take no notice of
+the observation weights. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Class counts at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+ClassificationTree.ClassNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 167
+ClassificationTree: property ClassNames
+
+Names of the classes
+
+The distinct class labels, in the type the response was given in and
+sorted. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Names of the classes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+ClassificationTree.ClassProbability
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 294
+ClassificationTree: property ClassProbability
+
+Class probabilities at each node
+
+A NumNodesxK matrix holding, for each node, the weight of each
+class among the observations that reached it, as a proportion of the
+node&rsquo;s total weight. The root row is the prior. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Class probabilities at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+ClassificationTree.ClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2606
+ClassificationTree: obj = ClassificationTree ( X , Y )
+ClassificationTree: obj = ClassificationTree (&hellip;, name , value )
+
+Grow a binary decision tree for classification.
+
+obj = ClassificationTree ( X , Y ) grows a tree
+on the NxP numeric matrix X of predictor data and the
+Nx1 response Y , and returns it as a
+ClassificationTree object. Y may be a numeric or logical
+vector, a character array, or a cell array of character vectors, and
+the class names come back in the type it was given in.
+
+obj = ClassificationTree (&hellip;, name ,
+value ) takes the options below.
+
+Name Value
+'ClassNames' The classes to fit, of the same type
+as Y . Observations of any other class are dropped.
+'Cost' A square matrix with one row and column per
+class, where element (i,j) is the cost of classifying an
+observation of class i into class j , or a structure with
+fields ClassNames and ClassificationCosts . The
+default is 1 - eye (K) .
+'MaxNumSplits' A nonnegative integer, the largest
+number of branch nodes the tree may take. The default is one less
+than the number of observations, which is as many as a tree can have.
+'MergeLeaves' 'on' (default) or
+'off' . When on, a pair of leaves whose parent is no worse
+than the two of them together is merged back into that parent.
+'MinLeafSize' A positive integer, the fewest
+observations a leaf may hold. The default is 1. A split leaving
+fewer than this on either side is not taken.
+'MinParentSize' A positive integer, the fewest
+observations a node must hold to be split at all. The default is 10.
+The value the fit uses is max (MinParentSize, 2 * MinLeafSize) ,
+since a smaller node cannot give both children a legal leaf.
+'PredictorNames' A cell array of character vectors
+naming the columns of X .
+'Prior' 'empirical' (default),
+'uniform' , a numeric vector with one element per class, or a
+structure with fields ClassNames and
+ClassProbs .
+'Prune' 'on' (default) or 'off' .
+When on, the cost complexity pruning sequence is estimated and
+reported in PruneList and PruneAlpha . The tree returned
+is the unpruned one either way; prune takes a subtree out of
+the sequence.
+'PruneCriterion' 'error' , the only
+criterion implemented.
+'ResponseName' A character vector naming the
+response. The default is 'Y' .
+'ScoreTransform' A character vector naming a
+transform to apply to the scores, or a function handle. The default
+is 'none' .
+'SplitCriterion' 'gdi' (default), the Gini
+diversity index, or 'deviance' , the cross entropy.
+'Weights' A nonnegative numeric vector with one
+element per observation. The default is uniform.
+
+See also:
+fitctree,
+treetrain,
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Grow a binary decision tree for classification.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+ClassificationTree.Cost
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 462
+ClassificationTree: property Cost
+
+Misclassification cost
+
+A square numeric matrix with one row and column per class, where
+Cost(i,j) is the cost of classifying an observation of class
+i into class j . It defaults to 1 - eye (K) and may
+be reassigned after fitting.
+
+Reassigning it re-derives NodeClass , NodeError and
+NodeRisk , and changes what predict answers. The shape
+of the tree does not follow, having been decided by the cost in force
+when it was grown.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Misclassification cost
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+ClassificationTree.CutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 299
+ClassificationTree: property CutCategories
+
+Categories used at each branch
+
+A NumNodesx2 cell array holding, for a node that cuts a
+categorical predictor, the levels sent left and the levels sent right.
+Categorical predictors are not implemented, so every entry is empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categories used at each branch
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.CutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 291
+ClassificationTree: property CutPoint
+
+Cut point of each node
+
+A column vector holding, for each node, the value the split compares
+the predictor against: an observation goes left when its value is less
+than the cut point and right otherwise. A leaf carries NaN .
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Cut point of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ClassificationTree.CutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 264
+ClassificationTree: property CutPredictor
+
+Name of the predictor each node cuts on
+
+A cell array of character vectors with one entry per node, holding the
+name of the predictor the node splits on and an empty character vector
+at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Name of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+ClassificationTree.CutPredictorIndex
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 213
+ClassificationTree: property CutPredictorIndex
+
+Index of the predictor each node cuts on
+
+A column vector holding, for each node, the column of X the node
+splits on, and zero at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Index of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ClassificationTree.CutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 379
+ClassificationTree: property CutType
+
+Type of cut at each node
+
+A cell array of character vectors holding 'continuous' at a
+branch node that cuts a numeric predictor at a point,
+'categorical' at one that splits a set of levels, and an empty
+character vector at a leaf. Categorical predictors are not
+implemented, so every branch node is 'continuous' . This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Type of cut at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+ClassificationTree.ExpandedPredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 310
+ClassificationTree: property ExpandedPredictorNames
+
+Expanded predictor names
+
+A cell array of character vectors. It differs from
+PredictorNames only when a categorical predictor has been
+expanded into one column per level, which this class does not do, so
+the two are always equal. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Expanded predictor names
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+ClassificationTree.HyperparameterOptimizationResults
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 206
+ClassificationTree: property HyperparameterOptimizationResults
+
+Results of a hyperparameter optimization
+
+Hyperparameter optimization is not implemented, so this is always
+empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Results of a hyperparameter optimization
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ClassificationTree.IsBranchNode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 190
+ClassificationTree: property IsBranchNode
+
+Which nodes are branch nodes
+
+A logical column vector, true for each node that carries a split and
+false for each leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Which nodes are branch nodes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ClassificationTree.ModelParameters
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 484
+ClassificationTree: property ModelParameters
+
+Parameters the fit was run with
+
+A structure recording the options the tree was grown under:
+SplitCriterion , MinParent , MinLeaf ,
+MaxSplits , NVarToSample , MergeLeaves ,
+Prune , PruneCriterion , QEToler ,
+NSurrogate , MaxCat , AlgCat ,
+PredictorSelection , Method and Type .
+
+MinParent is the value the fit used, which is
+max (MinParentSize, 2 * MinLeafSize) and so may exceed the
+'MinParentSize' asked for. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Parameters the fit was run with
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+ClassificationTree.NodeClass
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 360
+ClassificationTree: property NodeClass
+
+Class assigned to each node
+
+A cell array of character vectors naming, for each node, the class of
+least expected misclassification cost given the node&rsquo;s class
+probabilities. Under the default cost that is simply the most
+probable class, with the first of the class names kept on a tie. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Class assigned to each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+ClassificationTree.NodeError
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 340
+ClassificationTree: property NodeError
+
+Misclassification cost of each node
+
+A column vector holding, for each node, the expected misclassification
+cost of the class the node is assigned. Under the default cost that
+is the probability that the node&rsquo;s class is wrong, one less the
+largest class probability. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Misclassification cost of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ClassificationTree.NodeProbability
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 255
+ClassificationTree: property NodeProbability
+
+Probability of reaching each node
+
+A column vector holding, for each node, the total weight of the
+observations that reached it, the weights being those in W .
+The root carries one. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Probability of reaching each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 486
+ClassificationTree: property NodeRisk
+
+Risk of each node
+
+A column vector holding, for each node, the impurity of the node
+weighted by the probability of reaching it, measured by whichever of
+'gdi' and 'deviance' the tree was grown under.
+
+A non-default Cost enters here rather than through the class
+probabilities: the weights are scaled class by class by the total cost
+of misclassifying that class, and the impurity is measured on the
+scaled distribution. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Risk of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.NodeSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 344
+ClassificationTree: property NodeSize
+
+Number of observations at each node
+
+A column vector holding how many training observations reached each
+node. A row missing the predictor its node cuts on is counted at that
+node and at none below it, so a parent&rsquo;s size is not in general the
+sum of its children&rsquo;s. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Number of observations at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.NumNodes
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 296
+ClassificationTree: property NumNodes
+
+Number of nodes in the tree
+
+A positive integer, the number of nodes the tree holds, branch nodes
+and leaves together. Nodes are numbered as they are created, so a
+parent always carries a lower number than either of its children.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Number of nodes in the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+ClassificationTree.NumObservations
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 274
+ClassificationTree: property NumObservations
+
+Number of observations
+
+A positive integer, the number of observations the model was fitted
+on. It counts the rows kept, so it is smaller than the number of rows
+given whenever a response was missing. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Number of observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+ClassificationTree.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 158
+ClassificationTree: property Parent
+
+Parent of each node
+
+A column vector naming the parent of each node. The root carries a
+zero. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Parent of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+ClassificationTree.PredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 172
+ClassificationTree: property PredictorNames
+
+Names of the predictor variables
+
+A cell array of character vectors with one name per column of
+X . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Names of the predictor variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+ClassificationTree.Prior
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 506
+ClassificationTree: property Prior
+
+Prior probability of each class
+
+A numeric row vector with one element per class, summing to one. It
+defaults to the weight each class carries in the training data, and
+may be reassigned after fitting.
+
+Reassigning it re-derives W and every node statistic that
+depends on the class weights, so ClassProbability ,
+NodeProbability , NodeClass , NodeError and
+NodeRisk all follow. The shape of the tree does not, having
+been decided by the prior in force when it was grown.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Prior probability of each class
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+ClassificationTree.PruneAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 368
+ClassificationTree: property PruneAlpha
+
+Cost complexity parameter of each pruning level
+
+A column vector with one element per level of the pruning sequence,
+the first of which is zero and stands for the unpruned tree. Level
+L is the smallest subtree that is optimal for every complexity
+parameter from PruneAlpha( L +1) up to the next one. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Cost complexity parameter of each pruning level
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+ClassificationTree.PruneList
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 438
+ClassificationTree: property PruneList
+
+Pruning level of each node
+
+A column vector holding, for each branch node, the level of the cost
+complexity sequence at which it stops being a branch node, and zero at
+a leaf. Pruning the tree to level L turns every node whose
+level is between one and L into a leaf. It is empty when
+neither 'Prune' nor 'MergeLeaves' was asked for, since
+no sequence was then estimated. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Pruning level of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ClassificationTree.ResponseName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 141
+ClassificationTree: property ResponseName
+
+Name of the response variable
+
+A character vector naming the response. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Name of the response variable
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.RowsUsed
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 390
+ClassificationTree: property RowsUsed
+
+Rows used for fitting
+
+A logical column vector with one element per row of the predictor data
+as it was given, true for each row used for fitting. It is empty,
+[] , when every row was used, so a non-empty value means that
+rows were dropped. Only a missing response drops a row; a row missing
+some of its predictors is kept. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Rows used for fitting
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+ClassificationTree.ScoreTransform
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 228
+ClassificationTree: property ScoreTransform
+
+Transform applied to the scores
+
+A character vector naming the function predict applies to the
+class probabilities before returning them, or a function handle. The
+default is 'none' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Transform applied to the scores
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+ClassificationTree.SurrogateCutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 179
+ClassificationTree: property SurrogateCutCategories
+
+Categories of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Categories of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+ClassificationTree.SurrogateCutFlip
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 178
+ClassificationTree: property SurrogateCutFlip
+
+Cut assignments of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Cut assignments of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+ClassificationTree.SurrogateCutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 174
+ClassificationTree: property SurrogateCutPoint
+
+Cut points of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Cut points of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+ClassificationTree.SurrogateCutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 178
+ClassificationTree: property SurrogateCutPredictor
+
+Predictors of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Predictors of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+ClassificationTree.SurrogateCutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 168
+ClassificationTree: property SurrogateCutType
+
+Types of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Types of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+ClassificationTree.SurrogatePredictorAssociation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 210
+ClassificationTree: property SurrogatePredictorAssociation
+
+Predictive measures of association of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Predictive measures of association of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+ClassificationTree.W
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 315
+ClassificationTree: property W
+
+Observation weights
+
+A numeric column vector of the weights the fit used, one per retained
+observation. They are the weights given, scaled so that the
+observations of each class sum to that class&rsquo;s prior, and so that all
+of them together sum to one. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Observation weights
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+ClassificationTree.X
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 203
+ClassificationTree: property X
+
+Predictor data
+
+A numeric matrix holding the predictor data the model was fitted on.
+Each column is one predictor and each row one observation. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+Predictor data
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+ClassificationTree.Y
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 247
+ClassificationTree: property Y
+
+Class labels
+
+A logical or numeric column vector, a character array, or a cell array
+of character vectors with one row per row of X , holding the
+observed class label of each observation. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+Class labels
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ClassificationTree.compact
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 384
+ClassificationTree: CMdl = compact ( obj )
+
+Drop the training data from a trained model.
+
+CMdl = compact ( obj ) returns a
+CompactClassificationTree object carrying the tree and
+everything predict needs, but not the observations the model
+was fitted on. It classifies new data identically and is far smaller
+to keep or to ship.
+
+See also:
+CompactClassificationTree,
+ClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Drop the training data from a trained model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationTree.crossval
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1051
+ClassificationTree: CVMdl = crossval ( obj )
+ClassificationTree: CVMdl = crossval (&hellip;, name , value )
+
+Cross-validate a trained decision tree.
+
+CVMdl = crossval ( obj ) partitions the training data
+into ten folds, or into as many folds as there are observations when
+there are fewer than ten, grows a tree on the training part of each
+and returns them as a ClassificationPartitionedModel .
+
+CVMdl = crossval (&hellip;, name , value ) takes
+one of the following, and one only.
+
+Name Value
+'KFold' An integer greater than 1, the number of
+folds.
+'Holdout' A value between 0 and 1, the fraction of
+the data held out for testing, which gives a single fold.
+'Leaveout' 'on' or 'off' , one fold
+per observation.
+'CVPartition' A cvpartition object.
+
+Every fold is grown with the parent&rsquo;s class names, prior, cost and
+observation weights rather than being left to re-derive them from its
+own rows, so a fold reports the prior of the whole data and not its own
+frequencies.
+
+See also:
+ClassificationPartitionedModel,
+ClassificationTree,
+cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Cross-validate a trained decision tree.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+ClassificationTree.cvloss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2178
+ClassificationTree: E = cvloss ( obj )
+ClassificationTree: [ E , SE , Nleaf , BestLevel ] = cvloss ( obj )
+ClassificationTree: [&hellip;] = cvloss (&hellip;, name , value )
+
+Cross-validated loss of a tree and of its subtrees.
+
+E = cvloss ( obj ) partitions the training data into
+ten stratified folds, grows a tree on the training part of each, and
+returns the loss of the held-out part.
+
+[ E , SE , Nleaf , BestLevel ] = cvloss
+(&hellip;) also returns SE , the standard error of E over
+the folds, Nleaf , the number of leaves each subtree holds, and
+BestLevel , the pruning level chosen by 'TreeSize' . Each
+has one element per subtree asked for.
+
+[&hellip;] = cvloss (&hellip;, name , value ) takes the
+options below.
+
+Name Value
+'SubTrees' A vector of pruning levels in ascending
+order, or 'all' for every level of the sequence. The default
+is 0, the unpruned tree.
+'TreeSize' 'se' (default), the smallest
+subtree whose loss is within one standard error of the smallest loss,
+or 'min' , the smallest subtree of least loss.
+'KFold' An integer greater than 1, the number of
+folds. The default is 10. A value above the number of observations
+is reduced to it.
+
+A fold&rsquo;s tree is pruned to the level its own sequence gives for the
+geometric mean of the parent&rsquo;s two neighbouring complexity parameters,
+which is the classical way a fold is matched to a subtree of the whole
+tree. The last level takes every fold&rsquo;s tree back to its root.
+
+Every fold is grown with the parent&rsquo;s class names, prior, cost and
+observation weights, and the loss is weighed by the model&rsquo;s own
+weights.
+
+The standard error is not MATLAB&rsquo;s. This is the standard
+error of the loss over the folds, which is what the name means and
+which is zero when every fold answers alike, as MATLAB&rsquo;s is. Its
+value is not MATLAB&rsquo;s: on the iris tree MATLAB reports 0.019956 where
+the folds give 0.024343, and no formula over the fold losses, the
+observation losses or the loss itself reproduces MATLAB&rsquo;s number.
+E , Nleaf and BestLevel are measured and match.
+
+See also:
+ClassificationTree,
+ClassificationTree.prune,
+ClassificationTree.crossval,
+ClassificationTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Cross-validated loss of a tree and of its subtrees.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+ClassificationTree.edge
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 486
+ClassificationTree: e = edge ( obj , X , Y )
+ClassificationTree: e = edge (&hellip;, 'Weights' , w )
+
+Classification edge on new data.
+
+e = edge ( obj , X , Y ) returns the
+weighted mean of the margins, a single number summarising how
+confidently the model classifies the data.
+
+The weights are normalized within each class to that class&rsquo;s prior
+before they are applied.
+
+See also:
+ClassificationTree,
+ClassificationTree.margin,
+ClassificationTree.loss,
+ClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Classification edge on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+ClassificationTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 609
+ClassificationTree: l = loss ( obj , X , Y )
+ClassificationTree: l = loss (&hellip;, name , value )
+
+Classification loss on new data.
+
+l = loss ( obj , X , Y ) returns the
+minimum expected misclassification cost.
+
+l = loss (&hellip;, name , value ) takes the
+following options.
+
+Name Value
+'LossFun' One of 'binodeviance' ,
+'classifcost' , 'classiferror' , 'exponential' ,
+'hinge' , 'logit' , 'mincost' (default) or
+'quadratic' .
+'Weights' A numeric vector of observation weights,
+one per row of X .
+
+See also:
+ClassificationTree,
+ClassificationTree.margin,
+ClassificationTree.edge,
+ClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Classification loss on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+ClassificationTree.margin
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 488
+ClassificationTree: m = margin ( obj , X , Y )
+
+Classification margin on new data.
+
+m = margin ( obj , X , Y ) returns one
+margin per observation: the score the model gives the observation&rsquo;s
+true class, less the largest score it gives any other class. A
+positive margin means the observation is classified correctly, and a
+larger one means it is classified more confidently.
+
+See also:
+ClassificationTree,
+ClassificationTree.edge,
+ClassificationTree.loss,
+ClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Classification margin on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+ClassificationTree.nodeVariableRange
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 435
+ClassificationTree: r = nodeVariableRange ( obj , node )
+
+Range of each predictor at a node.
+
+r = nodeVariableRange ( obj , node ) returns a
+structure with one field per predictor the path from the root to
+node cuts on, holding the two-element range of values that reach
+the node. A predictor the path never cuts on is unconstrained and is
+left out, so the root gives a structure with no fields.
+
+See also:
+ClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Range of each predictor at a node.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1214
+ClassificationTree: label = predict ( obj , XC )
+ClassificationTree: [ label , score ] = predict (&hellip;)
+ClassificationTree: [ label , score , node ] = predict (&hellip;)
+ClassificationTree: [ label , score , node , cnum ] = predict (&hellip;)
+
+Classify new data with a trained ClassificationTree object.
+
+label = predict ( obj , XC ) sends each row of
+XC down the tree and returns the class of the node it comes to
+rest at. XC must have as many columns as the predictor data the
+model was fitted on.
+
+[ label , score ] = predict (&hellip;) also returns
+score , an NxK matrix holding the class probabilities of
+the node each row landed in, after ScoreTransform .
+
+[ label , score , node ] = predict (&hellip;) also
+returns the number of the node each row landed in, and
+[ label , score , node , cnum ] = predict
+(&hellip;) the index of the predicted class into ClassNames .
+
+The label is the class of least expected misclassification cost, which
+under the default Cost is the most probable class of the node.
+
+A row missing the predictor a node cuts on is stopped at that node and
+takes its answer, rather than being sent down a branch on evidence the
+row does not carry.
+
+See also:
+ClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Classify new data with a trained ClassificationTree object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+ClassificationTree.predictorImportance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 697
+ClassificationTree: imp = predictorImportance ( obj )
+
+Estimate the importance of each predictor.
+
+imp = predictorImportance ( obj ) returns a row
+vector with one element per predictor, holding the total drop in risk
+the splits on that predictor bring about, divided by the number of
+branch nodes. A predictor the tree never splits on scores zero.
+
+The drop at a branch node is its NodeRisk less the risk of its
+two children and less what it holds back, so a predictor that is
+chosen often, high up, and on nodes it separates well, scores
+highest. The numbers are comparable
+between predictors of one tree and not between trees.
+
+See also:
+ClassificationTree,
+fitctree,
+ClassificationTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Estimate the importance of each predictor.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+ClassificationTree.prune
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1163
+ClassificationTree: obj2 = prune ( obj )
+ClassificationTree: obj2 = prune ( obj , 'Level' , L )
+ClassificationTree: obj2 = prune ( obj , 'Alpha' , A )
+ClassificationTree: obj2 = prune ( obj , 'Nodes' , N )
+
+Take a subtree out of the pruning sequence.
+
+obj2 = prune ( obj ) returns the tree unchanged.
+
+obj2 = prune ( obj , 'Level' , L ) turns
+every branch node whose PruneList level is between one and
+L into a leaf and discards everything below it. Level zero is
+the tree itself and the largest level is the root alone. A level
+above the largest prunes to the root and warns.
+
+obj2 = prune ( obj , 'Alpha' , A ) prunes
+to the smallest subtree that is optimal for the cost complexity
+parameter A , which is the largest level whose PruneAlpha
+does not exceed it.
+
+obj2 = prune ( obj , 'Nodes' , N ) turns
+the branch nodes named in N into leaves, along with everything
+below them, and leaves the rest of the tree alone.
+
+Pruning renumbers the nodes, so the properties of the returned tree
+are those of a tree of that shape and not a subset of the original&rsquo;s.
+
+See also:
+ClassificationTree,
+fitctree,
+ClassificationTree.PruneList,
+ClassificationTree.PruneAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Take a subtree out of the pruning sequence.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+ClassificationTree.resubEdge
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 225
+ClassificationTree: e = resubEdge ( obj )
+
+Classification edge on the training data.
+
+e = resubEdge ( obj ) is edge over the
+training data, weighed as the fit weighed it.
+
+See also:
+ClassificationTree,
+ClassificationTree.edge
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Classification edge on the training data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+ClassificationTree.resubLoss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 430
+ClassificationTree: l = resubLoss ( obj )
+ClassificationTree: l = resubLoss (&hellip;, name , value )
+
+Classification loss on the training data.
+
+l = resubLoss ( obj ) is loss over the
+training data, weighed as the fit weighed it, and takes the same
+'LossFun' option. Giving 'Weights' weighs the
+training data some other way instead, which MATLAB refuses rather
+than honours.
+
+See also:
+ClassificationTree,
+ClassificationTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Classification loss on the training data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+ClassificationTree.resubMargin
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 206
+ClassificationTree: m = resubMargin ( obj )
+
+Classification margin on the training data.
+
+m = resubMargin ( obj ) is
+margin ( obj , obj .X, obj .Y) .
+
+See also:
+ClassificationTree,
+ClassificationTree.margin
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Classification margin on the training data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+ClassificationTree.resubPredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 325
+ClassificationTree: label = resubPredict ( obj )
+ClassificationTree: [ label , score , node , cnum ] = resubPredict ( obj )
+
+Classify the training data with the model fitted to it.
+
+label = resubPredict ( obj ) is
+predict ( obj , obj .X) , and takes the same outputs.
+
+See also:
+ClassificationTree,
+ClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+Classify the training data with the model fitted to it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+ClassificationTree.savemodel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 489
+ClassificationTree: savemodel ( obj , filename )
+
+Save a ClassificationTree model to a file.
+
+savemodel ( obj , filename ) saves each property of a
+ClassificationTree object into an Octave binary file, the name of
+which is specified in filename , along with an extra variable,
+which defines the type of classification object these variables
+constitute. Use loadmodel in order to load a classification
+object into Octave&rsquo;s workspace.
+
+See also:
+loadmodel,
+fitctree,
+ClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Save a ClassificationTree model to a file.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+ClassificationTree.view
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 405
+ClassificationTree: view ( obj )
+
+Print the tree as text.
+
+view ( obj ) prints one line per node: a branch node names
+the predictor it cuts on, the cut point, and the node each side leads
+to, and a leaf names the class it assigns. A branch node&rsquo;s line ends
+with the class it would assign itself, which is the answer an
+observation missing that predictor gets.
+
+See also:
+ClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Print the tree as text.
 
 
 
@@ -15008,7 +16983,7 @@ CompactClassificationGAM.edge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 447
+# length: 500
 CompactClassificationGAM: e = edge ( obj , X , Y )
 CompactClassificationGAM: e = edge (&hellip;, "Weights" , w )
 
@@ -15023,8 +16998,9 @@ weighted mean instead, with one weight per row of X .
 See also:
 CompactClassificationGAM,
 ClassificationGAM,
-margin,
-loss,
+CompactClassificationGAM.margin,
+CompactClassificationGAM.loss,
+##
 predict
 
 
@@ -15046,7 +17022,7 @@ CompactClassificationGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 946
+# length: 999
 CompactClassificationGAM: L = loss ( obj , X , Y )
 CompactClassificationGAM: L = loss (&hellip;, name , value )
 
@@ -15073,8 +17049,9 @@ sum to one before it is applied.
 See also:
 CompactClassificationGAM,
 ClassificationGAM,
-margin,
-edge,
+CompactClassificationGAM.margin,
+CompactClassificationGAM.edge,
+##
 predict
 
 
@@ -15096,7 +17073,7 @@ CompactClassificationGAM.margin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 471
+# length: 524
 CompactClassificationGAM: m = margin ( obj , X , Y )
 
 Classification margin of a compact generalized additive model.
@@ -15110,9 +17087,9 @@ larger it is the more confidently so.
 See also:
 CompactClassificationGAM,
 ClassificationGAM,
-edge,
-loss,
-predict
+CompactClassificationGAM.edge,
+CompactClassificationGAM.loss,
+## predict
 
 
 # name: <cell-element>
@@ -16457,7 +18434,7 @@ CompactClassificationNeuralNetwork.edge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 486
+# length: 594
 CompactClassificationNeuralNetwork: e = edge ( obj , X , Y )
 CompactClassificationNeuralNetwork: e = edge (&hellip;, "Weights" , w )
 
@@ -16471,10 +18448,11 @@ weighted mean instead, with one weight per row of X .
 
 See also:
 CompactClassificationNeuralNetwork,
+##
 ClassificationNeuralNetwork,
-margin,
-loss,
-predict
+CompactClassificationNeuralNetwork.margin,
+CompactClassificationNeuralNetwork.loss,
+CompactClassificationNeuralNetwork.predict
 
 
 # name: <cell-element>
@@ -16495,7 +18473,7 @@ CompactClassificationNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1165
+# length: 1273
 CompactClassificationNeuralNetwork: L = loss ( obj , X , Y )
 CompactClassificationNeuralNetwork: L = loss (&hellip;, name , value )
 
@@ -16524,10 +18502,11 @@ sum to one before it is applied.
 
 See also:
 CompactClassificationNeuralNetwork,
+##
 ClassificationNeuralNetwork,
-margin,
-edge,
-predict
+CompactClassificationNeuralNetwork.margin,
+CompactClassificationNeuralNetwork.edge,
+CompactClassificationNeuralNetwork.predict
 
 
 # name: <cell-element>
@@ -16548,7 +18527,7 @@ CompactClassificationNeuralNetwork.margin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 508
+# length: 616
 CompactClassificationNeuralNetwork: m = margin ( obj , X , Y )
 
 Classification margin of a compact neural network classifier.
@@ -16561,10 +18540,11 @@ the larger it is the more confidently so.
 
 See also:
 CompactClassificationNeuralNetwork,
+##
 ClassificationNeuralNetwork,
-edge,
-loss,
-predict
+CompactClassificationNeuralNetwork.edge,
+CompactClassificationNeuralNetwork.loss,
+CompactClassificationNeuralNetwork.predict
 
 
 # name: <cell-element>
@@ -17539,6 +19519,1341 @@ Save a CompactClassificationSVM object.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 25
+CompactClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 710
+statistics: CompactClassificationTree
+
+Compact binary decision tree for classification
+
+A CompactClassificationTree object carries the tree a
+ClassificationTree model grew and everything predict needs,
+but not the observations it was fitted on. It classifies new data
+identically to the model it came from, and is far smaller to keep or to
+ship.
+
+Create one with the compact method of a ClassificationTree
+object. Because it holds no training data, it has no resub
+methods and cannot be cross-validated, and it cannot be pruned: the
+pruning sequence is reported but taking a subtree out of it rewrites the
+node table, which is work for the model that still has its data.
+
+See also:
+ClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Compact binary decision tree for classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+CompactClassificationTree.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 280
+CompactClassificationTree: property CategoricalPredictors
+
+Indices of the categorical predictors
+
+A row vector of column indices into X , naming the predictors
+treated as categorical. Categorical predictors are not implemented,
+so this is always empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Indices of the categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+CompactClassificationTree.CategoricalSplit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 235
+CompactClassificationTree: property CategoricalSplit
+
+Categorical splits of the tree
+
+A Nx2 cell array with one row per categorical split.
+Categorical predictors are not implemented, so this is always empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categorical splits of the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationTree.Children
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 208
+CompactClassificationTree: property Children
+
+Child nodes of each node
+
+A NumNodesx2 matrix naming the left and the right child of each
+node. A leaf carries a zero in both columns. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Child nodes of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+CompactClassificationTree.ClassCount
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 258
+CompactClassificationTree: property ClassCount
+
+Class counts at each node
+
+A NumNodesxK matrix holding how many training observations of
+each class reached each node. These are counts and take no notice of
+the observation weights. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Class counts at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+CompactClassificationTree.ClassNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 174
+CompactClassificationTree: property ClassNames
+
+Names of the classes
+
+The distinct class labels, in the type the response was given in and
+sorted. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Names of the classes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+CompactClassificationTree.ClassProbability
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 301
+CompactClassificationTree: property ClassProbability
+
+Class probabilities at each node
+
+A NumNodesxK matrix holding, for each node, the weight of each
+class among the observations that reached it, as a proportion of the
+node&rsquo;s total weight. The root row is the prior. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Class probabilities at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+CompactClassificationTree.CompactClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 268
+CompactClassificationTree: obj = CompactClassificationTree ( Mdl )
+
+Create a CompactClassificationTree object.
+
+Mdl is the ClassificationTree object to compact. The
+documented way to reach this constructor is the compact method.
+
+See also:
+ClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Create a CompactClassificationTree object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactClassificationTree.Cost
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 634
+CompactClassificationTree: property Cost
+
+Misclassification cost
+
+A square numeric matrix with one row and column per class, where
+Cost(i,j) is the cost of classifying an observation of class
+i into class j . It defaults to 1 - eye (K) and may
+be reassigned after fitting.
+
+Reassigning it re-derives NodeClass , NodeError and
+NodeRisk , and changes what predict answers. The shape
+of the tree does not follow, having been decided by the cost in force
+when it was grown. MATLAB reports this property read-only on a
+compact tree and refuses the assignment; it is settable here, as it is
+on the package&rsquo;s other compact classifiers.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Misclassification cost
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+CompactClassificationTree.CutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 306
+CompactClassificationTree: property CutCategories
+
+Categories used at each branch
+
+A NumNodesx2 cell array holding, for a node that cuts a
+categorical predictor, the levels sent left and the levels sent right.
+Categorical predictors are not implemented, so every entry is empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categories used at each branch
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationTree.CutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 298
+CompactClassificationTree: property CutPoint
+
+Cut point of each node
+
+A column vector holding, for each node, the value the split compares
+the predictor against: an observation goes left when its value is less
+than the cut point and right otherwise. A leaf carries NaN .
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Cut point of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+CompactClassificationTree.CutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 271
+CompactClassificationTree: property CutPredictor
+
+Name of the predictor each node cuts on
+
+A cell array of character vectors with one entry per node, holding the
+name of the predictor the node splits on and an empty character vector
+at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Name of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+CompactClassificationTree.CutPredictorIndex
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 220
+CompactClassificationTree: property CutPredictorIndex
+
+Index of the predictor each node cuts on
+
+A column vector holding, for each node, the column of X the node
+splits on, and zero at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Index of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+CompactClassificationTree.CutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 386
+CompactClassificationTree: property CutType
+
+Type of cut at each node
+
+A cell array of character vectors holding 'continuous' at a
+branch node that cuts a numeric predictor at a point,
+'categorical' at one that splits a set of levels, and an empty
+character vector at a leaf. Categorical predictors are not
+implemented, so every branch node is 'continuous' . This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Type of cut at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+CompactClassificationTree.ExpandedPredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 317
+CompactClassificationTree: property ExpandedPredictorNames
+
+Expanded predictor names
+
+A cell array of character vectors. It differs from
+PredictorNames only when a categorical predictor has been
+expanded into one column per level, which this class does not do, so
+the two are always equal. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Expanded predictor names
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+CompactClassificationTree.IsBranchNode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 197
+CompactClassificationTree: property IsBranchNode
+
+Which nodes are branch nodes
+
+A logical column vector, true for each node that carries a split and
+false for each leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Which nodes are branch nodes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+CompactClassificationTree.NodeClass
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 367
+CompactClassificationTree: property NodeClass
+
+Class assigned to each node
+
+A cell array of character vectors naming, for each node, the class of
+least expected misclassification cost given the node&rsquo;s class
+probabilities. Under the default cost that is simply the most
+probable class, with the first of the class names kept on a tie. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Class assigned to each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+CompactClassificationTree.NodeError
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 347
+CompactClassificationTree: property NodeError
+
+Misclassification cost of each node
+
+A column vector holding, for each node, the expected misclassification
+cost of the class the node is assigned. Under the default cost that
+is the probability that the node&rsquo;s class is wrong, one less the
+largest class probability. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Misclassification cost of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+CompactClassificationTree.NodeProbability
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 295
+CompactClassificationTree: property NodeProbability
+
+Probability of reaching each node
+
+A column vector holding, for each node, the total weight of the
+observations that reached it, the weights being those the model it
+came from was fitted with. The root carries one. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Probability of reaching each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 493
+CompactClassificationTree: property NodeRisk
+
+Risk of each node
+
+A column vector holding, for each node, the impurity of the node
+weighted by the probability of reaching it, measured by whichever of
+'gdi' and 'deviance' the tree was grown under.
+
+A non-default Cost enters here rather than through the class
+probabilities: the weights are scaled class by class by the total cost
+of misclassifying that class, and the impurity is measured on the
+scaled distribution. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Risk of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationTree.NodeSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 351
+CompactClassificationTree: property NodeSize
+
+Number of observations at each node
+
+A column vector holding how many training observations reached each
+node. A row missing the predictor its node cuts on is counted at that
+node and at none below it, so a parent&rsquo;s size is not in general the
+sum of its children&rsquo;s. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Number of observations at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationTree.NumNodes
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 303
+CompactClassificationTree: property NumNodes
+
+Number of nodes in the tree
+
+A positive integer, the number of nodes the tree holds, branch nodes
+and leaves together. Nodes are numbered as they are created, so a
+parent always carries a lower number than either of its children.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Number of nodes in the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+CompactClassificationTree.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 165
+CompactClassificationTree: property Parent
+
+Parent of each node
+
+A column vector naming the parent of each node. The root carries a
+zero. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Parent of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+CompactClassificationTree.PredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 179
+CompactClassificationTree: property PredictorNames
+
+Names of the predictor variables
+
+A cell array of character vectors with one name per column of
+X . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Names of the predictor variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+CompactClassificationTree.Prior
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 672
+CompactClassificationTree: property Prior
+
+Prior probability of each class
+
+A numeric row vector with one element per class, summing to one. It
+defaults to the weight each class carries in the training data, and
+may be reassigned after fitting.
+
+Reassigning it re-derives every node statistic that depends on the
+class weights, so ClassProbability , NodeProbability ,
+NodeClass , NodeError and NodeRisk all follow.
+The shape of the tree does not, having been decided by the prior in
+force when it was grown. MATLAB reports this property read-only on a
+compact tree and refuses the assignment; it is settable here, as it is
+on the package&rsquo;s other compact classifiers.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Prior probability of each class
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+CompactClassificationTree.PruneAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 375
+CompactClassificationTree: property PruneAlpha
+
+Cost complexity parameter of each pruning level
+
+A column vector with one element per level of the pruning sequence,
+the first of which is zero and stands for the unpruned tree. Level
+L is the smallest subtree that is optimal for every complexity
+parameter from PruneAlpha( L +1) up to the next one. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Cost complexity parameter of each pruning level
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+CompactClassificationTree.PruneList
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 445
+CompactClassificationTree: property PruneList
+
+Pruning level of each node
+
+A column vector holding, for each branch node, the level of the cost
+complexity sequence at which it stops being a branch node, and zero at
+a leaf. Pruning the tree to level L turns every node whose
+level is between one and L into a leaf. It is empty when
+neither 'Prune' nor 'MergeLeaves' was asked for, since
+no sequence was then estimated. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Pruning level of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+CompactClassificationTree.ResponseName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 148
+CompactClassificationTree: property ResponseName
+
+Name of the response variable
+
+A character vector naming the response. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Name of the response variable
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+CompactClassificationTree.ScoreTransform
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 235
+CompactClassificationTree: property ScoreTransform
+
+Transform applied to the scores
+
+A character vector naming the function predict applies to the
+class probabilities before returning them, or a function handle. The
+default is 'none' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Transform applied to the scores
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+CompactClassificationTree.SurrogateCutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 186
+CompactClassificationTree: property SurrogateCutCategories
+
+Categories of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Categories of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+CompactClassificationTree.SurrogateCutFlip
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 185
+CompactClassificationTree: property SurrogateCutFlip
+
+Cut assignments of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Cut assignments of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+CompactClassificationTree.SurrogateCutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 181
+CompactClassificationTree: property SurrogateCutPoint
+
+Cut points of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Cut points of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+CompactClassificationTree.SurrogateCutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 185
+CompactClassificationTree: property SurrogateCutPredictor
+
+Predictors of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Predictors of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+CompactClassificationTree.SurrogateCutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 175
+CompactClassificationTree: property SurrogateCutType
+
+Types of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Types of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+CompactClassificationTree.SurrogatePredictorAssociation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 217
+CompactClassificationTree: property SurrogatePredictorAssociation
+
+Predictive measures of association of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Predictive measures of association of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactClassificationTree.edge
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 528
+CompactClassificationTree: e = edge ( obj , X , Y )
+CompactClassificationTree: e = edge (&hellip;, 'Weights' , w )
+
+Classification edge on new data.
+
+e = edge ( obj , X , Y ) returns the
+weighted mean of the margins, a single number summarising how
+confidently the model classifies the data.
+
+The weights are normalized within each class to that class&rsquo;s prior
+before they are applied.
+
+See also:
+CompactClassificationTree,
+CompactClassificationTree.margin,
+CompactClassificationTree.loss,
+CompactClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Classification edge on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactClassificationTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 651
+CompactClassificationTree: l = loss ( obj , X , Y )
+CompactClassificationTree: l = loss (&hellip;, name , value )
+
+Classification loss on new data.
+
+l = loss ( obj , X , Y ) returns the
+minimum expected misclassification cost.
+
+l = loss (&hellip;, name , value ) takes the
+following options.
+
+Name Value
+'LossFun' One of 'binodeviance' ,
+'classifcost' , 'classiferror' , 'exponential' ,
+'hinge' , 'logit' , 'mincost' (default) or
+'quadratic' .
+'Weights' A numeric vector of observation weights,
+one per row of X .
+
+See also:
+CompactClassificationTree,
+CompactClassificationTree.margin,
+CompactClassificationTree.edge,
+CompactClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Classification loss on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+CompactClassificationTree.margin
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 523
+CompactClassificationTree: m = margin ( obj , X , Y )
+
+Classification margin on new data.
+
+m = margin ( obj , X , Y ) returns one
+margin per observation: the score the model gives the observation&rsquo;s
+true class, less the largest score it gives any other class. A
+positive margin means the observation is classified correctly, and a
+larger one means it is classified more confidently.
+
+See also:
+CompactClassificationTree,
+CompactClassificationTree.edge,
+CompactClassificationTree.loss,
+CompactClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Classification margin on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+CompactClassificationTree.nodeVariableRange
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 449
+CompactClassificationTree: r = nodeVariableRange ( obj , node )
+
+Range of each predictor at a node.
+
+r = nodeVariableRange ( obj , node ) returns a
+structure with one field per predictor the path from the root to
+node cuts on, holding the two-element range of values that reach
+the node. A predictor the path never cuts on is unconstrained and is
+left out, so the root gives a structure with no fields.
+
+See also:
+CompactClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Range of each predictor at a node.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+CompactClassificationTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1256
+CompactClassificationTree: label = predict ( obj , XC )
+CompactClassificationTree: [ label , score ] = predict (&hellip;)
+CompactClassificationTree: [ label , score , node ] = predict (&hellip;)
+CompactClassificationTree: [ label , score , node , cnum ] = predict (&hellip;)
+
+Classify new data with a trained CompactClassificationTree object.
+
+label = predict ( obj , XC ) sends each row of
+XC down the tree and returns the class of the node it comes to
+rest at. XC must have as many columns as the predictor data the
+model was fitted on.
+
+[ label , score ] = predict (&hellip;) also returns
+score , an NxK matrix holding the class probabilities of
+the node each row landed in, after ScoreTransform .
+
+[ label , score , node ] = predict (&hellip;) also
+returns the number of the node each row landed in, and
+[ label , score , node , cnum ] = predict
+(&hellip;) the index of the predicted class into ClassNames .
+
+The label is the class of least expected misclassification cost, which
+under the default Cost is the most probable class of the node.
+
+A row missing the predictor a node cuts on is stopped at that node and
+takes its answer, rather than being sent down a branch on evidence the
+row does not carry.
+
+See also:
+CompactClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+Classify new data with a trained CompactClassificationTree object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+CompactClassificationTree.predictorImportance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 690
+CompactClassificationTree: imp = predictorImportance ( obj )
+
+Estimate the importance of each predictor.
+
+imp = predictorImportance ( obj ) returns a row
+vector with one element per predictor, holding the total drop in risk
+the splits on that predictor bring about, divided by the number of
+branch nodes. A predictor the tree never splits on scores zero.
+
+The drop at a branch node is its NodeRisk less the risk of its
+two children, so a predictor that is chosen often, high up, and on
+nodes it separates well, scores highest. The numbers are comparable
+between predictors of one tree and not between trees.
+
+See also:
+CompactClassificationTree,
+fitctree,
+CompactClassificationTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Estimate the importance of each predictor.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+CompactClassificationTree.savemodel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 510
+CompactClassificationTree: savemodel ( obj , filename )
+
+Save a CompactClassificationTree model to a file.
+
+savemodel ( obj , filename ) saves each property of a
+CompactClassificationTree object into an Octave binary file, the name
+of which is specified in filename , along with an extra variable,
+which defines the type of classification object these variables
+constitute. Use loadmodel in order to load a classification
+object into Octave&rsquo;s workspace.
+
+See also:
+loadmodel,
+fitctree,
+ClassificationTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Save a CompactClassificationTree model to a file.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactClassificationTree.view
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 419
+CompactClassificationTree: view ( obj )
+
+Print the tree as text.
+
+view ( obj ) prints one line per node: a branch node names
+the predictor it cuts on, the cut point, and the node each side leads
+to, and a leaf names the class it assigns. A branch node&rsquo;s line ends
+with the class it would assign itself, which is the answer an
+observation missing that predictor gets.
+
+See also:
+CompactClassificationTree,
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Print the tree as text.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 20
 CompactRegressionGAM
 
@@ -18104,7 +21419,7 @@ CompactRegressionGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 686
+# length: 707
 CompactRegressionGAM: L = loss ( obj , X , Y )
 CompactRegressionGAM: L = loss (&hellip;, name , value )
 
@@ -18128,7 +21443,7 @@ See also:
 CompactRegressionGAM,
 RegressionGAM,
 fitrgam,
-predict
+CompactRegressionGAM.predict
 
 
 # name: <cell-element>
@@ -20050,6 +23365,1093 @@ Save a compact support vector regression model to a file.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 21
+CompactRegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 683
+statistics: CompactRegressionTree
+
+Compact binary decision tree for regression
+
+A CompactRegressionTree object carries the tree a
+RegressionTree model grew and everything predict needs, but
+not the observations it was fitted on. It answers new data identically
+to the model it came from, and is far smaller to keep or to ship.
+
+Create one with the compact method of a RegressionTree
+object. Because it holds no training data, it has no resub
+methods and cannot be cross-validated, and it cannot be pruned: the
+pruning sequence is reported but taking a subtree out of it rewrites the
+node table, which is work for the model that still has its data.
+
+See also:
+RegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Compact binary decision tree for regression
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+CompactRegressionTree.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 276
+CompactRegressionTree: property CategoricalPredictors
+
+Indices of the categorical predictors
+
+A row vector of column indices into X , naming the predictors
+treated as categorical. Categorical predictors are not implemented,
+so this is always empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Indices of the categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+CompactRegressionTree.CategoricalSplit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 231
+CompactRegressionTree: property CategoricalSplit
+
+Categorical splits of the tree
+
+A Nx2 cell array with one row per categorical split.
+Categorical predictors are not implemented, so this is always empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categorical splits of the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionTree.Children
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 204
+CompactRegressionTree: property Children
+
+Child nodes of each node
+
+A NumNodesx2 matrix naming the left and the right child of each
+node. A leaf carries a zero in both columns. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Child nodes of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+CompactRegressionTree.CompactRegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 248
+CompactRegressionTree: obj = CompactRegressionTree ( Mdl )
+
+Create a CompactRegressionTree object.
+
+Mdl is the RegressionTree object to compact. The
+documented way to reach this constructor is the compact method.
+
+See also:
+RegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Create a CompactRegressionTree object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+CompactRegressionTree.CutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 302
+CompactRegressionTree: property CutCategories
+
+Categories used at each branch
+
+A NumNodesx2 cell array holding, for a node that cuts a
+categorical predictor, the levels sent left and the levels sent right.
+Categorical predictors are not implemented, so every entry is empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categories used at each branch
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionTree.CutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 294
+CompactRegressionTree: property CutPoint
+
+Cut point of each node
+
+A column vector holding, for each node, the value the split compares
+the predictor against: an observation goes left when its value is less
+than the cut point and right otherwise. A leaf carries NaN .
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Cut point of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactRegressionTree.CutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 267
+CompactRegressionTree: property CutPredictor
+
+Name of the predictor each node cuts on
+
+A cell array of character vectors with one entry per node, holding the
+name of the predictor the node splits on and an empty character vector
+at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Name of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+CompactRegressionTree.CutPredictorIndex
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 216
+CompactRegressionTree: property CutPredictorIndex
+
+Index of the predictor each node cuts on
+
+A column vector holding, for each node, the column of X the node
+splits on, and zero at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Index of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+CompactRegressionTree.CutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 382
+CompactRegressionTree: property CutType
+
+Type of cut at each node
+
+A cell array of character vectors holding 'continuous' at a
+branch node that cuts a numeric predictor at a point,
+'categorical' at one that splits a set of levels, and an empty
+character vector at a leaf. Categorical predictors are not
+implemented, so every branch node is 'continuous' . This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Type of cut at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+CompactRegressionTree.ExpandedPredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 313
+CompactRegressionTree: property ExpandedPredictorNames
+
+Expanded predictor names
+
+A cell array of character vectors. It differs from
+PredictorNames only when a categorical predictor has been
+expanded into one column per level, which this class does not do, so
+the two are always equal. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Expanded predictor names
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactRegressionTree.IsBranchNode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 193
+CompactRegressionTree: property IsBranchNode
+
+Which nodes are branch nodes
+
+A logical column vector, true for each node that carries a split and
+false for each leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Which nodes are branch nodes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+CompactRegressionTree.NodeError
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 220
+CompactRegressionTree: property NodeError
+
+Mean squared error of each node
+
+A column vector holding, for each node, the weighted mean squared
+error of the response about the node&rsquo;s mean. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Mean squared error of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionTree.NodeMean
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 273
+CompactRegressionTree: property NodeMean
+
+Mean response at each node
+
+A column vector holding, for each node, the weighted mean of the
+response over the observations that reached it. It is what
+predict answers for a row that comes to rest there. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Mean response at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+CompactRegressionTree.NodeProbability
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 258
+CompactRegressionTree: property NodeProbability
+
+Probability of reaching each node
+
+A column vector holding, for each node, the total weight of the
+observations that reached it, the weights being those in W .
+The root carries one. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Probability of reaching each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 262
+CompactRegressionTree: property NodeRisk
+
+Risk of each node
+
+A column vector holding, for each node, its mean squared error
+weighted by the probability of reaching it, which is the squared error
+the node contributes to the whole tree. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Risk of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionTree.NodeSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 347
+CompactRegressionTree: property NodeSize
+
+Number of observations at each node
+
+A column vector holding how many training observations reached each
+node. A row missing the predictor its node cuts on is counted at that
+node and at none below it, so a parent&rsquo;s size is not in general the
+sum of its children&rsquo;s. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Number of observations at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+CompactRegressionTree.NumNodes
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 299
+CompactRegressionTree: property NumNodes
+
+Number of nodes in the tree
+
+A positive integer, the number of nodes the tree holds, branch nodes
+and leaves together. Nodes are numbered as they are created, so a
+parent always carries a lower number than either of its children.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Number of nodes in the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+CompactRegressionTree.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 161
+CompactRegressionTree: property Parent
+
+Parent of each node
+
+A column vector naming the parent of each node. The root carries a
+zero. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Parent of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+CompactRegressionTree.PredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 175
+CompactRegressionTree: property PredictorNames
+
+Names of the predictor variables
+
+A cell array of character vectors with one name per column of
+X . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Names of the predictor variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+CompactRegressionTree.PruneAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 371
+CompactRegressionTree: property PruneAlpha
+
+Cost complexity parameter of each pruning level
+
+A column vector with one element per level of the pruning sequence,
+the first of which is zero and stands for the unpruned tree. Level
+L is the smallest subtree that is optimal for every complexity
+parameter from PruneAlpha( L +1) up to the next one. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Cost complexity parameter of each pruning level
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+CompactRegressionTree.PruneList
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 441
+CompactRegressionTree: property PruneList
+
+Pruning level of each node
+
+A column vector holding, for each branch node, the level of the cost
+complexity sequence at which it stops being a branch node, and zero at
+a leaf. Pruning the tree to level L turns every node whose
+level is between one and L into a leaf. It is empty when
+neither 'Prune' nor 'MergeLeaves' was asked for, since
+no sequence was then estimated. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Pruning level of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactRegressionTree.ResponseName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+CompactRegressionTree: property ResponseName
+
+Name of the response variable
+
+A character vector naming the response. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Name of the response variable
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+CompactRegressionTree.ResponseTransform
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 292
+CompactRegressionTree: property ResponseTransform
+
+Transform applied to the predicted response
+
+A character vector naming the function predict applies to the
+response it predicts before returning it, or a function handle taking
+and returning an array of the same size. The default is
+'none' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Transform applied to the predicted response
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+CompactRegressionTree.SurrogateCutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 182
+CompactRegressionTree: property SurrogateCutCategories
+
+Categories of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Categories of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+CompactRegressionTree.SurrogateCutFlip
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 181
+CompactRegressionTree: property SurrogateCutFlip
+
+Cut assignments of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Cut assignments of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+CompactRegressionTree.SurrogateCutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 177
+CompactRegressionTree: property SurrogateCutPoint
+
+Cut points of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Cut points of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+CompactRegressionTree.SurrogateCutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 181
+CompactRegressionTree: property SurrogateCutPredictor
+
+Predictors of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Predictors of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+CompactRegressionTree.SurrogateCutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 171
+CompactRegressionTree: property SurrogateCutType
+
+Types of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Types of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+CompactRegressionTree.SurrogatePredictorAssociation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 213
+CompactRegressionTree: property SurrogatePredictorAssociation
+
+Predictive measures of association of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Predictive measures of association of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+CompactRegressionTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 761
+CompactRegressionTree: L = loss ( obj , X , Y )
+CompactRegressionTree: L = loss (&hellip;, name , value )
+
+Regression loss on new data.
+
+L = loss ( obj , X , Y ) returns the
+weighted mean squared error of the response the model predicts for
+X against the observed response Y . A row whose response
+is missing is dropped, as it is when fitting.
+
+L = loss (&hellip;, name , value ) takes the
+following options.
+
+Name Value
+'LossFun' 'mse' , the default, or a function
+handle taking the true response, the predicted response and the
+weights, and returning a numeric scalar.
+'Weights' A numeric vector of observation weights,
+one per row of X , normalized to sum to one before it is applied.
+
+See also:
+CompactRegressionTree,
+fitrtree,
+CompactRegressionTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Regression loss on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+CompactRegressionTree.nodeVariableRange
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 441
+CompactRegressionTree: r = nodeVariableRange ( obj , node )
+
+Range of each predictor at a node.
+
+r = nodeVariableRange ( obj , node ) returns a
+structure with one field per predictor the path from the root to
+node cuts on, holding the two-element range of values that reach
+the node. A predictor the path never cuts on is unconstrained and is
+left out, so the root gives a structure with no fields.
+
+See also:
+CompactRegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Range of each predictor at a node.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+CompactRegressionTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 706
+CompactRegressionTree: yFit = predict ( obj , XC )
+CompactRegressionTree: [ yFit , node ] = predict (&hellip;)
+
+Predict the response with a trained CompactRegressionTree object.
+
+yFit = predict ( obj , XC ) sends each row of
+XC down the tree and returns the mean response of the node it
+comes to rest at, after ResponseTransform . XC must have
+as many columns as the predictor data the model was fitted on.
+
+[ yFit , node ] = predict (&hellip;) also returns the
+number of the node each row landed in.
+
+A row missing the predictor a node cuts on is stopped at that node and
+takes its answer, rather than being sent down a branch on evidence the
+row does not carry.
+
+See also:
+CompactRegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+Predict the response with a trained CompactRegressionTree object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+CompactRegressionTree.predictorImportance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 706
+CompactRegressionTree: imp = predictorImportance ( obj )
+
+Estimate the importance of each predictor.
+
+imp = predictorImportance ( obj ) returns a row
+vector with one element per predictor, holding the total drop in risk
+the splits on that predictor bring about, divided by the number of
+branch nodes. A predictor the tree never splits on scores zero.
+
+The drop at a branch node is its NodeRisk less the risk of its
+two children and less what it holds back, so a predictor that is
+chosen often, high up, and on nodes it separates well, scores highest.
+The numbers are comparable between predictors of one tree and not
+between trees.
+
+See also:
+CompactRegressionTree,
+fitrtree,
+CompactRegressionTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Estimate the importance of each predictor.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+CompactRegressionTree.savemodel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 486
+CompactRegressionTree: savemodel ( obj , filename )
+
+Save a CompactRegressionTree model to a file.
+
+savemodel ( obj , filename ) saves each property of a
+CompactRegressionTree object into an Octave binary file, the name of
+which is specified in filename , along with an extra variable,
+which defines the type of regression object these variables
+constitute. Use loadmodel in order to load a regression object
+into Octave&rsquo;s workspace.
+
+See also:
+loadmodel,
+fitrtree,
+RegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Save a CompactRegressionTree model to a file.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+CompactRegressionTree.view
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 411
+CompactRegressionTree: view ( obj )
+
+Print the tree as text.
+
+view ( obj ) prints one line per node: a branch node names
+the predictor it cuts on, the cut point, and the node each side leads
+to, and a leaf names the response it fits. A branch node&rsquo;s line ends
+with the response it would fit itself, which is the answer an
+observation missing that predictor gets.
+
+See also:
+CompactRegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Print the tree as text.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 13
 RegressionGAM
 
@@ -21226,7 +25628,7 @@ RegressionGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 650
+# length: 664
 RegressionGAM: L = loss ( obj , X , Y )
 RegressionGAM: L = loss (&hellip;, name , value )
 
@@ -21249,7 +25651,7 @@ sum to one before it is applied.
 See also:
 RegressionGAM,
 fitrgam,
-predict
+RegressionGAM.predict
 
 
 # name: <cell-element>
@@ -21339,7 +25741,7 @@ RegressionGAM.resubLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 355
+# length: 369
 RegressionGAM: L = resubLoss ( obj )
 RegressionGAM: L = resubLoss (&hellip;, name , value )
 
@@ -21352,7 +25754,7 @@ the same Name-Value pairs as loss .
 See also:
 RegressionGAM,
 fitrgam,
-loss
+RegressionGAM.loss
 
 
 # name: <cell-element>
@@ -21373,7 +25775,7 @@ RegressionGAM.resubPredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 242
+# length: 256
 RegressionGAM: yFit = resubPredict ( obj )
 
 Predict the training response with the model it was fitted on.
@@ -21384,7 +25786,7 @@ to the observations the model was fitted on.
 See also:
 RegressionGAM,
 fitrgam,
-predict
+RegressionGAM.predict
 
 
 # name: <cell-element>
@@ -21405,7 +25807,7 @@ RegressionGAM.resume
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 931
+# length: 945
 RegressionGAM: Mdl = resume ( obj , numTrees )
 
 Resume training a generalized additive model.
@@ -21430,7 +25832,7 @@ tolerance has no budget to extend.
 See also:
 RegressionGAM,
 fitrgam,
-addInteractions
+RegressionGAM.addInteractions
 
 
 # name: <cell-element>
@@ -26876,7 +31278,7 @@ RegressionPartitionedModel.kfoldLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1044
+# length: 1071
 RegressionPartitionedModel: L = kfoldLoss ( obj )
 RegressionPartitionedModel: L = kfoldLoss (&hellip;, name , value )
 
@@ -26905,7 +31307,7 @@ loss to. It defaults to every fold.
 
 See also:
 RegressionPartitionedModel,
-kfoldPredict
+RegressionPartitionedModel.kfoldPredict
 
 
 # name: <cell-element>
@@ -26926,7 +31328,7 @@ RegressionPartitionedModel.kfoldPredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1426
+# length: 1453
 RegressionPartitionedModel: yFit = kfoldPredict ( obj )
 RegressionPartitionedModel: [ yFit , ySD , yInt ] = kfoldPredict ( obj )
 RegressionPartitionedModel: [&hellip;] = kfoldPredict (&hellip;, 'Alpha' , alpha )
@@ -26960,7 +31362,7 @@ and a standard deviation is not.
 
 See also:
 RegressionPartitionedModel,
-kfoldLoss
+RegressionPartitionedModel.kfoldLoss
 
 
 # name: <cell-element>
@@ -26981,7 +31383,7 @@ RegressionPartitionedModel.kfoldfun
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 774
+# length: 828
 RegressionPartitionedModel: vals = kfoldfun ( obj , fun )
 
 Apply a function to each fold of a cross-validated model.
@@ -27004,8 +31406,8 @@ Wtest those of the observations it held out.
 
 See also:
 RegressionPartitionedModel,
-kfoldPredict,
-kfoldLoss
+RegressionPartitionedModel.kfoldPredict,
+RegressionPartitionedModel.kfoldLoss
 
 
 # name: <cell-element>
@@ -28153,6 +32555,1664 @@ Save a support vector regression model to a file.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 14
+RegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1600
+statistics: RegressionTree
+
+Binary decision tree for regression
+
+The RegressionTree class implements a CART binary decision tree.
+Growth splits each node on the single predictor and cut point that lower
+the squared error of the response the most, and stops when a node is too
+small to be a parent, has no split leaving enough observations on both
+sides, or already accounts for all but a tolerance of the error the root
+carried. The grown tree is then optionally reduced, first by merging
+the leaves that buy no accuracy and then by cost complexity pruning,
+which orders the branch nodes by how little error their subtrees remove
+and records that order so a subtree of any size can be recovered
+afterwards with prune .
+
+Create a RegressionTree object by using the fitrtree
+function or the class constructor.
+
+The fit is carried out by the compiled engine treetrain and
+predictions by treepredict , which the classification tree shares.
+
+An observation missing the predictor a node cuts on descends to neither
+child. It is counted in that node and in every node above it, and
+predict stops it there and gives it that node&rsquo;s answer, so a row
+is never sent down a branch on evidence it does not carry.
+
+What this class does not do yet. Categorical predictors,
+surrogate splits and predictor subsampling are not implemented, and an
+option asking for one of them is refused rather than quietly ignored.
+CategoricalSplit , CutCategories and the six
+Surrogate properties are therefore always empty, as they are in
+MATLAB on numeric data.
+
+See also:
+fitrtree,
+ClassificationTree,
+treetrain,
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Binary decision tree for regression
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.BinEdges
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 264
+RegressionTree: property BinEdges
+
+Bin edges of the predictors
+
+A cell array with one column vector of bin edges per predictor, empty
+unless the predictors were binned before fitting. Binning is not
+implemented, so this is always empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Bin edges of the predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+RegressionTree.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 269
+RegressionTree: property CategoricalPredictors
+
+Indices of the categorical predictors
+
+A row vector of column indices into X , naming the predictors
+treated as categorical. Categorical predictors are not implemented,
+so this is always empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Indices of the categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+RegressionTree.CategoricalSplit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 224
+RegressionTree: property CategoricalSplit
+
+Categorical splits of the tree
+
+A Nx2 cell array with one row per categorical split.
+Categorical predictors are not implemented, so this is always empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categorical splits of the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.Children
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 197
+RegressionTree: property Children
+
+Child nodes of each node
+
+A NumNodesx2 matrix naming the left and the right child of each
+node. A leaf carries a zero in both columns. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Child nodes of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+RegressionTree.CutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 295
+RegressionTree: property CutCategories
+
+Categories used at each branch
+
+A NumNodesx2 cell array holding, for a node that cuts a
+categorical predictor, the levels sent left and the levels sent right.
+Categorical predictors are not implemented, so every entry is empty.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Categories used at each branch
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.CutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 287
+RegressionTree: property CutPoint
+
+Cut point of each node
+
+A column vector holding, for each node, the value the split compares
+the predictor against: an observation goes left when its value is less
+than the cut point and right otherwise. A leaf carries NaN .
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Cut point of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RegressionTree.CutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 260
+RegressionTree: property CutPredictor
+
+Name of the predictor each node cuts on
+
+A cell array of character vectors with one entry per node, holding the
+name of the predictor the node splits on and an empty character vector
+at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Name of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+RegressionTree.CutPredictorIndex
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 209
+RegressionTree: property CutPredictorIndex
+
+Index of the predictor each node cuts on
+
+A column vector holding, for each node, the column of X the node
+splits on, and zero at a leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Index of the predictor each node cuts on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+RegressionTree.CutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 375
+RegressionTree: property CutType
+
+Type of cut at each node
+
+A cell array of character vectors holding 'continuous' at a
+branch node that cuts a numeric predictor at a point,
+'categorical' at one that splits a set of levels, and an empty
+character vector at a leaf. Categorical predictors are not
+implemented, so every branch node is 'continuous' . This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Type of cut at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+RegressionTree.ExpandedPredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 306
+RegressionTree: property ExpandedPredictorNames
+
+Expanded predictor names
+
+A cell array of character vectors. It differs from
+PredictorNames only when a categorical predictor has been
+expanded into one column per level, which this class does not do, so
+the two are always equal. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Expanded predictor names
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+RegressionTree.HyperparameterOptimizationResults
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+RegressionTree: property HyperparameterOptimizationResults
+
+Results of a hyperparameter optimization
+
+Hyperparameter optimization is not implemented, so this is always
+empty. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Results of a hyperparameter optimization
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RegressionTree.IsBranchNode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 186
+RegressionTree: property IsBranchNode
+
+Which nodes are branch nodes
+
+A logical column vector, true for each node that carries a split and
+false for each leaf. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Which nodes are branch nodes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+RegressionTree.ModelParameters
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 619
+RegressionTree: property ModelParameters
+
+Parameters the fit was run with
+
+A structure recording the options the tree was grown under:
+SplitCriterion , MinParent , MinLeaf ,
+MaxSplits , NVarToSample , MergeLeaves ,
+Prune , PruneCriterion , QEToler ,
+NSurrogate , MaxCat , AlgCat ,
+PredictorSelection , Method and Type .
+SplitCriterion and PruneCriterion are both
+'mse' , the only criterion a regression tree has, and
+QEToler is the tolerance growth stops at.
+
+MinParent is the value the fit used, which is
+max (MinParentSize, 2 * MinLeafSize) and so may exceed the
+'MinParentSize' asked for. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Parameters the fit was run with
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+RegressionTree.NodeError
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 213
+RegressionTree: property NodeError
+
+Mean squared error of each node
+
+A column vector holding, for each node, the weighted mean squared
+error of the response about the node&rsquo;s mean. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Mean squared error of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.NodeMean
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 266
+RegressionTree: property NodeMean
+
+Mean response at each node
+
+A column vector holding, for each node, the weighted mean of the
+response over the observations that reached it. It is what
+predict answers for a row that comes to rest there. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Mean response at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+RegressionTree.NodeProbability
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 251
+RegressionTree: property NodeProbability
+
+Probability of reaching each node
+
+A column vector holding, for each node, the total weight of the
+observations that reached it, the weights being those in W .
+The root carries one. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Probability of reaching each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 255
+RegressionTree: property NodeRisk
+
+Risk of each node
+
+A column vector holding, for each node, its mean squared error
+weighted by the probability of reaching it, which is the squared error
+the node contributes to the whole tree. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Risk of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.NodeSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 340
+RegressionTree: property NodeSize
+
+Number of observations at each node
+
+A column vector holding how many training observations reached each
+node. A row missing the predictor its node cuts on is counted at that
+node and at none below it, so a parent&rsquo;s size is not in general the
+sum of its children&rsquo;s. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Number of observations at each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.NumNodes
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 292
+RegressionTree: property NumNodes
+
+Number of nodes in the tree
+
+A positive integer, the number of nodes the tree holds, branch nodes
+and leaves together. Nodes are numbered as they are created, so a
+parent always carries a lower number than either of its children.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Number of nodes in the tree
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+RegressionTree.NumObservations
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 270
+RegressionTree: property NumObservations
+
+Number of observations
+
+A positive integer, the number of observations the model was fitted
+on. It counts the rows kept, so it is smaller than the number of rows
+given whenever a response was missing. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Number of observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+RegressionTree.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 154
+RegressionTree: property Parent
+
+Parent of each node
+
+A column vector naming the parent of each node. The root carries a
+zero. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Parent of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+RegressionTree.PredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 168
+RegressionTree: property PredictorNames
+
+Names of the predictor variables
+
+A cell array of character vectors with one name per column of
+X . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Names of the predictor variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+RegressionTree.PruneAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 364
+RegressionTree: property PruneAlpha
+
+Cost complexity parameter of each pruning level
+
+A column vector with one element per level of the pruning sequence,
+the first of which is zero and stands for the unpruned tree. Level
+L is the smallest subtree that is optimal for every complexity
+parameter from PruneAlpha( L +1) up to the next one. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Cost complexity parameter of each pruning level
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+RegressionTree.PruneList
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 434
+RegressionTree: property PruneList
+
+Pruning level of each node
+
+A column vector holding, for each branch node, the level of the cost
+complexity sequence at which it stops being a branch node, and zero at
+a leaf. Pruning the tree to level L turns every node whose
+level is between one and L into a leaf. It is empty when
+neither 'Prune' nor 'MergeLeaves' was asked for, since
+no sequence was then estimated. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Pruning level of each node
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+RegressionTree.RegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2122
+RegressionTree: obj = RegressionTree ( X , Y )
+RegressionTree: obj = RegressionTree (&hellip;, name , value )
+
+Grow a binary decision tree for regression.
+
+obj = RegressionTree ( X , Y ) grows a tree on
+the NxP numeric matrix X of predictor data and the
+Nx1 numeric response Y , and returns it as a
+RegressionTree object.
+
+obj = RegressionTree (&hellip;, name , value )
+takes the options below.
+
+Name Value
+'MaxNumSplits' A nonnegative integer, the largest
+number of branch nodes the tree may take. The default is one less
+than the number of observations, which is as many as a tree can have.
+'MergeLeaves' 'on' (default) or
+'off' . When on, a pair of leaves whose parent is no worse
+than the two of them together is merged back into that parent.
+'MinLeafSize' A positive integer, the fewest
+observations a leaf may hold. The default is 1. A split leaving
+fewer than this on either side is not taken.
+'MinParentSize' A positive integer, the fewest
+observations a node must hold to be split at all. The default is 10.
+The value the fit uses is max (MinParentSize, 2 * MinLeafSize) ,
+since a smaller node cannot give both children a legal leaf.
+'PredictorNames' A cell array of character vectors
+naming the columns of X .
+'Prune' 'on' (default) or 'off' .
+When on, the cost complexity pruning sequence is estimated and
+reported in PruneList and PruneAlpha . The tree returned
+is the unpruned one either way; prune takes a subtree out of
+the sequence.
+'PruneCriterion' 'mse' , the only criterion
+a regression tree has.
+'QuadraticErrorTolerance' A positive scalar. A
+node whose squared error has fallen to this fraction of the root&rsquo;s is
+not split further. The default is 1e-6.
+'ResponseName' A character vector naming the
+response. The default is 'Y' .
+'ResponseTransform' A character vector naming a
+transform to apply to the predicted response, or a function handle.
+The default is 'none' .
+'SplitCriterion' 'mse' , the only criterion
+a regression tree has.
+'Weights' A nonnegative numeric vector with one
+element per observation. The default is uniform.
+
+See also:
+fitrtree,
+ClassificationTree,
+treetrain,
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Grow a binary decision tree for regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RegressionTree.ResponseName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 137
+RegressionTree: property ResponseName
+
+Name of the response variable
+
+A character vector naming the response. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Name of the response variable
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+RegressionTree.ResponseTransform
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 285
+RegressionTree: property ResponseTransform
+
+Transform applied to the predicted response
+
+A character vector naming the function predict applies to the
+response it predicts before returning it, or a function handle taking
+and returning an array of the same size. The default is
+'none' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Transform applied to the predicted response
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.RowsUsed
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 386
+RegressionTree: property RowsUsed
+
+Rows used for fitting
+
+A logical column vector with one element per row of the predictor data
+as it was given, true for each row used for fitting. It is empty,
+[] , when every row was used, so a non-empty value means that
+rows were dropped. Only a missing response drops a row; a row missing
+some of its predictors is kept. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Rows used for fitting
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+RegressionTree.SurrogateCutCategories
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 175
+RegressionTree: property SurrogateCutCategories
+
+Categories of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Categories of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+RegressionTree.SurrogateCutFlip
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 174
+RegressionTree: property SurrogateCutFlip
+
+Cut assignments of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Cut assignments of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+RegressionTree.SurrogateCutPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 170
+RegressionTree: property SurrogateCutPoint
+
+Cut points of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Cut points of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+RegressionTree.SurrogateCutPredictor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 174
+RegressionTree: property SurrogateCutPredictor
+
+Predictors of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Predictors of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+RegressionTree.SurrogateCutType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 164
+RegressionTree: property SurrogateCutType
+
+Types of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Types of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+RegressionTree.SurrogatePredictorAssociation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 206
+RegressionTree: property SurrogatePredictorAssociation
+
+Predictive measures of association of the surrogate splits
+
+Surrogate splits are not implemented, so this is always empty. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Predictive measures of association of the surrogate splits
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+RegressionTree.W
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 209
+RegressionTree: property W
+
+Observation weights
+
+A numeric column vector of the weights the fit used, one per retained
+observation. They are the weights given, scaled to sum to one. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Observation weights
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+RegressionTree.X
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 199
+RegressionTree: property X
+
+Predictor data
+
+A numeric matrix holding the predictor data the model was fitted on.
+Each column is one predictor and each row one observation. This
+property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+Predictor data
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+RegressionTree.Y
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 177
+RegressionTree: property Y
+
+Response data
+
+A numeric column vector with one element per row of X , holding
+the observed response of each observation. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+Response data
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+RegressionTree.compact
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 365
+RegressionTree: CMdl = compact ( obj )
+
+Drop the training data from a trained model.
+
+CMdl = compact ( obj ) returns a
+CompactRegressionTree object carrying the tree and everything
+predict needs, but not the observations the model was fitted
+on. It answers new data identically and is far smaller to keep or to
+ship.
+
+See also:
+CompactRegressionTree,
+RegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Drop the training data from a trained model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+RegressionTree.crossval
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 916
+RegressionTree: CVMdl = crossval ( obj )
+RegressionTree: CVMdl = crossval (&hellip;, name , value )
+
+Cross-validate a trained decision tree.
+
+CVMdl = crossval ( obj ) partitions the training data
+into ten folds, or into as many folds as there are observations when
+there are fewer than ten, grows a tree on the training part of each
+and returns them as a RegressionPartitionedModel .
+
+CVMdl = crossval (&hellip;, name , value ) takes
+one of the following, and one only.
+
+Name Value
+'KFold' An integer greater than 1, the number of
+folds.
+'Holdout' A value between 0 and 1, the fraction of
+the data held out for testing, which gives a single fold.
+'Leaveout' 'on' or 'off' , one fold
+per observation.
+'CVPartition' A cvpartition object.
+
+Every fold is grown with the growth parameters the parent was grown
+with and a slice of its observation weights.
+
+See also:
+RegressionPartitionedModel,
+RegressionTree,
+cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Cross-validate a trained decision tree.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+RegressionTree.cvloss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1961
+RegressionTree: E = cvloss ( obj )
+RegressionTree: [ E , SE , Nleaf , BestLevel ] = cvloss ( obj )
+RegressionTree: [&hellip;] = cvloss (&hellip;, name , value )
+
+Cross-validated loss of a tree and of its subtrees.
+
+E = cvloss ( obj ) partitions the training data into
+ten folds, grows a tree on the training part of each, and returns the
+mean squared error of the held-out part.
+
+[ E , SE , Nleaf , BestLevel ] = cvloss
+(&hellip;) also returns SE , the standard error of E over
+the folds, Nleaf , the number of leaves each subtree holds, and
+BestLevel , the pruning level chosen by 'TreeSize' . Each
+has one element per subtree asked for.
+
+[&hellip;] = cvloss (&hellip;, name , value ) takes the
+options below.
+
+Name Value
+'SubTrees' A vector of pruning levels in ascending
+order, or 'all' for every level of the sequence. The default
+is 0, the unpruned tree.
+'TreeSize' 'se' (default), the smallest
+subtree whose loss is within one standard error of the smallest loss,
+or 'min' , the smallest subtree of least loss.
+'KFold' An integer greater than 1, the number of
+folds. The default is 10. A value above the number of observations
+is reduced to it.
+
+A fold&rsquo;s tree is pruned to the level its own sequence gives for the
+geometric mean of the parent&rsquo;s two neighbouring complexity parameters,
+which is the classical way a fold is matched to a subtree of the whole
+tree. The last level takes every fold&rsquo;s tree back to its root. The
+partition is drawn over the observations rather than over a response
+there is nothing to stratify, and the loss is weighed by the model&rsquo;s
+own weights.
+
+The standard error is not MATLAB&rsquo;s. This is the standard
+error of the loss over the folds, which is what the name means. Its
+value is not MATLAB&rsquo;s, whose formula is not recoverable from what it
+reports; E , Nleaf and BestLevel are measured and
+match.
+
+See also:
+RegressionTree,
+RegressionTree.prune,
+RegressionTree.crossval,
+RegressionTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Cross-validated loss of a tree and of its subtrees.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+RegressionTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 733
+RegressionTree: L = loss ( obj , X , Y )
+RegressionTree: L = loss (&hellip;, name , value )
+
+Regression loss on new data.
+
+L = loss ( obj , X , Y ) returns the
+weighted mean squared error of the response the model predicts for
+X against the observed response Y . A row whose response
+is missing is dropped, as it is when fitting.
+
+L = loss (&hellip;, name , value ) takes the
+following options.
+
+Name Value
+'LossFun' 'mse' , the default, or a function
+handle taking the true response, the predicted response and the
+weights, and returning a numeric scalar.
+'Weights' A numeric vector of observation weights,
+one per row of X , normalized to sum to one before it is applied.
+
+See also:
+RegressionTree,
+fitrtree,
+RegressionTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Regression loss on new data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+RegressionTree.nodeVariableRange
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 427
+RegressionTree: r = nodeVariableRange ( obj , node )
+
+Range of each predictor at a node.
+
+r = nodeVariableRange ( obj , node ) returns a
+structure with one field per predictor the path from the root to
+node cuts on, holding the two-element range of values that reach
+the node. A predictor the path never cuts on is unconstrained and is
+left out, so the root gives a structure with no fields.
+
+See also:
+RegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Range of each predictor at a node.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+RegressionTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 678
+RegressionTree: yFit = predict ( obj , XC )
+RegressionTree: [ yFit , node ] = predict (&hellip;)
+
+Predict the response with a trained RegressionTree object.
+
+yFit = predict ( obj , XC ) sends each row of
+XC down the tree and returns the mean response of the node it
+comes to rest at, after ResponseTransform . XC must have
+as many columns as the predictor data the model was fitted on.
+
+[ yFit , node ] = predict (&hellip;) also returns the
+number of the node each row landed in.
+
+A row missing the predictor a node cuts on is stopped at that node and
+takes its answer, rather than being sent down a branch on evidence the
+row does not carry.
+
+See also:
+RegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Predict the response with a trained RegressionTree object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+RegressionTree.predictorImportance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 685
+RegressionTree: imp = predictorImportance ( obj )
+
+Estimate the importance of each predictor.
+
+imp = predictorImportance ( obj ) returns a row
+vector with one element per predictor, holding the total drop in risk
+the splits on that predictor bring about, divided by the number of
+branch nodes. A predictor the tree never splits on scores zero.
+
+The drop at a branch node is its NodeRisk less the risk of its
+two children and less what it holds back, so a predictor that is
+chosen often, high up, and on nodes it separates well, scores highest.
+The numbers are comparable between predictors of one tree and not
+between trees.
+
+See also:
+RegressionTree,
+fitrtree,
+RegressionTree.NodeRisk
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Estimate the importance of each predictor.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+RegressionTree.prune
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1135
+RegressionTree: obj2 = prune ( obj )
+RegressionTree: obj2 = prune ( obj , 'Level' , L )
+RegressionTree: obj2 = prune ( obj , 'Alpha' , A )
+RegressionTree: obj2 = prune ( obj , 'Nodes' , N )
+
+Take a subtree out of the pruning sequence.
+
+obj2 = prune ( obj ) returns the tree unchanged.
+
+obj2 = prune ( obj , 'Level' , L ) turns
+every branch node whose PruneList level is between one and
+L into a leaf and discards everything below it. Level zero is
+the tree itself and the largest level is the root alone. A level
+above the largest prunes to the root and warns.
+
+obj2 = prune ( obj , 'Alpha' , A ) prunes
+to the smallest subtree that is optimal for the cost complexity
+parameter A , which is the largest level whose PruneAlpha
+does not exceed it.
+
+obj2 = prune ( obj , 'Nodes' , N ) turns
+the branch nodes named in N into leaves, along with everything
+below them, and leaves the rest of the tree alone.
+
+Pruning renumbers the nodes, so the properties of the returned tree
+are those of a tree of that shape and not a subset of the original&rsquo;s.
+
+See also:
+RegressionTree,
+fitrtree,
+RegressionTree.PruneList,
+RegressionTree.PruneAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Take a subtree out of the pruning sequence.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+RegressionTree.resubLoss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 368
+RegressionTree: L = resubLoss ( obj )
+RegressionTree: L = resubLoss (&hellip;, name , value )
+
+Regression loss on the training data.
+
+L = resubLoss ( obj ) is loss over the
+training data, weighed as the fit weighed it, and takes the same
+'LossFun' option. Giving 'Weights' weighs the
+training data some other way instead.
+
+See also:
+RegressionTree,
+RegressionTree.loss
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Regression loss on the training data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RegressionTree.resubPredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 211
+RegressionTree: yFit = resubPredict ( obj )
+
+Predict the training response with the model fitted to it.
+
+yFit = resubPredict ( obj ) is
+predict ( obj , obj .X) .
+
+See also:
+RegressionTree,
+RegressionTree.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Predict the training response with the model fitted to it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+RegressionTree.savemodel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 465
+RegressionTree: savemodel ( obj , filename )
+
+Save a RegressionTree model to a file.
+
+savemodel ( obj , filename ) saves each property of a
+RegressionTree object into an Octave binary file, the name of which is
+specified in filename , along with an extra variable, which
+defines the type of regression object these variables constitute. Use
+loadmodel in order to load a regression object into Octave&rsquo;s
+workspace.
+
+See also:
+loadmodel,
+fitrtree,
+RegressionTree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Save a RegressionTree model to a file.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+RegressionTree.view
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 397
+RegressionTree: view ( obj )
+
+Print the tree as text.
+
+view ( obj ) prints one line per node: a branch node names
+the predictor it cuts on, the cut point, and the node each side leads
+to, and a leaf names the response it fits. A branch node&rsquo;s line ends
+with the response it would fit itself, which is the answer an
+observation missing that predictor gets.
+
+See also:
+RegressionTree,
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Print the tree as text.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 9
 fitcdiscr
 
@@ -29148,6 +35208,101 @@ Fit a Support Vector Machine classification model.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 8
+fitctree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3102
+statistics: Mdl = fitctree ( X , Y )
+statistics: Mdl = fitctree (&hellip;, name , value )
+
+Fit a binary decision tree for classification.
+
+Mdl = fitctree ( X , Y ) grows a binary decision tree
+on the predictor data X and the class labels Y , and returns it
+as a ClassificationTree object.
+
+X must be a NxP numeric matrix of predictor data, where rows
+correspond to observations and columns to predictors.
+
+Y must be a Nx1 numeric or logical vector, a character array
+with one class name per row, or a cell array of character vectors, holding
+the class label of each observation in X . The class names come back
+in the type Y was given in.
+
+An observation whose class label is missing is dropped, and the rows kept
+are reported in RowsUsed . An observation missing some of its
+predictors is kept: it descends the tree as far as the predictors it does
+carry allow and is answered there.
+
+Mdl = fitctree (&hellip;, name , value ) takes the
+options below.
+
+Name Value
+'ClassNames' The classes to fit, of the same type as
+Y . Observations of any other class are dropped.
+'Cost' A square matrix with one row and column per
+class, where element (i,j) is the cost of classifying an
+observation of class i into class j , or a structure with
+fields ClassNames and ClassificationCosts . The default is
+1 - eye (K) . A non-default cost changes the shape of the tree, not
+only what it predicts.
+'MaxNumSplits' A nonnegative integer, the largest number
+of branch nodes the tree may take. The default is one less than the number
+of observations.
+'MergeLeaves' 'on' (default) or 'off' .
+When on, a pair of leaves whose parent is no worse than the two of them
+together is merged back into that parent.
+'MinLeafSize' A positive integer, the fewest
+observations a leaf may hold. The default is 1.
+'MinParentSize' A positive integer, the fewest
+observations a node must hold to be split. The default is 10. The value
+the fit uses is max (MinParentSize, 2 * MinLeafSize) .
+'PredictorNames' A cell array of character vectors
+naming the columns of X .
+'Prior' 'empirical' (default),
+'uniform' , a numeric vector with one element per class, or a
+structure with fields ClassNames and ClassProbs .
+'Prune' 'on' (default) or 'off' . When
+on, the cost complexity pruning sequence is estimated and reported in
+PruneList and PruneAlpha . The tree returned is the unpruned
+one either way; prune takes a subtree out of the sequence.
+'PruneCriterion' 'error' , the only criterion
+implemented.
+'ResponseName' A character vector naming the response.
+The default is 'Y' .
+'ScoreTransform' A character vector naming a transform
+to apply to the scores, or a function handle. The default is
+'none' .
+'SplitCriterion' 'gdi' (default), the Gini
+diversity index, or 'deviance' , the cross entropy.
+'Weights' A nonnegative numeric vector with one element
+per observation. The default is uniform.
+
+Categorical predictors, surrogate splits, predictor subsampling and the
+'twoing' split criterion are not implemented, and an option asking
+for one of them is refused rather than quietly ignored.
+
+See also:
+ClassificationTree,
+treetrain,
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Fit a binary decision tree for classification.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 7
 fitrgam
 
@@ -29671,6 +35826,92 @@ svmpredict
 # elements: 1
 # length: 46
 Fit a support vector machine regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+fitrtree
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2506
+statistics: Mdl = fitrtree ( X , Y )
+statistics: Mdl = fitrtree (&hellip;, name , value )
+
+Fit a binary decision tree for regression.
+
+Mdl = fitrtree ( X , Y ) grows a binary decision tree
+on the predictor data X and the response Y , and returns it as a
+RegressionTree object.
+
+X must be a NxP numeric matrix of predictor data, where rows
+correspond to observations and columns to predictors.
+
+Y must be a Nx1 numeric vector holding the response of each
+observation in X .
+
+An observation whose response is missing is dropped, and the rows kept are
+reported in RowsUsed . An observation missing some of its predictors
+is kept: it descends the tree as far as the predictors it does carry allow
+and is answered there.
+
+Mdl = fitrtree (&hellip;, name , value ) takes the
+options below.
+
+Name Value
+'MaxNumSplits' A nonnegative integer, the largest number
+of branch nodes the tree may take. The default is one less than the number
+of observations.
+'MergeLeaves' 'on' (default) or 'off' .
+When on, a pair of leaves whose parent is no worse than the two of them
+together is merged back into that parent.
+'MinLeafSize' A positive integer, the fewest
+observations a leaf may hold. The default is 1.
+'MinParentSize' A positive integer, the fewest
+observations a node must hold to be split. The default is 10. The value
+the fit uses is max (MinParentSize, 2 * MinLeafSize) .
+'PredictorNames' A cell array of character vectors
+naming the columns of X .
+'Prune' 'on' (default) or 'off' . When
+on, the cost complexity pruning sequence is estimated and reported in
+PruneList and PruneAlpha . The tree returned is the unpruned
+one either way; prune takes a subtree out of the sequence.
+'PruneCriterion' 'mse' , the only criterion a
+regression tree has.
+'QuadraticErrorTolerance' A positive scalar. A node
+whose squared error has fallen to this fraction of the root&rsquo;s is not split
+further. The default is 1e-6.
+'ResponseName' A character vector naming the response.
+The default is 'Y' .
+'ResponseTransform' A character vector naming a
+transform to apply to the predicted response, or a function handle. The
+default is 'none' .
+'SplitCriterion' 'mse' , the only criterion a
+regression tree has.
+'Weights' A nonnegative numeric vector with one element
+per observation. The default is uniform.
+
+Categorical predictors, surrogate splits and predictor subsampling are not
+implemented, and an option asking for one of them is refused rather than
+quietly ignored.
+
+See also:
+RegressionTree,
+fitctree,
+treetrain,
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Fit a binary decision tree for regression.
 
 
 

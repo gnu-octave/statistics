@@ -1784,7 +1784,8 @@ classdef ClassificationGAM
     ## positive margin means the observation is classified correctly, and the
     ## larger it is the more confidently so.
     ##
-    ## @seealso{ClassificationGAM, edge, loss, predict}
+    ## @seealso{ClassificationGAM, ClassificationGAM.edge,
+    ## ClassificationGAM.loss, ClassificationGAM.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -1828,7 +1829,8 @@ classdef ClassificationGAM
     ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
     ## weighted mean instead, with one weight per row of @var{X}.
     ##
-    ## @seealso{ClassificationGAM, margin, loss, predict}
+    ## @seealso{ClassificationGAM, ClassificationGAM.margin,
+    ## ClassificationGAM.loss, ClassificationGAM.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -1883,7 +1885,8 @@ classdef ClassificationGAM
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{ClassificationGAM, margin, edge, predict}
+    ## @seealso{ClassificationGAM, ClassificationGAM.margin,
+    ## ClassificationGAM.edge, ClassificationGAM.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
@@ -1996,7 +1999,7 @@ classdef ClassificationGAM
     ## @code{@var{label} = resubPredict (@var{obj})} is @code{predict} applied
     ## to the observations the model was fitted on.
     ##
-    ## @seealso{ClassificationGAM, predict}
+    ## @seealso{ClassificationGAM, ClassificationGAM.predict}
     ## @end deftypefn
     function [labels, scores] = resubPredict (this)
       used = true (rows (this.X), 1);
@@ -2009,7 +2012,7 @@ classdef ClassificationGAM
     ## Classification margin of a generalized additive model on its training
     ## data.
     ##
-    ## @seealso{ClassificationGAM, margin}
+    ## @seealso{ClassificationGAM, ClassificationGAM.margin}
     ## @end deftypefn
     function m = resubMargin (this)
       used = true (rows (this.X), 1);
@@ -2022,7 +2025,7 @@ classdef ClassificationGAM
     ## Classification edge of a generalized additive model on its training
     ## data.
     ##
-    ## @seealso{ClassificationGAM, edge}
+    ## @seealso{ClassificationGAM, ClassificationGAM.edge}
     ## @end deftypefn
     function e = resubEdge (this)
       used = true (rows (this.X), 1);
@@ -2036,7 +2039,7 @@ classdef ClassificationGAM
     ## Classification loss of a generalized additive model on its training
     ## data.
     ##
-    ## @seealso{ClassificationGAM, loss}
+    ## @seealso{ClassificationGAM, ClassificationGAM.loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
       used = true (rows (this.X), 1);
@@ -2139,7 +2142,7 @@ classdef ClassificationGAM
     ## @qcode{'FitMethod', 'splines'}: a backfit that has converged to its
     ## tolerance has no budget to extend.
     ##
-    ## @seealso{ClassificationGAM, fitcgam, addInteractions}
+    ## @seealso{ClassificationGAM, fitcgam, ClassificationGAM.addInteractions}
     ## @end deftypefn
     function Mdl = resume (this, numTrees)
 

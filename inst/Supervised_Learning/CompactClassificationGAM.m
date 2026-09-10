@@ -691,8 +691,8 @@ classdef CompactClassificationGAM
     ## positive margin means the observation is classified correctly, and the
     ## larger it is the more confidently so.
     ##
-    ## @seealso{CompactClassificationGAM, ClassificationGAM, edge, loss,
-    ## predict}
+    ## @seealso{CompactClassificationGAM, ClassificationGAM,
+    ## CompactClassificationGAM.edge, CompactClassificationGAM.loss, ## predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -735,7 +735,8 @@ classdef CompactClassificationGAM
     ## @code{@var{e} = edge (@dots{}, @qcode{"Weights"}, @var{w})} takes the
     ## weighted mean instead, with one weight per row of @var{X}.
     ##
-    ## @seealso{CompactClassificationGAM, ClassificationGAM, margin, loss,
+    ## @seealso{CompactClassificationGAM, ClassificationGAM,
+    ## CompactClassificationGAM.margin, CompactClassificationGAM.loss, ##
     ## predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
@@ -791,7 +792,8 @@ classdef CompactClassificationGAM
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{CompactClassificationGAM, ClassificationGAM, margin, edge,
+    ## @seealso{CompactClassificationGAM, ClassificationGAM,
+    ## CompactClassificationGAM.margin, CompactClassificationGAM.edge, ##
     ## predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)

@@ -108,7 +108,7 @@ classdef CompactLinearModel
   ## Create a @code{CompactLinearModel} object by using the @code{compact}
   ## method of a fitted @code{LinearModel} object.
   ##
-  ## @seealso{LinearModel, compact}
+  ## @seealso{LinearModel, LinearModel.compact}
   ## @end deftp
 
   properties(GetAccess = public, SetAccess = protected)
@@ -567,7 +567,7 @@ classdef CompactLinearModel
     ## the @code{compact} method on an already-fitted @code{LinearModel}
     ## object, rather than calling this constructor directly.
     ##
-    ## @seealso{LinearModel, compact}
+    ## @seealso{LinearModel, LinearModel.compact}
     ## @end deftypefn
     function this = CompactLinearModel (mdl = [])
 
@@ -1658,7 +1658,7 @@ classdef CompactLinearModel
     ## predictor fit without an intercept), type @code{3} raises an error,
     ## since a @code{CompactLinearModel} has no data to refit with.
     ##
-    ## @seealso{LinearModel, coefTest}
+    ## @seealso{LinearModel, CompactLinearModel.coefTest}
     ## @end deftypefn
     function tbl = anova (mdl, varargin)
       if (numel (varargin) > 2)

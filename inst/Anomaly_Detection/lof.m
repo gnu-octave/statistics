@@ -66,7 +66,7 @@
 ##
 ## Use the @code{isanomaly} method of @var{Mdl} to detect anomalies in new data.
 ##
-## @seealso{LocalOutlierFactor, isanomaly, dbscan, robustcov}
+## @seealso{LocalOutlierFactor, LocalOutlierFactor.isanomaly, dbscan, robustcov}
 ## @end deftypefn
 
 function [Mdl, tf, scores] = lof (X, varargin)

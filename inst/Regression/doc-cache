@@ -13,7 +13,7 @@ CompactLinearModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3435
+# length: 3447
 statistics: CompactLinearModel
 
 Compact linear regression model
@@ -91,7 +91,7 @@ method of a fitted LinearModel object.
 
 See also:
 LinearModel,
-compact
+LinearModel.compact
 
 
 # name: <cell-element>
@@ -204,7 +204,7 @@ CompactLinearModel.CompactLinearModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 866
+# length: 878
 CompactLinearModel: cmdl = CompactLinearModel ()
 CompactLinearModel: cmdl = CompactLinearModel ( mdl )
 
@@ -228,7 +228,7 @@ object, rather than calling this constructor directly.
 
 See also:
 LinearModel,
-compact
+LinearModel.compact
 
 
 # name: <cell-element>
@@ -848,7 +848,7 @@ CompactLinearModel.anova
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2725
+# length: 2744
 CompactLinearModel: tbl = anova ( mdl )
 CompactLinearModel: tbl = anova ( mdl , anovatype )
 CompactLinearModel: tbl = anova ( mdl , "components" , sstype )
@@ -910,7 +910,7 @@ since a CompactLinearModel has no data to refit with.
 
 See also:
 LinearModel,
-coefTest
+CompactLinearModel.coefTest
 
 
 # name: <cell-element>
@@ -8193,7 +8193,7 @@ LinearModel.step
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 942
+# length: 966
 LinearModel: NewMdl = step ( mdl )
 LinearModel: NewMdl = step ( mdl , Name , Value )
 
@@ -8219,8 +8219,8 @@ regression.
 
 See also:
 stepwiselm,
-addTerms,
-removeTerms
+LinearModel.addTerms,
+LinearModel.removeTerms
 
 
 # name: <cell-element>
@@ -10188,7 +10188,7 @@ invpred
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1641
+# length: 1794
 statistics: x0 = invpred ( x , y , y0 )
 statistics: [ x0 , dxlo , dxup ] = invpred ( x , y , y0 )
 statistics: [&hellip;] = invpred (&hellip;, name , value )
@@ -10208,9 +10208,11 @@ the width of a confidence interval on either side of x0 , so that the
 interval is [ x0 - dxlo , x0 + dxup ] . The
 bounds follow Fieller&rsquo;s theorem and are therefore not symmetric about
 x0 . They are not simultaneous over the elements of y0 , and
-they need not be finite: when the slope is not significantly different from
-zero at the requested level the interval is unbounded, and dxlo and
-dxup are both Inf .
+they need not be finite: when the slope is not significantly different
+from zero at the requested level, the interval either covers the entire
+real line, with dxlo and dxup both Inf , or it excludes
+a finite range around the fitted line and extends to Inf on one
+side only, with the other side of dxlo / dxup finite.
 
 [&hellip;] = invpred (&hellip;, name , value ) accepts the
 following name-value pairs:

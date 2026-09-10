@@ -65,7 +65,7 @@
 ##
 ## Use the @code{isanomaly} method of @var{Mdl} to detect anomalies in new data.
 ##
-## @seealso{IsolationForest, isanomaly, lof, robustcov}
+## @seealso{IsolationForest, IsolationForest.isanomaly, lof, robustcov}
 ## @end deftypefn
 
 function [Mdl, tf, scores] = iforest (X, varargin)

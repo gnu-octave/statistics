@@ -1147,7 +1147,7 @@ cvpartition.cvpartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7450
+# length: 7486
 cvpartition: C = cvpartition ( n , 'KFold' )
 cvpartition: C = cvpartition ( n , 'KFold' , k )
 cvpartition: C = cvpartition ( n , 'KFold' , k , 'GroupingVariables' , grpvars )
@@ -1310,9 +1310,9 @@ test set and the false elements correspond to the training set.
 
 See also:
 cvpartition,
-summary,
-test,
-training
+cvpartition.summary,
+cvpartition.test,
+cvpartition.training
 
 
 # name: <cell-element>
@@ -1333,7 +1333,7 @@ cvpartition.repartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1361
+# length: 1397
 cvpartition: Cnew = repartition ( C )
 cvpartition: Cnew = repartition ( C , sval )
 cvpartition: Cnew = repartition ( C , 'legacy' )
@@ -1367,9 +1367,9 @@ stratified or grouped partitions.
 
 See also:
 cvpartition,
-summary,
-test,
-training
+cvpartition.summary,
+cvpartition.test,
+cvpartition.training
 
 
 # name: <cell-element>
@@ -1390,7 +1390,7 @@ cvpartition.summary
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1431
+# length: 1467
 cvpartition: tbl = summary ( c )
 
 Summarize stratified or grouped cross-validation partitions.
@@ -1439,9 +1439,9 @@ The percentage of the set composed of that specific label.
 
 See also:
 cvpartition,
-repartition,
-test,
-training
+cvpartition.repartition,
+cvpartition.test,
+cvpartition.training
 
 
 # name: <cell-element>
@@ -1462,7 +1462,7 @@ cvpartition.test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1079
+# length: 1115
 cvpartition: idx = test ( C )
 cvpartition: idx = test ( C , i )
 cvpartition: idx = test ( C , 'all' )
@@ -1490,9 +1490,9 @@ returned. For K-fold and leave-one-out, a matrix is returned.
 
 See also:
 cvpartition,
-repartition,
-summary,
-training
+cvpartition.repartition,
+cvpartition.summary,
+cvpartition.training
 
 
 # name: <cell-element>
@@ -1513,7 +1513,7 @@ cvpartition.training
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1123
+# length: 1159
 cvpartition: idx = training ( C )
 cvpartition: idx = training ( C , i )
 cvpartition: idx = training ( C , 'all' )
@@ -1541,9 +1541,9 @@ is returned. For K-fold and leave-one-out, a matrix is returned.
 
 See also:
 cvpartition,
-repartition,
-summary,
-test
+cvpartition.repartition,
+cvpartition.summary,
+cvpartition.test
 
 
 # name: <cell-element>

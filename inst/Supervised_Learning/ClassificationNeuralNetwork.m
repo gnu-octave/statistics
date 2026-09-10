@@ -1337,7 +1337,8 @@ classdef ClassificationNeuralNetwork
     ## A positive margin means the observation is classified correctly, and
     ## the larger it is the more confidently so.
     ##
-    ## @seealso{ClassificationNeuralNetwork, edge, loss, predict}
+    ## @seealso{ClassificationNeuralNetwork, ClassificationNeuralNetwork.edge,
+    ## ClassificationNeuralNetwork.loss, ClassificationNeuralNetwork.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -1381,7 +1382,8 @@ classdef ClassificationNeuralNetwork
     ## weighted mean instead, @var{w} holding one weight per row of @var{X}.
     ## The weights are normalised to sum to one before they are applied.
     ##
-    ## @seealso{ClassificationNeuralNetwork, margin, loss, predict}
+    ## @seealso{ClassificationNeuralNetwork, ClassificationNeuralNetwork.margin,
+    ## ClassificationNeuralNetwork.loss, ClassificationNeuralNetwork.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -1440,7 +1442,8 @@ classdef ClassificationNeuralNetwork
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{ClassificationNeuralNetwork, margin, edge, predict}
+    ## @seealso{ClassificationNeuralNetwork, ClassificationNeuralNetwork.margin,
+    ## ClassificationNeuralNetwork.edge, ClassificationNeuralNetwork.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
@@ -1561,7 +1564,7 @@ classdef ClassificationNeuralNetwork
     ## @code{@var{m} = resubMargin (@var{obj})} is @code{margin} applied to
     ## the observations the model was fitted on.
     ##
-    ## @seealso{ClassificationNeuralNetwork, margin}
+    ## @seealso{ClassificationNeuralNetwork, ClassificationNeuralNetwork.margin}
     ## @end deftypefn
     function m = resubMargin (this)
       if (nargin != 1)
@@ -1580,7 +1583,7 @@ classdef ClassificationNeuralNetwork
     ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} applied to the
     ## observations the model was fitted on, weighted by @code{obj.W}.
     ##
-    ## @seealso{ClassificationNeuralNetwork, edge}
+    ## @seealso{ClassificationNeuralNetwork, ClassificationNeuralNetwork.edge}
     ## @end deftypefn
     function e = resubEdge (this)
       if (nargin != 1)
@@ -1601,7 +1604,7 @@ classdef ClassificationNeuralNetwork
     ## observations the model was fitted on, weighted by @code{obj.W}.  It
     ## takes the same @qcode{"LossFun"} name-value pair.
     ##
-    ## @seealso{ClassificationNeuralNetwork, loss}
+    ## @seealso{ClassificationNeuralNetwork, ClassificationNeuralNetwork.loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
       if (mod (numel (varargin), 2) != 0)

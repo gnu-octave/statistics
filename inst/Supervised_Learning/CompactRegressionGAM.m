@@ -560,7 +560,8 @@ classdef CompactRegressionGAM
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{CompactRegressionGAM, RegressionGAM, fitrgam, predict}
+    ## @seealso{CompactRegressionGAM, RegressionGAM, fitrgam,
+    ## CompactRegressionGAM.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 

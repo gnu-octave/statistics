@@ -1406,7 +1406,7 @@ classdef RegressionGAM
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{RegressionGAM, fitrgam, predict}
+    ## @seealso{RegressionGAM, fitrgam, RegressionGAM.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
@@ -1471,7 +1471,7 @@ classdef RegressionGAM
     ## @code{@var{yFit} = resubPredict (@var{obj})} is @code{predict} applied
     ## to the observations the model was fitted on.
     ##
-    ## @seealso{RegressionGAM, fitrgam, predict}
+    ## @seealso{RegressionGAM, fitrgam, RegressionGAM.predict}
     ## @end deftypefn
     function yFit = resubPredict (this)
       used = true (rows (this.X), 1);
@@ -1488,7 +1488,7 @@ classdef RegressionGAM
     ## squared error of the model on the data it was fitted on.  It accepts
     ## the same @qcode{Name-Value} pairs as @code{loss}.
     ##
-    ## @seealso{RegressionGAM, fitrgam, loss}
+    ## @seealso{RegressionGAM, fitrgam, RegressionGAM.loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
       used = true (rows (this.X), 1);
@@ -1718,7 +1718,7 @@ classdef RegressionGAM
     ## @qcode{'FitMethod', 'splines'}: a backfit that has converged to its
     ## tolerance has no budget to extend.
     ##
-    ## @seealso{RegressionGAM, fitrgam, addInteractions}
+    ## @seealso{RegressionGAM, fitrgam, RegressionGAM.addInteractions}
     ## @end deftypefn
     function Mdl = resume (this, numTrees)
 

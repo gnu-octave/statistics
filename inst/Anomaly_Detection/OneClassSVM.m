@@ -30,7 +30,7 @@
 ## Gaussian kernel and fits a linear boundary that encloses the bulk of the
 ## observations; points outside the boundary receive higher anomaly scores.
 ##
-## @seealso{ocsvm, isanomaly}
+## @seealso{ocsvm, OneClassSVM.isanomaly}
 ## @end deftypefn
 
 classdef OneClassSVM

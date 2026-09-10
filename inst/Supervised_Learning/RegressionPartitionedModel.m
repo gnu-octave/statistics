@@ -593,7 +593,8 @@ classdef RegressionPartitionedModel
     ## predicted response and an interval endpoint are on the response scale
     ## and a standard deviation is not.
     ##
-    ## @seealso{RegressionPartitionedModel, kfoldLoss}
+    ## @seealso{RegressionPartitionedModel,
+    ## RegressionPartitionedModel.kfoldLoss}
     ## @end deftypefn
     function [yFit, ySD, yInt] = kfoldPredict (this, varargin)
 
@@ -708,7 +709,8 @@ classdef RegressionPartitionedModel
     ## loss to.  It defaults to every fold.
     ## @end multitable
     ##
-    ## @seealso{RegressionPartitionedModel, kfoldPredict}
+    ## @seealso{RegressionPartitionedModel,
+    ## RegressionPartitionedModel.kfoldPredict}
     ## @end deftypefn
     function L = kfoldLoss (this, varargin)
 
@@ -820,7 +822,9 @@ classdef RegressionPartitionedModel
     ## observations that fold was trained on, and @var{Xtest}, @var{Ytest} and
     ## @var{Wtest} those of the observations it held out.
     ##
-    ## @seealso{RegressionPartitionedModel, kfoldPredict, kfoldLoss}
+    ## @seealso{RegressionPartitionedModel,
+    ## RegressionPartitionedModel.kfoldPredict,
+    ## RegressionPartitionedModel.kfoldLoss}
     ## @end deftypefn
 
     function vals = kfoldfun (this, fun)

@@ -1278,7 +1278,8 @@ classdef ClassificationTree
     ## Pruning renumbers the nodes, so the properties of the returned tree
     ## are those of a tree of that shape and not a subset of the original's.
     ##
-    ## @seealso{ClassificationTree, fitctree, PruneList, PruneAlpha}
+    ## @seealso{ClassificationTree, fitctree, ClassificationTree.PruneList,
+    ## ClassificationTree.PruneAlpha}
     ## @end deftypefn
     function this = prune (this, varargin)
 
@@ -1400,7 +1401,8 @@ classdef ClassificationTree
     ## observation losses or the loss itself reproduces MATLAB's number.
     ## @var{E}, @var{Nleaf} and @var{BestLevel} are measured and match.
     ##
-    ## @seealso{ClassificationTree, prune, crossval, loss}
+    ## @seealso{ClassificationTree, ClassificationTree.prune,
+    ## ClassificationTree.crossval, ClassificationTree.loss}
     ## @end deftypefn
     function [E, SE, Nleaf, BestLevel] = cvloss (this, varargin)
 
@@ -1566,7 +1568,7 @@ classdef ClassificationTree
     ## highest.  The numbers are comparable
     ## between predictors of one tree and not between trees.
     ##
-    ## @seealso{ClassificationTree, fitctree, NodeRisk}
+    ## @seealso{ClassificationTree, fitctree, ClassificationTree.NodeRisk}
     ## @end deftypefn
     function imp = predictorImportance (this)
 
@@ -1826,7 +1828,8 @@ classdef ClassificationTree
     ## positive margin means the observation is classified correctly, and a
     ## larger one means it is classified more confidently.
     ##
-    ## @seealso{ClassificationTree, edge, loss, predict}
+    ## @seealso{ClassificationTree, ClassificationTree.edge,
+    ## ClassificationTree.loss, ClassificationTree.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -1861,7 +1864,8 @@ classdef ClassificationTree
     ## The weights are normalized within each class to that class's prior
     ## before they are applied.
     ##
-    ## @seealso{ClassificationTree, margin, loss, predict}
+    ## @seealso{ClassificationTree, ClassificationTree.margin,
+    ## ClassificationTree.loss, ClassificationTree.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -1901,7 +1905,8 @@ classdef ClassificationTree
     ##
     ## @end multitable
     ##
-    ## @seealso{ClassificationTree, margin, edge, predict}
+    ## @seealso{ClassificationTree, ClassificationTree.margin,
+    ## ClassificationTree.edge, ClassificationTree.predict}
     ## @end deftypefn
     function l = loss (this, X, Y, varargin)
 
@@ -1975,7 +1980,7 @@ classdef ClassificationTree
     ## @code{@var{label} = resubPredict (@var{obj})} is
     ## @code{predict (@var{obj}, @var{obj}.X)}, and takes the same outputs.
     ##
-    ## @seealso{ClassificationTree, predict}
+    ## @seealso{ClassificationTree, ClassificationTree.predict}
     ## @end deftypefn
     function [label, score, node, cnum] = resubPredict (this)
 
@@ -1991,7 +1996,7 @@ classdef ClassificationTree
     ## @code{@var{m} = resubMargin (@var{obj})} is
     ## @code{margin (@var{obj}, @var{obj}.X, @var{obj}.Y)}.
     ##
-    ## @seealso{ClassificationTree, margin}
+    ## @seealso{ClassificationTree, ClassificationTree.margin}
     ## @end deftypefn
     function m = resubMargin (this)
 
@@ -2007,7 +2012,7 @@ classdef ClassificationTree
     ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} over the
     ## training data, weighed as the fit weighed it.
     ##
-    ## @seealso{ClassificationTree, edge}
+    ## @seealso{ClassificationTree, ClassificationTree.edge}
     ## @end deftypefn
     function e = resubEdge (this)
 
@@ -2031,7 +2036,7 @@ classdef ClassificationTree
     ## training data some other way instead, which MATLAB refuses rather
     ## than honours.
     ##
-    ## @seealso{ClassificationTree, loss}
+    ## @seealso{ClassificationTree, ClassificationTree.loss}
     ## @end deftypefn
     function l = resubLoss (this, varargin)
 

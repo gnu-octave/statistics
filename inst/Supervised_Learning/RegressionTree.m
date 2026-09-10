@@ -986,7 +986,8 @@ classdef RegressionTree
     ## Pruning renumbers the nodes, so the properties of the returned tree
     ## are those of a tree of that shape and not a subset of the original's.
     ##
-    ## @seealso{RegressionTree, fitrtree, PruneList, PruneAlpha}
+    ## @seealso{RegressionTree, fitrtree, RegressionTree.PruneList,
+    ## RegressionTree.PruneAlpha}
     ## @end deftypefn
     function this = prune (this, varargin)
 
@@ -1239,7 +1240,8 @@ classdef RegressionTree
     ## reports; @var{E}, @var{Nleaf} and @var{BestLevel} are measured and
     ## match.
     ##
-    ## @seealso{RegressionTree, prune, crossval, loss}
+    ## @seealso{RegressionTree, RegressionTree.prune, RegressionTree.crossval,
+    ## RegressionTree.loss}
     ## @end deftypefn
     function [E, SE, Nleaf, BestLevel] = cvloss (this, varargin)
 
@@ -1404,7 +1406,7 @@ classdef RegressionTree
     ## The numbers are comparable between predictors of one tree and not
     ## between trees.
     ##
-    ## @seealso{RegressionTree, fitrtree, NodeRisk}
+    ## @seealso{RegressionTree, fitrtree, RegressionTree.NodeRisk}
     ## @end deftypefn
     function imp = predictorImportance (this)
 
@@ -1545,7 +1547,7 @@ classdef RegressionTree
     ##
     ## @end multitable
     ##
-    ## @seealso{RegressionTree, fitrtree, predict}
+    ## @seealso{RegressionTree, fitrtree, RegressionTree.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
@@ -1646,7 +1648,7 @@ classdef RegressionTree
     ## @code{@var{yFit} = resubPredict (@var{obj})} is
     ## @code{predict (@var{obj}, @var{obj}.X)}.
     ##
-    ## @seealso{RegressionTree, predict}
+    ## @seealso{RegressionTree, RegressionTree.predict}
     ## @end deftypefn
     function yFit = resubPredict (this)
 
@@ -1665,7 +1667,7 @@ classdef RegressionTree
     ## @qcode{'LossFun'} option.  Giving @qcode{'Weights'} weighs the
     ## training data some other way instead.
     ##
-    ## @seealso{RegressionTree, loss}
+    ## @seealso{RegressionTree, RegressionTree.loss}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
 

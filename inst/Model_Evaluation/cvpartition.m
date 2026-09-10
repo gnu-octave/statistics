@@ -398,7 +398,8 @@ classdef cvpartition
     ## test set and the @qcode{false} elements correspond to the training set.
     ## @end itemize
     ##
-    ## @seealso{cvpartition, summary, test, training}
+    ## @seealso{cvpartition, cvpartition.summary, cvpartition.test,
+    ## cvpartition.training}
     ## @end deftypefn
 
     function this = cvpartition (X, varargin)
@@ -1036,7 +1037,8 @@ classdef cvpartition
     ## statistics package.  The @qcode{'legacy'} option does not apply to
     ## stratified or grouped partitions.
     ##
-    ## @seealso{cvpartition, summary, test, training}
+    ## @seealso{cvpartition, cvpartition.summary, cvpartition.test,
+    ## cvpartition.training}
     ## @end deftypefn
 
     function this = repartition (this, sval = [])
@@ -1281,7 +1283,8 @@ classdef cvpartition
     ## @end table
     ## @end itemize
     ##
-    ## @seealso{cvpartition, repartition, test, training}
+    ## @seealso{cvpartition, cvpartition.repartition, cvpartition.test,
+    ## cvpartition.training}
     ## @end deftypefn
 
    function tbl = summary (this)
@@ -1442,7 +1445,8 @@ classdef cvpartition
     ## @var{C}.  For holdout and resubstitution partition types, a vector is
     ## returned.  For K-fold and leave-one-out, a matrix is returned.
     ##
-    ## @seealso{cvpartition, repartition, summary, training}
+    ## @seealso{cvpartition, cvpartition.repartition, cvpartition.summary,
+    ## cvpartition.training}
     ## @end deftypefn
 
     function idx = test (this, varargin)
@@ -1581,7 +1585,8 @@ classdef cvpartition
     ## object @var{C}.  For holdout and resubstitution partition types, a vector
     ## is returned.  For K-fold and leave-one-out, a matrix is returned.
     ##
-    ## @seealso{cvpartition, repartition, summary, test}
+    ## @seealso{cvpartition, cvpartition.repartition, cvpartition.summary,
+    ## cvpartition.test}
     ## @end deftypefn
 
     function idx = training (this, varargin)

@@ -686,7 +686,8 @@ classdef CompactClassificationTree
     ## nodes it separates well, scores highest.  The numbers are comparable
     ## between predictors of one tree and not between trees.
     ##
-    ## @seealso{CompactClassificationTree, fitctree, NodeRisk}
+    ## @seealso{CompactClassificationTree, fitctree,
+    ## CompactClassificationTree.NodeRisk}
     ## @end deftypefn
     function imp = predictorImportance (this)
 
@@ -805,7 +806,8 @@ classdef CompactClassificationTree
     ## positive margin means the observation is classified correctly, and a
     ## larger one means it is classified more confidently.
     ##
-    ## @seealso{CompactClassificationTree, edge, loss, predict}
+    ## @seealso{CompactClassificationTree, CompactClassificationTree.edge,
+    ## CompactClassificationTree.loss, CompactClassificationTree.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -840,7 +842,8 @@ classdef CompactClassificationTree
     ## The weights are normalized within each class to that class's prior
     ## before they are applied.
     ##
-    ## @seealso{CompactClassificationTree, margin, loss, predict}
+    ## @seealso{CompactClassificationTree, CompactClassificationTree.margin,
+    ## CompactClassificationTree.loss, CompactClassificationTree.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -880,7 +883,8 @@ classdef CompactClassificationTree
     ##
     ## @end multitable
     ##
-    ## @seealso{CompactClassificationTree, margin, edge, predict}
+    ## @seealso{CompactClassificationTree, CompactClassificationTree.margin,
+    ## CompactClassificationTree.edge, CompactClassificationTree.predict}
     ## @end deftypefn
     function l = loss (this, X, Y, varargin)
 
