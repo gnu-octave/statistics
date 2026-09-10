@@ -18,16 +18,17 @@
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} {@var{args} =} treeFoldArgs (@var{Mdl})
 ##
-## The Name-Value arguments a fold of a @code{ClassificationTree} is grown
-## with.
+## The Name-Value arguments a fold of a @code{ClassificationTree} or a
+## @code{RegressionTree} is grown with.
 ##
-## Every fold is given the parent's class names, prior and cost rather than
-## being left to re-derive them from its own rows, along with the growth
-## parameters the parent actually used.  The observation weights are not here,
-## being sliced per fold by the caller.
+## A classifier's fold is given the parent's class names, prior and cost
+## rather than being left to re-derive them from its own rows; both are given
+## the growth parameters the parent actually used.  The observation weights
+## are not here, being sliced per fold by the caller.
 ##
-## @qcode{'ScoreTransform'} is deliberately absent: a transform is applied
-## once to the assembled scores, and a fold carrying one would apply it twice.
+## @qcode{'ScoreTransform'} and @qcode{'ResponseTransform'} are deliberately
+## absent: a transform is applied once to the assembled answer, and a fold
+## carrying one would apply it twice.
 ##
 ## @qcode{'MaxNumSplits'} defaults to one less than the number of
 ## observations, so a fold works its own out; a budget the caller actually
@@ -43,16 +44,21 @@ function args = treeFoldArgs (Mdl)
 
   MP = Mdl.ModelParameters;
   args = {'PredictorNames', Mdl.PredictorNames, ...
-          'ResponseName', Mdl.ResponseName, ...
-          'ClassNames', Mdl.ClassNames, ...
-          'Prior', Mdl.Prior, ...
-          'Cost', Mdl.Cost, ...
-          'SplitCriterion', MP.SplitCriterion, ...
-          'MinParentSize', MP.MinParent, ...
-          'MinLeafSize', MP.MinLeaf, ...
-          'MergeLeaves', MP.MergeLeaves, ...
-          'Prune', MP.Prune, ...
-          'PruneCriterion', MP.PruneCriterion};
+          'ResponseName', Mdl.ResponseName};
+
+  if (strcmp (MP.Type, 'classification'))
+    args = [args, {'ClassNames', Mdl.ClassNames, ...
+                   'Prior', Mdl.Prior, 'Cost', Mdl.Cost}];
+  else
+    args = [args, {'QuadraticErrorTolerance', MP.QEToler}];
+  endif
+
+  args = [args, {'SplitCriterion', MP.SplitCriterion, ...
+                 'MinParentSize', MP.MinParent, ...
+                 'MinLeafSize', MP.MinLeaf, ...
+                 'MergeLeaves', MP.MergeLeaves, ...
+                 'Prune', MP.Prune, ...
+                 'PruneCriterion', MP.PruneCriterion}];
 
   if (MP.MaxSplits != Mdl.NumObservations - 1)
     args = [args, {'MaxNumSplits', MP.MaxSplits}];

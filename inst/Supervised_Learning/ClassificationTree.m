@@ -2724,18 +2724,20 @@ endfunction
 %! assert_equal (Nleaf', [2, 1]);
 %! assert_equal (BestLevel, 0);
 
-%!test  # MATLAB parity: the leaf counts and the stable losses of the iris tree
-%! ## Only the losses no partition can move are asserted: a two-leaf tree
-%! ## separates setosa exactly, and a one-leaf tree carries a uniform prior
-%! ## and so answers the first class, whatever rows it was grown on.
+%!test  # MATLAB parity: the leaf counts and the stable loss of the iris tree
+%! ## Only the last level's loss is asserted.  Its parameter is infinite, so
+%! ## every fold's tree goes back to its root whatever the partition, and a
+%! ## root under a uniform prior answers the first class, which two thirds
+%! ## of the data are not.  The levels below it are not fixed: a fold's tree
+%! ## is matched to a subtree of the whole by a complexity parameter, and
+%! ## which of its own levels that picks out depends on the rows it saw.
 %! load fisheriris
 %! Mdl = ClassificationTree (meas, species);
 %! [E, SE, Nleaf, BestLevel] = cvloss (Mdl, 'SubTrees', 'all');
 %! assert_equal (size (E), [5, 1]);
 %! assert_equal (Nleaf', [5, 4, 3, 2, 1]);
-%! assert_equal (E(4), 1/3, 1e-14);
 %! assert_equal (E(5), 2/3, 1e-14);
-%! assert_equal (SE(4:5), [0; 0], 1e-12);
+%! assert_equal (SE(5), 0, 1e-12);
 %! assert_equal (BestLevel >= 0 && BestLevel <= 4, true);
 
 %!test  # cvloss defaults to the unpruned tree alone

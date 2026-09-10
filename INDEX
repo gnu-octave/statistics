@@ -146,6 +146,7 @@ Supervised Learning
  CompactRegressionGP
  CompactRegressionNeuralNetwork
  CompactRegressionSVM
+ CompactRegressionTree
  fcnnpredict
  fcnntrain
  fitcdiscr

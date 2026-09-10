@@ -128,6 +128,9 @@ function obj = loadmodel (filename)
     case 'RegressionTree'
       obj = RegressionTree.load_model (filename, data);
 
+    case 'CompactRegressionTree'
+      obj = CompactRegressionTree.load_model (filename, data);
+
     case 'CompactRegressionSVM'
       obj = CompactRegressionSVM.load_model (filename, data);
 

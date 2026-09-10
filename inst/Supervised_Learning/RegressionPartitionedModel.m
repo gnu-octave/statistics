@@ -335,7 +335,8 @@ classdef RegressionPartitionedModel
 
       ## Check for valid Regression object
       validTypes = {'RegressionGAM', 'RegressionGP', ...
-                    'RegressionNeuralNetwork', 'RegressionSVM'};
+                    'RegressionNeuralNetwork', 'RegressionSVM', ...
+                    'RegressionTree'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("RegressionPartitionedModel: unsupported model type.");
       endif
@@ -495,6 +496,27 @@ classdef RegressionPartitionedModel
             tmp = fitrsvm (X(idx, :), Y(idx), args{:});
             this.Trained{k} = compact (tmp);
           endfor
+
+        case 'Tree'
+          ## The arguments a fold is grown with, which the classification
+          ## tree's own cross-validation shares.  ResponseTransform is not
+          ## among them: the parent applies it once to the assembled
+          ## prediction, so a fold carrying it too would apply it twice.
+          args = treeFoldArgs (Mdl);
+
+          ## Train model according to partition object.  The fold is stored
+          ## compact, as MATLAB stores it: measured on R2024a, where
+          ## Trained{k} is a CompactRegressionTree.  The weights are sliced
+          ## per fold, this being the one backing whose constructor takes
+          ## them and reports them.
+          W = Mdl.RawWeights;
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            tmp = fitrtree (X(idx, :), Y(idx), args{:}, 'Weights', W(idx));
+            this.Trained{k} = compact (tmp);
+          endfor
+
+          ## The model's own, rather than a list of names restated here.
 
       endswitch
 
@@ -1127,6 +1149,43 @@ endclassdef
 %! load fisheriris; ...
 %! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
 %! kfoldPredict (CVMdl, 'Bogus', 1);
+
+%!test  # MATLAB parity: a cross-validated regression tree, over compact folds
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! a = fitrtree (X, MPG);
+%! cvModel = crossval (a, 'KFold', 5);
+%! assert_equal (class (cvModel), "RegressionPartitionedModel");
+%! assert_equal (cvModel.CrossValidatedModel, "Tree");
+%! assert_equal (class (cvModel.Trained{1}), "CompactRegressionTree");
+%! assert_equal (cvModel.KFold, 5);
+%! assert_equal (cvModel.NumObservations, 94);
+%! assert_equal (cvModel.ResponseTransform, 'none');
+
+%!test  # A tree fold is grown with the parameters the parent was grown with
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! a = fitrtree (X, MPG, 'MinLeafSize', 15, 'QuadraticErrorTolerance', 0.01);
+%! cvModel = crossval (a, 'KFold', 3);
+%! assert_equal (cvModel.ModelParameters.SplitCriterion, 'mse');
+%! assert_equal (cvModel.ModelParameters.MinLeaf, 15);
+%! assert_equal (cvModel.ModelParameters.QEToler, 0.01);
+%! assert_equal (min (cvModel.Trained{1}.NodeSize) >= 15, true);
+
+%!test  # kfoldPredict answers every observation of a cross-validated tree
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! cvModel = crossval (fitrtree (X, MPG), 'KFold', 5);
+%! yFit = kfoldPredict (cvModel);
+%! assert_equal (size (yFit), [94, 1]);
+%! assert_equal (any (isnan (yFit)), false);
+%! assert_equal (kfoldLoss (cvModel) > 0, true);
+%! assert_equal (size (kfoldLoss (cvModel, 'Mode', 'individual')), [5, 1]);
+
+%!error<RegressionPartitionedModel.kfoldPredict: a standard deviation and a prediction interval are only available for a cross-validated RegressionGP.>
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! [y, sd] = kfoldPredict (crossval (fitrtree (X, MPG), 'KFold', 3));
 
 ## Test input validation for the constructor
 %!error<RegressionPartitionedModel: too few input arguments.> ...

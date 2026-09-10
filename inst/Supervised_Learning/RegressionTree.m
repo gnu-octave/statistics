@@ -1055,6 +1055,140 @@ classdef RegressionTree
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn {RegressionTree} {@var{CMdl} =} compact (@var{obj})
+    ##
+    ## Drop the training data from a trained model.
+    ##
+    ## @code{@var{CMdl} = compact (@var{obj})} returns a
+    ## @code{CompactRegressionTree} object carrying the tree and everything
+    ## @code{predict} needs, but not the observations the model was fitted
+    ## on.  It answers new data identically and is far smaller to keep or to
+    ## ship.
+    ##
+    ## @seealso{CompactRegressionTree, RegressionTree}
+    ## @end deftypefn
+    function CMdl = compact (this)
+
+      CMdl = CompactRegressionTree (this);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionTree} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {RegressionTree} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate a trained decision tree.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} partitions the training data
+    ## into ten folds, or into as many folds as there are observations when
+    ## there are fewer than ten, grows a tree on the training part of each
+    ## and returns them as a @code{RegressionPartitionedModel}.
+    ##
+    ## @code{@var{CVMdl} = crossval (@dots{}, @var{name}, @var{value})} takes
+    ## one of the following, and one only.
+    ##
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KFold'} @tab An integer greater than 1, the number of
+    ## folds.
+    ##
+    ## @item @qcode{'Holdout'} @tab A value between 0 and 1, the fraction of
+    ## the data held out for testing, which gives a single fold.
+    ##
+    ## @item @qcode{'Leaveout'} @tab @qcode{'on'} or @qcode{'off'}, one fold
+    ## per observation.
+    ##
+    ## @item @qcode{'CVPartition'} @tab A @code{cvpartition} object.
+    ##
+    ## @end multitable
+    ##
+    ## Every fold is grown with the growth parameters the parent was grown
+    ## with and a slice of its observation weights.
+    ##
+    ## @seealso{RegressionPartitionedModel, RegressionTree, cvpartition}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      ## Input validation
+      if (numel (varargin) == 1)
+        error (strcat ("RegressionTree.crossval: Name-Value arguments", ...
+                       " must be in pairs."));
+      elseif (numel (varargin) > 2)
+        error (strcat ("RegressionTree.crossval: specify only one of the", ...
+                       " optional Name-Value paired arguments."));
+      endif
+
+      if (this.NumObservations < 10)
+        numFolds = this.NumObservations;
+      else
+        numFolds = 10;
+      endif
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin{1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && (numFolds == fix (numFolds)) && numFolds > 1))
+              error (strcat ("RegressionTree.crossval: 'KFold' must be an", ...
+                             " integer value greater than 1."));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat ("RegressionTree.crossval: 'Holdout' must be", ...
+                             " a numeric value between 0 and 1."));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && any (strcmpi (Leaveout, {'on', 'off'}))))
+              error (strcat ("RegressionTree.crossval: 'Leaveout' must be", ...
+                             " either 'on' or 'off'."));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (! (isa (CVPartition, 'cvpartition')))
+              error (strcat ("RegressionTree.crossval: 'CVPartition' must", ...
+                             " be a 'cvpartition' object."));
+            endif
+
+          otherwise
+            error (strcat ("RegressionTree.crossval: invalid parameter", ...
+                           " name in optional paired arguments."));
+
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## The partition covers the observations actually trained on: a row
+      ## dropped for a missing response is not one the folds can use.  A
+      ## regression has no classes to stratify over, so the partition is
+      ## drawn over their number.
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (this.NumObservations, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (this.NumObservations, 'LeaveOut');
+      else
+        partition = cvpartition (this.NumObservations, 'KFold', numFolds);
+      endif
+
+      CVMdl = RegressionPartitionedModel (this, partition);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionTree} {@var{imp} =} predictorImportance (@var{obj})
     ##
     ## Estimate the importance of each predictor.
@@ -1767,6 +1901,60 @@ endclassdef
 %!                                 402.520833333333], 1e-11);
 %! assert_equal (predictorImportance (Mdl), 73.2767857142857, 1e-12);
 
+%!test  # MATLAB parity: compact drops the data and answers identically
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG);
+%! CMdl = compact (Mdl);
+%! assert_equal (class (CMdl), 'CompactRegressionTree');
+%! assert_equal (numel (properties (CMdl)), 28);
+%! assert_equal (predict (CMdl, X), predict (Mdl, X));
+%! assert_equal (CMdl.NodeRisk, Mdl.NodeRisk, 1e-15);
+%! assert_equal (predictorImportance (CMdl), predictorImportance (Mdl), 1e-15);
+
+%!test  # MATLAB parity: crossval returns a partitioned model over compacts
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG);
+%! CVMdl = crossval (Mdl);
+%! assert_equal (class (CVMdl), 'RegressionPartitionedModel');
+%! assert_equal (CVMdl.CrossValidatedModel, 'Tree');
+%! assert_equal (class (CVMdl.Trained{1}), 'CompactRegressionTree');
+%! assert_equal (CVMdl.KFold, 10);
+%! assert_equal (CVMdl.NumObservations, 94);
+%! assert_equal (CVMdl.ResponseName, 'Y');
+%! assert_equal (CVMdl.W, Mdl.W, 1e-15);
+
+%!test  # Each way of asking for a partition gives the folds it names
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG);
+%! assert_equal (crossval (Mdl, 'KFold', 5).KFold, 5);
+%! assert_equal (crossval (Mdl, 'Holdout', 0.3).KFold, 1);
+%! assert_equal (crossval (Mdl, 'Leaveout', 'on').KFold, 94);
+%! assert_equal (crossval (Mdl, 'CVPartition', ...
+%!                         cvpartition (94, 'KFold', 4)).KFold, 4);
+
+%!test  # A fold is grown with the parameters the parent was grown with
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! Mdl = RegressionTree (X, MPG, 'MinLeafSize', 7, 'MergeLeaves', 'off', ...
+%!                       'QuadraticErrorTolerance', 0.01);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CVMdl.ModelParameters.MinLeaf, 7);
+%! assert_equal (CVMdl.ModelParameters.MergeLeaves, 'off');
+%! assert_equal (CVMdl.ModelParameters.QEToler, 0.01);
+%! assert_equal (CVMdl.Trained{1}.PredictorNames, Mdl.PredictorNames);
+
+%!test  # kfoldPredict answers every observation out of fold
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! CVMdl = crossval (RegressionTree (X, MPG), 'KFold', 5);
+%! yFit = kfoldPredict (CVMdl);
+%! assert_equal (size (yFit), [94, 1]);
+%! assert_equal (any (isnan (yFit)), false);
+%! assert_equal (kfoldLoss (CVMdl) > 0, true);
+
 ## Test input validation
 %!error<RegressionTree: too few input arguments.> RegressionTree ()
 %!error<RegressionTree: too few input arguments.> RegressionTree (ones (4, 2))
@@ -1867,6 +2055,20 @@ endclassdef
 %! nodeVariableRange (RegressionTree (ones (4, 2), (1:4)'))
 %!error<RegressionTree.nodeVariableRange: NODE must be a positive integer no greater than the number of nodes in the tree.>
 %! nodeVariableRange (RegressionTree (ones (4, 2), (1:4)'), 999)
+%!error<RegressionTree.crossval: Name-Value arguments must be in pairs.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'KFold')
+%!error<RegressionTree.crossval: specify only one of the optional Name-Value paired arguments.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'KFold', 2, 'Holdout', 0.3)
+%!error<RegressionTree.crossval: 'KFold' must be an integer value greater than 1.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'KFold', 1)
+%!error<RegressionTree.crossval: 'Holdout' must be a numeric value between 0 and 1.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'Holdout', 2)
+%!error<RegressionTree.crossval: 'Leaveout' must be either 'on' or 'off'.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'Leaveout', 'x')
+%!error<RegressionTree.crossval: 'CVPartition' must be a 'cvpartition' object.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'CVPartition', 5)
+%!error<RegressionTree.crossval: invalid parameter name in optional paired arguments.>
+%! crossval (RegressionTree (ones (4, 2), (1:4)'), 'Bogus', 1)
 %!error<RegressionTree.savemodel: too few input arguments.>
 %! savemodel (RegressionTree (ones (4, 2), (1:4)'))
 %!error<RegressionTree.savemodel: FNAME must be a character vector.>
