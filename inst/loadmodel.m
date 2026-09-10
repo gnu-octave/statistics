@@ -25,7 +25,8 @@
 ##
 ## @seealso{savemodel, ClassificationDiscriminant, ClassificationGAM,
 ## ClassificationKNN, ClassificationNeuralNetwork,
-## ClassificationPartitionedModel, ClassificationSVM, RegressionGAM}
+## ClassificationPartitionedModel, ClassificationSVM, ClassificationTree,
+## RegressionGAM}
 ## @end deftypefn
 
 function obj = loadmodel (filename)
@@ -90,6 +91,9 @@ function obj = loadmodel (filename)
 
     case 'ClassificationSVM'
       obj = ClassificationSVM.load_model (filename, data);
+
+    case 'ClassificationTree'
+      obj = ClassificationTree.load_model (filename, data);
 
     case 'CompactClassificationSVM'
       obj = CompactClassificationSVM.load_model (filename, data);

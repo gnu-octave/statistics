@@ -135,6 +135,7 @@ Supervised Learning
  ClassificationPartitionedLinear
  ClassificationPartitionedModel
  ClassificationSVM
+ ClassificationTree
  CompactClassificationDiscriminant
  CompactClassificationGAM
  CompactClassificationNaiveBayes
@@ -154,6 +155,7 @@ Supervised Learning
  fitcnb
  fitcnet
  fitcsvm
+ fitctree
  fitrgam
  fitrgp
  fitrkernel
