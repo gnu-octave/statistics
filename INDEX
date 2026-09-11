@@ -183,6 +183,13 @@ Supervised Learning
  RegressionTree
  svmpredict
  svmtrain
+ templateDiscriminant
+ templateKernel
+ templateKNN
+ templateLinear
+ templateNaiveBayes
+ templateSVM
+ templateTree
  treepredict
  treetrain
 Clustering
