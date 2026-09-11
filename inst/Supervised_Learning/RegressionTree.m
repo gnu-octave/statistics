@@ -861,12 +861,7 @@ classdef RegressionTree
                      'MaxSplits', MaxNumSplits, ...
                      'SplitCriterion', 'mse', ...
                      'MergeLeaves', mergeOn, ...
-                     'QEToler', QEToler, ...
-                     ## The sequence is estimated below instead, MATLAB
-                     ## carrying one whenever leaves were merged whether or
-                     ## not pruning was asked for, where the engine builds
-                     ## one only when it prunes.
-                     'Prune', false);
+                     'QEToler', QEToler);
 
       T = treetrain (X, this.Y, this.W, opts);
 

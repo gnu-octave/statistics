@@ -92,5 +92,5 @@ treepredict.oct: treepredict.cc tree.cpp
 
 # The pruning sequence on its own, for a tree that is already grown: prune
 # has no data left and a model read back from a file never had any.
-__treeprune__.oct: __treeprune__.cc tree.cpp
+__treeprune__.oct: __treeprune__.cc
 	$(MKOCTFILE) __treeprune__.cc

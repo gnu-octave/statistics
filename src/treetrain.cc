@@ -44,18 +44,22 @@ classifier and the response itself when fitting a regression.  @var{W} is an\n\
 \n\
 @var{opts} is a structure carrying @qcode{NumClasses}, @qcode{MinParent},\n\
 @qcode{MinLeaf}, @qcode{MaxSplits}, @qcode{SplitCriterion},\n\
-@qcode{MergeLeaves}, @qcode{Prune} and, for a regression, @qcode{QEToler}.\n\
+@qcode{MergeLeaves} and, for a regression, @qcode{QEToler}.\n\
 @qcode{SplitCriterion} is @qcode{\"gdi\"} or @qcode{\"deviance\"} for a\n\
 classifier and @qcode{\"mse\"} for a regression, and it is what selects\n\
 between the two.\n\
 \n\
 The returned structure holds @qcode{Children}, @qcode{Parent},\n\
 @qcode{CutPredictorIndex}, @qcode{CutPoint}, @qcode{IsBranchNode},\n\
-@qcode{NodeSize}, @qcode{NodeWeight}, @qcode{NumNodes}, @qcode{PruneList} and\n\
-@qcode{PruneAlpha}, plus @qcode{ClassWeight} and @qcode{ClassCount} for a\n\
-classifier or @qcode{NodeMean} and @qcode{NodeError} for a regression.\n\
+@qcode{NodeSize}, @qcode{NodeWeight} and @qcode{NumNodes}, plus\n\
+@qcode{ClassWeight} and @qcode{ClassCount} for a classifier or\n\
+@qcode{NodeMean} and @qcode{NodeError} for a regression.\n\
 Nodes are numbered as they are created, so a parent always precedes its\n\
 children.\n\
+\n\
+The cost complexity pruning sequence is not built here.  A tree outlives\n\
+the data it was grown on, so the sequence is @code{__treeprune__}, which\n\
+takes a node table and the risk the caller measures by.\n\
 \n\
 @seealso{treepredict}\n\
 @end deftypefn")
@@ -77,8 +81,6 @@ children.\n\
   o.minleaf = opts.contents ("MinLeaf").idx_type_value ();
   o.maxsplits = opts.contents ("MaxSplits").idx_type_value ();
   o.mergeleaves = opts.contents ("MergeLeaves").bool_value ();
-  o.prune = opts.isfield ("Prune")
-            ? opts.contents ("Prune").bool_value () : false;
   o.qetoler = opts.isfield ("QEToler")
               ? opts.contents ("QEToler").double_value () : 0.0;
 
@@ -112,7 +114,7 @@ children.\n\
 %! y = grp2idx (species);
 %! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', false);
+%!             'MergeLeaves', false);
 %! T = treetrain (meas, y, ones (150, 1) / 150, o);
 %! assert_equal (T.NumNodes, 11);
 %! assert_equal (T.NodeSize', [150, 50, 100, 54, 46, 48, 6, 3, 43, 47, 1]);
@@ -125,103 +127,23 @@ children.\n\
 %! y = grp2idx (species);
 %! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', false);
+%!             'MergeLeaves', true);
 %! T = treetrain (meas, y, ones (150, 1) / 150, o);
 %! assert_equal (T.NumNodes, 9);
 %! assert_equal (T.NodeSize', [150, 50, 100, 54, 46, 48, 6, 47, 1]);
 %! assert_equal (T.Parent', [0, 1, 1, 3, 3, 4, 4, 6, 6]);
 
 %!test
-%! ## Cost complexity pruning, levels and alphas
-%! load fisheriris
-%! y = grp2idx (species);
-%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
-%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', true);
-%! T = treetrain (meas, y, ones (150, 1) / 150, o);
-%! assert_equal (T.PruneList', [4, 0, 3, 2, 0, 1, 0, 0, 0]);
-%! assert_equal (T.PruneAlpha', [0, 1/150, 2/150, 44/150, 50/150], 1e-12);
-
-%!test
-%! ## A deeper tree, every branch pruned at its own level
+%! ## A deeper tree, grown until no node can be split further
 %! load fisheriris
 %! y = grp2idx (species);
 %! o = struct ('NumClasses', 3, 'MinParent', 2, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', true);
+%!             'MergeLeaves', true);
 %! T = treetrain (meas, y, ones (150, 1) / 150, o);
 %! assert_equal (T.NumNodes, 17);
 %! assert_equal (T.NodeSize', [150, 50, 100, 54, 46, 48, 6, 3, 43, 47, 1, ...
 %!                             3, 3, 1, 2, 2, 1]);
-%! assert_equal (T.PruneList', [5, 0, 4, 3, 1, 2, 2, 1, 0, 0, 0, 0, 2, ...
-%!                              0, 0, 0, 0]);
-
-%!test
-%! ## A subtree that costs nothing to give up opens no level of the sequence
-%! ## The pair of leaves that merging would have removed survives here, and
-%! ## giving it up costs nothing, so the eleven node tree carries the merged
-%! ## tree's five alphas rather than six.  Measured on R2024a.
-%! load fisheriris
-%! y = grp2idx (species);
-%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
-%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', true);
-%! T = treetrain (meas, y, ones (150, 1) / 150, o);
-%! assert_equal (T.NumNodes, 11);
-%! assert_equal (T.PruneList', [4, 0, 3, 2, 0, 1, 0, 0, 0, 0, 0]);
-%! assert_equal (T.PruneAlpha', [0, 1/150, 2/150, 44/150, 50/150], 1e-12);
-
-%!test
-%! ## A node holding rows back pays for them in the pruning sequence
-%! ## Twenty rows have no fourth predictor, so the node cutting on it sends
-%! ## them to neither child.  A subtree's risk is its children's plus what
-%! ## the node holds back; without it the sequence came out a level short.
-%! ## Measured on R2024a, the fit fitctree makes on this fixture.
-%! load fisheriris
-%! y = grp2idx (species);
-%! x = meas;
-%! x(51:70, 4) = NaN;
-%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
-%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', true);
-%! T = treetrain (x, y, ones (150, 1) / 150, o);
-%! assert_equal (T.NumNodes, 9);
-%! assert_equal (T.NodeSize', [150, 50, 100, 45, 55, 25, 1, 8, 46]);
-%! assert_equal (T.NodeSize(4) - T.NodeSize(6) - T.NodeSize(7), 19);
-%! assert_equal (T.PruneList', [4, 0, 3, 1, 2, 0, 0, 0, 0]);
-%! assert_equal (T.PruneAlpha', [0, 0.00385185185185185, ...
-%!                               0.00593939393939394, 0.286666666666666, ...
-%!                               0.333333333333333], 1e-14);
-
-%!test
-%! ## A held back node keeps the free subtree rule honest
-%! ## Charged for what it holds back, such a node gives a positive link
-%! ## where an uncharged one gave zero, so the free subtree left by
-%! ## MergeLeaves off must still be the one recognised.  Measured on R2024a.
-%! load fisheriris
-%! y = grp2idx (species);
-%! x = meas;
-%! x(51:70, 4) = NaN;
-%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
-%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', true);
-%! T = treetrain (x, y, ones (150, 1) / 150, o);
-%! assert_equal (T.NumNodes, 11);
-%! assert_equal (T.PruneList', [4, 0, 3, 1, 2, 0, 0, 0, 0, 0, 0]);
-%! assert_equal (T.PruneAlpha', [0, 0.00385185185185185, ...
-%!                               0.00593939393939394, 0.286666666666666, ...
-%!                               0.333333333333333], 1e-14);
-
-%!test
-%! ## Prune off leaves the pruning sequence empty
-%! load fisheriris
-%! y = grp2idx (species);
-%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
-%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', false);
-%! T = treetrain (meas, y, ones (150, 1) / 150, o);
-%! assert_equal (isempty (T.PruneList), true);
-%! assert_equal (isempty (T.PruneAlpha), true);
 
 %!test
 %! ## A row missing the split predictor descends to neither child
@@ -231,7 +153,7 @@ children.\n\
 %! x(51:60, 4) = NaN;
 %! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', false);
+%!             'MergeLeaves', false);
 %! T = treetrain (x, y, ones (150, 1) / 150, o);
 %! assert_equal (T.NodeSize', [150, 50, 100, 45, 55, 35, 1, 8, 46, 3, 43]);
 %! assert_equal (T.NodeSize(4) - T.NodeSize(6) - T.NodeSize(7), 9);
@@ -244,7 +166,7 @@ children.\n\
 %! x(1:5, :) = NaN;
 %! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', false);
+%!             'MergeLeaves', false);
 %! T = treetrain (x, y, ones (150, 1) / 150, o);
 %! assert_equal (T.NodeSize(1), 145);
 %! assert_equal (T.NodeSize', [145, 45, 100, 54, 46, 48, 6, 3, 43, 47, 1]);
@@ -257,7 +179,7 @@ children.\n\
 %! x(:, 2) = NaN;
 %! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', false);
+%!             'MergeLeaves', false);
 %! T = treetrain (x, y, ones (150, 1) / 150, o);
 %! assert_equal (T.CutPredictorIndex', [3, 0, 4, 3, 3, 4, 0, 0, 0, 0, 0]);
 
@@ -270,7 +192,7 @@ children.\n\
 %! x2(12:16) = (6:10)';
 %! o = struct ('NumClasses', 2, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 19, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', false);
+%!             'MergeLeaves', false);
 %! T = treetrain ([(1:20)', x2], y, ones (20, 1) / 20, o);
 %! assert_equal (T.CutPredictorIndex(1), 1);
 %! assert_equal (T.CutPoint(1), 9.5);
@@ -282,7 +204,7 @@ children.\n\
 %! y = grp2idx (species);
 %! o = struct ('NumClasses', 3, 'MinParent', 60, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', false, 'Prune', false);
+%!             'MergeLeaves', false);
 %! assert_equal (treetrain (meas, y, ones (150, 1) / 150, o).NumNodes, 5);
 %! o.MinParent = 10;
 %! o.MaxSplits = 2;
@@ -295,7 +217,7 @@ children.\n\
 %! y = grp2idx (species);
 %! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', true);
+%!             'MergeLeaves', true);
 %! count = [50, 50, 0, 0, 0, 0, 0, 0, 0; ...
 %!          50, 0, 50, 49, 1, 47, 2, 47, 0; ...
 %!          50, 0, 50, 5, 45, 1, 4, 0, 1];
@@ -317,45 +239,24 @@ children.\n\
 %! y = [ones(10,1); 5 * ones(10,1)];
 %! o = struct ('NumClasses', 1, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 19, 'SplitCriterion', 'mse', ...
-%!             'MergeLeaves', true, 'Prune', true, 'QEToler', 1e-6);
+%!             'MergeLeaves', true, 'QEToler', 1e-6);
 %! T = treetrain (x, y, ones (20, 1) / 20, o);
 %! assert_equal (isempty (T.ClassCount), true);
 %! assert_equal (isempty (T.ClassWeight), true);
 
 %!test
-%! ## A regression tree, its leaf values and its pruning sequence
+%! ## A regression tree and its leaf values
 %! g = mod ((1:20)', 3);
 %! x = [(1:20)', g];
 %! y = [ones(10,1); 5 * ones(10,1)];
 %! o = struct ('NumClasses', 1, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 19, 'SplitCriterion', 'mse', ...
-%!             'MergeLeaves', true, 'Prune', true, 'QEToler', 1e-6);
+%!             'MergeLeaves', true, 'QEToler', 1e-6);
 %! T = treetrain (x, y, ones (20, 1) / 20, o);
 %! assert_equal (T.NumNodes, 3);
 %! assert_equal (T.NodeSize', [20, 10, 10]);
 %! assert_equal (T.NodeMean', [3, 1, 5], 1e-12);
 %! assert_equal (T.NodeError', [4, 0, 0], 1e-12);
-%! assert_equal (T.PruneList', [1, 0, 0]);
-
-%!test
-%! ## A regression node holding a row back pays for it too
-%! ## One carsmall row has no horsepower and node 2 cuts on horsepower, so
-%! ## that row stops there and is in neither child.  Charging it the node's
-%! ## own error puts this alpha at 5.99 rather than 6.32.  Measured on
-%! ## R2024a, the fit fitrtree makes on this fixture.
-%! load carsmall
-%! X = [Weight, Cylinders, Horsepower];
-%! ok = ! isnan (MPG);
-%! o = struct ('NumClasses', 1, 'MinParent', 10, 'MinLeaf', 1, ...
-%!             'MaxSplits', 93, 'SplitCriterion', 'mse', ...
-%!             'MergeLeaves', true, 'Prune', true, 'QEToler', 1e-6);
-%! T = treetrain (X(ok, :), MPG(ok), ones (94, 1) / 94, o);
-%! assert_equal (T.NumNodes, 37);
-%! assert_equal (T.NodeSize(2) - sum (T.NodeSize(T.Children(2,:))), 1);
-%! assert_equal (T.PruneList(1:5)', [17, 16, 14, 15, 13]);
-%! assert_equal (numel (T.PruneAlpha), 18);
-%! assert_equal (T.PruneAlpha(17), 5.99325416896717, 1e-12);
-%! assert_equal (T.PruneAlpha(18), 41.4954735525515, 1e-11);
 
 %!test
 %! ## QEToler stops a node whose squared error is a small share of the root's
@@ -364,7 +265,7 @@ children.\n\
 %! y = (1:40)';
 %! o = struct ('NumClasses', 1, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 39, 'SplitCriterion', 'mse', ...
-%!             'MergeLeaves', true, 'Prune', false, 'QEToler', 1e-6);
+%!             'MergeLeaves', true, 'QEToler', 1e-6);
 %! loose = o;
 %! loose.QEToler = 0.05;
 %! assert_equal (treetrain (x, y, ones (40, 1) / 40, loose).NumNodes ...
@@ -374,7 +275,7 @@ children.\n\
 %! ## A single class, a single row and identical rows are each one leaf
 %! o = struct ('NumClasses', 2, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 19, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', true);
+%!             'MergeLeaves', true);
 %! w = ones (20, 1) / 20;
 %! assert_equal (treetrain (rand (20, 2), ones (20, 1), w, o).NumNodes, 1);
 %! assert_equal (treetrain ([1, 2], 1, 1, o).NumNodes, 1);
@@ -385,7 +286,7 @@ children.\n\
 %!shared o
 %! o = struct ('NumClasses', 2, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 19, 'SplitCriterion', 'gdi', ...
-%!             'MergeLeaves', true, 'Prune', true);
+%!             'MergeLeaves', true);
 %!error <treetrain: invalid number of input arguments.> treetrain (1, 2, 3);
 %!error <treetrain: invalid number of input arguments.> ...
 %! treetrain (1, 2, 3, o, 5);
