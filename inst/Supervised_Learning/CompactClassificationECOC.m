@@ -375,6 +375,63 @@ classdef CompactClassificationECOC
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn {CompactClassificationECOC} {@var{obj} =} discardSupportVectors (@var{obj})
+    ##
+    ## Give up the support vectors of the binary learners.
+    ##
+    ## @code{@var{obj} = discardSupportVectors (@var{obj})} empties
+    ## @code{Alpha}, @code{SupportVectors} and @code{SupportVectorLabels} on
+    ## every binary learner that is a support vector machine on a linear
+    ## kernel, whose linear model stands in for them exactly, so nothing the
+    ## model answers changes.  Any other learner is left as it is, a code
+    ## being free to mix them, and a model with no linear support vector
+    ## machine among its learners warns and is returned unchanged.
+    ##
+    ## @seealso{CompactClassificationECOC,
+    ## ClassificationSVM.discardSupportVectors}
+    ## @end deftypefn
+    function this = discardSupportVectors (this)
+
+      [learners, n] = ecocDiscardSVs (this.BinaryLearners);
+      if (n == 0)
+        warning (strcat ("CompactClassificationECOC.discardSupportVectors:", ...
+                         " no binary", ...
+                         " learner is a support vector machine on a", ...
+                         " linear kernel; nothing was discarded."));
+        return;
+      endif
+      this.BinaryLearners = learners;
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {CompactClassificationECOC} {@var{sub} =} selectModels (@var{obj}, @var{idx})
+    ##
+    ## Keep a subset of the fitted regularization strengths.
+    ##
+    ## @code{@var{sub} = selectModels (@var{obj}, @var{idx})} narrows every
+    ## binary learner to the strengths @var{idx} names, which may be indices
+    ## into the learner's @qcode{Lambda} or a logical vector over it.  Only a
+    ## linear learner is fitted over several strengths, so any other raises.
+    ##
+    ## @seealso{CompactClassificationECOC, ClassificationLinear.selectModels}
+    ## @end deftypefn
+    function sub = selectModels (this, idx)
+
+      if (nargin < 2)
+        error (strcat ("CompactClassificationECOC.selectModels: too few", ...
+                       " input arguments."));
+      endif
+      [learners, errmsg] = ecocSelectModels (this.BinaryLearners, idx);
+      if (! isempty (errmsg))
+        error ("CompactClassificationECOC.selectModels: %s", errmsg);
+      endif
+      sub = this;
+      sub.BinaryLearners = learners;
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationECOC} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactClassificationECOC} {@var{m} =} margin (@dots{}, @var{name}, @var{value})
     ##
@@ -625,6 +682,54 @@ endclassdef
 %! assert_equal (CMdl.BinaryLoss, 'hinge');
 %! CMdl.BinaryLoss = 'logit';
 %! assert_equal (CMdl.BinaryLoss, 'logit');
+
+%!test  # discarding support vectors changes nothing the model answers
+%! ## The linear model stands in for the vectors exactly, so the labels and
+%! ## the loss are what they were and only the memory is gone.
+%! load fisheriris
+%! Mdl = compact (fitcecoc (meas, species));
+%! assert_equal (size (Mdl.BinaryLearners{1}.SupportVectors), [3, 4]);
+%! D = discardSupportVectors (Mdl);
+%! assert_equal (class (D), 'CompactClassificationECOC');
+%! assert_equal (size (D.BinaryLearners{1}.SupportVectors), [0, 0]);
+%! assert_equal (isempty (D.BinaryLearners{1}.Alpha), true);
+%! assert_equal (predict (D, meas), predict (Mdl, meas));
+%! assert_equal (loss (D, meas, species), 0.0066666666666667, 1e-12);
+
+%!warning<CompactClassificationECOC.discardSupportVectors: no binary learner is a support vector machine on a linear kernel; nothing was discarded.> ...
+%! load fisheriris; ...
+%! M = fitcecoc (meas, species, 'Learners', 'tree'); ...
+%! discardSupportVectors (compact (M));
+
+%!test  # a code of trees is returned unchanged by discardSupportVectors
+%! load fisheriris
+%! Mdl = compact (fitcecoc (meas, species, 'Learners', 'tree'));
+%! ## The state is saved and put back rather than switched on: 'on' would
+%! ## enable warning classes Octave disables by default and leak them into
+%! ## every test that runs after this one.
+%! w = warning ('off', 'all');
+%! D = discardSupportVectors (Mdl);
+%! warning (w);
+%! assert_equal (predict (D, meas), predict (Mdl, meas));
+
+%!test  # selectModels narrows every binary learner to the same strengths
+%! load fisheriris
+%! L = fitcecoc (meas, species, ...
+%!               'Learners', templateLinear ('Lambda', [1e-4, 1e-3, 1e-2]));
+%! LC = L;
+%! assert_equal (LC.BinaryLearners{1}.Lambda, [1e-4, 1e-3, 1e-2], 1e-12);
+%! S = selectModels (LC, 2);
+%! assert_equal (class (S), 'CompactClassificationECOC');
+%! for j = 1:numel (S.BinaryLearners)
+%!   assert_equal (S.BinaryLearners{j}.Lambda, 1e-3, 1e-12);
+%! endfor
+
+%!error<CompactClassificationECOC.selectModels: too few input arguments.> ...
+%! load fisheriris; ...
+%! selectModels (compact (fitcecoc (meas, species)))
+%!error<CompactClassificationECOC.selectModels: the binary learners are 'ClassificationTree' models, which are fitted over one regularization strength and have none to select between.> ...
+%! load fisheriris; ...
+%! selectModels (compact (fitcecoc (meas, species, 'Learners', 'tree')), 1)
 
 ## Test input validation
 %!shared CMdl
