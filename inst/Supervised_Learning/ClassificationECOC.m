@@ -436,6 +436,108 @@ classdef ClassificationECOC
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationECOC} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationECOC} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross validate a @code{ClassificationECOC}.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} partitions the training data
+    ## into ten folds, fits the same model to each fold's training part, and
+    ## returns them as a @code{ClassificationPartitionedECOC}.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'KFold'} @tab @tab The number of folds, an integer greater
+    ## than one.  The default is ten, or the number of observations when there
+    ## are fewer than ten.
+    ##
+    ## @item @qcode{'Holdout'} @tab @tab The share of the data held out, a
+    ## number strictly between 0 and 1.
+    ##
+    ## @item @qcode{'Leaveout'} @tab @tab @qcode{'on'} for one fold per
+    ## observation, @qcode{'off'} otherwise.
+    ##
+    ## @item @qcode{'CVPartition'} @tab @tab A @code{cvpartition} object,
+    ## which names the folds outright.
+    ## @end multitable
+    ##
+    ## Only one of the four may be given.
+    ##
+    ## @seealso{ClassificationECOC, ClassificationPartitionedECOC, cvpartition}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      if (numel (varargin) == 1)
+        error (strcat ("ClassificationECOC.crossval: name-value arguments", ...
+                       " must be in pairs."));
+      elseif (numel (varargin) > 2)
+        error (strcat ("ClassificationECOC.crossval: specify only one of", ...
+                       " the optional name-value paired arguments."));
+      endif
+
+      if (this.NumObservations < 10)
+        numFolds = this.NumObservations;
+      else
+        numFolds = 10;
+      endif
+      Holdout = [];
+      Leaveout = 'off';
+      CVPartition = [];
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin{1}))
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && numFolds == fix (numFolds) && numFolds > 1))
+              error (strcat ("ClassificationECOC.crossval: 'KFold' must", ...
+                             " be an integer value greater than 1."));
+            endif
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat ("ClassificationECOC.crossval: 'Holdout' must", ...
+                             " be a numeric value between 0 and 1."));
+            endif
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && any (strcmpi (Leaveout, {'on', 'off'}))))
+              error (strcat ("ClassificationECOC.crossval: 'Leaveout' must", ...
+                             " be either 'on' or 'off'."));
+            endif
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (! isa (CVPartition, 'cvpartition'))
+              error (strcat ("ClassificationECOC.crossval: 'CVPartition'", ...
+                             " must be a 'cvpartition' object."));
+            endif
+          otherwise
+            error (strcat ("ClassificationECOC.crossval: invalid parameter", ...
+                           " name in optional paired arguments."));
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## The response is passed rather than a count so that the folds stay
+      ## stratified, as every other learner here does.
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (this.Y, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (this.NumObservations, 'LeaveOut');
+      else
+        partition = cvpartition (this.Y, 'KFold', numFolds);
+      endif
+
+      CVMdl = ClassificationPartitionedECOC (this, partition);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {ClassificationECOC} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Drop the training data from a @code{ClassificationECOC}.
@@ -745,7 +847,19 @@ endclassdef
 %! assert_equal (columns (ClassificationECOC (meas, species, ...
 %!                                            'Coding', M).CodingMatrix), 2);
 
+%!test  # crossval returns the ECOC partitioned class, not the general one
+%! load fisheriris
+%! CV = crossval (ClassificationECOC (meas, species, 'Learners', 'tree'));
+%! assert_equal (class (CV), 'ClassificationPartitionedECOC');
+%! assert_equal (CV.KFold, 10);
+%! assert_equal (CV.CodingMatrix, [1, 1, 0; -1, 0, 1; 0, -1, -1]);
+
 ## Test input validation
+%!error<ClassificationECOC.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (ClassificationECOC (ones (4, 2), [1; 2; 1; 2]), 'KFold', 1)
+%!error<ClassificationECOC.crossval: specify only one of the optional name-value paired arguments.> ...
+%! Mdl = ClassificationECOC (ones (4, 2), [1; 2; 1; 2]); ...
+%! crossval (Mdl, 'KFold', 2, 'Holdout', 0.3)
 %!error<ClassificationECOC: too few input arguments.> ...
 %! ClassificationECOC (ones (4, 2))
 %!error<ClassificationECOC: name-value arguments must be in pairs.> ...

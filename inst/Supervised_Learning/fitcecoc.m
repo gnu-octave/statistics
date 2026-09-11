@@ -100,7 +100,29 @@ function Mdl = fitcecoc (X, Y, varargin)
     error ("fitcecoc: number of rows in X and Y must be equal.");
   endif
 
+  ## A cross-validation option makes the fit a cross-validated one: the
+  ## model is fitted on all the data first, then partitioned, which is how
+  ## every other fitc* here reads these four.
+  cvnames = {'kfold', 'holdout', 'leaveout', 'cvpartition'};
+  iscv = cellfun (@(a) ischar (a) && isrow (a) ...
+                       && any (strcmpi (a, cvnames)), varargin(1:2:end));
+  cvargs = {};
+  if (any (iscv))
+    if (sum (iscv) > 1)
+      error (strcat ("fitcecoc: specify only one of 'KFold', 'Holdout',", ...
+                     " 'Leaveout' and 'CVPartition'."));
+    endif
+    at = 2 * find (iscv) - 1;
+    cvargs = varargin(at:at+1);
+    varargin(at:at+1) = [];
+  endif
+
   Mdl = ClassificationECOC (X, Y, varargin{:});
+
+  if (! isempty (cvargs))
+    Mdl = crossval (Mdl, cvargs{:});
+    return;
+  endif
 
   ## A learner that keeps no training data leaves nothing for the full class
   ## to hold, so the fit gives back the compact one.  Measured on R2024a.
@@ -187,7 +209,17 @@ endfunction
 %! assert_equal (Mdl.BinaryY(51,:), [-1, 0, 1]);
 %! assert_equal (Mdl.BinaryY(101,:), [0, -1, -1]);
 
+%!test  # MATLAB parity: a cross-validation option gives a partitioned model
+%! load fisheriris
+%! CV = fitcecoc (meas, species, 'KFold', 5);
+%! assert_equal (class (CV), 'ClassificationPartitionedECOC');
+%! assert_equal (CV.KFold, 5);
+%! assert_equal (class (fitcecoc (meas, species, 'Holdout', 0.3)), ...
+%!               'ClassificationPartitionedECOC');
+
 ## Test input validation
+%!error<fitcecoc: specify only one of 'KFold', 'Holdout', 'Leaveout' and 'CVPartition'.> ...
+%! fitcecoc (ones (8, 2), [1; 2; 1; 2; 1; 2; 1; 2], 'KFold', 2, 'Holdout', 0.3)
 %!error<fitcecoc: too few input arguments.> fitcecoc (ones (4, 2))
 %!error<fitcecoc: name-value arguments must be in pairs.> ...
 %! fitcecoc (ones (4, 2), [1; 2; 1; 2], 'Coding')

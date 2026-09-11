@@ -132,6 +132,7 @@ Supervised Learning
  ClassificationLinear
  ClassificationNaiveBayes
  ClassificationNeuralNetwork
+ ClassificationPartitionedECOC
  ClassificationPartitionedKernel
  ClassificationPartitionedLinear
  ClassificationPartitionedModel
