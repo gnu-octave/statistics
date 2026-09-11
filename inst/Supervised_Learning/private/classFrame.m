@@ -17,16 +17,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {@var{F} =} classFrame (@var{X}, @var{Y}, @var{ClassNames}, @var{Prior}, @var{Cost}, @var{Weights}, @var{classname})
+## @deftypefn  {Private Function} {@var{F} =} classFrame (@var{X}, @var{Y}, @var{ClassNames}, @var{Prior}, @var{Cost}, @var{Weights}, @var{classname})
+## @deftypefnx {Private Function} {@var{F} =} classFrame (@dots{}, @var{binary})
 ##
 ## Resolve the classes, the prior, the cost and the observation weights of a
-## binary classifier.
+## classifier.
 ##
 ## The four linear and kernel classifiers all begin the same way: group the
 ## response, keep only the named classes, drop the rows that are not
 ## complete, and turn what survives into a signed response and a weight per
 ## observation.  @var{F} is a structure carrying the results, so that the
 ## classifier and its cross-validated counterpart cannot drift apart.
+##
+## @var{binary} says whether exactly two classes are wanted, which is the
+## default and what the four linear and kernel classifiers want, or two or
+## more, which is what the ECOC model wants.
 ##
 ## Fields: @qcode{X} and @qcode{Y}, the retained data; @qcode{RowsUsed}, a
 ## logical over the rows as supplied; @qcode{gY}, the class index of each
@@ -41,7 +46,8 @@
 ##
 ## @end deftypefn
 
-function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, classname)
+function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
+                         classname, binary = true)
 
   if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ndims (X) == 2))
     error ("%s: invalid values in X.", classname);
@@ -102,10 +108,15 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, classname)
   F.ClassNames = glY;
   [F.n, F.p] = size (F.X);
 
-  if (nclasses != 2)
+  ## A binary model takes exactly two classes; a multiclass one takes two or
+  ## more.  BINARY says which is being built, and defaults to the binary
+  ## case, which is what every caller but the ECOC model wants.
+  if (binary && nclasses != 2)
     error (strcat ("%s: Y must name exactly two classes, this being a", ...
                    " binary model; use fitcecoc for more than two."), ...
            classname);
+  elseif (! binary && nclasses < 2)
+    error ("%s: Y must name at least two classes.", classname);
   endif
 
   ## Prior defaults to the weighted frequencies of the training data and
