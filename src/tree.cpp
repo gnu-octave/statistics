@@ -141,6 +141,160 @@ struct TreeOpts
 // Grow a tree and return it as one node table.  Shared by treetrain, which
 // fits it, and used by treepredict through the descent below, so that the two
 // halves of the same rule cannot drift apart.
+// Cost complexity pruning, by weakest link.  A branch node's link is the risk
+// it would take on as a leaf, less the risk its subtree carries now, spread
+// over the leaves the subtree would give up.  The branch with the smallest
+// link is pruned, the sequence repeats on what is left, and the level a node
+// is pruned at is its place in that sequence.  Leaves never carry a level, so
+// a tree of B branches gives B levels and B + 1 alphas, the first of which is
+// zero and stands for the unpruned tree.
+//
+// RISK is what each node would carry as a leaf and HELD what a branch carries
+// for the rows that stop there, on whatever scale the caller measures by.
+// Taking both rather than deriving them is what lets a tree be sequenced
+// after it was grown, and on a scale the engine knows nothing of: a caller
+// holding a cost matrix passes the risk that matrix defines.
+static void
+tree_prune_sequence (const Matrix& children, const ColumnVector& parent,
+                     const std::vector<double>& risk,
+                     const std::vector<double>& held,
+                     ColumnVector& prunelist, ColumnVector& prunealpha)
+{
+  const octave_idx_type out = children.rows ();
+  prunelist = ColumnVector (out, 0.0);
+  prunealpha = ColumnVector (0, 0.0);
+  if (out <= 0)
+    return;
+
+  std::vector<octave_idx_type> kidl (out), kidr (out);
+  for (octave_idx_type i = 0; i < out; i++)
+    {
+      kidl[i] = static_cast<octave_idx_type> (children(i, 0));
+      kidr[i] = static_cast<octave_idx_type> (children(i, 1));
+    }
+
+  std::vector<double> subrisk (out);
+  std::vector<octave_idx_type> subleaves (out);
+  std::vector<bool> reach (out);
+  // The branches given up at no cost, which are no part of the sequence
+  std::vector<bool> freed (out, false);
+  std::vector<double> alphas;
+  octave_idx_type level = 0;
+
+  while (kidl[0] != 0)
+    {
+      // A pruned branch takes its whole subtree with it, so only what is
+      // still reachable from the root can be a candidate.  Left in, those
+      // orphans go on offering links of their own and split one level
+      // into several.
+      std::fill (reach.begin (), reach.end (), false);
+      reach[0] = true;
+      for (octave_idx_type i = 0; i < out; i++)
+        if (reach[i] && kidl[i] != 0)
+          {
+            reach[kidl[i]-1] = true;
+            reach[kidr[i]-1] = true;
+          }
+
+      // Subtree risk and leaf count, deepest first.
+      for (octave_idx_type i = out - 1; i >= 0; i--)
+        {
+          if (kidl[i] == 0)
+            {
+              subrisk[i] = risk[i];
+              subleaves[i] = 1;
+            }
+          else
+            {
+              subrisk[i] = subrisk[kidl[i]-1]
+                           + subrisk[kidr[i]-1] + held[i];
+              subleaves[i] = subleaves[kidl[i]-1] + subleaves[kidr[i]-1];
+            }
+        }
+
+      bool any = false;
+      double weakest = 0.0;
+      for (octave_idx_type i = 0; i < out; i++)
+        {
+          if (kidl[i] == 0 || ! reach[i])
+            continue;
+          double link = (risk[i] - subrisk[i]) / (subleaves[i] - 1);
+          if (! any || link < weakest)
+            {
+              weakest = link;
+              any = true;
+            }
+        }
+
+      if (! any)
+        break;
+
+      // A subtree that costs nothing to give up is no step of the
+      // sequence.  It is what merging leaves would have removed, and it
+      // survives to be seen here only when the caller asked for a
+      // sequence without a merge.  Such a branch is given up all the
+      // same, so that the branches above it are priced on what is left,
+      // but it opens no level and takes no alpha: measured on R2024a,
+      // where an unmerged iris tree of eleven nodes carries the merged
+      // tree's five alphas rather than six.
+      const double tol = GAIN_TIE_TOL * std::max (std::fabs (risk[0]), 1.0);
+      const bool free = (weakest <= tol);
+
+      // Every branch whose link is the weakest goes at this level, not
+      // just one of them, and links equal in exact arithmetic can differ
+      // in their last bits here as split gains do.
+      if (! free)
+        {
+          level++;
+          alphas.push_back (weakest);
+        }
+      const double cut = weakest + std::fabs (weakest) * GAIN_TIE_TOL + tol;
+      for (octave_idx_type i = 0; i < out; i++)
+        {
+          if (kidl[i] == 0 || ! reach[i])
+            continue;
+          if ((risk[i] - subrisk[i]) / (subleaves[i] - 1) <= cut)
+            {
+              if (free)
+                freed[i] = true;
+              else
+                prunelist(i) = level;
+              kidl[i] = kidr[i] = 0;
+            }
+        }
+    }
+
+  // A branch inside a subtree given up at no cost is no part of the
+  // sequence either, its ancestor having left it at no level.  A parent
+  // always precedes its children, so one forward pass carries the mark
+  // down.
+  for (octave_idx_type i = 1; i < out; i++)
+    {
+      octave_idx_type a = static_cast<octave_idx_type> (parent(i));
+      if (a > 0 && freed[a - 1])
+        freed[i] = true;
+    }
+
+  // A branch that lost an ancestor never came up for pruning on its own
+  // account, but it stopped being a branch when that ancestor went, and
+  // that is the level it carries.
+  for (octave_idx_type i = 0; i < out; i++)
+    {
+      if (children(i, 0) == 0 || prunelist(i) != 0 || freed[i])
+        continue;
+      octave_idx_type a = static_cast<octave_idx_type> (parent(i));
+      while (a > 0 && prunelist(a - 1) == 0)
+        a = static_cast<octave_idx_type> (parent(a - 1));
+      if (a > 0)
+        prunelist(i) = prunelist(a - 1);
+    }
+
+  prunealpha.resize (level + 1);
+  prunealpha(0) = 0.0;
+  for (octave_idx_type i = 0; i < level; i++)
+    prunealpha(i + 1) = alphas[i];
+}
+
 static octave_scalar_map
 tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
             const TreeOpts& o)
@@ -629,14 +783,9 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           }
     }
 
-  // Cost complexity pruning, by weakest link.  A branch node's link is the
-  // risk it would take on as a leaf, less the risk its subtree carries now,
-  // spread over the leaves the subtree would give up.  The branch with the
-  // smallest link is pruned, the sequence repeats on what is left, and the
-  // level a node is pruned at is its place in that sequence.  Leaves never
-  // carry a level, so a tree of B branches gives B levels and B + 1 alphas,
-  // the first of which is zero and stands for the unpruned tree.
-  ColumnVector prunelist (prune ? out : 0, 0.0);
+  // The sequence is tree_prune_sequence above, which a tree already
+  // grown reaches through __treeprune__ instead.
+  ColumnVector prunelist (0, 0.0);
   ColumnVector prunealpha (0, 0.0);
   if (prune && out > 0)
     {
@@ -675,133 +824,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           held[i] = wheld * risk[i] / nodeweight(i);
         }
 
-      std::vector<octave_idx_type> kidl (out), kidr (out);
-      for (octave_idx_type i = 0; i < out; i++)
-        {
-          kidl[i] = static_cast<octave_idx_type> (children(i, 0));
-          kidr[i] = static_cast<octave_idx_type> (children(i, 1));
-        }
-
-      std::vector<double> subrisk (out);
-      std::vector<octave_idx_type> subleaves (out);
-      std::vector<bool> reach (out);
-      // The branches given up at no cost, which are no part of the sequence
-      std::vector<bool> freed (out, false);
-      std::vector<double> alphas;
-      octave_idx_type level = 0;
-
-      while (kidl[0] != 0)
-        {
-          // A pruned branch takes its whole subtree with it, so only what is
-          // still reachable from the root can be a candidate.  Left in, those
-          // orphans go on offering links of their own and split one level
-          // into several.
-          std::fill (reach.begin (), reach.end (), false);
-          reach[0] = true;
-          for (octave_idx_type i = 0; i < out; i++)
-            if (reach[i] && kidl[i] != 0)
-              {
-                reach[kidl[i]-1] = true;
-                reach[kidr[i]-1] = true;
-              }
-
-          // Subtree risk and leaf count, deepest first.
-          for (octave_idx_type i = out - 1; i >= 0; i--)
-            {
-              if (kidl[i] == 0)
-                {
-                  subrisk[i] = risk[i];
-                  subleaves[i] = 1;
-                }
-              else
-                {
-                  subrisk[i] = subrisk[kidl[i]-1]
-                               + subrisk[kidr[i]-1] + held[i];
-                  subleaves[i] = subleaves[kidl[i]-1] + subleaves[kidr[i]-1];
-                }
-            }
-
-          bool any = false;
-          double weakest = 0.0;
-          for (octave_idx_type i = 0; i < out; i++)
-            {
-              if (kidl[i] == 0 || ! reach[i])
-                continue;
-              double link = (risk[i] - subrisk[i]) / (subleaves[i] - 1);
-              if (! any || link < weakest)
-                {
-                  weakest = link;
-                  any = true;
-                }
-            }
-
-          if (! any)
-            break;
-
-          // A subtree that costs nothing to give up is no step of the
-          // sequence.  It is what merging leaves would have removed, and it
-          // survives to be seen here only when the caller asked for a
-          // sequence without a merge.  Such a branch is given up all the
-          // same, so that the branches above it are priced on what is left,
-          // but it opens no level and takes no alpha: measured on R2024a,
-          // where an unmerged iris tree of eleven nodes carries the merged
-          // tree's five alphas rather than six.
-          const double tol = GAIN_TIE_TOL * std::max (std::fabs (risk[0]), 1.0);
-          const bool free = (weakest <= tol);
-
-          // Every branch whose link is the weakest goes at this level, not
-          // just one of them, and links equal in exact arithmetic can differ
-          // in their last bits here as split gains do.
-          if (! free)
-            {
-              level++;
-              alphas.push_back (weakest);
-            }
-          const double cut = weakest + std::fabs (weakest) * GAIN_TIE_TOL + tol;
-          for (octave_idx_type i = 0; i < out; i++)
-            {
-              if (kidl[i] == 0 || ! reach[i])
-                continue;
-              if ((risk[i] - subrisk[i]) / (subleaves[i] - 1) <= cut)
-                {
-                  if (free)
-                    freed[i] = true;
-                  else
-                    prunelist(i) = level;
-                  kidl[i] = kidr[i] = 0;
-                }
-            }
-        }
-
-      // A branch inside a subtree given up at no cost is no part of the
-      // sequence either, its ancestor having left it at no level.  A parent
-      // always precedes its children, so one forward pass carries the mark
-      // down.
-      for (octave_idx_type i = 1; i < out; i++)
-        {
-          octave_idx_type a = static_cast<octave_idx_type> (parent(i));
-          if (a > 0 && freed[a - 1])
-            freed[i] = true;
-        }
-
-      // A branch that lost an ancestor never came up for pruning on its own
-      // account, but it stopped being a branch when that ancestor went, and
-      // that is the level it carries.
-      for (octave_idx_type i = 0; i < out; i++)
-        {
-          if (children(i, 0) == 0 || prunelist(i) != 0 || freed[i])
-            continue;
-          octave_idx_type a = static_cast<octave_idx_type> (parent(i));
-          while (a > 0 && prunelist(a - 1) == 0)
-            a = static_cast<octave_idx_type> (parent(a - 1));
-          if (a > 0)
-            prunelist(i) = prunelist(a - 1);
-        }
-
-      prunealpha.resize (level + 1);
-      prunealpha(0) = 0.0;
-      for (octave_idx_type i = 0; i < level; i++)
-        prunealpha(i + 1) = alphas[i];
+      tree_prune_sequence (children, parent, risk, held, prunelist,
+                           prunealpha);
     }
 
   octave_scalar_map T;

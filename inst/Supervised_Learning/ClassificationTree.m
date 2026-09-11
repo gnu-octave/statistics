@@ -2328,8 +2328,8 @@ classdef ClassificationTree
     function this = pruneSequence (this)
 
       [this.PruneList, this.PruneAlpha] = ...
-        treePruneSequence (this.Children, this.Parent, costRisk (this), ...
-                           this.HeldRisk);
+        __treeprune__ (this.Children, this.Parent, costRisk (this), ...
+                       this.HeldRisk);
 
     endfunction
 

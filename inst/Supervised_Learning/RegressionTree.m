@@ -1897,7 +1897,7 @@ classdef RegressionTree
 
       risk = this.NodeProbability .* this.NodeError;
       [this.PruneList, this.PruneAlpha] = ...
-        treePruneSequence (this.Children, this.Parent, risk, this.HeldRisk);
+        __treeprune__ (this.Children, this.Parent, risk, this.HeldRisk);
 
     endfunction
 

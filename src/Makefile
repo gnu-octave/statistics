@@ -6,7 +6,7 @@ OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            gamtrain.oct gampredict.oct gamboosttrain.oct gamboostpredict.oct \
            gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct \
            __knnselect__.oct __knnbrute__.oct \
-           treetrain.oct treepredict.oct
+           treetrain.oct treepredict.oct __treeprune__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -89,3 +89,8 @@ treetrain.oct: treetrain.cc tree.cpp
 
 treepredict.oct: treepredict.cc tree.cpp
 	$(MKOCTFILE) treepredict.cc
+
+# The pruning sequence on its own, for a tree that is already grown: prune
+# has no data left and a model read back from a file never had any.
+__treeprune__.oct: __treeprune__.cc tree.cpp
+	$(MKOCTFILE) __treeprune__.cc
