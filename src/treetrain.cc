@@ -338,6 +338,26 @@ children.\n\
 %! assert_equal (T.PruneList', [1, 0, 0]);
 
 %!test
+%! ## A regression node holding a row back pays for it too
+%! ## One carsmall row has no horsepower and node 2 cuts on horsepower, so
+%! ## that row stops there and is in neither child.  Charging it the node's
+%! ## own error puts this alpha at 5.99 rather than 6.32.  Measured on
+%! ## R2024a, the fit fitrtree makes on this fixture.
+%! load carsmall
+%! X = [Weight, Cylinders, Horsepower];
+%! ok = ! isnan (MPG);
+%! o = struct ('NumClasses', 1, 'MinParent', 10, 'MinLeaf', 1, ...
+%!             'MaxSplits', 93, 'SplitCriterion', 'mse', ...
+%!             'MergeLeaves', true, 'Prune', true, 'QEToler', 1e-6);
+%! T = treetrain (X(ok, :), MPG(ok), ones (94, 1) / 94, o);
+%! assert_equal (T.NumNodes, 37);
+%! assert_equal (T.NodeSize(2) - sum (T.NodeSize(T.Children(2,:))), 1);
+%! assert_equal (T.PruneList(1:5)', [17, 16, 14, 15, 13]);
+%! assert_equal (numel (T.PruneAlpha), 18);
+%! assert_equal (T.PruneAlpha(17), 5.99325416896717, 1e-12);
+%! assert_equal (T.PruneAlpha(18), 41.4954735525515, 1e-11);
+
+%!test
 %! ## QEToler stops a node whose squared error is a small share of the root's
 %! g = mod ((1:40)', 7);
 %! x = [(1:40)', g];
