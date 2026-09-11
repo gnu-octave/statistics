@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 13
+# columns: 15
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -704,6 +704,110 @@ Note on LIBSVM 3.36 Update : This implementation is based on LIBSVM 3.36 (2025) 
 # elements: 1
 # length: 119
 This function trains an SVM model based on known labels and their corresponding data which comprise an instance matrix.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1069
+statistics: V = treepredict ( X , Children , CutPredictorIndex , CutPoint , Value )
+statistics: [ V , node ] = treepredict (&hellip;)
+
+Evaluate a binary decision tree on new data.
+
+V = treepredict ( X , Children ,
+CutPredictorIndex , CutPoint , Value ) sends each row of the
+NxP matrix X down the tree and returns the value of the node it
+comes to rest at. It is the prediction engine shared by
+ClassificationTree and RegressionTree , and is not meant to be
+called directly.
+
+Children , CutPredictorIndex and CutPoint are the node table
+returned by treetrain , a zero in Children marking a leaf.
+Value carries one row per node: the class probabilities of a
+classifier, in which case V is NxK , or the mean of a
+regression, in which case it is Nx1 .
+
+[ V , node ] = treepredict (&hellip;) also returns the index
+of the node each row came to rest at.
+
+A row is stopped by the first node whose split predictor it is missing, and
+takes that node&rsquo;s value, which is how such a row was held back rather than
+sent to a child while the tree was grown.
+
+See also:
+treetrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+CutPredictorIndex, CutPoint, Value) @deftypefnx {statistics} {[V, node] =} treepredict ()
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+treetrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1338
+statistics: Mdl = treetrain ( X , Y , W , opts )
+
+Grow a binary decision tree by recursive partitioning.
+
+Mdl = treetrain ( X , Y , W , opts ) grows a
+tree on the NxP predictor matrix X and returns it as a structure
+with one row per node. It is the fitting engine shared by
+ClassificationTree and RegressionTree , and is not meant to be
+called directly.
+
+Y is an Nx1 vector of class indices in 1:K when fitting a
+classifier and the response itself when fitting a regression. W is an
+Nx1 vector of observation weights, already adjusted for any prior.
+
+opts is a structure carrying NumClasses , MinParent ,
+MinLeaf , MaxSplits , SplitCriterion ,
+MergeLeaves and, for a regression, QEToler .
+SplitCriterion is "gdi" or "deviance" for a
+classifier and "mse" for a regression, and it is what selects
+between the two.
+
+The returned structure holds Children , Parent ,
+CutPredictorIndex , CutPoint , IsBranchNode ,
+NodeSize , NodeWeight and NumNodes , plus
+ClassWeight and ClassCount for a classifier or
+NodeMean and NodeError for a regression.
+Nodes are numbered as they are created, so a parent always precedes its
+children.
+
+The cost complexity pruning sequence is not built here. A tree outlives
+the data it was grown on, so the sequence is __treeprune__ , which
+takes a node table and the risk the caller measures by.
+
+See also:
+treepredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+opts)
 
 
 

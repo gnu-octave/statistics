@@ -1684,7 +1684,7 @@ dwtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1829
+# length: 2175
 statistics: p = dwtest ( r , x )
 statistics: p = dwtest ( r , x , name , value )
 statistics: [ p , d ] = dwtest (&hellip;)
@@ -1725,6 +1725,13 @@ p is 0 for 'right' and 'both' and 1 for
 'left' with the exact method, and NaN with the approximate
 method. A p of exactly 0 or 1 signals this rather than strong
 evidence.
+
+If r is empty, p is 0 and d is NaN . MATLAB
+returns d = 0 for some empty inputs, a 0&times;3 array among them,
+and NaN for [] and for zero-length vectors; d is
+NaN here for every empty r , the statistic being undefined in
+all of them alike. MATLAB also accepts a character array as r and
+returns the empty result for it; r must be numeric here.
 
 See also:
 regress,
@@ -2014,7 +2021,7 @@ jbtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2989
+# length: 3148
 statistics: h = jbtest ( x )
 statistics: h = jbtest ( x , alpha )
 statistics: h = jbtest ( x , alpha , mctol )
@@ -2072,6 +2079,10 @@ narrow band of statistic values around the critical value) the test decision
 h , can differ slightly from MATLAB in edge cases. These differences are
 an unavoidable consequence of the Monte-Carlo origin of both tables, not a
 difference in method. Supply mctol for a direct Monte-Carlo p-value.
+
+If x has zero variance (or is otherwise degenerate so that skewness
+and kurtosis are undefined), jbstat is NaN ; in this case
+p is reported as 0 and h as 1 .
 
 See also:
 kstest,
@@ -2781,7 +2792,7 @@ ranksum
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2814
+# length: 2821
 statistics: p = ranksum ( x , y )
 statistics: p = ranksum ( x , y , alpha )
 statistics: p = ranksum ( x , y , alpha , Name , Value )
@@ -2812,8 +2823,8 @@ same significance level.
 [ p , h , stats ] = ranksum ( x , y ) also
 returns the structure stats with information about the test statistic.
 It contains the field ranksum with the value of the rank sum test
-statistic and if computed with the "approximate" method it also contains the
-value of the z-statistic in the field zval .
+statistic, and the field zval with the value of the z-statistic when
+computed with the "approximate" method, or empty otherwise.
 
 [&hellip;] = ranksum ( x , y , alpha ) or alternatively
 [&hellip;] = ranksum ( x , y , "alpha", alpha ) returns
@@ -2996,7 +3007,7 @@ runstest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1797
+# length: 2076
 statistics: h = runstest ( x )
 statistics: h = runstest ( x , v )
 statistics: h = runstest ( x , 'ud' )
@@ -3039,6 +3050,12 @@ and the length of x is greater than 50, then the default is
 'both' two-tailed (default)
 'left' left-tailed
 'right' right-tailed
+
+If x is empty, h is 0, pval is 1, and the fields of
+stats are nruns and z both NaN and n1 and
+n0 both 0, which is also what a sample that is empty after ties are
+removed returns. MATLAB accepts a character array as x and returns
+the empty result for it; x must be numeric here.
 
 See also:
 signrank,

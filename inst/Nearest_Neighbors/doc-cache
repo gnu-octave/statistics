@@ -13,7 +13,7 @@ ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 715
+# length: 716
 statistics: ExhaustiveSearcher
 
 Exhaustive nearest neighbor searcher
@@ -33,7 +33,7 @@ See also:
 createns,
 KDTreeSearcher,
 hnswSearcher,
-knnsearch,
+knnsearch ,
 rangesearch
 
 
@@ -119,7 +119,7 @@ ExhaustiveSearcher.ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1506
+# length: 1508
 ExhaustiveSearcher: obj = ExhaustiveSearcher ( X )
 ExhaustiveSearcher: obj = ExhaustiveSearcher ( X , name , value )
 
@@ -158,8 +158,8 @@ DistParameter properties keep their values, as they do in MATLAB.
 
 See also:
 ExhaustiveSearcher,
-knnsearch,
-rangesearch,
+knnsearch ,
+rangesearch ,
 pdist2
 
 
@@ -212,7 +212,7 @@ ExhaustiveSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1363
+# length: 1364
 ExhaustiveSearcher: [ idx , D ] = knnsearch ( obj , Y )
 ExhaustiveSearcher: [ idx , D ] = knnsearch ( obj , Y , name , value )
 
@@ -250,7 +250,7 @@ D contains the corresponding distances.
 
 See also:
 ExhaustiveSearcher,
-rangesearch,
+rangesearch ,
 pdist2
 
 
@@ -272,7 +272,7 @@ ExhaustiveSearcher.rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1140
+# length: 1141
 ExhaustiveSearcher: [ idx , D ] = rangesearch ( obj , Y , r )
 ExhaustiveSearcher: [ idx , D ] = rangesearch ( obj , Y , r , name , value )
 
@@ -305,7 +305,7 @@ indices and distances for one query point in Y .
 
 See also:
 ExhaustiveSearcher,
-knnsearch,
+knnsearch ,
 pdist2
 
 
@@ -327,7 +327,7 @@ KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 762
+# length: 763
 statistics: KDTreeSearcher
 
 KD-tree nearest neighbor searcher
@@ -348,7 +348,7 @@ See also:
 createns,
 ExhaustiveSearcher,
 hnswSearcher,
-knnsearch,
+knnsearch ,
 rangesearch
 
 
@@ -459,7 +459,7 @@ KDTreeSearcher.KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1315
+# length: 1317
 KDTreeSearcher: obj = KDTreeSearcher ( X )
 KDTreeSearcher: obj = KDTreeSearcher ( X , name , value )
 
@@ -497,8 +497,8 @@ cannot search.
 
 See also:
 KDTreeSearcher,
-knnsearch,
-rangesearch,
+knnsearch ,
+rangesearch ,
 createns
 
 
@@ -951,7 +951,7 @@ hnswSearcher.hnswSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1353
+# length: 1354
 hnswSearcher: obj = hnswSearcher ( X )
 hnswSearcher: obj = hnswSearcher ( X , name , value )
 
@@ -988,7 +988,7 @@ list during graph construction, a positive integer. Default is 200.
 
 See also:
 hnswSearcher,
-knnsearch,
+knnsearch ,
 createns,
 pdist2
 

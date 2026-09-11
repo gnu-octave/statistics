@@ -311,11 +311,13 @@ grpstats
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5899
+# length: 6530
 statistics: stats = grpstats ( x )
 statistics: stats = grpstats ( x , group )
+statistics: [ means , sem , counts , gname ] = grpstats ( x , group )
 statistics: [ stats1 , &hellip;, statsN ] = grpstats ( x , group , whichstats )
 statistics: [ stats1 , &hellip;, statsN ] = grpstats ( x , group , whichstats , 'Alpha' , alpha )
+statistics: tblstats = grpstats ( tbl )
 statistics: tblstats = grpstats ( tbl , groupvars )
 statistics: tblstats = grpstats ( tbl , groupvars , whichstats )
 statistics: tblstats = grpstats ( tbl , groupvars , whichstats , Name , Value )
@@ -344,7 +346,17 @@ supported by the grp2idx function. Alternatively, it can be a cell
 vector specifying multiple grouping variables with each cell element
 containing any of the aforementioned supported grouping vectors. If
 group is empty ( [] ), then input x is treated as a single
-group.
+group. A group whose values are all missing is dropped, so a grouping
+variable that is entirely missing leaves no groups at all.
+
+[ means , sem , counts , gname ] = grpstats
+( x , group ) returns, without naming any statistic, the mean, the
+standard error of the mean, the number of non- NaN values and the
+group names, in that order. Up to four outputs may be requested this way.
+
+An empty x produces empty output with as many columns as x and
+no rows, one row per group being the general rule and an empty x
+having no groups.
 
 [ stats1 , &hellip;, statsN ] = grpstats ( x , group ,
 whichstats ) calculates the summary statistics specified by the
@@ -448,8 +460,8 @@ grp2idx
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 464
-(x, group, whichstats) @deftypefnx {statistics} {[stats1, , statsN] =} grpstats @ (x, group, whichstats, 'Alpha', alpha) @deftypefnx {statistics} {tblstats =} grpstats (tbl, groupvars) @deftypefnx {statistics} {tblstats =} grpstats (tbl, groupvars, whichstats) @deftypefnx {statistics} {tblstats =} grpstats (tbl, groupvars, @ whichstats, Name, Value) @deftypefnx {statistics} {} grpstats (x, group, alpha) @deftypefnx {statistics} {h =} grpstats (x, group, alpha)
+# length: 596
+grpstats (x, group) @deftypefnx {statistics} {[stats1, , statsN] =} grpstats @ (x, group, whichstats) @deftypefnx {statistics} {[stats1, , statsN] =} grpstats @ (x, group, whichstats, 'Alpha', alpha) @deftypefnx {statistics} {tblstats =} grpstats (tbl) @deftypefnx {statistics} {tblstats =} grpstats (tbl, groupvars) @deftypefnx {statistics} {tblstats =} grpstats (tbl, groupvars, whichstats) @deftypefnx {statistics} {tblstats =} grpstats (tbl, groupvars, @ whichstats, Name, Value) @deftypefnx {statistics} {} grpstats (x, group, alpha) @deftypefnx {statistics} {h =} grpstats (x, group, alpha)
 
 
 

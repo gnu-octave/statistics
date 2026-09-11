@@ -69,7 +69,7 @@ loadmodel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 393
+# length: 413
 statistics: obj = loadmodel ( filename )
 
 Load a Classification or Regression model from a file.
@@ -85,6 +85,7 @@ ClassificationKNN,
 ClassificationNeuralNetwork,
 ClassificationPartitionedModel,
 ClassificationSVM,
+ClassificationTree,
 RegressionGAM
 
 
@@ -137,7 +138,7 @@ makima
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1632
+# length: 1728
 statistics: yi = makima ( x , y , xq )
 statistics: yi = makima ( y , xq )
 statistics: yi = makima (&hellip;, 'extrap' )
@@ -159,7 +160,9 @@ y accordingly.
 The sample values y can be a scalar, vector, or an N-dimensional
 array. If y is an N-dimensional array, the interpolation is
 performed along its last dimension, which must have the same length as
-x . Complex values for y are supported.
+x . Complex values for y are supported. Sample points where
+x or y is NaN are dropped in pairs before the fit,
+and a warning is issued.
 
 If query points xq are provided, the function evaluates the
 interpolant and returns the interpolated values yi . By default,
