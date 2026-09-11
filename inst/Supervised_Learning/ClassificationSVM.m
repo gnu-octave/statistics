@@ -990,10 +990,14 @@ classdef ClassificationSVM
                        " one-class or two-class learning."));
       endif
 
-      ## Force Y into numeric
-      if (! isnumeric (Y))
-        Y = gY;
-      endif
+      ## The solver is given the class indices, never the labels themselves.
+      ## A numeric label is not an index, so recoding one below would leave
+      ## it as it stands, and labels of -1 and +1 are the single pair LIBSVM
+      ## reorders: svm_group_classes swaps them so that its first class is
+      ## the +1 one, after which every label read back is the other class.
+      ## Taking the indices first makes the response the same whatever the
+      ## labels are named.
+      Y = gY;
 
       ## Force Y labels to -1 and +1 to avoid numeric issues with different
       ## compiling options; see https://github.com/cjlin1/libsvm/issues/220
@@ -2520,6 +2524,36 @@ endclassdef
 %!                   'KernelFunction', 'rbf');
 %! assert_equal (mean (resubPredict (Mdl) == Y), ...
 %!               mean (resubPredict (byhand) == Y));
+
+%!test  # the fit does not depend on what the two classes are called
+%! ## LIBSVM reorders a two-class problem labelled -1 and +1 so that its
+%! ## first class is the +1 one, and the class indices are what it is given
+%! ## so that this cannot reach the labels read back.  Before, a numeric
+%! ## response went through as it stood and every label came back the other
+%! ## one: on this fixture resubLoss was 1 rather than 0.
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! X = [randn(20, 2); randn(20, 2) + 6];
+%! truth = [ones(20, 1); 2 * ones(20, 1)];
+%! names = {[-1; 1], [1; 2], [0; 1], [5; 7], [2; 1]};
+%! for i = 1:numel (names)
+%!   lab = names{i};
+%!   Mdl = ClassificationSVM (X, lab(truth));
+%!   assert_equal (resubLoss (Mdl), 0);
+%!   assert_equal (predict (Mdl, X), lab(truth));
+%! endfor
+
+%!test  # a numeric response and a textual one give the same fit
+%! rand ('seed', 42);
+%! randn ('seed', 42);
+%! X = [randn(20, 2); randn(20, 2) + 6];
+%! truth = [ones(20, 1); 2 * ones(20, 1)];
+%! num = ClassificationSVM (X, [-1; 1](truth));
+%! txt = ClassificationSVM (X, {'neg', 'pos'}'(truth));
+%! [~, snum] = predict (num, X);
+%! [~, stxt] = predict (txt, X);
+%! assert_equal (snum, stxt, 1e-12);
+%! assert_equal (num.Beta, txt.Beta, 1e-12);
 
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
