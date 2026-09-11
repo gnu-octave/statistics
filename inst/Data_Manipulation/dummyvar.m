@@ -37,7 +37,10 @@
 ##
 ## @item a positive integer matrix with each column corresponding to a separate
 ## grouping variable and the integer values representing the group levels within
-## that grouping variable in the ordered range @code{1:max (@var{group})}.
+## that grouping variable in the ordered range @code{1:max (@var{group})}.  A
+## @code{NaN} in a column produces a row of @code{NaN} values in that column's
+## own block of dummy variables in @var{D}, without affecting the columns
+## produced by any other grouping variable.
 ##
 ## @item a @qcode{categorical} column vector, in which case the number and order
 ## of columns in @var{D} correspond to the categories returned by
@@ -94,7 +97,9 @@ function D = dummyvar (g)
       error (strcat ("dummyvar: numeric grouping variable", ...
                      " must be either a vector or a matrix."));
     endif
-    if (any (g(:) <= 0) || any (g(:) != fix (g(:))))
+    gv = g(:);
+    gv = gv(! isnan (gv));
+    if (any (gv <= 0) || any (gv != fix (gv)))
       error (strcat ("dummyvar: numeric grouping variable", ...
                      " must explicitly contain positive integers."));
     endif
@@ -106,7 +111,7 @@ function D = dummyvar (g)
       nc = 1;
     endif
 
-    K = max (g, [], 1);
+    K = max (g, [], 1, "omitnan");
     D = zeros (nr, sum (K));
 
     ij = 0;
@@ -116,6 +121,7 @@ function D = dummyvar (g)
         ij++;
         D(tmp == j, ij) = 1;
       endfor
+      D(isnan (tmp), ij - K(i) + 1:ij) = NaN;
     endfor
 
   ## --- CELLSTRING branch ---
@@ -212,6 +218,17 @@ endfunction
 %! D = dummyvar (g);
 %! D1 = [1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1; 0, 1, 0; 1, 0, 0];
 %! assert_equal (D, D1);
+
+## A NaN in a numeric grouping variable produces a NaN row in that
+## variable's own block of dummy columns.
+%!test
+%! g = [1; 2; NaN; 3; 2];
+%! D = dummyvar (g);
+%! assert_equal (D, [1, 0, 0; 0, 1, 0; NaN, NaN, NaN; 0, 0, 1; 0, 1, 0]);
+%!test
+%! g = [1, 1; 2, NaN; 1, 2; 2, 1];
+%! D = dummyvar (g);
+%! assert_equal (D, [1, 0, 1, 0; 0, 1, NaN, NaN; 1, 0, 0, 1; 0, 1, 1, 0]);
 
 ## Test input validation
 %!error dummyvar ()
