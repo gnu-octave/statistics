@@ -172,6 +172,47 @@ children.\n\
 %! assert_equal (T.PruneAlpha', [0, 1/150, 2/150, 44/150, 50/150], 1e-12);
 
 %!test
+%! ## A node holding rows back pays for them in the pruning sequence
+%! ## Twenty rows have no fourth predictor, so the node cutting on it sends
+%! ## them to neither child.  A subtree's risk is its children's plus what
+%! ## the node holds back; without it the sequence came out a level short.
+%! ## Measured on R2024a, the fit fitctree makes on this fixture.
+%! load fisheriris
+%! y = grp2idx (species);
+%! x = meas;
+%! x(51:70, 4) = NaN;
+%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', true, 'Prune', true);
+%! T = treetrain (x, y, ones (150, 1) / 150, o);
+%! assert_equal (T.NumNodes, 9);
+%! assert_equal (T.NodeSize', [150, 50, 100, 45, 55, 25, 1, 8, 46]);
+%! assert_equal (T.NodeSize(4) - T.NodeSize(6) - T.NodeSize(7), 19);
+%! assert_equal (T.PruneList', [4, 0, 3, 1, 2, 0, 0, 0, 0]);
+%! assert_equal (T.PruneAlpha', [0, 0.00385185185185185, ...
+%!                               0.00593939393939394, 0.286666666666666, ...
+%!                               0.333333333333333], 1e-14);
+
+%!test
+%! ## A held back node keeps the free subtree rule honest
+%! ## Charged for what it holds back, such a node gives a positive link
+%! ## where an uncharged one gave zero, so the free subtree left by
+%! ## MergeLeaves off must still be the one recognised.  Measured on R2024a.
+%! load fisheriris
+%! y = grp2idx (species);
+%! x = meas;
+%! x(51:70, 4) = NaN;
+%! o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'Prune', true);
+%! T = treetrain (x, y, ones (150, 1) / 150, o);
+%! assert_equal (T.NumNodes, 11);
+%! assert_equal (T.PruneList', [4, 0, 3, 1, 2, 0, 0, 0, 0, 0, 0]);
+%! assert_equal (T.PruneAlpha', [0, 0.00385185185185185, ...
+%!                               0.00593939393939394, 0.286666666666666, ...
+%!                               0.333333333333333], 1e-14);
+
+%!test
 %! ## Prune off leaves the pruning sequence empty
 %! load fisheriris
 %! y = grp2idx (species);

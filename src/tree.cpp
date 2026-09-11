@@ -656,6 +656,25 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
             }
         }
 
+      // The risk a branch carries on account of the rows that stop there,
+      // missing the predictor it cuts on.  Those rows are counted at the node
+      // and in neither child, so a subtree's risk is its children's plus this
+      // much, and leaving it out overstates the link of every branch above
+      // such a node.  They are charged the node's own error rate, which is
+      // its risk over its weight on either criterion.  A node that placed
+      // every row has its weight recomputed from its two children above, so
+      // this is exactly zero there and no tolerance is needed.
+      std::vector<double> held (out, 0.0);
+      for (octave_idx_type i = 0; i < out; i++)
+        {
+          octave_idx_type l = static_cast<octave_idx_type> (children(i, 0));
+          if (l == 0 || nodeweight(i) <= 0.0)
+            continue;
+          octave_idx_type r = static_cast<octave_idx_type> (children(i, 1));
+          double wheld = nodeweight(i) - nodeweight(l-1) - nodeweight(r-1);
+          held[i] = wheld * risk[i] / nodeweight(i);
+        }
+
       std::vector<octave_idx_type> kidl (out), kidr (out);
       for (octave_idx_type i = 0; i < out; i++)
         {
@@ -696,7 +715,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                 }
               else
                 {
-                  subrisk[i] = subrisk[kidl[i]-1] + subrisk[kidr[i]-1];
+                  subrisk[i] = subrisk[kidl[i]-1]
+                               + subrisk[kidr[i]-1] + held[i];
                   subleaves[i] = subleaves[kidl[i]-1] + subleaves[kidr[i]-1];
                 }
             }

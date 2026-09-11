@@ -862,9 +862,10 @@ classdef RegressionTree
                      'SplitCriterion', 'mse', ...
                      'MergeLeaves', mergeOn, ...
                      'QEToler', QEToler, ...
-                     ## The engine opens a pruning level for a subtree that
-                     ## costs nothing to give up where MATLAB opens none, so
-                     ## the sequence is estimated below instead.
+                     ## The sequence is estimated below instead, MATLAB
+                     ## carrying one whenever leaves were merged whether or
+                     ## not pruning was asked for, where the engine builds
+                     ## one only when it prunes.
                      'Prune', false);
 
       T = treetrain (X, this.Y, this.W, opts);
