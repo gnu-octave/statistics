@@ -813,6 +813,8 @@ endfunction
 %! assert_equal (U, 62)
 %! assert_equal (C, 59.75)
 
+## Quartiles method: base case, ThresholdFactor override, dim = 1 and
+## dim = 2 on a matrix, and NaN omission
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'quartiles');
