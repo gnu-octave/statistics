@@ -162,8 +162,9 @@
 ## @qcode{'movmean'} methods, @var{C} is computed by taking into account the
 ## outlier values.  For @qcode{'grubbs'} and @qcode{'gesd'} methods, @var{C} is
 ## computed by excluding the outliers.  For the @qcode{'percentiles'} method,
-## @var{C} is the average between @var{U} and @var{L} thresholds.
-## @end itemize
+## @var{C} is the average between @var{U} and @var{L} thresholds.  For the
+## @qcode{'quartiles'} method, @var{C} is the average of the 25th and 75th
+## percentiles.
 ##
 ## @seealso{filloutliers, rmoutliers, ismissing}
 ## @end deftypefn
