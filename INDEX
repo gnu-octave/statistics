@@ -150,6 +150,7 @@ Supervised Learning
  CompactRegressionNeuralNetwork
  CompactRegressionSVM
  CompactRegressionTree
+ CompactTreeBagger
  designecoc
  fcnnpredict
  fcnntrain
@@ -195,6 +196,7 @@ Supervised Learning
  templateNaiveBayes
  templateSVM
  templateTree
+ TreeBagger
  treepredict
  treetrain
 Clustering
