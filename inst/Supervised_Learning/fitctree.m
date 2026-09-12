@@ -72,6 +72,12 @@
 ## observations a node must hold to be split.  The default is 10.  The value
 ## the fit uses is @code{max (MinParentSize, 2 * MinLeafSize)}.
 ##
+## @item @qcode{'NumVariablesToSample'} @tab A positive integer, the number
+## of predictors each split is chosen from, drawn afresh at every node, or
+## @qcode{'all'} (default).  A number no smaller than the number of
+## predictors samples them all and is reported as @qcode{'all'}.  MATLAB also
+## accepts a fractional number, which is refused here.
+##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## naming the columns of @var{X}.
 ##
@@ -102,9 +108,9 @@
 ##
 ## @end multitable
 ##
-## Categorical predictors, surrogate splits, predictor subsampling and the
-## @qcode{'twoing'} split criterion are not implemented, and an option asking
-## for one of them is refused rather than quietly ignored.
+## Categorical predictors, surrogate splits and the @qcode{'twoing'} split
+## criterion are not implemented, and an option asking for one of them is
+## refused rather than quietly ignored.
 ##
 ## @seealso{ClassificationTree, treetrain, treepredict}
 ## @end deftypefn
@@ -326,6 +332,25 @@ endfunction
 %! assert_equal (Mdl.NumObservations, 100);
 %! assert_equal (Mdl.NodeSize', [100, 50, 50]);
 %! assert_equal (Mdl.Prior, [0.5, 0.5], 1e-14);
+
+%!test  # MATLAB parity: a number below the predictor count is kept
+%! load fisheriris
+%! Mdl = fitctree (meas, species, 'NumVariablesToSample', 2);
+%! assert_equal (Mdl.ModelParameters.NVarToSample, 2);
+
+%!test  # MATLAB parity: a number covering every predictor is reported 'all'
+%! load fisheriris
+%! Mdl = fitctree (meas, species, 'NumVariablesToSample', 5);
+%! assert_equal (Mdl.ModelParameters.NVarToSample, 'all');
+
+%!test  # the generator's state reproduces a sampled tree
+%! load fisheriris
+%! rng (1);
+%! A = fitctree (meas, species, 'NumVariablesToSample', 1);
+%! rng (1);
+%! B = fitctree (meas, species, 'NumVariablesToSample', 1);
+%! assert_equal (A.CutPredictorIndex, B.CutPredictorIndex);
+%! assert_equal (isequaln (A.CutPoint, B.CutPoint), true);
 
 ## Test input validation
 %!error<fitctree: too few arguments.> fitctree ()

@@ -43,9 +43,9 @@ classdef RegressionTree
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
   ##
-  ## @strong{What this class does not do yet.}  Categorical predictors,
-  ## surrogate splits and predictor subsampling are not implemented, and an
-  ## option asking for one of them is refused rather than quietly ignored.
+  ## @strong{What this class does not do yet.}  Categorical predictors and
+  ## surrogate splits are not implemented, and an option asking for one of
+  ## them is refused rather than quietly ignored.
   ## @code{CategoricalSplit}, @code{CutCategories} and the six
   ## @code{Surrogate} properties are therefore always empty, as they are in
   ## MATLAB on numeric data.
@@ -661,6 +661,7 @@ classdef RegressionTree
       MergeLeaves    = 'on';
       MinLeafSize    = 1;
       MinParentSize  = 10;
+      NumVarSample   = 'all';
       Prune          = 'on';
       QEToler        = 1e-6;
       this.ResponseTransform = 'none';
@@ -733,6 +734,16 @@ classdef RegressionTree
                              " positive integer."));
             endif
 
+          case 'numvariablestosample'
+            NumVarSample = Value;
+            if (! ((ischar (NumVarSample) && strcmpi (NumVarSample, 'all'))
+                   || (isnumeric (NumVarSample) && isscalar (NumVarSample)
+                       && isreal (NumVarSample) && NumVarSample >= 1
+                       && NumVarSample == fix (NumVarSample))))
+              error (strcat ("RegressionTree: 'NumVariablesToSample'", ...
+                             " must be a positive integer or 'all'."));
+            endif
+
           case 'mergeleaves'
             MergeLeaves = Value;
             if (! (ischar (MergeLeaves)
@@ -776,7 +787,7 @@ classdef RegressionTree
           ## Options MATLAB takes that this class does not implement.  They
           ## are named one by one so that asking for one is refused rather
           ## than quietly doing nothing.
-          case {'surrogate', 'numvariablestosample', 'predictorselection', ...
+          case {'surrogate', 'predictorselection', ...
                 'algorithmforcategorical', 'maxnumcategories', 'numbins', ...
                 'optimizehyperparameters', ...
                 'hyperparameteroptimizationoptions'}
@@ -855,6 +866,13 @@ classdef RegressionTree
       mergeOn = strcmpi (MergeLeaves, 'on');
       pruneOn = strcmpi (Prune, 'on');
 
+      ## A number covering every predictor samples them all, and is reported
+      ## as 'all', as MATLAB reports it.  The engine's seed is drawn only when
+      ## predictors are sampled, so an unsampled fit leaves the generator alone.
+      if (isnumeric (NumVarSample) && NumVarSample >= columns (X))
+        NumVarSample = 'all';
+      endif
+
       opts = struct ('NumClasses', 1, ...
                      'MinParent', MinParent, ...
                      'MinLeaf', MinLeafSize, ...
@@ -862,6 +880,10 @@ classdef RegressionTree
                      'SplitCriterion', 'mse', ...
                      'MergeLeaves', mergeOn, ...
                      'QEToler', QEToler);
+      if (isnumeric (NumVarSample))
+        opts.NumVariablesToSample = NumVarSample;
+        opts.Seed = randi ([0, 4294967295]);
+      endif
 
       T = treetrain (X, this.Y, this.W, opts);
 
@@ -895,7 +917,7 @@ classdef RegressionTree
                                      'MinParent', MinParent, ...
                                      'MinLeaf', MinLeafSize, ...
                                      'MaxSplits', MaxNumSplits, ...
-                                     'NVarToSample', 'all', ...
+                                     'NVarToSample', NumVarSample, ...
                                      'MergeLeaves', tolower (MergeLeaves), ...
                                      'Prune', tolower (Prune), ...
                                      'PruneCriterion', 'mse', ...
@@ -2376,3 +2398,9 @@ endclassdef
 %! savemodel (RegressionTree (ones (4, 2), (1:4)'))
 %!error<RegressionTree.savemodel: FNAME must be a character vector.>
 %! savemodel (RegressionTree (ones (4, 2), (1:4)'), 5)
+%!error<RegressionTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
+%! RegressionTree (ones (4, 2), [1; 2; 3; 4], 'NumVariablesToSample', 0)
+%!error<RegressionTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
+%! RegressionTree (ones (4, 2), [1; 2; 3; 4], 'NumVariablesToSample', 1.5)
+%!error<RegressionTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
+%! RegressionTree (ones (4, 2), [1; 2; 3; 4], 'NumVariablesToSample', 'some')

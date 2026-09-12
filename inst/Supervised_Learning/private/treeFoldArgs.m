@@ -30,10 +30,11 @@
 ## absent: a transform is applied once to the assembled answer, and a fold
 ## carrying one would apply it twice.
 ##
-## @qcode{'MaxNumSplits'} defaults to one less than the number of
-## observations, so a fold works its own out; a budget the caller actually
-## asked for is passed on.  @qcode{'MinParentSize'} is given the value the fit
-## settled on rather than the one asked for, which reproduces it: the
+## @qcode{'MaxNumSplits'} defaults to one less than the number of observations,
+## so a fold works its own out; a budget the caller actually asked for is passed
+## on.  @qcode{'NumVariablesToSample'} is passed on too, so a fold samples its
+## predictors as the parent did.  @qcode{'MinParentSize'} is given the value the
+## fit settled on rather than the one asked for, which reproduces it: the
 ## constructor takes the larger of it and twice @qcode{'MinLeafSize'}, and the
 ## larger is already there.
 ##
@@ -57,6 +58,7 @@ function args = treeFoldArgs (Mdl)
                  'MinParentSize', MP.MinParent, ...
                  'MinLeafSize', MP.MinLeaf, ...
                  'MergeLeaves', MP.MergeLeaves, ...
+                 'NumVariablesToSample', MP.NVarToSample, ...
                  'Prune', MP.Prune, ...
                  'PruneCriterion', MP.PruneCriterion}];
 

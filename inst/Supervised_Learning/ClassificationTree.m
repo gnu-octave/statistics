@@ -43,9 +43,9 @@ classdef ClassificationTree
   ## is never sent down a branch on evidence it does not carry.
   ##
   ## @strong{What this class does not do yet.}  Categorical predictors,
-  ## surrogate splits, predictor subsampling and the @qcode{'twoing'} split
-  ## criterion are not implemented, and an option asking for one of them is
-  ## refused rather than quietly ignored.  @code{CategoricalSplit},
+  ## surrogate splits and the @qcode{'twoing'} split criterion are not
+  ## implemented, and an option asking for one of them is refused rather than
+  ## quietly ignored.  @code{CategoricalSplit},
   ## @code{CutCategories} and the six @code{Surrogate} properties are
   ## therefore always empty, as they are in MATLAB on numeric data.
   ##
@@ -811,6 +811,7 @@ classdef ClassificationTree
       MergeLeaves    = 'on';
       MinLeafSize    = 1;
       MinParentSize  = 10;
+      NumVarSample   = 'all';
       Prune          = 'on';
       PruneCriterion = 'error';
       SplitCriterion = 'gdi';
@@ -928,6 +929,16 @@ classdef ClassificationTree
                              " a positive integer."));
             endif
 
+          case 'numvariablestosample'
+            NumVarSample = Value;
+            if (! ((ischar (NumVarSample) && strcmpi (NumVarSample, 'all'))
+                   || (isnumeric (NumVarSample) && isscalar (NumVarSample)
+                       && isreal (NumVarSample) && NumVarSample >= 1
+                       && NumVarSample == fix (NumVarSample))))
+              error (strcat ("ClassificationTree: 'NumVariablesToSample'", ...
+                             " must be a positive integer or 'all'."));
+            endif
+
           case 'mergeleaves'
             MergeLeaves = Value;
             if (! (ischar (MergeLeaves)
@@ -980,7 +991,7 @@ classdef ClassificationTree
           ## Options MATLAB takes that this class does not implement.  They
           ## are named one by one so that asking for one is refused rather
           ## than quietly doing nothing.
-          case {'surrogate', 'numvariablestosample', 'predictorselection', ...
+          case {'surrogate', 'predictorselection', ...
                 'algorithmforcategorical', 'maxnumcategories', 'numbins', ...
                 'optimizehyperparameters', ...
                 'hyperparameteroptimizationoptions'}
@@ -1127,12 +1138,23 @@ classdef ClassificationTree
       ## pruning sequence are taken over below, on the risk the cost defines.
       plainCost = isequal (this.Cost, 1 - eye (K));
 
+      ## A number covering every predictor samples them all, and is reported
+      ## as 'all', as MATLAB reports it.  The engine's seed is drawn only when
+      ## predictors are sampled, so an unsampled fit leaves the generator alone.
+      if (isnumeric (NumVarSample) && NumVarSample >= columns (X))
+        NumVarSample = 'all';
+      endif
+
       opts = struct ('NumClasses', K, ...
                      'MinParent', MinParent, ...
                      'MinLeaf', MinLeafSize, ...
                      'MaxSplits', MaxNumSplits, ...
                      'SplitCriterion', tolower (SplitCriterion), ...
                      'MergeLeaves', plainCost && mergeOn);
+      if (isnumeric (NumVarSample))
+        opts.NumVariablesToSample = NumVarSample;
+        opts.Seed = randi ([0, 4294967295]);
+      endif
 
       T = treetrain (X, gY, wAdj, opts);
 
@@ -1158,7 +1180,7 @@ classdef ClassificationTree
                                      'MinParent', MinParent, ...
                                      'MinLeaf', MinLeafSize, ...
                                      'MaxSplits', MaxNumSplits, ...
-                                     'NVarToSample', 'all', ...
+                                     'NVarToSample', NumVarSample, ...
                                      'MergeLeaves', tolower (MergeLeaves), ...
                                      'Prune', tolower (Prune), ...
                                      'PruneCriterion', ...
@@ -3039,3 +3061,10 @@ endfunction
 %!error<ClassificationTree.Prior: must be nonnegative and must not be all zero.>
 %! Mdl = ClassificationTree (ones (4, 2), [1; 1; 2; 2]);
 %! Mdl.Prior = [0, 0];
+%!error<ClassificationTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
+%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'NumVariablesToSample', 0)
+%!error<ClassificationTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
+%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'NumVariablesToSample', 1.5)
+%!error<ClassificationTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
+%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], ...
+%!                     'NumVariablesToSample', 'some')
