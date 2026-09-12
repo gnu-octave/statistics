@@ -67,7 +67,7 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
   ## first: ismember on two character matrices compares them character by
   ## character and answers a question nobody asked.
   if (! isempty (ClassNames))
-    if (iscellstr (ClassNames) || ischar (ClassNames))
+    if (! (isnumeric (ClassNames) || islogical (ClassNames)))
       drop = find (! ismember (gnY, cellstr (ClassNames)));
     else
       drop = find (! ismember (glY, ClassNames));
@@ -103,6 +103,7 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
   endif
 
   [gY, gnY, glY] = grp2idx (F.Y);
+  [gY, gnY, glY] = presentClasses (gY, gnY, glY);
   nclasses = numel (gnY);
   F.gY = gY;
   F.ClassNames = glY;

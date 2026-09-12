@@ -1061,14 +1061,18 @@ classdef ClassificationKNN
 
           case 'classnames'
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
-                   islogical (ClassNames) || ischar (ClassNames)))
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
               error (strcat ("ClassificationKNN: 'ClassNames' must be a", ...
-                             " cell array of character vectors, a logical", ...
-                             " vector, a numeric vector, or a character array."));
+                             " categorical array, a character array, a", ...
+                             " string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
             ## Check that all class names are available in gnY
-            if (iscellstr (ClassNames) || ischar (ClassNames))
+            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
               ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, 'UniformOutput', false))))
@@ -1262,7 +1266,7 @@ classdef ClassificationKNN
         ## own cellstr of them.  A character matrix is not a cellstr, and
         ## ismember between two of them compares character by character, so
         ## it would answer a question nobody asked.
-        if (iscellstr (ClassNames) || ischar (ClassNames))
+        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
           ru = find (! ismember (gnY, cellstr (ClassNames)));
         else
           ru = find (! ismember (glY, ClassNames));
@@ -1559,14 +1563,10 @@ classdef ClassificationKNN
                       'bucketsize', this.BucketSize);
       endif
 
-      ## Make prediction
-      if (iscellstr (this.ClassNames))
-        labels = {};
-      elseif (ischar (this.ClassNames))
-        labels = '';
-      else
-        labels = [];
-      endif
+      ## Make prediction.  The class index of each row is kept and the names
+      ## are taken once at the end: indexing keeps the type of ClassNames,
+      ## categorical and string included, which concatenating onto [] did not.
+      cnum = zeros (rows (idx), 1);
       scores = [];
       cost  = [];
 
@@ -1620,7 +1620,7 @@ classdef ClassificationKNN
             endif
           endif
         endif
-        labels = [labels; this.ClassNames(idl,:)];
+        cnum(i) = idl;
 
         ## The expected cost of assigning to each class is the posterior
         ## weighted by the cost matrix, sum_j P(j) * Cost(j,k).  It was
@@ -1636,10 +1636,7 @@ classdef ClassificationKNN
       ## came back transformed n-i+1 times.
       scores = this.STfun (scores);
 
-      ## Convert double to logical if ClassNames are logical
-      if (islogical (this.ClassNames))
-        labels = logical (labels);
-      endif
+      labels = this.ClassNames(cnum,:);
 
     endfunction
 
@@ -2586,7 +2583,7 @@ classdef ClassificationKNN
 
       ## Create variables from model properties
       X = this.X;
-      Y = this.Y;
+      Y = encodeLabels (this.Y);
       NumObservations = this.NumObservations;
       W               = this.W;
       RowsUsed        = this.RowsUsed;
@@ -2596,7 +2593,7 @@ classdef ClassificationKNN
       NumPredictors   = this.NumPredictors;
       PredictorNames  = this.PredictorNames;
       ResponseName    = this.ResponseName;
-      ClassNames      = this.ClassNames;
+      ClassNames      = encodeLabels (this.ClassNames);
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
@@ -2635,6 +2632,9 @@ classdef ClassificationKNN
   methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
+
       ## Create a ClassificationKNN object
       mdl = ClassificationKNN (1, 1);
 
@@ -3017,6 +3017,13 @@ endfunction
 %! a = ClassificationKNN (x, y, 'ClassNames', ClassNames);
 %! assert_equal (a.ClassNames, ClassNames')
 
+%!test  # A categorical 'ClassNames' keeps only the classes it names
+%! load fisheriris
+%! Mdl = ClassificationKNN (meas, categorical (species), 'ClassNames', ...
+%!                          categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+
 ## Test input validation for constructor
 ## A response naming its classes in the rows of a character matrix is one
 ## of the documented types and MATLAB accepts it on every classifier.  The
@@ -3166,9 +3173,9 @@ endfunction
 %! ClassificationKNN (ones (5,2), ones (5,1), 'ResponseName', {'Y'})
 %!error<ClassificationKNN: 'ResponseName' must be a character vector.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'ResponseName', 1)
-%!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationKNN: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationKNN (ones (10,2), ones (10,1), 'ClassNames', @(x)x)
-%!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationKNN: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationKNN (ones (10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
 %! ClassificationKNN (ones (10,2), ones (10,1), 'ClassNames', [1, 2])
@@ -3292,6 +3299,11 @@ endfunction
 %! assert_equal (l, {'setosa'; 'versicolor'; 'virginica'})
 %! assert_equal (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
 %! assert_equal (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, categorical (y), 'NumNeighbors', 5);
+%! l = predict (obj, xc);
+%! assert_equal (l, categorical ({'setosa'; 'versicolor'; 'virginica'}))
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);

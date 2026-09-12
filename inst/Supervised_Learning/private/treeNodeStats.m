@@ -87,6 +87,8 @@ function s = classText (C)
     s = C(:);
   elseif (ischar (C))
     s = cellstr (C);
+  elseif (isa (C, 'categorical') || isa (C, 'string'))
+    s = cellstr (C(:));
   else
     s = arrayfun (@(v) num2str (v), C(:), 'UniformOutput', false);
   endif

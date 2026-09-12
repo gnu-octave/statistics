@@ -959,15 +959,18 @@ classdef ClassificationDiscriminant
 
           case 'classnames'
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
-                   islogical (ClassNames) || ischar (ClassNames)))
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
               error (strcat ("ClassificationDiscriminant: 'ClassNames'", ...
-                             " must be a cell array of character vectors,", ...
-                             " a logical vector, a numeric vector,", ...
-                             " or a character array."));
+                             " must be a categorical array, a character", ...
+                             " array, a string array, a logical vector, a", ...
+                             " numeric vector, or a cell array of", ...
+                             " character vectors."));
             endif
             ## Check that all class names are available in gnY
-            if (iscellstr (ClassNames) || ischar (ClassNames))
+            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
               ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, 'UniformOutput', false))))
@@ -1067,7 +1070,7 @@ classdef ClassificationDiscriminant
         ## own cellstr of them.  A character matrix is not a cellstr, and
         ## ismember between two of them compares character by character, so
         ## it would answer a question nobody asked.
-        if (iscellstr (ClassNames) || ischar (ClassNames))
+        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
           ru = find (! ismember (gnY, cellstr (ClassNames)));
         else
           ru = find (! ismember (glY, ClassNames));
@@ -2274,14 +2277,14 @@ classdef ClassificationDiscriminant
 
       ## Create variables from model properties
       X = this.X;
-      Y = this.Y;
+      Y = encodeLabels (this.Y);
       NumObservations = this.NumObservations;
       W               = this.W;
       RowsUsed        = this.RowsUsed;
       NumPredictors   = this.NumPredictors;
       PredictorNames  = this.PredictorNames;
       ResponseName    = this.ResponseName;
-      ClassNames      = this.ClassNames;
+      ClassNames      = encodeLabels (this.ClassNames);
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
@@ -2289,7 +2292,7 @@ classdef ClassificationDiscriminant
       BinEdges        = this.BinEdges;
       BaseSigma       = this.BaseSigma;
       Mu              = this.Mu;
-      Coeffs          = this.Coeffs;
+      Coeffs          = encodeLabels (this.Coeffs);
       Delta           = this.Delta;
       DiscrimType     = this.DiscrimType;
       Gamma           = this.Gamma;
@@ -2477,6 +2480,9 @@ classdef ClassificationDiscriminant
   methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
+
       ## Create a ClassificationDiscriminant object
       ## Built without coefficients: every set method rebuilds Coeffs when it
       ## finds one, and a stub's would be rebuilt against half a loaded model.
@@ -2615,6 +2621,13 @@ endclassdef
 %! assert_equal (Mdl.Mu, mu, 1e-14)
 %! assert_equal (Mdl.XCentered([1:3],:), xCentered, 1e-14)
 %! assert_equal (Mdl.LogDetSigma, -8.6884, 1e-4)
+
+%!test  # A categorical 'ClassNames' keeps only the classes it names
+%! load fisheriris
+%! Mdl = ClassificationDiscriminant (meas, categorical (species), ...
+%!   'ClassNames', categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
 
 ## Test input validation for constructor
 %!shared X, Y, MODEL
@@ -2764,9 +2777,9 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, 'ResponseName', {'Y'})
 %!error<ClassificationDiscriminant: 'ResponseName' must be a character vector.> ...
 %! ClassificationDiscriminant (X, Y, 'ResponseName', 1)
-%!error<ClassificationDiscriminant: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationDiscriminant: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationDiscriminant (X, Y, 'ClassNames', @(x)x)
-%!error<ClassificationDiscriminant: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationDiscriminant: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationDiscriminant (X, Y, 'ClassNames', {1})
 %!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
 %! ClassificationDiscriminant (X, ones (10,1), 'ClassNames', [1, 2])
@@ -3222,6 +3235,24 @@ endclassdef
 %! p = struct ('ClassNames', {{'setosa'; 'virginica'; 'versicolor'}}, ...
 %!             'ClassProbs', [0.2, 0.3, 0.5]);
 %! Mdl = fitcdiscr (meas(i3,:), species(i3), 'Prior', p);
+%! assert_equal (Mdl.Prior, [0.2, 0.5, 0.3], 1e-14);
+
+## A structure Prior finds its classes in a character matrix response.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! p = struct ('ClassNames', {{'setosa'; 'virginica'; 'versicolor'}}, ...
+%!             'ClassProbs', [0.2, 0.3, 0.5]);
+%! Mdl = fitcdiscr (meas(i3,:), char (species(i3)), 'Prior', p);
+%! assert_equal (Mdl.Prior, [0.2, 0.5, 0.3], 1e-14);
+
+## A structure Prior finds its classes in a categorical response.
+%!test
+%! load fisheriris
+%! i3 = [1:50, 51:80, 101:120];
+%! p = struct ('ClassNames', {{'setosa'; 'virginica'; 'versicolor'}}, ...
+%!             'ClassProbs', [0.2, 0.3, 0.5]);
+%! Mdl = fitcdiscr (meas(i3,:), categorical (species(i3)), 'Prior', p);
 %! assert_equal (Mdl.Prior, [0.2, 0.5, 0.3], 1e-14);
 
 ## An unnormalized Prior is rescaled on assignment.

@@ -871,14 +871,18 @@ classdef ClassificationGAM
 
           case 'classnames'
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
-                   islogical (ClassNames) || ischar (ClassNames)))
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
               error (strcat ("ClassificationGAM: 'ClassNames' must be a", ...
-                             " cell array of character vectors, a logical", ...
-                             " vector, a numeric vector, or a character array."));
+                             " categorical array, a character array, a", ...
+                             " string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
             ## Check that all class names are available in gnY
-            if (iscellstr (ClassNames) || ischar (ClassNames))
+            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
               ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, 'UniformOutput', false))))
@@ -1165,7 +1169,7 @@ classdef ClassificationGAM
         ## own cellstr of them.  A character matrix is not a cellstr, and
         ## ismember between two of them compares character by character, so
         ## it would answer a question nobody asked.
-        if (iscellstr (ClassNames) || ischar (ClassNames))
+        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
           ru = find (! ismember (gnY, cellstr (ClassNames)));
         else
           ru = find (! ismember (glY, ClassNames));
@@ -1198,6 +1202,7 @@ classdef ClassificationGAM
       ## orders a character or cell response by first appearance where MATLAB
       ## sorts the classes, so the levels are sorted and the indices remapped.
       [gY, gnY, glY] = grp2idx (Y);
+      [gY, gnY, glY] = presentClasses (gY, gnY, glY);
       if (ischar (glY))
         [glY, sidx] = sortrows (glY);
       else
@@ -2072,14 +2077,14 @@ classdef ClassificationGAM
 
       ## Create variables from model properties
       X = this.X;
-      Y = this.Y;
+      Y = encodeLabels (this.Y);
       NumObservations = this.NumObservations;
       RowsUsed        = this.RowsUsed;
       NumPredictors   = this.NumPredictors;
       PredictorNames  = this.PredictorNames;
       BinEdges        = this.BinEdges;
       ResponseName    = this.ResponseName;
-      ClassNames      = this.ClassNames;
+      ClassNames      = encodeLabels (this.ClassNames);
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
@@ -2236,6 +2241,9 @@ classdef ClassificationGAM
   methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
+
       ## Create a ClassificationGAM object
       mdl = ClassificationGAM (1, 1);
 
@@ -2766,6 +2774,21 @@ endfunction
 %! a = ClassificationGAM (x, y, 'Prior', [2, 1]);
 %! assert_equal (a.Prior, [2/3, 1/3], 1e-6);
 
+%!test  # A categorical 'ClassNames' is accepted
+%! load fisheriris
+%! y = categorical (species(51:150));
+%! Mdl = ClassificationGAM (meas(51:150,:), y, 'ClassNames', ...
+%!                          categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+%! assert_equal (numel (Mdl.ClassNames), 2);
+
+%!test  # An unused category of a categorical response is not a class
+%! load fisheriris
+%! y = categorical (species);
+%! Mdl = ClassificationGAM (meas(51:150,:), y(51:150));
+%! assert_equal (cellstr (Mdl.ClassNames), {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51,:)), y(51));
+
 ## Test input validation for Prior
 ## Interactions reports the two-way terms the fitted model carries, as
 ## predictor index pairs.  R2024a's GAM with 'Interactions', 'all' over three
@@ -3087,9 +3110,9 @@ endfunction
 %! ClassificationGAM (ones (5,2), ones (5,1), 'ResponseName', {'Y'})
 %!error<ClassificationGAM: 'ResponseName' must be a character vector.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), 'ResponseName', 1)
-%!error<ClassificationGAM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationGAM: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationGAM (ones (10,2), ones (10,1), 'ClassNames', @(x)x)
-%!error<ClassificationGAM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationGAM: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationGAM (ones (10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationGAM (ones (10,2), ones (10,1), 'ClassNames', [1, 2])

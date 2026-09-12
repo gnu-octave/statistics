@@ -82,10 +82,6 @@ function [g, gn, gl] = grp2idx (s)
       error ("grp2idx: 'categorical' grouping variable must be a vector.");
     endif
     is_categorical = true;
-    undef = isundefined (s);
-    cats = categories (s);
-    s = cellstr (s);
-    s(undef) = {''};
   elseif (ischar (s))
     is_char_array = true;
     s = cellstr (s);
@@ -118,9 +114,25 @@ function [g, gn, gl] = grp2idx (s)
     error ("grp2idx: unsupported type for input S.");
   endif
 
+  ## A categorical array is numbered by its category codes, over every
+  ## category and in category order, whether a category is used or not.
+  if (is_categorical)
+    g = double (s(:));
+    cats = categories (s);
+    if (isempty (cats))
+      gn = cell (0,1);
+      gl = categorical (cell (0,1));
+    else
+      gn = cellstr (cats);
+      gl = categorical (cats, cats, 'Ordinal', isordinal (s), ...
+                        'Protected', isprotected (s));
+    endif
+    return;
+  endif
+
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s) && ! is_categorical)
+  if (iscellstr (s))
     I = sort (I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -154,13 +166,7 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   if (nargout > 1)
-    if (is_categorical)
-      if (isempty (cats))
-        gn = cell (0,1);
-      else
-        gn = cellstr (cats);
-      endif
-    elseif (is_duration)
+    if (is_duration)
       if (isempty (gl))
         gn = cell (0,1);
       else
@@ -185,9 +191,7 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   if (nargout > 2)
-    if (is_categorical)
-      gl = categorical (cats);
-    elseif (is_char_array)
+    if (is_char_array)
       if (isempty (gl))
         gl = char (cell (0,1));
       else
@@ -391,6 +395,25 @@ endfunction
 %! assert_equal (cellstr (gl), gn);
 
 ## test for duration arrays
+%!test  # MATLAB parity: an unused category keeps its code
+%! s = categorical ({'b'; 'c'; 'b'}, {'a', 'b', 'c'});
+%! [g, gn, gl] = grp2idx (s);
+%! assert_equal (g, [2; 3; 2]);
+%! assert_equal (gn, {'a'; 'b'; 'c'});
+%! assert_equal (cellstr (gl), gn);
+
+%!test  # MATLAB parity: an undefined element is NaN between defined codes
+%! s = categorical ({'b'; ''; 'c'}, {'a', 'b', 'c'});
+%! assert_equal (grp2idx (s), [2; NaN; 3]);
+
+%!test  # MATLAB parity: the categories keep their own order and ordinality
+%! s = categorical ({'c'; 'b'}, {'c', 'b', 'a'}, 'Ordinal', true);
+%! [g, gn, gl] = grp2idx (s);
+%! assert_equal (g, [1; 2]);
+%! assert_equal (gn, {'c'; 'b'; 'a'});
+%! assert_equal (categories (gl), {'c'; 'b'; 'a'});
+%! assert_equal (isordinal (gl), true);
+
 %!test
 %! g = gn = gl = [];
 %! [g, gn, gl] = grp2idx (seconds ([1.234, 1.234, 2.5, 3.000]));

@@ -759,7 +759,7 @@ classdef CompactClassificationNeuralNetwork
       NumPredictors           = this.NumPredictors;
       PredictorNames          = this.PredictorNames;
       ResponseName            = this.ResponseName;
-      ClassNames              = this.ClassNames;
+      ClassNames              = encodeLabels (this.ClassNames);
       ScoreTransform          = this.ScoreTransform;
       Sigma                   = this.Sigma;
       Mu                      = this.Mu;
@@ -840,6 +840,9 @@ classdef CompactClassificationNeuralNetwork
   methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
+
       ## Create a ClassificationNeuralNetwork object
       mdl = CompactClassificationNeuralNetwork ();
 

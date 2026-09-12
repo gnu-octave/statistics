@@ -1695,6 +1695,12 @@ endfunction
 %! assert_equal (tbl.sem_Y, 0.6454972243679028, 1e-14);
 %! tbl = grpstats (table (Y, Z), [], 'mean', 'DataVars', 'Y');
 %! assert_equal (tbl.Properties.VariableNames, {'GroupCount', 'mean_Y'});
+
+%!test  # MATLAB parity: a group per category, in category order, used or not
+%! g = categorical ({'hi'; 'hi'; 'lo'; 'lo'; 'hi'; 'lo'}, {'mid', 'lo', 'hi'});
+%! m = grpstats ([1; 2; 5; 6; 3; 7], g);
+%! assert_equal (m, [NaN; 6; 2]);
+
 ## Test input validation
 %!error <grpstats: X must be a matrix or a table.> grpstats (ones (2, 2, 2))
 %!error <grpstats: only one output argument in allowed when X is a table.> ...

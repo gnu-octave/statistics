@@ -543,11 +543,14 @@ classdef ClassificationKernel
           case 'classnames'
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)))
-              error (strcat ("ClassificationKernel: 'ClassNames' must be", ...
-                             " a cell array of character vectors, a", ...
-                             " logical vector, a numeric vector, or a", ...
-                             " character array."));
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
+              error (strcat ("ClassificationKernel: 'ClassNames' must be a", ...
+                             " categorical array, a character array, a", ...
+                             " string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
 
           case 'cost'
@@ -1051,7 +1054,7 @@ classdef ClassificationKernel
 
       classdef_name = 'ClassificationKernel';
       BoxConstraint = obj.BoxConstraint;
-      ClassNames = obj.ClassNames;
+      ClassNames = encodeLabels (obj.ClassNames);
       Prior = obj.Prior;
       Cost = obj.Cost;
       ScoreTransform = obj.ScoreTransform;
@@ -1222,6 +1225,8 @@ classdef ClassificationKernel
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
 
       mdl = ClassificationKernel (zeros (2, 1), [0; 1]);
       fields = fieldnames (data);
@@ -1500,6 +1505,20 @@ endclassdef
 %! delete (fname);
 %! assert_equal (Mnew.ClassNames, Mdl.ClassNames);
 %! assert_equal (predict (Mnew, X(1:5,:)), predict (Mdl, X(1:5,:)));
+
+%!test  # A categorical 'ClassNames' is accepted
+%! load fisheriris
+%! y = categorical (species(51:150));
+%! Mdl = ClassificationKernel (meas(51:150,:), y, 'ClassNames', ...
+%!                             categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+%! assert_equal (numel (Mdl.ClassNames), 2);
+
+%!test  # An unused category of a categorical response is not a class
+%! load fisheriris
+%! y = categorical (species);
+%! Mdl = ClassificationKernel (meas(51:150,:), y(51:150));
+%! assert_equal (cellstr (Mdl.ClassNames), {'versicolor'; 'virginica'});
 
 ## Test input validation
 %!error<ClassificationKernel: too few input arguments.> ...

@@ -841,13 +841,16 @@ classdef ClassificationTree
           case 'classnames'
             ClassNames = Value;
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)))
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
               error (strcat ("ClassificationTree: 'ClassNames' must be a", ...
-                             " cell array of character vectors, a logical", ...
-                             " vector, a numeric vector, or a character", ...
-                             " array."));
+                             " categorical array, a character array, a", ...
+                             " string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
-            if (iscellstr (ClassNames) || ischar (ClassNames))
+            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
               known = ismember (cellstr (ClassNames), gnY);
             else
               known = ismember (ClassNames(:), glY(:));
@@ -1017,7 +1020,7 @@ classdef ClassificationTree
       ## cellstr of them: a character matrix is not a cellstr, and ismember
       ## between two of them compares character by character.
       if (! isempty (ClassNames))
-        if (iscellstr (ClassNames) || ischar (ClassNames))
+        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
           drop = find (! ismember (gnY, cellstr (ClassNames)));
         else
           drop = find (! ismember (glY, ClassNames));
@@ -2080,14 +2083,14 @@ classdef ClassificationTree
 
       ## Create variables from model properties
       X                      = this.X;
-      Y                      = this.Y;
+      Y                      = encodeLabels (this.Y);
       RowsUsed               = this.RowsUsed;
       W                      = this.W;
       RawWeights             = this.RawWeights;
       NumObservations        = this.NumObservations;
       PredictorNames         = this.PredictorNames;
       ResponseName           = this.ResponseName;
-      ClassNames             = this.ClassNames;
+      ClassNames             = encodeLabels (this.ClassNames);
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
       BinEdges               = this.BinEdges;
@@ -2130,6 +2133,8 @@ classdef ClassificationTree
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
 
       ## The smallest fit the class accepts, filled property by property
       ## below.  Nothing of the stub survives the copy.
@@ -2568,6 +2573,13 @@ endfunction
 %! Mdl = ClassificationTree (meas, species, 'Prior', p);
 %! assert_equal (Mdl.Prior, [0.5, 0.25, 0.25], 1e-14);
 
+%!test  # A structure prior may name its classes in a character matrix
+%! load fisheriris
+%! p.ClassNames = char ({'virginica'; 'versicolor'; 'setosa'});
+%! p.ClassProbs = [0.25, 0.25, 0.5];
+%! Mdl = ClassificationTree (meas, char (species), 'Prior', p);
+%! assert_equal (Mdl.Prior, [0.5, 0.25, 0.25], 1e-14);
+
 %!test  # A cost given as a structure names its own class order
 %! load fisheriris
 %! c.ClassNames = {'virginica'; 'versicolor'; 'setosa'};
@@ -2858,6 +2870,13 @@ endfunction
 %!                                 0.00593939393939394, 0.286666666666666, ...
 %!                                 0.333333333333333], 1e-14);
 
+%!test  # A categorical 'ClassNames' keeps only the classes it names
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, categorical (species), 'ClassNames', ...
+%!                           categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+
 ## Test input validation
 %!error<ClassificationTree: too few input arguments.> ClassificationTree ()
 %!error<ClassificationTree: too few input arguments.>
@@ -2874,7 +2893,7 @@ endfunction
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'PredictorNames', {'a'})
 %!error<ClassificationTree: 'ResponseName' must be a character vector.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'ResponseName', 5)
-%!error<ClassificationTree: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.>
+%!error<ClassificationTree: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'ClassNames', {1})
 %!error<ClassificationTree: not all 'ClassNames' are present in Y.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'ClassNames', 5)

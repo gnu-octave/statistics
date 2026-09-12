@@ -180,6 +180,10 @@ endfunction
 %! y = categorical ({'X', 'Y', 'X', 'Y', 'X'});
 %! t = crosstab (x, y);
 %! assert_equal (size (t), [3, 2]);
+%!test  # MATLAB parity: rows follow the category order, not the names
+%! x = categorical ({'hi'; 'hi'; 'lo'; 'lo'; 'hi'; 'lo'}, {'lo', 'hi'});
+%! t = crosstab (x, [1; 2; 5; 6; 3; 7] > 3);
+%! assert_equal (t, [0, 3; 3, 0]);
 %!test
 %! ## Test categorical with numeric
 %! x = categorical ([10, 20, 10, 30, 20]);

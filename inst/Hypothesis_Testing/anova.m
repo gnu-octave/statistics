@@ -2841,7 +2841,12 @@ classdef anova
                              obj.Stats.gnames(:), "UniformOutput", false);
       obj.ExpandedFactorNames = string ([{"(Intercept)"}; level_names]);
       if (isvector (obj.Response))
+        ## grp2idx numbers a categorical group over all its categories, and
+        ## the means are held only for the groups present, in the same order.
         group_id = grp2idx (obj.GROUP);
+        have = isfinite (group_id);
+        [~, ~, present] = unique (group_id(have));
+        group_id(have) = present;
         fitted = NaN (size (group_id));
         grouped = isfinite (group_id) & group_id > 0;
         fitted(grouped) = means(group_id(grouped));
@@ -3688,6 +3693,11 @@ endclassdef
 %! T = stats (a);
 %! assert_equal (T.F(1), 8, 1e-12);
 %! assert_equal (a.Stats.grpnames{1}, {'3'; '1'});
+
+%!test  # fitted values are the means of the groups a categorical holds
+%! g = categorical ([3; 3; 1; 1], [3, 2, 1]);
+%! a = anova (g, (1:4)');
+%! assert_equal (a.FittedValues, [1.5; 1.5; 3.5; 3.5]);
 
 %!test
 %! g = kron ((1:120)', ones (2, 1));

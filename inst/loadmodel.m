@@ -358,6 +358,521 @@ endfunction
 %!   endif
 %! end_unwind_protect
 
+%!test  # ClassificationDiscriminant: categorical labels save and load
+%! load fisheriris
+%! m = fitcdiscr (meas, categorical (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%!   assert_equal (class (m2.Coeffs(1,2).Class1), 'categorical');
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationDiscriminant: string labels save and load
+%! load fisheriris
+%! m = fitcdiscr (meas, string (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%!   assert_equal (class (m2.Coeffs(1,2).Class1), 'string');
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationDiscriminant: categorical labels save and load
+%! load fisheriris
+%! m = compact (fitcdiscr (meas, categorical (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (class (m2.Coeffs(1,2).Class1), 'categorical');
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationDiscriminant: string labels save and load
+%! load fisheriris
+%! m = compact (fitcdiscr (meas, string (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (class (m2.Coeffs(1,2).Class1), 'string');
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationGAM: categorical labels save and load
+%! load fisheriris
+%! m = fitcgam (meas(51:150,:), categorical (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationGAM: string labels save and load
+%! load fisheriris
+%! m = fitcgam (meas(51:150,:), string (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationGAM: categorical labels save and load
+%! load fisheriris
+%! m = compact (fitcgam (meas(51:150,:), categorical (species(51:150))));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationGAM: string labels save and load
+%! load fisheriris
+%! m = compact (fitcgam (meas(51:150,:), string (species(51:150))));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationKernel: categorical labels save and load
+%! load fisheriris
+%! m = fitckernel (meas(51:150,:), categorical (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationKernel: string labels save and load
+%! load fisheriris
+%! m = fitckernel (meas(51:150,:), string (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationKNN: categorical labels save and load
+%! load fisheriris
+%! m = fitcknn (meas, categorical (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationKNN: string labels save and load
+%! load fisheriris
+%! m = fitcknn (meas, string (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationLinear: categorical labels save and load
+%! load fisheriris
+%! m = fitclinear (meas(51:150,:), categorical (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationLinear: string labels save and load
+%! load fisheriris
+%! m = fitclinear (meas(51:150,:), string (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationNaiveBayes: categorical labels save and load
+%! load fisheriris
+%! m = fitcnb (meas, categorical (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationNaiveBayes: string labels save and load
+%! load fisheriris
+%! m = fitcnb (meas, string (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationNaiveBayes: categorical labels save and load
+%! load fisheriris
+%! m = compact (fitcnb (meas, categorical (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationNaiveBayes: string labels save and load
+%! load fisheriris
+%! m = compact (fitcnb (meas, string (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationNeuralNetwork: categorical labels save and load
+%! load fisheriris
+%! m = fitcnet (meas, categorical (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationNeuralNetwork: string labels save and load
+%! load fisheriris
+%! m = fitcnet (meas, string (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationNeuralNetwork: categorical labels save and load
+%! load fisheriris
+%! m = compact (fitcnet (meas, categorical (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationNeuralNetwork: string labels save and load
+%! load fisheriris
+%! m = compact (fitcnet (meas, string (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationSVM: categorical labels save and load
+%! load fisheriris
+%! m = fitcsvm (meas(51:150,:), categorical (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationSVM: string labels save and load
+%! load fisheriris
+%! m = fitcsvm (meas(51:150,:), string (species(51:150)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationSVM: categorical labels save and load
+%! load fisheriris
+%! m = compact (fitcsvm (meas(51:150,:), categorical (species(51:150))));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationSVM: string labels save and load
+%! load fisheriris
+%! m = compact (fitcsvm (meas(51:150,:), string (species(51:150))));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationTree: categorical labels save and load
+%! load fisheriris
+%! m = fitctree (meas, categorical (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # ClassificationTree: string labels save and load
+%! load fisheriris
+%! m = fitctree (meas, string (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationTree: categorical labels save and load
+%! load fisheriris
+%! m = compact (fitctree (meas, categorical (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # CompactClassificationTree: string labels save and load
+%! load fisheriris
+%! m = compact (fitctree (meas, string (species)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (predict (m2, meas(51:55,:)), predict (m, meas(51:55,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # a categorical model saved by version 1.9.2 loads
+%! load fisheriris
+%! m = fitcknn (meas, categorical (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   d = load (fn);
+%!   c = m.ClassNames;
+%!   d.ClassNames = struct ('cats', {categories(c)}, ...
+%!                          'code', uint16 (double (c)), ...
+%!                          'isMissing', isundefined (c), ...
+%!                          'isOrdinal', isordinal (c), ...
+%!                          'isProtected', isprotected (c));
+%!   c = m.Y;
+%!   d.Y = struct ('cats', {categories(c)}, 'code', uint16 (double (c)), ...
+%!                 'isMissing', isundefined (c), 'isOrdinal', isordinal (c), ...
+%!                 'isProtected', isprotected (c));
+%!   save ('-binary', fn, '-struct', 'd');
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+%!test  # a string model saved by version 1.9.2 loads
+%! load fisheriris
+%! m = fitcknn (meas, string (species));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   d = load (fn);
+%!   d.ClassNames = struct ('strs', {cellstr(m.ClassNames)}, ...
+%!                          'isMissing', ismissing (m.ClassNames));
+%!   d.Y = struct ('strs', {cellstr(m.Y)}, 'isMissing', ismissing (m.Y));
+%!   save ('-binary', fn, '-struct', 'd');
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.ClassNames, m.ClassNames);
+%!   assert_equal (m2.Y, m.Y);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
 ## Test input validation
 %!error<loadmodel: too few arguments.> loadmodel ()
 %!error<loadmodel: 'fisheriris.mat' does not contain a Classification or Regression object.> ...

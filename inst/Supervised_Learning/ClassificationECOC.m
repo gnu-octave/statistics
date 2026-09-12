@@ -365,7 +365,7 @@ classdef ClassificationECOC
 
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
                       'ClassificationECOC', false);
-      K = numel (F.ClassNames);
+      K = classCount (F.ClassNames);
 
       ## The coding design, named or given outright.
       if (ischar (Coding) && isrow (Coding))
@@ -956,6 +956,13 @@ endclassdef
 %!error<ClassificationECOC.selectModels: the binary learners are 'ClassificationTree' models, which are fitted over one regularization strength and have none to select between.> ...
 %! load fisheriris; ...
 %! selectModels (fitcecoc (meas, species, 'Learners', 'tree'), 1)
+
+%!test  # An unused category of a categorical response is not a class
+%! load fisheriris
+%! y = categorical (species);
+%! Mdl = ClassificationECOC (meas(51:150,:), y(51:150));
+%! assert_equal (cellstr (Mdl.ClassNames), {'versicolor'; 'virginica'});
+%! assert_equal (size (Mdl.CodingMatrix), [2, 1]);
 
 ## Test input validation
 %!error<ClassificationECOC.crossval: 'KFold' must be an integer value greater than 1.> ...

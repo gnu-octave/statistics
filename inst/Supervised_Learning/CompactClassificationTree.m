@@ -981,7 +981,7 @@ classdef CompactClassificationTree
       ## Create variables from model properties
       PredictorNames         = this.PredictorNames;
       ResponseName           = this.ResponseName;
-      ClassNames             = this.ClassNames;
+      ClassNames             = encodeLabels (this.ClassNames);
       CategoricalPredictors  = this.CategoricalPredictors;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
       NumNodes               = this.NumNodes;
@@ -1017,6 +1017,8 @@ classdef CompactClassificationTree
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
 
       ## The compact model is built from a full one and has no training data
       ## of its own, so the smallest fit the full class accepts is compacted

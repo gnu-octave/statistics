@@ -928,15 +928,7 @@ classdef ClassificationPartitionedModel
       ## no fold tests is reported as missing instead of carrying a class.
       ## Under a holdout partition that is most of them.  A logical response
       ## has no missing value to give, so those rows stay false.
-      if (iscellstr (this.Y))
-        label = repmat ({''}, this.NumObservations, 1);
-      elseif (islogical (this.Y))
-        label = false (this.NumObservations, 1);
-      elseif (isnumeric (this.Y))
-        label = nan (this.NumObservations, 1);
-      elseif (ischar (this.Y))
-        label = repmat (' ', this.NumObservations, size (this.Y, 2));
-      endif
+      label = missingLabels (this.Y, this.NumObservations);
 
       ## Initialize the score and cost matrices
       Score = nan (this.NumObservations, classCount (this.ClassNames));
@@ -1686,6 +1678,29 @@ endfunction
 %! assert_equal (sum (score, 2), ones (150, 1), 1e-14);
 %! assert_equal (kfoldLoss (cvModel) < 0.2, true);
 %! assert_equal (size (kfoldMargin (cvModel)), [150, 1]);
+
+%!test  # kfoldPredict gives categorical labels for a categorical response
+%! load fisheriris
+%! c = cvpartition ('CustomPartition', repmat ((1:5)', 30, 1));
+%! a = crossval (fitctree (meas, species), 'CVPartition', c);
+%! b = crossval (fitctree (meas, categorical (species)), 'CVPartition', c);
+%! label = kfoldPredict (b);
+%! assert_equal (class (label), 'categorical');
+%! assert_equal (cellstr (label), kfoldPredict (a));
+
+%!test  # kfoldPredict gives string labels for a string response
+%! load fisheriris
+%! c = cvpartition ('CustomPartition', repmat ((1:5)', 30, 1));
+%! a = crossval (fitctree (meas, species), 'CVPartition', c);
+%! b = crossval (fitctree (meas, string (species)), 'CVPartition', c);
+%! label = kfoldPredict (b);
+%! assert_equal (class (label), 'string');
+%! assert_equal (cellstr (label), kfoldPredict (a));
+
+%!test  # a holdout leaves the rows no fold tested <undefined>
+%! load fisheriris
+%! b = crossval (fitctree (meas, categorical (species)), 'Holdout', 0.2);
+%! assert_equal (sum (isundefined (kfoldPredict (b))), 120);
 
 ## Test input validation for ClassificationPartitionedModel
 ## Cross-validating a GAM rebuilds each fold from the term matrix, the

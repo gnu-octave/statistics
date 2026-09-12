@@ -25,23 +25,25 @@
 ## under its own @code{class.method} name, as the package's shared validation
 ## helpers do.
 ##
-## A response naming its classes in the rows of a character matrix is matched
-## as whole names, with the padding such a matrix carries stripped from both
-## sides.  Resolving every observation in one comparison is what this is for:
-## asking per observation inside a loop costs a pass over the classes each
-## time.
+## Class names and labels given as text of any kind, a character matrix, a cell
+## array of character vectors, a categorical or a string array, are matched as
+## whole names, the padding a character matrix carries stripped. Resolving every
+## observation in one comparison is what this is for: asking per observation
+## inside a loop costs a pass over the classes each time.
 ## @end deftypefn
 
 function [gY, errmsg] = labelIndices (C, Y)
 
   errmsg = "";
 
-  ## A character matrix names one class per row, so it is compared row by row
-  ## rather than element by element, whichever side of the comparison it is on.
-  if (ischar (C))
+  ## Class names given as text of any kind are compared as text: a character
+  ## matrix row by row rather than element by element, and a categorical or
+  ## string array by the names it holds, whichever side it is on.
+  istext = @(v) iscellstr (v) || ischar (v) || isa (v, 'categorical') ...
+                || isa (v, 'string');
+  if (istext (C) && istext (Y) && ! (isa (C, 'categorical')
+                                     && isa (Y, 'categorical')))
     C = cellstr (C);
-  endif
-  if (iscellstr (C) && ischar (Y))
     Y = cellstr (Y);
   endif
 

@@ -604,7 +604,7 @@ classdef CompactClassificationNaiveBayes
       Kernel                 = this.Kernel;
       Support                = this.Support;
       Width                  = this.Width;
-      ClassNames             = this.ClassNames;
+      ClassNames             = encodeLabels (this.ClassNames);
       Prior                  = this.Prior;
       Cost                   = this.Cost;
       ScoreTransform         = this.ScoreTransform;
@@ -628,6 +628,8 @@ classdef CompactClassificationNaiveBayes
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
 
       ## The compact model is built from a full one and has no training data
       ## of its own, so the smallest fit the full class accepts is compacted

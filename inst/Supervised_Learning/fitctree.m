@@ -292,6 +292,20 @@ endfunction
 %! assert_equal (Mdl.ClassNames, [1; 2; 3]);
 %! assert_equal (Mdl.NodeClass{1}, '1');
 
+%!test  # MATLAB parity: a categorical response gives categorical labels
+%! load fisheriris
+%! Mdl = fitctree (meas, categorical (species));
+%! label = predict (Mdl, meas([1, 60, 120], :));
+%! assert_equal (label, categorical ({'setosa'; 'versicolor'; 'virginica'}));
+%! assert_equal (Mdl.NodeClass{1}, 'setosa');
+
+%!test  # A string response gives string labels, where MATLAB gives cellstr
+%! load fisheriris
+%! Mdl = fitctree (meas, string (species));
+%! label = predict (Mdl, meas([1, 60, 120], :));
+%! assert_equal (label, string ({'setosa'; 'versicolor'; 'virginica'}));
+%! assert_equal (Mdl.NodeClass{1}, 'setosa');
+
 %!test  # MATLAB parity: a missing response drops its row, a missing X does not
 %! load fisheriris
 %! x = meas;

@@ -748,14 +748,18 @@ classdef ClassificationSVM
 
           case 'classnames'
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
-                   islogical (ClassNames) || ischar (ClassNames)))
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
               error (strcat ("ClassificationSVM: 'ClassNames' must be a", ...
-                             " cell array of character vectors, a logical", ...
-                             " vector, a numeric vector, or a character array."));
+                             " categorical array, a character array, a", ...
+                             " string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
             ## Check that all class names are available in gnY
-            if (iscellstr (ClassNames) || ischar (ClassNames))
+            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
               ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, 'UniformOutput', false))))
@@ -906,7 +910,7 @@ classdef ClassificationSVM
         ## own cellstr of them.  A character matrix is not a cellstr, and
         ## ismember between two of them compares character by character, so
         ## it would answer a question nobody asked.
-        if (iscellstr (ClassNames) || ischar (ClassNames))
+        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
           ru = find (! ismember (gnY, cellstr (ClassNames)));
         else
           ru = find (! ismember (glY, ClassNames));
@@ -936,6 +940,7 @@ classdef ClassificationSVM
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model
       [gret, gnY, glY] = grp2idx (Yret);
+      [gret, gnY, glY] = presentClasses (gret, gnY, glY);
       gY = gret(cobs);
       nclasses = numel (gnY);
       this.ClassNames = glY;  # Keep the same type as Y
@@ -2028,13 +2033,13 @@ classdef ClassificationSVM
 
       ## Create variables from model properties
       X = this.X;
-      Y = this.Y;
+      Y = encodeLabels (this.Y);
       NumObservations     = this.NumObservations;
       RowsUsed            = this.RowsUsed;
       NumPredictors       = this.NumPredictors;
       PredictorNames      = this.PredictorNames;
       ResponseName        = this.ResponseName;
-      ClassNames          = this.ClassNames;
+      ClassNames          = encodeLabels (this.ClassNames);
       ScoreTransform      = this.ScoreTransform;
       Sigma               = this.Sigma;
       BinEdges        = this.BinEdges;
@@ -2078,6 +2083,9 @@ classdef ClassificationSVM
   methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
+
       ## Create a ClassificationSVM object
       mdl = ClassificationSVM (1, 1);
 
@@ -2555,6 +2563,21 @@ endclassdef
 %! assert_equal (snum, stxt, 1e-12);
 %! assert_equal (num.Beta, txt.Beta, 1e-12);
 
+%!test  # A categorical 'ClassNames' is accepted
+%! load fisheriris
+%! y = categorical (species(51:150));
+%! Mdl = ClassificationSVM (meas(51:150,:), y, 'ClassNames', ...
+%!                          categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+%! assert_equal (numel (Mdl.ClassNames), 2);
+
+%!test  # An unused category of a categorical response is not a class
+%! load fisheriris
+%! y = categorical (species);
+%! Mdl = ClassificationSVM (meas(51:150,:), y(51:150));
+%! assert_equal (cellstr (Mdl.ClassNames), {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51,:)), y(51));
+
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
 %!error<ClassificationSVM: too few input arguments.> ...
@@ -2571,9 +2594,9 @@ endclassdef
 %! ClassificationSVM (ones (10,2), ones (10,1), 'ResponseName', {'Y'})
 %!error<ClassificationSVM: 'ResponseName' must be a character vector.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'ResponseName', 21)
-%!error<ClassificationSVM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationSVM: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'ClassNames', @(x)x)
-%!error<ClassificationSVM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%!error<ClassificationSVM: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'ClassNames', [1, 2])

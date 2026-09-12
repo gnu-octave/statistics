@@ -36,17 +36,25 @@ function pr = priorFromStruct (S, ClassNames, classname)
   endif
   sn = S.ClassNames;
   sp = S.ClassProbs;
-  if (numel (sn) != numel (sp))
+  if (classCount (sn) != numel (sp))
     error (strcat (classname, ": 'ClassNames' and 'ClassProbs' must have", ...
                    " the same number of elements."));
   endif
-  K = numel (ClassNames);
+  ## Textual names are matched whole.  A character matrix holds one name per
+  ## row padded with blanks, which cellstr removes, and a categorical or
+  ## string array is compared by its text.
+  textual = ! (isnumeric (ClassNames) || islogical (ClassNames));
+  if (textual)
+    names = cellstr (ClassNames);
+    if (ischar (sn) || isa (sn, 'categorical') || isa (sn, 'string'))
+      sn = cellstr (sn);
+    endif
+  endif
+  K = classCount (ClassNames);
   pr = zeros (1, K);
   for i = 1:K
-    if (iscellstr (ClassNames))
-      j = find (strcmp (sn, ClassNames{i}));
-    elseif (ischar (ClassNames))
-      j = find (strcmp (sn, ClassNames(i,:)));
+    if (textual)
+      j = find (strcmp (sn, names{i}));
     else
       j = find (sn == ClassNames(i));
     endif

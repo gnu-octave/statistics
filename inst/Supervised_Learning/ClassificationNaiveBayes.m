@@ -544,11 +544,14 @@ classdef ClassificationNaiveBayes
           case 'classnames'
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)))
-              error (strcat ("ClassificationNaiveBayes: 'ClassNames'", ...
-                             " must be a cell array of character vectors,", ...
-                             " a logical vector, a numeric vector, or a", ...
-                             " character array."));
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
+              error (strcat ("ClassificationNaiveBayes: 'ClassNames' must", ...
+                             " be a categorical array, a character array,", ...
+                             " a string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
 
           case 'prior'
@@ -1218,7 +1221,7 @@ classdef ClassificationNaiveBayes
 
       ## Create variables from model properties
       X                      = this.X;
-      Y                      = this.Y;
+      Y                      = encodeLabels (this.Y);
       RowsUsed               = this.RowsUsed;
       W                      = this.W;
       ModelParameters        = this.ModelParameters;
@@ -1228,7 +1231,7 @@ classdef ClassificationNaiveBayes
       CategoricalPredictors  = this.CategoricalPredictors;
       ResponseName           = this.ResponseName;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
-      ClassNames             = this.ClassNames;
+      ClassNames             = encodeLabels (this.ClassNames);
       Prior                  = this.Prior;
       Cost                   = this.Cost;
       ScoreTransform         = this.ScoreTransform;
@@ -1265,6 +1268,8 @@ classdef ClassificationNaiveBayes
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
 
       ## The smallest fit the class accepts, filled property by property
       ## below.  Two observations per class give every distribution something
@@ -1876,6 +1881,20 @@ endclassdef
 %! assert_equal (Mdl.DistributionNames, {'kernel', 'normal'});
 %! assert_equal (Mdl.DistributionParameters{2,2}, [22.5; 3.535533905932738], ...
 %!               1e-12);
+
+%!test  # A categorical 'ClassNames' keeps only the classes it names
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, categorical (species), ...
+%!   'ClassNames', categorical ({'versicolor'; 'virginica'}));
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+
+%!test  # MATLAB parity: cellstr 'ClassNames' over a categorical response
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, categorical (species), ...
+%!   'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.NumObservations, 100);
 
 ## Test input validation
 %!error<ClassificationNaiveBayes: too few input arguments.> ...

@@ -350,16 +350,8 @@ classdef ClassificationPartitionedECOC
     function [label, NegLoss] = kfoldPredict (this)
 
       n = this.NumObservations;
-      K = numel (this.ClassNames);
-      if (iscellstr (this.Y))
-        label = repmat ({''}, n, 1);
-      elseif (islogical (this.Y))
-        label = false (n, 1);
-      elseif (ischar (this.Y))
-        label = repmat (' ', n, columns (this.Y));
-      else
-        label = nan (n, 1);
-      endif
+      K = classCount (this.ClassNames);
+      label = missingLabels (this.Y, n);
       NegLoss = nan (n, K);
 
       for k = 1:this.KFold
@@ -557,6 +549,14 @@ endclassdef
 %! assert_equal (any (cellfun (@isempty, label)), false);
 %! assert_equal (any (any (isnan (NegLoss))), false);
 
+%!test  # a character matrix response gives one out-of-fold label per row
+%! load fisheriris
+%! c = cvpartition ('CustomPartition', repmat ((1:5)', 30, 1));
+%! CV = fitcecoc (meas, char (species), 'Learners', 'tree', 'CVPartition', c);
+%! [label, NegLoss] = kfoldPredict (CV);
+%! assert_equal (size (NegLoss), [150, 3]);
+%! assert_equal (sum (! strcmp (cellstr (label), species)), 11);
+
 %!test  # a holdout partition leaves the rows no fold tested unanswered
 %! load fisheriris
 %! CV = crossval (ClassificationECOC (meas, species, 'Learners', ...
@@ -585,6 +585,16 @@ endclassdef
 %! b = crossval (ClassificationECOC (meas, species, 'Learners', ...
 %!                                   'discriminant'), 'CVPartition', c);
 %! assert_equal (kfoldLoss (a), kfoldLoss (b), 1e-12);
+
+%!test  # a categorical response gives categorical out-of-fold labels
+%! load fisheriris
+%! c = cvpartition ('CustomPartition', repmat ((1:5)', 30, 1));
+%! a = fitcecoc (meas, species, 'Learners', 'tree', 'CVPartition', c);
+%! b = fitcecoc (meas, categorical (species), 'Learners', 'tree', ...
+%!               'CVPartition', c);
+%! label = kfoldPredict (b);
+%! assert_equal (class (label), 'categorical');
+%! assert_equal (cellstr (label), kfoldPredict (a));
 
 ## Test input validation
 %!error<ClassificationPartitionedECOC: too few input arguments.> ...

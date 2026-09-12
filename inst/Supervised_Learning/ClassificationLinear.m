@@ -1207,7 +1207,7 @@ classdef ClassificationLinear
     function savemodel (obj, fname)
 
       classdef_name = 'ClassificationLinear';
-      ClassNames = obj.ClassNames;
+      ClassNames = encodeLabels (obj.ClassNames);
       Prior = obj.Prior;
       Cost = obj.Cost;
       ScoreTransform = obj.ScoreTransform;
@@ -1280,6 +1280,8 @@ classdef ClassificationLinear
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
+
+      data = decodeLabels (data);
 
       mdl = ClassificationLinear (zeros (2, 1), [0; 1]);
       fields = fieldnames (data);
@@ -1797,6 +1799,12 @@ endclassdef
 %! assert_equal (Mdl.ModelParameters.DeltaGradientTolerance, 1);
 %! assert_equal (Mdl.ModelParameters.NumCheckConvergence, 2);
 %! assert_equal (Mdl.ModelParameters.PassLimit, 10);
+
+%!test  # An unused category of a categorical response is not a class
+%! load fisheriris
+%! y = categorical (species);
+%! Mdl = ClassificationLinear (meas(51:150,:), y(51:150));
+%! assert_equal (cellstr (Mdl.ClassNames), {'versicolor'; 'virginica'});
 
 ## Test input validation
 %!error<ClassificationLinear: too few input arguments.> ...

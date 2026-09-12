@@ -218,6 +218,13 @@ endfunction
 %!               'ClassificationPartitionedECOC');
 
 ## Test input validation
+%!test  # MATLAB parity: a character matrix response counts a class per row
+%! load fisheriris
+%! Mdl = fitcecoc (meas, char (species));
+%! assert_equal (size (Mdl.CodingMatrix), [3, 3]);
+%! assert_equal (predict (Mdl, meas([1, 60, 120], :)), ...
+%!               char ({'setosa'; 'versicolor'; 'virginica'}));
+
 %!error<fitcecoc: specify only one of 'KFold', 'Holdout', 'Leaveout' and 'CVPartition'.> ...
 %! fitcecoc (ones (8, 2), [1; 2; 1; 2; 1; 2; 1; 2], 'KFold', 2, 'Holdout', 0.3)
 %!error<fitcecoc: too few input arguments.> fitcecoc (ones (4, 2))
