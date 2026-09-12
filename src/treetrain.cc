@@ -49,6 +49,13 @@ classifier and the response itself when fitting a regression.  @var{W} is an\n\
 classifier and @qcode{\"mse\"} for a regression, and it is what selects\n\
 between the two.\n\
 \n\
+@qcode{NumVariablesToSample}, when present, is the number of predictors\n\
+each node chooses its split from, drawn afresh at every node, and\n\
+@qcode{Seed}, an integer from 0 to @math{2^32-1}, seeds that draw, so the\n\
+same seed grows the same tree.  A node whose predictors hold no valid split\n\
+is a leaf.  Without @qcode{NumVariablesToSample} every predictor is tried and\n\
+nothing is drawn.\n\
+\n\
 The returned structure holds @qcode{Children}, @qcode{Parent},\n\
 @qcode{CutPredictorIndex}, @qcode{CutPoint}, @qcode{IsBranchNode},\n\
 @qcode{NodeSize}, @qcode{NodeWeight} and @qcode{NumNodes}, plus\n\
@@ -83,6 +90,26 @@ takes a node table and the risk the caller measures by.\n\
   o.mergeleaves = opts.contents ("MergeLeaves").bool_value ();
   o.qetoler = opts.isfield ("QEToler")
               ? opts.contents ("QEToler").double_value () : 0.0;
+
+  o.nvars = 0;
+  if (opts.isfield ("NumVariablesToSample"))
+    {
+      double v = opts.contents ("NumVariablesToSample").double_value ();
+      if (! (v >= 1.0 && v == std::floor (v)))
+        error ("treetrain: NumVariablesToSample must be a positive integer.");
+      if (v > X.columns ())
+        error ("treetrain: NumVariablesToSample must not exceed the number "
+               "of predictors.");
+      o.nvars = static_cast<octave_idx_type> (v);
+    }
+  o.seed = 0;
+  if (opts.isfield ("Seed"))
+    {
+      double v = opts.contents ("Seed").double_value ();
+      if (! (v >= 0.0 && v <= 4294967295.0 && v == std::floor (v)))
+        error ("treetrain: Seed must be an integer from 0 to 2^32-1.");
+      o.seed = static_cast<std::uint32_t> (v);
+    }
 
   std::string critname = opts.contents ("SplitCriterion").string_value ();
   if (critname == "gdi")
@@ -283,6 +310,73 @@ takes a node table and the risk the caller measures by.\n\
 %! assert_equal (treetrain (ones (20, 2), y, w, o).NumNodes, 1);
 
 ## Test input validation
+%!test
+%! ## Sampling every predictor draws nothing and grows the unsampled tree
+%! load fisheriris
+%! o = struct ('NumClasses', 3, 'MinParent', 2, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false);
+%! w = ones (150, 1) / 150;
+%! T = treetrain (meas, grp2idx (species), w, o);
+%! o.NumVariablesToSample = 4;
+%! o.Seed = 12345;
+%! assert_equal (isequaln (treetrain (meas, grp2idx (species), w, o), T), true);
+
+%!test
+%! ## The same seed grows the same tree
+%! load fisheriris
+%! o = struct ('NumClasses', 3, 'MinParent', 2, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'NumVariablesToSample', 1, 'Seed', 7);
+%! w = ones (150, 1) / 150;
+%! A = treetrain (meas, grp2idx (species), w, o);
+%! B = treetrain (meas, grp2idx (species), w, o);
+%! assert_equal (isequaln (A, B), true);
+
+%!test
+%! ## Different seeds grow different trees
+%! load fisheriris
+%! o = struct ('NumClasses', 3, 'MinParent', 2, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'NumVariablesToSample', 1, 'Seed', 7);
+%! w = ones (150, 1) / 150;
+%! assert_equal (treetrain (meas, grp2idx (species), w, o).NumNodes, 23);
+%! o.Seed = 8;
+%! assert_equal (treetrain (meas, grp2idx (species), w, o).NumNodes, 25);
+
+%!test
+%! ## A node whose sampled predictor holds no split is a leaf
+%! load fisheriris
+%! o = struct ('NumClasses', 3, 'MinParent', 2, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'NumVariablesToSample', 1, 'Seed', 0);
+%! X = [ones(150, 1), meas(:, 3)];
+%! T = treetrain (X, grp2idx (species), ones (150, 1) / 150, o);
+%! assert_equal (T.NumNodes, 1);
+
+%!test
+%! ## A predictor that cannot split is never cut, however the draw falls
+%! load fisheriris
+%! o = struct ('NumClasses', 3, 'MinParent', 2, 'MinLeaf', 1, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'NumVariablesToSample', 1, 'Seed', 14);
+%! X = [ones(150, 1), meas(:, 3)];
+%! T = treetrain (X, grp2idx (species), ones (150, 1) / 150, o);
+%! assert_equal (T.NumNodes, 15);
+%! cut = T.CutPredictorIndex(logical (T.IsBranchNode));
+%! assert_equal (all (cut == 2), true);
+
+%!test
+%! ## A sampled regression tree is reproduced by its seed
+%! load fisheriris
+%! o = struct ('NumClasses', 0, 'MinParent', 10, 'MinLeaf', 5, ...
+%!             'MaxSplits', 149, 'SplitCriterion', 'mse', ...
+%!             'MergeLeaves', false, 'NumVariablesToSample', 1, 'Seed', 3);
+%! w = ones (150, 1) / 150;
+%! A = treetrain (meas(:, 2:4), meas(:, 1), w, o);
+%! B = treetrain (meas(:, 2:4), meas(:, 1), w, o);
+%! assert_equal (isequaln (A, B), true);
+
 %!shared o
 %! o = struct ('NumClasses', 2, 'MinParent', 10, 'MinLeaf', 1, ...
 %!             'MaxSplits', 19, 'SplitCriterion', 'gdi', ...
@@ -312,4 +406,22 @@ takes a node table and the risk the caller measures by.\n\
 %! treetrain (rand (10, 2), 5 * ones (10, 1), ones (10, 1), o);
 %!error <treetrain: Y holds a class index outside 1:K.> ...
 %! treetrain (rand (10, 2), zeros (10, 1), ones (10, 1), o);
+%!error <treetrain: NumVariablesToSample must be a positive integer.> ...
+%! bad = setfield (o, 'NumVariablesToSample', 0); ...
+%! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
+%!error <treetrain: NumVariablesToSample must be a positive integer.> ...
+%! bad = setfield (o, 'NumVariablesToSample', 1.5); ...
+%! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
+%!error <treetrain: NumVariablesToSample must not exceed the number of predictors.> ...
+%! bad = setfield (o, 'NumVariablesToSample', 3); ...
+%! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
+%!error <treetrain: Seed must be an integer from 0 to 2\^32-1.> ...
+%! bad = setfield (o, 'Seed', -1); ...
+%! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
+%!error <treetrain: Seed must be an integer from 0 to 2\^32-1.> ...
+%! bad = setfield (o, 'Seed', 2.5); ...
+%! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
+%!error <treetrain: Seed must be an integer from 0 to 2\^32-1.> ...
+%! bad = setfield (o, 'Seed', 2^32); ...
+%! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
 */

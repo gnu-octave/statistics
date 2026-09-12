@@ -20,7 +20,9 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <cstdint>
 #include <numeric>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -136,7 +138,26 @@ struct TreeOpts
   bool mergeleaves;
   double qetoler;
   Criterion crit;
+  octave_idx_type nvars;               // predictors tried per node, 0 for all
+  std::uint32_t seed;                  // seeds the draw when nvars is set
 };
+
+// One value in 0 .. range-1, every value equally likely.  The raw output of
+// std::mt19937 is fixed by the standard where the distributions built on it
+// are not, so drawing from it directly keeps a seeded tree the same under
+// every C++ library, and rejecting the low values a bare modulus would favour
+// keeps the draw unbiased.
+static octave_idx_type
+draw_below (std::mt19937& rng, octave_idx_type range)
+{
+  const std::uint32_t r = static_cast<std::uint32_t> (range);
+  const std::uint32_t reject = (0u - r) % r;
+  std::uint32_t x;
+  do
+    x = static_cast<std::uint32_t> (rng ());
+  while (x < reject);
+  return static_cast<octave_idx_type> (x % r);
+}
 
 // Grow a tree and return it as one node table.  Shared by treetrain, which
 // fits it, and used by treepredict through the descent below, so that the two
@@ -157,6 +178,15 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
   const double qetoler = o.qetoler;
 
   const bool isreg = (crit == MSE);
+
+  // Sampling predictors per node grows the trees of a random forest.  With
+  // every predictor tried nothing is drawn, so such a tree is exactly the one
+  // grown without sampling.
+  const octave_idx_type nvars = (o.nvars > 0 && o.nvars < p) ? o.nvars : p;
+  const bool sampling = (nvars < p);
+  std::mt19937 rng (o.seed);
+  std::vector<octave_idx_type> cand (p);
+  std::iota (cand.begin (), cand.end (), 0);
 
   if (! isreg && K < 1)
     error ("treetrain: NumClasses must be a positive integer.");
@@ -319,8 +349,21 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
       double bestval = std::numeric_limits<double>::quiet_NaN ();
       double bestgain = 0.0;
 
-      for (octave_idx_type j = 0; j < p; j++)
+      // A searched node tries a fresh subset of the predictors, drawn by a
+      // partial shuffle and put back in index order, so a tie between two
+      // predictors still goes to the lower index as it does without sampling.
+      // A node whose subset holds no valid split is a leaf; no second draw is
+      // made.
+      if (sampling)
         {
+          for (octave_idx_type k = 0; k < nvars; k++)
+            std::swap (cand[k], cand[k + draw_below (rng, p - k)]);
+          std::sort (cand.begin (), cand.begin () + nvars);
+        }
+
+      for (octave_idx_type c = 0; c < nvars; c++)
+        {
+          const octave_idx_type j = cand[c];
           const double *xj = X.data () + j * n;
           const octave_idx_type *oj = &ord[j][0];
 
