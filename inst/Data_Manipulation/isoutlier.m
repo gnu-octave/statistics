@@ -378,10 +378,11 @@ endfunction
 
 ## Find lower and upper outlier thresholds with quartiles method
 function [L, U, C] = quartiles_method (x, dim, ThresholdFactor)
-  Q = quantile (x, dim);
-  C = Q(3);
-  L = Q(2) - (Q(4) - Q(2)) * ThresholdFactor;
-  U = Q(4) + (Q(4) - Q(2)) * ThresholdFactor;
+  Q1 = quantile (x, 0.25, dim);
+  Q3 = quantile (x, 0.75, dim);
+  C = (Q1 + Q3) / 2;
+  L = Q1 - (Q3 - Q1) * ThresholdFactor;
+  U = Q3 + (Q3 - Q1) * ThresholdFactor;
 endfunction
 
 ## Find lower and upper outlier thresholds with grubbs method
@@ -812,6 +813,42 @@ endfunction
 %! assert_equal (L, 57.5)
 %! assert_equal (U, 62)
 %! assert_equal (C, 59.75)
+
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'quartiles');
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 52.375, 1e-12)
+%! assert_equal (U, 67.375, 1e-12)
+%! assert_equal (C, 59.875, 1e-12)
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'quartiles', 'ThresholdFactor', 1);
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 54.25, 1e-12)
+%! assert_equal (U, 65.5, 1e-12)
+%! assert_equal (C, 59.875, 1e-12)
+%!test
+%! B = magic (5) + diag (200 * ones (1, 5));
+%! [TF, L, U, C] = isoutlier (B, 'quartiles', 1);
+%! assert_equal (TF, logical (eye (5)))
+%! assert_equal (L, [-86, -77.625, -94.25, -89.125, -73.125], 1e-12)
+%! assert_equal (U, [166, 157.375, 171.75, 165.875, 153.875], 1e-12)
+%! assert_equal (C, [40, 39.875, 38.75, 38.375, 40.375], 1e-12)
+%!test
+%! B = magic (5) + diag (200 * ones (1, 5));
+%! [TF, L, U, C] = isoutlier (B, 'quartiles', 2);
+%! assert_equal (TF, logical (eye (5)))
+%! assert_equal (L, [-92.75; -72.125; -90.875; -83.625; -84.625], 1e-12)
+%! assert_equal (U, [171.25; 152.875; 166.125;161.375; 164.375], 1e-12)
+%! assert_equal (C, [39.25; 40.375; 37.625; 38.875; 39.875], 1e-12)
+%!test
+%! A = [57 59 60 100 59 NaN 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'quartiles');
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 52, 1e-12)
+%! assert_equal (U, 68, 1e-12)
+%! assert_equal (C, 60, 1e-12)
 
 ## Test input validation
 %!shared A
