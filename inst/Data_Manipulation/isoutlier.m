@@ -124,8 +124,7 @@
 ## from 0 to 1, specifying the critical @math{alpha}-value of the respective
 ## test, and it is 0.05 by default.  For the @qcode{'quartiles'} method, the
 ## detection threshold factor replaces the number of interquartile ranges, which
-## is 1.5 by default.  @qcode{'ThresholdFactor'} is not supported for the
-## @qcode{'quartiles'} method.
+## is 1.5 by default. 
 ##
 ## @item @qcode{'MaxNumOutliers'} is only relevant to the @qcode{'gesd'} method
 ## and it must be a positive integer scalar specifying the maximum number of
