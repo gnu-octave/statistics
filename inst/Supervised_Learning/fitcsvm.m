@@ -58,7 +58,8 @@
 ##
 ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the kNN model.  @qcode{ClassNames} are of
-## the same type as the class labels in @var{Y}.
+## the same type as the class labels in @var{Y}.  The model keeps the classes
+## in this order; by default they are sorted.
 ##
 ## @item @qcode{'SVMtype'} @tab Specifies the type of SVM used for training
 ## the @code{ClassificationSVM} model.  By default, the type of SVM is defined
@@ -377,3 +378,23 @@ endfunction
 %! fitcsvm (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcsvm: You can use only one cross-validation name-value pair argument> ...
 %! fitcsvm (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 51:100];
+%! Mdl = fitcsvm (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});
+
+%!test  # the score columns follow a given ClassNames order
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! [label, s] = predict (Mdl, meas(51,:));
+%! assert_equal (label, {'versicolor'});
+%! assert_equal (s(2) > s(1), true);

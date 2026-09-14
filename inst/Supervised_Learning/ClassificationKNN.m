@@ -174,7 +174,8 @@ classdef ClassificationKNN
     ## Names of classes in the response variable
     ##
     ## An array of unique values of the response variable @var{Y}, which has the
-    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## same data types as the data in @var{Y}, sorted or in the order given by
+    ## the @qcode{'ClassNames'} option.  This property is read-only.
     ## @qcode{ClassNames} can have any of the following datatypes:
     ##
     ## @itemize
@@ -512,7 +513,7 @@ classdef ClassificationKNN
     ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
     ## order its own matrix is written in.  That matrix is permuted into the
     ## order of @qcode{ClassNames} above, so a caller need not know which
-    ## order the classes were sorted into.  It must name every class.
+    ## order the classes are in.  It must name every class.
     ##
     ## A cost must be floating point, not sparse, not complex, non-negative
     ## and zero down its diagonal, and must hold no @qcode{NaN} or
@@ -627,7 +628,7 @@ classdef ClassificationKNN
   methods (Hidden)
 
     function this = set.Cost (this, val)
-      gnY = uniqueLabels (this.Y);
+      gnY = this.ClassNames;
       if (isempty (val))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
@@ -642,20 +643,21 @@ classdef ClassificationKNN
     endfunction
 
     function this = set.Prior (this, val)
-      [~, gnY, gY] = uniqueLabels (this.Y);
+      gY = labelIndices (this.ClassNames, this.Y);
+      K = classCount (this.ClassNames);
       if (isstruct (val))
         val = priorFromStruct (val, this.ClassNames, 'ClassificationKNN');
       endif
       if (strcmpi ('uniform', val))
-        this.Prior = ones (1, numel (gnY)) ./ numel (gnY);
+        this.Prior = ones (1, K) ./ K;
       elseif (isempty (val) || strcmpi ('empirical', val))
         pr = [];
-        for i = 1:numel (gnY)
+        for i = 1:K
           pr = [pr; sum(gY==i)];
         endfor
         this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (val))
-        if (numel (gnY) != numel (val))
+        if (K != numel (val))
           error (strcat ("ClassificationKNN: the elements in 'Prior' do", ...
                          " not correspond to the selected classes in Y."));
         endif
@@ -1289,8 +1291,9 @@ classdef ClassificationKNN
       X         = Xret(cobs, :);
 
       ## Renew groups in Y over the retained observations, so a class held
-      ## only by a row with missing predictors is still a class of the model
-      [this.ClassNames, gnY, gret] = uniqueLabels (Yret);
+      ## only by a row with missing predictors is still a class of the model;
+      ## the classes are sorted or in the order ClassNames gives them
+      [this.ClassNames, gret] = classOrder (Yret, ClassNames);
       gY = gret(cobs);
 
       ## Check X contains valid data
@@ -1571,7 +1574,7 @@ classdef ClassificationKNN
       cost  = [];
 
       ## Get IDs of labels for each point in training data
-      [~, ~, gY] = uniqueLabels (Y);
+      gY = labelIndices (this.ClassNames, Y);
 
       ## Evaluate the K nearest neighbours for each new point
       for i = 1:rows (idx)

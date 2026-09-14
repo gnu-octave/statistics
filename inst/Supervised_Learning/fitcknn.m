@@ -58,7 +58,8 @@
 ##
 ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the kNN model.  @qcode{ClassNames} are of
-## the same type as the class labels in @var{Y}.
+## the same type as the class labels in @var{Y}.  The model keeps the classes
+## in this order; by default they are sorted.
 ##
 ## @item @qcode{'Prior'} @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
@@ -594,3 +595,15 @@ endfunction
 %! fitcknn (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcknn: You can use only one cross-validation name-value pair argument> ...
 %! fitcknn (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 1:50, 51:100];
+%! Mdl = fitcknn (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'setosa'; 'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcknn (meas(1:150,:), species(1:150), ...
+%!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});

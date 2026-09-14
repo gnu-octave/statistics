@@ -62,7 +62,8 @@
 ##
 ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the Discriminant model. @qcode{ClassNames}
-## are of the same type as the class labels in @var{Y}.
+## are of the same type as the class labels in @var{Y}.  The model keeps
+## the classes in this order; by default they are sorted.
 ##
 ## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
@@ -285,3 +286,15 @@ endfunction
 %! fitcgam (ones (4,2), ones (3, 1))
 %!error<fitcgam: number of rows in X and Y must be equal.>
 %! fitcgam (ones (4,2), ones (3, 1), 'K', 2)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 51:100];
+%! Mdl = fitcgam (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcgam (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});

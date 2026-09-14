@@ -102,11 +102,10 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
     error ("%s: no complete observations in the data.", classname);
   endif
 
-  [gY, gnY, glY] = grp2idx (F.Y);
-  [gY, gnY, glY] = presentClasses (gY, gnY, glY);
-  nclasses = numel (gnY);
+  ## The classes, sorted or in the order ClassNames gives them.
+  [F.ClassNames, gY] = classOrder (F.Y, ClassNames);
+  nclasses = classCount (F.ClassNames);
   F.gY = gY;
-  F.ClassNames = glY;
   [F.n, F.p] = size (F.X);
 
   ## A binary model takes exactly two classes; a multiclass one takes two or

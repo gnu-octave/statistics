@@ -211,7 +211,8 @@ classdef ClassificationDiscriminant
     ## Names of classes in the response variable
     ##
     ## An array of unique values of the response variable @var{Y}, which has the
-    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## same data types as the data in @var{Y}, sorted or in the order given by
+    ## the @qcode{'ClassNames'} option.  This property is read-only.
     ## @qcode{ClassNames} can have any of the following datatypes:
     ##
     ## @itemize
@@ -586,7 +587,7 @@ classdef ClassificationDiscriminant
   methods (Hidden)
 
     function this = set.Cost (this, Cost)
-      gnY = uniqueLabels (this.Y);
+      gnY = this.ClassNames;
       if (isempty (Cost))
         this.Cost = cast (! eye (classCount (gnY)), 'double');
       else
@@ -601,22 +602,23 @@ classdef ClassificationDiscriminant
     endfunction
 
     function this = set.Prior (this, Prior)
-      [~, gnY, gY] = uniqueLabels (this.Y);
+      gY = labelIndices (this.ClassNames, this.Y);
+      K = classCount (this.ClassNames);
       if (isstruct (Prior))
         Prior = priorFromStruct (Prior, this.ClassNames, ...
                                  'ClassificationDiscriminant');
       endif
       ## Set prior
       if (strcmpi ('uniform', Prior))
-        this.Prior = ones (1, numel (gnY)) ./ numel (gnY);
+        this.Prior = ones (1, K) ./ K;
       elseif (isempty (Prior) || strcmpi ('empirical', Prior))
         pr = [];
-        for i = 1:numel (gnY)
+        for i = 1:K
           pr = [pr; sum(gY==i)];
         endfor
         this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (Prior))
-        if (numel (gnY) != numel (Prior))
+        if (K != numel (Prior))
           error (strcat ("ClassificationDiscriminant: the elements", ...
                          " in 'Prior' do not correspond to the", ...
                          " selected classes in Y."));
@@ -1091,8 +1093,9 @@ classdef ClassificationDiscriminant
       this.X = X;
       this.Y = Y;
 
-      ## Renew groups in Y, get classes ordered, keep the same type
-      [this.ClassNames, gnY, gY] = uniqueLabels (Y);
+      ## Renew groups in Y: the classes keep the type of Y, sorted or in the
+      ## order ClassNames gives them
+      [this.ClassNames, gY] = classOrder (Y, ClassNames);
 
       ## Check X contains valid data
       if (! (isnumeric (X) && ! any (isinf (X(:)))))

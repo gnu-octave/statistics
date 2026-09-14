@@ -61,7 +61,8 @@
 ## @item @qcode{'ClassNames'} @tab Names of the classes in the class labels,
 ## @var{Y}, used for fitting the model.  @qcode{ClassNames} are of the same
 ## type as the class labels in @var{Y}.  Naming a subset of the classes keeps
-## only the observations belonging to them.
+## only the observations belonging to them.  The model keeps the classes in
+## this order; by default they are sorted.
 ##
 ## @item @qcode{'Prior'} @tab A numeric vector specifying the prior probability
 ## of each class, in the order of @qcode{ClassNames}, or the character vector

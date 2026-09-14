@@ -163,7 +163,8 @@ classdef ClassificationGAM
     ## Names of classes in the response variable
     ##
     ## An array of unique values of the response variable @var{Y}, which has the
-    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## same data types as the data in @var{Y}, sorted or in the order given by
+    ## the @qcode{'ClassNames'} option.  This property is read-only.
     ## @qcode{ClassNames} can have any of the following datatypes:
     ##
     ## @itemize
@@ -722,6 +723,7 @@ classdef ClassificationGAM
     ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
     ## labels, @var{Y}, used for fitting the GAM model.
     ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
+    ## The model keeps the classes in this order; by default they are sorted.
     ##
     ## @item @qcode{'Cost'} @tab An @math{N*R} numeric matrix containing
     ## misclassification cost for the corresponding instances in @var{X}, where
@@ -1196,25 +1198,12 @@ classdef ClassificationGAM
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
 
-      ## Renew groups in Y.  The third output of grp2idx holds the levels in
-      ## the type of Y, where the second is always a cell array of character
-      ## vectors, so a numeric or logical response keeps its own type.  grp2idx
-      ## orders a character or cell response by first appearance where MATLAB
-      ## sorts the classes, so the levels are sorted and the indices remapped.
-      [gY, gnY, glY] = grp2idx (Y);
-      [gY, gnY, glY] = presentClasses (gY, gnY, glY);
-      if (ischar (glY))
-        [glY, sidx] = sortrows (glY);
-      else
-        [glY, sidx] = sort (glY);
-      endif
-      remap(sidx) = 1:numel (sidx);
-      gY = remap(gY)(:);
-      gnY = gnY(sidx);
-      this.ClassNames = glY;
+      ## Renew groups in Y: the classes keep the type of Y, sorted or in the
+      ## order ClassNames gives them.
+      [this.ClassNames, gY] = classOrder (Y, ClassNames);
 
       ## Check that we are dealing only with binary classification
-      if (numel (gnY) > 2)
+      if (classCount (this.ClassNames) > 2)
         error ("ClassificationGAM: can only be used for binary classification.");
       endif
 
@@ -1406,7 +1395,7 @@ classdef ClassificationGAM
       if (strcmp (this.FitMethod, 'boostedtrees'))
         cobs = ! any (isnan (this.X), 2);
         Xfit = this.X(cobs, :);
-        [~, ~, gY] = uniqueLabels (this.Y(cobs, :));
+        gY = labelIndices (this.ClassNames, this.Y(cobs, :));
         Yfit = gY(:) - 1;
         MP = this.ModelParameters;
         lrInter = MP.InitialLearnRateForInteractions;
@@ -1429,7 +1418,7 @@ classdef ClassificationGAM
       ## are widened to the interaction columns by fitModelwInt.
       cobs = ! any (isnan (this.X), 2);
       Xfit = this.X(cobs, :);
-      [~, ~, gY] = uniqueLabels (this.Y(cobs, :));
+      gY = labelIndices (this.ClassNames, this.Y(cobs, :));
       Yfit = gY(:) - 1;
       this = this.fitModelwInt (Xfit, Yfit, mean (Yfit), this.Knots, ...
                                 this.Order, this.DoF, this.LearningRate, ...
@@ -2169,7 +2158,7 @@ classdef ClassificationGAM
       ## The rows the fit saw, coded as the engine takes them.
       cobs = ! any (isnan (this.X), 2);
       X = this.X(cobs, :);
-      [~, ~, gY] = uniqueLabels (this.Y(cobs, :));
+      gY = labelIndices (this.ClassNames, this.Y(cobs, :));
       Y = gY(:) - 1;
 
       Mdl = this;

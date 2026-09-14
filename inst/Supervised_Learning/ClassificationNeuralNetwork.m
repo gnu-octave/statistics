@@ -131,7 +131,8 @@ classdef ClassificationNeuralNetwork
     ## Names of classes in the response variable
     ##
     ## An array of unique values of the response variable @var{Y}, which has the
-    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## same data types as the data in @var{Y}, sorted or in the order given by
+    ## the @qcode{'ClassNames'} option.  This property is read-only.
     ## @qcode{ClassNames} can have any of the following datatypes:
     ##
     ## @itemize
@@ -482,7 +483,7 @@ classdef ClassificationNeuralNetwork
     ## @qcode{ClassNames} and @qcode{ClassificationCosts}, which names the
     ## order its own matrix is written in.  That matrix is permuted into the
     ## order of @qcode{ClassNames} above, so a caller need not know which
-    ## order the classes were sorted into.  It must name every class.
+    ## order the classes are in.  It must name every class.
     ##
     ## A cost must be floating point, not sparse, not complex, non-negative
     ## and zero down its diagonal, and must hold no @qcode{NaN} or
@@ -1004,8 +1005,9 @@ classdef ClassificationNeuralNetwork
       X         = Xret(cobs, :);
 
       ## Renew groups in Y over the retained observations, so a class held
-      ## only by a row with missing predictors is still a class of the model
-      [this.ClassNames, gnY, gret] = uniqueLabels (Yret);
+      ## only by a row with missing predictors is still a class of the model;
+      ## the classes are sorted or in the order ClassNames gives them
+      [this.ClassNames, gret] = classOrder (Yret, ClassNames);
       gY = gret(cobs);
 
       ## Check X contains valid data
@@ -1073,7 +1075,7 @@ classdef ClassificationNeuralNetwork
         ## keeps the share of the observation weight it carried before any row
         ## was set aside, which is what MATLAB reports.
         sw = zeros (rows (X), 1);
-        for k = 1:numel (gnY)
+        for k = 1:classCount (this.ClassNames)
           ck = (gY == k);
           if (any (ck))
             sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);

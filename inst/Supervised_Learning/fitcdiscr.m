@@ -55,7 +55,8 @@
 ##
 ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the Discriminant model. @qcode{ClassNames}
-## are of the same type as the class labels in @var{Y}.
+## are of the same type as the class labels in @var{Y}.  The model keeps
+## the classes in this order; by default they are sorted.
 ##
 ## @item @qcode{'Prior'} @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
@@ -184,3 +185,15 @@ endfunction
 %! fitcdiscr (ones (4,2), ones (3, 1))
 %!error<fitcdiscr: number of rows in X and Y must be equal.>
 %! fitcdiscr (ones (4,2), ones (3, 1), 'K', 2)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 1:50, 51:100];
+%! Mdl = fitcdiscr (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'setosa'; 'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcdiscr (meas(1:150,:), species(1:150), ...
+%!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});

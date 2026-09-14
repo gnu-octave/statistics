@@ -55,8 +55,9 @@ classdef ClassificationLinear
     ##
     ## A column of the same type as the response supplied to the constructor:
     ## a cell array of character vectors, a numeric vector, a logical vector
-    ## or a character matrix.  The second of the two is the positive class,
-    ## the one a positive score belongs to.  This property is read-only.
+    ## or a character matrix, sorted or in the order given by the
+    ## @qcode{'ClassNames'} option.  The second of the two is the positive
+    ## class, the one a positive score belongs to.  This property is read-only.
     ##
     ## @end deftp
     ClassNames             = [];
@@ -358,7 +359,8 @@ classdef ClassificationLinear
     ## quasi-Newton solvers keep, @qcode{15} by default.
     ##
     ## @item @qcode{'ClassNames'} @tab The classes to keep, given in the type
-    ## of @var{Y}.  Observations of any other class are dropped.
+    ## of @var{Y}.  Observations of any other class are dropped.  The model
+    ## keeps the classes in this order; by default they are sorted.
     ##
     ## @item @qcode{'Cost'} @tab A square misclassification cost matrix.
     ##

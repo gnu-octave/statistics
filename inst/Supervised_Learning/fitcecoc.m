@@ -56,6 +56,7 @@
 ##
 ## @item @qcode{'ClassNames'} @tab @tab The classes to fit, and the order
 ## the rows of the coding matrix, @code{Prior} and @code{Cost} take them in.
+## By default they are sorted.
 ##
 ## @item @qcode{'Cost'} @tab @tab A @math{KxK} matrix of misclassification
 ## costs.  The default is @code{1 - eye (K)}.
@@ -238,3 +239,15 @@ endfunction
 %! fitcecoc (ones (4, 2), [1; 2; 1; 2], 'FitPosterior', true)
 %!error<ClassificationECOC: invalid parameter name> ...
 %! fitcecoc (ones (4, 2), [1; 2; 1; 2], 'NoSuch', 1)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 1:50, 51:100];
+%! Mdl = fitcecoc (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'setosa'; 'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcecoc (meas(1:150,:), species(1:150), ...
+%!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});

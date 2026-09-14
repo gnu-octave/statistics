@@ -48,7 +48,8 @@
 ## @headitem @var{Name} @tab @var{Value}
 ##
 ## @item @qcode{'ClassNames'} @tab The classes to fit, of the same type as
-## @var{Y}.  Observations of any other class are dropped.
+## @var{Y}.  Observations of any other class are dropped.  The model keeps
+## the classes in this order; by default they are sorted.
 ##
 ## @item @qcode{'Cost'} @tab A square matrix with one row and column per
 ## class, where element @math{(i,j)} is the cost of classifying an
@@ -389,3 +390,29 @@ endfunction
 %! fitctree (ones (4, 2), ones (3, 1))
 %!error<fitctree: number of rows in X and Y must be equal.>
 %! fitctree (ones (4, 2), ones (3, 1), 'K', 2)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 51:100];
+%! Mdl = fitctree (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitctree (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});
+
+%!test  # the score columns follow a given ClassNames order
+%! load fisheriris
+%! Mdl = fitctree (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! [label, s] = predict (Mdl, meas(51,:));
+%! assert_equal (label, {'versicolor'});
+%! assert_equal (s(2) > s(1), true);
+
+%!test  # classes named as text for numeric labels keep the given order
+%! load fisheriris
+%! Y = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
+%! Mdl = fitctree (meas, Y, 'ClassNames', {'3', '1', '2'});
+%! assert_equal (Mdl.ClassNames, [3; 1; 2]);

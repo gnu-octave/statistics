@@ -172,3 +172,15 @@ endfunction
 %! fitckernel (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Learner')
 %!error<ClassificationKernel: 'Learner' must be either 'svm' or 'logistic'.> ...
 %! fitckernel (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Learner', 'tree')
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 51:100];
+%! Mdl = fitckernel (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitckernel (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});

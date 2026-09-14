@@ -198,3 +198,15 @@ endfunction
 %! fitclinear (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Learner')
 %!error<ClassificationLinear: 'Learner' must be either 'svm' or 'logistic'.> ...
 %! fitclinear (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Learner', 'tree')
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 51:100];
+%! Mdl = fitclinear (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitclinear (meas(51:150,:), species(51:150), ...
+%!             'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});

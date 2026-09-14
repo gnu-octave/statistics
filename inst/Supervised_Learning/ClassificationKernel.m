@@ -69,8 +69,9 @@ classdef ClassificationKernel
     ##
     ## Names of the two classes
     ##
-    ## A column of the same type as the response supplied to the constructor.
-    ## The second of the two is the positive class, the one a positive score
+    ## A column of the same type as the response supplied to the constructor,
+    ## sorted or in the order given by the @qcode{'ClassNames'} option.  The
+    ## second of the two is the positive class, the one a positive score
     ## belongs to.  This property is read-only.
     ##
     ## @end deftp
@@ -362,7 +363,8 @@ classdef ClassificationKernel
     ## megabytes, @qcode{4e3} by default.
     ##
     ## @item @qcode{'ClassNames'} @tab The classes to keep, given in the type
-    ## of @var{Y}.
+    ## of @var{Y}, in the order the model keeps them; by default they are
+    ## sorted.
     ##
     ## @item @qcode{'Cost'} @tab A square misclassification cost matrix.
     ##

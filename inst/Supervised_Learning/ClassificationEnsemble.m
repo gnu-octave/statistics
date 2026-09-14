@@ -174,8 +174,9 @@ classdef ClassificationEnsemble
     ##
     ## Names of the classes
     ##
-    ## The classes, in the type of the response and in the order the columns
-    ## of the scores take them.  This property is read-only.
+    ## The classes, in the type of the response, sorted or in the order given
+    ## by the @qcode{'ClassNames'} option; the columns of the scores take them
+    ## in that order.  This property is read-only.
     ##
     ## @end deftp
     ClassNames = [];
@@ -1131,8 +1132,7 @@ classdef ClassificationEnsemble
           case 'RUSBoost'
             d = this.State.d;
             idx = rusSample (g, d, this.RatioToSmallest);
-            present = uniqueLabels (labelsFromIndex (this.ClassNames, ...
-                                                     unique (g(idx))));
+            present = labelsFromIndex (this.ClassNames, unique (g(idx)));
             T = compact (ClassificationTree (this.X(idx,:), this.Y(idx,:), ...
                                              'ClassNames', present, ...
                                              ctree{:}, this.TreeArgs{:}));
@@ -1220,8 +1220,7 @@ classdef ClassificationEnsemble
               [~, order] = sort (rand (n, 1) .^ (1 ./ this.W), 'descend');
               idx = order(1:m);
             endif
-            present = uniqueLabels (labelsFromIndex (this.ClassNames, ...
-                                                     unique (g(idx))));
+            present = labelsFromIndex (this.ClassNames, unique (g(idx)));
             p = columns (this.X);
             T = compact (ClassificationTree (this.X(idx,:), this.Y(idx,:), ...
                                              'ClassNames', present, ...

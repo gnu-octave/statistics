@@ -127,7 +127,7 @@
 ## @item @qcode{'NPrint'} @tab @tab @qcode{'off'} (default) or a positive
 ## integer @var{n}, to print a line after every @var{n} trees.
 ## @item @qcode{'ClassNames'} @tab @tab The classes to fit, in the order their
-## scores are laid out.
+## scores are laid out; by default they are sorted.
 ## @item @qcode{'Cost'} @tab @tab A @math{KxK} matrix of misclassification
 ## costs.  The default is @code{1 - eye (K)}.
 ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
@@ -600,7 +600,7 @@ endfunction
 %! Mdl = fitcensemble (meas(k,:), species(k), 'Method', 'RUSBoost', ...
 %!                     'Learners', T1, 'NumLearningCycles', 1, ...
 %!                     'RatioToSmallest', [1, 1.25]);
-%! assert_equal (sort (Mdl.Trained{1}.ClassCount(1,:)), [10, 13]);
+%! assert_equal (Mdl.Trained{1}.ClassCount(1,:), [10, 13]);
 
 %!test  # MATLAB parity: a class smaller than its sample is oversampled
 %! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
@@ -622,3 +622,25 @@ endfunction
 %!                    'KFold', 3);
 %! assert_equal (CV.Trainable{1}.RatioToSmallest, [1, 2, 2]);
 %! assert_equal (CV.NumTrainedPerFold, [3, 3, 3]);
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 51:100];
+%! Mdl = fitcensemble (meas(k,:), species(k), 'NumLearningCycles', 2);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcensemble (meas(51:150,:), species(51:150), ...
+%!                     'NumLearningCycles', 2, ...
+%!                     'ClassNames', {'virginica'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});
+
+%!test  # the score columns follow a given ClassNames order
+%! load fisheriris
+%! Mdl = fitcensemble (meas(51:150,:), species(51:150), ...
+%!                     'NumLearningCycles', 2, ...
+%!                     'ClassNames', {'virginica'; 'versicolor'});
+%! [label, s] = predict (Mdl, meas(51,:));
+%! assert_equal (label, {'versicolor'});
+%! assert_equal (s(2) > s(1), true);

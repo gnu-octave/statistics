@@ -42,7 +42,8 @@ classdef ClassificationPartitionedModel
     ## Names of classes in the response variable
     ##
     ## An array of unique values of the response variable @var{Y}, which has the
-    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## same data types as the data in @var{Y}, sorted or in the order given by
+    ## the @qcode{'ClassNames'} option.  This property is read-only.
     ## @qcode{ClassNames} can have any of the following datatypes:
     ##
     ## @itemize
@@ -434,8 +435,8 @@ classdef ClassificationPartitionedModel
         n = classCount (this.ClassNames);
         this.Prior = ones (1, n) ./ n;
       elseif (isempty (val) || (ischar (val) && strcmpi ('empirical', val)))
-        [~, gnY, gY] = uniqueLabels (this.Y);
-        pr = accumarray (gY(:), 1, [numel(gnY), 1]);
+        gY = labelIndices (this.ClassNames, this.Y);
+        pr = accumarray (gY(:), 1, [classCount(this.ClassNames), 1]);
         this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (val))
         if (classCount (this.ClassNames) != numel (val))
@@ -599,7 +600,7 @@ classdef ClassificationPartitionedModel
           ## kept, so a fold holding a class in a different proportion from
           ## the whole reports a different prior.  The other five take the
           ## parent's value unchanged.
-          [~, ~, gY] = uniqueLabels (this.Y);
+          gY = labelIndices (this.ClassNames, this.Y);
           nclass = classCount (this.ClassNames);
           for k = 1:this.KFold
             idx = training (this.Partition, k);

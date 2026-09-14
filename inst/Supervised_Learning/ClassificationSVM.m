@@ -132,7 +132,8 @@ classdef ClassificationSVM
     ## Names of classes in the response variable
     ##
     ## An array of unique values of the response variable @var{Y}, which has the
-    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## same data types as the data in @var{Y}, sorted or in the order given by
+    ## the @qcode{'ClassNames'} option.  This property is read-only.
     ## @qcode{ClassNames} can have any of the following datatypes:
     ##
     ## @itemize
@@ -628,6 +629,7 @@ classdef ClassificationSVM
     ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
     ## labels, @var{Y}, used for fitting the SVM model. @qcode{ClassNames} are
     ## of the same type as the class labels in @var{Y}.
+    ## The model keeps the classes in this order; by default they are sorted.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -939,11 +941,11 @@ classdef ClassificationSVM
 
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model
-      [gret, gnY, glY] = grp2idx (Yret);
-      [gret, gnY, glY] = presentClasses (gret, gnY, glY);
+      ## The classes keep the type of Y, sorted or in the order ClassNames
+      ## gives them.
+      [this.ClassNames, gret] = classOrder (Yret, ClassNames);
       gY = gret(cobs);
-      nclasses = numel (gnY);
-      this.ClassNames = glY;  # Keep the same type as Y
+      nclasses = classCount (this.ClassNames);
 
       ## Resolve Prior and Cost against the classes that survived.  Prior
       ## defaults to the frequencies of the training data and Cost to zero on
@@ -1037,7 +1039,7 @@ classdef ClassificationSVM
         ## keeps the share of the observation weight it carried before any row
         ## was set aside, which is what MATLAB reports.
         sw = zeros (rows (X), 1);
-        for k = 1:numel (gnY)
+        for k = 1:nclasses
           ck = (gY == k);
           if (any (ck))
             sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);
@@ -1796,7 +1798,7 @@ classdef ClassificationSVM
       ## were included as well.
       used = true (rows (this.X), 1);
       Xu = this.X(used, :);
-      gY = grp2idx (this.Y(used, :));
+      gY = labelIndices (this.ClassNames, this.Y(used, :));
       Ypm = ones (rows (Xu), 1);
       Ypm(gY == 2) = -1;
       L = loss (this, Xu, Ypm, 'LossFun', LossFun, 'Weights', Weights);

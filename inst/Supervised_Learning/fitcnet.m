@@ -58,6 +58,7 @@
 ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the Neural Network model.
 ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
+## The model keeps the classes in this order; by default they are sorted.
 ##
 ## @item @qcode{'Prior'} @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
@@ -267,3 +268,15 @@ endfunction
 %! fitcnet (ones (4,2), ones (3, 1))
 %!error<fitcnet: number of rows in X and Y must be equal.>
 %! fitcnet (ones (4,2), ones (3, 1), 'LayerSizes', 2)
+
+%!test  # MATLAB parity: classes given as text are sorted
+%! load fisheriris
+%! k = [101:150, 1:50, 51:100];
+%! Mdl = fitcnet (meas(k,:), species(k));
+%! assert_equal (Mdl.ClassNames, {'setosa'; 'versicolor'; 'virginica'});
+
+%!test  # MATLAB parity: a given ClassNames order is kept
+%! load fisheriris
+%! Mdl = fitcnet (meas(1:150,:), species(1:150), ...
+%!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
+%! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});

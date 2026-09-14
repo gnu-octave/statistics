@@ -143,8 +143,9 @@ classdef ClassificationTree
     ##
     ## Names of the classes
     ##
-    ## The distinct class labels, in the type the response was given in and
-    ## sorted.  This property is read-only.
+    ## The distinct class labels, in the type the response was given in,
+    ## sorted or in the order given by the @qcode{'ClassNames'} option.  This
+    ## property is read-only.
     ##
     ## @end deftp
     ClassNames = [];
@@ -717,7 +718,8 @@ classdef ClassificationTree
     ## @headitem @var{Name} @tab @var{Value}
     ##
     ## @item @qcode{'ClassNames'} @tab The classes to fit, of the same type
-    ## as @var{Y}.  Observations of any other class are dropped.
+    ## as @var{Y}.  Observations of any other class are dropped.  The model
+    ## keeps the classes in this order; by default they are sorted.
     ##
     ## @item @qcode{'Cost'} @tab A square matrix with one row and column per
     ## class, where element @math{(i,j)} is the cost of classifying an
@@ -1068,9 +1070,9 @@ classdef ClassificationTree
         this.RowsUsed = RowsUsed;
       endif
 
-      ## The classes, sorted and in the type the response was given in
-      [this.ClassNames, ~, gY] = uniqueLabels (Y);
-      gY = gY(:);
+      ## The classes, in the type the response was given in, sorted or in the
+      ## order ClassNames gives them
+      [this.ClassNames, gY] = classOrder (Y, ClassNames);
       K = classCount (this.ClassNames);
 
       ## The raw weights, kept so that reassigning Prior can re-derive W

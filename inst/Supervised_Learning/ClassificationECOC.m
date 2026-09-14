@@ -132,9 +132,10 @@ classdef ClassificationECOC
     ## -*- texinfo -*-
     ## @deftp {ClassificationECOC} {property} ClassNames
     ##
-    ## The distinct class labels, in the order the rows of
-    ## @code{CodingMatrix}, @code{Prior} and @code{Cost} take them.  This
-    ## property is read-only.
+    ## The distinct class labels, sorted or in the order given by the
+    ## @qcode{'ClassNames'} option; the rows of @code{CodingMatrix},
+    ## @code{Prior} and @code{Cost} take them in that order.  This property is
+    ## read-only.
     ##
     ## @end deftp
     ClassNames            = [];
