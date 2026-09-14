@@ -24,9 +24,9 @@
 ## @code{@var{Mdl} = fitrensemble (@var{X}, @var{Y})} grows 100 regression
 ## trees by LSBoost on the @math{NxP} predictor matrix @var{X} and the numeric
 ## response @var{Y}, and returns a @code{RegressionEnsemble}.  With
-## @qcode{'Method'} set to @qcode{'Bag'} it returns a
-## @code{RegressionBaggedEnsemble}.  A row missing a predictor or the response
-## is left out.
+## @qcode{'Method'} set to @qcode{'Bag'}, or with LSBoost resampling, it
+## returns a @code{RegressionBaggedEnsemble}.  A row missing a predictor or the
+## response is left out.
 ##
 ## LSBoost starts from a prediction of zero.  Each tree is fitted, with the
 ## observation weights, to the residual of the trees before it, and the
@@ -34,6 +34,14 @@
 ## learning rate being the tree's weight.  The first tree therefore fits the
 ## response itself.  Bag grows each tree on a sample drawn in proportion to the
 ## weights and averages them.
+##
+## LSBoost resamples when @qcode{'Resample'} is @qcode{'on'} or
+## @qcode{'FResample'} or @qcode{'Replace'} is given.  Each tree is then fitted
+## to the residual of @code{ceil (FResample * N)} rows, drawn with replacement
+## in proportion to the weights or without replacement uniformly, while the
+## prediction and @code{FitInfo} run over every row, as in MATLAB R2024a.  The
+## ensemble is a @code{RegressionBaggedEnsemble}, which records the rows each
+## tree drew and estimates the out-of-bag error.
 ##
 ## Name-Value arguments:
 ##
@@ -51,10 +59,13 @@
 ## @item @qcode{'LearnRate'} @tab @tab A number greater than 0 and no greater
 ## than 1.  The default is 1.  LSBoost only.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
-## bagged tree draws, greater than 0 and no greater than 1.  The default is
-## 1.  Bag only.
+## tree draws, greater than 0 and no greater than 1.  The default is 1.  Given
+## with LSBoost, the ensemble resamples.
 ## @item @qcode{'Replace'} @tab @tab @qcode{'on'} (default) or @qcode{'off'},
-## whether the bagged trees draw with replacement.  Bag only.
+## whether the trees draw with replacement.  Given with LSBoost, the ensemble
+## resamples.
+## @item @qcode{'Resample'} @tab @tab @qcode{'off'} (default) or
+## @qcode{'on'}, whether LSBoost resamples.  Bag always does.
 ## @item @qcode{'NPrint'} @tab @tab @qcode{'off'} (default) or a positive
 ## integer @var{n}, to print a line after every @var{n} trees.
 ## @item @qcode{'Weights'} @tab @tab A nonnegative vector with one weight per
@@ -73,10 +84,10 @@
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{RegressionPartitionedEnsemble}.
 ##
-## Resampling in LSBoost, categorical predictors, binning and hyperparameter
-## optimization are not implemented, and an option asking for one of them is
-## refused.  An ensemble is regularized and shrunk afterwards with the
-## @code{regularize}, @code{shrink} and @code{cvshrink} methods.
+## Categorical predictors, binning and hyperparameter optimization are not
+## implemented, and an option asking for one of them is refused.  An ensemble is
+## regularized and shrunk afterwards with the @code{regularize}, @code{shrink}
+## and @code{cvshrink} methods.
 ##
 ## @seealso{RegressionEnsemble, RegressionBaggedEnsemble,
 ## CompactRegressionEnsemble, templateTree, TreeBagger}
@@ -95,16 +106,32 @@ function Mdl = fitrensemble (X, Y, varargin)
   ## ensemble is fitted on all the data first, then on each fold.
   cv = {'crossval', 'kfold', 'holdout', 'leaveout', 'cvpartition'};
   iscv = false (size (varargin));
-  isbag = false;
+  method = [];
+  resampled = false;
   for i = 1:2:numel (varargin)
     if (ischar (varargin{i}) && any (strcmpi (varargin{i}, cv)))
       iscv(i:i+1) = true;
     elseif (ischar (varargin{i}) && strcmpi (varargin{i}, 'Method'))
-      isbag = ischar (varargin{i+1}) && strcmpi (varargin{i+1}, 'Bag');
+      method = varargin{i+1};
+    elseif (ischar (varargin{i})
+            && any (strcmpi (varargin{i}, {'FResample', 'Replace'})))
+      resampled = true;
+    elseif (ischar (varargin{i}) && strcmpi (varargin{i}, 'Resample'))
+      resampled = resampled || (ischar (varargin{i+1})
+                                && strcmpi (varargin{i+1}, 'on'));
     endif
   endfor
   cvargs = varargin(iscv);
   varargin = varargin(! iscv);
+
+  ## LSBoost that resamples is a bagged ensemble too, as in MATLAB.
+  isbag = ischar (method) && strcmpi (method, 'Bag');
+  if (resampled && ! isbag)
+    isbag = true;
+    if (isempty (method))
+      varargin(end+1:end+2) = {'Method', 'LSBoost'};
+    endif
+  endif
 
   if (isbag)
     Mdl = RegressionBaggedEnsemble (X, Y, varargin{:});
@@ -227,3 +254,11 @@ endfunction
 %! fitrensemble (X, y, 'KFold', 5, 'CrossVal', 'on')
 %!error<fitrensemble: 'KFold' must be an integer greater than 1.> ...
 %! fitrensemble (X, y, 'KFold', 0)
+
+%!test  # MATLAB parity: LSBoost that resamples is a bagged ensemble
+%! load fisheriris
+%! M = fitrensemble (meas(:,2:4), meas(:,1), 'NumLearningCycles', 3, ...
+%!                   'FResample', 0.5);
+%! assert_equal (class (M), 'RegressionBaggedEnsemble');
+%! assert_equal (M.Method, 'LSBoost');
+%! assert_equal (M.CombineWeights, 'WeightedSum');

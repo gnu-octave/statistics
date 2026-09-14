@@ -29,7 +29,10 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
   ##
   ## Create one with @code{fitcensemble} and @qcode{'Method'} set to
   ## @qcode{'Bag'}.  It carries everything a @code{ClassificationEnsemble}
-  ## does, and which rows each tree drew.
+  ## does, and which rows each tree drew.  A boosting method that resamples,
+  ## asked for with @qcode{'Resample'}, @qcode{'FResample'} or
+  ## @qcode{'Replace'}, returns this class too: its trees are boosted and
+  ## summed by their weights, each grown on the rows it drew.
   ##
   ## @seealso{fitcensemble, ClassificationEnsemble,
   ## CompactClassificationEnsemble, TreeBagger}
@@ -531,7 +534,7 @@ endfunction
 ## Test input validation
 %!error<ClassificationBaggedEnsemble: too few input arguments.> ...
 %! ClassificationBaggedEnsemble (1)
-%!error<ClassificationBaggedEnsemble: 'Method' must be 'Bag'.> ...
+%!error<ClassificationBaggedEnsemble: 'Method' must be 'Bag' unless the ensemble resamples.> ...
 %! load fisheriris
 %! ClassificationBaggedEnsemble (meas, species, 'Method', 'AdaBoostM2')
 %!error<ClassificationBaggedEnsemble: 'LearnRate' cannot be used with the 'Bag' method.> ...
@@ -654,3 +657,134 @@ endfunction
 %! oobPermutedPredictorImportance (ClassificationBaggedEnsemble (meas, ...
 %!                                 species, 'NumLearningCycles', 1), ...
 %!                                 'Options', struct ())
+
+%!shared X2, Y2, S
+%! load fisheriris
+%! X2 = meas(51:150,:);
+%! Y2 = species(51:150);
+%! S = templateTree ('MaxNumSplits', 1);
+
+%!test  # MATLAB parity: drawing every row without replacement is plain boosting
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                                   'NumLearningCycles', 5, 'Learners', S, ...
+%!                                   'FResample', 1, 'Replace', 'off');
+%! assert_equal (M.Method, 'AdaBoostM1');
+%! assert_equal (M.CombineWeights, 'WeightedSum');
+%! assert_equal (M.UseObsForLearner, true (100, 5));
+%! assert_equal (M.TrainedWeights', [1.37576765652097, 0.99353411077441, ...
+%!                                   0.883434373403997, 0.554364192108759, ...
+%!                                   0.268194447432049], 1e-12);
+
+%!test  # MATLAB parity: a resampling boosting method draws with replacement
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                                   'NumLearningCycles', 5, 'Learners', S, ...
+%!                                   'Resample', 'on');
+%! assert_equal ([M.FResample, M.Replace], [1, true]);
+%! assert_equal (size (M.UseObsForLearner), [100, M.NumTrained]);
+%! assert_equal (M.FitInfo * 100, round (M.FitInfo * 100), 1e-9);
+
+%!test  # MATLAB parity: AdaBoostM1 reweights only the rows it drew
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                                   'NumLearningCycles', 4, 'Learners', S, ...
+%!                                   'FResample', 0.5, 'Replace', 'off');
+%! y = 2 * strcmp (Y2, M.ClassNames{1}) - 1;
+%! d = M.W / sum (M.W);
+%! for t = 1:M.NumTrained
+%!   u = M.UseObsForLearner(:,t);
+%!   h = 2 * strcmp (predict (M.Trained{t}, X2), M.ClassNames{1}) - 1;
+%!   e = sum (d(u) .* (h(u) != y(u))) / sum (d(u));
+%!   assert_equal (M.FitInfo(t), e, 1e-12);
+%!   s0 = sum (d(u));
+%!   d(u) = d(u) .* exp (-M.TrainedWeights(t) * y(u) .* h(u));
+%!   d(u) = d(u) / sum (d(u)) * s0;
+%! endfor
+
+%!test  # MATLAB parity: GentleBoost reweights only the rows it drew
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'GentleBoost', ...
+%!                                   'NumLearningCycles', 4, 'Learners', S, ...
+%!                                   'FResample', 0.5, 'Replace', 'off');
+%! y = 2 * strcmp (Y2, M.ClassNames{1}) - 1;
+%! d = M.W / sum (M.W);
+%! for t = 1:M.NumTrained
+%!   u = M.UseObsForLearner(:,t);
+%!   h = predict (M.Trained{t}, X2);
+%!   assert_equal (M.FitInfo(t), ...
+%!                 sum (d(u) .* (y(u) - h(u)) .^ 2) / sum (d(u)), 1e-12);
+%!   s0 = sum (d(u));
+%!   d(u) = d(u) .* exp (-y(u) .* h(u));
+%!   d(u) = d(u) / sum (d(u)) * s0;
+%! endfor
+
+%!test  # MATLAB parity: LogitBoost moves the score of the rows it drew
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'LogitBoost', ...
+%!                                   'NumLearningCycles', 4, 'Learners', S, ...
+%!                                   'FResample', 0.5, 'Replace', 'off');
+%! y01 = double (strcmp (Y2, M.ClassNames{1}));
+%! w0 = M.W / sum (M.W);
+%! w = w0;
+%! F = zeros (100, 1);
+%! for t = 1:M.NumTrained
+%!   u = M.UseObsForLearner(:,t);
+%!   p = 1 ./ (1 + exp (-F));
+%!   z = (y01 - p) ./ (p .* (1 - p));
+%!   h = predict (M.Trained{t}, X2);
+%!   assert_equal (M.FitInfo(t), ...
+%!                 sum (w(u) .* (z(u) - h(u)) .^ 2) / sum (w(u)), 1e-10);
+%!   F(u) += h(u) / 2;
+%!   s0 = sum (w(u));
+%!   pu = 1 ./ (1 + exp (-F(u)));
+%!   w(u) = w0(u) .* pu .* (1 - pu);
+%!   w(u) = w(u) / sum (w(u)) * s0;
+%! endfor
+
+%!test  # MATLAB parity: AdaBoostM2 keeps one weight per observation
+%! load fisheriris
+%! M = ClassificationBaggedEnsemble (meas, species, 'Method', 'AdaBoostM2', ...
+%!                                   'NumLearningCycles', 3, 'Learners', S, ...
+%!                                   'FResample', 0.5, 'Replace', 'off');
+%! g = grp2idx (species);
+%! tru = sub2ind ([150, 3], (1:150)', g);
+%! w = M.W / sum (M.W);
+%! for t = 1:M.NumTrained
+%!   u = M.UseObsForLearner(:,t);
+%!   [~, P] = predict (M.Trained{t}, meas);
+%!   hy = P(tru);
+%!   L = 1 - hy + P;
+%!   L(tru) = 0;
+%!   e = sum (w(u) .* sum (L(u,:), 2)) / sum (w(u)) / 4;
+%!   assert_equal (M.FitInfo(t), e, 1e-12);
+%!   E = exp (-M.TrainedWeights(t) * (1 + hy - P));
+%!   E(tru) = 0;
+%!   s0 = sum (w(u));
+%!   w(u) = w(u) .* sum (E(u,:), 2);
+%!   w(u) = w(u) / sum (w(u)) * s0;
+%! endfor
+
+%!test  # MATLAB parity: out-of-bag scores sum the learners that did not draw
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                                   'NumLearningCycles', 8, 'Learners', S, ...
+%!                                   'Resample', 'on');
+%! [~, s] = oobPredict (M);
+%! out = ! M.UseObsForLearner;
+%! man = zeros (100, 1);
+%! for t = 1:M.NumTrained
+%!   h = 2 * strcmp (predict (M.Trained{t}, X2), M.ClassNames{1}) - 1;
+%!   man += M.TrainedWeights(t) * h .* out(:,t);
+%! endfor
+%! k = any (out, 2);
+%! assert_equal (s(k,1), man(k), 1e-12);
+
+%!test  # resume grows the record of the rows each learner drew
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                                   'NumLearningCycles', 2, 'Learners', S, ...
+%!                                   'FResample', 0.7, 'Replace', 'off');
+%! R = resume (M, 2);
+%! assert_equal (size (R.UseObsForLearner), [100, R.NumTrained]);
+
+%!test  # a resampled boosting ensemble cross-validates with its learning rate
+%! M = ClassificationBaggedEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                                   'NumLearningCycles', 2, 'Learners', S, ...
+%!                                   'FResample', 0.7, 'LearnRate', 0.5);
+%! CV = crossval (M, 'KFold', 3);
+%! assert_equal (CV.Trainable{1}.LearnRate, 0.5);
+%! assert_equal (class (CV.Trainable{1}), 'ClassificationBaggedEnsemble');

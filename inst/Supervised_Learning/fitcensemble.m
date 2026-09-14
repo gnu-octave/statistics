@@ -25,7 +25,8 @@
 ## decision trees on the @math{NxP} predictor matrix @var{X} and the class
 ## labels @var{Y}, LogitBoost for two classes and AdaBoostM2 for more, and
 ## returns a @code{ClassificationEnsemble}.  With @qcode{'Method'} set to
-## @qcode{'Bag'} it returns a @code{ClassificationBaggedEnsemble}.
+## @qcode{'Bag'}, or with a boosting method that resamples, it returns a
+## @code{ClassificationBaggedEnsemble}.
 ##
 ## @var{Y} holds a class label per row of @var{X}, as a numeric or logical
 ## vector, a categorical, string or character array, or a cell array of
@@ -82,6 +83,21 @@
 ## passes them to the learners; the learners in this package take none, so
 ## weights that are not uniform are refused.
 ##
+## A boosting method resamples when @qcode{'Resample'} is @qcode{'on'} or
+## @qcode{'FResample'} or @qcode{'Replace'} is given; RUSBoost and Subspace
+## cannot.  Each learner is then grown on @code{ceil (FResample * N)} rows,
+## drawn with replacement in proportion to @var{d}, each draw weighing the
+## same, or without replacement uniformly, each row keeping its weight in
+## @var{d}.  Its error is taken on those rows with those weights, and only
+## they are reweighted, rescaled to the weight they carried over their draws.
+## AdaBoostM2 then keeps one weight per observation, spread evenly over the
+## classes other than its own, as RUSBoost does, and LogitBoost advances the
+## score of the rows drawn only.  The ensemble is a
+## @code{ClassificationBaggedEnsemble}, which records the rows each learner
+## drew and estimates the out-of-bag error.  These rules reproduce MATLAB
+## R2024a's fits on its own draws, except LogitBoost with replacement, whose
+## reweighting in MATLAB was not identified; here it follows the others.
+##
 ## A boosting method whose tree classifies the data without error, zero error
 ## for AdaBoostM1 or zero pseudo-loss for AdaBoostM2, keeps that tree with the
 ## weight an error of @code{eps} gives and stops; one whose error is greater
@@ -120,10 +136,13 @@
 ## with one per class, the size of each class's sample relative to the
 ## smallest class.  The default is 1 for every class.  RUSBoost only.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
-## bagged tree draws, greater than 0 and no greater than 1.  The default is
-## 1.  Bag only.
+## learner draws, greater than 0 and no greater than 1.  The default is 1.
+## Given with a boosting method, the ensemble resamples.
 ## @item @qcode{'Replace'} @tab @tab @qcode{'on'} (default) or @qcode{'off'},
-## whether the bagged trees draw with replacement.  Bag only.
+## whether the learners draw with replacement.  Given with a boosting method,
+## the ensemble resamples.
+## @item @qcode{'Resample'} @tab @tab @qcode{'off'} (default) or
+## @qcode{'on'}, whether a boosting method resamples.  Bag always does.
 ## @item @qcode{'NPrint'} @tab @tab @qcode{'off'} (default) or a positive
 ## integer @var{n}, to print a line after every @var{n} trees.
 ## @item @qcode{'ClassNames'} @tab @tab The classes to fit, in the order their
@@ -147,9 +166,9 @@
 ## returning a @code{ClassificationPartitionedEnsemble}.
 ##
 ## The methods @qcode{'LPBoost'}, @qcode{'TotalBoost'} and
-## @qcode{'RobustBoost'}, resampling in a boosting method, categorical
-## predictors, binning and hyperparameter optimization are not implemented,
-## and an option asking for one of them is refused.
+## @qcode{'RobustBoost'}, categorical predictors, binning and hyperparameter
+## optimization are not implemented, and an option asking for one of them is
+## refused.
 ##
 ## @seealso{ClassificationEnsemble, ClassificationBaggedEnsemble,
 ## CompactClassificationEnsemble, templateTree, TreeBagger}
@@ -168,16 +187,35 @@ function Mdl = fitcensemble (X, Y, varargin)
   ## ensemble is fitted on all the data first, then on each fold.
   cv = {'crossval', 'kfold', 'holdout', 'leaveout', 'cvpartition'};
   iscv = false (size (varargin));
-  isbag = false;
+  method = [];
+  resampled = false;
   for i = 1:2:numel (varargin)
     if (ischar (varargin{i}) && any (strcmpi (varargin{i}, cv)))
       iscv(i:i+1) = true;
     elseif (ischar (varargin{i}) && strcmpi (varargin{i}, 'Method'))
-      isbag = ischar (varargin{i+1}) && strcmpi (varargin{i+1}, 'Bag');
+      method = varargin{i+1};
+    elseif (ischar (varargin{i})
+            && any (strcmpi (varargin{i}, {'FResample', 'Replace'})))
+      resampled = true;
+    elseif (ischar (varargin{i}) && strcmpi (varargin{i}, 'Resample'))
+      resampled = resampled || (ischar (varargin{i+1})
+                                && strcmpi (varargin{i+1}, 'on'));
     endif
   endfor
   cvargs = varargin(iscv);
   varargin = varargin(! iscv);
+
+  ## A boosting method that resamples is a bagged ensemble too, as in MATLAB;
+  ## RUSBoost and Subspace refuse to resample in the ensemble itself.
+  named = ischar (method) && isrow (method);
+  isbag = named && strcmpi (method, 'Bag');
+  if (resampled && ! (named && any (strcmpi (method, {'Bag', 'RUSBoost', ...
+                                                      'Subspace'}))))
+    isbag = true;
+    if (isempty (method))
+      varargin(end+1:end+2) = {'Method', ''};
+    endif
+  endif
 
   if (isbag)
     Mdl = ClassificationBaggedEnsemble (X, Y, varargin{:});
@@ -652,3 +690,24 @@ endfunction
 %!error<ClassificationEnsemble: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcensemble (meas, species, 'ClassNames', {'setosa'; 'rose'})
+
+%!test  # MATLAB parity: a boosting method that resamples is a bagged ensemble
+%! load fisheriris
+%! S = templateTree ('MaxNumSplits', 1);
+%! X2 = meas(51:150,:);
+%! Y2 = species(51:150);
+%! assert_equal (class (fitcensemble (X2, Y2, 'Learners', S, ...
+%!                                    'NumLearningCycles', 2, ...
+%!                                    'FResample', 0.5)), ...
+%!               'ClassificationBaggedEnsemble');
+%! M = fitcensemble (X2, Y2, 'Learners', S, 'NumLearningCycles', 2, ...
+%!                   'Replace', 'off');
+%! assert_equal (class (M), 'ClassificationBaggedEnsemble');
+%! assert_equal (M.Method, 'LogitBoost');
+%! M = fitcensemble (meas, species, 'Learners', S, 'NumLearningCycles', 2, ...
+%!                   'Resample', 'on');
+%! assert_equal (M.Method, 'AdaBoostM2');
+
+%!error<ClassificationEnsemble: the 'RUSBoost' method cannot resample the observations.> ...
+%! load fisheriris
+%! fitcensemble (meas, species, 'Method', 'RUSBoost', 'Resample', 'on')

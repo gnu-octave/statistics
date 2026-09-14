@@ -281,7 +281,8 @@ classdef RegressionPartitionedEnsemble
         onoff = {'off', 'on'};
         fargs(end+1:end+4) = {'FResample', Mdl.FResample, ...
                               'Replace', onoff{Mdl.Replace + 1}};
-      else
+      endif
+      if (strcmp (Mdl.Method, 'LSBoost'))
         fargs(end+1:end+2) = {'LearnRate', mp.LearnRate};
       endif
       ## Assigned field by field: struct () given a cell array of labels

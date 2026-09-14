@@ -346,6 +346,7 @@ classdef ClassificationEnsemble
     NPredToSample = [];  # predictors each Subspace learner is fitted on
     AllCombinations = false;  # whether Subspace takes every combination
     RatioToSmallest = [];  # RUSBoost's class sample sizes over the smallest
+    Resampling = false;  # whether a boosting method resamples its rows
   endproperties
 
   methods (Hidden)
@@ -561,12 +562,24 @@ classdef ClassificationEnsemble
         error ("%s: '%s' is not a valid ensemble method.", caller, Method);
       endif
       isbag = strcmp (Method, 'Bag');
+      issub = strcmp (Method, 'Subspace');
+      resampled = Resample || ! isempty (FResample) || ! isempty (Replace);
+      if (resampled && strcmp (Method, 'RUSBoost'))
+        error (strcat ("%s: the 'RUSBoost' method cannot resample the", ...
+                       " observations."), caller);
+      elseif (resampled && issub)
+        error (strcat ("%s: the 'Subspace' method cannot resample the", ...
+                       " observations."), caller);
+      endif
       if (isbag && ! bagged)
         error (strcat ("ClassificationEnsemble: a bagged ensemble is", ...
                        " fitted by ClassificationBaggedEnsemble."));
-      elseif (! isbag && bagged)
+      elseif (! isbag && bagged && ! resampled)
         error (strcat ("ClassificationBaggedEnsemble: 'Method' must be", ...
-                       " 'Bag'."));
+                       " 'Bag' unless the ensemble resamples."));
+      elseif (! isbag && ! bagged && resampled)
+        error (strcat ("ClassificationEnsemble: a resampled ensemble is", ...
+                       " fitted by ClassificationBaggedEnsemble."));
       endif
       if (any (strcmp (Method, methods2)) && K != 2)
         error ("%s: the '%s' method fits exactly two classes.", caller, Method);
@@ -574,7 +587,6 @@ classdef ClassificationEnsemble
         error (strcat ("%s: the 'AdaBoostM2' method fits more than two", ...
                        " classes."), caller);
       endif
-      issub = strcmp (Method, 'Subspace');
 
       ## The learners, by name or as a template: trees for every method but
       ## Subspace, which takes nearest neighbours or discriminants instead.
@@ -642,10 +654,6 @@ classdef ClassificationEnsemble
           error (strcat ("%s: 'LearnRate' cannot be used with the", ...
                          " 'Subspace' method."), caller);
         endif
-        if (Resample || ! isempty (FResample) || ! isempty (Replace))
-          error (strcat ("%s: resampling in the 'Subspace' method is not", ...
-                         " implemented."), caller);
-        endif
       elseif (isbag)
         if (! isempty (LearnRate))
           error ("%s: 'LearnRate' cannot be used with the 'Bag' method.", ...
@@ -658,9 +666,11 @@ classdef ClassificationEnsemble
           Replace = true;
         endif
       else
-        if (Resample || ! isempty (FResample) || ! isempty (Replace))
-          error ("%s: resampling in a boosting method is not implemented.", ...
-                 caller);
+        if (resampled && isempty (FResample))
+          FResample = 1;
+        endif
+        if (resampled && isempty (Replace))
+          Replace = true;
         endif
         if (isempty (LearnRate))
           LearnRate = 1;
@@ -738,6 +748,12 @@ classdef ClassificationEnsemble
       else
         this.LearnRate = LearnRate;
         this.RatioToSmallest = Ratio;
+        this.Resampling = resampled;
+        if (resampled)
+          this.BagFResample = FResample;
+          this.BagReplace = Replace;
+          this.BagInBag = false (F.n, 0);
+        endif
         this.ModelParameters.LearnRate = LearnRate;
         this.FitInfo = zeros (0, 1);
         this.FitInfoDescription = ClassificationEnsemble.fitInfoText (Method);
@@ -1052,11 +1068,15 @@ classdef ClassificationEnsemble
         d0 /= sum (d0);
         switch (this.Method)
           case 'AdaBoostM2'
-            D = repmat (d0 / (K - 1), 1, K);
-            D(sub2ind ([n, K], (1:n)', g)) = 0;
-            this.State = struct ('D', D);
+            if (this.Resampling)
+              this.State = struct ('d', d0);
+            else
+              D = repmat (d0 / (K - 1), 1, K);
+              D(sub2ind ([n, K], (1:n)', g)) = 0;
+              this.State = struct ('D', D);
+            endif
           case 'LogitBoost'
-            this.State = struct ('d0', d0, 'F', zeros (n, 1));
+            this.State = struct ('d0', d0, 'F', zeros (n, 1), 'w', d0);
           otherwise
             this.State = struct ('d', d0);
         endswitch
@@ -1068,6 +1088,8 @@ classdef ClassificationEnsemble
                'MinParentSize', 10, 'MinLeafSize', 1, 'Prune', 'off', ...
                'MergeLeaves', 'off'};
       y = double (g == 1) - double (g == 2);
+      rs = this.Resampling;
+      m = ceil (this.BagFResample * n);
 
       for c = 1:N
         if (this.Stopped)
@@ -1077,12 +1099,28 @@ classdef ClassificationEnsemble
 
           case 'AdaBoostM1'
             d = this.State.d;
-            T = compact (ClassificationTree (this.X, this.Y, 'Weights', d, ...
-                                             'ClassNames', this.ClassNames, ...
-                                             ctree{:}, this.TreeArgs{:}));
+            if (rs)
+              [idx, sw, cnt] = boostSample (d, m, this.BagReplace);
+              present = labelsFromIndex (this.ClassNames, unique (g(idx)));
+              T = compact (ClassificationTree (this.X(idx,:), ...
+                                               this.Y(idx,:), ...
+                                               'Weights', sw, ...
+                                               'ClassNames', present, ...
+                                               ctree{:}, this.TreeArgs{:}));
+            else
+              T = compact (ClassificationTree (this.X, this.Y, ...
+                                               'Weights', d, ...
+                                               'ClassNames', ...
+                                               this.ClassNames, ...
+                                               ctree{:}, this.TreeArgs{:}));
+            endif
             gh = labelIndices (this.ClassNames, predict (T, this.X));
             h = double (gh == 1) - double (gh == 2);
-            e = sum (d .* (h != y));
+            if (rs)
+              e = sum (sw .* (h(idx) != y(idx)));
+            else
+              e = sum (d .* (h != y));
+            endif
             if (e > 0.5)
               this.Stopped = true;
               this.ReasonForTermination = sprintf (strcat ("Classification", ...
@@ -1091,27 +1129,54 @@ classdef ClassificationEnsemble
             endif
             a = LR * log ((1 - e) / max (e, eps)) / 2;
             this = addLearner (this, T, a, e);
+            if (rs)
+              this.BagInBag(:,end+1) = cnt > 0;
+            endif
             if (e <= 0)
               this = stopPerfect (this, strcat ("Classification error from", ...
                                                 " the last weak learner is", ...
                                                 " zero."));
               break;
             endif
-            d = d .* exp (-a * y .* h);
-            this.State.d = d / sum (d);
+            if (rs)
+              this.State.d = boostRescale (d, d .* exp (-a * y .* h), cnt);
+            else
+              d = d .* exp (-a * y .* h);
+              this.State.d = d / sum (d);
+            endif
 
           case 'AdaBoostM2'
-            D = this.State.D;
             tru = sub2ind ([n, K], (1:n)', g);
-            T = compact (ClassificationTree (this.X, this.Y, ...
-                                             'Weights', sum (D, 2), ...
-                                             'ClassNames', this.ClassNames, ...
-                                             ctree{:}, this.TreeArgs{:}));
+            if (rs)
+              ## A resampled AdaBoostM2 keeps one weight per observation,
+              ## as RUSBoost does, and as MATLAB R2024a does.
+              d = this.State.d;
+              [idx, sw, cnt] = boostSample (d, m, this.BagReplace);
+              present = labelsFromIndex (this.ClassNames, unique (g(idx)));
+              T = compact (ClassificationTree (this.X(idx,:), ...
+                                               this.Y(idx,:), ...
+                                               'Weights', sw, ...
+                                               'ClassNames', present, ...
+                                               ctree{:}, this.TreeArgs{:}));
+            else
+              D = this.State.D;
+              T = compact (ClassificationTree (this.X, this.Y, ...
+                                               'Weights', sum (D, 2), ...
+                                               'ClassNames', ...
+                                               this.ClassNames, ...
+                                               ctree{:}, this.TreeArgs{:}));
+            endif
             [~, s] = predict (T, this.X);
             P = zeros (n, K);
             P(:, labelIndices (this.ClassNames, T.ClassNames)) = s;
             hy = P(tru);
-            e = sum (sum (D .* (1 - hy + P))) / 2;
+            if (rs)
+              L = 1 - hy + P;
+              L(tru) = 0;
+              e = sum (sw .* sum (L(idx,:), 2)) / (2 * (K - 1));
+            else
+              e = sum (sum (D .* (1 - hy + P))) / 2;
+            endif
             if (e > 0.5)
               this.Stopped = true;
               this.ReasonForTermination = sprintf (strcat ("Pseudo-loss", ...
@@ -1120,14 +1185,23 @@ classdef ClassificationEnsemble
             endif
             a = LR * log ((1 - e) / max (e, eps)) / 2;
             this = addLearner (this, T, a, e);
+            if (rs)
+              this.BagInBag(:,end+1) = cnt > 0;
+            endif
             if (e <= 0)
               this = stopPerfect (this, strcat ("Pseudo-loss from the last", ...
                                                 " weak learner is zero."));
               break;
             endif
-            D = D .* exp (-a * (1 + hy - P));
-            D(tru) = 0;
-            this.State.D = D / sum (D(:));
+            if (rs)
+              E = exp (-a * (1 + hy - P));
+              E(tru) = 0;
+              this.State.d = boostRescale (d, d .* sum (E, 2) / (K - 1), cnt);
+            else
+              D = D .* exp (-a * (1 + hy - P));
+              D(tru) = 0;
+              this.State.D = D / sum (D(:));
+            endif
 
           case 'RUSBoost'
             d = this.State.d;
@@ -1164,24 +1238,57 @@ classdef ClassificationEnsemble
 
           case 'GentleBoost'
             d = this.State.d;
-            R = compact (RegressionTree (this.X, y, 'Weights', d, rtree{:}, ...
-                                         this.TreeArgs{:}));
-            h = predict (R, this.X);
-            this = addLearner (this, R, LR, sum (d .* (y - h) .^ 2));
-            d = d .* exp (-LR * y .* h);
-            this.State.d = d / sum (d);
+            if (rs)
+              [idx, sw, cnt] = boostSample (d, m, this.BagReplace);
+              R = compact (RegressionTree (this.X(idx,:), y(idx), ...
+                                           'Weights', sw, rtree{:}, ...
+                                           this.TreeArgs{:}));
+              h = predict (R, this.X);
+              this = addLearner (this, R, LR, ...
+                                 sum (sw .* (y(idx) - h(idx)) .^ 2));
+              this.BagInBag(:,end+1) = cnt > 0;
+              this.State.d = boostRescale (d, d .* exp (-LR * y .* h), cnt);
+            else
+              R = compact (RegressionTree (this.X, y, 'Weights', d, ...
+                                           rtree{:}, this.TreeArgs{:}));
+              h = predict (R, this.X);
+              this = addLearner (this, R, LR, sum (d .* (y - h) .^ 2));
+              d = d .* exp (-LR * y .* h);
+              this.State.d = d / sum (d);
+            endif
 
           case 'LogitBoost'
             p = 1 ./ (1 + exp (-this.State.F));
             p = min (max (p, eps), 1 - eps);
-            d = this.State.d0 .* p .* (1 - p);
-            d /= sum (d);
             z = (double (y > 0) - p) ./ (p .* (1 - p));
-            R = compact (RegressionTree (this.X, z, 'Weights', d, rtree{:}, ...
-                                         this.TreeArgs{:}));
-            h = predict (R, this.X);
-            this = addLearner (this, R, LR / 2, sum (d .* (z - h) .^ 2));
-            this.State.F += LR / 2 * h;
+            if (rs)
+              ## Each row keeps its own score and weight; only the rows drawn
+              ## move, as in MATLAB R2024a.
+              w = this.State.w;
+              [idx, sw, cnt] = boostSample (w, m, this.BagReplace);
+              R = compact (RegressionTree (this.X(idx,:), z(idx), ...
+                                           'Weights', sw, rtree{:}, ...
+                                           this.TreeArgs{:}));
+              h = predict (R, this.X);
+              this = addLearner (this, R, LR / 2, ...
+                                 sum (sw .* (z(idx) - h(idx)) .^ 2));
+              this.BagInBag(:,end+1) = cnt > 0;
+              u = cnt > 0;
+              this.State.F(u) += LR / 2 * h(u);
+              pu = 1 ./ (1 + exp (-this.State.F(u)));
+              pu = min (max (pu, eps), 1 - eps);
+              w1 = w;
+              w1(u) = this.State.d0(u) .* pu .* (1 - pu);
+              this.State.w = boostRescale (w, w1, cnt);
+            else
+              d = this.State.d0 .* p .* (1 - p);
+              d /= sum (d);
+              R = compact (RegressionTree (this.X, z, 'Weights', d, ...
+                                           rtree{:}, this.TreeArgs{:}));
+              h = predict (R, this.X);
+              this = addLearner (this, R, LR / 2, sum (d .* (z - h) .^ 2));
+              this.State.F += LR / 2 * h;
+            endif
 
           case 'Subspace'
             p = columns (this.X);
@@ -1336,6 +1443,20 @@ function idx = rusSample (g, d, ratio)
 
 endfunction
 
+## The weights W after a resampled learner: the rows drawn take their new
+## weights W1, rescaled so that over their draws they carry what they carried
+## before, and the whole is normalised.
+function w = boostRescale (w, w1, cnt)
+
+  u = cnt > 0;
+  s1 = sum (cnt(u) .* w1(u));
+  if (s1 > 0)
+    w(u) = w1(u) * (sum (cnt(u) .* w(u)) / s1);
+  endif
+  w /= sum (w);
+
+endfunction
+
 ## 'on' or 'off' as a logical scalar, OK false for anything else.
 function [tf, ok] = onOff (val)
 
@@ -1469,7 +1590,7 @@ endfunction
 %!                         'RatioToSmallest', [1, 2, 3])
 %!error<ClassificationEnsemble: 'RatioToSmallest' applies only to the 'RUSBoost' method.> ...
 %! ClassificationEnsemble (X2, Y2, 'RatioToSmallest', 1)
-%!error<ClassificationEnsemble: resampling in a boosting method is not implemented.> ...
+%!error<ClassificationEnsemble: the 'RUSBoost' method cannot resample the observations.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method', 'RUSBoost', 'Resample', 'on')
 %!error<ClassificationEnsemble: 'Learners' must be 'tree' or a tree template.> ...
 %! ClassificationEnsemble (X2, Y2, 'Learners', 'knn')
@@ -1486,7 +1607,7 @@ endfunction
 %! ClassificationEnsemble (meas, species, 'Method', 'AdaBoostM1')
 %!error<ClassificationEnsemble: the 'AdaBoostM2' method fits more than two classes.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method', 'AdaBoostM2')
-%!error<ClassificationEnsemble: resampling in a boosting method is not implemented.> ...
+%!error<ClassificationEnsemble: a resampled ensemble is fitted by ClassificationBaggedEnsemble.> ...
 %! ClassificationEnsemble (X2, Y2, 'FResample', 0.5)
 %!error<ClassificationEnsemble: 'PredictorNames' must be a cell array of character vectors with one element per column of X.> ...
 %! ClassificationEnsemble (X2, Y2, 'PredictorNames', {'a'})
@@ -1562,7 +1683,7 @@ endfunction
 %! load fisheriris
 %! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
 %!                         'LearnRate', 0.5)
-%!error<ClassificationEnsemble: resampling in the 'Subspace' method is not implemented.> ...
+%!error<ClassificationEnsemble: the 'Subspace' method cannot resample the observations.> ...
 %! load fisheriris
 %! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
 %!                         'FResample', 0.5)

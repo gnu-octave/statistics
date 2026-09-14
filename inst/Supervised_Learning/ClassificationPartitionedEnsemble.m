@@ -331,12 +331,13 @@ classdef ClassificationPartitionedEnsemble
         onoff = {'off', 'on'};
         fargs(end+1:end+4) = {'FResample', Mdl.FResample, ...
                               'Replace', onoff{Mdl.Replace + 1}};
-      elseif (strcmp (Mdl.Method, 'Subspace'))
+      endif
+      if (strcmp (Mdl.Method, 'Subspace'))
         fargs(end+1:end+2) = {'NPredToSample', Mdl.NPredToSample};
         if (Mdl.AllCombinations)
           fargs{4} = 'AllPredictorCombinations';
         endif
-      else
+      elseif (! strcmp (Mdl.Method, 'Bag'))
         fargs(end+1:end+2) = {'LearnRate', mp.LearnRate};
         if (strcmp (Mdl.Method, 'RUSBoost'))
           fargs(end+1:end+2) = {'RatioToSmallest', Mdl.RatioToSmallest};

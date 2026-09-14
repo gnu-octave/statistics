@@ -29,7 +29,10 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
   ##
   ## Create one with @code{fitrensemble} and @qcode{'Method'} set to
   ## @qcode{'Bag'}.  It carries everything a @code{RegressionEnsemble} does,
-  ## and which rows each tree drew.
+  ## and which rows each tree drew.  LSBoost that resamples, asked for with
+  ## @qcode{'Resample'}, @qcode{'FResample'} or @qcode{'Replace'}, returns this
+  ## class too: its trees are boosted and summed by their weights, each fitted
+  ## on the rows it drew.
   ##
   ## @seealso{fitrensemble, RegressionEnsemble, CompactRegressionEnsemble,
   ## TreeBagger}
@@ -466,7 +469,7 @@ endfunction
 ## Test input validation
 %!error<RegressionBaggedEnsemble: too few input arguments.> ...
 %! RegressionBaggedEnsemble (1)
-%!error<RegressionBaggedEnsemble: 'Method' must be 'Bag'.> ...
+%!error<RegressionBaggedEnsemble: 'Method' must be 'Bag' unless the ensemble resamples.> ...
 %! load fisheriris
 %! RegressionBaggedEnsemble (meas(:,2:4), meas(:,1), 'Method', 'LSBoost')
 %!error<RegressionBaggedEnsemble: 'LearnRate' cannot be used with the 'Bag' method.> ...
@@ -535,3 +538,38 @@ endfunction
 %! oobPermutedPredictorImportance (RegressionBaggedEnsemble (meas(:,2:4), ...
 %!                                 meas(:,1), 'NumLearningCycles', 1), ...
 %!                                 'Options', struct ())
+
+%!shared Xr, yr, tr
+%! load fisheriris
+%! Xr = meas(:,2:4);
+%! yr = meas(:,1);
+%! tr = templateTree ('MaxNumSplits', 3);
+
+%!test  # MATLAB parity: LSBoost drawing every row without replacement is plain
+%! M = RegressionBaggedEnsemble (Xr, yr, 'Method', 'LSBoost', ...
+%!                               'NumLearningCycles', 4, 'Learners', tr, ...
+%!                               'FResample', 1, 'Replace', 'off');
+%! P = fitrensemble (Xr, yr, 'NumLearningCycles', 4, 'Learners', tr);
+%! assert_equal (M.FitInfo, P.FitInfo, 1e-12);
+%! assert_equal (predict (M, Xr(1:5,:)), predict (P, Xr(1:5,:)), 1e-12);
+%! assert_equal ([M.FResample, M.Replace], [1, false]);
+
+%!test  # MATLAB parity: resampled LSBoost measures its fit over every row
+%! M = RegressionBaggedEnsemble (Xr, yr, 'Method', 'LSBoost', ...
+%!                               'NumLearningCycles', 4, 'Learners', tr, ...
+%!                               'Resample', 'on');
+%! assert_equal (size (M.UseObsForLearner), [150, 4]);
+%! W = M.W / sum (M.W);
+%! F = zeros (150, 1);
+%! for t = 1:4
+%!   h = predict (M.Trained{t}, Xr);
+%!   assert_equal (M.FitInfo(t), sum (W .* (yr - F - h) .^ 2), 1e-12);
+%!   F += M.TrainedWeights(t) * h;
+%! endfor
+
+%!test  # a resampled LSBoost cross-validates with its learning rate
+%! M = RegressionBaggedEnsemble (Xr, yr, 'Method', 'LSBoost', ...
+%!                               'NumLearningCycles', 2, 'Learners', tr, ...
+%!                               'FResample', 0.7, 'LearnRate', 0.5);
+%! CV = crossval (M, 'KFold', 3);
+%! assert_equal (CV.Trainable{1}.LearnRate, 0.5);

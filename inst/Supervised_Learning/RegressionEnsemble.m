@@ -306,6 +306,7 @@ classdef RegressionEnsemble
     BagFResample = 1;    # share of the observations each bag draws
     BagReplace = true;   # whether the bags draw with replacement
     BagInBag = [];       # NxNumTrained logical, the rows each bag drew
+    Resampling = false;  # whether LSBoost resamples its rows
   endproperties
 
   methods (Hidden)
@@ -487,11 +488,16 @@ classdef RegressionEnsemble
       endfor
 
       isbag = strcmp (Method, 'Bag');
+      resampled = Resample || ! isempty (FResample) || ! isempty (Replace);
       if (isbag && ! bagged)
         error (strcat ("RegressionEnsemble: a bagged ensemble is fitted by", ...
                        " RegressionBaggedEnsemble."));
-      elseif (! isbag && bagged)
-        error ("RegressionBaggedEnsemble: 'Method' must be 'Bag'.");
+      elseif (! isbag && bagged && ! resampled)
+        error (strcat ("RegressionBaggedEnsemble: 'Method' must be 'Bag'", ...
+                       " unless the ensemble resamples."));
+      elseif (! isbag && ! bagged && resampled)
+        error (strcat ("RegressionEnsemble: a resampled ensemble is fitted", ...
+                       " by RegressionBaggedEnsemble."));
       endif
       if (isbag)
         if (! isempty (LearnRate))
@@ -505,8 +511,11 @@ classdef RegressionEnsemble
           Replace = true;
         endif
       else
-        if (Resample || ! isempty (FResample) || ! isempty (Replace))
-          error ("%s: resampling in LSBoost is not implemented.", caller);
+        if (resampled && isempty (FResample))
+          FResample = 1;
+        endif
+        if (resampled && isempty (Replace))
+          Replace = true;
         endif
         if (isempty (LearnRate))
           LearnRate = 1;
@@ -554,6 +563,12 @@ classdef RegressionEnsemble
       else
         this.LearnRate = LearnRate;
         this.ModelParameters.LearnRate = LearnRate;
+        this.Resampling = resampled;
+        if (resampled)
+          this.BagFResample = FResample;
+          this.BagReplace = Replace;
+          this.BagInBag = false (F.n, 0);
+        endif
         this.FitInfo = zeros (0, 1);
         this.FitInfoDescription = ...
           {strcat("Vector of length NumTrained, where NumTrained is the", ...
@@ -1025,14 +1040,23 @@ classdef RegressionEnsemble
       for c = 1:N
         if (strcmp (this.Method, 'LSBoost'))
           r = this.Y - this.F;
-          T = compact (RegressionTree (this.X, r, 'Weights', this.W, ...
-                                       'PredictorNames', ...
-                                       this.PredictorNames, ...
-                                       'MaxNumSplits', 10, ...
-                                       'MinParentSize', 10, ...
-                                       'MinLeafSize', 5, 'Prune', 'off', ...
-                                       'MergeLeaves', 'off', ...
-                                       this.TreeArgs{:}));
+          targs = {'PredictorNames', this.PredictorNames, ...
+                   'MaxNumSplits', 10, 'MinParentSize', 10, ...
+                   'MinLeafSize', 5, 'Prune', 'off', 'MergeLeaves', 'off', ...
+                   this.TreeArgs{:}};
+          if (this.Resampling)
+            ## The tree sees the rows drawn; the prediction and the fit
+            ## information run over every row, as in MATLAB R2024a.
+            [idx, sw, cnt] = boostSample (this.W, ...
+                                          ceil (this.BagFResample * n), ...
+                                          this.BagReplace);
+            T = compact (RegressionTree (this.X(idx,:), r(idx), ...
+                                         'Weights', sw, targs{:}));
+            this.BagInBag(:,end+1) = cnt > 0;
+          else
+            T = compact (RegressionTree (this.X, r, 'Weights', this.W, ...
+                                         targs{:}));
+          endif
           h = predict (T, this.X);
           this.FitInfo(end+1,1) = sum (this.W .* (r - h) .^ 2);
           this.F += this.LearnRate * h;
@@ -1290,7 +1314,7 @@ endfunction
 %! RegressionEnsemble (X, y, 'Learners', 'svm')
 %!error<RegressionEnsemble: a bagged ensemble is fitted by RegressionBaggedEnsemble.> ...
 %! RegressionEnsemble (X, y, 'Method', 'Bag')
-%!error<RegressionEnsemble: resampling in LSBoost is not implemented.> ...
+%!error<RegressionEnsemble: a resampled ensemble is fitted by RegressionBaggedEnsemble.> ...
 %! RegressionEnsemble (X, y, 'Resample', 'on')
 %!error<RegressionEnsemble: 'PredictorNames' must be a cell array of character vectors with one element per column of X.> ...
 %! RegressionEnsemble (X, y, 'PredictorNames', {'a'})
