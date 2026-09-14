@@ -114,6 +114,49 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionBaggedEnsemble} {@var{B} =} regularize (@var{obj})
+    ## @deftypefnx {RegressionBaggedEnsemble} {@var{B} =} regularize (@dots{}, @var{name}, @var{value})
+    ##
+    ## Find lasso weights for the trees of a bagged ensemble.
+    ##
+    ## Behaves as @code{RegressionEnsemble.regularize}.
+    ##
+    ## @seealso{RegressionBaggedEnsemble, RegressionEnsemble.regularize}
+    ## @end deftypefn
+    function this = regularize (this, varargin)
+      this = regularize@RegressionEnsemble (this, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionBaggedEnsemble} {@var{C} =} shrink (@var{obj})
+    ## @deftypefnx {RegressionBaggedEnsemble} {@var{C} =} shrink (@dots{}, @var{name}, @var{value})
+    ##
+    ## Keep the trees of a bagged ensemble that a lasso weight retains.
+    ##
+    ## Behaves as @code{RegressionEnsemble.shrink}, returning a
+    ## @code{CompactRegressionEnsemble}.
+    ##
+    ## @seealso{RegressionBaggedEnsemble, RegressionEnsemble.shrink}
+    ## @end deftypefn
+    function C = shrink (this, varargin)
+      C = shrink@RegressionEnsemble (this, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionBaggedEnsemble} {[@var{vals}, @var{nlearn}] =} cvshrink (@var{obj})
+    ## @deftypefnx {RegressionBaggedEnsemble} {[@var{vals}, @var{nlearn}] =} cvshrink (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate the shrinking of a bagged ensemble.
+    ##
+    ## Behaves as @code{RegressionEnsemble.cvshrink}.
+    ##
+    ## @seealso{RegressionBaggedEnsemble, RegressionEnsemble.cvshrink}
+    ## @end deftypefn
+    function [vals, nlearn] = cvshrink (this, varargin)
+      [vals, nlearn] = cvshrink@RegressionEnsemble (this, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionBaggedEnsemble} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Drop the training data from a bagged regression ensemble.

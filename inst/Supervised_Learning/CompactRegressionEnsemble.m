@@ -197,6 +197,17 @@ classdef CompactRegressionEnsemble
 
     endfunction
 
+    ## Keep the learners IDX, in that order, with the weights WEIGHTS and the
+    ## combination rule COMBINE; shrink builds its ensemble with this.
+    function this = keepLearners (this, idx, weights, combine)
+
+      this.Trained = this.Trained(idx);
+      this.TrainedWeights = weights(:);
+      this.NumTrained = numel (idx);
+      this.CombineWeights = combine;
+
+    endfunction
+
     function display (this)
       in_name = inputname (1);
       if (! isempty (in_name))

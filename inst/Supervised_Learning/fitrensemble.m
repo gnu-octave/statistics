@@ -73,9 +73,10 @@
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{RegressionPartitionedEnsemble}.
 ##
-## Resampling in LSBoost, categorical predictors, binning, shrinkage,
-## regularization and hyperparameter optimization are not implemented, and
-## an option asking for one of them is refused.
+## Resampling in LSBoost, categorical predictors, binning and hyperparameter
+## optimization are not implemented, and an option asking for one of them is
+## refused.  An ensemble is regularized and shrunk afterwards with the
+## @code{regularize}, @code{shrink} and @code{cvshrink} methods.
 ##
 ## @seealso{RegressionEnsemble, RegressionBaggedEnsemble,
 ## CompactRegressionEnsemble, templateTree, TreeBagger}

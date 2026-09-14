@@ -40,8 +40,9 @@ classdef RegressionEnsemble
     ##
     ## Result of regularizing the ensemble
     ##
-    ## Always empty, @code{regularize} not being implemented.  This property
-    ## is read-only.
+    ## Empty until @code{regularize} fills it with a structure of lasso
+    ## weights for the trees, and emptied again by @code{resume}.  This
+    ## property is read-only.
     ##
     ## @end deftp
     Regularization = [];
@@ -623,7 +624,9 @@ classdef RegressionEnsemble
     ##
     ## @var{B} is the ensemble with @var{NumLearningCycles} further trees
     ## grown as though the fit had asked for them from the start.
-    ## @qcode{'NPrint'} is taken as by @code{fitrensemble}.
+    ## @qcode{'NPrint'} is taken as by @code{fitrensemble}.  A
+    ## @code{Regularization} is emptied, its weights no longer covering every
+    ## tree; MATLAB keeps it and applies its weights to the first trees.
     ##
     ## @seealso{RegressionEnsemble, fitrensemble}
     ## @end deftypefn
@@ -658,6 +661,7 @@ classdef RegressionEnsemble
         endif
       endfor
       this = growLearners (this, double (NumLearningCycles), NPrint);
+      this.Regularization = [];
 
     endfunction
 
@@ -756,6 +760,254 @@ classdef RegressionEnsemble
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionEnsemble} {@var{B} =} regularize (@var{obj})
+    ## @deftypefnx {RegressionEnsemble} {@var{B} =} regularize (@dots{}, @var{name}, @var{value})
+    ##
+    ## Find lasso weights for the trees of a regression ensemble.
+    ##
+    ## @code{@var{B} = regularize (@var{obj})} fits the training response by
+    ## the trees' predictions with a lasso that has no intercept and whose
+    ## weights may not be negative, over a path of penalties, and returns the
+    ## ensemble with the result in @code{Regularization}.  For a penalty
+    ## @var{lambda} the tree weights @var{a} minimize
+    ## @code{sum (W .* (Y - P * a) .^ 2) / 2 + lambda * sum (a)}, where @var{P}
+    ## holds one column of training predictions per tree and @code{W} is the
+    ## observation weights, which sum to one.  @code{TrainedWeights} is left as
+    ## it was.
+    ##
+    ## @multitable @columnfractions 0.2 0.02 0.78
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @item @qcode{'Lambda'} @tab @tab A vector of non-negative penalties.  The
+    ## default is 0 followed by nine values spaced evenly on a log scale from
+    ## @code{lmax / 1000} to @code{lmax}, the smallest penalty that sets every
+    ## weight to zero, @code{lmax = max (abs (P' * (W .* Y)))}.
+    ## @item @qcode{'MaxIter'} @tab @tab The most passes of coordinate descent
+    ## over the trees for each penalty.  The default is 1e5.
+    ## @item @qcode{'RelTol'} @tab @tab The descent stops after a pass in which
+    ## no weight changed by more than this times the largest weight, or this
+    ## when that weight is below one.  The default is 1e-10.
+    ## @end multitable
+    ##
+    ## @code{Regularization} is a structure with the fields @qcode{Method},
+    ## @qcode{'Lasso'}; @qcode{TrainedWeights}, one column per penalty;
+    ## @qcode{Lambda}; @qcode{ResubstitutionMSE}, the weighted mean squared
+    ## error of each column; and @qcode{CombineWeights},
+    ## @qcode{'WeightedSum'}.
+    ##
+    ## MATLAB's solver can stop well short of the minimum at small penalties,
+    ## so its weights there differ from these, which are the minimum.  Its
+    ## @qcode{CombineWeights} is a function handle, and it also takes
+    ## @qcode{'Npass'} and @qcode{'Verbose'}, which are not taken here.
+    ##
+    ## @seealso{RegressionEnsemble, RegressionEnsemble.shrink,
+    ## RegressionEnsemble.cvshrink, lasso}
+    ## @end deftypefn
+    function this = regularize (this, varargin)
+
+      caller = sprintf ('%s.regularize', class (this));
+      [o, errmsg] = shrinkOptions (varargin, {'Lambda', 'MaxIter', 'RelTol'});
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
+
+      T = this.NumTrained;
+      Y = this.Y;
+      W = this.W / sum (this.W);
+      P = zeros (numel (Y), T);
+      for t = 1:T
+        P(:,t) = predict (this.Trained{t}, this.X);
+      endfor
+      Lambda = o.Lambda;
+      if (isempty (Lambda))
+        lmax = 0;
+        if (T > 0)
+          lmax = max (abs (P' * (W .* Y)));
+        endif
+        Lambda = [0, lmax * 10 .^ linspace(-3, 0, 9)];
+      endif
+
+      ## From the largest penalty down, each starting from the last answer.
+      L = numel (Lambda);
+      TW = zeros (T, L);
+      mse = zeros (1, L);
+      [~, order] = sort (Lambda, 'descend');
+      w = zeros (T, 1);
+      for k = order
+        w = nnLasso (P, Y, W, Lambda(k), w, o.MaxIter, o.RelTol);
+        TW(:,k) = w;
+        mse(k) = sum (W .* (Y - P * w) .^ 2);
+      endfor
+      this.Regularization = struct ('Method', 'Lasso', ...
+                                    'TrainedWeights', TW, ...
+                                    'Lambda', Lambda, ...
+                                    'ResubstitutionMSE', mse, ...
+                                    'CombineWeights', 'WeightedSum');
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionEnsemble} {@var{C} =} shrink (@var{obj})
+    ## @deftypefnx {RegressionEnsemble} {@var{C} =} shrink (@dots{}, @var{name}, @var{value})
+    ##
+    ## Keep the trees a lasso weight retains.
+    ##
+    ## @code{@var{C} = shrink (@var{obj})} returns a
+    ## @code{CompactRegressionEnsemble} of the trees whose weight in a column
+    ## of @code{Regularization.TrainedWeights} is above a threshold, ordered
+    ## from the largest weight down, each carrying that weight and their
+    ## predictions summed.  An ensemble that has not been regularized is
+    ## thresholded on its @code{TrainedWeights} and keeps its way of combining
+    ## its trees.
+    ##
+    ## @multitable @columnfractions 0.2 0.02 0.78
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @item @qcode{'WeightColumn'} @tab @tab The column of weights to use, a
+    ## positive integer.  The default is 1.
+    ## @item @qcode{'Threshold'} @tab @tab A non-negative number; a tree whose
+    ## weight is not above it is dropped.  The default is 0.
+    ## @item @qcode{'Lambda'} @tab @tab Penalties to regularize with first, as
+    ## @code{regularize} does, which also takes @qcode{'MaxIter'} and
+    ## @qcode{'RelTol'} here.
+    ## @end multitable
+    ##
+    ## MATLAB accepts a @qcode{'WeightColumn'} that is not a whole number,
+    ## which is refused here.
+    ##
+    ## @seealso{RegressionEnsemble, RegressionEnsemble.regularize,
+    ## RegressionEnsemble.cvshrink}
+    ## @end deftypefn
+    function C = shrink (this, varargin)
+
+      caller = sprintf ('%s.shrink', class (this));
+      [o, errmsg] = shrinkOptions (varargin, {'WeightColumn', 'Threshold', ...
+                                              'Lambda', 'MaxIter', 'RelTol'});
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
+      if (! isscalar (o.Threshold))
+        error ("%s: 'Threshold' must be a scalar.", caller);
+      endif
+      if (! isempty (o.Lambda))
+        this = regularize (this, 'Lambda', o.Lambda, 'MaxIter', o.MaxIter, ...
+                           'RelTol', o.RelTol);
+      endif
+
+      C = compact (this);
+      if (isempty (this.Regularization))
+        weights = this.TrainedWeights(:);
+        combine = this.CombineWeights;
+      else
+        TW = this.Regularization.TrainedWeights;
+        if (o.WeightColumn > columns (TW))
+          error (strcat ("%s: 'WeightColumn' must not exceed the number of", ...
+                         " values in 'Lambda'."), caller);
+        endif
+        weights = TW(:,o.WeightColumn);
+        combine = 'WeightedSum';
+      endif
+      keep = find (weights > o.Threshold);
+      [~, order] = sort (weights(keep), 'descend');
+      idx = keep(order);
+      C = keepLearners (C, idx, weights(idx), combine);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionEnsemble} {[@var{vals}, @var{nlearn}] =} cvshrink (@var{obj})
+    ## @deftypefnx {RegressionEnsemble} {[@var{vals}, @var{nlearn}] =} cvshrink (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate the shrinking of a regression ensemble.
+    ##
+    ## @code{[@var{vals}, @var{nlearn}] = cvshrink (@var{obj})} grows the
+    ## ensemble again on the training part of each fold, as @code{crossval}
+    ## does, regularizes it with each penalty, shrinks it at each threshold,
+    ## and predicts the fold's held-out observations.  @var{vals} holds one row
+    ## per penalty and one column per threshold: the weighted mean squared
+    ## error pooled over every held-out observation.  @var{nlearn} holds the
+    ## matching mean number of trees kept per fold.
+    ##
+    ## @multitable @columnfractions 0.2 0.02 0.78
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @item @qcode{'Lambda'} @tab @tab A vector of non-negative penalties.  The
+    ## default is @code{Regularization.Lambda}; an ensemble that has not been
+    ## regularized must be given one.
+    ## @item @qcode{'Threshold'} @tab @tab A vector of non-negative thresholds,
+    ## as @code{shrink} takes them.  The default is 0.
+    ## @item @qcode{'KFold'}, @qcode{'Holdout'}, @qcode{'Leaveout'},
+    ## @qcode{'CVPartition'} @tab @tab The partition, as @code{crossval} takes
+    ## it, only one of them.  The default is ten folds.
+    ## @item @qcode{'MaxIter'}, @qcode{'RelTol'} @tab @tab As @code{regularize}
+    ## takes them.
+    ## @end multitable
+    ##
+    ## MATLAB warns and returns empty outputs when an ensemble that has not
+    ## been regularized is given no penalties; here that is an error.
+    ##
+    ## @seealso{RegressionEnsemble, RegressionEnsemble.shrink,
+    ## RegressionEnsemble.crossval}
+    ## @end deftypefn
+    function [vals, nlearn] = cvshrink (this, varargin)
+
+      caller = sprintf ('%s.cvshrink', class (this));
+      if (mod (numel (varargin), 2) != 0)
+        error ("%s: name-value arguments must be in pairs.", caller);
+      endif
+      cvnames = {'kfold', 'holdout', 'leaveout', 'cvpartition'};
+      cvargs = {};
+      rest = {};
+      for i = 1:2:numel (varargin)
+        if (ischar (varargin{i}) && any (strcmpi (varargin{i}, cvnames)))
+          cvargs(end+1:end+2) = varargin(i:i+1);
+        else
+          rest(end+1:end+2) = varargin(i:i+1);
+        endif
+      endfor
+      [o, errmsg] = shrinkOptions (rest, {'Lambda', 'Threshold', ...
+                                          'MaxIter', 'RelTol'});
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
+      Lambda = o.Lambda;
+      if (isempty (Lambda))
+        if (isempty (this.Regularization))
+          error (strcat ("%s: 'Lambda' must be given for an ensemble that", ...
+                         " has not been regularized."), caller);
+        endif
+        Lambda = this.Regularization.Lambda;
+      endif
+      [P, errmsg] = ensemblePartition (cvargs, this.Y, this.NumObservations, ...
+                                       false);
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
+
+      CV = RegressionPartitionedEnsemble (this, P);
+      L = numel (Lambda);
+      M = numel (o.Threshold);
+      sse = zeros (L, M);
+      counts = zeros (L, M);
+      wsum = 0;
+      K = numel (CV.Trainable);
+      for k = 1:K
+        te = test (CV.Partition, k);
+        Ek = regularize (CV.Trainable{k}, 'Lambda', Lambda, ...
+                         'MaxIter', o.MaxIter, 'RelTol', o.RelTol);
+        wsum += sum (this.W(te));
+        for a = 1:L
+          for b = 1:M
+            Ck = shrink (Ek, 'WeightColumn', a, 'Threshold', o.Threshold(b));
+            r = this.Y(te) - predict (Ck, this.X(te,:));
+            sse(a,b) += sum (this.W(te) .* r .^ 2);
+            counts(a,b) += Ck.NumTrained;
+          endfor
+        endfor
+      endfor
+      vals = sse / wsum;
+      nlearn = counts / K;
+
+    endfunction
+
   endmethods
 
   methods (Access = protected)
@@ -827,6 +1079,97 @@ classdef RegressionEnsemble
   endmethods
 
 endclassdef
+
+## The options of regularize, shrink and cvshrink that ALLOWED names, checked
+## and with their defaults.  ERRMSG is the body of the message the caller
+## raises, or empty.
+function [o, errmsg] = shrinkOptions (args, allowed)
+
+  o = struct ('Lambda', [], 'MaxIter', 1e5, 'RelTol', 1e-10, ...
+              'WeightColumn', 1, 'Threshold', 0);
+  errmsg = "";
+  if (mod (numel (args), 2) != 0)
+    errmsg = "name-value arguments must be in pairs.";
+    return;
+  endif
+  for i = 1:2:numel (args)
+    k = [];
+    if (ischar (args{i}))
+      k = find (strcmpi (args{i}, allowed));
+    endif
+    if (isempty (k))
+      errmsg = "invalid parameter name in optional pair arguments.";
+      return;
+    endif
+    val = args{i+1};
+    switch (allowed{k})
+      case 'Lambda'
+        if (! (isnumeric (val) && isreal (val) && isvector (val)
+               && all (isfinite (val)) && all (val >= 0)))
+          errmsg = "'Lambda' must be a vector of non-negative numbers.";
+          return;
+        endif
+        o.Lambda = double (val(:)');
+      case 'MaxIter'
+        if (! (isnumeric (val) && isscalar (val) && isreal (val)
+               && val >= 1 && val == fix (val)))
+          errmsg = "'MaxIter' must be a positive integer.";
+          return;
+        endif
+        o.MaxIter = double (val);
+      case 'RelTol'
+        if (! (isnumeric (val) && isscalar (val) && isreal (val)
+               && isfinite (val) && val > 0))
+          errmsg = "'RelTol' must be a positive number.";
+          return;
+        endif
+        o.RelTol = double (val);
+      case 'WeightColumn'
+        if (! (isnumeric (val) && isscalar (val) && isreal (val)
+               && val >= 1 && val == fix (val)))
+          errmsg = "'WeightColumn' must be a positive integer.";
+          return;
+        endif
+        o.WeightColumn = double (val);
+      case 'Threshold'
+        if (! (isnumeric (val) && isreal (val) && isvector (val)
+               && all (isfinite (val)) && all (val >= 0)))
+          errmsg = "'Threshold' must hold non-negative numbers.";
+          return;
+        endif
+        o.Threshold = double (val(:)');
+    endswitch
+  endfor
+
+endfunction
+
+## The non-negative weights W over the columns of P that minimize
+## sum (V .* (y - P * w) .^ 2) / 2 + lambda * sum (w), V summing to one, by
+## cyclic coordinate descent from the given W.
+function w = nnLasso (P, y, V, lambda, w, maxiter, reltol)
+
+  VP = V .* P;
+  d = sum (VP .* P, 1)';
+  r = y - P * w;
+  for it = 1:maxiter
+    step = 0;
+    for j = 1:numel (w)
+      if (d(j) <= 0)
+        continue;
+      endif
+      new = max (0, (VP(:,j)' * r + d(j) * w(j) - lambda) / d(j));
+      if (new != w(j))
+        r -= P(:,j) * (new - w(j));
+        step = max (step, abs (new - w(j)));
+        w(j) = new;
+      endif
+    endfor
+    if (step <= reltol * max ([abs(w); 1]))
+      break;
+    endif
+  endfor
+
+endfunction
 
 ## 'on' or 'off' as a logical scalar, OK false for anything else.
 function [tf, ok] = onOff (val)
@@ -982,3 +1325,142 @@ endfunction
 
 %!error<RegressionEnsemble.crossval: invalid parameter name in optional pair arguments.> ...
 %! crossval (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 'Foo', 1)
+
+%!shared X, y, tt, E
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! tt = templateTree ('MaxNumSplits', 3);
+%! E = fitrensemble (X, y, 'Method', 'LSBoost', 'NumLearningCycles', 20, ...
+%!                   'Learners', tt);
+
+%!test  # MATLAB parity: the default penalties of regularize
+%! R = regularize (E).Regularization;
+%! assert_equal (fieldnames (R), {'Method'; 'TrainedWeights'; 'Lambda'; ...
+%!                                'ResubstitutionMSE'; 'CombineWeights'});
+%! assert_equal (R.Method, 'Lasso');
+%! assert_equal (size (R.TrainedWeights), [20, 10]);
+%! assert_equal (R.Lambda(1), 0);
+%! assert_equal (R.Lambda([2, 10]), [0.0346843052641099, 34.6843052641099], ...
+%!               1e-12);
+
+%!test  # MATLAB parity: lasso weights where R2024a converges
+%! R = regularize (E, 'Lambda', [0.01, 0.05, 0.1]).Regularization;
+%! assert_equal (R.TrainedWeights(:,[2, 3]), ...
+%!               [0.998558425788861, 0.997116851577722; zeros(19, 2)], 1e-9);
+%! assert_equal (R.TrainedWeights(:,1), [0.99983699976111; ...
+%!               0.688155074556548; 0.205495438447582; 0.0983109617173514; ...
+%!               0; 0.314714964487384; zeros(14, 1)], 1e-6);
+%! assert_equal (R.ResubstitutionMSE(2:3), ...
+%!               [0.141433481267387, 0.141649717399058], 1e-12);
+%! assert_equal (R.ResubstitutionMSE(1), 0.0981895827257545, 1e-6);
+
+%!test  # MATLAB parity: observation weights enter the fit and the error
+%! Ew = fitrensemble (X, y, 'Method', 'LSBoost', 'NumLearningCycles', 20, ...
+%!                    'Learners', tt, 'Weights', (1:150)' / 150);
+%! R = regularize (Ew, 'Lambda', 0.1).Regularization;
+%! assert_equal (R.TrainedWeights, [0.997413841751991; zeros(19, 1)], 1e-9);
+%! assert_equal (R.ResubstitutionMSE, 0.136057521685236, 1e-12);
+%! assert_equal (regularize (Ew).Regularization.Lambda(end), ...
+%!               38.6673940301219, 1e-12);
+
+%!test  # MATLAB parity: the weights are never negative
+%! Elr = fitrensemble (X, y, 'Method', 'LSBoost', 'NumLearningCycles', 20, ...
+%!                     'Learners', tt, 'LearnRate', 0.1);
+%! R = regularize (Elr, 'Lambda', [0, 0.01]).Regularization;
+%! assert_equal (all (R.TrainedWeights(:) >= 0), true);
+
+%!test  # regularize leaves the trained weights as they were
+%! Er = regularize (E, 'Lambda', 0.1);
+%! assert_equal (Er.TrainedWeights, E.TrainedWeights);
+
+%!test  # MATLAB parity: shrink keeps the weighted trees, largest first
+%! C = shrink (regularize (E, 'Lambda', 0.01));
+%! assert_equal (class (C), 'CompactRegressionEnsemble');
+%! assert_equal (C.CombineWeights, 'WeightedSum');
+%! assert_equal (C.NumTrained, 5);
+%! assert_equal (C.TrainedWeights, [0.99983699976111; 0.688155074556548; ...
+%!               0.314714964487384; 0.205495438447582; ...
+%!               0.0983109617173514], 1e-6);
+
+%!test  # MATLAB parity: a weight equal to the threshold is dropped
+%! Er = regularize (E, 'Lambda', 0.01);
+%! C = shrink (Er);
+%! assert_equal (shrink (Er, 'Threshold', C.TrainedWeights(5)).NumTrained, 4);
+
+%!test  # MATLAB parity: shrink regularizes first when given penalties
+%! assert_equal (shrink (E, 'Lambda', 0.01).NumTrained, 5);
+
+%!test  # MATLAB parity: an ensemble not regularized keeps its trees
+%! C = shrink (E);
+%! assert_equal (C.NumTrained, 20);
+%! assert_equal (C.TrainedWeights, ones (20, 1));
+
+%!test  # MATLAB parity: a shrunk bagged ensemble sums its weighted trees
+%! B = fitrensemble (X, y, 'Method', 'Bag', 'NumLearningCycles', 5);
+%! Br = regularize (B, 'Lambda', 0.001);
+%! C = shrink (Br);
+%! assert_equal (C.CombineWeights, 'WeightedSum');
+%! P = zeros (3, 5);
+%! for t = 1:5
+%!   P(:,t) = predict (B.Trained{t}, X(1:3,:));
+%! endfor
+%! assert_equal (predict (C, X(1:3,:)), ...
+%!               P * Br.Regularization.TrainedWeights, 1e-12);
+
+%!test  # MATLAB parity: cvshrink pools the held-out error over the folds
+%! cvp = cvpartition (150, 'KFold', 3);
+%! [vals, nlearn] = cvshrink (E, 'CVPartition', cvp, 'Lambda', [0.01, 0.1], ...
+%!                            'Threshold', [0, 0.5]);
+%! sse = zeros (2, 2);
+%! counts = zeros (2, 2);
+%! for k = 1:3
+%!   tr = training (cvp, k);
+%!   te = test (cvp, k);
+%!   Ek = regularize (fitrensemble (X(tr,:), y(tr), 'Method', 'LSBoost', ...
+%!                                  'NumLearningCycles', 20, ...
+%!                                  'Learners', tt), 'Lambda', [0.01, 0.1]);
+%!   for a = 1:2
+%!     for b = 1:2
+%!       thr = [0, 0.5];
+%!       Ck = shrink (Ek, 'WeightColumn', a, 'Threshold', thr(b));
+%!       sse(a,b) += sum ((y(te) - predict (Ck, X(te,:))) .^ 2) / 150;
+%!       counts(a,b) += Ck.NumTrained;
+%!     endfor
+%!   endfor
+%! endfor
+%! assert_equal (vals, sse, 1e-12);
+%! assert_equal (nlearn, counts / 3);
+
+%!test  # MATLAB parity: cvshrink takes the penalties of a regularized ensemble
+%! cvp = cvpartition (150, 'KFold', 3);
+%! vals = cvshrink (regularize (E, 'Lambda', [0.01, 0.1]), 'CVPartition', cvp);
+%! assert_equal (size (vals), [2, 1]);
+
+%!test  # resume empties the regularization
+%! Er = resume (regularize (E, 'Lambda', 0.1), 2);
+%! assert_equal (Er.NumTrained, 22);
+%! assert_equal (Er.Regularization, []);
+
+%!error<RegressionEnsemble.regularize: 'Lambda' must be a vector of non-negative numbers.> ...
+%! regularize (E, 'Lambda', -1)
+%!error<RegressionEnsemble.regularize: 'MaxIter' must be a positive integer.> ...
+%! regularize (E, 'MaxIter', 0)
+%!error<RegressionEnsemble.regularize: 'RelTol' must be a positive number.> ...
+%! regularize (E, 'RelTol', 0)
+%!error<RegressionEnsemble.regularize: invalid parameter name in optional pair arguments.> ...
+%! regularize (E, 'Npass', 3)
+%!error<RegressionEnsemble.regularize: name-value arguments must be in pairs.> ...
+%! regularize (E, 'Lambda')
+%!error<RegressionEnsemble.shrink: 'WeightColumn' must be a positive integer.> ...
+%! shrink (E, 'WeightColumn', 1.5)
+%!error<RegressionEnsemble.shrink: 'WeightColumn' must not exceed the number of values in 'Lambda'.> ...
+%! shrink (regularize (E, 'Lambda', 0.1), 'WeightColumn', 2)
+%!error<RegressionEnsemble.shrink: 'Threshold' must hold non-negative numbers.> ...
+%! shrink (E, 'Threshold', -1)
+%!error<RegressionEnsemble.shrink: 'Threshold' must be a scalar.> ...
+%! shrink (E, 'Threshold', [0, 1])
+%!error<RegressionEnsemble.cvshrink: 'Lambda' must be given for an ensemble that has not been regularized.> ...
+%! cvshrink (E)
+%!error<RegressionEnsemble.cvshrink: invalid parameter name in optional pair arguments.> ...
+%! cvshrink (E, 'Lambda', 0.1, 'Foo', 1)
