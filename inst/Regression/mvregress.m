@@ -75,6 +75,9 @@ function [beta, Sigma, E, CovB, logL] = mvregress (X, Y, varargin)
     error ("mvregress: Y must be a real numeric matrix.");
   endif
   [n, d] = size (Y);
+  if (n == 0 || d == 0)
+    error ("mvregress: Y array is empty - cannot continue.");
+  endif
 
   ## --- normalise the design to per-observation d-by-K matrices ---
   is_numeric = ! iscell (X);
@@ -431,5 +434,12 @@ endfunction
 %!error <Invalid call> mvregress (1)
 %!error <Y must be a real numeric matrix> mvregress (ones (3), {1})
 %!error <X must have as many rows as Y> mvregress (ones (2, 2), ones (3, 2))
+
+%!test
+%! ## Edge cases with empty arrays
+%!fail ("mvregress ([], [])", ...
+%!      "mvregress: Y array is empty - cannot continue.")
+%!fail ("mvregress (zeros(0,3), zeros(0,1))", ...
+%!      "mvregress: Y array is empty - cannot continue.")
 %!error <algorithm must be> mvregress (ones (3, 2), ones (3, 2), "algorithm", "xxx")
 %!error <unknown option 'bogus'> mvregress (ones (3, 2), ones (3, 2), "bogus", 1)
