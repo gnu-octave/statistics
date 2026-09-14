@@ -107,6 +107,41 @@ classdef CompactTreeBagger
     ## @end deftp
     PredictorNames = {};
 
+    ## -*- texinfo -*-
+    ## @deftp {CompactTreeBagger} {property} DeltaCriterionDecisionSplit
+    ##
+    ## Split criterion contributions of the predictors
+    ##
+    ## A row vector with one element per predictor, the mean over the trees
+    ## of each tree's @code{predictorImportance}.  This property is read-only.
+    ##
+    ## @end deftp
+    DeltaCriterionDecisionSplit = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactTreeBagger} {property} NumPredictorSplit
+    ##
+    ## Decision splits on each predictor
+    ##
+    ## A row vector with one element per predictor, the sum over the trees of
+    ## the share of each tree's branch nodes that split on the predictor.  A
+    ## tree without branch nodes adds nothing.  This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictorSplit = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactTreeBagger} {property} SurrogateAssociation
+    ##
+    ## Predictive association between the predictors
+    ##
+    ## A square matrix with one row and one column per predictor.  The trees
+    ## grow no surrogate splits, so it is the identity matrix.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    SurrogateAssociation = [];
+
   endproperties
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
@@ -163,6 +198,9 @@ classdef CompactTreeBagger
       this.ClassNames = B.ClassNames;
       this.DefaultYfit = B.DefaultYfit;
       this.PredictorNames = B.PredictorNames;
+      this.DeltaCriterionDecisionSplit = B.DeltaCriterionDecisionSplit;
+      this.NumPredictorSplit = B.NumPredictorSplit;
+      this.SurrogateAssociation = B.SurrogateAssociation;
       this.TreeClassIdx = B.TreeClassIdx;
       this.DefaultIndex = B.DefaultIndex;
       this.DefaultScore = B.DefaultScore;
@@ -361,6 +399,8 @@ classdef CompactTreeBagger
       this.Trees = [this.Trees; other.Trees];
       this.TreeClassIdx = [this.TreeClassIdx; other.TreeClassIdx];
       this.NumTrees = numel (this.Trees);
+      [this.DeltaCriterionDecisionSplit, this.NumPredictorSplit] = ...
+        bagSplitStats (this.Trees, numel (this.PredictorNames));
 
     endfunction
 
@@ -411,9 +451,195 @@ classdef CompactTreeBagger
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {CompactTreeBagger} {@var{prox} =} proximity (@var{obj}, @var{X})
+    ##
+    ## Proximity matrix of the observations.
+    ##
+    ## @var{prox} is a symmetric @math{NxN} matrix, @math{N} being the number
+    ## of rows of @var{X}, whose element @math{(i,j)} is the share of the
+    ## trees that bring observations @math{i} and @math{j} to the same leaf.
+    ## Its diagonal holds ones.
+    ##
+    ## @seealso{CompactTreeBagger, CompactTreeBagger.outlierMeasure,
+    ## CompactTreeBagger.mdsprox, TreeBagger.fillprox}
+    ## @end deftypefn
+    function prox = proximity (this, X)
+
+      if (nargin < 2)
+        error ("CompactTreeBagger.proximity: too few input arguments.");
+      endif
+      o = proxArgs (this, X, {}, {}, 'CompactTreeBagger.proximity');
+      prox = o.P;
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactTreeBagger} {@var{out} =} outlierMeasure (@var{obj}, @var{X})
+    ## @deftypefnx {CompactTreeBagger} {@var{out} =} outlierMeasure (@dots{}, @var{name}, @var{value})
+    ##
+    ## Outlier measure of each observation.
+    ##
+    ## The raw measure of an observation is the size of its class divided by
+    ## the sum of its squared proximities to the observations of the class,
+    ## itself included, all the observations forming one class when no labels
+    ## are given.  @var{out} is a column holding, for each observation, the
+    ## absolute deviation of its raw measure from the median of its class,
+    ## divided by the median absolute deviation of the class.  A large value
+    ## marks an observation that the trees seldom group with the rest of its
+    ## class.  As in MATLAB, a class whose median absolute deviation is zero
+    ## gives the raw measures themselves, and a class of one or two
+    ## observations gives zeros.
+    ##
+    ## Name-Value arguments:
+    ##
+    ## @multitable @columnfractions 0.2 0.02 0.78
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @item @qcode{'Data'} @tab @tab @qcode{'predictors'} (default), for
+    ## @var{X} holding predictor data, or @qcode{'proximity'}, for @var{X}
+    ## holding a proximity matrix such as @code{proximity} returns.
+    ## @item @qcode{'Labels'} @tab @tab The class label of each observation,
+    ## each one of @code{ClassNames}.  Classification only.
+    ## @end multitable
+    ##
+    ## @seealso{CompactTreeBagger, CompactTreeBagger.proximity,
+    ## TreeBagger.OutlierMeasure}
+    ## @end deftypefn
+    function out = outlierMeasure (this, X, varargin)
+
+      if (nargin < 2)
+        error ("CompactTreeBagger.outlierMeasure: too few input arguments.");
+      endif
+      o = proxArgs (this, X, varargin, {'Data', 'Labels'}, ...
+                    'CompactTreeBagger.outlierMeasure');
+      out = bagOutlier (o.P, o.g);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactTreeBagger} {[@var{S}, @var{E}] =} mdsprox (@var{obj}, @var{X})
+    ## @deftypefnx {CompactTreeBagger} {[@var{S}, @var{E}] =} mdsprox (@dots{}, @var{name}, @var{value})
+    ##
+    ## Multidimensional scaling of the proximity matrix.
+    ##
+    ## Applies classical multidimensional scaling, as @code{cmdscale} does, to
+    ## the distances @code{1 - @var{prox}}, @var{prox} being the proximity
+    ## matrix of the rows of @var{X}.  @var{S} holds the scaled coordinates,
+    ## one column per positive eigenvalue, and @var{E} the eigenvalues.
+    ##
+    ## Name-Value arguments:
+    ##
+    ## @multitable @columnfractions 0.25 0.02 0.73
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @item @qcode{'Data'} @tab @tab @qcode{'predictors'} (default) or
+    ## @qcode{'proximity'}, as for @code{outlierMeasure}.
+    ## @item @qcode{'Colors'} @tab @tab A character vector with one color
+    ## letter per class.  When given, the scaled coordinates are drawn as
+    ## overlaid scatter plots, one per class, and a class beyond the number of
+    ## letters is not drawn.
+    ## @item @qcode{'Labels'} @tab @tab The class label of each observation,
+    ## each one of @code{ClassNames}.  Classification only.  Without labels
+    ## every observation is drawn in the first color.
+    ## @item @qcode{'MDSCoordinates'} @tab @tab Two or three indices of the
+    ## columns of @var{S} to draw.  The default is @code{[1, 2]}.  It has no
+    ## effect unless @qcode{'Colors'} is given.
+    ## @end multitable
+    ##
+    ## @seealso{CompactTreeBagger, CompactTreeBagger.proximity, cmdscale,
+    ## TreeBagger.mdsprox}
+    ## @end deftypefn
+    function [S, E] = mdsprox (this, X, varargin)
+
+      if (nargin < 2)
+        error ("CompactTreeBagger.mdsprox: too few input arguments.");
+      endif
+      o = proxArgs (this, X, varargin, ...
+                    {'Data', 'Colors', 'Labels', 'MDSCoordinates'}, ...
+                    'CompactTreeBagger.mdsprox');
+      [S, E, errmsg] = bagMds (o.P, o.g, o.colors, o.coords);
+      if (! isempty (errmsg))
+        error ("CompactTreeBagger.mdsprox: %s", errmsg);
+      endif
+
+    endfunction
+
   endmethods
 
 endclassdef
+
+## The proximity matrix and the Name-Value arguments of the proximity methods.
+function o = proxArgs (M, X, args, allowed, caller)
+
+  if (mod (numel (args), 2) != 0)
+    error ("%s: name-value arguments must be in pairs.", caller);
+  endif
+  o = struct ('P', [], 'g', [], 'colors', '', 'coords', [1, 2]);
+  isprox = false;
+  labels = [];
+  for i = 1:2:numel (args)
+    name = args{i};
+    val = args{i+1};
+    if (! (ischar (name) && any (strcmpi (name, allowed))))
+      error ("%s: invalid parameter name in optional pair arguments.", ...
+             caller);
+    endif
+    switch (tolower (name))
+      case 'data'
+        if (! (ischar (val)
+               && any (strcmpi (val, {'predictors', 'proximity'}))))
+          error ("%s: 'Data' must be 'predictors' or 'proximity'.", caller);
+        endif
+        isprox = strcmpi (val, 'proximity');
+      case 'labels'
+        labels = {val};
+      case 'colors'
+        o.colors = val;
+      case 'mdscoordinates'
+        o.coords = val;
+    endswitch
+  endfor
+
+  if (isprox)
+    if (! (isnumeric (X) && isreal (X) && issquare (X) && ! isempty (X)))
+      error (strcat ("%s: X must be a square real numeric matrix when", ...
+                     " 'Data' is 'proximity'."), caller);
+    endif
+    o.P = double (X);
+  else
+    if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
+      error ("%s: X must be a real numeric matrix.", caller);
+    endif
+    if (columns (X) != numel (M.PredictorNames))
+      error ("%s: X must have one column per predictor.", caller);
+    endif
+    o.P = bagProximity (M, X, 1:M.NumTrees);
+  endif
+
+  if (! isempty (labels))
+    lab = labels{1};
+    if (ischar (lab))
+      nL = rows (lab);
+    else
+      nL = numel (lab);
+    endif
+    if (! (isnumeric (lab) || islogical (lab) || ischar (lab)
+           || iscellstr (lab) || isa (lab, 'categorical')
+           || isa (lab, 'string')) || nL != rows (o.P))
+      error ("%s: 'Labels' must hold one class label per observation.", ...
+             caller);
+    endif
+    if (! strcmp (M.Method, 'classification'))
+      error ("%s: 'Labels' cannot be used with a regression ensemble.", ...
+             caller);
+    endif
+    [o.g, errmsg] = labelIndices (M.ClassNames, lab);
+    if (! isempty (errmsg))
+      error (strcat ("%s: 'Labels' must hold only classes the ensemble", ...
+                     " was trained on."), caller);
+    endif
+  endif
+
+endfunction
 
 %!demo
 %! ## Compact a random forest and classify new flowers with it.  The compact
@@ -474,6 +700,137 @@ endclassdef
 %! C = setDefaultYfit (C, 3);
 %! assert_equal (C.DefaultYfit, 3);
 
+%!test  # MATLAB parity: combining adds up the split counts
+%! load fisheriris
+%! rng (1);
+%! C1 = compact (TreeBagger (3, meas, species));
+%! C2 = compact (TreeBagger (4, meas, species));
+%! C = combine (C1, C2);
+%! assert_equal (C.NumPredictorSplit, ...
+%!               C1.NumPredictorSplit + C2.NumPredictorSplit, 1e-14);
+%! assert_equal (C.DeltaCriterionDecisionSplit, ...
+%!               (3 * C1.DeltaCriterionDecisionSplit ...
+%!                + 4 * C2.DeltaCriterionDecisionSplit) / 7, 1e-14);
+%! assert_equal (C.SurrogateAssociation, eye (4));
+
+%!test  # MATLAB parity: proximity is the share of trees sharing a leaf
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (6, meas, species, 'MinLeafSize', 5));
+%! X = meas(1:3:end,:);
+%! P = zeros (rows (X));
+%! for t = 1:6
+%!   [~, ~, nd] = predict (C.Trees{t}, X);
+%!   P += nd == nd';
+%! endfor
+%! prox = proximity (C, X);
+%! assert_equal (prox, P / 6, 1e-15);
+%! assert_equal (diag (prox), ones (50, 1));
+
+%!test  # a regression ensemble has proximities too
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (3, meas(:,2:4), meas(:,1), 'Method', 'regression'));
+%! [~, n1] = predict (C.Trees{1}, meas(1:2,2:4));
+%! [~, n2] = predict (C.Trees{2}, meas(1:2,2:4));
+%! [~, n3] = predict (C.Trees{3}, meas(1:2,2:4));
+%! p12 = mean ([n1(1) == n1(2), n2(1) == n2(2), n3(1) == n3(2)]);
+%! assert_equal (proximity (C, meas(1:2,2:4)), [1, p12; p12, 1], 1e-15);
+
+%!test  # MATLAB parity: the outlier measure within each class
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (8, meas, species, 'MinLeafSize', 5));
+%! P = proximity (C, meas);
+%! g = grp2idx (species);
+%! om = zeros (150, 1);
+%! for k = 2:3
+%!   raw = 50 ./ sum (P(g == k, g == k) .^ 2, 2);
+%!   om(g == k) = abs (raw - median (raw)) / median (abs (raw - median (raw)));
+%! endfor
+%! out = outlierMeasure (C, meas, 'Labels', species);
+%! assert_equal (out(g > 1), om(g > 1), 1e-12);
+
+%!test  # MATLAB parity: a proximity matrix may be given in place of the data
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (8, meas, species, 'MinLeafSize', 5));
+%! P = proximity (C, meas);
+%! assert_equal (outlierMeasure (C, P, 'Data', 'proximity', ...
+%!                               'Labels', species), ...
+%!               outlierMeasure (C, meas, 'Labels', species));
+
+%!test  # MATLAB parity: without labels every observation is one class
+%! C = compact (TreeBagger (1, [1; 2; 3; 4], [1; 1; 2; 2]));
+%! P = [1, 0.2, 0.6, 0.1, 0.3; 0.2, 1, 0.4, 0.7, 0.5; ...
+%!      0.6, 0.4, 1, 0.2, 0.8; 0.1, 0.7, 0.2, 1, 0.3; ...
+%!      0.3, 0.5, 0.8, 0.3, 1];
+%! assert_equal (outlierMeasure (C, P, 'Data', 'proximity'), ...
+%!               [2.482051282051284; 0; 1; 1.609249646059462; ...
+%!                0.531400966183575], 1e-12);
+
+%!test  # MATLAB parity: a zero median absolute deviation gives the raw measure
+%! C = compact (TreeBagger (1, [1; 2; 3; 4], [1; 1; 2; 2]));
+%! P = [1, 1, 1, 0.5; 1, 1, 1, 0.5; 1, 1, 1, 0.5; 0.5, 0.5, 0.5, 1];
+%! assert_equal (outlierMeasure (C, P, 'Data', 'proximity'), ...
+%!               [1.230769230769231; 1.230769230769231; ...
+%!                1.230769230769231; 2.285714285714286], 1e-12);
+%! assert_equal (outlierMeasure (C, [1, 1, 0; 1, 1, 0; 0, 0, 1], ...
+%!                               'Data', 'proximity'), [1.5; 1.5; 3]);
+
+%!test  # MATLAB parity: a class of one or two observations gives zeros
+%! load fisheriris
+%! C = compact (TreeBagger (1, meas, species));
+%! P = [1, 1, 1, 0, 0, 0; 1, 1, 1, 0, 0, 0; 1, 1, 1, 0, 0, 0; ...
+%!      0, 0, 0, 1, 1, 1; 0, 0, 0, 1, 1, 1; 0, 0, 0, 1, 1, 1];
+%! lab = {'setosa'; 'setosa'; 'virginica'; 'virginica'; 'virginica'; ...
+%!        'virginica'};
+%! assert_equal (outlierMeasure (C, P, 'Data', 'proximity', 'Labels', lab), ...
+%!               [0; 0; 4; 4/3; 4/3; 4/3], 1e-15);
+%! assert_equal (outlierMeasure (C, [1, 0.5; 0.5, 0.8], 'Data', ...
+%!                               'proximity'), [0; 0]);
+
+%!test  # MATLAB parity: scaling applies cmdscale to one less the proximity
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (5, meas, species, 'MinLeafSize', 5));
+%! X = meas(1:5:end,:);
+%! [S, E] = mdsprox (C, X);
+%! [S0, E0] = cmdscale (1 - proximity (C, X));
+%! assert_equal (S, S0);
+%! assert_equal (E, E0);
+%! [S1, E1] = mdsprox (C, proximity (C, X), 'Data', 'proximity');
+%! assert_equal (S1, S0);
+
+%!test  # the scaled coordinates are drawn one class per color
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (5, meas, species, 'MinLeafSize', 5));
+%! h = figure ('visible', 'off');
+%! unwind_protect
+%!   mdsprox (C, meas, 'Colors', 'rb', 'Labels', species);
+%!   kids = get (gca, 'children');
+%!   assert_equal (numel (kids), 2);
+%!   assert_equal (sort (cellfun (@numel, get (kids, 'xdata'))), [50; 50]);
+%!   assert_equal (ishold (), false);
+%! unwind_protect_cleanup
+%!   close (h);
+%! end_unwind_protect
+
+%!test  # three coordinates are drawn in three dimensions
+%! load fisheriris
+%! rng (1);
+%! C = compact (TreeBagger (5, meas, species, 'MinLeafSize', 5));
+%! h = figure ('visible', 'off');
+%! unwind_protect
+%!   S = mdsprox (C, meas, 'Colors', 'k', 'MDSCoordinates', [1, 2, 3]);
+%!   kids = get (gca, 'children');
+%!   assert_equal (numel (kids), 1);
+%!   assert_equal (get (kids, 'zdata')(:), S(:,3));
+%! unwind_protect_cleanup
+%!   close (h);
+%! end_unwind_protect
+
 ## Test input validation
 %!shared x, y, C, R
 %! load fisheriris
@@ -509,3 +866,35 @@ endclassdef
 %! setDefaultYfit (C, 'setosa')
 %!error<CompactTreeBagger.setDefaultYfit: YFIT must be a real numeric scalar for a regression ensemble.> ...
 %! setDefaultYfit (R, 'mean')
+%!error<CompactTreeBagger.proximity: too few input arguments.> proximity (C)
+%!error<CompactTreeBagger.proximity: X must be a real numeric matrix.> ...
+%! proximity (C, {1})
+%!error<CompactTreeBagger.proximity: X must have one column per predictor.> ...
+%! proximity (C, ones (2, 3))
+%!error<CompactTreeBagger.outlierMeasure: too few input arguments.> ...
+%! outlierMeasure (C)
+%!error<CompactTreeBagger.outlierMeasure: name-value arguments must be in pairs.> ...
+%! outlierMeasure (C, x, 'Data')
+%!error<CompactTreeBagger.outlierMeasure: invalid parameter name in optional pair arguments.> ...
+%! outlierMeasure (C, x, 'Colors', 'r')
+%!error<CompactTreeBagger.outlierMeasure: 'Data' must be 'predictors' or 'proximity'.> ...
+%! outlierMeasure (C, x, 'Data', 'distance')
+%!error<CompactTreeBagger.outlierMeasure: X must be a square real numeric matrix when 'Data' is 'proximity'.> ...
+%! outlierMeasure (C, x, 'Data', 'proximity')
+%!error<CompactTreeBagger.outlierMeasure: 'Labels' must hold one class label per observation.> ...
+%! outlierMeasure (C, x, 'Labels', y(1:10))
+%!error<CompactTreeBagger.mdsprox: too few input arguments.> mdsprox (C)
+%!error<CompactTreeBagger.mdsprox: 'Colors' must be a character vector or a string scalar.> ...
+%! mdsprox (C, x(1:10,:), 'Colors', 1)
+%!error<CompactTreeBagger.mdsprox: 'MDSCoordinates' must be a vector of two or three positive integers.> ...
+%! mdsprox (C, x(1:10,:), 'MDSCoordinates', 1)
+%!error<CompactTreeBagger.mdsprox: 'MDSCoordinates' must not exceed the number of scaled coordinates.> ...
+%! mdsprox (C, x(1:10,:), 'Colors', 'r', 'MDSCoordinates', [1, 200])
+%!error<CompactTreeBagger.outlierMeasure: 'Labels' must hold only classes the ensemble was trained on.> ...
+%! outlierMeasure (C, x(1:2,:), 'Labels', {'rose'; 'setosa'})
+%!error<CompactTreeBagger.outlierMeasure: 'Labels' must hold only classes the ensemble was trained on.> ...
+%! outlierMeasure (C, x(1:2,:), 'Labels', [1; 2])
+%!error<CompactTreeBagger.outlierMeasure: 'Labels' cannot be used with a regression ensemble.> ...
+%! outlierMeasure (R, x(1:2,2:4), 'Labels', [1; 2])
+%!error<CompactTreeBagger.mdsprox: 'Labels' must hold only classes the ensemble was trained on.> ...
+%! mdsprox (C, x(1:2,:), 'Labels', {''; 'setosa'})
