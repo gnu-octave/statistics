@@ -153,7 +153,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
 
   ## Validate row compatibility BEFORE any concatenation
 if (rows (X) != rows (y))
-  error ("stepwisefit: X and Y must have the same number of rows");
+    error ("stepwisefit: X and Y must have the same number of rows.");
 endif
 
   ## Parse Name-Value pairs
@@ -221,13 +221,13 @@ endif
     se = NaN (p, 1);
     pval = NaN (p, 1);
     finalmodel = false (1, p);
-    stats = struct ('source', 'stepwisefit', 'df0', 0, 'dfe', -1, ...
+    stats = struct ('source', 'stepwisefit', 'df0', -1, 'dfe', 0, ...
                     'SStotal', 0, 'SSresid', 0, 'fstat', NaN, 'pval', NaN, ...
-                    'rmse', NaN, 'intercept', NaN, 'wasnan', wasnan, ...
+                    'rmse', NaN, 'intercept', 0, 'wasnan', wasnan, ...
                     'xr', zeros(0, p), 'yr', zeros(0, 1), 'B', NaN (p, 1), ...
                     'SE', NaN (p, 1), 'TSTAT', NaN (p, 1), 'PVAL', NaN (p, 1), ...
-                    'covb', NaN (p+1, p+1));
-    history = struct ('B', NaN (p, 1), 'rmse', NaN, 'df0', 0, 'in', false(1, p));
+                    'covb', NaN (p, p));
+    history = struct ('B', zeros (p, 0), 'rmse', zeros (0, 0), 'df0', zeros (0, 0), 'in', false (0, p));
     nextstep = 0;
     return;
   endif
@@ -671,17 +671,15 @@ endfunction
 %! [b1] = stepwisefit (X, y);
 %! [b2] = stepwisefit (X, y, 'Scale', 'on');
 %! assert_equal (rows (b1) == rows (b2), true);
-%!test
-%! X = randn (20,4);
-%! y = randn (20,1);
-%!error stepwisefit (X,y,'Keep',[true false])
+%!error <stepwisefit: Keep length must match number of predictors> ...
+%!       stepwisefit (randn (20,4), randn (20,1), 'Keep', [true false])
 
 ## Test input validation
 %!error <stepwisefit: at least two input arguments required> ...
 %!       stepwisefit ()
 %!error <stepwisefit: X must be a matrix.> ...
 %!       stepwisefit (ones (2,2,2), [1;2])
-%!error <stepwisefit: X and Y must have the same number of rows> ...
+%!error <stepwisefit: X and Y must have the same number of rows.> ...
 %!       stepwisefit (ones (3,2), ones (2,1))
 %!error <stepwisefit: unrecognized input arguments> ...
 %!       stepwisefit (randn (10,2), randn (10,1), 'UnknownOpt', 5)
@@ -690,11 +688,11 @@ endfunction
 
 %!test
 %! ## Edge cases with empty arrays
-%! b = stepwisefit (zeros (0, 3), zeros (0, 1));
+%! b = stepwisefit (zeros (0, 3), zeros (0, 1), 'Display', 'off');
 %! assert_equal (size (b), [3 1]);
 %! assert_equal (isnan (b), true (3, 1));
 %!
-%!error <stepwisefit: Y must be a column vector.> stepwisefit ([], [])
+%!error <stepwisefit: Y must be a column vector.> stepwisefit ([], [], 'Display', 'off')
 %!error <stepwisefit: Scale must be 'on' or 'off'> ...
 %!       stepwisefit (randn (10,2), randn (10,1), 'Scale', 123)
 %!error <stepwisefit: PEnter must be a scalar strictly between 0 and 1> ...
