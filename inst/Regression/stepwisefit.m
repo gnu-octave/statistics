@@ -195,7 +195,8 @@ endif
 
   ## Validate PRemove (if provided)
   if (! isempty (PRemove))
-    if (! (isscalar (PRemove) && isnumeric (PRemove) && PRemove > 0 && PRemove < 1))
+    if (! (isscalar (PRemove) && isnumeric (PRemove) && PRemove > 0
+           && PRemove < 1))
       error ("stepwisefit: PRemove must be a scalar strictly between 0 and 1");
     endif
     if (PRemove < PEnter)
@@ -204,7 +205,8 @@ endif
   endif
 
   ## Validate MaxIter
-  if (! (isscalar (MaxIter) && isnumeric (MaxIter) && MaxIter > 0 && fix (MaxIter) == MaxIter))
+  if (! (isscalar (MaxIter) && isnumeric (MaxIter) && MaxIter > 0
+         && fix (MaxIter) == MaxIter))
     error ("stepwisefit: MaxIter must be a positive integer");
   endif
 
@@ -225,9 +227,11 @@ endif
                     'SStotal', 0, 'SSresid', 0, 'fstat', NaN, 'pval', NaN, ...
                     'rmse', NaN, 'intercept', 0, 'wasnan', wasnan, ...
                     'xr', zeros(0, p), 'yr', zeros(0, 1), 'B', NaN (p, 1), ...
-                    'SE', NaN (p, 1), 'TSTAT', NaN (p, 1), 'PVAL', NaN (p, 1), ...
+                    'SE', NaN (p, 1), 'TSTAT', NaN (p, 1), ...
+                    'PVAL', NaN (p, 1), ...
                     'covb', NaN (p, p));
-    history = struct ('B', zeros (p, 0), 'rmse', zeros (0, 0), 'df0', zeros (0, 0), 'in', false (0, p));
+    history = struct ('B', zeros (p, 0), 'rmse', zeros (0, 0), ...
+                      'df0', zeros (0, 0), 'in', false (0, p));
     nextstep = 0;
     return;
   endif
@@ -692,7 +696,8 @@ endfunction
 %! assert_equal (size (b), [3 1]);
 %! assert_equal (isnan (b), true (3, 1));
 %!
-%!error <stepwisefit: Y must be a column vector.> stepwisefit ([], [], 'Display', 'off')
+%!error <stepwisefit: Y must be a column vector.> ...
+%!       stepwisefit ([], [], 'Display', 'off')
 %!error <stepwisefit: Scale must be 'on' or 'off'> ...
 %!       stepwisefit (randn (10,2), randn (10,1), 'Scale', 123)
 %!error <stepwisefit: PEnter must be a scalar strictly between 0 and 1> ...
