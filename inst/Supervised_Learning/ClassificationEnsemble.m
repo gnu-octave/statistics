@@ -211,8 +211,9 @@ classdef ClassificationEnsemble
     ## Ensemble method
     ##
     ## @qcode{'AdaBoostM1'}, @qcode{'AdaBoostM2'}, @qcode{'GentleBoost'},
-    ## @qcode{'LogitBoost'}, @qcode{'RUSBoost'}, @qcode{'TotalBoost'},
-    ## @qcode{'Bag'} or @qcode{'Subspace'}.  This property is read-only.
+    ## @qcode{'LogitBoost'}, @qcode{'RUSBoost'}, @qcode{'LPBoost'},
+    ## @qcode{'TotalBoost'}, @qcode{'Bag'} or @qcode{'Subspace'}.  This
+    ## property is read-only.
     ##
     ## @end deftp
     Method = '';
@@ -246,9 +247,9 @@ classdef ClassificationEnsemble
     ## A column with one element per learner: the weighted classification error
     ## for AdaBoostM1, the weighted pseudo-loss for AdaBoostM2 and RUSBoost, and
     ## the weighted mean squared error of the regression tree for GentleBoost
-    ## and LogitBoost.  For TotalBoost a matrix with a row per learner: its
-    ## margin on each observation, and its edge last.  Empty for Bag.  This
-    ## property is read-only.
+    ## and LogitBoost.  For LPBoost and TotalBoost a matrix with a row per
+    ## learner: its margin on each observation, and its edge last.  Empty for
+    ## Bag.  This property is read-only.
     ##
     ## @end deftp
     FitInfo = [];
@@ -349,7 +350,7 @@ classdef ClassificationEnsemble
     AllCombinations = false;  # whether Subspace takes every combination
     RatioToSmallest = [];  # RUSBoost's class sample sizes over the smallest
     Resampling = false;  # whether a boosting method resamples its rows
-    MarginPrecision = 0.01;  # TotalBoost's gap below the smallest edge
+    MarginPrecision = 0.01;  # LPBoost's and TotalBoost's edge tolerance
   endproperties
 
   methods (Hidden)
@@ -554,9 +555,9 @@ classdef ClassificationEnsemble
 
       ## The method, by default the one MATLAB chooses for the class count.
       methods2 = {'AdaBoostM1', 'GentleBoost', 'LogitBoost'};
-      known = [methods2, {'AdaBoostM2', 'RUSBoost', 'TotalBoost', 'Bag', ...
-                          'Subspace'}];
-      later = {'LPBoost', 'RobustBoost'};
+      known = [methods2, {'AdaBoostM2', 'RUSBoost', 'LPBoost', ...
+                          'TotalBoost', 'Bag', 'Subspace'}];
+      later = {'RobustBoost'};
       if (isempty (Method))
         if (K == 2)
           Method = 'LogitBoost';
@@ -576,13 +577,13 @@ classdef ClassificationEnsemble
       isbag = strcmp (Method, 'Bag');
       issub = strcmp (Method, 'Subspace');
       resampled = Resample || ! isempty (FResample) || ! isempty (Replace);
-      istotal = strcmp (Method, 'TotalBoost');
+      ismargin = any (strcmp (Method, {'LPBoost', 'TotalBoost'}));
       if (resampled && strcmp (Method, 'RUSBoost'))
         error (strcat ("%s: the 'RUSBoost' method cannot resample the", ...
                        " observations."), caller);
-      elseif (resampled && istotal)
-        error (strcat ("%s: resampling with the 'TotalBoost' method is not", ...
-                       " implemented."), caller);
+      elseif (resampled && ismargin)
+        error (strcat ("%s: resampling with the '%s' method is not", ...
+                       " implemented."), caller, Method);
       elseif (resampled && issub)
         error (strcat ("%s: the 'Subspace' method cannot resample the", ...
                        " observations."), caller);
@@ -664,21 +665,21 @@ classdef ClassificationEnsemble
         error (strcat ("%s: 'RatioToSmallest' applies only to the", ...
                        " 'RUSBoost' method."), caller);
       endif
-      if (istotal)
+      if (ismargin)
         if (! isempty (LearnRate))
-          error (strcat ("%s: 'LearnRate' cannot be used with the", ...
-                         " 'TotalBoost' method."), caller);
+          error ("%s: 'LearnRate' cannot be used with the '%s' method.", ...
+                 caller, Method);
         endif
         if (exist ('__glpk__') == 0)
-          error (strcat ("%s: the 'TotalBoost' method needs GLPK, which", ...
-                         " this Octave was built without."), caller);
+          error (strcat ("%s: the '%s' method needs GLPK, which this", ...
+                         " Octave was built without."), caller, Method);
         endif
         if (isempty (MarginPrecision))
           MarginPrecision = 0.01;
         endif
       elseif (! isempty (MarginPrecision))
         error (strcat ("%s: 'MarginPrecision' applies only to the", ...
-                       " 'TotalBoost' method."), caller);
+                       " 'LPBoost' and 'TotalBoost' methods."), caller);
       endif
 
       if (issub)
@@ -786,7 +787,7 @@ classdef ClassificationEnsemble
           this.BagReplace = Replace;
           this.BagInBag = false (F.n, 0);
         endif
-        if (istotal)
+        if (ismargin)
           this.MarginPrecision = MarginPrecision;
           this.ModelParameters.MarginPrecision = MarginPrecision;
           this.FitInfo = zeros (0, F.n + 1);
@@ -1115,6 +1116,8 @@ classdef ClassificationEnsemble
             endif
           case 'LogitBoost'
             this.State = struct ('d0', d0, 'F', zeros (n, 1), 'w', d0);
+          case 'LPBoost'
+            this.State = struct ('d', d0, 'ghat', Inf, 'U', zeros (0, n));
           case 'TotalBoost'
             this.State = struct ('d0', d0, 'd', d0, 'ghat', Inf, ...
                                  'U', zeros (0, n));
@@ -1331,6 +1334,35 @@ classdef ClassificationEnsemble
               this.State.F += LR / 2 * h;
             endif
 
+          case 'LPBoost'
+            ## As MATLAB R2024a grows LPBoost: the linear program over the
+            ## trees with the new one gives the least largest edge; when the
+            ## smallest edge is no more than MarginPrecision above it, the new
+            ## tree is not kept and the fit stops.  Otherwise the program gives
+            ## the learner weights, and as its dual the next observation
+            ## weights.
+            d = this.State.d;
+            T = compact (ClassificationTree (this.X, this.Y, 'Weights', d, ...
+                                             'ClassNames', this.ClassNames, ...
+                                             ctree{:}, this.TreeArgs{:}));
+            mg = treeMargins (T, this.X, this.ClassNames, g);
+            e = mg * d;
+            ghat = min (this.State.ghat, e);
+            U = [this.State.U; mg];
+            [gamma, a, dn] = minMaxEdge (U);
+            if (ghat - gamma <= this.MarginPrecision)
+              this = stopPerfect (this, strcat ("No improvement in the", ...
+                                                " last iteration."));
+              break;
+            endif
+            this.Trained{end+1,1} = T;
+            this.TrainedWeights = a;
+            this.FitInfo(end+1,:) = [mg, e];
+            this.NumTrained = numel (this.Trained);
+            this.State.d = dn;
+            this.State.ghat = ghat;
+            this.State.U = U;
+
           case 'TotalBoost'
             ## As MATLAB R2024a grows TotalBoost: the tree's margins give its
             ## edge; the fit stops when the least largest edge over the trees
@@ -1342,13 +1374,7 @@ classdef ClassificationEnsemble
             T = compact (ClassificationTree (this.X, this.Y, 'Weights', d, ...
                                              'ClassNames', this.ClassNames, ...
                                              ctree{:}, this.TreeArgs{:}));
-            [~, s] = predict (T, this.X);
-            P = zeros (n, K);
-            P(:, labelIndices (this.ClassNames, T.ClassNames)) = s;
-            tru = sub2ind ([n, K], (1:n)', g);
-            other = P;
-            other(tru) = -Inf;
-            mg = (P(tru) - max (other, [], 2))';
+            mg = treeMargins (T, this.X, this.ClassNames, g);
             e = mg * d;
             ghat = min (this.State.ghat, e);
             U = [this.State.U; mg];
@@ -1472,7 +1498,7 @@ classdef ClassificationEnsemble
         case 'RUSBoost'
           tail = strcat ("Element t of this vector is the weighted loss", ...
                          " from hypothesis t.");
-        case 'TotalBoost'
+        case {'LPBoost', 'TotalBoost'}
           l1 = strcat ("Matrix of size NumTrained-by-(N+1), where N is the", ...
                        " number of training observations");
           l2 = strcat ("and NumTrained is the number of learned weak", ...
@@ -1536,24 +1562,43 @@ function idx = rusSample (g, d, ratio)
 
 endfunction
 
+## The margins of tree T on X, a row: the probability it gives each
+## observation's class, of index G, less the largest it gives another.
+function mg = treeMargins (T, X, ClassNames, g)
+
+  n = rows (X);
+  K = classCount (ClassNames);
+  [~, s] = predict (T, X);
+  P = zeros (n, K);
+  P(:, labelIndices (ClassNames, T.ClassNames)) = s;
+  tru = sub2ind ([n, K], (1:n)', g);
+  other = P;
+  other(tru) = -Inf;
+  mg = (P(tru) - max (other, [], 2))';
+
+endfunction
+
 ## The least, over distributions D on the observations, of the largest edge
-## U * D of the learners, one row of margins each, as GAMMA, and from its dual
-## the learner weights A that maximise the smallest margin, summing to one.
-function [gamma, a] = minMaxEdge (U)
+## U * D of the learners, one row of margins each, as GAMMA, with such a D,
+## and from its dual the learner weights A that maximise the smallest margin,
+## summing to one.
+function [gamma, a, d] = minMaxEdge (U)
 
   [T, n] = size (U);
   c = [zeros(n, 1); 1];
   A = [U, -ones(T, 1); ones(1, n), 0];
   b = [zeros(T, 1); 1];
-  [~, gamma, ~, extra] = glpk (c, A, b, [zeros(n, 1); -Inf], [], ...
+  [x, gamma, ~, extra] = glpk (c, A, b, [zeros(n, 1); -Inf], [], ...
                                [repmat('U', 1, T), 'S'], ...
                                repmat ('C', 1, n + 1), 1);
-  a = max (-extra.lambda(1:T), 0);
+  a = max (-extra.lambda(1:T), 0) + 0;
   if (sum (a) > 0)
     a /= sum (a);
   else
     a = ones (T, 1) / T;
   endif
+  d = max (x(1:n), 0);
+  d /= sum (d);
 
 endfunction
 

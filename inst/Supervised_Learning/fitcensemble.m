@@ -60,6 +60,20 @@
 ## weights are then multiplied by the mean over those classes of
 ## @code{exp (-weight * (1 + h_true - h_k))}, and the scores are as for
 ## AdaBoostM2.  A perfect tree is kept as for AdaBoostM2.
+## @item @qcode{'LPBoost'}
+## Two or more classes.  Each tree is grown with the weights @var{d}, and its
+## margins and edge are as for TotalBoost.  A linear program over the trees
+## with the new one, solved by GLPK, gives the least over distributions of
+## their largest edge; when the smallest edge is no more than
+## @qcode{'MarginPrecision'} above it, the new tree is not kept and the fit
+## stops.  Otherwise the program gives the learner weights that maximise the
+## smallest margin, and as its dual the next weights @var{d}.  The scores are
+## as for TotalBoost.  Where the program has several solutions, MATLAB and
+## this package may choose different ones: the learner weights, and the
+## weights @var{d} with the trees grown on them, then differ, and so may the
+## number of trees kept.  MATLAB R2024a keeps a tree only when that gap is also
+## above 0.01, so a @qcode{'MarginPrecision'} below 0.01 acts there as 0.01;
+## here it is taken as given.
 ## @item @qcode{'TotalBoost'}
 ## Two or more classes.  Each tree is grown with the weights @var{d}; its
 ## margin on an observation is the probability it gives the observation's
@@ -126,8 +140,8 @@
 ## @headitem @var{Name} @tab @tab @var{Value}
 ## @item @qcode{'Method'} @tab @tab @qcode{'AdaBoostM1'},
 ## @qcode{'AdaBoostM2'}, @qcode{'RUSBoost'}, @qcode{'GentleBoost'},
-## @qcode{'LogitBoost'}, @qcode{'TotalBoost'}, @qcode{'Bag'} or
-## @qcode{'Subspace'}.  The default is
+## @qcode{'LogitBoost'}, @qcode{'LPBoost'}, @qcode{'TotalBoost'},
+## @qcode{'Bag'} or @qcode{'Subspace'}.  The default is
 ## @qcode{'LogitBoost'} for two classes and @qcode{'AdaBoostM2'} for more.
 ## @item @qcode{'NumLearningCycles'} @tab @tab A positive integer, the number
 ## of learners to grow, or for Subspace @qcode{'AllPredictorCombinations'}.
@@ -150,8 +164,9 @@
 ## with one per class, the size of each class's sample relative to the
 ## smallest class.  The default is 1 for every class.  RUSBoost only.
 ## @item @qcode{'MarginPrecision'} @tab @tab A number from 0 to 1, how far
-## below the smallest edge TotalBoost holds every edge.  The default is 0.01.
-## TotalBoost only.
+## above the linear program LPBoost needs the smallest edge to stay, and how
+## far below the smallest edge TotalBoost holds every edge.  The default is
+## 0.01.  LPBoost and TotalBoost only.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
 ## learner draws, greater than 0 and no greater than 1.  The default is 1.
 ## Given with a boosting method, the ensemble resamples.
@@ -182,9 +197,9 @@
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{ClassificationPartitionedEnsemble}.
 ##
-## The methods @qcode{'LPBoost'} and @qcode{'RobustBoost'}, categorical
-## predictors, binning and hyperparameter optimization are not implemented,
-## and an option asking for one of them is refused.
+## The method @qcode{'RobustBoost'}, categorical predictors, binning and
+## hyperparameter optimization are not implemented, and an option asking for
+## one of them is refused.
 ##
 ## @seealso{ClassificationEnsemble, ClassificationBaggedEnsemble,
 ## CompactClassificationEnsemble, templateTree, TreeBagger}
@@ -226,6 +241,7 @@ function Mdl = fitcensemble (X, Y, varargin)
   named = ischar (method) && isrow (method);
   isbag = named && strcmpi (method, 'Bag');
   if (resampled && ! (named && any (strcmpi (method, {'Bag', 'RUSBoost', ...
+                                                      'LPBoost', ...
                                                       'TotalBoost', ...
                                                       'Subspace'}))))
     isbag = true;
@@ -814,11 +830,65 @@ endfunction
 %! endfor
 %! assert_equal (s, man, 1e-12);
 
+%!test  # MATLAB parity: LPBoost edges and margins up to its first tie
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'LPBoost', 'NumLearningCycles', 4, ...
+%!                     'Learners', St);
+%! assert_equal (Mdl.NumTrained, 4);
+%! assert_equal (size (Mdl.FitInfo), [4, 101]);
+%! assert_equal (Mdl.FitInfo(1,1), 0.814814814814815, 1e-14);
+%! assert_equal (Mdl.FitInfo(:,end)', [0.77938808373591, 1, ...
+%!               0.999999999999991, 0.999999999999966], 1e-12);
+%! assert_equal (Mdl.ModelParameters.MarginPrecision, 0.01);
+%! assert_equal (Mdl.CombineWeights, 'WeightedSum');
+%! assert_equal (numel (Mdl.FitInfoDescription), 4);
+
+%!test  # MATLAB parity: LPBoost stops on the gap to the linear program
+%! Y = [repmat({'a'}, 60, 1); repmat({'b'}, 40, 1)];
+%! Mdl = fitcensemble (ones (100, 1), Y, 'Method', 'LPBoost', ...
+%!                     'NumLearningCycles', 4, 'Learners', St);
+%! assert_equal (Mdl.NumTrained, 2);
+%! assert_equal (Mdl.ReasonForTermination, ...
+%!               'No improvement in the last iteration.');
+%! assert_equal (Mdl.FitInfo(:,end)', [0.04, 1], 1e-12);
+%! assert_equal (Mdl.TrainedWeights', [5/6, 1/6], 1e-9);
+
+%!test  # MATLAB parity: a gap within MarginPrecision leaves the tree out
+%! Y = [repmat({'a'}, 60, 1); repmat({'b'}, 40, 1)];
+%! Mdl = fitcensemble (ones (100, 1), Y, 'Method', 'LPBoost', ...
+%!                     'NumLearningCycles', 4, 'Learners', St, ...
+%!                     'MarginPrecision', 0.05);
+%! assert_equal (Mdl.NumTrained, 1);
+%! assert_equal (Mdl.TrainedWeights, 1);
+
+%!test  # MATLAB parity: the first LPBoost tree is held to the same gap
+%! Y = [repmat({'a'}, 52, 1); repmat({'b'}, 48, 1)];
+%! Mdl = fitcensemble (ones (100, 1), Y, 'Method', 'LPBoost', ...
+%!                     'NumLearningCycles', 4, 'Learners', St, ...
+%!                     'MarginPrecision', 0.05);
+%! assert_equal (Mdl.NumTrained, 0);
+%! assert_equal (size (Mdl.FitInfo), [0, 101]);
+
+%!test  # LPBoost weights maximise the smallest margin, summing to one
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'LPBoost', 'NumLearningCycles', ...
+%!                     20, 'Learners', St, 'MarginPrecision', 0.5);
+%! assert_equal (sum (Mdl.TrainedWeights), 1, 1e-12);
+%! assert_equal (min (Mdl.FitInfo(:,1:end-1)' * Mdl.TrainedWeights), 0, 1e-12);
+
+%!test  # MATLAB parity: a three-class LPBoost starts from the class margins
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'LPBoost', ...
+%!                     'NumLearningCycles', 3, 'Learners', St);
+%! assert_equal (Mdl.FitInfo(:,end)', [1/3, 1, 1], 1e-12);
+
+%!error<ClassificationEnsemble: 'LearnRate' cannot be used with the 'LPBoost' method.> ...
+%! fitcensemble (Xt, Yt, 'Method', 'LPBoost', 'LearnRate', 0.5)
+%!error<ClassificationEnsemble: resampling with the 'LPBoost' method is not implemented.> ...
+%! fitcensemble (Xt, Yt, 'Method', 'LPBoost', 'Resample', 'on')
 %!error<ClassificationEnsemble: 'LearnRate' cannot be used with the 'TotalBoost' method.> ...
 %! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'LearnRate', 0.5)
 %!error<ClassificationEnsemble: 'MarginPrecision' must be a number from 0 to 1.> ...
 %! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'MarginPrecision', 2)
-%!error<ClassificationEnsemble: 'MarginPrecision' applies only to the 'TotalBoost' method.> ...
+%!error<ClassificationEnsemble: 'MarginPrecision' applies only to the 'LPBoost' and 'TotalBoost' methods.> ...
 %! fitcensemble (Xt, Yt, 'Method', 'AdaBoostM1', 'MarginPrecision', 0.1)
 %!error<ClassificationEnsemble: resampling with the 'TotalBoost' method is not implemented.> ...
 %! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'Resample', 'on')

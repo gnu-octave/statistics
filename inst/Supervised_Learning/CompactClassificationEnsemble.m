@@ -685,9 +685,9 @@ classdef CompactClassificationEnsemble
         case {'GentleBoost', 'LogitBoost'}
           h = predict (mdl, X);
           G = [h, -h];
-        case 'TotalBoost'
-          ## A TotalBoost learner scores a class with twice its probability
-          ## less one, as in MATLAB R2024a.
+        case {'LPBoost', 'TotalBoost'}
+          ## An LPBoost or TotalBoost learner scores a class with twice its
+          ## probability less one, as in MATLAB R2024a.
           [~, s] = predict (mdl, X);
           G = -ones (rows (X), K);
           G(:, labelIndices (this.ClassNames, mdl.ClassNames)) = 2 * s - 1;

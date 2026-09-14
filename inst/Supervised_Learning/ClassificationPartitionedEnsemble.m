@@ -337,7 +337,7 @@ classdef ClassificationPartitionedEnsemble
         if (Mdl.AllCombinations)
           fargs{4} = 'AllPredictorCombinations';
         endif
-      elseif (strcmp (Mdl.Method, 'TotalBoost'))
+      elseif (any (strcmp (Mdl.Method, {'LPBoost', 'TotalBoost'})))
         fargs(end+1:end+2) = {'MarginPrecision', Mdl.MarginPrecision};
       elseif (! strcmp (Mdl.Method, 'Bag'))
         fargs(end+1:end+2) = {'LearnRate', mp.LearnRate};
