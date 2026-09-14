@@ -749,12 +749,6 @@ classdef ClassificationECOC
           if (! strcmp (tmpl.Type, 'classification'))
             errmsg = "templates of regression type are not supported.";
             return;
-          elseif (strcmp (tmpl.Method, 'RUSBoost'))
-            ## MATLAB accepts it and then cannot read its scores with any
-            ## binary loss; refused here, see fitcecoc.
-            errmsg = strcat ("RUSBoost ensembles cannot be binary", ...
-                             " learners.");
-            return;
           endif
         elseif (! any (strcmp (tolower (tmpl.Method), known)))
           errmsg = strcat ("'", tmpl.Method, "' is not a binary learner.");
@@ -769,7 +763,8 @@ classdef ClassificationECOC
     ## The interval a learner scores on, which is what decides the losses its
     ## scores can be read with.  Measured on R2024a across all seven learners
     ## and the ensembles: a boosted ensemble scores on the whole line, and a
-    ## bagged or random subspace one with class probabilities.
+    ## bagged or random subspace one with class probabilities.  A RUSBoost
+    ## one scores in [0,1] once CompactClassificationECOC scales it.
     function range = ecocScoreRange (method)
 
       if (any (strcmpi (method, {'SVM', 'Linear', 'Kernel', 'AdaBoostM1', ...

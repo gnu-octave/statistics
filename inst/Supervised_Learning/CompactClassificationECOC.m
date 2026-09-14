@@ -568,13 +568,28 @@ classdef CompactClassificationECOC
     ## The score each binary learner gives the class it calls +1, which is
     ## always the second of its two classes: the learners are fitted on -1
     ## and +1 and a learner lists its classes in order.
+    ##
+    ## A RUSBoost ensemble scores with the weighted sum of its trees' class
+    ## probabilities, which no binary loss can read.  Divided by the total
+    ## weight of the trees it is their weighted mean, a probability like a
+    ## bagged ensemble's, as R's ebmc and adabag and scikit-learn scale a
+    ## boosted ensemble's weighted votes.  MATLAB cannot predict with it.
     function S = binaryScores (this, XC)
 
       L = numel (this.BinaryLearners);
       S = zeros (rows (XC), L);
       for j = 1:L
-        [~, sc] = predict (this.BinaryLearners{j}, XC);
+        mdl = this.BinaryLearners{j};
+        [~, sc] = predict (mdl, XC);
         S(:,j) = sc(:,2);
+        if (any (strcmp (class (mdl), {'ClassificationEnsemble', ...
+                                        'CompactClassificationEnsemble'}))
+            && strcmp (mdl.Method, 'RUSBoost'))
+          total = sum (mdl.TrainedWeights);
+          if (total > 0)
+            S(:,j) /= total;
+          endif
+        endif
       endfor
 
     endfunction

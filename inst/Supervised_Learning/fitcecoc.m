@@ -57,7 +57,7 @@
 ## AdaBoostM1 or GentleBoost ensemble, @qcode{'binodeviance'} for a
 ## LogitBoost one, and otherwise @qcode{'hinge'} for one scoring on
 ## @math{(-Inf,+Inf)} and @qcode{'quadratic'} for one scoring on @math{[0,1]},
-## as a bagged or random subspace ensemble does.
+## as a bagged, random subspace or RUSBoost ensemble does.
 ##
 ## @item @qcode{'ClassNames'} @tab @tab The classes to fit, and the order
 ## the rows of the coding matrix, @code{Prior} and @code{Cost} take them in.
@@ -90,14 +90,23 @@
 ## fitting this package does not have yet.
 ##
 ## An ensemble template may name any classification method of
-## @code{fitcensemble} but RUSBoost, whose scores MATLAB accepts and then
-## cannot read with any binary loss; a regression template is refused, as in
-## MATLAB.  A binary learner that cannot be fitted, such as an AdaBoostM2
-## ensemble, which needs three classes, stops the fit with its own error,
-## where MATLAB warns and predicts the majority class.  An AdaBoostM1 learner
-## whose first tree separates its two classes keeps that tree, as
-## @code{fitcensemble} does; MATLAB keeps no tree and never predicts those
-## classes from it.
+## @code{fitcensemble}; a regression template is refused, as in MATLAB.
+##
+## A RUSBoost ensemble scores each class with the weighted sum of its trees'
+## class probabilities, which no binary loss can read: MATLAB sets the loss
+## to @qcode{'unknown'} and then cannot predict.  Here those scores, and the
+## binary scores @code{predict} returns, are divided by the total weight of
+## the trees, which gives the weighted mean of their class probabilities, and
+## are read with @qcode{'quadratic'} as a bagged ensemble's are.  This follows
+## R's @code{ebmc} and @code{adabag} packages and scikit-learn, whose
+## @code{AdaBoostClassifier} and imbalanced-learn's @code{RUSBoostClassifier}
+## built on it scale a boosted ensemble's weighted votes the same way.
+##
+## A binary learner that cannot be fitted, such as an AdaBoostM2 ensemble, which
+## needs three classes, stops the fit with its own error, where MATLAB warns and
+## predicts the majority class.  An AdaBoostM1 learner whose first tree
+## separates its two classes keeps that tree, as @code{fitcensemble} does;
+## MATLAB keeps no tree and never predicts those classes from it.
 ##
 ## @seealso{ClassificationECOC, CompactClassificationECOC, designecoc,
 ## templateSVM, templateTree}
@@ -332,10 +341,17 @@ endfunction
 %! CV = crossval (fitcecoc (meas, species, 'Learners', T), 'KFold', 3);
 %! assert_equal (class (CV), 'ClassificationPartitionedECOC');
 
-%!error<ClassificationECOC: RUSBoost ensembles cannot be binary learners.> ...
+%!test  # RUSBoost binary scores are the weighted mean of tree probabilities
 %! load fisheriris
-%! fitcecoc (meas, species, 'Learners', ...
-%!           templateEnsemble ('RUSBoost', 5, 'tree'))
+%! T = templateEnsemble ('RUSBoost', 5, templateTree ('MaxNumSplits', 1));
+%! Mdl = fitcecoc (meas, species, 'Learners', T);
+%! assert_equal (Mdl.BinaryLoss, 'quadratic');
+%! B = Mdl.BinaryLearners{1};
+%! [~, s] = predict (B, meas(51,:));
+%! [~, ~, PBScore] = predict (Mdl, meas(51,:));
+%! assert_equal (PBScore(1), s(2) / sum (B.TrainedWeights), 1e-14);
+%! assert_equal (all (PBScore >= 0 & PBScore <= 1), true);
+%! assert_equal (isfinite (resubLoss (Mdl)), true);
 %!error<ClassificationECOC: templates of regression type are not supported.> ...
 %! load fisheriris
 %! fitcecoc (meas, species, 'Learners', templateEnsemble ('LSBoost', 5, 'tree'))
