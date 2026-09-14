@@ -200,6 +200,7 @@ Supervised Learning
  svmpredict
  svmtrain
  templateDiscriminant
+ templateEnsemble
  templateKernel
  templateKNN
  templateLinear

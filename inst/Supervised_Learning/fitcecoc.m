@@ -42,17 +42,22 @@
 ##
 ## @item @qcode{'Learners'} @tab @tab The binary learner, either a name,
 ## @qcode{'svm'} (default), @qcode{'tree'}, @qcode{'knn'},
-## @qcode{'naivebayes'}, @qcode{'discriminant'}, @qcode{'linear'} or
-## @qcode{'kernel'}, or a template from @code{templateSVM} and its siblings,
-## which also carries the options that learner is to be fitted with.
+## @qcode{'naivebayes'}, @qcode{'discriminant'}, @qcode{'linear'},
+## @qcode{'kernel'} or @qcode{'ensemble'}, a LogitBoost ensemble of 100
+## trees, or a template from @code{templateSVM} and its siblings,
+## @code{templateEnsemble} among them, which also carries the options that
+## learner is to be fitted with.
 ##
 ## @item @qcode{'Coding'} @tab @tab The coding design, either a name
 ## @code{designecoc} accepts, @qcode{'onevsone'} by default, or a coding
 ## matrix given outright, which sets @code{CodingName} to @qcode{'custom'}.
 ##
 ## @item @qcode{'BinaryLoss'} @tab @tab The loss the binary scores are read
-## with.  The default follows the learner: @qcode{'hinge'} for one scoring on
-## @math{(-Inf,+Inf)} and @qcode{'quadratic'} for one scoring on @math{[0,1]}.
+## with.  The default follows the learner: @qcode{'exponential'} for an
+## AdaBoostM1 or GentleBoost ensemble, @qcode{'binodeviance'} for a
+## LogitBoost one, and otherwise @qcode{'hinge'} for one scoring on
+## @math{(-Inf,+Inf)} and @qcode{'quadratic'} for one scoring on @math{[0,1]},
+## as a bagged or random subspace ensemble does.
 ##
 ## @item @qcode{'ClassNames'} @tab @tab The classes to fit, and the order
 ## the rows of the coding matrix, @code{Prior} and @code{Cost} take them in.
@@ -83,6 +88,16 @@
 ## @code{'FitPosterior'} is refused rather than quietly ignored: it installs
 ## a fitted score transform on each binary learner, which needs the posterior
 ## fitting this package does not have yet.
+##
+## An ensemble template may name any classification method of
+## @code{fitcensemble} but RUSBoost, whose scores MATLAB accepts and then
+## cannot read with any binary loss; a regression template is refused, as in
+## MATLAB.  A binary learner that cannot be fitted, such as an AdaBoostM2
+## ensemble, which needs three classes, stops the fit with its own error,
+## where MATLAB warns and predicts the majority class.  An AdaBoostM1 learner
+## whose first tree separates its two classes keeps that tree, as
+## @code{fitcensemble} does; MATLAB keeps no tree and never predicts those
+## classes from it.
 ##
 ## @seealso{ClassificationECOC, CompactClassificationECOC, designecoc,
 ## templateSVM, templateTree}
@@ -259,3 +274,68 @@ endfunction
 %!error<ClassificationECOC: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcecoc (meas, species, 'ClassNames', {'setosa'; 'rose'})
+
+%!test  # MATLAB parity: GentleBoost ensembles as binary learners
+%! load fisheriris
+%! T = templateEnsemble ('GentleBoost', 5, templateTree ('MaxNumSplits', 1));
+%! Mdl = fitcecoc (meas, species, 'Learners', T);
+%! assert_equal (Mdl.BinaryLoss, 'exponential');
+%! assert_equal (resubLoss (Mdl), 1/30, 1e-14);
+%! [~, NegLoss] = predict (Mdl, meas([51, 120],:));
+%! assert_equal (NegLoss, [-74.2065795512883, -0.017199167383083, ...
+%!                         -4.030127061700748; -74.2065795512883, ...
+%!                         -0.197045791294161, -0.32160454535994], 1e-12);
+
+%!test  # MATLAB parity: LogitBoost ensembles as binary learners
+%! load fisheriris
+%! T = templateEnsemble ('LogitBoost', 5, templateTree ('MaxNumSplits', 1));
+%! Mdl = fitcecoc (meas, species, 'Learners', T);
+%! assert_equal (Mdl.BinaryLoss, 'binodeviance');
+%! assert_equal (resubLoss (Mdl), 1/30, 1e-14);
+%! [~, NegLoss] = predict (Mdl, meas([51, 120],:));
+%! assert_equal (NegLoss, [-4.844912733252615, -0.002477430762383, ...
+%!                         -1.86787026045674; -4.844912733252615, ...
+%!                         -0.163235262337723, -0.365681737695726], 1e-12);
+
+%!test  # MATLAB parity: the weights of an AdaBoostM1 binary learner
+%! load fisheriris
+%! T = templateEnsemble ('AdaBoostM1', 5, templateTree ('MaxNumSplits', 1));
+%! Mdl = fitcecoc (meas, species, 'Learners', T);
+%! assert_equal (Mdl.BinaryLoss, 'exponential');
+%! assert_equal (Mdl.BinaryLearners{3}.TrainedWeights', ...
+%!               [1.375767656520975, 0.993534110774411, ...
+%!                0.883434373403998, 0.554364192108758, ...
+%!                0.268194447432047], 1e-12);
+
+%!test  # MATLAB parity: bagged and random subspace ensembles read posteriors
+%! load fisheriris
+%! Mdl = fitcecoc (meas, species, 'Learners', ...
+%!                 templateEnsemble ('Bag', 3, 'tree'));
+%! assert_equal (Mdl.BinaryLoss, 'quadratic');
+%! assert_equal (class (Mdl.BinaryLearners{1}), 'ClassificationBaggedEnsemble');
+%! Mdl = fitcecoc (meas, species, 'Learners', ...
+%!                 templateEnsemble ('Subspace', 3, 'knn', ...
+%!                                   'NPredToSample', 2));
+%! assert_equal (Mdl.BinaryLoss, 'quadratic');
+
+%!test  # MATLAB parity: an ensemble named as the learner is LogitBoost
+%! load fisheriris
+%! Mdl = fitcecoc (meas, species, 'Learners', 'ensemble');
+%! assert_equal (Mdl.ModelParameters.BinaryLearners.Method, 'LogitBoost');
+%! assert_equal (Mdl.ModelParameters.BinaryLearners.NLearn, 100);
+%! assert_equal (Mdl.BinaryLoss, 'binodeviance');
+%! assert_equal (Mdl.BinaryLearners{1}.NumTrained, 100);
+
+%!test  # an ensemble of binary learners cross-validates
+%! load fisheriris
+%! T = templateEnsemble ('GentleBoost', 3, templateTree ('MaxNumSplits', 1));
+%! CV = crossval (fitcecoc (meas, species, 'Learners', T), 'KFold', 3);
+%! assert_equal (class (CV), 'ClassificationPartitionedECOC');
+
+%!error<ClassificationECOC: RUSBoost ensembles cannot be binary learners.> ...
+%! load fisheriris
+%! fitcecoc (meas, species, 'Learners', ...
+%!           templateEnsemble ('RUSBoost', 5, 'tree'))
+%!error<ClassificationECOC: templates of regression type are not supported.> ...
+%! load fisheriris
+%! fitcecoc (meas, species, 'Learners', templateEnsemble ('LSBoost', 5, 'tree'))

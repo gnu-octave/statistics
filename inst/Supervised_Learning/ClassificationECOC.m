@@ -419,11 +419,8 @@ classdef ClassificationECOC
       endfor
 
       if (isempty (BinaryLoss))
-        if (isequal (this.ScoreRange, [0, 1]))
-          BinaryLoss = 'quadratic';
-        else
-          BinaryLoss = 'hinge';
-        endif
+        BinaryLoss = ClassificationECOC.ecocDefaultLoss (tmpl.Method, ...
+                                                         this.ScoreRange);
       endif
       this.BinaryLoss     = BinaryLoss;
       this.ScoreTransform = ScoreTransform;
@@ -736,17 +733,30 @@ classdef ClassificationECOC
                 @templateLinear, @templateKernel};
       if (ischar (Learners) && isrow (Learners))
         k = find (strcmp (tolower (Learners), known));
-        if (isempty (k))
+        if (strcmpi (Learners, 'ensemble'))
+          ## MATLAB's default ensemble for a binary learner.
+          tmpl = templateEnsemble ('LogitBoost', 100, 'tree');
+        elseif (isempty (k))
           errmsg = strcat ("'", Learners, "' is not a binary learner.");
           return;
+        else
+          tmpl = makers{k} ();
         endif
-        tmpl = makers{k} ();
       elseif (isstruct (Learners) && isscalar (Learners)
               && isfield (Learners, 'Method'))
         tmpl = Learners;
-        if (isempty (find (strcmp (tolower (tmpl.Method), ...
-                                   strrep (known, 'naivebayes', ...
-                                           'naivebayes')))))
+        if (any (strcmp (tmpl.Method, ClassificationECOC.ensembleMethods ())))
+          if (! strcmp (tmpl.Type, 'classification'))
+            errmsg = "templates of regression type are not supported.";
+            return;
+          elseif (strcmp (tmpl.Method, 'RUSBoost'))
+            ## MATLAB accepts it and then cannot read its scores with any
+            ## binary loss; refused here, see fitcecoc.
+            errmsg = strcat ("RUSBoost ensembles cannot be binary", ...
+                             " learners.");
+            return;
+          endif
+        elseif (! any (strcmp (tolower (tmpl.Method), known)))
           errmsg = strcat ("'", tmpl.Method, "' is not a binary learner.");
           return;
         endif
@@ -757,14 +767,44 @@ classdef ClassificationECOC
     endfunction
 
     ## The interval a learner scores on, which is what decides the losses its
-    ## scores can be read with.  Measured on R2024a across all seven.
+    ## scores can be read with.  Measured on R2024a across all seven learners
+    ## and the ensembles: a boosted ensemble scores on the whole line, and a
+    ## bagged or random subspace one with class probabilities.
     function range = ecocScoreRange (method)
 
-      if (any (strcmpi (method, {'SVM', 'Linear', 'Kernel'})))
+      if (any (strcmpi (method, {'SVM', 'Linear', 'Kernel', 'AdaBoostM1', ...
+                                 'AdaBoostM2', 'GentleBoost', ...
+                                 'LogitBoost', 'LPBoost', 'TotalBoost', ...
+                                 'RobustBoost'})))
         range = [-Inf, Inf];
       else
         range = [0, 1];
       endif
+
+    endfunction
+
+    ## The loss a learner's scores are read with when none is asked for, as
+    ## R2024a chooses it.
+    function loss = ecocDefaultLoss (method, range)
+
+      if (any (strcmp (method, {'AdaBoostM1', 'GentleBoost'})))
+        loss = 'exponential';
+      elseif (strcmp (method, 'LogitBoost'))
+        loss = 'binodeviance';
+      elseif (isequal (range, [0, 1]))
+        loss = 'quadratic';
+      else
+        loss = 'hinge';
+      endif
+
+    endfunction
+
+    ## The methods an ensemble template may name.
+    function names = ensembleMethods ()
+
+      names = {'AdaBoostM1', 'AdaBoostM2', 'GentleBoost', 'LogitBoost', ...
+               'LPBoost', 'TotalBoost', 'RobustBoost', 'RUSBoost', ...
+               'Subspace', 'Bag', 'LSBoost'};
 
     endfunction
 
@@ -773,9 +813,19 @@ classdef ClassificationECOC
     ## the score the decoding reads.
     function Mdl = ecocFitBinary (tmpl, X, y, w, pnames)
 
+      ## An ensemble template carries the method, cycles and learners under
+      ## names of its own, which the ensemble takes under fitcensemble's.
+      ensemble = any (strcmp (tmpl.Method, ...
+                              ClassificationECOC.ensembleMethods ()));
+      skip = {'Method', 'Type'};
       args = {};
+      if (ensemble)
+        skip(end+1:end+2) = {'NLearn', 'LearnerTemplates'};
+        args = {'Method', tmpl.Method, 'NumLearningCycles', tmpl.NLearn, ...
+                'Learners', tmpl.LearnerTemplates};
+      endif
       for [val, name] = tmpl
-        if (any (strcmp (name, {'Method', 'Type'})))
+        if (any (strcmp (name, skip)))
           continue;
         endif
         args(end+1:end+2) = {name, val};
@@ -790,6 +840,13 @@ classdef ClassificationECOC
         args(end+1:end+2) = {'Weights', w};
       endif
 
+      if (ensemble && strcmp (tmpl.Method, 'Bag'))
+        Mdl = ClassificationBaggedEnsemble (X, y, args{:});
+        return;
+      elseif (ensemble)
+        Mdl = ClassificationEnsemble (X, y, args{:});
+        return;
+      endif
       switch (tolower (tmpl.Method))
         case 'svm'
           Mdl = ClassificationSVM (X, y, args{:});
