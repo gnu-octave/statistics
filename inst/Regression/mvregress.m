@@ -437,9 +437,9 @@ endfunction
 
 %!test
 %! ## Edge cases with empty arrays
-%!fail ("mvregress ([], [])", ...
-%!      "mvregress: Y array is empty - cannot continue.")
-%!fail ("mvregress (zeros(0,3), zeros(0,1))", ...
-%!      "mvregress: Y array is empty - cannot continue.")
+%!error<mvregress: Y array is empty - cannot continue.> ...
+%! mvregress ([], [])
+%!error<mvregress: Y array is empty - cannot continue.> ...
+%! mvregress (zeros(0,3), zeros(0,1))
 %!error <algorithm must be> mvregress (ones (3, 2), ones (3, 2), "algorithm", "xxx")
 %!error <unknown option 'bogus'> mvregress (ones (3, 2), ones (3, 2), "bogus", 1)
