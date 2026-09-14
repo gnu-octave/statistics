@@ -149,6 +149,7 @@ Supervised Learning
  CompactClassificationSVM
  CompactClassificationTree
  CompactRegressionGAM
+ CompactRegressionEnsemble
  CompactRegressionGP
  CompactRegressionNeuralNetwork
  CompactRegressionSVM
@@ -168,6 +169,7 @@ Supervised Learning
  fitcnet
  fitcsvm
  fitctree
+ fitrensemble
  fitrgam
  fitrgp
  fitrkernel
@@ -181,6 +183,8 @@ Supervised Learning
  gamboosttrain
  gampredict
  gamtrain
+ RegressionBaggedEnsemble
+ RegressionEnsemble
  RegressionGAM
  RegressionGP
  RegressionKernel
