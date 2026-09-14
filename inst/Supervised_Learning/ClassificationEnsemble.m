@@ -210,7 +210,8 @@ classdef ClassificationEnsemble
     ## Ensemble method
     ##
     ## @qcode{'AdaBoostM1'}, @qcode{'AdaBoostM2'}, @qcode{'GentleBoost'},
-    ## @qcode{'LogitBoost'} or @qcode{'Bag'}.  This property is read-only.
+    ## @qcode{'LogitBoost'}, @qcode{'RUSBoost'}, @qcode{'Bag'} or
+    ## @qcode{'Subspace'}.  This property is read-only.
     ##
     ## @end deftp
     Method = '';
@@ -220,7 +221,8 @@ classdef ClassificationEnsemble
     ##
     ## Names of the weak learners
     ##
-    ## Always @code{@{'Tree'@}}.  This property is read-only.
+    ## @code{@{'Tree'@}}, or for Subspace @code{@{'KNN'@}} or
+    ## @code{@{'Discriminant'@}}.  This property is read-only.
     ##
     ## @end deftp
     LearnerNames = {'Tree'};
@@ -240,10 +242,10 @@ classdef ClassificationEnsemble
     ##
     ## Fit information
     ##
-    ## A column with one element per learner: the weighted classification
-    ## error for AdaBoostM1, the weighted pseudo-loss for AdaBoostM2, and the
-    ## weighted mean squared error of the regression tree for GentleBoost and
-    ## LogitBoost.  Empty for Bag.  This property is read-only.
+    ## A column with one element per learner: the weighted classification error
+    ## for AdaBoostM1, the weighted pseudo-loss for AdaBoostM2 and RUSBoost, and
+    ## the weighted mean squared error of the regression tree for GentleBoost
+    ## and LogitBoost.  Empty for Bag.  This property is read-only.
     ##
     ## @end deftp
     FitInfo = [];
@@ -263,8 +265,9 @@ classdef ClassificationEnsemble
     ##
     ## Which predictors each learner uses
     ##
-    ## Always empty, as MATLAB returns it for tree learners.  This property
-    ## is read-only.
+    ## For the @qcode{'Subspace'} method, a logical matrix with one row per
+    ## predictor and one column per learner.  Empty for tree learners, as
+    ## MATLAB returns it.  This property is read-only.
     ##
     ## @end deftp
     UsePredForLearner = [];
@@ -339,6 +342,9 @@ classdef ClassificationEnsemble
     BagFResample = 1;    # share of the observations each bag draws
     BagReplace = true;   # whether the bags draw with replacement
     BagInBag = [];       # NxNumTrained logical, the rows each bag drew
+    NPredToSample = [];  # predictors each Subspace learner is fitted on
+    AllCombinations = false;  # whether Subspace takes every combination
+    RatioToSmallest = [];  # RUSBoost's class sample sizes over the smallest
   endproperties
 
   methods (Hidden)
@@ -418,10 +424,11 @@ classdef ClassificationEnsemble
         caller = 'ClassificationEnsemble';
       endif
 
-      Method = ''; NLearn = 100; Learners = 'tree'; LearnRate = [];
+      Method = ''; NLearn = 100; Learners = []; LearnRate = [];
+      NPred = []; AllCombinations = false;
       NPrint = 0; ClassNames = []; Cost = []; Prior = []; Weights = [];
       PredictorNames = {}; ResponseName = 'Y'; ScoreTransform = 'none';
-      FResample = []; Replace = []; Resample = false;
+      FResample = []; Replace = []; Resample = false; Ratio = [];
 
       for i = 1:2:numel (varargin)
         name = varargin{i};
@@ -434,12 +441,23 @@ classdef ClassificationEnsemble
           case 'method'
             Method = val;
           case 'numlearningcycles'
+            if (ischar (val) && strcmpi (val, 'AllPredictorCombinations'))
+              AllCombinations = true;
+            elseif (isnumeric (val) && isscalar (val) && isreal (val)
+                    && val >= 1 && val == fix (val))
+              NLearn = double (val);
+            else
+              error (strcat ("%s: 'NumLearningCycles' must be a positive", ...
+                             " integer or 'AllPredictorCombinations'."), ...
+                     caller);
+            endif
+          case 'npredtosample'
             if (! (isnumeric (val) && isscalar (val) && isreal (val)
                    && val >= 1 && val == fix (val)))
-              error (strcat ("%s: 'NumLearningCycles' must be a positive", ...
-                             " integer."), caller);
+              error ("%s: 'NPredToSample' must be a positive integer.", ...
+                     caller);
             endif
-            NLearn = double (val);
+            NPred = double (val);
           case 'learners'
             Learners = val;
           case 'learnrate'
@@ -499,7 +517,15 @@ classdef ClassificationEnsemble
               error ("%s: 'CategoricalPredictors' is not implemented.", ...
                      caller);
             endif
-          case {'ratiotosmallest', 'marginprecision', 'robusterrorgoal', ...
+          case 'ratiotosmallest'
+            if (! (isnumeric (val) && isvector (val) && isreal (val)
+                   && all (isfinite (val)) && all (val >= 0) && any (val > 0)))
+              error (strcat ("%s: 'RatioToSmallest' must be a vector of", ...
+                             " nonnegative numbers with a positive", ...
+                             " element."), caller);
+            endif
+            Ratio = double (val(:)');
+          case {'marginprecision', 'robusterrorgoal', ...
                 'robustmaxmargin', 'robustmarginsigma', 'numbins', ...
                 'optimizehyperparameters', ...
                 'hyperparameteroptimizationoptions', 'options'}
@@ -510,30 +536,13 @@ classdef ClassificationEnsemble
         endswitch
       endfor
 
-      ## The learners, by name or as a tree template.
-      if (ischar (Learners) && strcmpi (Learners, 'tree'))
-        tmpl = templateTree ();
-      elseif (isstruct (Learners) && isscalar (Learners)
-              && isfield (Learners, 'Method')
-              && strcmpi (Learners.Method, 'Tree'))
-        tmpl = Learners;
-      else
-        error ("%s: 'Learners' must be 'tree' or a tree template.", caller);
-      endif
-      TreeArgs = {};
-      for [val, key] = tmpl
-        if (! any (strcmp (key, {'Method', 'Type'})))
-          TreeArgs(end+1:end+2) = {key, val};
-        endif
-      endfor
-
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, caller, false);
       K = classCount (F.ClassNames);
 
       ## The method, by default the one MATLAB chooses for the class count.
       methods2 = {'AdaBoostM1', 'GentleBoost', 'LogitBoost'};
-      known = [methods2, {'AdaBoostM2', 'Bag'}];
-      later = {'Subspace', 'LPBoost', 'TotalBoost', 'RobustBoost', 'RUSBoost'};
+      known = [methods2, {'AdaBoostM2', 'RUSBoost', 'Bag', 'Subspace'}];
+      later = {'LPBoost', 'TotalBoost', 'RobustBoost'};
       if (isempty (Method))
         if (K == 2)
           Method = 'LogitBoost';
@@ -564,7 +573,79 @@ classdef ClassificationEnsemble
         error (strcat ("%s: the 'AdaBoostM2' method fits more than two", ...
                        " classes."), caller);
       endif
-      if (isbag)
+      issub = strcmp (Method, 'Subspace');
+
+      ## The learners, by name or as a template: trees for every method but
+      ## Subspace, which takes nearest neighbours or discriminants instead.
+      if (isempty (Learners))
+        Learners = ifelse_learner (issub);
+      endif
+      if (ischar (Learners) && isrow (Learners))
+        names = {'tree', 'knn', 'discriminant'};
+        makers = {@templateTree, @templateKNN, @templateDiscriminant};
+        k = find (strcmpi (Learners, names));
+        if (isempty (k))
+          tmpl = [];
+        else
+          tmpl = makers{k} ();
+        endif
+      elseif (isstruct (Learners) && isscalar (Learners)
+              && isfield (Learners, 'Method'))
+        tmpl = Learners;
+      else
+        tmpl = [];
+      endif
+      if (issub)
+        if (isempty (tmpl) || ! any (strcmpi (tmpl.Method, ...
+                                             {'KNN', 'Discriminant', 'Tree'})))
+          error (strcat ("%s: 'Learners' must be 'knn', 'discriminant' or", ...
+                         " a template of either for the 'Subspace'", ...
+                         " method."), caller);
+        elseif (strcmpi (tmpl.Method, 'Tree'))
+          error (strcat ("%s: trees cannot be the learners of the", ...
+                         " 'Subspace' method."), caller);
+        endif
+      elseif (isempty (tmpl) || ! strcmpi (tmpl.Method, 'Tree'))
+        error ("%s: 'Learners' must be 'tree' or a tree template.", caller);
+      endif
+      TreeArgs = {};
+      for [val, key] = tmpl
+        if (! any (strcmp (key, {'Method', 'Type'})))
+          TreeArgs(end+1:end+2) = {key, val};
+        endif
+      endfor
+      if (! issub && ! isempty (NPred))
+        error ("%s: 'NPredToSample' applies only to the 'Subspace' method.", ...
+               caller);
+      endif
+      if (! issub && AllCombinations)
+        error (strcat ("%s: 'AllPredictorCombinations' applies only to the", ...
+                       " 'Subspace' method."), caller);
+      endif
+      if (strcmp (Method, 'RUSBoost'))
+        if (isempty (Ratio))
+          Ratio = ones (1, K);
+        elseif (isscalar (Ratio))
+          Ratio = repmat (Ratio, 1, K);
+        elseif (numel (Ratio) != K)
+          error ("%s: 'RatioToSmallest' must have one element per class.", ...
+                 caller);
+        endif
+      elseif (! isempty (Ratio))
+        error (strcat ("%s: 'RatioToSmallest' applies only to the", ...
+                       " 'RUSBoost' method."), caller);
+      endif
+
+      if (issub)
+        if (! isempty (LearnRate))
+          error (strcat ("%s: 'LearnRate' cannot be used with the", ...
+                         " 'Subspace' method."), caller);
+        endif
+        if (Resample || ! isempty (FResample) || ! isempty (Replace))
+          error (strcat ("%s: resampling in the 'Subspace' method is not", ...
+                         " implemented."), caller);
+        endif
+      elseif (isbag)
         if (! isempty (LearnRate))
           error ("%s: 'LearnRate' cannot be used with the 'Bag' method.", ...
                  caller);
@@ -608,6 +689,24 @@ classdef ClassificationEnsemble
       this.W = priorNormalize (F.Weights, this.gY, this.Prior);
       this.W /= sum (this.W);
       [~, this.DefaultIndex] = max (this.Prior);
+      if (issub)
+        ## The nearest neighbour and discriminant learners take no weights,
+        ## so weights that are not uniform cannot reach them.
+        if (max (F.Weights) - min (F.Weights) > 1e-12 * max (F.Weights))
+          error (strcat ("%s: 'Weights' that are not uniform cannot be", ...
+                         " used with the 'Subspace' method."), caller);
+        endif
+        if (isempty (NPred))
+          NPred = 1;
+        endif
+        if (NPred >= F.p)
+          error (strcat ("%s: 'NPredToSample' must be less than the number", ...
+                         " of predictors."), caller);
+        endif
+        if (AllCombinations)
+          NLearn = nchoosek (F.p, NPred);
+        endif
+      endif
       this.PredictorNames = PredictorNames(:)';
       this.ExpandedPredictorNames = this.PredictorNames;
       this.ResponseName = ResponseName;
@@ -620,7 +719,15 @@ classdef ClassificationEnsemble
                                      'Method', Method, ...
                                      'LearnerTemplates', tmpl, ...
                                      'NLearn', 0);
-      if (isbag)
+      if (issub)
+        this.CombineWeights = 'WeightedAverage';
+        this.FitInfo = [];
+        this.FitInfoDescription = 'None';
+        this.LearnerNames = {tmpl.Method};
+        this.NPredToSample = NPred;
+        this.AllCombinations = AllCombinations;
+        this.UsePredForLearner = false (F.p, 0);
+      elseif (isbag)
         this.CombineWeights = 'WeightedAverage';
         this.FitInfo = [];
         this.FitInfoDescription = 'None';
@@ -629,6 +736,7 @@ classdef ClassificationEnsemble
         this.BagInBag = false (F.n, 0);
       else
         this.LearnRate = LearnRate;
+        this.RatioToSmallest = Ratio;
         this.ModelParameters.LearnRate = LearnRate;
         this.FitInfo = zeros (0, 1);
         this.FitInfoDescription = ClassificationEnsemble.fitInfoText (Method);
@@ -718,6 +826,10 @@ classdef ClassificationEnsemble
       endif
       if (mod (numel (varargin), 2) != 0)
         error ("%s: name-value arguments must be in pairs.", caller);
+      endif
+      if (this.AllCombinations)
+        error (strcat ("%s: an ensemble of all predictor combinations", ...
+                       " cannot grow further."), caller);
       endif
       NPrint = 0;
       for i = 1:2:numel (varargin)
@@ -837,7 +949,8 @@ classdef ClassificationEnsemble
     ## @end deftypefn
     function [imp, ma] = predictorImportance (this)
 
-      [imp, ma] = ensembleImportance (compact (this));
+      [imp, ma] = ensembleImportance (compact (this), ...
+                                      [class(this), '.predictorImportance']);
 
     endfunction
 
@@ -931,7 +1044,8 @@ classdef ClassificationEnsemble
       if (NPrint > 0)
         printf ("Training %s...\n", this.Method);
       endif
-      if (isempty (this.State) && ! strcmp (this.Method, 'Bag'))
+      if (isempty (this.State) && ! any (strcmp (this.Method, ...
+                                                 {'Bag', 'Subspace'})))
         csum = sum (this.Cost, 2);
         d0 = this.W .* csum(g);
         d0 /= sum (d0);
@@ -1014,6 +1128,40 @@ classdef ClassificationEnsemble
             D(tru) = 0;
             this.State.D = D / sum (D(:));
 
+          case 'RUSBoost'
+            d = this.State.d;
+            idx = rusSample (g, d, this.RatioToSmallest);
+            present = uniqueLabels (labelsFromIndex (this.ClassNames, ...
+                                                     unique (g(idx))));
+            T = compact (ClassificationTree (this.X(idx,:), this.Y(idx,:), ...
+                                             'ClassNames', present, ...
+                                             ctree{:}, this.TreeArgs{:}));
+            [~, s] = predict (T, this.X);
+            P = zeros (n, K);
+            P(:, labelIndices (this.ClassNames, T.ClassNames)) = s;
+            tru = sub2ind ([n, K], (1:n)', g);
+            hy = P(tru);
+            L = 1 - hy + P;
+            L(tru) = 0;
+            e = sum (d .* sum (L, 2)) / (2 * (K - 1));
+            if (e > 0.5)
+              this.Stopped = true;
+              this.ReasonForTermination = sprintf (strcat ("Pseudo-loss", ...
+                " from the last weak learner is too high: err=%g"), e);
+              break;
+            endif
+            a = LR * log ((1 - e) / max (e, eps)) / 2;
+            this = addLearner (this, T, a, e);
+            if (e <= 0)
+              this = stopPerfect (this, strcat ("Pseudo-loss from the last", ...
+                                                " weak learner is zero."));
+              break;
+            endif
+            E = exp (-a * (1 + hy - P));
+            E(tru) = 0;
+            d = d .* sum (E, 2);
+            this.State.d = d / sum (d);
+
           case 'GentleBoost'
             d = this.State.d;
             R = compact (RegressionTree (this.X, y, 'Weights', d, rtree{:}, ...
@@ -1034,6 +1182,33 @@ classdef ClassificationEnsemble
             h = predict (R, this.X);
             this = addLearner (this, R, LR / 2, sum (d .* (z - h) .^ 2));
             this.State.F += LR / 2 * h;
+
+          case 'Subspace'
+            p = columns (this.X);
+            if (this.AllCombinations)
+              ## nchoosek's order; MATLAB R2024a reverses it for some sizes.
+              combos = nchoosek (1:p, this.NPredToSample);
+              if (this.NumTrained >= rows (combos))
+                break;
+              endif
+              cols = combos(this.NumTrained + 1,:);
+            else
+              perm = randperm (p);
+              cols = sort (perm(1:this.NPredToSample));
+            endif
+            largs = [{'PredictorNames', this.PredictorNames(cols), ...
+                      'ClassNames', this.ClassNames, 'Prior', this.Prior, ...
+                      'Cost', this.Cost}, this.TreeArgs];
+            if (strcmp (this.LearnerNames{1}, 'KNN'))
+              mdl = ClassificationKNN (this.X(:,cols), this.Y, largs{:});
+            else
+              mdl = compact (ClassificationDiscriminant (this.X(:,cols), ...
+                                                         this.Y, largs{:}));
+            endif
+            use = false (p, 1);
+            use(cols) = true;
+            this.UsePredForLearner(:,end+1) = use;
+            this = addLearner (this, mdl, 1, []);
 
           case 'Bag'
             m = ceil (this.BagFResample * n);
@@ -1105,6 +1280,9 @@ classdef ClassificationEnsemble
         case 'AdaBoostM2'
           tail = strcat ("Element t of this vector is the weighted", ...
                          " pseudoloss from hypothesis t.");
+        case 'RUSBoost'
+          tail = strcat ("Element t of this vector is the weighted loss", ...
+                         " from hypothesis t.");
         otherwise
           tail = strcat ("Element t of this vector is the weighted mean", ...
                          " squared error from regression hypothesis t.");
@@ -1115,6 +1293,49 @@ classdef ClassificationEnsemble
   endmethods
 
 endclassdef
+
+## The default learner: nearest neighbours for Subspace, trees otherwise.
+function name = ifelse_learner (issub)
+
+  if (issub)
+    name = 'knn';
+  else
+    name = 'tree';
+  endif
+
+endfunction
+
+## The rows of one RUSBoost tree: from class k, round (RATIO(k) times the size
+## of the smallest class) rows drawn in proportion to the weights D, without
+## replacement unless the class holds fewer rows than that.
+function idx = rusSample (g, d, ratio)
+
+  K = numel (ratio);
+  cnt = accumarray (g, 1, [K, 1]);
+  nmin = min (cnt(cnt > 0));
+  idx = zeros (0, 1);
+  for k = 1:K
+    rk = find (g == k);
+    m = round (ratio(k) * nmin);
+    if (m == 0 || isempty (rk))
+      continue;
+    endif
+    w = d(rk);
+    if (! any (w > 0))
+      w = ones (size (w));
+    endif
+    if (m <= numel (rk))
+      [~, order] = sort (rand (numel (rk), 1) .^ (1 ./ w), 'descend');
+      idx = [idx; rk(order(1:m))];
+    else
+      cw = [0; cumsum(w)];
+      cw /= cw(end);
+      idx = [idx; rk(lookup (cw, rand (m, 1)))];
+    endif
+  endfor
+  idx = sort (idx);
+
+endfunction
 
 ## 'on' or 'off' as a logical scalar, OK false for anything else.
 function [tf, ok] = onOff (val)
@@ -1222,7 +1443,7 @@ endfunction
 %! ClassificationEnsemble (X2, Y2, 'Foo', 1)
 %!error<ClassificationEnsemble: invalid parameter name in optional pair arguments.> ...
 %! ClassificationEnsemble (X2, Y2, 1, 1)
-%!error<ClassificationEnsemble: 'NumLearningCycles' must be a positive integer.> ...
+%!error<ClassificationEnsemble: 'NumLearningCycles' must be a positive integer or 'AllPredictorCombinations'.> ...
 %! ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 0)
 %!error<ClassificationEnsemble: 'LearnRate' must be a number greater than 0 and no greater than 1.> ...
 %! ClassificationEnsemble (X2, Y2, 'LearnRate', 2)
@@ -1238,16 +1459,27 @@ endfunction
 %! ClassificationEnsemble (X2, Y2, 'Resample', 1)
 %!error<ClassificationEnsemble: 'CategoricalPredictors' is not implemented.> ...
 %! ClassificationEnsemble (X2, Y2, 'CategoricalPredictors', 1)
-%!error<ClassificationEnsemble: 'RatioToSmallest' is not implemented.> ...
+%!error<ClassificationEnsemble: 'RatioToSmallest' must be a vector of nonnegative numbers with a positive element.> ...
+%! ClassificationEnsemble (X2, Y2, 'Method', 'RUSBoost', ...
+%!                         'RatioToSmallest', [0, 0])
+%!error<ClassificationEnsemble: 'RatioToSmallest' must be a vector of nonnegative numbers with a positive element.> ...
+%! ClassificationEnsemble (X2, Y2, 'Method', 'RUSBoost', ...
+%!                         'RatioToSmallest', [1, NaN])
+%!error<ClassificationEnsemble: 'RatioToSmallest' must have one element per class.> ...
+%! ClassificationEnsemble (X2, Y2, 'Method', 'RUSBoost', ...
+%!                         'RatioToSmallest', [1, 2, 3])
+%!error<ClassificationEnsemble: 'RatioToSmallest' applies only to the 'RUSBoost' method.> ...
 %! ClassificationEnsemble (X2, Y2, 'RatioToSmallest', 1)
+%!error<ClassificationEnsemble: resampling in a boosting method is not implemented.> ...
+%! ClassificationEnsemble (X2, Y2, 'Method', 'RUSBoost', 'Resample', 'on')
 %!error<ClassificationEnsemble: 'Learners' must be 'tree' or a tree template.> ...
 %! ClassificationEnsemble (X2, Y2, 'Learners', 'knn')
 %!error<ClassificationEnsemble: 'Method' must be a character vector.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method', 1)
 %!error<ClassificationEnsemble: 'Boost' is not a valid ensemble method.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method', 'Boost')
-%!error<ClassificationEnsemble: the 'RUSBoost' method is not implemented.> ...
-%! ClassificationEnsemble (X2, Y2, 'Method', 'rusboost')
+%!error<ClassificationEnsemble: the 'RobustBoost' method is not implemented.> ...
+%! ClassificationEnsemble (X2, Y2, 'Method', 'robustboost')
 %!error<ClassificationEnsemble: a bagged ensemble is fitted by ClassificationBaggedEnsemble.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method', 'Bag')
 %!error<ClassificationEnsemble: the 'AdaBoostM1' method fits exactly two classes.> ...
@@ -1307,3 +1539,43 @@ endfunction
 %!           'CrossVal', 'off')
 %!error<ClassificationEnsemble.crossval: invalid parameter name in optional pair arguments.> ...
 %! crossval (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 'Foo', 1)
+
+%!error<ClassificationEnsemble: trees cannot be the learners of the 'Subspace' method.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!                         'Learners', 'tree')
+%!error<ClassificationEnsemble: 'Learners' must be 'knn', 'discriminant' or a template of either for the 'Subspace' method.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!                         'Learners', 'svm')
+%!error<ClassificationEnsemble: 'NPredToSample' must be a positive integer.> ...
+%! ClassificationEnsemble (X2, Y2, 'NPredToSample', 0)
+%!error<ClassificationEnsemble: 'NPredToSample' must be less than the number of predictors.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!                         'NPredToSample', 4)
+%!error<ClassificationEnsemble: 'NPredToSample' applies only to the 'Subspace' method.> ...
+%! ClassificationEnsemble (X2, Y2, 'NPredToSample', 2)
+%!error<ClassificationEnsemble: 'AllPredictorCombinations' applies only to the 'Subspace' method.> ...
+%! ClassificationEnsemble (X2, Y2, 'NumLearningCycles', ...
+%!                         'AllPredictorCombinations')
+%!error<ClassificationEnsemble: 'LearnRate' cannot be used with the 'Subspace' method.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!                         'LearnRate', 0.5)
+%!error<ClassificationEnsemble: resampling in the 'Subspace' method is not implemented.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!                         'FResample', 0.5)
+%!error<ClassificationEnsemble: 'Weights' that are not uniform cannot be used with the 'Subspace' method.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!                         'Weights', [5 * ones(50, 1); ones(100, 1)])
+%!error<ClassificationEnsemble.predictorImportance: predictor importance is defined only for ensembles of trees.> ...
+%! load fisheriris
+%! predictorImportance (ClassificationEnsemble (meas, species, ...
+%!                      'Method', 'Subspace', 'NumLearningCycles', 2))
+%!error<ClassificationEnsemble.resume: an ensemble of all predictor combinations cannot grow further.> ...
+%! load fisheriris
+%! resume (ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
+%!         'NumLearningCycles', 'AllPredictorCombinations'), 1)

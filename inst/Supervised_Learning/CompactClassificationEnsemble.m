@@ -141,8 +141,8 @@ classdef CompactClassificationEnsemble
     ## Trained weak learners
     ##
     ## A column cell array with one compact model per learner: a
-    ## @code{CompactClassificationTree} for AdaBoostM1, AdaBoostM2 and Bag,
-    ## and a @code{CompactRegressionTree} for GentleBoost and LogitBoost,
+    ## @code{CompactClassificationTree} for AdaBoostM1, AdaBoostM2, RUSBoost and
+    ## Bag, and a @code{CompactRegressionTree} for GentleBoost and LogitBoost,
     ## which fit regression trees.  MATLAB wraps those regression trees in a
     ## classifier object of its own; here they are held as they are.  This
     ## property is read-only.
@@ -165,8 +165,9 @@ classdef CompactClassificationEnsemble
     ##
     ## Which predictors each learner uses
     ##
-    ## Always empty, as MATLAB returns it for tree learners.  This property
-    ## is read-only.
+    ## For the @qcode{'Subspace'} method, a logical matrix with one row per
+    ## predictor and one column per learner.  Empty for tree learners, as
+    ## MATLAB returns it.  This property is read-only.
     ##
     ## @end deftp
     UsePredForLearner = [];
@@ -355,8 +356,12 @@ classdef CompactClassificationEnsemble
 
     endfunction
 
-    function [imp, ma] = ensembleImportance (this)
+    function [imp, ma] = ensembleImportance (this, caller)
 
+      if (strcmp (this.Method, 'Subspace'))
+        error (strcat ("%s: predictor importance is defined only for", ...
+                       " ensembles of trees."), caller);
+      endif
       imp = zeros (1, numel (this.PredictorNames));
       for t = 1:this.NumTrained
         imp += this.TrainedWeights(t) * predictorImportance (this.Trained{t});
@@ -384,10 +389,10 @@ classdef CompactClassificationEnsemble
     ## scores after @code{ScoreTransform}.
     ##
     ## The scores of a boosted ensemble are the sum over the learners of each
-    ## learner's weight times its output.  For AdaBoostM1 the output is +1
-    ## for the class the learner predicts and -1 for the other; for GentleBoost
-    ## and LogitBoost it is the regression tree's prediction for the first
-    ## class and its negative for the second; for AdaBoostM2 it is the
+    ## learner's weight times its output.  For AdaBoostM1 the output is +1 for
+    ## the class the learner predicts and -1 for the other; for GentleBoost and
+    ## LogitBoost it is the regression tree's prediction for the first class and
+    ## its negative for the second; for AdaBoostM2 and RUSBoost it is the
     ## learner's class probabilities.  The scores of a bagged ensemble are the
     ## average of its trees' class probabilities.  A row that no learner may
     ## score has @code{NaN} scores and is given the class of greatest prior
@@ -529,7 +534,8 @@ classdef CompactClassificationEnsemble
     ## @end deftypefn
     function [imp, ma] = predictorImportance (this)
 
-      [imp, ma] = ensembleImportance (this);
+      [imp, ma] = ensembleImportance (this, ...
+                    'CompactClassificationEnsemble.predictorImportance');
 
     endfunction
 
@@ -679,6 +685,10 @@ classdef CompactClassificationEnsemble
         case {'GentleBoost', 'LogitBoost'}
           h = predict (mdl, X);
           G = [h, -h];
+        case 'Subspace'
+          [~, s] = predict (mdl, X(:,this.UsePredForLearner(:,t)));
+          G = zeros (rows (X), K);
+          G(:, labelIndices (this.ClassNames, mdl.ClassNames)) = s;
         otherwise
           [~, s] = predict (mdl, X);
           G = zeros (rows (X), K);

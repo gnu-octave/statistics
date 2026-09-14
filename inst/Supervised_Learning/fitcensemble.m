@@ -48,6 +48,17 @@
 ## pseudo-loss @var{e} over its class probabilities gives its weight as for
 ## AdaBoostM1, and the scores are the weighted sums of the class
 ## probabilities.
+## @item @qcode{'RUSBoost'}
+## Two or more classes, for classes of unequal size.  Each tree is grown
+## without weights on a sample of every class, @code{round (r * m)} rows,
+## @var{m} being the size of the smallest class and @var{r} the class's
+## element of @qcode{'RatioToSmallest'}, drawn in proportion to @var{d} and
+## with replacement only when the class holds fewer rows.  Its pseudo-loss
+## @var{e} over all the observations, the weight of each spread evenly over
+## the classes other than its own, gives its weight as for AdaBoostM1, the
+## weights are then multiplied by the mean over those classes of
+## @code{exp (-weight * (1 + h_true - h_k))}, and the scores are as for
+## AdaBoostM2.  A perfect tree is kept as for AdaBoostM2.
 ## @item @qcode{'GentleBoost'}
 ## Two classes.  Each regression tree is fitted to @var{y} with the weights
 ## @var{d}, its prediction @var{h} added to the score times @var{eta}, and the
@@ -58,6 +69,18 @@
 ## weights @code{d .* p .* (1 - p)}; its prediction times @code{eta / 2} is
 ## added to the score @var{f}, and @code{p = 1 ./ (1 + exp (-f))}.
 ## @end table
+##
+## The @qcode{'Subspace'} method fits each learner, a nearest neighbour or
+## discriminant classifier, on @code{NPredToSample} predictors drawn at random
+## without replacement, or on every combination of that many with
+## @qcode{'NumLearningCycles'} set to @qcode{'AllPredictorCombinations'}, and
+## scores each observation with the plain average of the learners' class
+## probabilities.  @code{UsePredForLearner} records the predictors of each
+## learner; every combination is taken in the order of @code{nchoosek}, which
+## MATLAB R2024a reverses for some subset sizes, changing the order of the
+## learners but not the scores.  MATLAB takes observation weights here and
+## passes them to the learners; the learners in this package take none, so
+## weights that are not uniform are refused.
 ##
 ## A boosting method whose tree classifies the data without error, zero error
 ## for AdaBoostM1 or zero pseudo-loss for AdaBoostM2, keeps that tree with the
@@ -73,13 +96,19 @@
 ## @multitable @columnfractions 0.28 0.02 0.7
 ## @headitem @var{Name} @tab @tab @var{Value}
 ## @item @qcode{'Method'} @tab @tab @qcode{'AdaBoostM1'},
-## @qcode{'AdaBoostM2'}, @qcode{'GentleBoost'}, @qcode{'LogitBoost'} or
-## @qcode{'Bag'}.  The default is @qcode{'LogitBoost'} for two classes and
-## @qcode{'AdaBoostM2'} for more.
+## @qcode{'AdaBoostM2'}, @qcode{'RUSBoost'}, @qcode{'GentleBoost'},
+## @qcode{'LogitBoost'}, @qcode{'Bag'} or @qcode{'Subspace'}.  The default is
+## @qcode{'LogitBoost'} for two classes and @qcode{'AdaBoostM2'} for more.
 ## @item @qcode{'NumLearningCycles'} @tab @tab A positive integer, the number
-## of trees to grow.  The default is 100.
-## @item @qcode{'Learners'} @tab @tab @qcode{'tree'} (default) or a template
-## from @code{templateTree}, whose options override the defaults: for
+## of learners to grow, or for Subspace @qcode{'AllPredictorCombinations'}.
+## The default is 100.
+## @item @qcode{'NPredToSample'} @tab @tab A positive integer less than the
+## number of predictors, the predictors each Subspace learner is fitted on.
+## The default is 1.  Subspace only.
+## @item @qcode{'Learners'} @tab @tab For Subspace @qcode{'knn'} (default),
+## @qcode{'discriminant'}, or a template from @code{templateKNN} or
+## @code{templateDiscriminant}.  Otherwise @qcode{'tree'} (default) or a
+## template from @code{templateTree}, whose options override the defaults: for
 ## boosting @code{MaxNumSplits} 10, @code{MinParentSize} 2 and
 ## @code{MinLeafSize} 1, the regression trees of GentleBoost and LogitBoost
 ## taking @code{MinParentSize} 10; for Bag unlimited splits,
@@ -87,6 +116,9 @@
 ## @code{NumVariablesToSample} @code{ceil (sqrt (P))}.
 ## @item @qcode{'LearnRate'} @tab @tab A number greater than 0 and no greater
 ## than 1.  The default is 1.  Boosting only.
+## @item @qcode{'RatioToSmallest'} @tab @tab A nonnegative number, or a vector
+## with one per class, the size of each class's sample relative to the
+## smallest class.  The default is 1 for every class.  RUSBoost only.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
 ## bagged tree draws, greater than 0 and no greater than 1.  The default is
 ## 1.  Bag only.
@@ -109,15 +141,15 @@
 ## returned scores.  The default is @qcode{'none'}.
 ## @end multitable
 ##
-## The methods @qcode{'Subspace'}, @qcode{'LPBoost'}, @qcode{'TotalBoost'},
 ## @qcode{'CrossVal'} set to @qcode{'on'}, @qcode{'KFold'},
 ## @qcode{'Holdout'}, @qcode{'Leaveout'} or @qcode{'CVPartition'}, only one of
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{ClassificationPartitionedEnsemble}.
 ##
-## @qcode{'RobustBoost'} and @qcode{'RUSBoost'}, resampling in a boosting
-## method, categorical predictors, binning and hyperparameter optimization
-## are not implemented, and an option asking for one of them is refused.
+## The methods @qcode{'LPBoost'}, @qcode{'TotalBoost'} and
+## @qcode{'RobustBoost'}, resampling in a boosting method, categorical
+## predictors, binning and hyperparameter optimization are not implemented,
+## and an option asking for one of them is refused.
 ##
 ## @seealso{ClassificationEnsemble, ClassificationBaggedEnsemble,
 ## CompactClassificationEnsemble, templateTree, TreeBagger}
@@ -389,3 +421,204 @@ endfunction
 %! fitcensemble (X2, Y2, 'CVPartition', 5)
 %!error<fitcensemble: 'CVPartition' must partition the observations the ensemble was fitted on.> ...
 %! fitcensemble (X2, Y2, 'CVPartition', cvpartition (50, 'KFold', 5))
+
+%!test  # Subspace of discriminants over every pair, in nchoosek order
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'NPredToSample', 2, 'Learners', 'discriminant');
+%! assert_equal (Mdl.NumTrained, 6);
+%! assert_equal (Mdl.CombineWeights, 'WeightedAverage');
+%! assert_equal (Mdl.TrainedWeights, ones (6, 1));
+%! assert_equal (Mdl.FitInfo, []);
+%! assert_equal (Mdl.LearnerNames, {'Discriminant'});
+%! assert_equal (Mdl.UsePredForLearner, logical ([1, 1, 1, 0, 0, 0; ...
+%!                                                1, 0, 0, 1, 1, 0; ...
+%!                                                0, 1, 0, 1, 0, 1; ...
+%!                                                0, 0, 1, 0, 1, 1]));
+%! assert_equal (class (Mdl.Trained{1}), 'CompactClassificationDiscriminant');
+%! assert_equal (Mdl.Trained{1}.PredictorNames, {'x1', 'x2'});
+
+%!test  # MATLAB parity: Subspace scores are the mean of the learners
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'NPredToSample', 2, 'Learners', 'discriminant');
+%! [~, s] = predict (Mdl, meas([51, 120],:));
+%! assert_equal (s, [0.000000674895093, 0.834981379863075, ...
+%!                   0.165017945241832; 0.000000043609969, ...
+%!                   0.560291808349626, 0.439708148040405], 1e-12);
+%! assert_equal (resubLoss (Mdl), 0.046666666666667, 1e-13);
+
+%!test  # MATLAB parity: Subspace of nearest neighbours is the default
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'NPredToSample', 2);
+%! assert_equal (Mdl.LearnerNames, {'KNN'});
+%! [~, s] = predict (Mdl, meas([101, 120],:));
+%! assert_equal (s, [0, 1/6, 5/6; 0, 0.5, 0.5], 1e-15);
+%! assert_equal (resubLoss (Mdl), 0.006666666666667, 1e-13);
+
+%!test  # MATLAB parity: a nearest neighbour template over every triple
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'NPredToSample', 3, ...
+%!                     'Learners', templateKNN ('NumNeighbors', 5));
+%! assert_equal (Mdl.NumTrained, 4);
+%! [~, s] = predict (Mdl, meas([71, 120],:));
+%! assert_equal (s, [0, 0.4, 0.6; 0, 0.55, 0.45], 1e-15);
+
+%!test  # MATLAB parity: single predictors are taken in order
+%! load fisheriris
+%! Mdl = fitcensemble (meas(51:150,:), species(51:150), ...
+%!                     'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'Learners', 'discriminant');
+%! assert_equal (Mdl.UsePredForLearner, logical (eye (4)));
+%! [~, s] = predict (Mdl, meas([51, 101],:));
+%! assert_equal (s, [0.558349136121729, 0.441650863878271; ...
+%!                   0.195748544656556, 0.804251455343444], 1e-12);
+%! assert_equal (resubLoss (Mdl), 0.06, 1e-15);
+
+%!test  # random subspaces draw distinct predictors
+%! load fisheriris
+%! rng (9);
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 8, 'NPredToSample', 2, ...
+%!                     'Learners', 'discriminant');
+%! assert_equal (sum (Mdl.UsePredForLearner), 2 * ones (1, 8));
+%! D = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                   'NumLearningCycles', 3);
+%! assert_equal (sum (D.UsePredForLearner), ones (1, 3));
+
+%!test  # MATLAB parity: the score transform applies to the averaged scores
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'NPredToSample', 2, 'Learners', 'discriminant');
+%! [~, s0] = predict (Mdl, meas(1,:));
+%! Mdl.ScoreTransform = 'logit';
+%! [~, s] = predict (Mdl, meas(1,:));
+%! assert_equal (s, 1 ./ (1 + exp (-s0)), 1e-15);
+
+%!test  # MATLAB parity: a cross-validated Subspace refits every combination
+%! load fisheriris
+%! CV = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                    'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                    'NPredToSample', 2, 'Learners', 'discriminant', ...
+%!                    'KFold', 3);
+%! assert_equal (CV.NumTrainedPerFold, [6, 6, 6]);
+
+%!shared Xi, Yi, T1
+%! load fisheriris
+%! Xi = meas([1:10, 51:100, 101:130],:);
+%! Yi = species([1:10, 51:100, 101:130]);
+%! T1 = templateTree ('MaxNumSplits', 1);
+
+%!test  # MATLAB parity: RUSBoost sampling every row of imbalanced classes
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 6, 'RatioToSmallest', [1, 5, 3]);
+%! assert_equal (Mdl.FitInfo', [0.195372503840246, 0.273203444497188, ...
+%!                              0.342324146410416, 0.391679747239235, ...
+%!                              0.424713594905408, 0.446828084418694], 1e-13);
+%! assert_equal (Mdl.TrainedWeights', [0.707735710111105, ...
+%!                                     0.489214930830132, ...
+%!                                     0.326477050756789, ...
+%!                                     0.220128470123600, ...
+%!                                     0.151726482595071, ...
+%!                                     0.106747454637321], 1e-13);
+%! assert_equal (Mdl.CombineWeights, 'WeightedSum');
+%! assert_equal (Mdl.FitInfoDescription{2}, ...
+%!               strcat ('Element t of this vector is the weighted loss', ...
+%!                       ' from hypothesis t.'));
+
+%!test  # MATLAB parity: RUSBoost scores are weighted sums of probabilities
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 6, 'RatioToSmallest', [1, 5, 3]);
+%! [~, s] = predict (Mdl, Xi([1, 61],:));
+%! assert_equal (s, [0.322908080492584, 1.582249594413660, ...
+%!                   0.096872424147775; 0, 0.071501074966215, ...
+%!                   1.930529024087804], 1e-13);
+
+%!test  # MATLAB parity: RUSBoost starts from the observation weights
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 5, 'RatioToSmallest', [1, 5, 3], ...
+%!                     'Weights', (1:90)');
+%! assert_equal (Mdl.FitInfo', [0.135468889789166, 0.227297593785240, ...
+%!                              0.325572187192910, 0.392977365900961, ...
+%!                              0.433450832378125], 1e-13);
+
+%!test  # MATLAB parity: RUSBoost starts from the prior
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 5, 'RatioToSmallest', [1, 5, 3], ...
+%!                     'Prior', 'uniform');
+%! assert_equal (Mdl.FitInfo', [0.297695852534562, 0.363195690083740, ...
+%!                              0.405887261979897, 0.433634399973484, ...
+%!                              0.452182830272981], 1e-13);
+
+%!test  # MATLAB parity: RUSBoost starts from the cost
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 5, 'RatioToSmallest', [1, 5, 3], ...
+%!                     'Cost', [0, 1, 1; 2, 0, 1; 1, 3, 0]);
+%! assert_equal (Mdl.FitInfo', [0.170084816462736, 0.253339506885676, ...
+%!                              0.332687545823290, 0.389034394725378, ...
+%!                              0.425567217510485], 1e-13);
+
+%!test  # MATLAB parity: RUSBoost on two classes
+%! load fisheriris
+%! Mdl = fitcensemble (meas(51:140,:), species(51:140), ...
+%!                     'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 6, 'RatioToSmallest', [1.25, 1]);
+%! assert_equal (Mdl.FitInfo', [0.122427983539095, 0.303342803047074, ...
+%!                              0.440725113503495, 0.483823466199863, ...
+%!                              0.495606380578646, 0.498805931770484], 1e-13);
+
+%!test  # MATLAB parity: the learning rate shrinks RUSBoost
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 6, 'LearnRate', 0.5);
+%! assert_equal (Mdl.FitInfo', [0.25, 0.266721039894768, ...
+%!                              0.280862713503484, 0.292850544622122, ...
+%!                              0.303050532217282, 0.311767644857868], 1e-13);
+%! assert_equal (Mdl.TrainedWeights', [0.274653072167027, ...
+%!                                     0.252830721199463, ...
+%!                                     0.235046573619133, ...
+%!                                     0.220394911259144, ...
+%!                                     0.208203335984824, ...
+%!                                     0.197967081018013], 1e-13);
+
+%!test  # MATLAB parity: each class draws RatioToSmallest times the smallest
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 1, 'RatioToSmallest', 0.5);
+%! assert_equal (Mdl.Trained{1}.ClassCount(1,:), [5, 5, 5]);
+
+%!test  # MATLAB parity: sample sizes round half away from zero
+%! load fisheriris
+%! k = [101:110, 51:100];
+%! Mdl = fitcensemble (meas(k,:), species(k), 'Method', 'RUSBoost', ...
+%!                     'Learners', T1, 'NumLearningCycles', 1, ...
+%!                     'RatioToSmallest', [1, 1.25]);
+%! assert_equal (sort (Mdl.Trained{1}.ClassCount(1,:)), [10, 13]);
+
+%!test  # MATLAB parity: a class smaller than its sample is oversampled
+%! Mdl = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                     'NumLearningCycles', 1, 'RatioToSmallest', [2, 1, 1]);
+%! assert_equal (Mdl.Trained{1}.ClassCount(1,:), [20, 10, 10]);
+
+%!test  # MATLAB parity: RUSBoost samples in proportion to the weights
+%! load fisheriris
+%! k = [101:110, 51:90];
+%! w = [ones(20, 1); 1e-8 * ones(30, 1)];
+%! Mdl = fitcensemble (meas(k,:), species(k), 'Method', 'RUSBoost', ...
+%!                     'NumLearningCycles', 1, 'Weights', w, ...
+%!                     'Learners', templateTree ('MaxNumSplits', 3));
+%! assert_equal (Mdl.Trained{1}.CutPoint(1), 1.65, 1e-14);
+
+%!test  # a cross-validated RUSBoost keeps its ratios
+%! CV = fitcensemble (Xi, Yi, 'Method', 'RUSBoost', 'Learners', T1, ...
+%!                    'NumLearningCycles', 3, 'RatioToSmallest', [1, 2, 2], ...
+%!                    'KFold', 3);
+%! assert_equal (CV.Trainable{1}.RatioToSmallest, [1, 2, 2]);
+%! assert_equal (CV.NumTrainedPerFold, [3, 3, 3]);
