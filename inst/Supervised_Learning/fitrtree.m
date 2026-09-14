@@ -280,6 +280,15 @@ endfunction
 %! assert_equal (A.CutPredictorIndex, B.CutPredictorIndex);
 %! assert_equal (isequaln (A.CutPoint, B.CutPoint), true);
 
+%!test  # MATLAB parity: a split budget spent inside a layer keeps the best
+%! load fisheriris
+%! T = fitrtree (meas(:,2:4), meas(:,1), 'MaxNumSplits', 10, 'MinLeafSize', 5);
+%! assert_equal (T.CutPredictorIndex', [2, 2, 2, 1, 2, 2, 0, 2, 1, 0, 0, ...
+%!                                      1, 2, 0, 0, 0, 0, 0, 0, 0, 0]);
+%! assert_equal (T.NodeSize', [150, 73, 77, 53, 20, 68, 9, 20, 33, 8, 12, ...
+%!                             43, 25, 11, 9, 20, 13, 33, 10, 15, 10]);
+%! assert_equal (T.CutPoint(13), 5.65, 1e-12);
+
 ## Test input validation
 %!error<fitrtree: too few arguments.> fitrtree ()
 %!error<fitrtree: too few arguments.> fitrtree (ones (4, 1))

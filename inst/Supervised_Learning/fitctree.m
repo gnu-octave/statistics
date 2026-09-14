@@ -352,6 +352,34 @@ endfunction
 %! assert_equal (A.CutPredictorIndex, B.CutPredictorIndex);
 %! assert_equal (isequaln (A.CutPoint, B.CutPoint), true);
 
+%!test  # MATLAB parity: a split budget spent inside a layer keeps the best
+%! load fisheriris
+%! T = fitctree (meas(:,1:2), species, 'MaxNumSplits', 7);
+%! assert_equal (T.CutPredictorIndex', [1, 2, 1, 0, 0, 2, 1, 0, 0, 2, 0, 0, 0]);
+%! assert_equal (T.NodeSize', [150, 52, 98, 7, 45, 43, 55, 38, 5, 43, 12, ...
+%!                             2, 41]);
+%! assert_equal (T.CutPoint([1, 2, 3, 6, 7, 10])', ...
+%!               [5.45, 2.8, 6.15, 3.45, 7.05, 2.4], 1e-12);
+
+%!test  # MATLAB parity: the budget ranks weighted splits by their gain
+%! load fisheriris
+%! w = [5 * ones(50, 1); (1:100)' / 20];
+%! T = fitctree (meas(:,1:2), species, 'MaxNumSplits', 6, 'Weights', w);
+%! assert_equal (T.CutPredictorIndex', [1, 2, 1, 1, 0, 2, 2, 0, 0, 0, 0, ...
+%!                                      0, 0]);
+%! assert_equal (T.NodeSize', [150, 59, 91, 12, 47, 36, 55, 3, 9, 33, 3, ...
+%!                             2, 53]);
+%! assert_equal (T.CutPoint([1, 2, 3, 4, 6, 7])', ...
+%!               [5.55, 2.8, 6.15, 4.95, 3.6, 2.4], 1e-12);
+
+%!test  # MATLAB parity: the budget ranks deviance splits by their gain
+%! load fisheriris
+%! T = fitctree (meas, species, 'MaxNumSplits', 4, ...
+%!               'SplitCriterion', 'deviance', 'MinParentSize', 2);
+%! assert_equal (T.CutPredictorIndex', [3, 0, 4, 3, 0, 0, 0]);
+%! assert_equal (T.NodeSize', [150, 50, 100, 54, 46, 48, 6]);
+%! assert_equal (T.CutPoint([1, 3, 4])', [2.45, 1.75, 4.95], 1e-12);
+
 ## Test input validation
 %!error<fitctree: too few arguments.> fitctree ()
 %!error<fitctree: too few arguments.> fitctree (ones (4, 1))

@@ -284,242 +284,292 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
 
   octave_idx_type numsplits = 0;
 
-  // Nodes are visited in index order, so a split's children are visited later
-  // in the same pass, which is what makes the numbering breadth first.
-  for (octave_idx_type idx = 0;
-       idx < static_cast<octave_idx_type> (nodes.size ()); idx++)
+  // The tree grows a layer at a time.  Every node of a layer is searched
+  // first, in index order, and only then are the splits made, so that when
+  // the layer holds more splittable nodes than MaxNumSplits has left, the
+  // ones left unsplit are those whose splits gain the least, as MATLAB
+  // documents under tree depth control, and not simply the last ones.
+  // Splits are made in index order, so a split's children still follow
+  // every node of the layer, which is what makes the numbering breadth first.
+  octave_idx_type lfirst = 0;
+  while (lfirst < static_cast<octave_idx_type> (nodes.size ()))
     {
-      Node& nd = nodes[idx];
-      const octave_idx_type start = nd.start;
-      const octave_idx_type stop = nd.stop;
+      const octave_idx_type llast
+        = static_cast<octave_idx_type> (nodes.size ());
+      const octave_idx_type lsize = llast - lfirst;
+      std::vector<octave_idx_type> lvar (lsize, 0);
+      std::vector<double> lval (lsize, 0.0);
+      std::vector<double> lgain (lsize, 0.0);
 
-      std::fill (tally.begin (), tally.end (), 0.0);
-      std::fill (tallyn.begin (), tallyn.end (), 0.0);
-      Moments nodemom;
-      nodemom.clear ();
-      double total = 0.0;
-      for (octave_idx_type i = start; i < stop; i++)
+      for (octave_idx_type idx = lfirst; idx < llast; idx++)
         {
-          octave_idx_type r = ord[0][i];
-          if (isreg)
-            nodemom.add (w[r], resp[r]);
-          else
-            {
-              tally[y[r]] += w[r];
-              tallyn[y[r]] += 1.0;
-            }
-          total += w[r];
-        }
-      nd.nsize = stop - start;
-      nd.nweight = total;
-      if (isreg)
-        {
-          nodesse.push_back (nodemom.sse ());
-          nodemean.push_back (nodemom.mean ());
-        }
-      else
-        {
-          nodecw.insert (nodecw.end (), tally.begin (), tally.end ());
-          nodecn.insert (nodecn.end (), tallyn.begin (), tallyn.end ());
-        }
+          Node& nd = nodes[idx];
+          const octave_idx_type start = nd.start;
+          const octave_idx_type stop = nd.stop;
 
-      if (idx == 0 && isreg)
-        rootsse = nodemom.sse ();
-
-      // A node with nothing left to separate is a leaf.  For a classifier
-      // that is one class; for a regression it is one distinct response, and
-      // QEToler holds it to a share of the whole tree's error rather than to
-      // exactly zero.
-      bool nothingtosplit;
-      if (isreg)
-        nothingtosplit = (nodemom.sse () <= qetoler * rootsse);
-      else
-        {
-          octave_idx_type nonempty = 0;
-          for (octave_idx_type k = 0; k < K; k++)
-            if (tally[k] > 0.0)
-              nonempty++;
-          nothingtosplit = (nonempty < 2);
-        }
-
-      if (nd.nsize < minparent || numsplits >= maxsplits || nothingtosplit)
-        continue;
-
-      octave_idx_type bestvar = 0;
-      double bestval = std::numeric_limits<double>::quiet_NaN ();
-      double bestgain = 0.0;
-
-      // A searched node tries a fresh subset of the predictors, drawn by a
-      // partial shuffle and put back in index order, so a tie between two
-      // predictors still goes to the lower index as it does without sampling.
-      // A node whose subset holds no valid split is a leaf; no second draw is
-      // made.
-      if (sampling)
-        {
-          for (octave_idx_type k = 0; k < nvars; k++)
-            std::swap (cand[k], cand[k + draw_below (rng, p - k)]);
-          std::sort (cand.begin (), cand.begin () + nvars);
-        }
-
-      for (octave_idx_type c = 0; c < nvars; c++)
-        {
-          const octave_idx_type j = cand[c];
-          const double *xj = X.data () + j * n;
-          const octave_idx_type *oj = &ord[j][0];
-
-          // The rows missing this predictor sit at the end of the range, so
-          // the ones that can be split are the prefix before them.
-          octave_idx_type have = stop;
-          while (have > start && std::isnan (xj[oj[have - 1]]))
-            have--;
-          if (have - start < 2 * minleaf)
-            continue;
-
-          std::fill (present.begin (), present.end (), 0.0);
-          Moments presmom, runmom;
-          presmom.clear ();
-          double wp = 0.0;
-          for (octave_idx_type i = start; i < have; i++)
-            {
-              octave_idx_type r = oj[i];
-              if (isreg)
-                presmom.add (w[r], resp[r]);
-              else
-                present[y[r]] += w[r];
-              wp += w[r];
-            }
-          const double presentimp = isreg ? presmom.sse () / wp
-                                          : impurity (present, wp, K, crit);
-
-          std::fill (running.begin (), running.end (), 0.0);
-          runmom.clear ();
-          double wl = 0.0;
-
-          // Position i splits after the i-th row of this node's order, so it
-          // leaves i + 1 rows on the left.  Only positions where the value
-          // changes are cuts, and each side must keep MinLeaf rows.
-          const octave_idx_type last = have - start - 1;
-          for (octave_idx_type i = 0; i < last; i++)
-            {
-              octave_idx_type r = oj[start + i];
-              if (isreg)
-                runmom.add (w[r], resp[r]);
-              else
-                running[y[r]] += w[r];
-              wl += w[r];
-
-              const octave_idx_type nleft = i + 1;
-              if (nleft < minleaf || (have - start) - nleft < minleaf)
-                continue;
-
-              const double xa = xj[r];
-              const double xb = xj[oj[start + i + 1]];
-              if (! (xa < xb))
-                continue;
-
-              const double wr = wp - wl;
-              double impl, impr;
-              if (isreg)
-                {
-                  Moments rest;
-                  rest.w = presmom.w - runmom.w;
-                  rest.wy = presmom.wy - runmom.wy;
-                  rest.wyy = presmom.wyy - runmom.wyy;
-                  impl = runmom.sse () / wl;
-                  impr = rest.sse () / wr;
-                }
-              else
-                {
-                  for (octave_idx_type k = 0; k < K; k++)
-                    other[k] = present[k] - running[k];
-                  impl = impurity (running, wl, K, crit);
-                  impr = impurity (other, wr, K, crit);
-                }
-
-              // The rows that are missing this predictor cannot be placed by
-              // it, so the split is judged on the rows it can place and then
-              // scaled by their share of the node.  Without that scaling a
-              // predictor known for a handful of rows would beat one known
-              // for all of them.
-              const double gain = (wp * presentimp - wl * impl - wr * impr)
-                                  / total;
-
-              if (gain > bestgain + std::fabs (bestgain) * GAIN_TIE_TOL)
-                {
-                  bestgain = gain;
-                  bestvar = j + 1;
-                  bestval = (xa + xb) / 2.0;
-                }
-            }
-        }
-
-      if (bestvar == 0 || bestgain <= 0.0)
-        continue;
-
-      // Mark which side each row takes, then partition every predictor's
-      // order in place, keeping the rows of each side in the order they were.
-      // A row missing the chosen predictor cannot be placed on either side,
-      // so it descends to neither child and is left in the tail of the range,
-      // counted at this node and nowhere below it.  Prediction stops such a
-      // row at this node for the same reason.
-      const double *xb = X.data () + (bestvar - 1) * n;
-      octave_idx_type nleft = 0, nright = 0;
-      for (octave_idx_type i = start; i < stop; i++)
-        {
-          octave_idx_type r = ord[0][i];
-          if (std::isnan (xb[r]))
-            side[r] = 2;
-          else if (xb[r] < bestval)
-            {
-              side[r] = 0;
-              nleft++;
-            }
-          else
-            {
-              side[r] = 1;
-              nright++;
-            }
-        }
-
-      for (octave_idx_type j = 0; j < p; j++)
-        {
-          octave_idx_type a = 0, b = 0, c = 0;
+          std::fill (tally.begin (), tally.end (), 0.0);
+          std::fill (tallyn.begin (), tallyn.end (), 0.0);
+          Moments nodemom;
+          nodemom.clear ();
+          double total = 0.0;
           for (octave_idx_type i = start; i < stop; i++)
             {
-              octave_idx_type r = ord[j][i];
-              if (side[r] == 0)
-                ord[j][start + a++] = r;
-              else if (side[r] == 1)
-                buffer[b++] = r;
+              octave_idx_type r = ord[0][i];
+              if (isreg)
+                nodemom.add (w[r], resp[r]);
               else
-                held[c++] = r;
+                {
+                  tally[y[r]] += w[r];
+                  tallyn[y[r]] += 1.0;
+                }
+              total += w[r];
             }
-          for (octave_idx_type i = 0; i < b; i++)
-            ord[j][start + a + i] = buffer[i];
-          for (octave_idx_type i = 0; i < c; i++)
-            ord[j][start + a + b + i] = held[i];
+          nd.nsize = stop - start;
+          nd.nweight = total;
+          if (isreg)
+            {
+              nodesse.push_back (nodemom.sse ());
+              nodemean.push_back (nodemom.mean ());
+            }
+          else
+            {
+              nodecw.insert (nodecw.end (), tally.begin (), tally.end ());
+              nodecn.insert (nodecn.end (), tallyn.begin (), tallyn.end ());
+            }
+
+          if (idx == 0 && isreg)
+            rootsse = nodemom.sse ();
+
+          // A node with nothing left to separate is a leaf.  For a classifier
+          // that is one class; for a regression it is one distinct response,
+          // and QEToler holds it to a share of the whole tree's error rather
+          // than to exactly zero.
+          bool nothingtosplit;
+          if (isreg)
+            nothingtosplit = (nodemom.sse () <= qetoler * rootsse);
+          else
+            {
+              octave_idx_type nonempty = 0;
+              for (octave_idx_type k = 0; k < K; k++)
+                if (tally[k] > 0.0)
+                  nonempty++;
+              nothingtosplit = (nonempty < 2);
+            }
+
+          if (nd.nsize < minparent || numsplits >= maxsplits || nothingtosplit)
+            continue;
+
+          octave_idx_type bestvar = 0;
+          double bestval = std::numeric_limits<double>::quiet_NaN ();
+          double bestgain = 0.0;
+
+          // A searched node tries a fresh subset of the predictors, drawn by a
+          // partial shuffle and put back in index order, so a tie between two
+          // predictors still goes to the lower index as it does without
+          // sampling. A node whose subset holds no valid split is a leaf; no
+          // second draw is made.
+          if (sampling)
+            {
+              for (octave_idx_type k = 0; k < nvars; k++)
+                std::swap (cand[k], cand[k + draw_below (rng, p - k)]);
+              std::sort (cand.begin (), cand.begin () + nvars);
+            }
+
+          for (octave_idx_type c = 0; c < nvars; c++)
+            {
+              const octave_idx_type j = cand[c];
+              const double *xj = X.data () + j * n;
+              const octave_idx_type *oj = &ord[j][0];
+
+              // The rows missing this predictor sit at the end of the range, so
+              // the ones that can be split are the prefix before them.
+              octave_idx_type have = stop;
+              while (have > start && std::isnan (xj[oj[have - 1]]))
+                have--;
+              if (have - start < 2 * minleaf)
+                continue;
+
+              std::fill (present.begin (), present.end (), 0.0);
+              Moments presmom, runmom;
+              presmom.clear ();
+              double wp = 0.0;
+              for (octave_idx_type i = start; i < have; i++)
+                {
+                  octave_idx_type r = oj[i];
+                  if (isreg)
+                    presmom.add (w[r], resp[r]);
+                  else
+                    present[y[r]] += w[r];
+                  wp += w[r];
+                }
+              const double presentimp = isreg ? presmom.sse () / wp
+                                              : impurity (present, wp, K, crit);
+
+              std::fill (running.begin (), running.end (), 0.0);
+              runmom.clear ();
+              double wl = 0.0;
+
+              // Position i splits after the i-th row of this node's order, so
+              // it leaves i + 1 rows on the left.  Only positions where the
+              // value changes are cuts, and each side must keep MinLeaf rows.
+              const octave_idx_type last = have - start - 1;
+              for (octave_idx_type i = 0; i < last; i++)
+                {
+                  octave_idx_type r = oj[start + i];
+                  if (isreg)
+                    runmom.add (w[r], resp[r]);
+                  else
+                    running[y[r]] += w[r];
+                  wl += w[r];
+
+                  const octave_idx_type nleft = i + 1;
+                  if (nleft < minleaf || (have - start) - nleft < minleaf)
+                    continue;
+
+                  const double xa = xj[r];
+                  const double xb = xj[oj[start + i + 1]];
+                  if (! (xa < xb))
+                    continue;
+
+                  const double wr = wp - wl;
+                  double impl, impr;
+                  if (isreg)
+                    {
+                      Moments rest;
+                      rest.w = presmom.w - runmom.w;
+                      rest.wy = presmom.wy - runmom.wy;
+                      rest.wyy = presmom.wyy - runmom.wyy;
+                      impl = runmom.sse () / wl;
+                      impr = rest.sse () / wr;
+                    }
+                  else
+                    {
+                      for (octave_idx_type k = 0; k < K; k++)
+                        other[k] = present[k] - running[k];
+                      impl = impurity (running, wl, K, crit);
+                      impr = impurity (other, wr, K, crit);
+                    }
+
+                  // The rows that are missing this predictor cannot be placed
+                  // by it, so the split is judged on the rows it can place and
+                  // then scaled by their share of the node.  Without that
+                  // scaling a predictor known for a handful of rows would beat
+                  // one known for all of them.
+                  const double gain = (wp * presentimp - wl * impl - wr * impr)
+                                      / total;
+
+                  if (gain > bestgain + std::fabs (bestgain) * GAIN_TIE_TOL)
+                    {
+                      bestgain = gain;
+                      bestvar = j + 1;
+                      bestval = (xa + xb) / 2.0;
+                    }
+                }
+            }
+
+          if (bestvar == 0 || bestgain <= 0.0)
+            continue;
+
+          // The gain is per unit of the node's weight; weighted by it, it is
+          // the reduction in the tree's risk, which is what ranks nodes of
+          // different sizes against one another.
+          lvar[idx - lfirst] = bestvar;
+          lval[idx - lfirst] = bestval;
+          lgain[idx - lfirst] = bestgain * total;
         }
 
-      Node kid;
-      kid.left = kid.right = kid.cutvar = 0;
-      kid.cutval = std::numeric_limits<double>::quiet_NaN ();
-      kid.parent = idx + 1;
-      kid.nsize = 0;
-      kid.nweight = 0.0;
+      // Keep the most successful splits the budget allows.  A stable sort
+      // leaves the earlier node ahead on a tie.
+      std::vector<octave_idx_type> found;
+      for (octave_idx_type i = 0; i < lsize; i++)
+        if (lvar[i] != 0)
+          found.push_back (i);
+      const octave_idx_type budget = maxsplits - numsplits;
+      if (static_cast<octave_idx_type> (found.size ()) > budget)
+        {
+          std::stable_sort (found.begin (), found.end (),
+                            [&lgain] (octave_idx_type a, octave_idx_type b)
+                            { return lgain[a] > lgain[b]; });
+          for (std::size_t i = budget; i < found.size (); i++)
+            lvar[found[i]] = 0;
+        }
 
-      nodes[idx].cutvar = bestvar;
-      nodes[idx].cutval = bestval;
-      nodes[idx].left = static_cast<octave_idx_type> (nodes.size ()) + 1;
-      nodes[idx].right = static_cast<octave_idx_type> (nodes.size ()) + 2;
+      for (octave_idx_type idx = lfirst; idx < llast; idx++)
+        {
+          if (lvar[idx - lfirst] == 0)
+            continue;
 
-      kid.start = start;
-      kid.stop = start + nleft;
-      nodes.push_back (kid);
-      kid.start = start + nleft;
-      kid.stop = start + nleft + nright;
-      nodes.push_back (kid);
+          // Mark which side each row takes, then partition every predictor's
+          // order in place, keeping the rows of each side in the order they
+          // were. A row missing the chosen predictor cannot be placed on either
+          // side, so it descends to neither child and is left in the tail of
+          // the range, counted at this node and nowhere below it.  Prediction
+          // stops such a row at this node for the same reason.
+          const octave_idx_type start = nodes[idx].start;
+          const octave_idx_type stop = nodes[idx].stop;
+          const octave_idx_type bestvar = lvar[idx - lfirst];
+          const double bestval = lval[idx - lfirst];
+          const double *xb = X.data () + (bestvar - 1) * n;
+          octave_idx_type nleft = 0, nright = 0;
+          for (octave_idx_type i = start; i < stop; i++)
+            {
+              octave_idx_type r = ord[0][i];
+              if (std::isnan (xb[r]))
+                side[r] = 2;
+              else if (xb[r] < bestval)
+                {
+                  side[r] = 0;
+                  nleft++;
+                }
+              else
+                {
+                  side[r] = 1;
+                  nright++;
+                }
+            }
 
-      numsplits++;
+          for (octave_idx_type j = 0; j < p; j++)
+            {
+              octave_idx_type a = 0, b = 0, c = 0;
+              for (octave_idx_type i = start; i < stop; i++)
+                {
+                  octave_idx_type r = ord[j][i];
+                  if (side[r] == 0)
+                    ord[j][start + a++] = r;
+                  else if (side[r] == 1)
+                    buffer[b++] = r;
+                  else
+                    held[c++] = r;
+                }
+              for (octave_idx_type i = 0; i < b; i++)
+                ord[j][start + a + i] = buffer[i];
+              for (octave_idx_type i = 0; i < c; i++)
+                ord[j][start + a + b + i] = held[i];
+            }
+
+          Node kid;
+          kid.left = kid.right = kid.cutvar = 0;
+          kid.cutval = std::numeric_limits<double>::quiet_NaN ();
+          kid.parent = idx + 1;
+          kid.nsize = 0;
+          kid.nweight = 0.0;
+
+          nodes[idx].cutvar = bestvar;
+          nodes[idx].cutval = bestval;
+          nodes[idx].left = static_cast<octave_idx_type> (nodes.size ()) + 1;
+          nodes[idx].right = static_cast<octave_idx_type> (nodes.size ()) + 2;
+
+          kid.start = start;
+          kid.stop = start + nleft;
+          nodes.push_back (kid);
+          kid.start = start + nleft;
+          kid.stop = start + nleft + nright;
+          nodes.push_back (kid);
+
+          numsplits++;
+        }
+
+      lfirst = llast;
     }
 
   octave_idx_type nn = static_cast<octave_idx_type> (nodes.size ());
