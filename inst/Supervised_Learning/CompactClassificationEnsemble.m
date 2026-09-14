@@ -297,15 +297,23 @@ classdef CompactClassificationEnsemble
       S = this.STfun (ensembleScores (this, X, o, o.Mode));
       L = zeros (size (S, 3), 1);
       for k = 1:size (S, 3)
-        Sk = S(:,:,k);
+        ## A row no learner may score has no scores to judge, and is left out
+        ## with its weight, the rest renormalized, as MATLAB does.
+        have = ! any (isnan (S(:,:,k)), 2);
+        wk = w(have);
+        if (! (sum (wk) > 0))
+          L(k) = NaN;
+          continue;
+        endif
+        wk /= sum (wk);
+        Sk = S(have,:,k);
+        gk = gY(have);
         if (is_function_handle (o.LossFun))
           C = false (size (Sk));
-          C(sub2ind (size (Sk), (1:rows (Sk))', gY)) = true;
-          L(k) = o.LossFun (C, Sk, w, this.Cost);
-        elseif (any (isnan (Sk(w > 0,:))(:)))
-          L(k) = NaN;
+          C(sub2ind (size (Sk), (1:rows (Sk))', gk)) = true;
+          L(k) = o.LossFun (C, Sk, wk, this.Cost);
         else
-          L(k) = classificationLoss (o.LossFun, Sk, gY, w, this.Cost);
+          L(k) = classificationLoss (o.LossFun, Sk, gk, wk, this.Cost);
         endif
       endfor
 
@@ -319,7 +327,11 @@ classdef CompactClassificationEnsemble
       [gY, w] = ensembleResponse (this, X, Y, o, caller);
       S = this.STfun (ensembleScores (this, X, o, o.Mode));
       m = marginsOf (S, gY, size (S, 3));
-      e = sum (w .* m, 1)(:);
+      ## Rows without a margin are left out and the weights renormalized.
+      have = ! isnan (m);
+      m(! have) = 0;
+      W2 = w .* have;
+      e = (sum (W2 .* m, 1) ./ sum (W2, 1))(:);
 
     endfunction
 
@@ -330,6 +342,19 @@ classdef CompactClassificationEnsemble
       gY = ensembleResponse (this, X, Y, o, caller);
       S = this.STfun (ensembleScores (this, X, o, 'ensemble'));
       m = marginsOf (S, gY, 1);
+
+    endfunction
+
+    function [imp, ma] = ensembleImportance (this)
+
+      imp = zeros (1, numel (this.PredictorNames));
+      for t = 1:this.NumTrained
+        imp += this.TrainedWeights(t) * predictorImportance (this.Trained{t});
+      endfor
+      if (sum (this.TrainedWeights) > 0)
+        imp /= sum (this.TrainedWeights);
+      endif
+      ma = [];
 
     endfunction
 
@@ -412,8 +437,9 @@ classdef CompactClassificationEnsemble
     ## @end multitable
     ##
     ## @qcode{'Learners'} and @qcode{'UseObsForLearner'} are taken as by
-    ## @code{predict}.  The loss is @code{NaN} when a row that carries weight
-    ## has @code{NaN} scores.
+    ## @code{predict}.  A row with @code{NaN} scores, which no learner may
+    ## score, is left out and the weights are renormalized over the rest;
+    ## @code{edge} does the same.
     ##
     ## @seealso{CompactClassificationEnsemble,
     ## CompactClassificationEnsemble.edge}
@@ -473,6 +499,27 @@ classdef CompactClassificationEnsemble
       endif
       m = ensembleMargin (this, X, Y, varargin, ...
                           'CompactClassificationEnsemble.margin');
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationEnsemble} {@var{imp} =} predictorImportance (@var{obj})
+    ## @deftypefnx {CompactClassificationEnsemble} {[@var{imp}, @var{ma}] =} predictorImportance (@var{obj})
+    ##
+    ## Estimate the importance of each predictor.
+    ##
+    ## @var{imp} is a row vector with one element per predictor, the average
+    ## over the trees of each tree's @code{predictorImportance}, weighted by
+    ## @code{TrainedWeights}.  GentleBoost and LogitBoost ensembles take the
+    ## importance of their regression trees.  @var{ma}, the predictive
+    ## measure of association between the predictors, is empty, the trees
+    ## growing no surrogate splits.
+    ##
+    ## @seealso{CompactClassificationEnsemble}
+    ## @end deftypefn
+    function [imp, ma] = predictorImportance (this)
+
+      [imp, ma] = ensembleImportance (this);
 
     endfunction
 
@@ -821,3 +868,32 @@ endclassdef
 %!error<CompactClassificationEnsemble.subsasgn: 'ScoreTransform' must be a character vector or a 'function_handle' object.> ...
 %! D = C;
 %! D.ScoreTransform = 1;
+
+%!test  # MATLAB parity: importance is the weighted average over the learners
+%! [imp, ma] = predictorImportance (C);
+%! assert_equal (imp, [0.020544313498471, 0, 0.094343052487178, ...
+%!                     0.131555749375574], 1e-13);
+%! assert_equal (ma, []);
+
+%!test  # MATLAB parity: the importance of AdaBoostM2 stumps
+%! load fisheriris
+%! M = fitcensemble (meas, species, 'Method', 'AdaBoostM2', ...
+%!                   'NumLearningCycles', 4, ...
+%!                   'Learners', templateTree ('MaxNumSplits', 1));
+%! assert_equal (predictorImportance (compact (M)), ...
+%!               [0, 0, 0.230674233368758, 0.072325623666526], 1e-13);
+
+%!test  # MATLAB parity: boosted regression trees give their importance
+%! M = fitcensemble (X2, Y2, 'Method', 'LogitBoost', 'NumLearningCycles', 3, ...
+%!                   'Learners', templateTree ('MaxNumSplits', 1), ...
+%!                   'LearnRate', 0.5);
+%! assert_equal (predictorImportance (M), ...
+%!               [0, 0, 0.698823105603178, 1.563129005828868], 1e-13);
+
+%!test  # MATLAB parity: a row no learner may score is left out of the loss
+%! U = true (100, 5);
+%! U(1,:) = false;
+%! miss = ! strcmp (predict (C, X2(2:end,:)), Y2(2:end));
+%! assert_equal (loss (C, X2, Y2, 'UseObsForLearner', U), mean (miss), 1e-15);
+%! m = margin (C, X2(2:end,:), Y2(2:end));
+%! assert_equal (edge (C, X2, Y2, 'UseObsForLearner', U), mean (m), 1e-13);

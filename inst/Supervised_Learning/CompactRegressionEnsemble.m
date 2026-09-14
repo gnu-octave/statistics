@@ -255,16 +255,34 @@ classdef CompactRegressionEnsemble
       w = w(keep) / sum (w(keep));
       L = zeros (columns (Yf), 1);
       for k = 1:columns (Yf)
-        if (is_function_handle (o.LossFun))
-          L(k) = o.LossFun (Y, Yf(:,k), w);
-        elseif (any (isnan (Yf(w > 0,k))))
+        ## A row no tree may predict is left out with its weight, the rest
+        ## renormalized, as MATLAB does.
+        have = ! isnan (Yf(:,k));
+        wk = w(have);
+        if (! (sum (wk) > 0))
           L(k) = NaN;
+          continue;
+        endif
+        wk /= sum (wk);
+        if (is_function_handle (o.LossFun))
+          L(k) = o.LossFun (Y(have), Yf(have,k), wk);
         else
-          d = Yf(:,k) - Y;
-          d(w == 0) = 0;
-          L(k) = sum (w .* d .^ 2);
+          L(k) = sum (wk .* (Yf(have,k) - Y(have)) .^ 2);
         endif
       endfor
+
+    endfunction
+
+    function [imp, ma] = ensembleImportance (this)
+
+      imp = zeros (1, numel (this.PredictorNames));
+      for t = 1:this.NumTrained
+        imp += this.TrainedWeights(t) * predictorImportance (this.Trained{t});
+      endfor
+      if (sum (this.TrainedWeights) > 0)
+        imp /= sum (this.TrainedWeights);
+      endif
+      ma = [];
 
     endfunction
 
@@ -335,7 +353,8 @@ classdef CompactRegressionEnsemble
     ## @end multitable
     ##
     ## @qcode{'Learners'} and @qcode{'UseObsForLearner'} are taken as by
-    ## @code{predict}.
+    ## @code{predict}.  A row that no tree may predict is left out and the
+    ## weights are renormalized over the rest.
     ##
     ## @seealso{CompactRegressionEnsemble, CompactRegressionEnsemble.predict}
     ## @end deftypefn
@@ -346,6 +365,26 @@ classdef CompactRegressionEnsemble
       endif
       L = ensembleLoss (this, X, Y, varargin, ...
                         'CompactRegressionEnsemble.loss');
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactRegressionEnsemble} {@var{imp} =} predictorImportance (@var{obj})
+    ## @deftypefnx {CompactRegressionEnsemble} {[@var{imp}, @var{ma}] =} predictorImportance (@var{obj})
+    ##
+    ## Estimate the importance of each predictor.
+    ##
+    ## @var{imp} is a row vector with one element per predictor, the average
+    ## over the trees of each tree's @code{predictorImportance}, weighted by
+    ## @code{TrainedWeights}.  @var{ma}, the predictive measure of
+    ## association between the predictors, is empty, the trees growing no
+    ## surrogate splits.
+    ##
+    ## @seealso{CompactRegressionEnsemble}
+    ## @end deftypefn
+    function [imp, ma] = predictorImportance (this)
+
+      [imp, ma] = ensembleImportance (this);
 
     endfunction
 
@@ -597,3 +636,16 @@ endclassdef
 %!error<CompactRegressionEnsemble: 'ResponseTransform' must be a character vector or a function handle.> ...
 %! D = C;
 %! D.ResponseTransform = 1;
+
+%!test  # MATLAB parity: importance is the weighted average over the trees
+%! M = fitrensemble (X, y, 'NumLearningCycles', 3, 'LearnRate', 0.5, ...
+%!                   'Learners', templateTree ('MaxNumSplits', 1));
+%! [imp, ma] = predictorImportance (compact (M));
+%! assert_equal (imp, [0, 0.223154680811778, 0], 1e-13);
+%! assert_equal (ma, []);
+
+%!test  # MATLAB parity: a row no tree may predict is left out of the loss
+%! U = true (150, 4);
+%! U(1,:) = false;
+%! e = mean ((predict (C, X(2:end,:)) - y(2:end)) .^ 2);
+%! assert_equal (loss (C, X, y, 'UseObsForLearner', U), e, 1e-14);

@@ -241,6 +241,161 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
       m = resubMargin@ClassificationEnsemble (this, varargin{:});
     endfunction
 
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{imp} =} predictorImportance (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {[@var{imp}, @var{ma}] =} predictorImportance (@var{obj})
+    ##
+    ## Estimate the importance of each predictor.
+    ##
+    ## The mean over the trees of each tree's @code{predictorImportance}, as
+    ## @code{CompactClassificationEnsemble.predictorImportance} computes it.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobPermutedPredictorImportance}
+    ## @end deftypefn
+    function [imp, ma] = predictorImportance (this)
+      [imp, ma] = predictorImportance@ClassificationEnsemble (this);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{label} =} oobPredict (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {[@var{label}, @var{scores}] =} oobPredict (@dots{})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {[@dots{}] =} oobPredict (@dots{}, 'Learners', @var{idx})
+    ##
+    ## Out-of-bag predictions for the training data.
+    ##
+    ## Each training observation is classified by the trees whose samples
+    ## left it out, as @code{predict} classifies it with
+    ## @qcode{'UseObsForLearner'} set to @code{! UseObsForLearner}.  An
+    ## observation in the sample of every tree used has @code{NaN} scores and
+    ## is given the class of greatest prior probability.  @qcode{'Learners'}
+    ## restricts the trees.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobLoss}
+    ## @end deftypefn
+    function [label, scores] = oobPredict (this, varargin)
+      caller = 'ClassificationBaggedEnsemble.oobPredict';
+      args = oobArgs (varargin, {'Learners'}, caller);
+      [label, scores] = ensemblePredict (compact (this), this.X, ...
+                                         [{'UseObsForLearner', ...
+                                           ! this.UseObsForLearner}, args], ...
+                                         caller);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{L} =} oobLoss (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{L} =} oobLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Out-of-bag classification loss.
+    ##
+    ## The loss of the out-of-bag scores against @code{Y}, weighted by
+    ## @code{W}, an observation in the sample of every tree used being left
+    ## out.  @qcode{'LossFun'} and @qcode{'Mode'} are taken as by
+    ## @code{CompactClassificationEnsemble.loss}, and @qcode{'Learners'}
+    ## restricts the trees.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobPredict}
+    ## @end deftypefn
+    function L = oobLoss (this, varargin)
+      caller = 'ClassificationBaggedEnsemble.oobLoss';
+      args = oobArgs (varargin, {'Learners', 'LossFun', 'Mode'}, caller);
+      L = ensembleLoss (compact (this), this.X, this.Y, ...
+                        [{'UseObsForLearner', ! this.UseObsForLearner, ...
+                          'Weights', this.W}, args], caller);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{e} =} oobEdge (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{e} =} oobEdge (@dots{}, @var{name}, @var{value})
+    ##
+    ## Out-of-bag classification edge.
+    ##
+    ## The weighted mean of the out-of-bag margins, weighted by @code{W}.
+    ## @qcode{'Mode'} and @qcode{'Learners'} are taken as by @code{oobLoss}.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobMargin}
+    ## @end deftypefn
+    function e = oobEdge (this, varargin)
+      caller = 'ClassificationBaggedEnsemble.oobEdge';
+      args = oobArgs (varargin, {'Learners', 'Mode'}, caller);
+      e = ensembleEdge (compact (this), this.X, this.Y, ...
+                        [{'UseObsForLearner', ! this.UseObsForLearner, ...
+                          'Weights', this.W}, args], caller);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{m} =} oobMargin (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{m} =} oobMargin (@dots{}, 'Learners', @var{idx})
+    ##
+    ## Out-of-bag classification margins.
+    ##
+    ## The margin of each training observation under its out-of-bag scores,
+    ## @code{NaN} for one in the sample of every tree used.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobEdge}
+    ## @end deftypefn
+    function m = oobMargin (this, varargin)
+      caller = 'ClassificationBaggedEnsemble.oobMargin';
+      args = oobArgs (varargin, {'Learners'}, caller);
+      m = ensembleMargin (compact (this), this.X, this.Y, ...
+                          [{'UseObsForLearner', ...
+                            ! this.UseObsForLearner}, args], caller);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{imp} =} oobPermutedPredictorImportance (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{imp} =} oobPermutedPredictorImportance (@dots{}, 'Learners', @var{idx})
+    ##
+    ## Out-of-bag predictor importance by permutation.
+    ##
+    ## For each tree, the values of each predictor are permuted among the
+    ## observations out of its bag, and the tree's misclassification rate on
+    ## them, weighted by @code{W}, is taken before and after.  @var{imp} holds,
+    ## for each predictor, the mean of the rise over the trees divided by its
+    ## standard deviation over the trees, zero where the mean is zero.
+    ## @qcode{'Learners'} restricts the trees.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.predictorImportance}
+    ## @end deftypefn
+    function imp = oobPermutedPredictorImportance (this, varargin)
+
+      caller = 'ClassificationBaggedEnsemble.oobPermutedPredictorImportance';
+      args = oobArgs (varargin, {'Learners', 'Options'}, caller);
+      learners = 1:this.NumTrained;
+      for i = 1:2:numel (args)
+        if (strcmpi (args{i}, 'Options'))
+          error ("%s: 'Options' is not implemented.", caller);
+        endif
+        learners = oobLearners (args{i+1}, this.NumTrained, caller);
+      endfor
+      p = columns (this.X);
+      gY = labelIndices (this.ClassNames, this.Y);
+      D = zeros (numel (learners), p);
+      for j = 1:numel (learners)
+        t = learners(j);
+        r = find (! this.UseObsForLearner(:,t));
+        w = this.W(r);
+        if (isempty (r) || ! (sum (w) > 0))
+          continue;
+        endif
+        w /= sum (w);
+        tree = this.Trained{t};
+        Xo = this.X(r,:);
+        miss = @(Z) labelIndices (this.ClassNames, predict (tree, Z)) != gY(r);
+        e0 = sum (w .* miss (Xo));
+        for v = 1:p
+          Xp = Xo;
+          Xp(:,v) = Xo(randperm (numel (r)), v);
+          D(j,v) = sum (w .* miss (Xp)) - e0;
+        endfor
+      endfor
+      imp = mean (D, 1) ./ std (D, 0, 1);
+      imp(mean (D, 1) == 0) = 0;
+
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -255,6 +410,33 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
   endmethods
 
 endclassdef
+
+## The Name-Value pairs of an out-of-bag method, refused unless in ALLOWED.
+function args = oobArgs (args, allowed, caller)
+
+  if (mod (numel (args), 2) != 0)
+    error ("%s: name-value arguments must be in pairs.", caller);
+  endif
+  for i = 1:2:numel (args)
+    if (! (ischar (args{i}) && any (strcmpi (args{i}, allowed))))
+      error ("%s: invalid parameter name in optional pair arguments.", ...
+             caller);
+    endif
+  endfor
+
+endfunction
+
+## The indices of the learners 'Learners' names.
+function learners = oobLearners (val, T, caller)
+
+  if (! (isnumeric (val) && isvector (val) && isreal (val)
+         && all (val >= 1) && all (val <= T) && all (val == fix (val))))
+    error (strcat ("%s: 'Learners' must be a vector of indices of", ...
+                   " trained learners."), caller);
+  endif
+  learners = double (val(:)');
+
+endfunction
 
 ## Test output
 %!test  # MATLAB parity: the properties of a bagged ensemble
@@ -344,3 +526,116 @@ endclassdef
 %! load fisheriris
 %! predict (ClassificationBaggedEnsemble (meas, species, ...
 %!                                        'NumLearningCycles', 1))
+
+%!test  # MATLAB parity: the importance of a bagged ensemble is the mean
+%! load fisheriris
+%! rng (1);
+%! Mdl = ClassificationBaggedEnsemble (meas, species, 'NumLearningCycles', 5);
+%! I = cell2mat (cellfun (@(t) predictorImportance (t), Mdl.Trained, ...
+%!                        'UniformOutput', false));
+%! assert_equal (predictorImportance (Mdl), mean (I), 1e-15);
+
+%!test  # MATLAB parity: out-of-bag predictions invert UseObsForLearner
+%! load fisheriris
+%! rng (2);
+%! Mdl = ClassificationBaggedEnsemble (meas, species, 'NumLearningCycles', 6);
+%! U = ! Mdl.UseObsForLearner;
+%! [l1, s1] = oobPredict (Mdl);
+%! [l2, s2] = predict (Mdl, meas, 'UseObsForLearner', U);
+%! assert_equal (l1, l2);
+%! assert_equal (isequaln (s1, s2), true);
+%! r = find (all (Mdl.UseObsForLearner, 2));
+%! assert_equal (all (isnan (s1(r,:))(:)), true);
+
+%!test  # MATLAB parity: the out-of-bag loss leaves out rows in every bag
+%! load fisheriris
+%! rng (2);
+%! Mdl = ClassificationBaggedEnsemble (meas, species, 'NumLearningCycles', 6);
+%! [~, s] = oobPredict (Mdl);
+%! have = ! any (isnan (s), 2);
+%! g = grp2idx (species);
+%! st = s(sub2ind (size (s), (1:150)', g));
+%! so = s;
+%! so(sub2ind (size (s), (1:150)', g)) = -Inf;
+%! miss = st <= max (so, [], 2);
+%! assert_equal (oobLoss (Mdl), mean (miss(have)), 1e-15);
+%! U = ! Mdl.UseObsForLearner;
+%! assert_equal (oobLoss (Mdl, 'Mode', 'cumulative'), ...
+%!               loss (Mdl, meas, species, 'UseObsForLearner', U, ...
+%!                     'Mode', 'cumulative'), 1e-15);
+%! assert_equal (oobLoss (Mdl, 'Learners', [2, 4]), ...
+%!               loss (Mdl, meas, species, 'UseObsForLearner', U, ...
+%!                     'Learners', [2, 4]), 1e-15);
+
+%!test  # MATLAB parity: the out-of-bag edge and margins
+%! load fisheriris
+%! rng (2);
+%! Mdl = ClassificationBaggedEnsemble (meas, species, 'NumLearningCycles', 6);
+%! U = ! Mdl.UseObsForLearner;
+%! assert_equal (oobEdge (Mdl), edge (Mdl, meas, species, ...
+%!                                    'UseObsForLearner', U), 1e-15);
+%! m = oobMargin (Mdl);
+%! assert_equal (isequaln (m, margin (Mdl, meas, species, ...
+%!                                    'UseObsForLearner', U)), true);
+%! assert_equal (oobEdge (Mdl), mean (m(! isnan (m))), 1e-14);
+
+%!test  # MATLAB parity: permuted importance of one tree is zero or infinite
+%! load fisheriris
+%! rng (4);
+%! Mdl = ClassificationBaggedEnsemble (meas, species, 'NumLearningCycles', 1);
+%! imp = oobPermutedPredictorImportance (Mdl);
+%! assert_equal (size (imp), [1, 4]);
+%! assert_equal (all (imp == 0 | isinf (imp)), true);
+
+%!test  # MATLAB parity: a constant predictor has zero permuted importance
+%! load fisheriris
+%! rng (5);
+%! Mdl = ClassificationBaggedEnsemble ([meas, ones(150, 1)], species, ...
+%!                                     'NumLearningCycles', 20);
+%! imp = oobPermutedPredictorImportance (Mdl);
+%! assert_equal (imp(5), 0);
+%! assert_equal (size (oobPermutedPredictorImportance (Mdl, ...
+%!                                                     'Learners', 1:5)), ...
+%!               [1, 5]);
+
+%!test  # MATLAB parity: permuting a petal measurement matters most
+%! load fisheriris
+%! rng (3);
+%! Mdl = ClassificationBaggedEnsemble (meas, species, 'NumLearningCycles', 60);
+%! imp = oobPermutedPredictorImportance (Mdl);
+%! assert_equal (min (imp(3:4)) > max (imp(1:2)), true);
+
+%!error<ClassificationBaggedEnsemble.oobPredict: invalid parameter name in optional pair arguments.> ...
+%! load fisheriris
+%! oobPredict (ClassificationBaggedEnsemble (meas, species, ...
+%!                                           'NumLearningCycles', 1), ...
+%!             'UseObsForLearner', true (150, 1))
+%!error<ClassificationBaggedEnsemble.oobLoss: name-value arguments must be in pairs.> ...
+%! load fisheriris
+%! oobLoss (ClassificationBaggedEnsemble (meas, species, ...
+%!                                        'NumLearningCycles', 1), 'Mode')
+%!error<ClassificationBaggedEnsemble.oobLoss: invalid parameter name in optional pair arguments.> ...
+%! load fisheriris
+%! oobLoss (ClassificationBaggedEnsemble (meas, species, ...
+%!                                        'NumLearningCycles', 1), ...
+%!          'Weights', ones (150, 1))
+%!error<ClassificationBaggedEnsemble.oobEdge: invalid parameter name in optional pair arguments.> ...
+%! load fisheriris
+%! oobEdge (ClassificationBaggedEnsemble (meas, species, ...
+%!                                        'NumLearningCycles', 1), ...
+%!          'LossFun', 'hinge')
+%!error<ClassificationBaggedEnsemble.oobMargin: invalid parameter name in optional pair arguments.> ...
+%! load fisheriris
+%! oobMargin (ClassificationBaggedEnsemble (meas, species, ...
+%!                                          'NumLearningCycles', 1), ...
+%!            'Mode', 'cumulative')
+%!error<ClassificationBaggedEnsemble.oobPermutedPredictorImportance: 'Learners' must be a vector of indices of trained learners.> ...
+%! load fisheriris
+%! oobPermutedPredictorImportance (ClassificationBaggedEnsemble (meas, ...
+%!                                 species, 'NumLearningCycles', 1), ...
+%!                                 'Learners', 2)
+%!error<ClassificationBaggedEnsemble.oobPermutedPredictorImportance: 'Options' is not implemented.> ...
+%! load fisheriris
+%! oobPermutedPredictorImportance (ClassificationBaggedEnsemble (meas, ...
+%!                                 species, 'NumLearningCycles', 1), ...
+%!                                 'Options', struct ())

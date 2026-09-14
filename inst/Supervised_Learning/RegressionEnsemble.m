@@ -672,6 +672,23 @@ classdef RegressionEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionEnsemble} {@var{imp} =} predictorImportance (@var{obj})
+    ## @deftypefnx {RegressionEnsemble} {[@var{imp}, @var{ma}] =} predictorImportance (@var{obj})
+    ##
+    ## Estimate the importance of each predictor.
+    ##
+    ## Behaves as @code{CompactRegressionEnsemble.predictorImportance}.
+    ##
+    ## @seealso{RegressionEnsemble,
+    ## CompactRegressionEnsemble.predictorImportance}
+    ## @end deftypefn
+    function [imp, ma] = predictorImportance (this)
+
+      [imp, ma] = ensembleImportance (compact (this));
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {RegressionEnsemble} {@var{yfit} =} resubPredict (@var{obj})
     ## @deftypefnx {RegressionEnsemble} {@var{yfit} =} resubPredict (@dots{}, @var{name}, @var{value})
     ##

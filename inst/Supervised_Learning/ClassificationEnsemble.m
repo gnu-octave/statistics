@@ -793,6 +793,23 @@ classdef ClassificationEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationEnsemble} {@var{imp} =} predictorImportance (@var{obj})
+    ## @deftypefnx {ClassificationEnsemble} {[@var{imp}, @var{ma}] =} predictorImportance (@var{obj})
+    ##
+    ## Estimate the importance of each predictor.
+    ##
+    ## Behaves as @code{CompactClassificationEnsemble.predictorImportance}.
+    ##
+    ## @seealso{ClassificationEnsemble,
+    ## CompactClassificationEnsemble.predictorImportance}
+    ## @end deftypefn
+    function [imp, ma] = predictorImportance (this)
+
+      [imp, ma] = ensembleImportance (compact (this));
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationEnsemble} {@var{label} =} resubPredict (@var{obj})
     ## @deftypefnx {ClassificationEnsemble} {[@var{label}, @var{scores}] =} resubPredict (@dots{})
     ## @deftypefnx {ClassificationEnsemble} {[@dots{}] =} resubPredict (@dots{}, @var{name}, @var{value})
@@ -1234,3 +1251,9 @@ endfunction
 %!error<ClassificationEnsemble.subsasgn: 'ScoreTransform' must be a character vector or a 'function_handle' object.> ...
 %! Mdl = ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1);
 %! Mdl.ScoreTransform = 1;
+
+%!test  # MATLAB parity: GentleBoost importance over its regression trees
+%! Mdl = ClassificationEnsemble (X2, Y2, 'Method', 'GentleBoost', ...
+%!                               'NumLearningCycles', 3, 'Learners', S);
+%! assert_equal (predictorImportance (Mdl), ...
+%!               [0, 0, 0.222096984079193, 0.388833770583033], 1e-13);
