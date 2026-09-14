@@ -78,6 +78,14 @@
 ## of freedom, where @math{k} is the number of controlling variables and @math{n}
 ## the number of observations used.
 ##
+## The data are centered, and the controlling variables rescaled, before the
+## regression, which leaves the result unchanged in exact arithmetic and keeps
+## it accurate in floating point.  Shifting or rescaling a controlling
+## variable, or giving the two variables very different scales, does not
+## change the coefficient.  MATLAB's coefficient does change in those cases:
+## a large shift gives a different value, a small-scaled controlling variable
+## is dropped, and very different scales overflow to @code{NaN}.
+##
 ## @seealso{partialcorri, corr, corrcoef, tiedrank}
 ## @end deftypefn
 
@@ -421,18 +429,24 @@ endfunction
 %! assert_equal (isnan (partialcorr ([Z + v, Y], Z)(1,2)), false);
 %! assert_equal (isnan (partialcorr ([1e12 + Z + v, Y], Z)(1,2)), true);
 
-## translating or rescaling a control does not change its regression subspace
+## shifting a control does not change the coefficient, where MATLAB's changes
 %!test
 %! t = linspace (-1, 1, 50)';
 %! X = [sin(3*t) + 0.2*cos(11*t), cos(5*t) - 0.1*sin(13*t)];
-%! Z = [t, t.^2];
-%! r0 = partialcorr (X, Z);
+%! r0 = partialcorr (X, [t, t.^2]);
 %! rt = partialcorr (X, [1e8 + t, t.^2]);
-%! rs = partialcorr (X, [t, 1e-16 * t.^2]);
 %! assert_equal (rt(1,2), r0(1,2), 1e-8);
+
+## rescaling a control does not change the coefficient, where MATLAB drops it
+%!test
+%! t = linspace (-1, 1, 50)';
+%! X = [sin(3*t) + 0.2*cos(11*t), cos(5*t) - 0.1*sin(13*t)];
+%! r0 = partialcorr (X, [t, t.^2]);
+%! rs = partialcorr (X, [t, 1e-16 * t.^2]);
 %! assert_equal (rs(1,2), r0(1,2), 1e-12);
 
-## residual normalization avoids overflow and underflow across response scales
+## residual normalization avoids overflow and underflow across response
+## scales, where MATLAB gives NaN
 %!test
 %! t = linspace (-1, 1, 50)';
 %! X = [sin(3*t) + 0.2*cos(11*t), cos(5*t) - 0.1*sin(13*t)];
