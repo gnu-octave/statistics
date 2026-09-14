@@ -99,6 +99,21 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationBaggedEnsemble} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate a bagged ensemble.
+    ##
+    ## Behaves as @code{ClassificationEnsemble.crossval}, returning a
+    ## @code{ClassificationPartitionedEnsemble}.
+    ##
+    ## @seealso{ClassificationBaggedEnsemble, ClassificationPartitionedEnsemble}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+      CVMdl = crossval@ClassificationEnsemble (this, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {ClassificationBaggedEnsemble} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Drop the training data from a bagged ensemble.

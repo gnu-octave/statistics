@@ -567,6 +567,38 @@ classdef RegressionEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionEnsemble} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {RegressionEnsemble} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate an ensemble.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} refits the ensemble on the
+    ## training part of each of ten folds, and returns a
+    ## @code{RegressionPartitionedEnsemble}.  One of @qcode{'KFold'}, an
+    ## integer greater than 1, @qcode{'Holdout'}, a number between 0 and 1,
+    ## @qcode{'Leaveout'}, @qcode{'on'} for one fold per observation, or
+    ## @qcode{'CVPartition'}, a @code{cvpartition} object, may choose the
+    ## partition instead.
+    ##
+    ## @seealso{RegressionEnsemble, RegressionPartitionedEnsemble, cvpartition}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      [P, errmsg] = ensemblePartition (varargin, this.Y, ...
+                                       this.NumObservations, ...
+                                       false);
+      if (! isempty (errmsg))
+        error ("%s.crossval: %s", class (this), errmsg);
+      endif
+      if (isempty (P))
+        error (strcat ("%s.crossval: no partition was asked for; set", ...
+                       " 'CrossVal' to 'on' or give 'KFold'."), class (this));
+      endif
+      CVMdl = RegressionPartitionedEnsemble (this, P);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionEnsemble} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Drop the training data from a regression ensemble.
@@ -938,3 +970,15 @@ endfunction
 %! loss (RegressionEnsemble (X, y, 'NumLearningCycles', 1), X)
 %!error<RegressionEnsemble.resubLoss: invalid parameter name in optional pair arguments.> ...
 %! resubLoss (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 'Foo', 1)
+
+%!test  # MATLAB parity: crossval equals cross-validating at fit time
+%! c = cvpartition (150, 'KFold', 4);
+%! M = RegressionEnsemble (X, y, 'NumLearningCycles', 2, 'Learners', S);
+%! CV = crossval (M, 'CVPartition', c);
+%! F = fitrensemble (X, y, 'NumLearningCycles', 2, 'Learners', S, ...
+%!                   'CVPartition', c);
+%! assert_equal (class (CV), 'RegressionPartitionedEnsemble');
+%! assert_equal (kfoldLoss (CV), kfoldLoss (F), 1e-15);
+
+%!error<RegressionEnsemble.crossval: invalid parameter name in optional pair arguments.> ...
+%! crossval (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 'Foo', 1)

@@ -110,10 +110,14 @@
 ## @end multitable
 ##
 ## The methods @qcode{'Subspace'}, @qcode{'LPBoost'}, @qcode{'TotalBoost'},
+## @qcode{'CrossVal'} set to @qcode{'on'}, @qcode{'KFold'},
+## @qcode{'Holdout'}, @qcode{'Leaveout'} or @qcode{'CVPartition'}, only one of
+## them, fits the ensemble and cross-validates it as @code{crossval} does,
+## returning a @code{ClassificationPartitionedEnsemble}.
+##
 ## @qcode{'RobustBoost'} and @qcode{'RUSBoost'}, resampling in a boosting
-## method, categorical predictors, binning, cross-validation and
-## hyperparameter optimization are not implemented, and an option asking for
-## one of them is refused.
+## method, categorical predictors, binning and hyperparameter optimization
+## are not implemented, and an option asking for one of them is refused.
 ##
 ## @seealso{ClassificationEnsemble, ClassificationBaggedEnsemble,
 ## CompactClassificationEnsemble, templateTree, TreeBagger}
@@ -128,24 +132,35 @@ function Mdl = fitcensemble (X, Y, varargin)
     error ("fitcensemble: name-value arguments must be in pairs.");
   endif
 
-  names = varargin(1:2:end);
+  ## The cross-validation options make the fit a cross-validated one: the
+  ## ensemble is fitted on all the data first, then on each fold.
   cv = {'crossval', 'kfold', 'holdout', 'leaveout', 'cvpartition'};
-  for i = 1:numel (names)
-    if (ischar (names{i}) && any (strcmpi (names{i}, cv)))
-      error ("fitcensemble: cross-validation is not implemented.");
-    endif
-  endfor
+  iscv = false (size (varargin));
   isbag = false;
   for i = 1:2:numel (varargin)
-    if (ischar (varargin{i}) && strcmpi (varargin{i}, 'Method'))
+    if (ischar (varargin{i}) && any (strcmpi (varargin{i}, cv)))
+      iscv(i:i+1) = true;
+    elseif (ischar (varargin{i}) && strcmpi (varargin{i}, 'Method'))
       isbag = ischar (varargin{i+1}) && strcmpi (varargin{i+1}, 'Bag');
     endif
   endfor
+  cvargs = varargin(iscv);
+  varargin = varargin(! iscv);
 
   if (isbag)
     Mdl = ClassificationBaggedEnsemble (X, Y, varargin{:});
   else
     Mdl = ClassificationEnsemble (X, Y, varargin{:});
+  endif
+
+  if (! isempty (cvargs))
+    [P, errmsg] = ensemblePartition (cvargs, Mdl.Y, Mdl.NumObservations, true);
+    if (! isempty (errmsg))
+      error ("fitcensemble: %s", errmsg);
+    endif
+    if (! isempty (P))
+      Mdl = ClassificationPartitionedEnsemble (Mdl, P);
+    endif
   endif
 
 endfunction
@@ -350,5 +365,27 @@ endfunction
 %!error<fitcensemble: too few input arguments.> fitcensemble (X2)
 %!error<fitcensemble: name-value arguments must be in pairs.> ...
 %! fitcensemble (X2, Y2, 'Method')
-%!error<fitcensemble: cross-validation is not implemented.> ...
-%! fitcensemble (X2, Y2, 'KFold', 5)
+
+%!test  # MATLAB parity: 'CrossVal' gives ten folds
+%! CV = fitcensemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                    'NumLearningCycles', 2, 'Learners', S, 'CrossVal', 'on');
+%! assert_equal (class (CV), 'ClassificationPartitionedEnsemble');
+%! assert_equal (CV.KFold, 10);
+%! M = fitcensemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                   'NumLearningCycles', 2, 'Learners', S, 'CrossVal', 'off');
+%! assert_equal (class (M), 'ClassificationEnsemble');
+
+%!error<fitcensemble: specify only one of 'CrossVal', 'KFold', 'Holdout', 'Leaveout' and 'CVPartition'.> ...
+%! fitcensemble (X2, Y2, 'KFold', 5, 'Holdout', 0.2)
+%!error<fitcensemble: 'KFold' must be an integer greater than 1.> ...
+%! fitcensemble (X2, Y2, 'KFold', 1)
+%!error<fitcensemble: 'Holdout' must be a number between 0 and 1.> ...
+%! fitcensemble (X2, Y2, 'Holdout', 1)
+%!error<fitcensemble: 'CrossVal' must be 'on' or 'off'.> ...
+%! fitcensemble (X2, Y2, 'CrossVal', true)
+%!error<fitcensemble: 'Leaveout' must be 'on' or 'off'.> ...
+%! fitcensemble (X2, Y2, 'Leaveout', 1)
+%!error<fitcensemble: 'CVPartition' must be a 'cvpartition' object.> ...
+%! fitcensemble (X2, Y2, 'CVPartition', 5)
+%!error<fitcensemble: 'CVPartition' must partition the observations the ensemble was fitted on.> ...
+%! fitcensemble (X2, Y2, 'CVPartition', cvpartition (50, 'KFold', 5))

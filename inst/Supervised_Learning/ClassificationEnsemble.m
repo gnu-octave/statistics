@@ -639,6 +639,38 @@ classdef ClassificationEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationEnsemble} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationEnsemble} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate an ensemble.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} refits the ensemble on the
+    ## training part of each of ten folds, stratified by class, and returns a
+    ## @code{ClassificationPartitionedEnsemble}.  One of @qcode{'KFold'}, an
+    ## integer greater than 1, @qcode{'Holdout'}, a number between 0 and 1,
+    ## @qcode{'Leaveout'}, @qcode{'on'} for one fold per observation, or
+    ## @qcode{'CVPartition'}, a @code{cvpartition} object, may choose the
+    ## partition instead.
+    ##
+    ## @seealso{ClassificationEnsemble, ClassificationPartitionedEnsemble, cvpartition}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+
+      [P, errmsg] = ensemblePartition (varargin, this.Y, ...
+                                       this.NumObservations, ...
+                                       true);
+      if (! isempty (errmsg))
+        error ("%s.crossval: %s", class (this), errmsg);
+      endif
+      if (isempty (P))
+        error (strcat ("%s.crossval: no partition was asked for; set", ...
+                       " 'CrossVal' to 'on' or give 'KFold'."), class (this));
+      endif
+      CVMdl = ClassificationPartitionedEnsemble (this, P);
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {ClassificationEnsemble} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Drop the training data from an ensemble.
@@ -1257,3 +1289,21 @@ endfunction
 %!                               'NumLearningCycles', 3, 'Learners', S);
 %! assert_equal (predictorImportance (Mdl), ...
 %!               [0, 0, 0.222096984079193, 0.388833770583033], 1e-13);
+
+%!test  # MATLAB parity: crossval equals cross-validating at fit time
+%! load fisheriris
+%! c = cvpartition (Y2, 'KFold', 5);
+%! M = ClassificationEnsemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                             'NumLearningCycles', 4, 'Learners', S);
+%! CV = crossval (M, 'CVPartition', c);
+%! F = fitcensemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                   'NumLearningCycles', 4, 'Learners', S, 'CVPartition', c);
+%! assert_equal (kfoldLoss (CV), kfoldLoss (F), 1e-15);
+%! assert_equal (crossval (M).KFold, 10);
+%! assert_equal (crossval (M, 'KFold', 3).KFold, 3);
+
+%!error<ClassificationEnsemble.crossval: no partition was asked for; set 'CrossVal' to 'on' or give 'KFold'.> ...
+%! crossval (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), ...
+%!           'CrossVal', 'off')
+%!error<ClassificationEnsemble.crossval: invalid parameter name in optional pair arguments.> ...
+%! crossval (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 'Foo', 1)

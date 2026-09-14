@@ -345,6 +345,16 @@ classdef CompactClassificationEnsemble
 
     endfunction
 
+    ## The untransformed scores of the rows of X over the first t learners,
+    ## for every t, as an NxKxNumTrained array.
+    function S = ensembleSteps (this, X)
+
+      T = this.NumTrained;
+      o = struct ('Learners', 1:T, 'U', true (rows (X), T));
+      S = ensembleScores (this, X, o, 'cumulative');
+
+    endfunction
+
     function [imp, ma] = ensembleImportance (this)
 
       imp = zeros (1, numel (this.PredictorNames));

@@ -99,6 +99,21 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {RegressionBaggedEnsemble} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {RegressionBaggedEnsemble} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross-validate a bagged ensemble.
+    ##
+    ## Behaves as @code{RegressionEnsemble.crossval}, returning a
+    ## @code{RegressionPartitionedEnsemble}.
+    ##
+    ## @seealso{RegressionBaggedEnsemble, RegressionPartitionedEnsemble}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
+      CVMdl = crossval@RegressionEnsemble (this, varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn {RegressionBaggedEnsemble} {@var{CMdl} =} compact (@var{obj})
     ##
     ## Drop the training data from a bagged regression ensemble.

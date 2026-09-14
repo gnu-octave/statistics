@@ -68,9 +68,14 @@
 ## on the named transforms.
 ## @end multitable
 ##
-## Resampling in LSBoost, categorical predictors, binning, cross-validation,
-## shrinkage, regularization and hyperparameter optimization are not
-## implemented, and an option asking for one of them is refused.
+## @qcode{'CrossVal'} set to @qcode{'on'}, @qcode{'KFold'},
+## @qcode{'Holdout'}, @qcode{'Leaveout'} or @qcode{'CVPartition'}, only one of
+## them, fits the ensemble and cross-validates it as @code{crossval} does,
+## returning a @code{RegressionPartitionedEnsemble}.
+##
+## Resampling in LSBoost, categorical predictors, binning, shrinkage,
+## regularization and hyperparameter optimization are not implemented, and
+## an option asking for one of them is refused.
 ##
 ## @seealso{RegressionEnsemble, RegressionBaggedEnsemble,
 ## CompactRegressionEnsemble, templateTree, TreeBagger}
@@ -85,21 +90,35 @@ function Mdl = fitrensemble (X, Y, varargin)
     error ("fitrensemble: name-value arguments must be in pairs.");
   endif
 
+  ## The cross-validation options make the fit a cross-validated one: the
+  ## ensemble is fitted on all the data first, then on each fold.
   cv = {'crossval', 'kfold', 'holdout', 'leaveout', 'cvpartition'};
+  iscv = false (size (varargin));
   isbag = false;
   for i = 1:2:numel (varargin)
     if (ischar (varargin{i}) && any (strcmpi (varargin{i}, cv)))
-      error ("fitrensemble: cross-validation is not implemented.");
-    endif
-    if (ischar (varargin{i}) && strcmpi (varargin{i}, 'Method'))
+      iscv(i:i+1) = true;
+    elseif (ischar (varargin{i}) && strcmpi (varargin{i}, 'Method'))
       isbag = ischar (varargin{i+1}) && strcmpi (varargin{i+1}, 'Bag');
     endif
   endfor
+  cvargs = varargin(iscv);
+  varargin = varargin(! iscv);
 
   if (isbag)
     Mdl = RegressionBaggedEnsemble (X, Y, varargin{:});
   else
     Mdl = RegressionEnsemble (X, Y, varargin{:});
+  endif
+
+  if (! isempty (cvargs))
+    [P, errmsg] = ensemblePartition (cvargs, Mdl.Y, Mdl.NumObservations, false);
+    if (! isempty (errmsg))
+      error ("fitrensemble: %s", errmsg);
+    endif
+    if (! isempty (P))
+      Mdl = RegressionPartitionedEnsemble (Mdl, P);
+    endif
   endif
 
 endfunction
@@ -197,5 +216,13 @@ endfunction
 %!error<fitrensemble: too few input arguments.> fitrensemble (X)
 %!error<fitrensemble: name-value arguments must be in pairs.> ...
 %! fitrensemble (X, y, 'Method')
-%!error<fitrensemble: cross-validation is not implemented.> ...
-%! fitrensemble (X, y, 'KFold', 5)
+
+%!test  # MATLAB parity: 'KFold' returns a cross-validated ensemble
+%! CV = fitrensemble (X, y, 'NumLearningCycles', 2, 'Learners', S, 'KFold', 3);
+%! assert_equal (class (CV), 'RegressionPartitionedEnsemble');
+%! assert_equal (CV.KFold, 3);
+
+%!error<fitrensemble: specify only one of 'CrossVal', 'KFold', 'Holdout', 'Leaveout' and 'CVPartition'.> ...
+%! fitrensemble (X, y, 'KFold', 5, 'CrossVal', 'on')
+%!error<fitrensemble: 'KFold' must be an integer greater than 1.> ...
+%! fitrensemble (X, y, 'KFold', 0)

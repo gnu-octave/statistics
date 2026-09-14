@@ -17,23 +17,27 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {@var{O} =} kfoldOpts (@var{args}, @var{validLoss}, @var{classname}, @var{caller}, @var{K})
+## @deftypefn  {Private Function} {@var{O} =} kfoldOpts (@var{args}, @var{validLoss}, @var{classname}, @var{caller}, @var{K})
+## @deftypefnx {Private Function} {@var{O} =} kfoldOpts (@dots{}, @var{modes}, @var{handles})
 ##
 ## Parse the options the @code{kfold} methods share.
 ##
-## @var{O} carries @qcode{Mode}, either @qcode{'average'} or
-## @qcode{'individual'}; @qcode{Folds}, a row of fold indices defaulting to
-## all @var{K} of them; and @qcode{LossFun}, empty unless one was given.
+## @var{O} carries @qcode{Mode}, one of @var{modes}, which default to
+## @qcode{'average'} and @qcode{'individual'}, the first being the default
+## mode; @qcode{Folds}, a row of fold indices defaulting to all @var{K} of
+## them; and @qcode{LossFun}, empty unless one was given.
 ##
 ## @var{validLoss} lists the losses the caller accepts; pass an empty cell
 ## for a method that takes no @qcode{'LossFun'} at all, and the option is
-## then refused like any other unknown name.
+## then refused like any other unknown name.  @var{handles}, false by
+## default, says whether a function handle is accepted as a loss as well.
 ##
 ## @end deftypefn
 
-function O = kfoldOpts (args, validLoss, classname, caller, K)
+function O = kfoldOpts (args, validLoss, classname, caller, K, ...
+                        modes = {'average', 'individual'}, handles = false)
 
-  O = struct ('Mode', 'average', 'Folds', 1:K, 'LossFun', '');
+  O = struct ('Mode', modes{1}, 'Folds', 1:K, 'LossFun', '');
 
   if (mod (numel (args), 2) != 0)
     error (strcat ("%s.%s: optional arguments must be given in", ...
@@ -45,10 +49,13 @@ function O = kfoldOpts (args, validLoss, classname, caller, K)
 
       case 'mode'
         O.Mode = args{2};
-        if (! (ischar (O.Mode)
-               && any (strcmpi (O.Mode, {'average', 'individual'}))))
-          error (strcat ("%s.%s: 'Mode' must be either 'average' or", ...
-                         " 'individual'."), classname, caller);
+        if (! (ischar (O.Mode) && any (strcmpi (O.Mode, modes))))
+          if (numel (modes) == 2)
+            error ("%s.%s: 'Mode' must be either '%s' or '%s'.", ...
+                   classname, caller, modes{:});
+          endif
+          error ("%s.%s: 'Mode' must be %s.", classname, caller, ...
+                 listing (quoted (modes)));
         endif
         O.Mode = lower (O.Mode);
 
@@ -69,9 +76,17 @@ function O = kfoldOpts (args, validLoss, classname, caller, K)
                          " arguments."), classname, caller);
         endif
         O.LossFun = args{2};
+        if (handles && is_function_handle (O.LossFun))
+          args(1:2) = [];
+          continue;
+        endif
         if (! (ischar (O.LossFun) && any (strcmpi (O.LossFun, validLoss))))
+          q = quoted (validLoss);
+          if (handles)
+            q{end+1} = 'a function handle';
+          endif
           error ("%s.%s: 'LossFun' must be %s.", classname, caller, ...
-                 listing (validLoss));
+                 listing (q));
         endif
         O.LossFun = lower (O.LossFun);
 
@@ -87,9 +102,14 @@ endfunction
 
 ## The accepted values, quoted and listed the way an error message wants
 ## them, with 'or' before the last.
-function s = listing (names)
+function q = quoted (names)
 
   q = cellfun (@(n) sprintf ("'%s'", n), names, 'UniformOutput', false);
+
+endfunction
+
+function s = listing (q)
+
   if (numel (q) == 1)
     s = q{1};
   elseif (numel (q) == 2)

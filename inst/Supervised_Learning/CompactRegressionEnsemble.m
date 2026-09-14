@@ -273,6 +273,16 @@ classdef CompactRegressionEnsemble
 
     endfunction
 
+    ## The untransformed predictions for the rows of X over the first t
+    ## trees, for every t, as an NxNumTrained matrix.
+    function Y = ensembleSteps (this, X)
+
+      T = this.NumTrained;
+      o = struct ('Learners', 1:T, 'U', true (rows (X), T));
+      Y = ensembleResponse (this, X, o, 'cumulative');
+
+    endfunction
+
     function [imp, ma] = ensembleImportance (this)
 
       imp = zeros (1, numel (this.PredictorNames));

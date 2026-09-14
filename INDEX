@@ -135,6 +135,7 @@ Supervised Learning
  ClassificationNaiveBayes
  ClassificationNeuralNetwork
  ClassificationPartitionedECOC
+ ClassificationPartitionedEnsemble
  ClassificationPartitionedKernel
  ClassificationPartitionedLinear
  ClassificationPartitionedModel
@@ -190,6 +191,7 @@ Supervised Learning
  RegressionKernel
  RegressionLinear
  RegressionNeuralNetwork
+ RegressionPartitionedEnsemble
  RegressionPartitionedKernel
  RegressionPartitionedLinear
  RegressionPartitionedModel
