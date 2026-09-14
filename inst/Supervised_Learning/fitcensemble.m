@@ -60,6 +60,19 @@
 ## weights are then multiplied by the mean over those classes of
 ## @code{exp (-weight * (1 + h_true - h_k))}, and the scores are as for
 ## AdaBoostM2.  A perfect tree is kept as for AdaBoostM2.
+## @item @qcode{'TotalBoost'}
+## Two or more classes.  Each tree is grown with the weights @var{d}; its
+## margin on an observation is the probability it gives the observation's
+## class less the largest it gives another, and its edge is those margins
+## weighted by @var{d}.  The fit stops, without that tree, once the least over
+## distributions of the largest edge of the trees exceeds the smallest edge
+## less @qcode{'MarginPrecision'}.  Otherwise @var{d} takes one quadratic step
+## towards the least relative entropy to the starting weights, every edge held
+## at most the smallest edge less @qcode{'MarginPrecision'}, and the learner
+## weights are those that maximise the smallest margin, a linear program solved
+## by GLPK@.  A tree scores each class with twice its probability less one.
+## Where several learner weights maximise that margin equally, MATLAB and this
+## package may choose different ones, and the scores then differ.
 ## @item @qcode{'GentleBoost'}
 ## Two classes.  Each regression tree is fitted to @var{y} with the weights
 ## @var{d}, its prediction @var{h} added to the score times @var{eta}, and the
@@ -113,7 +126,8 @@
 ## @headitem @var{Name} @tab @tab @var{Value}
 ## @item @qcode{'Method'} @tab @tab @qcode{'AdaBoostM1'},
 ## @qcode{'AdaBoostM2'}, @qcode{'RUSBoost'}, @qcode{'GentleBoost'},
-## @qcode{'LogitBoost'}, @qcode{'Bag'} or @qcode{'Subspace'}.  The default is
+## @qcode{'LogitBoost'}, @qcode{'TotalBoost'}, @qcode{'Bag'} or
+## @qcode{'Subspace'}.  The default is
 ## @qcode{'LogitBoost'} for two classes and @qcode{'AdaBoostM2'} for more.
 ## @item @qcode{'NumLearningCycles'} @tab @tab A positive integer, the number
 ## of learners to grow, or for Subspace @qcode{'AllPredictorCombinations'}.
@@ -135,6 +149,9 @@
 ## @item @qcode{'RatioToSmallest'} @tab @tab A nonnegative number, or a vector
 ## with one per class, the size of each class's sample relative to the
 ## smallest class.  The default is 1 for every class.  RUSBoost only.
+## @item @qcode{'MarginPrecision'} @tab @tab A number from 0 to 1, how far
+## below the smallest edge TotalBoost holds every edge.  The default is 0.01.
+## TotalBoost only.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
 ## learner draws, greater than 0 and no greater than 1.  The default is 1.
 ## Given with a boosting method, the ensemble resamples.
@@ -165,10 +182,9 @@
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{ClassificationPartitionedEnsemble}.
 ##
-## The methods @qcode{'LPBoost'}, @qcode{'TotalBoost'} and
-## @qcode{'RobustBoost'}, categorical predictors, binning and hyperparameter
-## optimization are not implemented, and an option asking for one of them is
-## refused.
+## The methods @qcode{'LPBoost'} and @qcode{'RobustBoost'}, categorical
+## predictors, binning and hyperparameter optimization are not implemented,
+## and an option asking for one of them is refused.
 ##
 ## @seealso{ClassificationEnsemble, ClassificationBaggedEnsemble,
 ## CompactClassificationEnsemble, templateTree, TreeBagger}
@@ -210,6 +226,7 @@ function Mdl = fitcensemble (X, Y, varargin)
   named = ischar (method) && isrow (method);
   isbag = named && strcmpi (method, 'Bag');
   if (resampled && ! (named && any (strcmpi (method, {'Bag', 'RUSBoost', ...
+                                                      'TotalBoost', ...
                                                       'Subspace'}))))
     isbag = true;
     if (isempty (method))
@@ -711,3 +728,97 @@ endfunction
 %!error<ClassificationEnsemble: the 'RUSBoost' method cannot resample the observations.> ...
 %! load fisheriris
 %! fitcensemble (meas, species, 'Method', 'RUSBoost', 'Resample', 'on')
+
+%!shared Xt, Yt, St
+%! load fisheriris
+%! Xt = meas(51:150,:);
+%! Yt = species(51:150);
+%! St = templateTree ('MaxNumSplits', 1);
+
+%!test  # MATLAB parity: TotalBoost edges, margins and termination
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', ...
+%!                     'NumLearningCycles', 20, 'Learners', St);
+%! assert_equal (Mdl.NumTrained, 20);
+%! assert_equal (size (Mdl.FitInfo), [20, 101]);
+%! assert_equal (Mdl.FitInfo(1,1), 0.814814814814815, 1e-14);
+%! assert_equal (Mdl.FitInfo(:,end)', [0.77938808373591, 0.76044474400507, ...
+%!               0.733474571057422, 0.713600406110363, 0.674985664146386, ...
+%!               0.617169871251258, 0.545304010166485, 0.481644597614076, ...
+%!               0.406905671288418, 0.305738947836862, 0.248186856286276, ...
+%!               0.223985203507107, 0.206293794856975, 0.190855934857519, ...
+%!               0.174375765970188, 0.164345799335436, 0.152347022022222, ...
+%!               0.156330779459034, 0.138184070638576, 0.13354613032089], 5e-5);
+%! assert_equal (sum (Mdl.TrainedWeights), 1, 1e-12);
+%! assert_equal (Mdl.ModelParameters.MarginPrecision, 0.01);
+%! assert_equal (Mdl.CombineWeights, 'WeightedSum');
+%! assert_equal (numel (Mdl.FitInfoDescription), 4);
+
+%!test  # MATLAB parity: TotalBoost stops and weights its learners
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'NumLearningCycles', ...
+%!                     20, 'Learners', St, 'MarginPrecision', 0.3);
+%! assert_equal (Mdl.NumTrained, 3);
+%! assert_equal (Mdl.ReasonForTermination, ...
+%!               'No improvement in the last iteration.');
+%! assert_equal (Mdl.FitInfo(:,end)', [0.77938808373591, ...
+%!               0.676485226347579, 0.363399531924414], 1e-6);
+%! assert_equal (Mdl.TrainedWeights', [0.321673618833505, ...
+%!               0.344387693465888, 0.333938687700607], 1e-6);
+
+%!test  # MATLAB parity: a larger MarginPrecision holds the edges lower
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'NumLearningCycles', ...
+%!                     20, 'Learners', St, 'MarginPrecision', 0.5);
+%! assert_equal (Mdl.FitInfo(:,end)', [0.77938808373591, ...
+%!               0.654956941202807, 0.314330389584896], 1e-6);
+%! assert_equal (Mdl.TrainedWeights', [0.312047586212885, ...
+%!               0.338803356427739, 0.349149057359376], 1e-6);
+
+%!test  # MATLAB parity: TotalBoost with MarginPrecision 0.1 keeps ten trees
+%! ## R2024a's quadprog stops a little short of each step's optimum, and the
+%! ## shortfall compounds, so late edges agree only to a few parts in 1e4.
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'NumLearningCycles', ...
+%!                     20, 'Learners', St, 'MarginPrecision', 0.1);
+%! assert_equal (Mdl.NumTrained, 10);
+%! assert_equal (Mdl.FitInfo(:,end)', [0.77938808373591, ...
+%!               0.717802322505678, 0.566889939927384, 0.413011741373863, ...
+%!               0.254813551545311, 0.198534963191251, 0.248289227195743, ...
+%!               0.151913855148981, 0.18012529479998, 0.145075739302781], 1e-3);
+
+%!test  # MATLAB parity: a first tree with no error leaves TotalBoost empty
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'NumLearningCycles', 5);
+%! assert_equal (Mdl.NumTrained, 0);
+%! assert_equal (Mdl.ReasonForTermination, ...
+%!               'No improvement in the last iteration.');
+
+%!test  # MATLAB parity: TotalBoost starts from the observation weights
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'NumLearningCycles', ...
+%!                     6, 'Learners', St, 'Weights', (1:100)');
+%! assert_equal (Mdl.FitInfo(:,end)', [0.853081762279423, ...
+%!               0.833229884995196, 0.794516592483876, 0.729979583810379, ...
+%!               0.701779537592642, 0.663396027611383], 1e-5);
+
+%!test  # MATLAB parity: a three-class margin is the lead over the next class
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'TotalBoost', ...
+%!                     'NumLearningCycles', 8, 'Learners', St);
+%! assert_equal (Mdl.NumTrained, 8);
+%! assert_equal (Mdl.FitInfo(1,[1, 51, 101, 151]), [1, 0, 0, 1/3], 1e-12);
+
+%!test  # MATLAB parity: TotalBoost scores are weighted sums of 2p - 1
+%! Mdl = fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'NumLearningCycles', ...
+%!                     20, 'Learners', St, 'MarginPrecision', 0.3);
+%! [~, s] = predict (Mdl, Xt([1, 51],:));
+%! man = zeros (2, 2);
+%! for t = 1:Mdl.NumTrained
+%!   [~, p] = predict (Mdl.Trained{t}, Xt([1, 51],:));
+%!   man += Mdl.TrainedWeights(t) * (2 * p - 1);
+%! endfor
+%! assert_equal (s, man, 1e-12);
+
+%!error<ClassificationEnsemble: 'LearnRate' cannot be used with the 'TotalBoost' method.> ...
+%! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'LearnRate', 0.5)
+%!error<ClassificationEnsemble: 'MarginPrecision' must be a number from 0 to 1.> ...
+%! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'MarginPrecision', 2)
+%!error<ClassificationEnsemble: 'MarginPrecision' applies only to the 'TotalBoost' method.> ...
+%! fitcensemble (Xt, Yt, 'Method', 'AdaBoostM1', 'MarginPrecision', 0.1)
+%!error<ClassificationEnsemble: resampling with the 'TotalBoost' method is not implemented.> ...
+%! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'Resample', 'on')
