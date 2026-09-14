@@ -43,12 +43,14 @@ classdef RegressionTree
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
   ##
-  ## @strong{What this class does not do yet.}  Categorical predictors and
-  ## surrogate splits are not implemented, and an option asking for one of
-  ## them is refused rather than quietly ignored.
-  ## @code{CategoricalSplit}, @code{CutCategories} and the six
-  ## @code{Surrogate} properties are therefore always empty, as they are in
-  ## MATLAB on numeric data.
+  ## A categorical predictor is split into two sets of levels, those of lower
+  ## mean response on the left, and an observation whose level a node did not
+  ## see stops there, as one missing the predictor does.
+  ##
+  ## @strong{What this class does not do yet.}  Surrogate splits are not
+  ## implemented, and an option asking for them is refused rather than
+  ## quietly ignored.  The six @code{Surrogate} properties are therefore
+  ## always empty, as they are in MATLAB without surrogate splits.
   ##
   ## @seealso{fitrtree, ClassificationTree, treetrain, treepredict}
   ## @end deftp
@@ -144,8 +146,8 @@ classdef RegressionTree
     ## Indices of the categorical predictors
     ##
     ## A row vector of column indices into @var{X}, naming the predictors
-    ## treated as categorical.  Categorical predictors are not implemented,
-    ## so this is always empty.  This property is read-only.
+    ## treated as categorical, empty when none is.  This property is
+    ## read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];
@@ -285,7 +287,8 @@ classdef RegressionTree
     ##
     ## A column vector holding, for each node, the value the split compares
     ## the predictor against: an observation goes left when its value is less
-    ## than the cut point and right otherwise.  A leaf carries @qcode{NaN}.
+    ## than the cut point and right otherwise.  A leaf and a categorical cut
+    ## carry @qcode{NaN}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -299,9 +302,7 @@ classdef RegressionTree
     ## A cell array of character vectors holding @qcode{'continuous'} at a
     ## branch node that cuts a numeric predictor at a point,
     ## @qcode{'categorical'} at one that splits a set of levels, and an empty
-    ## character vector at a leaf.  Categorical predictors are not
-    ## implemented, so every branch node is @qcode{'continuous'}.  This
-    ## property is read-only.
+    ## character vector at a leaf.  This property is read-only.
     ##
     ## @end deftp
     CutType = {};
@@ -313,8 +314,7 @@ classdef RegressionTree
     ##
     ## A @math{NumNodesx2} cell array holding, for a node that cuts a
     ## categorical predictor, the levels sent left and the levels sent right.
-    ## Categorical predictors are not implemented, so every entry is empty.
-    ## This property is read-only.
+    ## Every other entry is empty.  This property is read-only.
     ##
     ## @end deftp
     CutCategories = {};
@@ -324,9 +324,9 @@ classdef RegressionTree
     ##
     ## Categorical splits of the tree
     ##
-    ## A @math{Nx2} cell array with one row per categorical split.
-    ## Categorical predictors are not implemented, so this is always empty.
-    ## This property is read-only.
+    ## A @math{Nx2} cell array with one row per categorical split, in node
+    ## order, holding the levels sent left and the levels sent right.  It is
+    ## empty when no split is categorical.  This property is read-only.
     ##
     ## @end deftp
     CategoricalSplit = {};
@@ -578,6 +578,15 @@ classdef RegressionTree
     ## @multitable @columnfractions 0.24 0.74
     ## @headitem @var{Name} @tab @var{Value}
     ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.
+    ##
+    ## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, recorded
+    ## in @code{ModelParameters}.  The default is 10.  A regression orders
+    ## the levels by their mean response, which finds the best split whatever
+    ## the number of levels.
+    ##
     ## @item @qcode{'MaxNumSplits'} @tab A nonnegative integer, the largest
     ## number of branch nodes the tree may take.  The default is one less
     ## than the number of observations, which is as many as a tree can have.
@@ -664,6 +673,8 @@ classdef RegressionTree
       NumVarSample   = 'all';
       Prune          = 'on';
       QEToler        = 1e-6;
+      CatPreds       = [];
+      MaxNumCat      = 10;
       this.ResponseTransform = 'none';
 
       ## Parse optional parameters
@@ -776,19 +787,21 @@ classdef RegressionTree
             endif
 
           case 'categoricalpredictors'
-            ## Accepted only when it asks for nothing, so that a caller
-            ## passing the MATLAB default is not turned away.
-            if (! (isempty (Value)
-                   || (ischar (Value) && strcmpi (Value, 'none'))))
-              error (strcat ("RegressionTree: categorical predictors are", ...
-                             " not implemented."));
+            CatPreds = Value;
+
+          case 'maxnumcategories'
+            MaxNumCat = Value;
+            if (! (isnumeric (MaxNumCat) && isscalar (MaxNumCat)
+                   && isreal (MaxNumCat) && MaxNumCat >= 0
+                   && (MaxNumCat == fix (MaxNumCat) || isinf (MaxNumCat))))
+              error (strcat ("RegressionTree: 'MaxNumCategories' must be a", ...
+                             " nonnegative integer."));
             endif
 
           ## Options MATLAB takes that this class does not implement.  They
           ## are named one by one so that asking for one is refused rather
           ## than quietly doing nothing.
-          case {'surrogate', 'predictorselection', ...
-                'algorithmforcategorical', 'maxnumcategories', 'numbins', ...
+          case {'surrogate', 'predictorselection', 'numbins', ...
                 'optimizehyperparameters', ...
                 'hyperparameteroptimizationoptions'}
             error ("RegressionTree: '%s' is not implemented.", varargin{1});
@@ -818,7 +831,20 @@ classdef RegressionTree
       endif
       this.PredictorNames = PredictorNames;
       this.ResponseName = ResponseName;
+      ## The categorical predictors, checked as every learner checks them
+      if (ischar (CatPreds) && strcmpi (CatPreds, 'none'))
+        CatPreds = [];
+      endif
+      pnames = arrayfun (@(k) sprintf ('x%d', k), 1:columns (X), ...
+                         'UniformOutput', false);
+      [C, errmsg] = dummyCoding (X, CatPreds, pnames);
+      if (! isempty (errmsg))
+        error ("RegressionTree: %s", errmsg);
+      endif
       this.CategoricalPredictors = [];
+      if (! isempty (C.Index))
+        this.CategoricalPredictors = C.Index;
+      endif
       this.ExpandedPredictorNames = PredictorNames;
 
       ## An observation is dropped only when its response is missing.  A row
@@ -885,6 +911,11 @@ classdef RegressionTree
         opts.Seed = randi ([0, 4294967295]);
       endif
 
+      if (! isempty (this.CategoricalPredictors))
+        opts.CategoricalPredictors = this.CategoricalPredictors;
+        opts.MaxNumCategories = MaxNumCat;
+      endif
+
       T = treetrain (X, this.Y, this.W, opts);
 
       ## The node table the engine returns
@@ -893,6 +924,7 @@ classdef RegressionTree
       this.Parent = T.Parent;
       this.CutPredictorIndex = T.CutPredictorIndex;
       this.CutPoint = T.CutPoint;
+      this.CutCategories = T.CutCategories;
       this.NodeSize = T.NodeSize;
       this.NodeWeight = T.NodeWeight;
       this.NodeMean = T.NodeMean;
@@ -923,7 +955,7 @@ classdef RegressionTree
                                      'PruneCriterion', 'mse', ...
                                      'QEToler', QEToler, ...
                                      'NSurrogate', 0, ...
-                                     'MaxCat', 10, ...
+                                     'MaxCat', MaxNumCat, ...
                                      'AlgCat', 'auto', ...
                                      'PredictorSelection', 'allsplits', ...
                                      'Method', 'Tree', ...
@@ -971,7 +1003,8 @@ classdef RegressionTree
 
       [yFit, node] = treepredict (XC, this.Children, ...
                                   this.CutPredictorIndex, this.CutPoint, ...
-                                  this.NodeMean);
+                                  this.NodeMean, ...
+                                  this.CutCategories);
       yFit = this.RTfun (yFit);
 
     endfunction
@@ -1456,8 +1489,9 @@ classdef RegressionTree
     ## @code{@var{r} = nodeVariableRange (@var{obj}, @var{node})} returns a
     ## structure with one field per predictor the path from the root to
     ## @var{node} cuts on, holding the two-element range of values that reach
-    ## the node.  A predictor the path never cuts on is unconstrained and is
-    ## left out, so the root gives a structure with no fields.
+    ## the node, or for a categorical predictor the levels that reach it.  A
+    ## predictor the path never cuts on is unconstrained and is left out, so
+    ## the root gives a structure with no fields.
     ##
     ## @seealso{RegressionTree, fitrtree}
     ## @end deftypefn
@@ -1483,24 +1517,36 @@ classdef RegressionTree
       ## Walk up to the root, narrowing the range of whichever predictor
       ## each step cut on.  Going up rather than down finds the path without
       ## a search, a node having exactly one parent.
+      ## A categorical cut narrows its predictor to a set of levels instead,
+      ## and the first such cut met on the way up is the narrowest.
+      levels = cell (1, p);
       child = node;
       up = this.Parent(child);
       while (up > 0)
         v = this.CutPredictorIndex(up);
-        cut = this.CutPoint(up);
-        touched(v) = true;
-        if (this.Children(up,1) == child)
-          hi(v) = min (hi(v), cut);
+        side = 1 + (this.Children(up,1) != child);
+        cats = this.CutCategories{up,side};
+        if (! isempty (cats))
+          if (! touched(v))
+            levels{v} = cats;
+          endif
+        elseif (side == 1)
+          hi(v) = min (hi(v), this.CutPoint(up));
         else
-          lo(v) = max (lo(v), cut);
+          lo(v) = max (lo(v), this.CutPoint(up));
         endif
+        touched(v) = true;
         child = up;
         up = this.Parent(child);
       endwhile
 
       r = struct ();
       for v = find (touched)
-        r.(this.PredictorNames{v}) = [lo(v), hi(v)];
+        if (isempty (levels{v}))
+          r.(this.PredictorNames{v}) = [lo(v), hi(v)];
+        else
+          r.(this.PredictorNames{v}) = levels{v};
+        endif
       endfor
 
     endfunction
@@ -1530,9 +1576,16 @@ classdef RegressionTree
           fprintf ("%*d  fit = %s\n", w, ii, m);
         else
           v = this.PredictorNames{this.CutPredictorIndex(ii)};
-          c = sprintf ("%g", this.CutPoint(ii));
-          fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
-                   w, ii, v, c, this.Children(ii,1), v, c);
+          cc = this.CutCategories(ii,:);
+          if (! isempty (cc{1}))
+            fprintf ("%*d  if %s then node %d elseif %s then node", w, ii, ...
+                     treeLevelText (v, cc{1}), this.Children(ii,1), ...
+                     treeLevelText (v, cc{2}));
+          else
+            c = sprintf ("%g", this.CutPoint(ii));
+            fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
+                     w, ii, v, c, this.Children(ii,1), v, c);
+          endif
           fprintf (" %d else %s\n", this.Children(ii,2), m);
         endif
       endfor
@@ -1746,6 +1799,7 @@ classdef RegressionTree
       Parent                 = this.Parent;
       CutPredictorIndex      = this.CutPredictorIndex;
       CutPoint               = this.CutPoint;
+      CutCategories          = this.CutCategories;
       NodeSize               = this.NodeSize;
       NodeWeight             = this.NodeWeight;
       NodeMean               = this.NodeMean;
@@ -1765,7 +1819,8 @@ classdef RegressionTree
             'ResponseName', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'BinEdges', 'ModelParameters', ...
             'NumNodes', 'Children', 'Parent', 'CutPredictorIndex', ...
-            'CutPoint', 'NodeSize', 'NodeWeight', 'NodeMean', 'NodeError', ...
+            'CutPoint', 'CutCategories', 'NodeSize', 'NodeWeight', ...
+            'NodeMean', 'NodeError', ...
             'PruneList', 'PruneAlpha', 'ResponseTransform', 'RTfun', ...
             'HyperparameterOptimizationResults');
 
@@ -1832,7 +1887,8 @@ classdef RegressionTree
     ## The descriptions of the cuts, derived from the node table.
     function this = fillCuts (this)
 
-      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames);
+      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames, ...
+                     this.CutCategories);
       for [val, name] = S
         this.(name) = val;
       endfor
@@ -1887,12 +1943,14 @@ classdef RegressionTree
         return;
       endif
       S = treeCollapse (this.Children, this.Parent, ...
-                        this.CutPredictorIndex, this.CutPoint, nodes);
+                        this.CutPredictorIndex, this.CutPoint, nodes, ...
+                        this.CutCategories);
       this.NumNodes = numel (S.keep);
       this.Children = S.Children;
       this.Parent = S.Parent;
       this.CutPredictorIndex = S.CutPredictorIndex;
       this.CutPoint = S.CutPoint;
+      this.CutCategories = S.CutCategories;
       this.NodeSize = this.NodeSize(S.keep);
       this.NodeWeight = this.NodeWeight(S.keep);
       this.NodeMean = this.NodeMean(S.keep);
@@ -2298,8 +2356,6 @@ endclassdef
 %! RegressionTree (ones (4, 2), (1:4)', 'SplitCriterion', 'gdi')
 %!error<RegressionTree: 'PruneCriterion' must be 'mse' for a regression tree.>
 %! RegressionTree (ones (4, 2), (1:4)', 'PruneCriterion', 'error')
-%!error<RegressionTree: categorical predictors are not implemented.>
-%! RegressionTree (ones (4, 2), (1:4)', 'CategoricalPredictors', 1)
 %!error<RegressionTree: 'Surrogate' is not implemented.>
 %! RegressionTree (ones (4, 2), (1:4)', 'Surrogate', 'on')
 %!error<RegressionTree: 'KFold' is not implemented; fit the model and cross-validate it afterwards.>
@@ -2404,3 +2460,46 @@ endclassdef
 %! RegressionTree (ones (4, 2), [1; 2; 3; 4], 'NumVariablesToSample', 1.5)
 %!error<RegressionTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
 %! RegressionTree (ones (4, 2), [1; 2; 3; 4], 'NumVariablesToSample', 'some')
+
+%!shared Xr, yr
+%! k = (0:99)';
+%! c = mod (k, 5) + 1;
+%! means = [3, 1, 4, 1.5, 5];
+%! yr = means(c)' + 0.1 * sin (k);
+%! Xr = [c, mod(k * 3, 8)];
+
+%!test  # MATLAB parity: levels are ordered by their mean response
+%! Mdl = RegressionTree (Xr, yr, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.NumNodes, 39);
+%! assert_equal (Mdl.CutCategories(1,:), {[2, 4], [1, 3, 5]});
+%! [yhat, nd] = predict (Mdl, [1, 0; 3, 0; 6, 0; NaN, 0]);
+%! assert_equal (yhat', [2.9817303, 4.0402625, 2.9003792, 2.9003792], 1e-7);
+%! assert_equal (nd', [12, 24, 1, 1]);
+
+%!test  # MATLAB parity: view and nodeVariableRange of a categorical cut
+%! Mdl = RegressionTree (Xr(:,1), yr, 'CategoricalPredictors', 1, ...
+%!                       'MaxNumSplits', 2);
+%! txt = evalc ('view (Mdl)');
+%! assert_equal (! isempty (strfind (txt, ['1  if x1 in {2 4} then node 2', ...
+%!               ' elseif x1 in {1 3 5} then node 3 else 2.90038'])), true);
+%! assert_equal (! isempty (strfind (txt, ['3  if x1=1 then node 4', ...
+%!               ' elseif x1 in {3 5} then node 5 else 4.00008'])), true);
+%! assert_equal (nodeVariableRange (Mdl, 3), struct ('x1', [1, 3, 5]));
+
+%!test  # MaxNumCategories is recorded, and the level sets are saved
+%! Mdl = RegressionTree (Xr, yr, 'CategoricalPredictors', 1, ...
+%!                       'MaxNumCategories', 2);
+%! assert_equal (Mdl.ModelParameters.MaxCat, 2);
+%! assert_equal (Mdl.NumNodes, 39);
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, Xr), predict (Mdl, Xr));
+
+%!error<RegressionTree: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! RegressionTree (Xr, yr, 'CategoricalPredictors', 3)
+%!error<RegressionTree: 'MaxNumCategories' must be a nonnegative integer.> ...
+%! RegressionTree (Xr, yr, 'MaxNumCategories', 1.5)
+%!error<RegressionTree: invalid parameter name in optional pair arguments.> ...
+%! RegressionTree (Xr, yr, 'AlgorithmForCategorical', 'pca')

@@ -42,12 +42,15 @@ classdef ClassificationTree
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
   ##
-  ## @strong{What this class does not do yet.}  Categorical predictors,
-  ## surrogate splits and the @qcode{'twoing'} split criterion are not
-  ## implemented, and an option asking for one of them is refused rather than
-  ## quietly ignored.  @code{CategoricalSplit},
-  ## @code{CutCategories} and the six @code{Surrogate} properties are
-  ## therefore always empty, as they are in MATLAB on numeric data.
+  ## A categorical predictor is split into two sets of levels, and an
+  ## observation whose level a node did not see stops there, as one missing
+  ## the predictor does.
+  ##
+  ## @strong{What this class does not do yet.}  Surrogate splits and the
+  ## @qcode{'twoing'} split criterion are not implemented, and an option
+  ## asking for one of them is refused rather than quietly ignored.  The six
+  ## @code{Surrogate} properties are therefore always empty, as they are in
+  ## MATLAB without surrogate splits.
   ##
   ## @seealso{fitctree, treetrain, treepredict}
   ## @end deftp
@@ -156,8 +159,8 @@ classdef ClassificationTree
     ## Indices of the categorical predictors
     ##
     ## A row vector of column indices into @var{X}, naming the predictors
-    ## treated as categorical.  Categorical predictors are not implemented,
-    ## so this is always empty.  This property is read-only.
+    ## treated as categorical, empty when none is.  This property is
+    ## read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];
@@ -294,7 +297,8 @@ classdef ClassificationTree
     ##
     ## A column vector holding, for each node, the value the split compares
     ## the predictor against: an observation goes left when its value is less
-    ## than the cut point and right otherwise.  A leaf carries @qcode{NaN}.
+    ## than the cut point and right otherwise.  A leaf and a categorical cut
+    ## carry @qcode{NaN}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -308,9 +312,7 @@ classdef ClassificationTree
     ## A cell array of character vectors holding @qcode{'continuous'} at a
     ## branch node that cuts a numeric predictor at a point,
     ## @qcode{'categorical'} at one that splits a set of levels, and an empty
-    ## character vector at a leaf.  Categorical predictors are not
-    ## implemented, so every branch node is @qcode{'continuous'}.  This
-    ## property is read-only.
+    ## character vector at a leaf.  This property is read-only.
     ##
     ## @end deftp
     CutType = {};
@@ -322,8 +324,7 @@ classdef ClassificationTree
     ##
     ## A @math{NumNodesx2} cell array holding, for a node that cuts a
     ## categorical predictor, the levels sent left and the levels sent right.
-    ## Categorical predictors are not implemented, so every entry is empty.
-    ## This property is read-only.
+    ## Every other entry is empty.  This property is read-only.
     ##
     ## @end deftp
     CutCategories = {};
@@ -333,9 +334,9 @@ classdef ClassificationTree
     ##
     ## Categorical splits of the tree
     ##
-    ## A @math{Nx2} cell array with one row per categorical split.
-    ## Categorical predictors are not implemented, so this is always empty.
-    ## This property is read-only.
+    ## A @math{Nx2} cell array with one row per categorical split, in node
+    ## order, holding the levels sent left and the levels sent right.  It is
+    ## empty when no split is categorical.  This property is read-only.
     ##
     ## @end deftp
     CategoricalSplit = {};
@@ -717,6 +718,18 @@ classdef ClassificationTree
     ## @multitable @columnfractions 0.20 0.78
     ## @headitem @var{Name} @tab @var{Value}
     ##
+    ## @item @qcode{'AlgorithmForCategorical'} @tab How a node with three or
+    ## more classes splits a categorical predictor: @qcode{'exact'},
+    ## @qcode{'pullleft'}, @qcode{'pca'} or @qcode{'ovabyclass'}.  By default
+    ## the exact search is taken when the node holds at most
+    ## @qcode{'MaxNumCategories'} levels, and otherwise the best split of
+    ## @qcode{'ovabyclass'}, @qcode{'pca'} and @qcode{'pullleft'}, leaving
+    ## @qcode{'ovabyclass'} out above four classes.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.
+    ##
     ## @item @qcode{'ClassNames'} @tab The classes to fit, of the same type
     ## as @var{Y}.  Observations of any other class are dropped.  The model
     ## keeps the classes in this order; by default they are sorted.
@@ -726,6 +739,10 @@ classdef ClassificationTree
     ## observation of class @math{i} into class @math{j}, or a structure with
     ## fields @qcode{ClassNames} and @qcode{ClassificationCosts}.  The
     ## default is @code{1 - eye (K)}.
+    ##
+    ## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, the most
+    ## levels a node with three or more classes searches exactly by default.
+    ## The default is 10.
     ##
     ## @item @qcode{'MaxNumSplits'} @tab A nonnegative integer, the largest
     ## number of branch nodes the tree may take.  The default is one less
@@ -776,6 +793,11 @@ classdef ClassificationTree
     ##
     ## @end multitable
     ##
+    ## On a node with three or more classes and more than
+    ## @qcode{'MaxNumCategories'} levels, the heuristic splits, the choice
+    ## between equally good partitions and which side each set of levels
+    ## takes may differ from MATLAB's.
+    ##
     ## @seealso{fitctree, treetrain, treepredict}
     ## @end deftypefn
     function this = ClassificationTree (X, Y, varargin)
@@ -817,6 +839,9 @@ classdef ClassificationTree
       Prune          = 'on';
       PruneCriterion = 'error';
       SplitCriterion = 'gdi';
+      CatPreds       = [];
+      MaxNumCat      = 10;
+      AlgCat         = 'auto';
       this.ScoreTransform = 'none';
 
       ## Parse optional parameters
@@ -977,19 +1002,30 @@ classdef ClassificationTree
             endif
 
           case 'categoricalpredictors'
-            ## Accepted only when it asks for nothing, so that a caller
-            ## passing the MATLAB default is not turned away.
-            if (! (isempty (Value)
-                   || (ischar (Value) && strcmpi (Value, 'none'))))
-              error (strcat ("ClassificationTree: categorical predictors", ...
-                             " are not implemented."));
+            CatPreds = Value;
+
+          case 'maxnumcategories'
+            MaxNumCat = Value;
+            if (! (isnumeric (MaxNumCat) && isscalar (MaxNumCat)
+                   && isreal (MaxNumCat) && MaxNumCat >= 0
+                   && (MaxNumCat == fix (MaxNumCat) || isinf (MaxNumCat))))
+              error (strcat ("ClassificationTree: 'MaxNumCategories' must", ...
+                             " be a nonnegative integer."));
+            endif
+
+          case 'algorithmforcategorical'
+            AlgCat = Value;
+            if (! (ischar (AlgCat) && any (strcmpi (AlgCat, {'exact', ...
+                                   'pullleft', 'pca', 'ovabyclass'}))))
+              error (strcat ("ClassificationTree:", ...
+                             " 'AlgorithmForCategorical' must be 'exact',", ...
+                             " 'pullleft', 'pca', or 'ovabyclass'."));
             endif
 
           ## Options MATLAB takes that this class does not implement.  They
           ## are named one by one so that asking for one is refused rather
           ## than quietly doing nothing.
-          case {'surrogate', 'predictorselection', ...
-                'algorithmforcategorical', 'maxnumcategories', 'numbins', ...
+          case {'surrogate', 'predictorselection', 'numbins', ...
                 'optimizehyperparameters', ...
                 'hyperparameteroptimizationoptions'}
             error ("ClassificationTree: '%s' is not implemented.", ...
@@ -1020,7 +1056,18 @@ classdef ClassificationTree
       endif
       this.PredictorNames = PredictorNames;
       this.ResponseName = ResponseName;
+      ## The categorical predictors, checked as every learner checks them
+      if (ischar (CatPreds) && strcmpi (CatPreds, 'none'))
+        CatPreds = [];
+      endif
+      [C, errmsg] = dummyCoding (X, CatPreds, PredictorNames);
+      if (! isempty (errmsg))
+        error ("ClassificationTree: %s", errmsg);
+      endif
       this.CategoricalPredictors = [];
+      if (! isempty (C.Index))
+        this.CategoricalPredictors = C.Index;
+      endif
       this.ExpandedPredictorNames = PredictorNames;
 
       ## A class the caller did not ask for takes its observations with it.
@@ -1143,6 +1190,12 @@ classdef ClassificationTree
         opts.Seed = randi ([0, 4294967295]);
       endif
 
+      if (! isempty (this.CategoricalPredictors))
+        opts.CategoricalPredictors = this.CategoricalPredictors;
+        opts.MaxNumCategories = MaxNumCat;
+        opts.AlgorithmForCategorical = tolower (AlgCat);
+      endif
+
       T = treetrain (X, gY, wAdj, opts);
 
       ## The node table the engine returns
@@ -1151,6 +1204,7 @@ classdef ClassificationTree
       this.Parent = T.Parent;
       this.CutPredictorIndex = T.CutPredictorIndex;
       this.CutPoint = T.CutPoint;
+      this.CutCategories = T.CutCategories;
       this.IsBranchNode = logical (T.IsBranchNode);
       this.NodeSize = T.NodeSize;
       this.ClassCount = T.ClassCount;
@@ -1174,8 +1228,8 @@ classdef ClassificationTree
                                      tolower (PruneCriterion), ...
                                      'QEToler', [], ...
                                      'NSurrogate', 0, ...
-                                     'MaxCat', 10, ...
-                                     'AlgCat', 'auto', ...
+                                     'MaxCat', MaxNumCat, ...
+                                     'AlgCat', AlgCat, ...
                                      'PredictorSelection', 'allsplits', ...
                                      'Method', 'Tree', ...
                                      'Type', 'classification');
@@ -1250,7 +1304,8 @@ classdef ClassificationTree
 
       [score, node] = treepredict (XC, this.Children, ...
                                    this.CutPredictorIndex, this.CutPoint, ...
-                                   this.ClassProbability);
+                                   this.ClassProbability, ...
+                                   this.CutCategories);
 
       ## The class of least expected cost, ties kept by the first class
       [~, cnum] = min (score * this.Cost, [], 2);
@@ -1611,8 +1666,9 @@ classdef ClassificationTree
     ## @code{@var{r} = nodeVariableRange (@var{obj}, @var{node})} returns a
     ## structure with one field per predictor the path from the root to
     ## @var{node} cuts on, holding the two-element range of values that reach
-    ## the node.  A predictor the path never cuts on is unconstrained and is
-    ## left out, so the root gives a structure with no fields.
+    ## the node, or for a categorical predictor the levels that reach it.  A
+    ## predictor the path never cuts on is unconstrained and is left out, so
+    ## the root gives a structure with no fields.
     ##
     ## @seealso{ClassificationTree, fitctree}
     ## @end deftypefn
@@ -1638,24 +1694,36 @@ classdef ClassificationTree
       ## Walk up to the root, narrowing the range of whichever predictor
       ## each step cut on.  Going up rather than down finds the path
       ## without a search, a node having exactly one parent.
+      ## A categorical cut narrows its predictor to a set of levels instead,
+      ## and the first such cut met on the way up is the narrowest.
+      levels = cell (1, p);
       child = node;
       up = this.Parent(child);
       while (up > 0)
         v = this.CutPredictorIndex(up);
-        cut = this.CutPoint(up);
-        touched(v) = true;
-        if (this.Children(up,1) == child)
-          hi(v) = min (hi(v), cut);
+        side = 1 + (this.Children(up,1) != child);
+        cats = this.CutCategories{up,side};
+        if (! isempty (cats))
+          if (! touched(v))
+            levels{v} = cats;
+          endif
+        elseif (side == 1)
+          hi(v) = min (hi(v), this.CutPoint(up));
         else
-          lo(v) = max (lo(v), cut);
+          lo(v) = max (lo(v), this.CutPoint(up));
         endif
+        touched(v) = true;
         child = up;
         up = this.Parent(child);
       endwhile
 
       r = struct ();
       for v = find (touched)
-        r.(this.PredictorNames{v}) = [lo(v), hi(v)];
+        if (isempty (levels{v}))
+          r.(this.PredictorNames{v}) = [lo(v), hi(v)];
+        else
+          r.(this.PredictorNames{v}) = levels{v};
+        endif
       endfor
 
     endfunction
@@ -1684,9 +1752,16 @@ classdef ClassificationTree
           fprintf ("%*d  class = %s\n", w, ii, this.NodeClass{ii});
         else
           v = this.PredictorNames{this.CutPredictorIndex(ii)};
-          c = sprintf ("%g", this.CutPoint(ii));
-          fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
-                   w, ii, v, c, this.Children(ii,1), v, c);
+          cc = this.CutCategories(ii,:);
+          if (! isempty (cc{1}))
+            fprintf ("%*d  if %s then node %d elseif %s then node", w, ii, ...
+                     treeLevelText (v, cc{1}), this.Children(ii,1), ...
+                     treeLevelText (v, cc{2}));
+          else
+            c = sprintf ("%g", this.CutPoint(ii));
+            fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
+                     w, ii, v, c, this.Children(ii,1), v, c);
+          endif
           fprintf (" %d else %s\n", this.Children(ii,2), this.NodeClass{ii});
         endif
       endfor
@@ -2110,6 +2185,7 @@ classdef ClassificationTree
       IsBranchNode           = this.IsBranchNode;
       CutPredictorIndex      = this.CutPredictorIndex;
       CutPoint               = this.CutPoint;
+      CutCategories          = this.CutCategories;
       NodeSize               = this.NodeSize;
       ClassCount             = this.ClassCount;
       ClassShare             = this.ClassShare;
@@ -2130,7 +2206,8 @@ classdef ClassificationTree
             'ResponseName', 'ClassNames', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'BinEdges', 'ModelParameters', ...
             'NumNodes', 'Children', 'Parent', 'IsBranchNode', ...
-            'CutPredictorIndex', 'CutPoint', 'NodeSize', 'ClassCount', ...
+            'CutPredictorIndex', 'CutPoint', 'CutCategories', ...
+            'NodeSize', 'ClassCount', ...
             'ClassShare', 'PruneList', 'PruneAlpha', 'Prior', 'Cost', ...
             'ScoreTransform', 'STfun', ...
             'HyperparameterOptimizationResults');
@@ -2215,7 +2292,8 @@ classdef ClassificationTree
     ## so that they cannot fall out of step with it.
     function this = fillCuts (this)
 
-      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames);
+      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames, ...
+                     this.CutCategories);
       for [val, name] = S
         this.(name) = val;
       endfor
@@ -2249,12 +2327,14 @@ classdef ClassificationTree
         return;
       endif
       S = treeCollapse (this.Children, this.Parent, ...
-                        this.CutPredictorIndex, this.CutPoint, nodes);
+                        this.CutPredictorIndex, this.CutPoint, nodes, ...
+                        this.CutCategories);
       this.NumNodes = numel (S.keep);
       this.Children = S.Children;
       this.Parent = S.Parent;
       this.CutPredictorIndex = S.CutPredictorIndex;
       this.CutPoint = S.CutPoint;
+      this.CutCategories = S.CutCategories;
       this.NodeSize = this.NodeSize(S.keep);
       this.ClassCount = this.ClassCount(S.keep,:);
       this.ClassShare = this.ClassShare(S.keep,:);
@@ -2936,8 +3016,6 @@ endfunction
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'SplitCriterion', 'x')
 %!error<ClassificationTree: 'SplitCriterion' 'twoing' is not implemented.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'SplitCriterion', 'twoing')
-%!error<ClassificationTree: categorical predictors are not implemented.>
-%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'CategoricalPredictors', 1)
 %!error<ClassificationTree: 'Surrogate' is not implemented.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Surrogate', 'on')
 %!error<ClassificationTree: 'KFold' is not implemented; fit the model and cross-validate it afterwards.>
@@ -3055,3 +3133,84 @@ endfunction
 %!error<ClassificationTree: 'NumVariablesToSample' must be a positive integer or 'all'.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], ...
 %!                     'NumVariablesToSample', 'some')
+
+%!shared Xb, yb, X3, y3
+%! k = (0:79)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! Xb = [c, mod(k * 7, 10)];
+%! yb = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0);
+%! k = (0:119)';
+%! c = mod (k, 6) + 1;
+%! base = [1, 2, 3, 1, 2, 3];
+%! alt = [1, 2, 3, 2, 3, 1];
+%! y3 = base(c)';
+%! odd = mod (floor (k / 6), 2) == 1 & c >= 4;
+%! y3(odd) = alt(c(odd));
+%! X3 = [c, mod(k * 5, 7)];
+
+%!test  # MATLAB parity: a categorical predictor splits into sets of levels
+%! Mdl = ClassificationTree (Xb, yb, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.NumNodes, 3);
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.CutType, {'categorical'; ''; ''});
+%! assert_equal (Mdl.CutCategories(1,:), {[1, 2], [3, 4]});
+%! assert_equal (Mdl.CategoricalSplit, {[1, 2], [3, 4]});
+%! assert_equal (isnan (Mdl.CutPoint(1)), true);
+%! assert_equal (predictorImportance (Mdl), [0.28125, 0], 1e-12);
+
+%!test  # MATLAB parity: a level a node did not see stops the row there
+%! Mdl = ClassificationTree (Xb, yb, 'CategoricalPredictors', 1);
+%! [~, s, nd] = predict (Mdl, [1, 0; 3, 0; 5, 0; NaN, 0; 2.5, 0]);
+%! assert_equal (nd', [2, 3, 1, 1, 1]);
+%! assert_equal (s(3,:), [0.5, 0.5], 1e-12);
+%! assert_equal (s(1,:), [0.125, 0.875], 1e-12);
+
+%!test  # MATLAB parity: three classes search every partition of the levels
+%! Mdl = ClassificationTree (X3, y3, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.NumNodes, 25);
+%! assert_equal (Mdl.CutCategories(1,:), {[1, 4, 6], [2, 3, 5]});
+%! assert_equal (size (Mdl.CategoricalSplit), [5, 2]);
+%! assert_equal (nodeVariableRange (Mdl, 2), struct ('x1', [1, 4, 6]));
+%! assert_equal (Mdl.ModelParameters.MaxCat, 10);
+%! assert_equal (Mdl.ModelParameters.AlgCat, 'auto');
+
+%!test  # MATLAB parity: view prints a categorical cut as sets of levels
+%! Mdl = ClassificationTree (X3, y3, 'CategoricalPredictors', 1);
+%! txt = evalc ('view (Mdl)');
+%! assert_equal (! isempty (strfind (txt, [' 1  if x1 in {1 4 6} then node', ...
+%!               ' 2 elseif x1 in {2 3 5} then node 3 else 1'])), true);
+
+%!test  # MATLAB parity: the categorical options are recorded as given
+%! Mdl = ClassificationTree (X3, y3, 'CategoricalPredictors', 1, ...
+%!                           'MaxNumCategories', 4, ...
+%!                           'AlgorithmForCategorical', 'PCA');
+%! assert_equal (Mdl.ModelParameters.MaxCat, 4);
+%! assert_equal (Mdl.ModelParameters.AlgCat, 'PCA');
+
+%!test  # MATLAB parity: pruning keeps the categorical splits that remain
+%! Mdl = ClassificationTree (X3, y3, 'CategoricalPredictors', 1);
+%! P = prune (Mdl, 'Level', 1);
+%! assert_equal (P.NumNodes, 13);
+%! assert_equal (rows (P.CategoricalSplit), 3);
+
+%!test  # the level sets travel with a saved and a compact tree
+%! Mdl = ClassificationTree (X3, y3, 'CategoricalPredictors', 1);
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.CutCategories, Mdl.CutCategories);
+%! assert_equal (predict (compact (Mdl), X3), predict (Mdl, X3));
+
+%!test  # cross-validation grows every fold with the categorical predictors
+%! Mdl = ClassificationTree (X3, y3, 'CategoricalPredictors', 1);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.Trained{1}.CategoricalPredictors, 1);
+
+%!error<ClassificationTree: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationTree (Xb, yb, 'CategoricalPredictors', 3)
+%!error<ClassificationTree: 'MaxNumCategories' must be a nonnegative integer.> ...
+%! ClassificationTree (Xb, yb, 'MaxNumCategories', -1)
+%!error<ClassificationTree: 'AlgorithmForCategorical' must be 'exact', 'pullleft', 'pca', or 'ovabyclass'.> ...
+%! ClassificationTree (Xb, yb, 'AlgorithmForCategorical', 'bogus')

@@ -114,7 +114,8 @@ classdef CompactRegressionTree
     ##
     ## A column vector holding, for each node, the value the split compares
     ## the predictor against: an observation goes left when its value is less
-    ## than the cut point and right otherwise.  A leaf carries @qcode{NaN}.
+    ## than the cut point and right otherwise.  A leaf and a categorical cut
+    ## carry @qcode{NaN}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -128,9 +129,7 @@ classdef CompactRegressionTree
     ## A cell array of character vectors holding @qcode{'continuous'} at a
     ## branch node that cuts a numeric predictor at a point,
     ## @qcode{'categorical'} at one that splits a set of levels, and an empty
-    ## character vector at a leaf.  Categorical predictors are not
-    ## implemented, so every branch node is @qcode{'continuous'}.  This
-    ## property is read-only.
+    ## character vector at a leaf.  This property is read-only.
     ##
     ## @end deftp
     CutType = {};
@@ -142,8 +141,7 @@ classdef CompactRegressionTree
     ##
     ## A @math{NumNodesx2} cell array holding, for a node that cuts a
     ## categorical predictor, the levels sent left and the levels sent right.
-    ## Categorical predictors are not implemented, so every entry is empty.
-    ## This property is read-only.
+    ## Every other entry is empty.  This property is read-only.
     ##
     ## @end deftp
     CutCategories = {};
@@ -153,9 +151,9 @@ classdef CompactRegressionTree
     ##
     ## Categorical splits of the tree
     ##
-    ## A @math{Nx2} cell array with one row per categorical split.
-    ## Categorical predictors are not implemented, so this is always empty.
-    ## This property is read-only.
+    ## A @math{Nx2} cell array with one row per categorical split, in node
+    ## order, holding the levels sent left and the levels sent right.  It is
+    ## empty when no split is categorical.  This property is read-only.
     ##
     ## @end deftp
     CategoricalSplit = {};
@@ -344,8 +342,8 @@ classdef CompactRegressionTree
     ## Indices of the categorical predictors
     ##
     ## A row vector of column indices into @var{X}, naming the predictors
-    ## treated as categorical.  Categorical predictors are not implemented,
-    ## so this is always empty.  This property is read-only.
+    ## treated as categorical, empty when none is.  This property is
+    ## read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];
@@ -447,6 +445,7 @@ classdef CompactRegressionTree
       this.Parent = Mdl.Parent;
       this.CutPredictorIndex = Mdl.CutPredictorIndex;
       this.CutPoint = Mdl.CutPoint;
+      this.CutCategories = Mdl.CutCategories;
       this.NodeSize = Mdl.NodeSize;
       this.NodeMean = Mdl.NodeMean;
       this.NodeError = Mdl.NodeError;
@@ -511,7 +510,8 @@ classdef CompactRegressionTree
 
       [yFit, node] = treepredict (XC, this.Children, ...
                                   this.CutPredictorIndex, this.CutPoint, ...
-                                  this.NodeMean);
+                                  this.NodeMean, ...
+                                  this.CutCategories);
       yFit = this.RTfun (yFit);
 
     endfunction
@@ -564,8 +564,9 @@ classdef CompactRegressionTree
     ## @code{@var{r} = nodeVariableRange (@var{obj}, @var{node})} returns a
     ## structure with one field per predictor the path from the root to
     ## @var{node} cuts on, holding the two-element range of values that reach
-    ## the node.  A predictor the path never cuts on is unconstrained and is
-    ## left out, so the root gives a structure with no fields.
+    ## the node, or for a categorical predictor the levels that reach it.  A
+    ## predictor the path never cuts on is unconstrained and is left out, so
+    ## the root gives a structure with no fields.
     ##
     ## @seealso{CompactRegressionTree, fitrtree}
     ## @end deftypefn
@@ -591,24 +592,36 @@ classdef CompactRegressionTree
       ## Walk up to the root, narrowing the range of whichever predictor
       ## each step cut on.  Going up rather than down finds the path without
       ## a search, a node having exactly one parent.
+      ## A categorical cut narrows its predictor to a set of levels instead,
+      ## and the first such cut met on the way up is the narrowest.
+      levels = cell (1, p);
       child = node;
       up = this.Parent(child);
       while (up > 0)
         v = this.CutPredictorIndex(up);
-        cut = this.CutPoint(up);
-        touched(v) = true;
-        if (this.Children(up,1) == child)
-          hi(v) = min (hi(v), cut);
+        side = 1 + (this.Children(up,1) != child);
+        cats = this.CutCategories{up,side};
+        if (! isempty (cats))
+          if (! touched(v))
+            levels{v} = cats;
+          endif
+        elseif (side == 1)
+          hi(v) = min (hi(v), this.CutPoint(up));
         else
-          lo(v) = max (lo(v), cut);
+          lo(v) = max (lo(v), this.CutPoint(up));
         endif
+        touched(v) = true;
         child = up;
         up = this.Parent(child);
       endwhile
 
       r = struct ();
       for v = find (touched)
-        r.(this.PredictorNames{v}) = [lo(v), hi(v)];
+        if (isempty (levels{v}))
+          r.(this.PredictorNames{v}) = [lo(v), hi(v)];
+        else
+          r.(this.PredictorNames{v}) = levels{v};
+        endif
       endfor
 
     endfunction
@@ -638,9 +651,16 @@ classdef CompactRegressionTree
           fprintf ("%*d  fit = %s\n", w, ii, m);
         else
           v = this.PredictorNames{this.CutPredictorIndex(ii)};
-          c = sprintf ("%g", this.CutPoint(ii));
-          fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
-                   w, ii, v, c, this.Children(ii,1), v, c);
+          cc = this.CutCategories(ii,:);
+          if (! isempty (cc{1}))
+            fprintf ("%*d  if %s then node %d elseif %s then node", w, ii, ...
+                     treeLevelText (v, cc{1}), this.Children(ii,1), ...
+                     treeLevelText (v, cc{2}));
+          else
+            c = sprintf ("%g", this.CutPoint(ii));
+            fprintf ("%*d  if %s<%s then node %d elseif %s>=%s then node", ...
+                     w, ii, v, c, this.Children(ii,1), v, c);
+          endif
           fprintf (" %d else %s\n", this.Children(ii,2), m);
         endif
       endfor
@@ -808,6 +828,7 @@ classdef CompactRegressionTree
       Parent                 = this.Parent;
       CutPredictorIndex      = this.CutPredictorIndex;
       CutPoint               = this.CutPoint;
+      CutCategories          = this.CutCategories;
       NodeSize               = this.NodeSize;
       NodeMean               = this.NodeMean;
       NodeError              = this.NodeError;
@@ -825,7 +846,8 @@ classdef CompactRegressionTree
       save ('-binary', fname, 'classdef_name', 'PredictorNames', ...
             'ResponseName', 'CategoricalPredictors', ...
             'ExpandedPredictorNames', 'NumNodes', 'Children', 'Parent', ...
-            'CutPredictorIndex', 'CutPoint', 'NodeSize', 'NodeMean', ...
+            'CutPredictorIndex', 'CutPoint', 'CutCategories', ...
+            'NodeSize', 'NodeMean', ...
             'NodeError', 'NodeProbability', 'NodeRisk', 'HeldRisk', ...
             'PruneList', 'PruneAlpha', 'ResponseTransform', 'RTfun');
 
@@ -874,7 +896,8 @@ classdef CompactRegressionTree
     ## The descriptions of the cuts, derived from the node table.
     function this = fillCuts (this)
 
-      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames);
+      S = treeCutInfo (this.CutPredictorIndex, this.PredictorNames, ...
+                     this.CutCategories);
       for [val, name] = S
         this.(name) = val;
       endfor
@@ -1023,3 +1046,19 @@ endclassdef
 %!error<CompactRegressionTree: unrecognized 'ResponseTransform' function.>
 %! CMdl = compact (RegressionTree (ones (4, 2), (1:4)'));
 %! CMdl.ResponseTransform = 'bogus';
+
+%!test  # a compact tree keeps and uses the level sets of its cuts
+%! k = (0:99)';
+%! c = mod (k, 5) + 1;
+%! means = [3, 1, 4, 1.5, 5];
+%! y = means(c)' + 0.1 * sin (k);
+%! Full = fitrtree (c, y, 'CategoricalPredictors', 1, 'MaxNumSplits', 2);
+%! Mdl = compact (Full);
+%! assert_equal (Mdl.CutCategories, Full.CutCategories);
+%! assert_equal (predict (Mdl, [1; 2; 6]), predict (Full, [1; 2; 6]));
+%! assert_equal (nodeVariableRange (Mdl, 3), struct ('x1', [1, 3, 5]));
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, [1; 2; 6]), predict (Mdl, [1; 2; 6]));

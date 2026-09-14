@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {@var{S} =} treeCollapse (@var{Children}, @var{Parent}, @var{CutPredictorIndex}, @var{CutPoint}, @var{nodes})
+## @deftypefn  {Private Function} {@var{S} =} treeCollapse (@var{Children}, @var{Parent}, @var{CutPredictorIndex}, @var{CutPoint}, @var{nodes})
+## @deftypefnx {Private Function} {@var{S} =} treeCollapse (@dots{}, @var{CutCategories})
 ##
 ## Turn the named branch nodes of a tree into leaves and renumber what is
 ## left.
@@ -27,13 +28,16 @@
 ##
 ## @var{S} carries the rewritten @qcode{Children}, @qcode{Parent},
 ## @qcode{CutPredictorIndex} and @qcode{CutPoint}, along with @qcode{keep},
-## the indices of the surviving nodes in the old numbering.  A caller subsets
-## whatever else it holds per node by @qcode{keep}.
+## the indices of the surviving nodes in the old numbering.  Given
+## @var{CutCategories}, the level sets of the cuts, @var{S} carries them
+## rewritten too.  A caller subsets whatever else it holds per node by
+## @qcode{keep}.
 ##
 ## @seealso{ClassificationTree, RegressionTree}
 ## @end deftypefn
 
-function S = treeCollapse (Children, Parent, CutPredictorIndex, CutPoint, nodes)
+function S = treeCollapse (Children, Parent, CutPredictorIndex, CutPoint, ...
+                           nodes, CutCategories)
 
   n = rows (Children);
   kid = Children;
@@ -64,5 +68,10 @@ function S = treeCollapse (Children, Parent, CutPredictorIndex, CutPoint, nodes)
   S.Parent = renum(Parent(idx) + 1);
   S.CutPredictorIndex = cutvar(idx);
   S.CutPoint = cutval(idx);
+  if (nargin > 5 && rows (CutCategories) == n)
+    cats = CutCategories;
+    cats(nodes,:) = {zeros(0, 0)};
+    S.CutCategories = cats(idx,:);
+  endif
 
 endfunction

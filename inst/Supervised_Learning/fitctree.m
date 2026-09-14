@@ -47,6 +47,19 @@
 ## @multitable @columnfractions 0.20 0.78
 ## @headitem @var{Name} @tab @var{Value}
 ##
+## @item @qcode{'AlgorithmForCategorical'} @tab How a node with three or more
+## classes splits a categorical predictor: @qcode{'exact'},
+## @qcode{'pullleft'}, @qcode{'pca'} or @qcode{'ovabyclass'}.  By default the
+## exact search is taken when the node holds at most @qcode{'MaxNumCategories'}
+## levels, and otherwise the best split of @qcode{'ovabyclass'},
+## @qcode{'pca'} and @qcode{'pullleft'}, leaving @qcode{'ovabyclass'} out above
+## four classes.
+##
+## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
+## levels, as indices, as a logical vector with one element per predictor, or
+## as @qcode{'all'}.  Such a predictor is split into two sets of levels, and an
+## observation whose level a node did not see stops there.
+##
 ## @item @qcode{'ClassNames'} @tab The classes to fit, of the same type as
 ## @var{Y}.  Observations of any other class are dropped.  The model keeps
 ## the classes in this order; by default they are sorted.
@@ -57,6 +70,10 @@
 ## fields @qcode{ClassNames} and @qcode{ClassificationCosts}.  The default is
 ## @code{1 - eye (K)}.  A non-default cost changes the shape of the tree, not
 ## only what it predicts.
+##
+## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, the most
+## levels a node with three or more classes searches exactly by default.  The
+## default is 10.
 ##
 ## @item @qcode{'MaxNumSplits'} @tab A nonnegative integer, the largest number
 ## of branch nodes the tree may take.  The default is one less than the number
@@ -109,9 +126,12 @@
 ##
 ## @end multitable
 ##
-## Categorical predictors, surrogate splits and the @qcode{'twoing'} split
-## criterion are not implemented, and an option asking for one of them is
-## refused rather than quietly ignored.
+## Surrogate splits and the @qcode{'twoing'} split criterion are not
+## implemented, and an option asking for one of them is refused rather than
+## quietly ignored.  On a node with three or more classes and more than
+## @qcode{'MaxNumCategories'} levels, the heuristic splits, the choice between
+## equally good partitions and which side each set of levels takes may differ
+## from MATLAB's.
 ##
 ## @seealso{ClassificationTree, treetrain, treepredict}
 ## @end deftypefn
@@ -431,3 +451,23 @@ endfunction
 %! load fisheriris
 %! fitctree (meas(51:150,:), [false(50, 1); true(50, 1)], ...
 %!           'ClassNames', {'1'; '0'})
+
+%!test  # MATLAB parity: 'all' and a logical vector name categorical predictors
+%! k = (0:79)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! y = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0);
+%! Mdl = fitctree ([c, mod(k * 7, 10)], y, 'CategoricalPredictors', 'all');
+%! assert_equal (Mdl.CategoricalPredictors, [1, 2]);
+%! Mdl = fitctree ([c, mod(k * 7, 10)], y, 'CategoricalPredictors', ...
+%!                 logical ([1, 0]));
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.CutCategories(1,:), {[1, 2], [3, 4]});
+
+%!test  # MATLAB parity: levels need not be integers
+%! k = (0:79)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! y = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0);
+%! Mdl = fitctree ([c + 0.5, mod(k * 7, 10)], y, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CutCategories(1,:), {[1.5, 2.5], [3.5, 4.5]});

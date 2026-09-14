@@ -36,7 +36,9 @@
 ## predictors as the parent did.  @qcode{'MinParentSize'} is given the value the
 ## fit settled on rather than the one asked for, which reproduces it: the
 ## constructor takes the larger of it and twice @qcode{'MinLeafSize'}, and the
-## larger is already there.
+## larger is already there.  A tree with categorical predictors passes them on,
+## with @qcode{'MaxNumCategories'} and, for a classifier that was given one,
+## @qcode{'AlgorithmForCategorical'}.
 ##
 ## @seealso{ClassificationTree, ClassificationPartitionedModel}
 ## @end deftypefn
@@ -64,6 +66,14 @@ function args = treeFoldArgs (Mdl)
 
   if (MP.MaxSplits != Mdl.NumObservations - 1)
     args = [args, {'MaxNumSplits', MP.MaxSplits}];
+  endif
+
+  if (! isempty (Mdl.CategoricalPredictors))
+    args = [args, {'CategoricalPredictors', Mdl.CategoricalPredictors, ...
+                   'MaxNumCategories', MP.MaxCat}];
+    if (strcmp (MP.Type, 'classification') && ! strcmpi (MP.AlgCat, 'auto'))
+      args = [args, {'AlgorithmForCategorical', MP.AlgCat}];
+    endif
   endif
 
 endfunction

@@ -45,6 +45,16 @@
 ## @multitable @columnfractions 0.24 0.74
 ## @headitem @var{Name} @tab @var{Value}
 ##
+## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
+## levels, as indices, as a logical vector with one element per predictor, or
+## as @qcode{'all'}.  Such a predictor is split into two sets of levels, those
+## of lower mean response on the left, and an observation whose level a node
+## did not see stops there.
+##
+## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, recorded in
+## @code{ModelParameters}.  The default is 10.  Ordering the levels by their
+## mean response finds the best split whatever the number of levels.
+##
 ## @item @qcode{'MaxNumSplits'} @tab A nonnegative integer, the largest number
 ## of branch nodes the tree may take.  The default is one less than the number
 ## of observations.
@@ -96,8 +106,8 @@
 ##
 ## @end multitable
 ##
-## Categorical predictors and surrogate splits are not implemented, and an
-## option asking for one of them is refused rather than quietly ignored.
+## Surrogate splits are not implemented, and an option asking for them is
+## refused rather than quietly ignored.
 ##
 ## @seealso{RegressionTree, fitctree, treetrain, treepredict}
 ## @end deftypefn
@@ -298,3 +308,16 @@ endfunction
 %! fitrtree (ones (4, 2), ones (3, 1))
 %!error<fitrtree: number of rows in X and Y must be equal.>
 %! fitrtree (ones (4, 2), ones (3, 1), 'K', 2)
+
+%!test  # MATLAB parity: a level absent from a node's rows stops there
+%! k = (0:95)';
+%! xa = mod (k, 2);
+%! ca = mod (k, 4) + 1;
+%! ca(xa == 0 & ca == 4) = 3;
+%! y = 2 * xa + (ca >= 3) + 0.05 * cos (k);
+%! Mdl = fitrtree ([xa, ca], y, 'CategoricalPredictors', 2);
+%! assert_equal (Mdl.NumNodes, 7);
+%! assert_equal (Mdl.CutCategories(2,:), {1, 3});
+%! [yhat, nd] = predict (Mdl, [0, 4; 1, 4; 0, 1]);
+%! assert_equal (nd', [2, 7, 4]);
+%! assert_equal (yhat', [0.50094374, 2.9994709, 0.00076071259], 1e-7);

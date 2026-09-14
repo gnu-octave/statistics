@@ -16,15 +16,22 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {@var{S} =} treeCutInfo (@var{CutPredictorIndex}, @var{PredictorNames})
+## @deftypefn  {Private Function} {@var{S} =} treeCutInfo (@var{CutPredictorIndex}, @var{PredictorNames})
+## @deftypefnx {Private Function} {@var{S} =} treeCutInfo (@dots{}, @var{CutCategories})
 ##
 ## The descriptions of a tree's cuts, derived from its node table.
 ##
 ## @var{S} is a structure carrying @qcode{IsBranchNode}, @qcode{CutPredictor},
 ## @qcode{CutType} and @qcode{CutCategories}, along with
 ## @qcode{CategoricalSplit} and the six @qcode{Surrogate} properties, which
-## are empty in the shapes MATLAB reports for a tree with neither categorical
-## predictors nor surrogate splits.
+## are empty in the shapes MATLAB reports for a tree without surrogate splits.
+##
+## @var{CutCategories}, an @math{Mx2} cell array, holds the levels each
+## categorical cut sends left and right, empty for any other node; a branch
+## with levels is a @qcode{'categorical'} cut and every other branch a
+## @qcode{'continuous'} one.  @qcode{CategoricalSplit} lists the level sets of
+## the categorical cuts, one row each in node order.  Left out or empty, no
+## cut is categorical.
 ##
 ## Deriving them rather than storing them is what keeps them from falling out
 ## of step with the node table, which pruning rewrites.
@@ -32,7 +39,7 @@
 ## @seealso{ClassificationTree, CompactClassificationTree}
 ## @end deftypefn
 
-function S = treeCutInfo (CutPredictorIndex, PredictorNames)
+function S = treeCutInfo (CutPredictorIndex, PredictorNames, CutCategories)
 
   n = numel (CutPredictorIndex);
   br = CutPredictorIndex(:) > 0;
@@ -43,14 +50,27 @@ function S = treeCutInfo (CutPredictorIndex, PredictorNames)
     cuttype(br) = {'continuous'};
   endif
 
+  cats = repmat ({zeros(0, 0)}, n, 2);
+  if (nargin > 2 && rows (CutCategories) == n && columns (CutCategories) == 2)
+    iscat = br & ! cellfun ('isempty', CutCategories(:,1));
+    cats(iscat,:) = CutCategories(iscat,:);
+    cuttype(iscat) = {'categorical'};
+  else
+    iscat = false (n, 1);
+  endif
+
   S.IsBranchNode = br;
   S.CutPredictor = cutname;
   S.CutType = cuttype;
-  S.CutCategories = repmat ({zeros(0, 0)}, n, 2);
+  S.CutCategories = cats;
 
-  ## Categorical predictors and surrogate splits are not implemented, and
-  ## these are the shapes MATLAB reports for a tree that has neither.
-  S.CategoricalSplit = cell (0, 0);
+  ## Surrogate splits are not implemented, and these are the shapes MATLAB
+  ## reports for a tree that has none.
+  if (any (iscat))
+    S.CategoricalSplit = cats(iscat,:);
+  else
+    S.CategoricalSplit = cell (0, 0);
+  endif
   S.SurrogateCutCategories = cell (0, 0);
   S.SurrogateCutFlip = cell (0, 0);
   S.SurrogateCutPoint = cell (0, 0);

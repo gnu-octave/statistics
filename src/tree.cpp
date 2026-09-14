@@ -71,6 +71,8 @@ struct Node
   octave_idx_type start, stop;         // its range in every sorted order
   octave_idx_type nsize;
   double nweight;
+  std::vector<double> catleft;         // the levels sent left, sorted, when
+  std::vector<double> catright;        // the cut is on a categorical predictor
 };
 
 // The tree grows the same way whichever it is fitting.  Only what a node
@@ -130,6 +132,11 @@ impurity (const std::vector<double>& cw, double total, octave_idx_type K,
     }
   return imp;
 }
+// How a node with more than two classes splits a categorical predictor: the
+// exact search, one of the three heuristics MATLAB names, or its automatic
+// choice between them.
+enum CatAlg { CAT_AUTO, CAT_EXACT, CAT_PULLLEFT, CAT_PCA, CAT_OVA };
+
 // Everything the caller settles before the engine starts.  A classifier and a
 // regression differ here in three fields and nowhere else.
 struct TreeOpts
@@ -140,6 +147,9 @@ struct TreeOpts
   Criterion crit;
   octave_idx_type nvars;               // predictors tried per node, 0 for all
   std::uint32_t seed;                  // seeds the draw when nvars is set
+  std::vector<bool> iscat;             // per predictor, empty when none is
+  double maxcat;                       // levels an automatic exact search takes
+  CatAlg catalg;
 };
 
 // One value in 0 .. range-1, every value equally likely.  The raw output of
@@ -157,6 +167,347 @@ draw_below (std::mt19937& rng, octave_idx_type range)
     x = static_cast<std::uint32_t> (rng ());
   while (x < reject);
   return static_cast<octave_idx_type> (x % r);
+}
+
+// The eigenvector of the largest eigenvalue of the symmetric K by K matrix A,
+// by cyclic Jacobi rotations, signed so that its largest entry in magnitude
+// is positive.
+static std::vector<double>
+leading_eigenvector (std::vector<double> A, octave_idx_type K)
+{
+  std::vector<double> V (K * K, 0.0);
+  for (octave_idx_type i = 0; i < K; i++)
+    V[i * K + i] = 1.0;
+  for (int sweep = 0; sweep < 100; sweep++)
+    {
+      double off = 0.0;
+      for (octave_idx_type p = 0; p < K; p++)
+        for (octave_idx_type q = p + 1; q < K; q++)
+          off += A[p * K + q] * A[p * K + q];
+      if (off < 1e-30)
+        break;
+      for (octave_idx_type p = 0; p < K; p++)
+        for (octave_idx_type q = p + 1; q < K; q++)
+          {
+            const double apq = A[p * K + q];
+            if (std::fabs (apq) < 1e-300)
+              continue;
+            const double theta = (A[q * K + q] - A[p * K + p]) / (2.0 * apq);
+            const double t = ((theta >= 0.0) ? 1.0 : -1.0)
+                             / (std::fabs (theta)
+                                + std::sqrt (theta * theta + 1.0));
+            const double c = 1.0 / std::sqrt (t * t + 1.0);
+            const double sn = t * c;
+            for (octave_idx_type k = 0; k < K; k++)
+              {
+                const double akp = A[k * K + p];
+                const double akq = A[k * K + q];
+                A[k * K + p] = c * akp - sn * akq;
+                A[k * K + q] = sn * akp + c * akq;
+              }
+            for (octave_idx_type k = 0; k < K; k++)
+              {
+                const double apk = A[p * K + k];
+                const double aqk = A[q * K + k];
+                A[p * K + k] = c * apk - sn * aqk;
+                A[q * K + k] = sn * apk + c * aqk;
+              }
+            for (octave_idx_type k = 0; k < K; k++)
+              {
+                const double vkp = V[k * K + p];
+                const double vkq = V[k * K + q];
+                V[k * K + p] = c * vkp - sn * vkq;
+                V[k * K + q] = sn * vkp + c * vkq;
+              }
+          }
+    }
+  octave_idx_type top = 0;
+  for (octave_idx_type i = 1; i < K; i++)
+    if (A[i * K + i] > A[top * K + top])
+      top = i;
+  std::vector<double> v (K);
+  octave_idx_type big = 0;
+  for (octave_idx_type k = 0; k < K; k++)
+    {
+      v[k] = V[k * K + top];
+      if (std::fabs (v[k]) > std::fabs (v[big]))
+        big = k;
+    }
+  if (v[big] < 0.0)
+    for (octave_idx_type k = 0; k < K; k++)
+      v[k] = -v[k];
+  return v;
+}
+
+// The best split of a node's rows on a categorical predictor, as its gain per
+// unit of the node's weight, with the levels sent each way.  The rows
+// [start, have) of the predictor's order hold its known values, sorted, so
+// the rows of one level are contiguous.
+//
+// A regression orders the levels by their mean response and two classes by
+// the probability of the first class, and either takes the best of the L - 1
+// cuts of that order, which is the exact search.  More classes search every
+// partition when the node holds at most MaxNumCategories levels, the lowest
+// level always on the left and ties kept by the first partition in the order
+// the other levels' membership of the right counts up in binary.  Above that
+// the automatic choice keeps the best of OVAbyClass, PCA and PullLeft for up
+// to four classes and of PCA and PullLeft for more, the earlier on a tie, as
+// measured on MATLAB R2024a; the heuristics follow MATLAB's descriptions of
+// them.  A regression keeps the lower means on the left; every classifier
+// split from an order puts the lowest level on the left.
+static double
+categorical_split (const double *xj, const octave_idx_type *oj,
+                   octave_idx_type start, octave_idx_type have,
+                   const std::vector<octave_idx_type>& y,
+                   const std::vector<double>& resp,
+                   const std::vector<double>& w, octave_idx_type K,
+                   Criterion crit, bool isreg,
+                   const std::vector<double>& present,
+                   const Moments& presmom, double wp, double presentimp,
+                   double total, const TreeOpts& o,
+                   std::vector<double>& catleft,
+                   std::vector<double>& catright)
+{
+  catleft.clear ();
+  catright.clear ();
+
+  // Each level's value, row count, weight and class weights or moments
+  std::vector<double> lev, lw, lcw;
+  std::vector<octave_idx_type> cnt;
+  std::vector<Moments> lmom;
+  for (octave_idx_type i = start; i < have; i++)
+    {
+      const octave_idx_type r = oj[i];
+      if (lev.empty () || xj[r] != lev.back ())
+        {
+          lev.push_back (xj[r]);
+          cnt.push_back (0);
+          lw.push_back (0.0);
+          if (isreg)
+            {
+              Moments m;
+              m.clear ();
+              lmom.push_back (m);
+            }
+          else
+            lcw.insert (lcw.end (), K, 0.0);
+        }
+      const std::size_t l = lev.size () - 1;
+      cnt[l]++;
+      lw[l] += w[r];
+      if (isreg)
+        lmom[l].add (w[r], resp[r]);
+      else
+        lcw[l * K + y[r]] += w[r];
+    }
+  const octave_idx_type L = static_cast<octave_idx_type> (lev.size ());
+  if (L < 2)
+    return 0.0;
+  const octave_idx_type ntot = have - start;
+
+  std::vector<double> running (K), other (K);
+
+  // The gain of sending the levels marked in inL left, and whether both
+  // sides keep MinLeaf rows and some weight.
+  auto gain_of = [&] (const std::vector<char>& inL, bool& ok) -> double
+    {
+      octave_idx_type nl = 0;
+      double wl = 0.0;
+      Moments ml;
+      ml.clear ();
+      std::fill (running.begin (), running.end (), 0.0);
+      for (octave_idx_type l = 0; l < L; l++)
+        if (inL[l])
+          {
+            nl += cnt[l];
+            wl += lw[l];
+            if (isreg)
+              {
+                ml.w += lmom[l].w;
+                ml.wy += lmom[l].wy;
+                ml.wyy += lmom[l].wyy;
+              }
+            else
+              for (octave_idx_type k = 0; k < K; k++)
+                running[k] += lcw[l * K + k];
+          }
+      const double wr = wp - wl;
+      ok = (nl >= o.minleaf && ntot - nl >= o.minleaf);
+      if (! (wl > 0.0 && wr > 0.0))
+        {
+          ok = false;
+          return -std::numeric_limits<double>::infinity ();
+        }
+      double impl, impr;
+      if (isreg)
+        {
+          Moments rest;
+          rest.w = presmom.w - ml.w;
+          rest.wy = presmom.wy - ml.wy;
+          rest.wyy = presmom.wyy - ml.wyy;
+          impl = ml.sse () / wl;
+          impr = rest.sse () / wr;
+        }
+      else
+        {
+          for (octave_idx_type k = 0; k < K; k++)
+            other[k] = present[k] - running[k];
+          impl = impurity (running, wl, K, crit);
+          impr = impurity (other, wr, K, crit);
+        }
+      return (wp * presentimp - wl * impl - wr * impr) / total;
+    };
+
+  double best = 0.0;
+  bool found = false;
+  std::vector<char> bestL;
+  auto consider = [&] (const std::vector<char>& inL)
+    {
+      bool ok;
+      const double g = gain_of (inL, ok);
+      if (ok && (! found || g > best + std::fabs (best) * GAIN_TIE_TOL))
+        {
+          best = g;
+          bestL = inL;
+          found = true;
+        }
+    };
+
+  // The L - 1 cuts of the levels in ascending order of key, ties kept in
+  // the order of the levels themselves
+  auto scan_order = [&] (const std::vector<double>& key)
+    {
+      std::vector<octave_idx_type> ord (L);
+      std::iota (ord.begin (), ord.end (), 0);
+      std::stable_sort (ord.begin (), ord.end (),
+                        [&key] (octave_idx_type a, octave_idx_type b)
+                        { return key[a] < key[b]; });
+      std::vector<char> inL (L, 0);
+      for (octave_idx_type m = 0; m < L - 1; m++)
+        {
+          inL[ord[m]] = 1;
+          consider (inL);
+        }
+    };
+
+  // The probability of class c at level l
+  auto prob = [&] (octave_idx_type l, octave_idx_type c) -> double
+    {
+      return (lw[l] > 0.0) ? lcw[l * K + c] / lw[l] : 0.0;
+    };
+
+  bool lowleft = ! isreg;
+  if (isreg)
+    {
+      std::vector<double> key (L);
+      for (octave_idx_type l = 0; l < L; l++)
+        key[l] = lmom[l].mean ();
+      scan_order (key);
+    }
+  else if (K <= 2)
+    {
+      std::vector<double> key (L);
+      for (octave_idx_type l = 0; l < L; l++)
+        key[l] = prob (l, 0);
+      scan_order (key);
+    }
+  else if (o.catalg == CAT_EXACT
+           || (o.catalg == CAT_AUTO && static_cast<double> (L) <= o.maxcat))
+    {
+      if (L > 31)
+        error ("treetrain: an exact categorical search cannot take more "
+               "than 31 levels.");
+      std::vector<char> inL (L, 1);
+      const std::uint64_t stop = std::uint64_t (1) << (L - 1);
+      for (std::uint64_t mask = 1; mask < stop; mask++)
+        {
+          for (octave_idx_type l = 1; l < L; l++)
+            inL[l] = ! ((mask >> (l - 1)) & 1);
+          consider (inL);
+        }
+    }
+  else
+    {
+      lowleft = false;
+      const bool automatic = (o.catalg == CAT_AUTO);
+      if (o.catalg == CAT_OVA || (automatic && K <= 4))
+        for (octave_idx_type c = 0; c < K; c++)
+          {
+            std::vector<double> key (L);
+            for (octave_idx_type l = 0; l < L; l++)
+              key[l] = -prob (l, c);
+            scan_order (key);
+          }
+      if (o.catalg == CAT_PCA || automatic)
+        {
+          double ws = 0.0;
+          std::vector<double> mean (K, 0.0), C (K * K, 0.0);
+          for (octave_idx_type l = 0; l < L; l++)
+            {
+              ws += lw[l];
+              for (octave_idx_type k = 0; k < K; k++)
+                mean[k] += lw[l] * prob (l, k);
+            }
+          for (octave_idx_type k = 0; k < K; k++)
+            mean[k] /= ws;
+          for (octave_idx_type l = 0; l < L; l++)
+            for (octave_idx_type a = 0; a < K; a++)
+              for (octave_idx_type b = 0; b < K; b++)
+                C[a * K + b] += lw[l] * (prob (l, a) - mean[a])
+                                * (prob (l, b) - mean[b]) / ws;
+          const std::vector<double> v = leading_eigenvector (C, K);
+          std::vector<double> key (L, 0.0);
+          for (octave_idx_type l = 0; l < L; l++)
+            for (octave_idx_type k = 0; k < K; k++)
+              key[l] += prob (l, k) * v[k];
+          scan_order (key);
+        }
+      if (o.catalg == CAT_PULLLEFT || automatic)
+        {
+          std::vector<char> inL (L, 0);
+          octave_idx_type nright = L;
+          while (nright > 1)
+            {
+              std::vector<octave_idx_type> cand;
+              for (octave_idx_type c = 0; c < K; c++)
+                {
+                  octave_idx_type top = -1;
+                  for (octave_idx_type l = 0; l < L; l++)
+                    if (! inL[l] && (top < 0 || prob (l, c) > prob (top, c)))
+                      top = l;
+                  if (std::find (cand.begin (), cand.end (), top)
+                      == cand.end ())
+                    cand.push_back (top);
+                }
+              octave_idx_type pick = -1;
+              double pg = 0.0;
+              for (octave_idx_type x : cand)
+                {
+                  inL[x] = 1;
+                  bool ok;
+                  const double g = gain_of (inL, ok);
+                  inL[x] = 0;
+                  if (pick < 0 || g > pg)
+                    {
+                      pick = x;
+                      pg = g;
+                    }
+                }
+              inL[pick] = 1;
+              nright--;
+              consider (inL);
+            }
+        }
+    }
+
+  if (! found)
+    return 0.0;
+  if (lowleft && ! bestL[0])
+    for (octave_idx_type l = 0; l < L; l++)
+      bestL[l] = ! bestL[l];
+  for (octave_idx_type l = 0; l < L; l++)
+    (bestL[l] ? catleft : catright).push_back (lev[l]);
+  return best;
 }
 
 // Grow a tree and return it as one node table.  Shared by treetrain, which
@@ -300,6 +651,7 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
       std::vector<octave_idx_type> lvar (lsize, 0);
       std::vector<double> lval (lsize, 0.0);
       std::vector<double> lgain (lsize, 0.0);
+      std::vector<std::vector<double>> lleft (lsize), lright (lsize);
 
       for (octave_idx_type idx = lfirst; idx < llast; idx++)
         {
@@ -362,6 +714,7 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           octave_idx_type bestvar = 0;
           double bestval = std::numeric_limits<double>::quiet_NaN ();
           double bestgain = 0.0;
+          std::vector<double> bestleft, bestright, catl, catr;
 
           // A searched node tries a fresh subset of the predictors, drawn by a
           // partial shuffle and put back in index order, so a tie between two
@@ -404,6 +757,25 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                 }
               const double presentimp = isreg ? presmom.sse () / wp
                                               : impurity (present, wp, K, crit);
+
+              // A categorical predictor is split into two sets of levels
+              if (! o.iscat.empty () && o.iscat[j])
+                {
+                  const double g
+                    = categorical_split (xj, oj, start, have, y, resp, w, K,
+                                         crit, isreg, present, presmom, wp,
+                                         presentimp, total, o, catl, catr);
+                  if (! catl.empty ()
+                      && g > bestgain + std::fabs (bestgain) * GAIN_TIE_TOL)
+                    {
+                      bestgain = g;
+                      bestvar = j + 1;
+                      bestval = std::numeric_limits<double>::quiet_NaN ();
+                      bestleft = catl;
+                      bestright = catr;
+                    }
+                  continue;
+                }
 
               std::fill (running.begin (), running.end (), 0.0);
               runmom.clear ();
@@ -463,6 +835,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                       bestgain = gain;
                       bestvar = j + 1;
                       bestval = (xa + xb) / 2.0;
+                      bestleft.clear ();
+                      bestright.clear ();
                     }
                 }
             }
@@ -476,6 +850,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           lvar[idx - lfirst] = bestvar;
           lval[idx - lfirst] = bestval;
           lgain[idx - lfirst] = bestgain * total;
+          lleft[idx - lfirst] = bestleft;
+          lright[idx - lfirst] = bestright;
         }
 
       // Keep the most successful splits the budget allows.  A stable sort
@@ -509,6 +885,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           const octave_idx_type stop = nodes[idx].stop;
           const octave_idx_type bestvar = lvar[idx - lfirst];
           const double bestval = lval[idx - lfirst];
+          const std::vector<double>& catleft = lleft[idx - lfirst];
+          const bool bycat = ! catleft.empty ();
           const double *xb = X.data () + (bestvar - 1) * n;
           octave_idx_type nleft = 0, nright = 0;
           for (octave_idx_type i = start; i < stop; i++)
@@ -516,7 +894,9 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
               octave_idx_type r = ord[0][i];
               if (std::isnan (xb[r]))
                 side[r] = 2;
-              else if (xb[r] < bestval)
+              else if (bycat ? std::binary_search (catleft.begin (),
+                                                   catleft.end (), xb[r])
+                             : (xb[r] < bestval))
                 {
                   side[r] = 0;
                   nleft++;
@@ -556,6 +936,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
 
           nodes[idx].cutvar = bestvar;
           nodes[idx].cutval = bestval;
+          nodes[idx].catleft = catleft;
+          nodes[idx].catright = lright[idx - lfirst];
           nodes[idx].left = static_cast<octave_idx_type> (nodes.size ()) + 1;
           nodes[idx].right = static_cast<octave_idx_type> (nodes.size ()) + 2;
 
@@ -656,6 +1038,8 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                   nodes[idx].left = nodes[idx].right = 0;
                   nodes[idx].cutvar = 0;
                   nodes[idx].cutval = std::numeric_limits<double>::quiet_NaN ();
+                  nodes[idx].catleft.clear ();
+                  nodes[idx].catright.clear ();
                   merged = true;
                 }
             }
@@ -690,6 +1074,7 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
   Matrix classcount (out, isreg ? 0 : K, 0.0);
   ColumnVector nodemeanout (isreg ? out : 0, 0.0);
   ColumnVector nodeerror (isreg ? out : 0, 0.0);
+  Cell cutcats (out, 2);
 
   for (octave_idx_type idx = 0; idx < nn; idx++)
     {
@@ -705,6 +1090,19 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                   ? std::numeric_limits<double>::quiet_NaN ()
                   : nodes[idx].cutval;
       isbranch(i, 0) = (nodes[idx].cutvar != 0);
+      cutcats(i, 0) = Matrix ();
+      cutcats(i, 1) = Matrix ();
+      if (nodes[idx].cutvar != 0 && ! nodes[idx].catleft.empty ())
+        {
+          RowVector a (nodes[idx].catleft.size ());
+          RowVector b (nodes[idx].catright.size ());
+          for (std::size_t q = 0; q < nodes[idx].catleft.size (); q++)
+            a(q) = nodes[idx].catleft[q];
+          for (std::size_t q = 0; q < nodes[idx].catright.size (); q++)
+            b(q) = nodes[idx].catright[q];
+          cutcats(i, 0) = a;
+          cutcats(i, 1) = b;
+        }
       nodesize(i) = nodes[idx].nsize;
       nodeweight(i) = nodes[idx].nweight;
       if (isreg)
@@ -726,6 +1124,7 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
   T.assign ("Parent", parent);
   T.assign ("CutPredictorIndex", cutvar);
   T.assign ("CutPoint", cutval);
+  T.assign ("CutCategories", cutcats);
   T.assign ("IsBranchNode", isbranch);
   T.assign ("NodeSize", nodesize);
   T.assign ("NodeWeight", nodeweight);
@@ -741,17 +1140,35 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
 // Send each row of X down the tree and report where it came to rest and what
 // that node answers with.  A row is stopped by a node whose split predictor it
 // is missing, exactly as growth held such a row back rather than sending it to
-// a child; the two are the same rule, which is why they live in one file.
+// a child; the two are the same rule, which is why they live in one file.  A
+// categorical cut sends a row by the set its level is in, and stops a row
+// whose level is in neither, a level the node never saw, as MATLAB does.
 static void
 tree_descend (const Matrix& X, const Matrix& children,
               const ColumnVector& cutvar, const ColumnVector& cutpoint,
-              const Matrix& value, Matrix& V, ColumnVector& node)
+              const Matrix& value, Matrix& V, ColumnVector& node,
+              const Cell *cats = nullptr)
 {
   const octave_idx_type n = X.rows ();
   const octave_idx_type m = value.columns ();
+  const octave_idx_type nn = children.rows ();
 
   V.resize (n, m);
   node.resize (n);
+
+  std::vector<std::vector<double>> catl (nn), catr (nn);
+  if (cats)
+    for (octave_idx_type i = 0; i < nn; i++)
+      {
+        if ((*cats)(i, 0).isempty ())
+          continue;
+        const NDArray a = (*cats)(i, 0).array_value ();
+        const NDArray b = (*cats)(i, 1).array_value ();
+        catl[i].assign (a.data (), a.data () + a.numel ());
+        catr[i].assign (b.data (), b.data () + b.numel ());
+        std::sort (catl[i].begin (), catl[i].end ());
+        std::sort (catr[i].begin (), catr[i].end ());
+      }
 
   for (octave_idx_type i = 0; i < n; i++)
     {
@@ -763,6 +1180,19 @@ tree_descend (const Matrix& X, const Matrix& children,
           const double x = X(i, v - 1);
           if (std::isnan (x))
             break;
+          if (! catl[at - 1].empty ())
+            {
+              const octave_idx_type from = at;
+              if (std::binary_search (catl[from - 1].begin (),
+                                      catl[from - 1].end (), x))
+                at = static_cast<octave_idx_type> (children(from - 1, 0));
+              else if (std::binary_search (catr[from - 1].begin (),
+                                           catr[from - 1].end (), x))
+                at = static_cast<octave_idx_type> (children(from - 1, 1));
+              else
+                break;
+              continue;
+            }
           at = static_cast<octave_idx_type> ((x < cutpoint(at - 1))
                                              ? children(at - 1, 0)
                                              : children(at - 1, 1));

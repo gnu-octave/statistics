@@ -28,6 +28,7 @@ DEFUN_DLD (treepredict, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {statistics} {@var{V} =} treepredict (@var{X}, @var{Children}, @\n\
 @var{CutPredictorIndex}, @var{CutPoint}, @var{Value})\n\
+@deftypefnx {statistics} {@var{V} =} treepredict (@dots{}, @var{CutCategories})\n\
 @deftypefnx {statistics} {[@var{V}, @var{node}] =} treepredict (@dots{})\n\
 \n\
 \n\
@@ -53,10 +54,15 @@ A row is stopped by the first node whose split predictor it is missing, and\n\
 takes that node's value, which is how such a row was held back rather than\n\
 sent to a child while the tree was grown.\n\
 \n\
+@var{CutCategories}, the @math{Mx2} cell array @code{treetrain} returns,\n\
+gives the levels a categorical cut sends left and right.  A row goes the way\n\
+its level is listed, and a row whose level is in neither list, one the node\n\
+never saw, is stopped there like a missing value.\n\
+\n\
 @seealso{treetrain}\n\
 @end deftypefn")
 {
-  if (args.length () != 5)
+  if (args.length () < 5 || args.length () > 6)
     error ("treepredict: invalid number of input arguments.");
 
   Matrix X = args(0).matrix_value ();
@@ -87,9 +93,22 @@ sent to a child while the tree was grown.\n\
         error ("treepredict: a node names a child outside the tree.");
     }
 
+  Cell cats;
+  const bool hascats = (args.length () == 6);
+  if (hascats)
+    {
+      if (! args(5).iscell ())
+        error ("treepredict: CUTCATEGORIES must be a cell array.");
+      cats = args(5).cell_value ();
+      if (cats.rows () != nn || cats.columns () != 2)
+        error ("treepredict: CUTCATEGORIES must have one row per node and "
+               "two columns.");
+    }
+
   Matrix V;
   ColumnVector node;
-  tree_descend (X, children, cutvar, cutpoint, value, V, node);
+  tree_descend (X, children, cutvar, cutpoint, value, V, node,
+                hascats ? &cats : nullptr);
 
   if (nargout > 1)
     return ovl (V, node);
@@ -166,11 +185,24 @@ sent to a child while the tree was grown.\n\
 %! score = treepredict ([1; 3], kids, [1; 0; 0], [2; NaN; NaN], [0; 10; 20]);
 %! assert_equal (score, [10; 20]);
 
+%!test
+%! ## A categorical cut sends a row by its level, and stops an unknown one
+%! kids = [2, 3; 0, 0; 0, 0];
+%! cats = {[1, 3], 2; [], []; [], []};
+%! [v, node] = treepredict ([1; 2; 3; 4; NaN], kids, [1; 0; 0], ...
+%!                          [NaN; NaN; NaN], [0; 10; 20], cats);
+%! assert_equal (v', [10, 20, 10, 0, 0]);
+%! assert_equal (node', [2, 3, 2, 1, 1]);
+
 ## Test input validation
 %!error <treepredict: invalid number of input arguments.> ...
 %! treepredict (1, 2, 3, 4);
 %!error <treepredict: invalid number of input arguments.> ...
-%! treepredict (1, 2, 3, 4, 5, 6);
+%! treepredict (1, 2, 3, 4, 5, 6, 7);
+%!error <treepredict: CUTCATEGORIES must be a cell array.> ...
+%! treepredict (rand (3, 2), [0, 0], 0, NaN, 1, 2);
+%!error <treepredict: CUTCATEGORIES must have one row per node and two columns.> ...
+%! treepredict (rand (3, 2), [0, 0], 0, NaN, 1, cell (2, 2));
 %!error <treepredict: the tree must hold at least one node.> ...
 %! treepredict (rand (3, 2), zeros (0, 2), [], [], zeros (0, 1));
 %!error <treepredict: CHILDREN must have two columns.> ...

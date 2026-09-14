@@ -56,9 +56,20 @@ same seed grows the same tree.  A node whose predictors hold no valid split\n\
 is a leaf.  Without @qcode{NumVariablesToSample} every predictor is tried and\n\
 nothing is drawn.\n\
 \n\
+@qcode{CategoricalPredictors}, when present, lists the columns of @var{X}\n\
+that hold levels rather than numbers, and such a column is split into two\n\
+sets of levels.  A regression orders the levels by mean response and two\n\
+classes by the probability of the first class.  More classes search every\n\
+partition when the node holds at most @qcode{MaxNumCategories} levels, 10\n\
+by default, and otherwise take MATLAB's heuristics, as\n\
+@qcode{AlgorithmForCategorical} selects: @qcode{\"auto\"} (default),\n\
+@qcode{\"exact\"}, @qcode{\"pullleft\"}, @qcode{\"pca\"} or\n\
+@qcode{\"ovabyclass\"}.\n\
+\n\
 The returned structure holds @qcode{Children}, @qcode{Parent},\n\
-@qcode{CutPredictorIndex}, @qcode{CutPoint}, @qcode{IsBranchNode},\n\
-@qcode{NodeSize}, @qcode{NodeWeight} and @qcode{NumNodes}, plus\n\
+@qcode{CutPredictorIndex}, @qcode{CutPoint}, @qcode{CutCategories},\n\
+@qcode{IsBranchNode}, @qcode{NodeSize}, @qcode{NodeWeight} and\n\
+@qcode{NumNodes}, plus\n\
 @qcode{ClassWeight} and @qcode{ClassCount} for a classifier or\n\
 @qcode{NodeMean} and @qcode{NodeError} for a regression.\n\
 Nodes are numbered as they are created, so a parent always precedes its\n\
@@ -109,6 +120,48 @@ takes a node table and the risk the caller measures by.\n\
       if (! (v >= 0.0 && v <= 4294967295.0 && v == std::floor (v)))
         error ("treetrain: Seed must be an integer from 0 to 2^32-1.");
       o.seed = static_cast<std::uint32_t> (v);
+    }
+
+  o.iscat.clear ();
+  if (opts.isfield ("CategoricalPredictors"))
+    {
+      const NDArray c = opts.contents ("CategoricalPredictors").array_value ();
+      if (c.numel () > 0)
+        o.iscat.assign (X.columns (), false);
+      for (octave_idx_type i = 0; i < c.numel (); i++)
+        {
+          const double v = c(i);
+          if (! (v >= 1.0 && v <= X.columns () && v == std::floor (v)))
+            error ("treetrain: CategoricalPredictors must hold indices of "
+                   "columns of X.");
+          o.iscat[static_cast<octave_idx_type> (v) - 1] = true;
+        }
+    }
+  o.maxcat = 10.0;
+  if (opts.isfield ("MaxNumCategories"))
+    {
+      const double v = opts.contents ("MaxNumCategories").double_value ();
+      if (! (v >= 0.0 && (std::isinf (v) || v == std::floor (v))))
+        error ("treetrain: MaxNumCategories must be a non-negative integer.");
+      o.maxcat = v;
+    }
+  o.catalg = CAT_AUTO;
+  if (opts.isfield ("AlgorithmForCategorical"))
+    {
+      const std::string a
+        = opts.contents ("AlgorithmForCategorical").string_value ();
+      if (a == "auto")
+        o.catalg = CAT_AUTO;
+      else if (a == "exact")
+        o.catalg = CAT_EXACT;
+      else if (a == "pullleft")
+        o.catalg = CAT_PULLLEFT;
+      else if (a == "pca")
+        o.catalg = CAT_PCA;
+      else if (a == "ovabyclass")
+        o.catalg = CAT_OVA;
+      else
+        error ("treetrain: unsupported AlgorithmForCategorical.");
     }
 
   std::string critname = opts.contents ("SplitCriterion").string_value ();
@@ -424,4 +477,61 @@ takes a node table and the risk the caller measures by.\n\
 %!error <treetrain: Seed must be an integer from 0 to 2\^32-1.> ...
 %! bad = setfield (o, 'Seed', 2^32); ...
 %! treetrain (rand (10, 2), ones (10, 1), ones (10, 1), bad);
+%!test
+%! ## MATLAB parity: two classes order the levels and split them in two
+%! k = (0:79)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! y = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0);
+%! o = struct ('NumClasses', 2, 'MinParent', 10, 'MinLeaf', 1, ...
+%!             'MaxSplits', 79, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', true, 'CategoricalPredictors', 1);
+%! T = treetrain ([c, mod(k * 7, 10)], double (y) + 1, ones (80, 1) / 80, o);
+%! assert_equal (T.NumNodes, 3);
+%! assert_equal (T.CutCategories(1,:), {[1, 2], [3, 4]});
+%! assert_equal (isnan (T.CutPoint(1)), true);
+
+%!test
+%! ## MATLAB parity: a regression orders the levels by their mean response
+%! k = (0:99)';
+%! c = mod (k, 5) + 1;
+%! means = [3, 1, 4, 1.5, 5];
+%! y = means(c)' + 0.1 * sin (k);
+%! o = struct ('NumClasses', 1, 'MinParent', 10, 'MinLeaf', 1, ...
+%!             'MaxSplits', 99, 'SplitCriterion', 'mse', ...
+%!             'MergeLeaves', true, 'QEToler', 1e-6, ...
+%!             'CategoricalPredictors', 1);
+%! T = treetrain ([c, mod(k * 3, 8)], y, ones (100, 1) / 100, o);
+%! assert_equal (T.NumNodes, 39);
+%! assert_equal (T.CutCategories(1,:), {[2, 4], [1, 3, 5]});
+
+%!test
+%! ## Every named algorithm finds a split of three classes
+%! k = (0:119)';
+%! c = mod (k, 6) + 1;
+%! y = mod (c + floor (k / 12), 3) + 1;
+%! for a = {'exact', 'pullleft', 'pca', 'ovabyclass'}
+%!   o = struct ('NumClasses', 3, 'MinParent', 10, 'MinLeaf', 1, ...
+%!               'MaxSplits', 1, 'SplitCriterion', 'gdi', ...
+%!               'MergeLeaves', false, 'CategoricalPredictors', 1, ...
+%!               'AlgorithmForCategorical', a{1});
+%!   T = treetrain (c, y, ones (120, 1) / 120, o);
+%!   assert_equal (sort ([T.CutCategories{1,:}]), 1:6);
+%! endfor
+
+%!error <treetrain: CategoricalPredictors must hold indices of columns of X.> ...
+%! o = struct ('NumClasses', 2, 'MinParent', 1, 'MinLeaf', 1, ...
+%!             'MaxSplits', 1, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'CategoricalPredictors', 3); ...
+%! treetrain (ones (4, 2), [1; 1; 2; 2], ones (4, 1), o);
+%!error <treetrain: MaxNumCategories must be a non-negative integer.> ...
+%! o = struct ('NumClasses', 2, 'MinParent', 1, 'MinLeaf', 1, ...
+%!             'MaxSplits', 1, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'MaxNumCategories', -1); ...
+%! treetrain (ones (4, 2), [1; 1; 2; 2], ones (4, 1), o);
+%!error <treetrain: unsupported AlgorithmForCategorical.> ...
+%! o = struct ('NumClasses', 2, 'MinParent', 1, 'MinLeaf', 1, ...
+%!             'MaxSplits', 1, 'SplitCriterion', 'gdi', ...
+%!             'MergeLeaves', false, 'AlgorithmForCategorical', 'bogus'); ...
+%! treetrain (ones (4, 2), [1; 1; 2; 2], ones (4, 1), o);
 */
