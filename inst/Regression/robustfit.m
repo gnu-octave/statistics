@@ -70,7 +70,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
   if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
     error ("robustfit: X must be a real matrix.");
   endif
-  if (! (isnumeric (y) && isreal (y) && isvector (y)))
+  if (! (isnumeric (y) && isreal (y) && (isvector (y) || isempty (y))))
     error ("robustfit: Y must be a real vector.");
   endif
   y = y(:);
@@ -114,7 +114,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
   endif
   [n, p] = size (X);
   if (n <= p)
-    error ("robustfit: not enough observations for the number of parameters.");
+    error ("robustfit: Not enough points to perform robust estimation.");
   endif
 
   ## Ordinary least squares start, leverages, and the OLS scale.
@@ -322,3 +322,10 @@ endfunction
 %! robustfit (X, y, "huber", -1)
 %!error <robustfit: CONST must be 'on' or 'off'.> ...
 %! robustfit (X, y, "huber", 1.345, "maybe")
+
+%!test
+%! ## Edge cases with empty arrays
+%!fail ("robustfit ([], [])", ...
+%!      "robustfit: Not enough points to perform robust estimation.")
+%!fail ("robustfit (zeros(0,3), zeros(0,1))", ...
+%!      "robustfit: Not enough points to perform robust estimation.")
