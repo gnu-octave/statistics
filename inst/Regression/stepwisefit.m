@@ -674,7 +674,7 @@ endfunction
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);
-%! fail ('stepwisefit (X,y,''Keep'',[true false])');
+%!error stepwisefit (X,y,'Keep',[true false])
 
 ## Test input validation
 %!error <stepwisefit: at least two input arguments required> ...
@@ -694,7 +694,7 @@ endfunction
 %! assert_equal (size (b), [3 1]);
 %! assert_equal (isnan (b), true (3, 1));
 %!
-%! fail ("stepwisefit ([], [])", "stepwisefit: Y must be a column vector.");
+%!error <stepwisefit: Y must be a column vector.> stepwisefit ([], [])
 %!error <stepwisefit: Scale must be 'on' or 'off'> ...
 %!       stepwisefit (randn (10,2), randn (10,1), 'Scale', 123)
 %!error <stepwisefit: PEnter must be a scalar strictly between 0 and 1> ...
