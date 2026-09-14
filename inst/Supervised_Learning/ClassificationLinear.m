@@ -256,6 +256,7 @@ classdef ClassificationLinear
     ## Number of predictors the fit saw, which the class does not report
     ## because MATLAB does not, but predict needs to validate its input.
     NumPredictors_         = [];
+    Coding_                = [];
 
     ## What the fit reported, so that fitclinear can hand it back as its
     ## second output.  MATLAB returns it from the fitting function rather
@@ -377,8 +378,12 @@ classdef ClassificationLinear
     ##
     ## @item @qcode{'ResponseName'} @tab A name for the response.
     ##
-    ## @item @qcode{'CategoricalPredictors'} @tab Indices of the categorical
-    ## predictors.
+    ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors,
+    ## as indices, as a logical vector with one element per predictor, or as
+    ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
+    ## and ones per distinct value it takes in the training data, named as in
+    ## @qcode{'x1 == 2'}.  A row holding a value the training data did not
+    ## is scored @code{NaN}.
     ## @end multitable
     ##
     ## The default solver is @qcode{'sparsa'} under a lasso penalty.  Under a
@@ -710,18 +715,6 @@ classdef ClassificationLinear
 
           case 'categoricalpredictors'
             CategoricalPredictors = varargin{2};
-            if (! ((isnumeric (CategoricalPredictors)
-                    && isvector (CategoricalPredictors)
-                    && all (fix (CategoricalPredictors)
-                            == CategoricalPredictors)
-                    && all (CategoricalPredictors > 0))
-                   || islogical (CategoricalPredictors)
-                   || isempty (CategoricalPredictors)))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'CategoricalPredictors' must be a vector", ...
-                             " of positive integers or a logical", ...
-                             " vector."));
-            endif
 
           otherwise
             error (strcat ("ClassificationLinear: invalid parameter", ...
@@ -750,6 +743,23 @@ classdef ClassificationLinear
       this.ClassNames = F.ClassNames;
       this.Prior = F.Prior;
       this.Cost = F.Cost;
+
+      ## Dummy code the categorical predictors on the rows kept; the fit
+      ## sees the coded columns, and new data is coded the same way.
+      if (isempty (PredictorNames))
+        PredictorNames = arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
+                                   'UniformOutput', false);
+      elseif (numel (PredictorNames) != p)
+        error (strcat ("ClassificationLinear: 'PredictorNames' must", ...
+                       " have one name per predictor."));
+      endif
+      [Coding, errmsg] = dummyCoding (X, CategoricalPredictors, ...
+                                      PredictorNames);
+      if (! isempty (errmsg))
+        error ("ClassificationLinear: %s", errmsg);
+      endif
+      X = dummyCoding (X, Coding);
+      p = columns (X);
 
       ## Resolve the penalty and the solver against one another, since each
       ## has a default that depends on the other.
@@ -904,23 +914,19 @@ classdef ClassificationLinear
 
       ## Fill in the model
       this.PredictorNames = PredictorNames;
-      if (isempty (this.PredictorNames))
-        this.PredictorNames = ...
-                     arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
-                               'UniformOutput', false);
-      elseif (numel (this.PredictorNames) != p)
-        error (strcat ("ClassificationLinear: 'PredictorNames' must", ...
-                       " have one name per predictor."));
+      this.ExpandedPredictorNames = PredictorNames;
+      if (! isempty (Coding.Index))
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.CategoricalPredictors = Coding.Index;
+        this.Coding_ = Coding;
       endif
-      this.ExpandedPredictorNames = this.PredictorNames;
-      this.CategoricalPredictors = CategoricalPredictors;
       this.ResponseName = ResponseName;
       this.Learner = Learner;
       this.Beta = Beta;
       this.Bias = Bias;
       this.FittedLoss = P.LossFunction;
       this.Lambda = Lambda;
-      this.NumPredictors_ = p;
+      this.NumPredictors_ = Coding.NumPredictors;
       if (strcmp (Regularization, 'ridge'))
         this.Regularization = 'ridge (L2)';
       else
@@ -984,6 +990,9 @@ classdef ClassificationLinear
       if (columns (XC) != this.NumPredictors_)
         error (strcat ("ClassificationLinear.predict: XC must have the", ...
                        " same number of predictors as the trained model."));
+      endif
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
       endif
 
       f = XC * this.Beta + this.Bias;
@@ -1225,13 +1234,14 @@ classdef ClassificationLinear
       ModelParameters = obj.ModelParameters;
       Regularization = obj.Regularization;
       NumPredictors_ = obj.NumPredictors_;
+      Coding_ = obj.Coding_;
 
       save ('-binary', fname, 'classdef_name', 'ClassNames', 'Prior', ...
             'Cost', 'ScoreTransform', 'PredictorNames', ...
             'CategoricalPredictors', 'ResponseName', ...
             'ExpandedPredictorNames', 'Learner', 'Beta', 'Bias', ...
             'FittedLoss', 'Lambda', 'ModelParameters', 'Regularization', ...
-            'NumPredictors_');
+            'NumPredictors_', 'Coding_');
 
     endfunction
 
@@ -1941,3 +1951,40 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!shared Xc, Dc, yc
+%! c1 = repmat ([1; 2; 3], 20, 1);
+%! x2 = sin ((1:60)');
+%! c3 = repmat ([10; 10; 20; 20], 15, 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yc = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos ((1:60)') > 1;
+
+%!test  # MATLAB parity: a categorical predictor is dummy coded in its place
+%! Mdl = ClassificationLinear (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! assert_equal (size (Mdl.Beta), [6, 1]);
+%! H = ClassificationLinear (Dc, yc);
+%! assert_equal (Mdl.Beta, H.Beta, 1e-12);
+%! [~, s] = predict (Mdl, Xc(1:5,:));
+%! [~, sh] = predict (H, Dc(1:5,:));
+%! assert_equal (s, sh, 1e-12);
+
+%!test  # a logical vector names the categorical predictors too
+%! Mdl = ClassificationLinear (Xc, yc, 'CategoricalPredictors', ...
+%!                             logical ([1, 0, 1]));
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+
+%!test  # a level the training data did not hold is scored NaN
+%! Mdl = ClassificationLinear (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! [~, s] = predict (Mdl, [4, 0, 10; 2.5, 0, 20; NaN, 0, 10; 2, 0, 20]);
+%! assert_equal (isnan (s(:,1))', [true, true, true, false]);
+
+%!error<ClassificationLinear: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationLinear (Xc, yc, 'CategoricalPredictors', 4)
+%!error<ClassificationLinear: a logical 'CategoricalPredictors' must have one element per predictor.> ...
+%! ClassificationLinear (Xc, yc, 'CategoricalPredictors', logical ([1, 0]))
+%!error<ClassificationLinear: 'CategoricalPredictors' must be a vector of positive integers, a logical vector or 'all'.> ...
+%! ClassificationLinear (Xc, yc, 'CategoricalPredictors', 0)

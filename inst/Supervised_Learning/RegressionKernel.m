@@ -135,9 +135,10 @@ classdef RegressionKernel
     ##
     ## Names of the predictors as the fit saw them
     ##
-    ## A cell array of character vectors.  These name the original
-    ## predictors, not the expansion dimensions, which have no names.  This
-    ## property is read-only.
+    ## A cell array of character vectors.  It equals @qcode{PredictorNames}
+    ## unless categorical predictors were dummy coded, each then named once
+    ## per level, as in @qcode{'x1 == 2'}.  The expansion dimensions have no
+    ## names.  This property is read-only.
     ##
     ## @end deftp
     ExpandedPredictorNames = {};
@@ -265,6 +266,7 @@ classdef RegressionKernel
     ## Number of predictors and of observations the fit saw, neither of them
     ## a property of MATLAB's class.
     NumPredictors_         = [];
+    Coding_                = [];
     NumObservations_       = [];
 
     ## What the fit reported, so that fitrkernel can hand it back as its
@@ -341,8 +343,12 @@ classdef RegressionKernel
     ##
     ## @item @qcode{'ResponseName'} @tab A name for the response.
     ##
-    ## @item @qcode{'CategoricalPredictors'} @tab Indices of the categorical
-    ## predictors.
+    ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors,
+    ## as indices, as a logical vector with one element per predictor, or as
+    ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
+    ## and ones per distinct value it takes in the training data, named as in
+    ## @qcode{'x1 == 2'}, and the coded columns are not standardized.  A row
+    ## holding a value the training data did not is predicted as @code{NaN}.
     ## @end multitable
     ##
     ## The fit is always by limited-memory BFGS, the only solver MATLAB
@@ -536,17 +542,6 @@ classdef RegressionKernel
 
           case 'categoricalpredictors'
             CategoricalPredictors = varargin{2};
-            if (! ((isnumeric (CategoricalPredictors)
-                    && isvector (CategoricalPredictors)
-                    && all (fix (CategoricalPredictors)
-                            == CategoricalPredictors)
-                    && all (CategoricalPredictors > 0))
-                   || islogical (CategoricalPredictors)
-                   || isempty (CategoricalPredictors)))
-              error (strcat ("RegressionKernel:", ...
-                             " 'CategoricalPredictors' must be a vector", ...
-                             " of positive integers or a logical vector."));
-            endif
 
           otherwise
             error (strcat ("RegressionKernel: invalid parameter name in", ...
@@ -577,6 +572,23 @@ classdef RegressionKernel
       n = F.n;
       p = F.p;
 
+      ## Dummy code the categorical predictors on the rows kept; the fit
+      ## sees the coded columns, and new data is coded the same way.
+      if (isempty (PredictorNames))
+        PredictorNames = arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
+                                   'UniformOutput', false);
+      elseif (numel (PredictorNames) != p)
+        error (strcat ("RegressionKernel: 'PredictorNames' must have one", ...
+                       " name per predictor."));
+      endif
+      [Coding, errmsg] = dummyCoding (X, CategoricalPredictors, ...
+                                      PredictorNames);
+      if (! isempty (errmsg))
+        error ("RegressionKernel: %s", errmsg);
+      endif
+      X = dummyCoding (X, Coding);
+      p = columns (X);
+
       ## Epsilon belongs to the insensitive band, so it means nothing to a
       ## least squares fit and is refused there rather than ignored.
       if (strcmp (Learner, 'leastsquares'))
@@ -601,6 +613,9 @@ classdef RegressionKernel
         this.Mu = mean (X, 1);
         this.Sigma = std (X, 0, 1);
         this.Sigma(this.Sigma == 0) = 1;
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.Mu(Coding.Dummy) = 0;
+        this.Sigma(Coding.Dummy) = 1;
         X = (X - this.Mu) ./ this.Sigma;
       endif
 
@@ -665,16 +680,12 @@ classdef RegressionKernel
       this.Epsilon = Epsilon;
       this.BoxConstraint = BoxConstraint;
       this.PredictorNames = PredictorNames;
-      if (isempty (this.PredictorNames))
-        this.PredictorNames = ...
-                     arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
-                               'UniformOutput', false);
-      elseif (numel (this.PredictorNames) != p)
-        error (strcat ("RegressionKernel: 'PredictorNames' must have one", ...
-                       " name per predictor."));
+      this.ExpandedPredictorNames = PredictorNames;
+      if (! isempty (Coding.Index))
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.CategoricalPredictors = Coding.Index;
+        this.Coding_ = Coding;
       endif
-      this.ExpandedPredictorNames = this.PredictorNames;
-      this.CategoricalPredictors = CategoricalPredictors;
       this.ResponseName = ResponseName;
       this.NumExpansionDimensions = m;
       this.FittedLoss = P.LossFunction;
@@ -685,7 +696,7 @@ classdef RegressionKernel
       this.Basis_ = basis;
       this.Beta_ = Beta;
       this.Bias_ = Bias;
-      this.NumPredictors_ = p;
+      this.NumPredictors_ = Coding.NumPredictors;
       this.NumObservations_ = n;
 
       this.ModelParameters = struct ('BetaTolerance', BetaTolerance, ...
@@ -734,6 +745,9 @@ classdef RegressionKernel
                        " number of predictors as the trained model."));
       endif
 
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -920,6 +934,9 @@ classdef RegressionKernel
                        " Y must be equal."));
       endif
 
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         X = (X - this.Mu) ./ this.Sigma;
       endif
@@ -1005,6 +1022,7 @@ classdef RegressionKernel
       Bias_ = obj.Bias_;
       NumPredictors_ = obj.NumPredictors_;
       NumObservations_ = obj.NumObservations_;
+      Coding_ = obj.Coding_;
 
       save ('-binary', fname, 'classdef_name', 'Epsilon', ...
             'BoxConstraint', 'ResponseTransform', 'PredictorNames', ...
@@ -1012,7 +1030,7 @@ classdef RegressionKernel
             'ExpandedPredictorNames', 'NumExpansionDimensions', ...
             'FittedLoss', 'Lambda', 'ModelParameters', 'Regularization', ...
             'KernelScale', 'Learner', 'Mu', 'Sigma', 'Basis_', 'Beta_', ...
-            'Bias_', 'NumPredictors_', 'NumObservations_');
+            'Bias_', 'NumPredictors_', 'NumObservations_', 'Coding_');
 
     endfunction
 
@@ -1324,3 +1342,37 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+%!shared Xc, Dc, yc
+%! c1 = repmat ([1; 2; 3], 20, 1);
+%! x2 = sin ((1:60)');
+%! c3 = repmat ([10; 10; 20; 20], 15, 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yc = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos ((1:60)');
+
+%!test  # MATLAB parity: the kernel expands the dummy coded predictors
+%! randn ('seed', 9);
+%! rand ('seed', 9);
+%! Mdl = RegressionKernel (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! randn ('seed', 9);
+%! rand ('seed', 9);
+%! H = RegressionKernel (Dc, yc);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.NumExpansionDimensions, 256);
+%! assert_equal (predict (Mdl, Xc(1:5,:)), predict (H, Dc(1:5,:)), 1e-12);
+
+%!test  # MATLAB parity: the coded columns are not standardized
+%! Mdl = RegressionKernel (Xc, yc, 'CategoricalPredictors', [1, 3], ...
+%!                         'Standardize', true);
+%! assert_equal (Mdl.Mu([1:3, 5:6]), zeros (1, 5));
+%! assert_equal (Mdl.Sigma([1:3, 5:6]), ones (1, 5));
+%! assert_equal (Mdl.Sigma(4), std (Xc(:,2)), 1e-12);
+
+%!test  # resume codes the data as the fit did
+%! Mdl = RegressionKernel (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! Mdl = resume (Mdl, Xc, yc);
+%! assert_equal (isnan (predict (Mdl, [4, 0, 10; 2, 0, 20]))', [true, false]);
+
+%!error<RegressionKernel: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! RegressionKernel (Xc, yc, 'CategoricalPredictors', 4)

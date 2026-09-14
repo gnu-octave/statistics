@@ -168,9 +168,10 @@ classdef ClassificationKernel
     ##
     ## Names of the predictors as the fit saw them
     ##
-    ## A cell array of character vectors.  These name the original
-    ## predictors, not the expansion dimensions, which have no names.  This
-    ## property is read-only.
+    ## A cell array of character vectors.  It equals @qcode{PredictorNames}
+    ## unless categorical predictors were dummy coded, each then named once
+    ## per level, as in @qcode{'x1 == 2'}.  The expansion dimensions have no
+    ## names.  This property is read-only.
     ##
     ## @end deftp
     ExpandedPredictorNames = {};
@@ -300,6 +301,7 @@ classdef ClassificationKernel
     ## its input and resume needs the second to keep Lambda and BoxConstraint
     ## reciprocal.
     NumPredictors_         = [];
+    Coding_                = [];
     NumObservations_       = [];
 
     ## What the fit reported, so that fitckernel can hand it back as its
@@ -381,8 +383,12 @@ classdef ClassificationKernel
     ##
     ## @item @qcode{'ResponseName'} @tab A name for the response.
     ##
-    ## @item @qcode{'CategoricalPredictors'} @tab Indices of the categorical
-    ## predictors.
+    ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors,
+    ## as indices, as a logical vector with one element per predictor, or as
+    ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
+    ## and ones per distinct value it takes in the training data, named as in
+    ## @qcode{'x1 == 2'}, and the coded columns are not standardized.  A row
+    ## holding a value the training data did not is scored @code{NaN}.
     ## @end multitable
     ##
     ## The fit is always by limited-memory BFGS, the only solver MATLAB
@@ -604,18 +610,6 @@ classdef ClassificationKernel
 
           case 'categoricalpredictors'
             CategoricalPredictors = varargin{2};
-            if (! ((isnumeric (CategoricalPredictors)
-                    && isvector (CategoricalPredictors)
-                    && all (fix (CategoricalPredictors)
-                            == CategoricalPredictors)
-                    && all (CategoricalPredictors > 0))
-                   || islogical (CategoricalPredictors)
-                   || isempty (CategoricalPredictors)))
-              error (strcat ("ClassificationKernel:", ...
-                             " 'CategoricalPredictors' must be a vector", ...
-                             " of positive integers or a logical", ...
-                             " vector."));
-            endif
 
           otherwise
             error (strcat ("ClassificationKernel: invalid parameter name", ...
@@ -652,12 +646,32 @@ classdef ClassificationKernel
       this.Prior = F.Prior;
       this.Cost = F.Cost;
 
+      ## Dummy code the categorical predictors on the rows kept; the fit
+      ## sees the coded columns, and new data is coded the same way.
+      if (isempty (PredictorNames))
+        PredictorNames = arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
+                                   'UniformOutput', false);
+      elseif (numel (PredictorNames) != p)
+        error (strcat ("ClassificationKernel: 'PredictorNames' must have", ...
+                       " one name per predictor."));
+      endif
+      [Coding, errmsg] = dummyCoding (X, CategoricalPredictors, ...
+                                      PredictorNames);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel: %s", errmsg);
+      endif
+      X = dummyCoding (X, Coding);
+      p = columns (X);
+
       ## Standardize before anything is measured off the predictors, so the
       ## kernel scale and the expansion both see the same data predict will.
       if (Standardize)
         this.Mu = mean (X, 1);
         this.Sigma = std (X, 0, 1);
         this.Sigma(this.Sigma == 0) = 1;
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.Mu(Coding.Dummy) = 0;
+        this.Sigma(Coding.Dummy) = 1;
         X = (X - this.Mu) ./ this.Sigma;
       endif
 
@@ -722,16 +736,12 @@ classdef ClassificationKernel
       ## Fill in the model
       this.BoxConstraint = BoxConstraint;
       this.PredictorNames = PredictorNames;
-      if (isempty (this.PredictorNames))
-        this.PredictorNames = ...
-                     arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
-                               'UniformOutput', false);
-      elseif (numel (this.PredictorNames) != p)
-        error (strcat ("ClassificationKernel: 'PredictorNames' must have", ...
-                       " one name per predictor."));
+      this.ExpandedPredictorNames = PredictorNames;
+      if (! isempty (Coding.Index))
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.CategoricalPredictors = Coding.Index;
+        this.Coding_ = Coding;
       endif
-      this.ExpandedPredictorNames = this.PredictorNames;
-      this.CategoricalPredictors = CategoricalPredictors;
       this.ResponseName = ResponseName;
       this.NumExpansionDimensions = m;
       this.FittedLoss = P.LossFunction;
@@ -741,7 +751,7 @@ classdef ClassificationKernel
       this.Basis_ = basis;
       this.Beta_ = Beta;
       this.Bias_ = Bias;
-      this.NumPredictors_ = p;
+      this.NumPredictors_ = Coding.NumPredictors;
       this.NumObservations_ = n;
 
       if (isempty (ScoreTransform))
@@ -1078,6 +1088,7 @@ classdef ClassificationKernel
       Bias_ = obj.Bias_;
       NumPredictors_ = obj.NumPredictors_;
       NumObservations_ = obj.NumObservations_;
+      Coding_ = obj.Coding_;
 
       save ('-binary', fname, 'classdef_name', 'BoxConstraint', ...
             'ClassNames', 'Prior', 'Cost', 'ScoreTransform', ...
@@ -1085,7 +1096,7 @@ classdef ClassificationKernel
             'ExpandedPredictorNames', 'NumExpansionDimensions', ...
             'FittedLoss', 'Lambda', 'ModelParameters', 'Regularization', ...
             'KernelScale', 'Learner', 'Mu', 'Sigma', 'Basis_', 'Beta_', ...
-            'Bias_', 'NumPredictors_', 'NumObservations_');
+            'Bias_', 'NumPredictors_', 'NumObservations_', 'Coding_');
 
     endfunction
 
@@ -1135,6 +1146,9 @@ classdef ClassificationKernel
     ## through the model's own basis first.
     function f = rawScore (this, XC)
 
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -1188,6 +1202,9 @@ classdef ClassificationKernel
       endfor
       W = W / sum (W);
 
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         X = (X - this.Mu) ./ this.Sigma;
       endif
@@ -1632,3 +1649,42 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!shared Xc, Dc, yc
+%! c1 = repmat ([1; 2; 3], 20, 1);
+%! x2 = sin ((1:60)');
+%! c3 = repmat ([10; 10; 20; 20], 15, 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yc = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos ((1:60)') > 1;
+
+%!test  # MATLAB parity: the kernel expands the dummy coded predictors
+%! randn ('seed', 9);
+%! rand ('seed', 9);
+%! Mdl = ClassificationKernel (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! randn ('seed', 9);
+%! rand ('seed', 9);
+%! H = ClassificationKernel (Dc, yc);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! assert_equal (Mdl.NumExpansionDimensions, 256);
+%! [~, s] = predict (Mdl, Xc(1:5,:));
+%! [~, sh] = predict (H, Dc(1:5,:));
+%! assert_equal (s, sh, 1e-12);
+
+%!test  # MATLAB parity: the coded columns are not standardized
+%! Mdl = ClassificationKernel (Xc, yc, 'CategoricalPredictors', [1, 3], ...
+%!                             'Standardize', true);
+%! assert_equal (Mdl.Mu([1:3, 5:6]), zeros (1, 5));
+%! assert_equal (Mdl.Sigma([1:3, 5:6]), ones (1, 5));
+%! assert_equal (Mdl.Mu(4), mean (Xc(:,2)), 1e-12);
+
+%!test  # a level the training data did not hold is scored NaN
+%! Mdl = ClassificationKernel (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! [~, s] = predict (Mdl, [4, 0, 10; 2, 0, 20]);
+%! assert_equal (isnan (s(:,1))', [true, false]);
+
+%!error<ClassificationKernel: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationKernel (Xc, yc, 'CategoricalPredictors', 4)
+%!error<ClassificationKernel: a logical 'CategoricalPredictors' must have one element per predictor.> ...
+%! ClassificationKernel (Xc, yc, 'CategoricalPredictors', logical ([1, 0]))

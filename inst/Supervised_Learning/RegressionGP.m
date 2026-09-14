@@ -100,6 +100,14 @@
 ## predictor data should be centred and scaled before training.  The same
 ## transformation is applied by @code{predict}.  The default is @qcode{false}.
 ##
+## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors, as
+## indices, as a logical vector with one element per predictor, or as
+## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
+## ones per distinct value it takes in the training data, named as in
+## @qcode{'x1 == 2'}, and the coded columns are not standardized.
+## @qcode{X} keeps the predictors as given.  A row holding a value the
+## training data did not is predicted as @code{NaN}.
+##
 ## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
 ## observation weights.  The default is a vector of ones.
 ##
@@ -532,6 +540,8 @@ classdef RegressionGP
   endproperties
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ## The dummy coding of the categorical predictors, empty when none.
+    Coding_               = [];
 
     ## The callable behind ResponseTransform.  The public property is the text
     ## MATLAB stores; this is what predict actually applies.
@@ -758,19 +768,33 @@ classdef RegressionGP
       this.PredictorNames = PredictorNames;
       this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName = ResponseName;
-      this.CategoricalPredictors = CategoricalPredictors;
+      ## Dummy code the categorical predictors on the rows kept.  X keeps
+      ## the predictors as given, and the fit sees the coded columns.
+      [Coding, errmsg] = dummyCoding (X, CategoricalPredictors, ...
+                                      PredictorNames);
+      if (! isempty (errmsg))
+        error ("RegressionGP: %s", errmsg);
+      endif
+      if (! isempty (Coding.Index))
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.CategoricalPredictors = Coding.Index;
+        this.Coding_ = Coding;
+      endif
       this.BinEdges = {};
       this.ResponseTransform = ResponseTransform;
 
       ## Standardize the predictors, if asked.  The location and scale are
       ## kept so that predict can apply the same transformation.
-      XS = X;
+      XS = dummyCoding (X, Coding);
       if (Standardize)
-        this.PredictorLocation = mean (X, 1);
-        s = std (X, 0, 1);
+        this.PredictorLocation = mean (XS, 1);
+        s = std (XS, 0, 1);
         s(s == 0) = 1;
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.PredictorLocation(Coding.Dummy) = 0;
+        s(Coding.Dummy) = 1;
         this.PredictorScale = s;
-        XS = (X - this.PredictorLocation) ./ this.PredictorScale;
+        XS = (XS - this.PredictorLocation) ./ this.PredictorScale;
       endif
 
       ## Initial values, which are the documented defaults where the caller
@@ -815,7 +839,7 @@ classdef RegressionGP
       this.PredictMethod = properName (PredictMethod);
       this.BasisFunction = properName (BasisFunction);
       this.KernelFunction = properName (KernelFunction);
-      kpnames = kernelParameterNames (KernelFunction, columns (X));
+      kpnames = kernelParameterNames (KernelFunction, columns (XS));
       KI = struct ();
       KI.Name = properName (KernelFunction);
       KI.KernelParameters = theta;
@@ -928,6 +952,9 @@ classdef RegressionGP
         varargin(1:2) = [];
       endwhile
 
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       M = this.predictModel_ (CIAlpha);
       if (nargout < 2)
         yFit = this.RTfun (gpPredict (XC, M));
@@ -1254,6 +1281,7 @@ classdef RegressionGP
       ResponseTransform = obj.ResponseTransform;
 
       HyperparameterOptimizationResults = obj.HyperparameterOptimizationResults;
+      Coding_ = obj.Coding_;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'W', 'PredictorNames', 'ExpandedPredictorNames', ...
             'ResponseName', 'CategoricalPredictors', 'BinEdges', ...
@@ -1263,7 +1291,7 @@ classdef RegressionGP
             'ActiveSetMethod', 'ActiveSetSize', 'IsActiveSetVector', ...
             'ActiveSetHistory', 'BCDInformation', ...
             'PredictorLocation', 'PredictorScale', 'ResponseTransform', ...
-            'HyperparameterOptimizationResults');
+            'HyperparameterOptimizationResults', 'Coding_');
 
     endfunction
 
@@ -2241,3 +2269,40 @@ endfunction
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+%!shared Xc, Dc, yc
+%! c1 = repmat ([1; 2; 3], 20, 1);
+%! x2 = sin ((1:60)');
+%! c3 = repmat ([10; 10; 20; 20], 15, 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yc = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos ((1:60)');
+
+%!test  # MATLAB parity: a categorical predictor is dummy coded in its place
+%! Mdl = RegressionGP (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! H = RegressionGP (Dc, yc);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! assert_equal (size (Mdl.X), [60, 3]);
+%! assert_equal (predict (Mdl, Xc(1:5,:)), predict (H, Dc(1:5,:)), 1e-8);
+
+%!test  # MATLAB parity: an ARD kernel has a length scale per coded column
+%! Mdl = RegressionGP (Xc, yc, 'CategoricalPredictors', [1, 3], ...
+%!                     'KernelFunction', 'ardsquaredexponential', ...
+%!                     'Standardize', true);
+%! assert_equal (numel (Mdl.KernelInformation.KernelParameters), 7);
+%! assert_equal (Mdl.PredictorLocation([1:3, 5:6]), zeros (1, 5));
+%! assert_equal (Mdl.PredictorScale([1:3, 5:6]), ones (1, 5));
+
+%!test  # a level the training data did not hold is predicted as NaN
+%! Mdl = RegressionGP (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! yhat = predict (Mdl, [4, 0, 10; 2, 0, 20]);
+%! assert_equal (isnan (yhat)', [true, false]);
+
+%!test  # cross-validation folds keep the categorical predictors
+%! Mdl = RegressionGP (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.Trained{1}.CategoricalPredictors, [1, 3]);
+
+%!error<RegressionGP: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! RegressionGP (Xc, yc, 'CategoricalPredictors', 4)

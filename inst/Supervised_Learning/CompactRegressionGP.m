@@ -239,6 +239,8 @@ classdef CompactRegressionGP
   endproperties
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ## The dummy coding of the categorical predictors, empty when none.
+    Coding_               = [];
 
     ## The callable behind ResponseTransform.
     RTfun                 = @(y) y;
@@ -269,7 +271,11 @@ classdef CompactRegressionGP
       if (isempty (XC))
         error ("CompactRegressionGP.predict: XC is empty.");
       endif
-      if (columns (XC) != columns (this.ActiveSetVectors))
+      p = columns (this.ActiveSetVectors);
+      if (! isempty (this.Coding_))
+        p = this.Coding_.NumPredictors;
+      endif
+      if (columns (XC) != p)
         error (strcat ("CompactRegressionGP.predict: XC must have the same", ...
                        " number of predictors as the trained model."));
       endif
@@ -295,6 +301,9 @@ classdef CompactRegressionGP
         varargin(1:2) = [];
       endwhile
 
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       M = struct ('X', this.ActiveSetVectors, 'Alpha', this.Alpha, ...
                   'KernelFunction', this.KernelFunction, ...
                   'Theta', this.KernelInformation.KernelParameters, ...
@@ -431,6 +440,7 @@ classdef CompactRegressionGP
       PredictorLocation = obj.PredictorLocation;
       PredictorScale = obj.PredictorScale;
       ResponseTransform = obj.ResponseTransform;
+      Coding_ = obj.Coding_;
 
       save ('-binary', fname, 'classdef_name', 'PredictorNames', ...
             'ExpandedPredictorNames', 'ResponseName', ...
@@ -438,7 +448,8 @@ classdef CompactRegressionGP
             'Sigma', 'KernelFunction', ...
             'KernelInformation', 'PredictMethod', 'Alpha', ...
             'ActiveSetVectors', 'ActiveSetMethod', 'ActiveSetSize', ...
-            'PredictorLocation', 'PredictorScale', 'ResponseTransform');
+            'PredictorLocation', 'PredictorScale', 'ResponseTransform', ...
+            'Coding_');
 
     endfunction
 
@@ -514,6 +525,7 @@ classdef CompactRegressionGP
       this.PredictorLocation = Mdl.PredictorLocation;
       this.PredictorScale = Mdl.PredictorScale;
       this.ResponseTransform = Mdl.ResponseTransform;
+      this.Coding_ = Mdl.Coding_;
 
     endfunction
 
@@ -708,3 +720,14 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+%!test  # a compact model codes new data as the full model does
+%! c1 = repmat ([1; 2; 3], 20, 1);
+%! x2 = sin ((1:60)');
+%! X = [c1, x2];
+%! y = 5 * (c1 == 2) + 0.5 * x2 + 0.1 * cos ((1:60)');
+%! Mdl = fitrgp (X, y, 'CategoricalPredictors', 1);
+%! CMdl = compact (Mdl);
+%! Xq = [1, 0; 3, 0.5; 4, 0];
+%! assert_equal (predict (CMdl, Xq), predict (Mdl, Xq));
+%! assert_equal (CMdl.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);

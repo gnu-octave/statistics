@@ -221,6 +221,7 @@ classdef RegressionLinear
     ## Number of predictors the fit saw, which the class does not report
     ## because MATLAB does not, but predict needs to validate its input.
     NumPredictors_         = [];
+    Coding_                = [];
 
     ## What the fit reported, so that fitrlinear can hand it back as its
     ## second output.  MATLAB returns it from the fitting function rather
@@ -332,8 +333,12 @@ classdef RegressionLinear
     ##
     ## @item @qcode{'ResponseName'} @tab A name for the response.
     ##
-    ## @item @qcode{'CategoricalPredictors'} @tab Indices of the categorical
-    ## predictors.
+    ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors,
+    ## as indices, as a logical vector with one element per predictor, or as
+    ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
+    ## and ones per distinct value it takes in the training data, named as in
+    ## @qcode{'x1 == 2'}.  A row holding a value the training data did not
+    ## is predicted as @code{NaN}.
     ## @end multitable
     ##
     ## The default solver is @qcode{'sparsa'} under a lasso penalty.  Under a
@@ -633,17 +638,6 @@ classdef RegressionLinear
 
           case 'categoricalpredictors'
             CategoricalPredictors = varargin{2};
-            if (! ((isnumeric (CategoricalPredictors)
-                    && isvector (CategoricalPredictors)
-                    && all (fix (CategoricalPredictors)
-                            == CategoricalPredictors)
-                    && all (CategoricalPredictors > 0))
-                   || islogical (CategoricalPredictors)
-                   || isempty (CategoricalPredictors)))
-              error (strcat ("RegressionLinear:", ...
-                             " 'CategoricalPredictors' must be a vector", ...
-                             " of positive integers or a logical vector."));
-            endif
 
           otherwise
             error (strcat ("RegressionLinear: invalid parameter name in", ...
@@ -668,6 +662,23 @@ classdef RegressionLinear
       W = F.W;
       n = F.n;
       p = F.p;
+
+      ## Dummy code the categorical predictors on the rows kept; the fit
+      ## sees the coded columns, and new data is coded the same way.
+      if (isempty (PredictorNames))
+        PredictorNames = arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
+                                   'UniformOutput', false);
+      elseif (numel (PredictorNames) != p)
+        error (strcat ("RegressionLinear: 'PredictorNames' must have one", ...
+                       " name per predictor."));
+      endif
+      [Coding, errmsg] = dummyCoding (X, CategoricalPredictors, ...
+                                      PredictorNames);
+      if (! isempty (errmsg))
+        error ("RegressionLinear: %s", errmsg);
+      endif
+      X = dummyCoding (X, Coding);
+      p = columns (X);
 
       ## Epsilon belongs to the insensitive band, so it means nothing to a
       ## least squares fit and MATLAB refuses it there rather than ignoring
@@ -843,23 +854,19 @@ classdef RegressionLinear
       ## Fill in the model
       this.Epsilon = Epsilon;
       this.PredictorNames = PredictorNames;
-      if (isempty (this.PredictorNames))
-        this.PredictorNames = ...
-                     arrayfun (@(k) sprintf ("x%d", k), 1:p, ...
-                               'UniformOutput', false);
-      elseif (numel (this.PredictorNames) != p)
-        error (strcat ("RegressionLinear: 'PredictorNames' must have one", ...
-                       " name per predictor."));
+      this.ExpandedPredictorNames = PredictorNames;
+      if (! isempty (Coding.Index))
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.CategoricalPredictors = Coding.Index;
+        this.Coding_ = Coding;
       endif
-      this.ExpandedPredictorNames = this.PredictorNames;
-      this.CategoricalPredictors = CategoricalPredictors;
       this.ResponseName = ResponseName;
       this.Learner = Learner;
       this.Beta = Beta;
       this.Bias = Bias;
       this.FittedLoss = P.LossFunction;
       this.Lambda = Lambda;
-      this.NumPredictors_ = p;
+      this.NumPredictors_ = Coding.NumPredictors;
       this.ResponseTransform = ResponseTransform;
       if (strcmp (Regularization, 'ridge'))
         this.Regularization = 'ridge (L2)';
@@ -907,6 +914,9 @@ classdef RegressionLinear
       if (columns (XC) != this.NumPredictors_)
         error (strcat ("RegressionLinear.predict: XC must have the same", ...
                        " number of predictors as the trained model."));
+      endif
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
       endif
 
       yFit = this.RTfun (XC * this.Beta + this.Bias);
@@ -1069,13 +1079,14 @@ classdef RegressionLinear
       ModelParameters = obj.ModelParameters;
       Regularization = obj.Regularization;
       NumPredictors_ = obj.NumPredictors_;
+      Coding_ = obj.Coding_;
 
       save ('-binary', fname, 'classdef_name', 'Epsilon', ...
             'ResponseTransform', 'PredictorNames', ...
             'CategoricalPredictors', 'ResponseName', ...
             'ExpandedPredictorNames', 'Learner', 'Beta', 'Bias', ...
             'FittedLoss', 'Lambda', 'ModelParameters', 'Regularization', ...
-            'NumPredictors_');
+            'NumPredictors_', 'Coding_');
 
     endfunction
 
@@ -1445,3 +1456,59 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+%!shared Xc, Dc, yc
+%! c1 = repmat ([1; 2; 3], 20, 1);
+%! x2 = sin ((1:60)');
+%! c3 = repmat ([10; 10; 20; 20], 15, 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yc = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos ((1:60)');
+
+%!test  # MATLAB parity: a categorical predictor is dummy coded in its place
+%! Mdl = RegressionLinear (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! H = RegressionLinear (Dc, yc);
+%! assert_equal (Mdl.Beta, H.Beta, 1e-12);
+%! assert_equal (predict (Mdl, Xc(1:5,:)), predict (H, Dc(1:5,:)), 1e-12);
+
+%!test  # MATLAB parity: 'all' codes every predictor, reported as indices
+%! Mdl = RegressionLinear (Xc(:,[1, 3]), yc, 'CategoricalPredictors', 'all');
+%! assert_equal (Mdl.CategoricalPredictors, [1, 2]);
+%! assert_equal (numel (Mdl.ExpandedPredictorNames), 5);
+
+%!test  # MATLAB parity: levels need not be integers
+%! Mdl = RegressionLinear ([Xc(:,1) + 0.5, Xc(:,2)], yc, ...
+%!                         'CategoricalPredictors', 1);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1.5', 'x1 == 2.5', ...
+%!               'x1 == 3.5', 'x2'});
+
+%!test  # a level the training data did not hold is predicted as NaN
+%! Mdl = RegressionLinear (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! yhat = predict (Mdl, [4, 0, 10; 2.5, 0, 20; NaN, 0, 10; 2, 0, 20]);
+%! assert_equal (isnan (yhat)', [true, true, true, false]);
+
+%!test  # a NaN in a categorical predictor leaves the row out of the fit
+%! X2 = Xc;
+%! X2(1,1) = NaN;
+%! Mdl = RegressionLinear (X2, yc, 'CategoricalPredictors', [1, 3]);
+%! H = RegressionLinear (Xc(2:end,:), yc(2:end), ...
+%!                       'CategoricalPredictors', [1, 3]);
+%! assert_equal (Mdl.Beta, H.Beta, 1e-12);
+
+%!test  # the coding travels with a saved model
+%! Mdl = RegressionLinear (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, Xc(1:5,:)), predict (Mdl, Xc(1:5,:)));
+
+%!error<RegressionLinear: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! RegressionLinear (Xc, yc, 'CategoricalPredictors', 4)
+%!error<RegressionLinear: a logical 'CategoricalPredictors' must have one element per predictor.> ...
+%! RegressionLinear (Xc, yc, 'CategoricalPredictors', logical ([1, 0]))
+%!error<RegressionLinear: 'CategoricalPredictors' must be a vector of positive integers, a logical vector or 'all'.> ...
+%! RegressionLinear (Xc, yc, 'CategoricalPredictors', 0)
