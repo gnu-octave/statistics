@@ -124,8 +124,10 @@ Regression
  stepwiseglm
  stepwiselm
 Supervised Learning
+ ClassificationBaggedEnsemble
  ClassificationDiscriminant
  ClassificationECOC
+ ClassificationEnsemble
  ClassificationGAM
  ClassificationKernel
  ClassificationKNN
@@ -140,6 +142,7 @@ Supervised Learning
  ClassificationTree
  CompactClassificationDiscriminant
  CompactClassificationECOC
+ CompactClassificationEnsemble
  CompactClassificationGAM
  CompactClassificationNaiveBayes
  CompactClassificationNeuralNetwork
@@ -156,6 +159,7 @@ Supervised Learning
  fcnntrain
  fitcdiscr
  fitcecoc
+ fitcensemble
  fitcgam
  fitckernel
  fitcknn
