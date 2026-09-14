@@ -197,3 +197,7 @@ endfunction
 %! Mdl = fitcdiscr (meas(1:150,:), species(1:150), ...
 %!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
 %! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});
+
+%!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcdiscr (meas, species, 'ClassNames', [3, 1, 2])

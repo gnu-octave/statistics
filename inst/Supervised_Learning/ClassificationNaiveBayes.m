@@ -629,19 +629,13 @@ classdef ClassificationNaiveBayes
       if (isempty (ClassNames))
         C = uniqueLabels (Yf);
       else
-        C = ClassNames;
-        if (ischar (C) && isrow (C))
-          C = cellstr (C);
+        ## The named classes, in the type of the response
+        U = uniqueLabels (Yf);
+        [pos, errmsg] = namedClasses (U, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationNaiveBayes: %s", errmsg);
         endif
-        ## The classes are held one per row, whichever orientation they were
-        ## given in: every per-class property is counted by rows.
-        if (! ischar (C))
-          C = C(:);
-        endif
-        if (! labelsKnown (C, uniqueLabels (Yf)))
-          error (strcat ("ClassificationNaiveBayes: not all 'ClassNames'", ...
-                         " are present in Y."));
-        endif
+        C = U(pos,:);
       endif
 
       ## A label outside the classes indexes as zero.  That is a fault only
@@ -1889,11 +1883,12 @@ endclassdef
 %! assert_equal (Mdl.NumObservations, 100);
 %! assert_equal (class (Mdl.ClassNames), 'categorical');
 
-%!test  # MATLAB parity: cellstr 'ClassNames' over a categorical response
+%!test  # cellstr 'ClassNames' over a categorical response keep its type
 %! load fisheriris
 %! Mdl = ClassificationNaiveBayes (meas, categorical (species), ...
 %!   'ClassNames', {'virginica'; 'versicolor'});
-%! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+%! assert_equal (cellstr (Mdl.ClassNames), {'virginica'; 'versicolor'});
 %! assert_equal (Mdl.NumObservations, 100);
 
 ## Test input validation

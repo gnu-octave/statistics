@@ -22,8 +22,8 @@
 ##
 ## @var{C} holds the classes present in @var{Y}, in the type @var{Y} holds
 ## them: sorted, or in the order of @var{ClassNames} when that names any, a
-## class it leaves out being left out of @var{C}.  Text names for a numeric or
-## logical response match the text of its labels.  @var{gY} is the index into
+## class it leaves out being left out of @var{C}.  Names match the classes as
+## @code{namedClasses} matches them.  @var{gY} is the index into
 ## @var{C} of each observation, zero for one whose class was left out.
 ## @end deftypefn
 
@@ -31,15 +31,7 @@ function [C, gY] = classOrder (Y, ClassNames)
 
   C = uniqueLabels (Y);
   if (! isempty (ClassNames))
-    if ((isnumeric (C) || islogical (C))
-        && ! (isnumeric (ClassNames) || islogical (ClassNames)))
-      ## Classes named as text for a numeric or logical response are matched
-      ## by the text of each label.
-      pos = labelIndices (arrayfun (@num2str, C, 'UniformOutput', false), ...
-                          ClassNames);
-    else
-      pos = labelIndices (C, ClassNames);
-    endif
+    pos = namedClasses (C, ClassNames);
     pos = pos(pos > 0);
     [~, first] = unique (pos, 'first');
     C = C(pos(sort (first)),:);

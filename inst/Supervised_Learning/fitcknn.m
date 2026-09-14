@@ -607,3 +607,7 @@ endfunction
 %! Mdl = fitcknn (meas(1:150,:), species(1:150), ...
 %!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
 %! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});
+
+%!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcknn (meas, species, 'ClassNames', [3, 1, 2])

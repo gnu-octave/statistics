@@ -298,3 +298,7 @@ endfunction
 %! Mdl = fitcgam (meas(51:150,:), species(51:150), ...
 %!             'ClassNames', {'virginica'; 'versicolor'});
 %! assert_equal (Mdl.ClassNames, {'virginica'; 'versicolor'});
+
+%!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcgam (meas(51:150,:), species(51:150), 'ClassNames', [3, 2])

@@ -853,14 +853,9 @@ classdef ClassificationTree
                              " vector, or a cell array of character", ...
                              " vectors."));
             endif
-            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
-              known = ismember (cellstr (ClassNames), gnY);
-            else
-              known = ismember (ClassNames(:), glY(:));
-            endif
-            if (! all (known))
-              error (strcat ("ClassificationTree: not all 'ClassNames'", ...
-                             " are present in Y."));
+            [~, errmsg] = namedClasses (glY, ClassNames);
+            if (! isempty (errmsg))
+              error ("ClassificationTree: %s", errmsg);
             endif
 
           case 'prior'
@@ -1029,18 +1024,8 @@ classdef ClassificationTree
       this.ExpandedPredictorNames = PredictorNames;
 
       ## A class the caller did not ask for takes its observations with it.
-      ## Anything textual is matched as whole names, gnY being grp2idx's own
-      ## cellstr of them: a character matrix is not a cellstr, and ismember
-      ## between two of them compares character by character.
       if (! isempty (ClassNames))
-        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
-          drop = find (! ismember (gnY, cellstr (ClassNames)));
-        else
-          drop = find (! ismember (glY, ClassNames));
-        endif
-        for ii = 1:numel (drop)
-          gY(gY == drop(ii)) = NaN;
-        endfor
+        gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
       ## An observation is dropped only when its response is missing.  A row

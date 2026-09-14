@@ -1073,20 +1073,9 @@ classdef ClassificationKNN
                              " vector, or a cell array of character", ...
                              " vectors."));
             endif
-            ## Check that all class names are available in gnY
-            if (! (isnumeric (ClassNames) || islogical (ClassNames)))
-              ClassNames = cellstr (ClassNames);
-              if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
-                                   ClassNames, 'UniformOutput', false))))
-                error (strcat ("ClassificationKNN: not all 'ClassNames'", ...
-                               " are present in Y."));
-              endif
-            else
-              if (! all (cell2mat (arrayfun (@(x) any (x == glY),
-                                   ClassNames, 'UniformOutput', false))))
-                error (strcat ("ClassificationKNN: not all 'ClassNames'", ...
-                               " are present in Y."));
-              endif
+            [~, errmsg] = namedClasses (glY, ClassNames);
+            if (! isempty (errmsg))
+              error ("ClassificationKNN: %s", errmsg);
             endif
 
           case 'prior'
@@ -1264,18 +1253,8 @@ classdef ClassificationKNN
 
       ## Handle class names
       if (! isempty (ClassNames))
-        ## Anything textual is matched as whole names, gnY being grp2idx's
-        ## own cellstr of them.  A character matrix is not a cellstr, and
-        ## ismember between two of them compares character by character, so
-        ## it would answer a question nobody asked.
-        if (! (isnumeric (ClassNames) || islogical (ClassNames)))
-          ru = find (! ismember (gnY, cellstr (ClassNames)));
-        else
-          ru = find (! ismember (glY, ClassNames));
-        endif
-        for i = 1:numel (ru)
-          gY(gY == ru(i)) = NaN;
-        endfor
+        ## The observations of a class ClassNames leaves out are dropped
+        gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
       ## An observation is dropped only when its response is missing.  A row

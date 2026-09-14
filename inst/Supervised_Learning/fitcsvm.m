@@ -398,3 +398,7 @@ endfunction
 %! [label, s] = predict (Mdl, meas(51,:));
 %! assert_equal (label, {'versicolor'});
 %! assert_equal (s(2) > s(1), true);
+
+%!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcsvm (meas(51:150,:), species(51:150), 'ClassNames', [3, 2])

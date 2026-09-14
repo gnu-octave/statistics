@@ -792,18 +792,9 @@ classdef TreeBagger
                            " vector, or a cell array of character", ...
                            " vectors."));
           endif
-          textC = ! (isnumeric (ClassNames) || islogical (ClassNames));
-          textU = ! (isnumeric (U) || islogical (U));
-          if (textC && textU)
-            names = cellstr (ClassNames);
-            [tf, loc] = ismember (names(:), cellstr (U));
-          elseif (! textC && ! textU)
-            [tf, loc] = ismember (ClassNames(:), U(:));
-          else
-            tf = false;
-          endif
-          if (! all (tf))
-            error ("TreeBagger: not all 'ClassNames' are present in Y.");
+          [loc, errmsg] = namedClasses (U, ClassNames);
+          if (! isempty (errmsg))
+            error ("TreeBagger: %s", errmsg);
           endif
           C = labelsFromIndex (U, loc(:));
         endif
@@ -2716,3 +2707,13 @@ endfunction
 %! mdsprox (fillprox (B), 'MDSCoordinates', [1, 2, 3, 4])
 %!error<TreeBagger.mdsprox: 'MDSCoordinates' must not exceed the number of scaled coordinates.> ...
 %! mdsprox (fillprox (B), 'MDSCoordinates', [1, 500])
+
+%!error<TreeBagger: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! TreeBagger (2, meas, species, 'ClassNames', [3, 1, 2])
+
+%!test  # classes named as text for numeric labels keep the labels' type
+%! load fisheriris
+%! Y = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
+%! B = TreeBagger (2, meas, Y, 'ClassNames', {'3', '1', '2'});
+%! assert_equal (B.ClassNames, [3; 1; 2]);

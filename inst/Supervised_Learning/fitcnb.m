@@ -182,3 +182,13 @@ endfunction
 %! fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], ones (3, 1), 'Prior', 'uniform')
 %!error<ClassificationNaiveBayes: a normal distribution cannot be fit for the combination of class 2 and predictor x1. The data has zero variance.> ...
 %! fitcnb ([1, 2; 2, 3; 3, 4; 10, 20], [1; 1; 1; 2])
+
+%!error<ClassificationNaiveBayes: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcnb (meas, species, 'ClassNames', [3, 1, 2])
+
+%!test  # classes named as text for numeric labels keep the labels' type
+%! load fisheriris
+%! Y = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
+%! Mdl = fitcnb (meas, Y, 'ClassNames', {'3', '1', '2'});
+%! assert_equal (Mdl.ClassNames, [3; 1; 2]);

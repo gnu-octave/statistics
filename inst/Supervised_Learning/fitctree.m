@@ -416,3 +416,18 @@ endfunction
 %! Y = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
 %! Mdl = fitctree (meas, Y, 'ClassNames', {'3', '1', '2'});
 %! assert_equal (Mdl.ClassNames, [3; 1; 2]);
+
+%!error<ClassificationTree: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitctree (meas, species, 'ClassNames', [3, 1, 2])
+
+%!test  # classes named 'true' and 'false' for logical labels
+%! load fisheriris
+%! Y = [false(50, 1); true(50, 1)];
+%! Mdl = fitctree (meas(51:150,:), Y, 'ClassNames', {'true'; 'false'});
+%! assert_equal (Mdl.ClassNames, [true; false]);
+
+%!error<ClassificationTree: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitctree (meas(51:150,:), [false(50, 1); true(50, 1)], ...
+%!           'ClassNames', {'1'; '0'})

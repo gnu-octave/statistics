@@ -61,20 +61,13 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
 
   [gY, gnY, glY] = grp2idx (Y);
 
-  ## Keep only the named classes, if any were named.  Names given as text
-  ## are matched against grp2idx's own names, which are always a cell array
-  ## of character vectors.  A character matrix must be turned into one
-  ## first: ismember on two character matrices compares them character by
-  ## character and answers a question nobody asked.
+  ## Keep only the named classes, if any were named.
   if (! isempty (ClassNames))
-    if (! (isnumeric (ClassNames) || islogical (ClassNames)))
-      drop = find (! ismember (gnY, cellstr (ClassNames)));
-    else
-      drop = find (! ismember (glY, ClassNames));
+    [pos, errmsg] = namedClasses (glY, ClassNames);
+    if (! isempty (errmsg))
+      error ("%s: %s", classname, errmsg);
     endif
-    for i = 1:numel (drop)
-      gY(gY == drop(i)) = NaN;
-    endfor
+    gY(! ismember (gY, pos)) = NaN;
   endif
 
   ## Weights are validated against the data as supplied, then follow it

@@ -251,3 +251,11 @@ endfunction
 %! Mdl = fitcecoc (meas(1:150,:), species(1:150), ...
 %!             'ClassNames', {'virginica'; 'setosa'; 'versicolor'});
 %! assert_equal (Mdl.ClassNames, {'virginica'; 'setosa'; 'versicolor'});
+
+%!error<ClassificationECOC: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcecoc (meas, species, 'ClassNames', [3, 1, 2])
+
+%!error<ClassificationECOC: not all 'ClassNames' are present in Y.> ...
+%! load fisheriris
+%! fitcecoc (meas, species, 'ClassNames', {'setosa'; 'rose'})
