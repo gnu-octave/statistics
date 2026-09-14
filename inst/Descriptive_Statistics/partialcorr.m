@@ -233,12 +233,40 @@ function [r, nu] = resid_partial (a, b, C, Type, Rows, completerows)
     endfor
   endif
 
+  ## Use single precision only when all the data for this regression are
+  ## single.  In particular, do not let concatenation silently demote a double
+  ## response when another input is single.
+  use_single = isa (a, 'single') && isa (b, 'single') && ...
+               (isempty (C) || isa (C, 'single'));
+  if (! use_single)
+    a = double (a);
+    b = double (b);
+    C = double (C);
+  endif
+
   m = numel (a);
-  M = [ones(m, 1), C];
-  ra = a - M * (M \ a);
-  rb = b - M * (M \ b);
-  sa = sqrt (sum (ra .^ 2));
-  sb = sqrt (sum (rb .^ 2));
+  Y = [a, b];
+
+  ## Center before fitting, then equilibrate the control columns.  Translation
+  ## and nonzero scaling do not change the regression subspace, but doing both
+  ## keeps the intercept and controls well conditioned.  Retain the intercept
+  ## to absorb rounding in the calculated means.  Zero columns need no scale.
+  Yc = Y - mean (Y, 1);
+  Cc = C - mean (C, 1);
+  cscale = max (abs (Cc), [], 1);
+  cscale(cscale == 0) = 1;
+  Cc = Cc ./ cscale;
+  M = [ones(m, 1, class (Yc)), Cc];
+
+  ## Fit both responses with the same factorization.  Recenter the residuals
+  ## to enforce their theoretical orthogonality to the intercept despite the
+  ## final matrix multiplication and subtraction rounding.
+  R = Yc - M * (M \ Yc);
+  R = R - mean (R, 1);
+  ra = R(:,1);
+  rb = R(:,2);
+  sa = norm (ra);
+  sb = norm (rb);
   ## A residual at or below the precision the column is held in counts as
   ## zero.  Scale by the vector's magnitude, not one element of it, so a large
   ## constant offset raises the tolerance as it raises the rounding error.
@@ -247,7 +275,9 @@ function [r, nu] = resid_partial (a, b, C, Type, Rows, completerows)
   if (sa <= tol_a || sb <= tol_b)
     r = NaN;
   else
-    r = sum (ra .* rb) / (sa * sb);
+    ## Normalize before multiplying to avoid overflow or underflow when the
+    ## two responses have very different magnitudes.
+    r = sum ((ra / sa) .* (rb / sb), 'extra');
     r = max (-1, min (1, r));
   endif
 
@@ -390,6 +420,26 @@ endfunction
 %! Y = [3; 1; 4; 1; 5; 9];
 %! assert_equal (isnan (partialcorr ([Z + v, Y], Z)(1,2)), false);
 %! assert_equal (isnan (partialcorr ([1e12 + Z + v, Y], Z)(1,2)), true);
+
+## translating or rescaling a control does not change its regression subspace
+%!test
+%! t = linspace (-1, 1, 50)';
+%! X = [sin(3*t) + 0.2*cos(11*t), cos(5*t) - 0.1*sin(13*t)];
+%! Z = [t, t.^2];
+%! r0 = partialcorr (X, Z);
+%! rt = partialcorr (X, [1e8 + t, t.^2]);
+%! rs = partialcorr (X, [t, 1e-16 * t.^2]);
+%! assert_equal (rt(1,2), r0(1,2), 1e-8);
+%! assert_equal (rs(1,2), r0(1,2), 1e-12);
+
+## residual normalization avoids overflow and underflow across response scales
+%!test
+%! t = linspace (-1, 1, 50)';
+%! X = [sin(3*t) + 0.2*cos(11*t), cos(5*t) - 0.1*sin(13*t)];
+%! Z = [t, t.^2];
+%! r0 = partialcorr (X, Z);
+%! rs = partialcorr ([1e200 * X(:,1), 1e-200 * X(:,2)], Z);
+%! assert_equal (rs(1,2), r0(1,2), 1e-12);
 
 ## input validation
 %!error <partialcorr: invalid number of input matrices.> ...
