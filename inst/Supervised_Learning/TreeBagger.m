@@ -1351,8 +1351,9 @@ classdef TreeBagger
     ## overlaid scatter plots, one per class, a class beyond the number of
     ## letters not drawn; a regression ensemble is drawn in the first color.
     ## @item @qcode{'MDSCoordinates'} @tab @tab Two or three indices of the
-    ## columns of @var{S} to draw.  The default is @code{[1, 2]}.  It has no
-    ## effect unless @qcode{'Colors'} is given.
+    ## columns of @var{S} to draw.  The default is @code{[1, 2]}.  They must
+    ## not exceed the number of columns of @var{S} even when nothing is drawn,
+    ## as in MATLAB, whose documentation says otherwise.
     ## @end multitable
     ##
     ## @seealso{TreeBagger, TreeBagger.fillprox, CompactTreeBagger.mdsprox,
@@ -2713,3 +2714,5 @@ endfunction
 %! mdsprox (fillprox (B), 'Colors', 1)
 %!error<TreeBagger.mdsprox: 'MDSCoordinates' must be a vector of two or three positive integers.> ...
 %! mdsprox (fillprox (B), 'MDSCoordinates', [1, 2, 3, 4])
+%!error<TreeBagger.mdsprox: 'MDSCoordinates' must not exceed the number of scaled coordinates.> ...
+%! mdsprox (fillprox (B), 'MDSCoordinates', [1, 500])

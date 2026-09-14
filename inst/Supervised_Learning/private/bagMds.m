@@ -25,9 +25,10 @@
 ## positive eigenvalue, and @var{E} the eigenvalues, as @code{cmdscale}
 ## returns them.
 ##
-## @var{colors}, when not empty, is a character vector with one color letter
-## per class, and the coordinates @var{coords}, two or three column indices of
-## @var{S}, are drawn as overlaid scatter plots, one per class.  @var{g} holds
+## @var{coords} holds two or three column indices of @var{S}, which must exist
+## whether or not anything is drawn.  @var{colors}, when not empty, is a
+## character vector with one color letter per class, and those coordinates are
+## drawn as overlaid scatter plots, one per class.  @var{g} holds
 ## the class index of each observation, or is empty to draw every observation
 ## in the first color; a class beyond the number of letters is not drawn.
 ## @var{errmsg} is the body of the message the caller should raise, or empty.
@@ -55,14 +56,14 @@ function [S, E, errmsg] = bagMds (P, g, colors, coords)
   endif
 
   [S, E] = cmdscale (1 - P);
-  if (isempty (colors))
-    return;
-  endif
   if (any (coords > columns (S)))
     S = [];
     E = [];
     errmsg = strcat ("'MDSCoordinates' must not exceed the number of", ...
                      " scaled coordinates.");
+    return;
+  endif
+  if (isempty (colors))
     return;
   endif
 

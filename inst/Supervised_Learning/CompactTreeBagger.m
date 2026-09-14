@@ -541,8 +541,9 @@ classdef CompactTreeBagger
     ## each one of @code{ClassNames}.  Classification only.  Without labels
     ## every observation is drawn in the first color.
     ## @item @qcode{'MDSCoordinates'} @tab @tab Two or three indices of the
-    ## columns of @var{S} to draw.  The default is @code{[1, 2]}.  It has no
-    ## effect unless @qcode{'Colors'} is given.
+    ## columns of @var{S} to draw.  The default is @code{[1, 2]}.  They must
+    ## not exceed the number of columns of @var{S} even when nothing is drawn,
+    ## as in MATLAB, whose documentation says otherwise.
     ## @end multitable
     ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.proximity, cmdscale,
@@ -890,6 +891,8 @@ endfunction
 %! mdsprox (C, x(1:10,:), 'MDSCoordinates', 1)
 %!error<CompactTreeBagger.mdsprox: 'MDSCoordinates' must not exceed the number of scaled coordinates.> ...
 %! mdsprox (C, x(1:10,:), 'Colors', 'r', 'MDSCoordinates', [1, 200])
+%!error<CompactTreeBagger.mdsprox: 'MDSCoordinates' must not exceed the number of scaled coordinates.> ...
+%! mdsprox (C, x(1:10,:), 'MDSCoordinates', [1, 200])
 %!error<CompactTreeBagger.outlierMeasure: 'Labels' must hold only classes the ensemble was trained on.> ...
 %! outlierMeasure (C, x(1:2,:), 'Labels', {'rose'; 'setosa'})
 %!error<CompactTreeBagger.outlierMeasure: 'Labels' must hold only classes the ensemble was trained on.> ...
