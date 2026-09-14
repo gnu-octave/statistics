@@ -243,7 +243,16 @@ classdef CompactClassificationEnsemble
       this.UsePredForLearner      = Mdl.UsePredForLearner;
       this.Method                 = Mdl.Method;
       this.DefaultIndex           = Mdl.DefaultIndex;
-      this.ScoreTransform         = Mdl.ScoreTransform;
+      ## A transform given as a function handle is held as its text, which
+      ## names no built-in transform, so the function itself is copied.
+      named = {'doublelogit', 'invlogit', 'ismax', 'logit', 'none', ...
+               'identity', 'sign', 'symmetric', 'symmetricismax', ...
+               'symmetriclogit'};
+      if (any (strcmp (Mdl.ScoreTransform, named)))
+        this.ScoreTransform       = Mdl.ScoreTransform;
+      else
+        this.ScoreTransform       = Mdl.STfun;
+      endif
 
     endfunction
 
@@ -751,6 +760,16 @@ endclassdef
 %! D.ScoreTransform = 'doublelogit';
 %! assert_equal (loss (D, X2, Y2, 'LossFun', 'quadratic'), ...
 %!               0.028390700687515, 1e-13);
+
+%!test  # a score transform given as a function handle survives compacting
+%! load fisheriris
+%! Mdl = fitcensemble (X2, Y2, 'Method', 'AdaBoostM1', ...
+%!                     'NumLearningCycles', 2, ...
+%!                     'Learners', templateTree ('MaxNumSplits', 1), ...
+%!                     'ScoreTransform', @(s) 2 * s);
+%! [~, s] = predict (Mdl, X2(1,:));
+%! [~, s0] = predict (C, X2(1,:), 'Learners', [1, 2]);
+%! assert_equal (s, 2 * s0, 1e-14);
 
 %!test  # MATLAB parity: removing learners
 %! D = removeLearners (C, [2, 4]);
