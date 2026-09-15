@@ -208,7 +208,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   if (PSC > 1)
     error ("knnsearch: only a single distance parameter can be defined.");
   endif
-  if (! isscalar (K) || ! isnumeric (K) || K < 1 || K != round (K))
+  if (! isscalar (K) || ! isnumeric (K) || K < 1 || K != round (K) || K > rows (X))
     error ("knnsearch: invalid value of K.");
   endif
   if (! isscalar (P) || ! isnumeric (P) || P <= 0)
@@ -625,6 +625,8 @@ endfunction
 %! knnsearch (ones (4, 5), ones (1, 5), 'scale', ones (1, 5), 'P', 3)
 %!error<knnsearch: invalid value of K.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'K', 0)
+%!error<knnsearch: invalid value of K.> ...
+%! knnsearch (ones (3, 2), ones (1, 2), "K", 4)
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'P', -2)
 %!error<knnsearch: invalid value in Scale or the size of Scale.> ...
