@@ -35,6 +35,12 @@
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
 ## the labels of each input argument.
 ##
+## A categorical input has a row or column for every one of its categories,
+## an unused one included, holding zeros.  The chi-square statistic and its
+## p-value are computed over the rows and columns that hold observations,
+## where MATLAB returns @code{NaN} for both whenever any row or column is
+## empty.
+##
 ## @seealso{grp2idx, tabulate}
 ## @end deftypefn
 
@@ -78,8 +84,16 @@ function [t, chisq, p, labels] = crosstab (varargin)
       error ("crosstab: x1, x2 ... xn must be vectors of the same length.");
     endif
     X = [X, vector];
-    reshape_format(i) = length (unique (vector(! isnan (vector))));
-    coordinates(i) = unique (vector(! isnan (vector)));
+    if (isnumeric (varargin{i}) || islogical (varargin{i}))
+      reshape_format(i) = length (unique (vector(! isnan (vector))));
+      coordinates(i) = unique (vector(! isnan (vector)));
+    else
+      ## A group has a row or column for every name it carries, an unused
+      ## category included, so the table lines up with LABELS as R2024a's
+      ## does.
+      reshape_format(i) = numel (labels_data{i});
+      coordinates(i) = (1:numel (labels_data{i}))';
+    endif
   endfor
 
   if (nargout > 3)
@@ -112,12 +126,25 @@ function [t, chisq, p, labels] = crosstab (varargin)
     endif
   endfor
 
+  ## The test runs over the rows and columns holding observations: an empty
+  ## one has no expected count to compare with, and R2024a returns NaN for
+  ## the whole table instead.
   if (nargout > 1)
-    if (isscalar (t) || isempty (t))
+    nd = ndims (t);
+    keep = cell (1, nd);
+    for d = 1:nd
+      tot = t;
+      for o = setdiff (1:nd, d)
+        tot = sum (tot, o);
+      endfor
+      keep{d} = find (tot(:) > 0);
+    endfor
+    tt = t(keep{:});
+    if (isscalar (tt) || isempty (tt))
       chisq = NaN;
       p = NaN;
     else
-      [p, chisq] = chi2test (t);
+      [p, chisq] = chi2test (tt);
     endif
   endif
 endfunction
@@ -180,6 +207,16 @@ endfunction
 %! y = categorical ({'X', 'Y', 'X', 'Y', 'X'});
 %! t = crosstab (x, y);
 %! assert_equal (size (t), [3, 2]);
+%!test  # MATLAB parity: an unused category keeps its zero row
+%! g = categorical ({'hi'; 'hi'; 'lo'; 'lo'; 'hi'; 'lo'}, {'mid', 'lo', 'hi'});
+%! w = warning ();
+%! warning ('off');
+%! [t, chisq, p, labels] = crosstab (g, [1; 2; 5; 6; 3; 7] > 3);
+%! warning (w);
+%! assert_equal (t, [0, 0; 0, 3; 3, 0]);
+%! assert_equal (labels(:,1)', {'mid', 'lo', 'hi'});
+%! assert_equal (chisq, 6);
+%! assert_equal (p, 0.01430587844, 1e-10);
 %!test  # MATLAB parity: rows follow the category order, not the names
 %! x = categorical ({'hi'; 'hi'; 'lo'; 'lo'; 'hi'; 'lo'}, {'lo', 'hi'});
 %! t = crosstab (x, [1; 2; 5; 6; 3; 7] > 3);
@@ -226,7 +263,8 @@ endfunction
 %! assert_equal (chisq, 18.00000000);
 %! assert_equal (p, 0.00123410, 1e-8);
 %!test
-%! ## Test for Partial NaN giving NaN for chisq/p
+%! ## The two columns holding only rows with a missing x7 are empty, and the
+%! ## test runs over the other four; R2024a returns NaN for chisq and p.
 %! x7 = [1 2 3 4 NaN NaN]';
 %! y7 = [10 20 30 40 50 60]';
 %! w = warning ();
@@ -234,8 +272,8 @@ endfunction
 %! [t, chisq, p, labels] = crosstab (x7, y7);
 %! warning (w);
 %! assert_equal (t, [eye(4), zeros(4, 2)]);
-%! assert_equal (isnan (chisq), true);
-%! assert_equal (isnan (p), true);
+%! assert_equal (chisq, 12);
+%! assert_equal (p, 0.2133093051, 1e-10);
 %! assert_equal (labels{1,1}, '1');
 %! assert_equal (labels{1,2}, '10');
 %! assert_equal (labels{2,1}, '2');
