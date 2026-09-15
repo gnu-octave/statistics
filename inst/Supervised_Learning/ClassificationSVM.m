@@ -1593,6 +1593,11 @@ classdef ClassificationSVM
       endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
       m = 2 * Ypm .* dec_values_L;
+      ## A one-class model has no second class to measure a margin against,
+      ## and R2024a returns NaN for every row, so edge is NaN too.
+      if (classCount (this.ClassNames) == 1)
+        m = NaN (rows (X), 1);
+      endif
 
     endfunction
 
@@ -1795,9 +1800,13 @@ classdef ClassificationSVM
             endfor
 
           case 'classifcost'
-            ## What the model's own prediction costs, given the true class
+            ## What the model's own prediction costs, given the true class.
+            ## A one-class model predicts its one class for every row, so an
+            ## outlier costs nothing, as R2024a reports.
             pred_idx = ones (rows (X), 1);
-            pred_idx(dec_values_L <= 0) = 2;
+            if (classCount (this.ClassNames) == 2)
+              pred_idx(dec_values_L <= 0) = 2;
+            endif
             true_idx = ones (rows (X), 1);
             true_idx(Y == -1) = 2;
             L = 0;
@@ -2723,6 +2732,25 @@ endclassdef
 %! assert_equal (M.Nu, 0.5);
 %! [~, s] = predict (M, Xo);
 %! assert_equal (mean (s < 0), 0.1);
+## MATLAB parity: the one-class losses, with margin and edge NaN.  Values
+## from R2024a (linear kernel).
+%!test
+%! load fisheriris
+%! M = fitcsvm (meas(51:100,[1, 3]), ones (50, 1), 'KernelFunction', ...
+%!              'linear', 'Nu', 0.5);
+%! assert_equal (resubLoss (M, 'LossFun', 'classifcost'), 0);
+%! assert_equal (resubLoss (M, 'LossFun', 'binodeviance'), ...
+%!               0.0144818627743958, 1e-12);
+%! assert_equal (resubLoss (M, 'LossFun', 'exponential'), ...
+%!               0.0235456917291944, 1e-12);
+%! assert_equal (resubLoss (M, 'LossFun', 'hinge'), 0.02, 1e-12);
+%! assert_equal (resubLoss (M, 'LossFun', 'logit'), 0.0171271559174886, 1e-12);
+%! assert_equal (resubLoss (M, 'LossFun', 'quadratic'), 68502.381296, 1e-6);
+%! Q = [6, 4.3; 5, 3.5; 7, 4.7; 5.5, 5; 6.2, 4.5];
+%! assert_equal (margin (M, Q, ones (5, 1)), NaN (5, 1));
+%! assert_equal (edge (M, Q, ones (5, 1)), NaN);
+%! assert_equal (resubEdge (M), NaN);
+%! assert_equal (margin (compact (M), Q, ones (5, 1)), NaN (5, 1));
 %!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
 %!error<ClassificationSVM: 'Weights' must have one element per row in X.> ...

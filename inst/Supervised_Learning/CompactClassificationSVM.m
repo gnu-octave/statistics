@@ -654,6 +654,11 @@ classdef CompactClassificationSVM
       endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
       m = 2 * Ypm .* dec_values_L;
+      ## A one-class model has no second class to measure a margin against,
+      ## and R2024a returns NaN for every row, so edge is NaN too.
+      if (classCount (this.ClassNames) == 1)
+        m = NaN (rows (X), 1);
+      endif
 
     endfunction
 
@@ -855,9 +860,13 @@ classdef CompactClassificationSVM
             endfor
 
           case 'classifcost'
-            ## What the model's own prediction costs, given the true class
+            ## What the model's own prediction costs, given the true class.
+            ## A one-class model predicts its one class for every row, so an
+            ## outlier costs nothing, as R2024a reports.
             pred_idx = ones (rows (X), 1);
-            pred_idx(dec_values_L <= 0) = 2;
+            if (classCount (this.ClassNames) == 2)
+              pred_idx(dec_values_L <= 0) = 2;
+            endif
             true_idx = ones (rows (X), 1);
             true_idx(Y == -1) = 2;
             L = 0;
