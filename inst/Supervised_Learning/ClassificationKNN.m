@@ -1632,6 +1632,17 @@ classdef ClassificationKNN
 
       endfor
 
+      ## A row missing a predictor has no neighbours to speak of: the search
+      ## finds some regardless, so its score and cost are set aside and it
+      ## takes the class of largest prior, as MATLAB R2024a labels it.
+      miss = any (isnan (XC), 2);
+      if (any (miss))
+        [~, top] = max (this.Prior);
+        cnum(miss) = top;
+        scores(miss,:) = NaN;
+        cost(miss,:) = NaN;
+      endif
+
       ## Apply ScoreTransform once to the whole matrix.  Inside the loop it
       ## was applied to everything accumulated so far, so observation i of n
       ## came back transformed n-i+1 times.
@@ -2791,6 +2802,18 @@ endfunction
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! f = @(d1,d2) sqrt (sum ((d1 - d2) .^ 2, 2));
 %! a = ClassificationKNN (x, y, 'Distance', f);
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:10)', mod((1:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = ClassificationKNN (X, y);
+%! [label, score, cost] = predict (Mdl, [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (score, [NaN, NaN]);
+%! assert_equal (cost, [NaN, NaN]);
+%! Mdl = ClassificationKNN (X, y, 'Prior', [0.3, 0.7]);
+%! assert_equal (predict (Mdl, [NaN, 1]), 2);
+
 %!error<ClassificationKNN: invalid function handle for distance metric.> ...
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];

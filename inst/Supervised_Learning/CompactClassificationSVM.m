@@ -554,6 +554,11 @@ classdef CompactClassificationSVM
       ## assigning into a preallocated result instead has to know that a
       ## character matrix holds a name per row and not per element.
       idx = 2 - (out == 1);
+      ## A row missing a predictor has no score, and takes the class of
+      ## largest prior, as MATLAB R2024a labels it whatever the cost.
+      miss = isnan (scores(:,1));
+      [~, top] = max (this.Prior);
+      idx(miss) = top;
       labels = labelsFromIndex (this.ClassNames, idx);
 
       ## The expected cost of each assignment, sum_j P(j) * Cost(j,k).  An
@@ -566,6 +571,7 @@ classdef CompactClassificationSVM
       ## discriminant and naive Bayes on any asymmetric cost matrix.  Both
       ## agree when Cost is symmetric, the default included.
       cost = this.Cost(idx, :);
+      cost(miss,:) = NaN;
 
       if (nargout > 1)
         ## Apply ScoreTransform
@@ -1057,6 +1063,17 @@ endclassdef
 %! rand ("state", 1); randn ("state", 1); Cc = compact (fitcsvm (Xch, Ych));
 %! rand ("state", 1); randn ("state", 1); Cs = compact (fitcsvm (Xch, Ycell));
 %! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:10)', mod((1:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = compact (ClassificationSVM (X, y));
+%! [label, score, cost] = predict (Mdl, [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (score, [NaN, NaN]);
+%! assert_equal (cost, [NaN, NaN]);
+%! Mdl = compact (ClassificationSVM (X, y, 'Prior', [0.3, 0.7]));
+%! assert_equal (predict (Mdl, [NaN, 1]), 2);
 
 %!error<CompactClassificationSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris

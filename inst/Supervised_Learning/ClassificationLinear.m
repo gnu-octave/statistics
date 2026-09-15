@@ -383,7 +383,8 @@ classdef ClassificationLinear
     ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
     ## and ones per distinct value it takes in the training data, named as in
     ## @qcode{'x1 == 2'}.  A row holding a value the training data did not
-    ## is scored @code{NaN}.
+    ## is scored @code{NaN} and labelled with the class of largest prior, as
+    ## a row missing a predictor is.
     ## @end multitable
     ##
     ## The default solver is @qcode{'sparsa'} under a lasso penalty.  Under a
@@ -1006,7 +1007,12 @@ classdef ClassificationLinear
                        " value of 'Lambda'; give the response as a cell", ...
                        " array of character vectors."));
       endif
-      labels = labelsFromIndex (this.ClassNames, 1 + (f > 0));
+      ## A row missing a predictor has no score, and takes the class of
+      ## largest prior, as MATLAB R2024a labels it whatever the cost.
+      idx = 1 + (f > 0);
+      [~, top] = max (this.Prior);
+      idx(isnan (f)) = top;
+      labels = labelsFromIndex (this.ClassNames, idx);
 
       if (nargout > 1)
         L = numel (this.Lambda);
@@ -1817,6 +1823,16 @@ endclassdef
 %! y = categorical (species);
 %! Mdl = ClassificationLinear (meas(51:150,:), y(51:150));
 %! assert_equal (cellstr (Mdl.ClassNames), {'versicolor'; 'virginica'});
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:10)', mod((1:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = ClassificationLinear (X, y);
+%! [label, score] = predict (Mdl, [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (score, [NaN, NaN]);
+%! Mdl = ClassificationLinear (X, y, 'Prior', [0.3, 0.7]);
+%! assert_equal (predict (Mdl, [NaN, 1]), 2);
 
 ## Test input validation
 %!error<ClassificationLinear: too few input arguments.> ...

@@ -628,7 +628,8 @@ classdef ClassificationSVM
     ## column of zeros and ones per level seen in training, named as in
     ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
     ## are not standardized.  An observation holding a level the training data
-    ## did not has no score.
+    ## did not has no score and takes the class of largest prior, as a row
+    ## missing a predictor does.
     ##
     ## @item @qcode{'PredictorNames'} @tab A cell array of character
     ## vectors specifying the names of the predictors. The length of this array
@@ -1339,6 +1340,11 @@ classdef ClassificationSVM
       ## assigning into a preallocated result instead has to know that a
       ## character matrix holds a name per row and not per element.
       idx = 2 - (out == 1);
+      ## A row missing a predictor has no score, and takes the class of
+      ## largest prior, as MATLAB R2024a labels it whatever the cost.
+      miss = isnan (scores(:,1));
+      [~, top] = max (this.Prior);
+      idx(miss) = top;
       labels = labelsFromIndex (this.ClassNames, idx);
 
       ## The expected cost of each assignment, sum_j P(j) * Cost(j,k).  An
@@ -1351,6 +1357,7 @@ classdef ClassificationSVM
       ## discriminant and naive Bayes on any asymmetric cost matrix.  Both
       ## agree when Cost is symmetric, the default included.
       cost = this.Cost(idx, :);
+      cost(miss,:) = NaN;
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -1419,29 +1426,22 @@ classdef ClassificationSVM
         scores = [scores, -scores];
       endif
 
-      ## Translate labels to classnames
-      if (iscellstr (this.Y))
-        labels = cell (rows (X), 1);
-        labels(out==1) = this.ClassNames{1};
-        labels(out!=1) = this.ClassNames{2};
-      elseif (islogical (this.Y))
-        labels = false (rows (X), 1);
-      elseif (isnumeric (this.Y))
-        labels = zeros (rows (X), 1);
-      elseif (ischar (this.Y))
-        labels = char (zeros (rows (X), size (this.Y, 2)));
-      endif
-      if (! iscellstr (this.Y))
-        labels(out==1) = this.ClassNames(1);
-        labels(out!=1) = this.ClassNames(2);
-      endif
+      ## Translate labels to classnames, as predict does
+      idx = 2 - (out == 1);
+      ## A row missing a predictor has no score, and takes the class of
+      ## largest prior, as MATLAB R2024a labels it whatever the cost.
+      miss = isnan (scores(:,1));
+      [~, top] = max (this.Prior);
+      idx(miss) = top;
+      labels = labelsFromIndex (this.ClassNames, idx);
 
       ## The expected cost of each assignment, as in predict above: an SVM
       ## score is a signed distance and not a posterior, so the row of Cost
       ## belonging to the predicted class is the whole of it.  MATLAB returns
       ## the column instead, which its own KNN, discriminant and naive Bayes
       ## contradict on any asymmetric cost matrix.
-      cost = this.Cost(2 - (out == 1), :);
+      cost = this.Cost(idx, :);
+      cost(miss,:) = NaN;
 
       ## Apply ScoreTransform
       scores = this.STfun (scores);
@@ -2519,6 +2519,24 @@ endclassdef
 %! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
 %! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
 %! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:10)', mod((1:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = ClassificationSVM (X, y);
+%! [label, score, cost] = predict (Mdl, [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (score, [NaN, NaN]);
+%! assert_equal (cost, [NaN, NaN]);
+%! Mdl = ClassificationSVM (X, y, 'Prior', [0.3, 0.7]);
+%! assert_equal (predict (Mdl, [NaN, 1]), 2);
+%!test  # resubPredict on a row missing a predictor
+%! X = [NaN, 1; (2:10)', mod((2:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! [label, score, cost] = resubPredict (ClassificationSVM (X, y));
+%! assert_equal (label(1), 1);
+%! assert_equal (score(1,:), [NaN, NaN]);
+%! assert_equal (cost(1,:), [NaN, NaN]);
 
 %!error<ClassificationSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris

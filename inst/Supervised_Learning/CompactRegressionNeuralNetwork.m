@@ -196,6 +196,8 @@ classdef CompactRegressionNeuralNetwork
   properties (GetAccess = public, SetAccess = protected, Hidden)
     ## The dummy coding of the categorical predictors, empty when none.
     Coding_ = [];
+    ## The prediction for a row missing a predictor.
+    MissingResponse_ = NaN;
 
     RTfun = @(y) y;
   endproperties
@@ -255,6 +257,7 @@ classdef CompactRegressionNeuralNetwork
       this.LayerBiases            = Mdl.LayerBiases;
       this.CategoricalPredictors  = Mdl.CategoricalPredictors;
       this.Coding_                = Mdl.Coding_;
+      this.MissingResponse_ = Mdl.MissingResponse_;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
@@ -347,8 +350,9 @@ classdef CompactRegressionNeuralNetwork
                                this.Activations, this.OutputLayerActivation, ...
                                XC, NumThreads);
       ## A row missing a predictor, or holding a level the fit did not see,
-      ## has no prediction: a rectified missing value would make one up.
-      yFit(any (isnan (XC), 2)) = NaN;
+      ## is predicted as MATLAB R2024a predicts it, not from a rectified
+      ## missing value.
+      yFit(any (isnan (XC), 2)) = this.MissingResponse_;
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -488,6 +492,7 @@ classdef CompactRegressionNeuralNetwork
       LayerBiases             = this.LayerBiases;
       CategoricalPredictors   = this.CategoricalPredictors;
       Coding_                 = this.Coding_;
+      MissingResponse_ = this.MissingResponse_;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       RTfun                  = this.RTfun;
 
@@ -498,7 +503,8 @@ classdef CompactRegressionNeuralNetwork
             'Activations', 'OutputLayerActivation', ...
             ...
             'LayerWeights', 'LayerBiases', ...
-            'CategoricalPredictors', 'Coding_', 'ExpandedPredictorNames', ...
+            'CategoricalPredictors', 'Coding_', ...
+            'MissingResponse_', 'ExpandedPredictorNames', ...
             'RTfun');
     endfunction
 
@@ -673,6 +679,11 @@ endclassdef
 %! assert_equal (C2.NumPredictors, CMdl.NumPredictors);
 %! assert_equal (C2.LayerSizes, CMdl.LayerSizes);
 %! assert_equal (predict (C2, X), predict (CMdl, X));
+
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = compact (RegressionNeuralNetwork (X, (1:10)'));
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
 
 ## Test input validation for the constructor
 %!error<CompactRegressionNeuralNetwork: invalid regression object.> ...

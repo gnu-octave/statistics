@@ -493,10 +493,12 @@ classdef CompactClassificationNeuralNetwork
                                       this.OutputLayerActivation, ...
                                       XC, NumThreads);
       ## A row missing a predictor, or holding a level the fit did not see,
-      ## has no score: a rectified missing value would make one up.
+      ## has no score: a rectified missing value would make one up.  It
+      ## takes the class of largest prior, as MATLAB R2024a labels it.
       miss = any (isnan (XC), 2);
       scores(miss,:) = NaN;
-      labels(miss) = 1;
+      [~, top] = max (this.Prior);
+      labels(miss) = top;
 
       # Get class labels
       labels = labelsFromIndex (this.ClassNames, labels);
@@ -922,6 +924,16 @@ endclassdef
 %! rand ("state", 1); randn ("state", 1); Cc = compact (fitcnet (Xch, Ych));
 %! rand ("state", 1); randn ("state", 1); Cs = compact (fitcnet (Xch, Ycell));
 %! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:10)', mod((1:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = compact (ClassificationNeuralNetwork (X, y));
+%! [label, score] = predict (Mdl, [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (score, [NaN, NaN]);
+%! Mdl = compact (ClassificationNeuralNetwork (X, y, 'Prior', [0.3, 0.7]));
+%! assert_equal (predict (Mdl, [NaN, 1]), 2);
 
 %!error<CompactClassificationNeuralNetwork: invalid classification object.> ...
 %! CompactClassificationNeuralNetwork (1)

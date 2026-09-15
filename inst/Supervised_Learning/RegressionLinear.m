@@ -222,6 +222,7 @@ classdef RegressionLinear
     ## because MATLAB does not, but predict needs to validate its input.
     NumPredictors_         = [];
     Coding_                = [];
+    MissingResponse_       = NaN;
 
     ## What the fit reported, so that fitrlinear can hand it back as its
     ## second output.  MATLAB returns it from the fitting function rather
@@ -338,7 +339,8 @@ classdef RegressionLinear
     ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
     ## and ones per distinct value it takes in the training data, named as in
     ## @qcode{'x1 == 2'}.  A row holding a value the training data did not
-    ## is predicted as @code{NaN}.
+    ## is predicted as a row missing a predictor, the weighted lower median
+    ## of the training response.
     ## @end multitable
     ##
     ## The default solver is @qcode{'sparsa'} under a lasso penalty.  Under a
@@ -679,6 +681,9 @@ classdef RegressionLinear
       endif
       X = dummyCoding (X, Coding);
       p = columns (X);
+      ## What a row missing a predictor is predicted to be, as MATLAB R2024a
+      ## predicts it: the weighted lower median of the training response.
+      this.MissingResponse_ = missingResponse (Y, W);
 
       ## Epsilon belongs to the insensitive band, so it means nothing to a
       ## least squares fit and MATLAB refuses it there rather than ignoring
@@ -919,7 +924,9 @@ classdef RegressionLinear
         XC = dummyCoding (XC, this.Coding_);
       endif
 
-      yFit = this.RTfun (XC * this.Beta + this.Bias);
+      f = XC * this.Beta + this.Bias;
+      f(any (isnan (XC), 2),:) = this.MissingResponse_;
+      yFit = this.RTfun (f);
 
     endfunction
 
@@ -1080,13 +1087,14 @@ classdef RegressionLinear
       Regularization = obj.Regularization;
       NumPredictors_ = obj.NumPredictors_;
       Coding_ = obj.Coding_;
+      MissingResponse_ = obj.MissingResponse_;
 
       save ('-binary', fname, 'classdef_name', 'Epsilon', ...
             'ResponseTransform', 'PredictorNames', ...
             'CategoricalPredictors', 'ResponseName', ...
             'ExpandedPredictorNames', 'Learner', 'Beta', 'Bias', ...
             'FittedLoss', 'Lambda', 'ModelParameters', 'Regularization', ...
-            'NumPredictors_', 'Coding_');
+            'NumPredictors_', 'Coding_', 'MissingResponse_');
 
     endfunction
 
@@ -1372,6 +1380,15 @@ endclassdef
 %! assert_equal (Mdl.ModelParameters.NumCheckConvergence, 2);
 %! assert_equal (Mdl.ModelParameters.PassLimit, 10);
 
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = RegressionLinear (X, (1:10)');
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
+%!test  # The lower median is weighted
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = RegressionLinear (X, (1:10)', 'Weights', [ones(9, 1); 10]);
+%! assert_equal (predict (Mdl, [NaN, 1]), 10);
+
 ## Test input validation
 %!error<RegressionLinear: too few input arguments.> RegressionLinear (ones (5, 2))
 %!error<RegressionLinear: optional arguments must be given in Name-Value pairs.> ...
@@ -1485,10 +1502,12 @@ endclassdef
 %! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1.5', 'x1 == 2.5', ...
 %!               'x1 == 3.5', 'x2'});
 
-%!test  # a level the training data did not hold is predicted as NaN
+%!test  # a level the training data did not hold predicts the lower median
 %! Mdl = RegressionLinear (Xc, yc, 'CategoricalPredictors', [1, 3]);
 %! yhat = predict (Mdl, [4, 0, 10; 2.5, 0, 20; NaN, 0, 10; 2, 0, 20]);
-%! assert_equal (isnan (yhat)', [true, true, true, false]);
+%! ys = sort (yc);
+%! assert_equal (yhat(1:3), repmat (ys(ceil (numel (ys) / 2)), 3, 1));
+%! assert_equal (isnan (yhat(4)), false);
 
 %!test  # a NaN in a categorical predictor leaves the row out of the fit
 %! X2 = Xc;

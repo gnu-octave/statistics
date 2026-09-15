@@ -267,6 +267,7 @@ classdef RegressionKernel
     ## a property of MATLAB's class.
     NumPredictors_         = [];
     Coding_                = [];
+    MissingResponse_       = NaN;
     NumObservations_       = [];
 
     ## What the fit reported, so that fitrkernel can hand it back as its
@@ -348,7 +349,8 @@ classdef RegressionKernel
     ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros
     ## and ones per distinct value it takes in the training data, named as in
     ## @qcode{'x1 == 2'}, and the coded columns are not standardized.  A row
-    ## holding a value the training data did not is predicted as @code{NaN}.
+    ## holding a value the training data did not is predicted as a row
+    ## missing a predictor, the weighted lower median of the training response.
     ## @end multitable
     ##
     ## The fit is always by limited-memory BFGS, the only solver MATLAB
@@ -588,6 +590,9 @@ classdef RegressionKernel
       endif
       X = dummyCoding (X, Coding);
       p = columns (X);
+      ## What a row missing a predictor is predicted to be, as MATLAB R2024a
+      ## predicts it: the weighted lower median of the training response.
+      this.MissingResponse_ = missingResponse (Y, W);
 
       ## Epsilon belongs to the insensitive band, so it means nothing to a
       ## least squares fit and is refused there rather than ignored.
@@ -751,8 +756,9 @@ classdef RegressionKernel
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
-      yFit = this.RTfun (kernelExpand (XC, this.Basis_) * this.Beta_ ...
-                         + this.Bias_);
+      f = kernelExpand (XC, this.Basis_) * this.Beta_ + this.Bias_;
+      f(any (isnan (XC), 2)) = this.MissingResponse_;
+      yFit = this.RTfun (f);
 
     endfunction
 
@@ -1023,6 +1029,7 @@ classdef RegressionKernel
       NumPredictors_ = obj.NumPredictors_;
       NumObservations_ = obj.NumObservations_;
       Coding_ = obj.Coding_;
+      MissingResponse_ = obj.MissingResponse_;
 
       save ('-binary', fname, 'classdef_name', 'Epsilon', ...
             'BoxConstraint', 'ResponseTransform', 'PredictorNames', ...
@@ -1030,7 +1037,8 @@ classdef RegressionKernel
             'ExpandedPredictorNames', 'NumExpansionDimensions', ...
             'FittedLoss', 'Lambda', 'ModelParameters', 'Regularization', ...
             'KernelScale', 'Learner', 'Mu', 'Sigma', 'Basis_', 'Beta_', ...
-            'Bias_', 'NumPredictors_', 'NumObservations_', 'Coding_');
+            'Bias_', 'NumPredictors_', 'NumObservations_', 'Coding_', ...
+            'MissingResponse_');
 
     endfunction
 
@@ -1259,6 +1267,11 @@ endclassdef
 %! assert_equal (kept.FitInfo_.ObjectiveValue ...
 %!               != lost.FitInfo_.ObjectiveValue, true);
 
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = RegressionKernel (X, (1:10)');
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
+
 ## Test input validation
 %!error<RegressionKernel: too few input arguments.> RegressionKernel (ones (5, 2))
 %!error<RegressionKernel: optional arguments must be given in Name-Value pairs.> ...
@@ -1372,7 +1385,10 @@ endclassdef
 %!test  # resume codes the data as the fit did
 %! Mdl = RegressionKernel (Xc, yc, 'CategoricalPredictors', [1, 3]);
 %! Mdl = resume (Mdl, Xc, yc);
-%! assert_equal (isnan (predict (Mdl, [4, 0, 10; 2, 0, 20]))', [true, false]);
+%! yhat = predict (Mdl, [4, 0, 10; 2, 0, 20]);
+%! ys = sort (yc);
+%! assert_equal (yhat(1), ys(ceil (numel (ys) / 2)));
+%! assert_equal (isnan (yhat(2)), false);
 
 %!error<RegressionKernel: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! RegressionKernel (Xc, yc, 'CategoricalPredictors', 4)

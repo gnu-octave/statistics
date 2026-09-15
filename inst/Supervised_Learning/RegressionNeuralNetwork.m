@@ -59,7 +59,8 @@
 ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
 ## ones per level seen in training, named as in @qcode{'x1 == 2'} in
 ## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
-## An observation holding a level the training data did not has no prediction.
+## An observation holding a level the training data did not is predicted as a
+## row missing a predictor, the lower median of the training response.
 ##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## naming the predictors, in the order they appear in @var{X}.
@@ -511,6 +512,8 @@ classdef RegressionNeuralNetwork
   properties (GetAccess = public, SetAccess = protected, Hidden)
     ## The dummy coding of the categorical predictors, empty when none.
     Coding_ = [];
+    ## The prediction for a row missing a predictor.
+    MissingResponse_ = NaN;
 
     RTfun = @(y) y;
   endproperties
@@ -813,6 +816,10 @@ classdef RegressionNeuralNetwork
       if (! isempty (errmsg))
         error ("RegressionNeuralNetwork: %s", errmsg);
       endif
+      ## What a row missing a predictor is predicted to be, as MATLAB R2024a
+      ## predicts it: the lower median of the training response, every
+      ## observation weighing the same here.
+      this.MissingResponse_ = missingResponse (Y, ones (rows (Y), 1));
       X = dummyCoding (X, Coding);
       if (! isempty (Coding.Index))
         this.CategoricalPredictors = Coding.Index;
@@ -1023,8 +1030,9 @@ classdef RegressionNeuralNetwork
                                       this.OutputLayerActivation, ...
                                XC, NumThreads);
       ## A row missing a predictor, or holding a level the fit did not see,
-      ## has no prediction: a rectified missing value would make one up.
-      yFit(any (isnan (XC), 2)) = NaN;
+      ## is predicted as MATLAB R2024a predicts it, not from a rectified
+      ## missing value.
+      yFit(any (isnan (XC), 2)) = this.MissingResponse_;
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -1068,8 +1076,9 @@ classdef RegressionNeuralNetwork
                                       this.OutputLayerActivation, ...
                                XC, NumThreads);
       ## A row missing a predictor, or holding a level the fit did not see,
-      ## has no prediction: a rectified missing value would make one up.
-      yFit(any (isnan (XC), 2)) = NaN;
+      ## is predicted as MATLAB R2024a predicts it, not from a rectified
+      ## missing value.
+      yFit(any (isnan (XC), 2)) = this.MissingResponse_;
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -1378,6 +1387,7 @@ classdef RegressionNeuralNetwork
       W                       = this.W;
       CategoricalPredictors   = this.CategoricalPredictors;
       Coding_                 = this.Coding_;
+      MissingResponse_ = this.MissingResponse_;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       RTfun                  = this.RTfun;
 
@@ -1400,7 +1410,7 @@ classdef RegressionNeuralNetwork
               'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
               'ConvergenceInfo', 'TrainingHistory', 'DisplayInfo', ...
               'LayerWeights', 'LayerBiases', ...
-              'W', 'CategoricalPredictors', 'Coding_', ...
+              'W', 'CategoricalPredictors', 'Coding_', 'MissingResponse_', ...
               'ExpandedPredictorNames', 'RTfun', ...
               'HyperparameterOptimizationResults');
       unwind_protect_cleanup
@@ -1882,6 +1892,12 @@ endfunction
 %!               table2cell (Mdl.TrainingHistory));
 
 ## An option that cannot act is refused rather than ignored.
+
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = RegressionNeuralNetwork (X, (1:10)');
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
+
 %!error<RegressionNeuralNetwork: 'GradientTolerance' applies only when 'Solver' is 'lbfgs'.> ...
 %! fitrnet (ones (5, 2), [1; 2; 3; 4; 5], "Solver", "sgd", ...
 %!          "GradientTolerance", 1e-8)
@@ -2218,11 +2234,13 @@ endfunction
 %! assert_equal (predict (Mdl, Xq), predict (H, Dq), 1e-12);
 %! assert_equal (resubPredict (Mdl), resubPredict (H), 1e-12);
 
-%!test  # a level the fit did not see, or a missing value, has no prediction
+%!test  # a level the fit did not see, or a missing value, predicts the median
 %! Mdl = RegressionNeuralNetwork (Xc, yr, 'CategoricalPredictors', [1, 3], ...
 %!                                'LayerSizes', 4);
 %! yhat = predict (Mdl, [4, 0, 10; 1, NaN, 10; 1, 0, 10]);
-%! assert_equal (isnan (yhat)', [true, true, false]);
+%! ys = sort (yr);
+%! assert_equal (yhat(1:2), repmat (ys(ceil (numel (ys) / 2)), 2, 1));
+%! assert_equal (isnan (yhat(3)), false);
 
 %!test  # MATLAB parity: the coded columns are not standardized
 %! Mdl = RegressionNeuralNetwork (Xc, yr, 'CategoricalPredictors', [1, 3], ...

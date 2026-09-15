@@ -106,7 +106,8 @@
 ## ones per distinct value it takes in the training data, named as in
 ## @qcode{'x1 == 2'}, and the coded columns are not standardized.
 ## @qcode{X} keeps the predictors as given.  A row holding a value the
-## training data did not is predicted as @code{NaN}.
+## training data did not is predicted as a row missing a predictor, the
+## weighted lower median of the training response.
 ##
 ## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
 ## observation weights.  The default is a vector of ones.
@@ -197,8 +198,9 @@ classdef RegressionGP
     ##
     ## Number of observations used to train the model
     ##
-    ## A positive integer scalar, counting only the rows that survived the
-    ## removal of missing values.  This property is read-only.
+    ## A positive integer scalar, counting the rows whose response is not
+    ## missing.  A row missing a predictor is counted, as in MATLAB, though the
+    ## fit leaves it out.  This property is read-only.
     ##
     ## @end deftp
     NumObservations       = [];
@@ -209,8 +211,8 @@ classdef RegressionGP
     ## Rows of the original data used to train the model
     ##
     ## A logical vector with one element per row of the data as supplied, true
-    ## where the row was used.  It is empty when no row was dropped.  This
-    ## property is read-only.
+    ## where the row was used, false where its response was missing.  It is
+    ## empty when no row was dropped.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed              = [];
@@ -543,6 +545,9 @@ classdef RegressionGP
     ## The dummy coding of the categorical predictors, empty when none.
     Coding_               = [];
 
+    ## The prediction for a row missing a predictor.
+    MissingResponse_      = NaN;
+
     ## The callable behind ResponseTransform.  The public property is the text
     ## MATLAB stores; this is what predict actually applies.
     RTfun                 = @(y) y;
@@ -575,9 +580,12 @@ classdef RegressionGP
         error ("RegressionGP: too few input arguments.");
       endif
 
-      ## Validate X and Y and drop rows with missing values
-      [X, Y, RowsUsed] = this.checkXY_ (X, Y, 'RegressionGP');
+      ## Validate X and Y.  A row whose response is missing is dropped; one
+      ## missing a predictor stays in X and counts as an observation, as MATLAB
+      ## R2024a keeps it, but takes no part in the fit.
+      [X, Y, RowsUsed] = this.checkXY_ (X, Y, 'RegressionGP', true);
       [n, p] = size (X);
+      fitRows = ! any (isnan (X), 2);
 
       ## Defaults
       KernelFunction   = 'squaredexponential';
@@ -761,6 +769,7 @@ classdef RegressionGP
       this.NumObservations = n;
       this.RowsUsed = RowsUsed;
       this.W = this.getWeights_ (Weights, n, 'RegressionGP');
+      this.MissingResponse_ = missingResponse (Y(fitRows), this.W(fitRows));
       if (isempty (PredictorNames))
         PredictorNames = arrayfun (@(k) sprintf ('x%d', k), 1:p, ...
                                    'UniformOutput', false);
@@ -785,7 +794,9 @@ classdef RegressionGP
 
       ## Standardize the predictors, if asked.  The location and scale are
       ## kept so that predict can apply the same transformation.
-      XS = dummyCoding (X, Coding);
+      XS = dummyCoding (X(fitRows,:), Coding);
+      Y = Y(fitRows);
+      n = rows (XS);
       if (Standardize)
         this.PredictorLocation = mean (XS, 1);
         s = std (XS, 0, 1);
@@ -850,7 +861,7 @@ classdef RegressionGP
       this.LogLikelihood = LL;
       this.ActiveSetVectors = XS;
       this.ActiveSetSize = n;
-      this.IsActiveSetVector = true (n, 1);
+      this.IsActiveSetVector = fitRows;
       ## The fit as it was asked for, in MATLAB's field order.  Beta, Sigma
       ## and KernelParameters are the starting values the caller gave, not
       ## what the fit found; SigmaLowerBound is the exception and is reported
@@ -956,16 +967,19 @@ classdef RegressionGP
         XC = dummyCoding (XC, this.Coding_);
       endif
       M = this.predictModel_ (CIAlpha);
+      ## A row missing a predictor is predicted as MATLAB R2024a predicts it,
+      ## the weighted lower median of the training response.
+      miss = any (isnan (XC), 2);
       if (nargout < 2)
-        yFit = this.RTfun (gpPredict (XC, M));
+        yFit = gpPredict (XC, M);
       elseif (nargout < 3)
         [yFit, ySD] = gpPredict (XC, M);
-        yFit = this.RTfun (yFit);
       else
         [yFit, ySD, yInt] = gpPredict (XC, M);
-        yFit = this.RTfun (yFit);
         yInt = this.RTfun (yInt);
       endif
+      yFit(miss) = this.MissingResponse_;
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -1282,6 +1296,7 @@ classdef RegressionGP
 
       HyperparameterOptimizationResults = obj.HyperparameterOptimizationResults;
       Coding_ = obj.Coding_;
+      MissingResponse_ = obj.MissingResponse_;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'W', 'PredictorNames', 'ExpandedPredictorNames', ...
             'ResponseName', 'CategoricalPredictors', 'BinEdges', ...
@@ -1291,7 +1306,7 @@ classdef RegressionGP
             'ActiveSetMethod', 'ActiveSetSize', 'IsActiveSetVector', ...
             'ActiveSetHistory', 'BCDInformation', ...
             'PredictorLocation', 'PredictorScale', 'ResponseTransform', ...
-            'HyperparameterOptimizationResults', 'Coding_');
+            'HyperparameterOptimizationResults', 'Coding_', 'MissingResponse_');
 
     endfunction
 
@@ -1348,7 +1363,7 @@ classdef RegressionGP
 
     ## Validate the predictor and response data, and drop any row that is not
     ## complete in both.
-    function [X, Y, used] = checkXY_ (this, X, Y, caller)
+    function [X, Y, used] = checkXY_ (this, X, Y, caller, keepX)
 
       if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
         error ("%s: invalid values in X.", caller);
@@ -1364,15 +1379,23 @@ classdef RegressionGP
         error ("%s: X is empty.", caller);
       endif
 
-      used = ! (any (isnan (X), 2) | isnan (Y));
+      ## KEEPX keeps a row that is missing only a predictor, which the fit
+      ## sets aside but the model still counts.
+      if (nargin > 4 && keepX)
+        used = ! isnan (Y);
+        complete = used & ! any (isnan (X), 2);
+      else
+        used = ! (any (isnan (X), 2) | isnan (Y));
+        complete = used;
+      endif
+      if (! any (complete))
+        error ("%s: no complete observations in the data.", caller);
+      endif
       if (all (used))
         used = [];
       else
         X = X(used, :);
         Y = Y(used);
-        if (isempty (Y))
-          error ("%s: no complete observations in the data.", caller);
-        endif
       endif
 
     endfunction
@@ -2056,10 +2079,10 @@ endfunction
 %! assert_equal (predict (Mdl, x), exp (predict (Mdl2, x)), 1e-12);
 
 %!test
-%! ## A row with a missing value is dropped, and RowsUsed says which
+%! ## A row with a missing response is dropped, and RowsUsed says which
 %! x = linspace (0, 1, 12)';
 %! y = cos (3*x);
-%! x(4) = NaN;
+%! y(4) = NaN;
 %! Mdl = RegressionGP (x, y);
 %! assert_equal (Mdl.NumObservations, 11);
 %! assert_equal (Mdl.RowsUsed, [true(3,1); false; true(8,1)]);
@@ -2087,6 +2110,18 @@ endfunction
 %! M2 = RegressionGP (x, y, 'KernelFunction', 'squaredexponential', ...
 %!                    'KernelParameters', [0.4; 1.2], 'FitMethod', 'none');
 %! assert_equal (predict (M1, x), predict (M2, x), 1e-12);
+
+%!test  # A row missing a predictor counts, but is left out of the fit
+%! X = [(1:10)', mod((1:10)', 3)];
+%! X(1,1) = NaN;
+%! Mdl = RegressionGP (X, (1:10)');
+%! assert_equal (Mdl.NumObservations, 10);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.ActiveSetSize, 9);
+%! assert_equal (Mdl.IsActiveSetVector, [false; true(9, 1)]);
+%! assert_equal (predict (Mdl, [NaN, 1]), 6);
+%! yFit = resubPredict (Mdl);
+%! assert_equal (yFit(1), 6);
 
 ## Test input validation for the constructor
 %!error<RegressionGP: too few input arguments.> RegressionGP (ones (5, 2))
@@ -2294,10 +2329,12 @@ endfunction
 %! assert_equal (Mdl.PredictorLocation([1:3, 5:6]), zeros (1, 5));
 %! assert_equal (Mdl.PredictorScale([1:3, 5:6]), ones (1, 5));
 
-%!test  # a level the training data did not hold is predicted as NaN
+%!test  # a level the training data did not hold predicts the lower median
 %! Mdl = RegressionGP (Xc, yc, 'CategoricalPredictors', [1, 3]);
 %! yhat = predict (Mdl, [4, 0, 10; 2, 0, 20]);
-%! assert_equal (isnan (yhat)', [true, false]);
+%! ys = sort (yc);
+%! assert_equal (yhat(1), ys(ceil (numel (ys) / 2)));
+%! assert_equal (isnan (yhat(2)), false);
 
 %!test  # cross-validation folds keep the categorical predictors
 %! Mdl = RegressionGP (Xc, yc, 'CategoricalPredictors', [1, 3]);

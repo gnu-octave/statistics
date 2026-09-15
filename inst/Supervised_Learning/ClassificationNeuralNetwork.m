@@ -654,7 +654,8 @@ classdef ClassificationNeuralNetwork
     ## column of zeros and ones per level seen in training, named as in
     ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
     ## are not standardized.  An observation holding a level the training data
-    ## did not has no score.
+    ## did not has no score and takes the class of largest prior, as a row
+    ## missing a predictor does.
     ##
     ## @item @qcode{'PredictorNames'} @tab A cell array of character
     ## vectors specifying the names of the predictors. The length of this array
@@ -1288,10 +1289,12 @@ classdef ClassificationNeuralNetwork
                                       this.OutputLayerActivation, ...
                                       XC, NumThreads);
       ## A row missing a predictor, or holding a level the fit did not see,
-      ## has no score: a rectified missing value would make one up.
+      ## has no score: a rectified missing value would make one up.  It
+      ## takes the class of largest prior, as MATLAB R2024a labels it.
       miss = any (isnan (XC), 2);
       scores(miss,:) = NaN;
-      labels(miss) = 1;
+      [~, top] = max (this.Prior);
+      labels(miss) = top;
 
       # Get class labels
       labels = labelsFromIndex (this.ClassNames, labels);
@@ -1346,10 +1349,12 @@ classdef ClassificationNeuralNetwork
                                       this.OutputLayerActivation, ...
                                       X, NumThreads);
       ## A row missing a predictor, or holding a level the fit did not see,
-      ## has no score: a rectified missing value would make one up.
+      ## has no score: a rectified missing value would make one up.  It
+      ## takes the class of largest prior, as MATLAB R2024a labels it.
       miss = any (isnan (X), 2);
       scores(miss,:) = NaN;
-      labels(miss) = 1;
+      [~, top] = max (this.Prior);
+      labels(miss) = top;
 
       # Get class labels
       labels = labelsFromIndex (this.ClassNames, labels);
@@ -2213,6 +2218,16 @@ endfunction
 %! rand ("state", 2); cvc = crossval (Mc, "KFold", 3);
 %! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
 %! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:10)', mod((1:10)', 3)];
+%! y = [1; 1; 1; 1; 1; 1; 2; 2; 2; 2];
+%! Mdl = ClassificationNeuralNetwork (X, y);
+%! [label, score] = predict (Mdl, [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (score, [NaN, NaN]);
+%! Mdl = ClassificationNeuralNetwork (X, y, 'Prior', [0.3, 0.7]);
+%! assert_equal (predict (Mdl, [NaN, 1]), 2);
 
 %!error<ClassificationNeuralNetwork: 'GradientTolerance' applies only when 'Solver' is 'lbfgs'.> ...
 %! fitcnet (ones (5, 2), [1; 1; 2; 2; 2], "Solver", "sgd", ...

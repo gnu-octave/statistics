@@ -58,7 +58,8 @@
 ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
 ## ones per level seen in training, named as in @qcode{'x1 == 2'} in
 ## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
-## An observation holding a level the training data did not has no prediction.
+## An observation holding a level the training data did not is predicted as a
+## row missing a predictor, the lower median of the training response.
 ##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## naming the predictors, in the order they appear in @var{X}.
@@ -453,6 +454,8 @@ classdef RegressionSVM
   properties (GetAccess = public, SetAccess = protected, Hidden)
     ## The dummy coding of the categorical predictors, empty when none.
     Coding_ = [];
+    ## The prediction for a row missing a predictor.
+    MissingResponse_ = NaN;
 
     RTfun = @(y) y;
   endproperties
@@ -721,6 +724,10 @@ classdef RegressionSVM
       if (! isempty (errmsg))
         error ("RegressionSVM: %s", errmsg);
       endif
+      ## What a row missing a predictor is predicted to be, as MATLAB R2024a
+      ## predicts it: the lower median of the training response, every
+      ## observation weighing the same here.
+      this.MissingResponse_ = missingResponse (Y, ones (rows (Y), 1));
       X = dummyCoding (X, Coding);
       if (! isempty (Coding.Index))
         this.CategoricalPredictors = Coding.Index;
@@ -950,6 +957,7 @@ classdef RegressionSVM
       ## LIBSVM returns the fitted response as its first output for a
       ## regression model, there being no label to decide.
       yFit = svmpredict (zeros (rows (XC), 1), XC, this.Model, '-q');
+      yFit(any (isnan (XC), 2)) = this.MissingResponse_;
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -1278,6 +1286,7 @@ classdef RegressionSVM
       SupportVectors          = this.SupportVectors;
       CategoricalPredictors   = this.CategoricalPredictors;
       Coding_                 = this.Coding_;
+      MissingResponse_ = this.MissingResponse_;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       W                       = this.W;
       RTfun                  = this.RTfun;
@@ -1290,6 +1299,7 @@ classdef RegressionSVM
             'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'IsSupportVector', ...
             'SupportVectors', 'CategoricalPredictors', 'Coding_', ...
+            'MissingResponse_', ...
             'ExpandedPredictorNames', 'KernelParameters', ...
             'BoxConstraints', 'W', 'RTfun', ...
             'HyperparameterOptimizationResults');
@@ -1660,6 +1670,11 @@ endclassdef
 %! assert_equal (rows (D.Model.SVs), 1);
 %! assert_equal (predict (discardSupportVectors (D), X), predict (D, X));
 
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = RegressionSVM (X, (1:10)');
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
+
 %!error<RegressionSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris
 %! keep = ! strcmp (species, "setosa");
@@ -1964,7 +1979,8 @@ endclassdef
 %!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
 %! assert_equal (Mdl.Beta, H.Beta, 1e-12);
 %! assert_equal (predict (Mdl, Xq), predict (H, Dq), 1e-12);
-%! assert_equal (isnan (predict (Mdl, [4, 0, 10])), true);
+%! ys = sort (yr);
+%! assert_equal (predict (Mdl, [4, 0, 10]), ys(ceil (numel (ys) / 2)));
 
 %!test  # MATLAB parity: the coded columns are not standardized
 %! Mdl = RegressionSVM (Xc, yr, 'CategoricalPredictors', [1, 3], ...

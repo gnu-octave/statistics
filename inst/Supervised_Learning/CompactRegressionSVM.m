@@ -228,6 +228,8 @@ classdef CompactRegressionSVM
   properties (GetAccess = public, SetAccess = protected, Hidden)
     ## The dummy coding of the categorical predictors, empty when none.
     Coding_ = [];
+    ## The prediction for a row missing a predictor.
+    MissingResponse_ = NaN;
 
     RTfun = @(y) y;
   endproperties
@@ -288,6 +290,7 @@ classdef CompactRegressionSVM
       this.SupportVectors        = Mdl.SupportVectors;
       this.CategoricalPredictors = Mdl.CategoricalPredictors;
       this.Coding_               = Mdl.Coding_;
+      this.MissingResponse_ = Mdl.MissingResponse_;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
@@ -408,6 +411,7 @@ classdef CompactRegressionSVM
       ## LIBSVM returns the fitted response as its first output for a
       ## regression model, there being no label to decide.
       yFit = svmpredict (zeros (rows (XC), 1), XC, this.Model, '-q');
+      yFit(any (isnan (XC), 2)) = this.MissingResponse_;
 
       ## Apply ResponseTransform
       yFit = this.RTfun (yFit);
@@ -548,6 +552,7 @@ classdef CompactRegressionSVM
       SupportVectors          = this.SupportVectors;
       CategoricalPredictors   = this.CategoricalPredictors;
       Coding_                 = this.Coding_;
+      MissingResponse_ = this.MissingResponse_;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       RTfun                  = this.RTfun;
 
@@ -556,7 +561,8 @@ classdef CompactRegressionSVM
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
             'Epsilon', 'Sigma', 'Mu', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'SupportVectors', ...
-            'CategoricalPredictors', 'Coding_', 'ExpandedPredictorNames', ...
+            'CategoricalPredictors', 'Coding_', ...
+            'MissingResponse_', 'ExpandedPredictorNames', ...
             'KernelParameters', 'RTfun');
     endfunction
 
@@ -787,6 +793,11 @@ endclassdef
 %! assert_equal (rows (Mdl.Model.SVs) > 1, true);
 %! assert_equal (rows (D.Model.SVs), 1);
 %! assert_equal (predict (discardSupportVectors (D), X), predict (D, X));
+
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = compact (RegressionSVM (X, (1:10)'));
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
 
 %!error<CompactRegressionSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris

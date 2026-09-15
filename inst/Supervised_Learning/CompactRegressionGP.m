@@ -242,6 +242,9 @@ classdef CompactRegressionGP
     ## The dummy coding of the categorical predictors, empty when none.
     Coding_               = [];
 
+    ## The prediction for a row missing a predictor.
+    MissingResponse_      = NaN;
+
     ## The callable behind ResponseTransform.
     RTfun                 = @(y) y;
 
@@ -311,16 +314,19 @@ classdef CompactRegressionGP
                   'Sigma', this.Sigma, 'Location', this.PredictorLocation, ...
                   'Scale', this.PredictorScale, 'CIAlpha', CIAlpha);
 
+      ## A row missing a predictor is predicted as MATLAB R2024a predicts it,
+      ## the weighted lower median of the training response.
+      miss = any (isnan (XC), 2);
       if (nargout < 2)
-        yFit = this.RTfun (gpPredict (XC, M));
+        yFit = gpPredict (XC, M);
       elseif (nargout < 3)
         [yFit, ySD] = gpPredict (XC, M);
-        yFit = this.RTfun (yFit);
       else
         [yFit, ySD, yInt] = gpPredict (XC, M);
-        yFit = this.RTfun (yFit);
         yInt = this.RTfun (yInt);
       endif
+      yFit(miss) = this.MissingResponse_;
+      yFit = this.RTfun (yFit);
 
     endfunction
 
@@ -441,6 +447,7 @@ classdef CompactRegressionGP
       PredictorScale = obj.PredictorScale;
       ResponseTransform = obj.ResponseTransform;
       Coding_ = obj.Coding_;
+      MissingResponse_ = obj.MissingResponse_;
 
       save ('-binary', fname, 'classdef_name', 'PredictorNames', ...
             'ExpandedPredictorNames', 'ResponseName', ...
@@ -449,7 +456,7 @@ classdef CompactRegressionGP
             'KernelInformation', 'PredictMethod', 'Alpha', ...
             'ActiveSetVectors', 'ActiveSetMethod', 'ActiveSetSize', ...
             'PredictorLocation', 'PredictorScale', 'ResponseTransform', ...
-            'Coding_');
+            'Coding_', 'MissingResponse_');
 
     endfunction
 
@@ -526,6 +533,7 @@ classdef CompactRegressionGP
       this.PredictorScale = Mdl.PredictorScale;
       this.ResponseTransform = Mdl.ResponseTransform;
       this.Coding_ = Mdl.Coding_;
+      this.MissingResponse_ = Mdl.MissingResponse_;
 
     endfunction
 
@@ -666,6 +674,11 @@ endclassdef
 %! CMdl = compact (Mdl);
 %! assert_equal (CMdl.ResponseTransform, 'exp');
 %! assert_equal (predict (CMdl, x), predict (Mdl, x), 1e-14);
+
+%!test  # A row missing a predictor predicts the lower median of the response
+%! X = [(1:10)', mod((1:10)', 3)];
+%! Mdl = compact (RegressionGP (X, (1:10)'));
+%! assert_equal (predict (Mdl, [NaN, 1]), 5);
 
 ## Test input validation for the constructor
 %!error<CompactRegressionGP: too few input arguments.> CompactRegressionGP ()

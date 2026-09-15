@@ -368,8 +368,14 @@ classdef CompactClassificationECOC
         error ("CompactClassificationECOC.predict: %s", errmsg);
       endif
 
+      ## A row a binary learner cannot score has no loss either, and takes the
+      ## class of largest prior, as MATLAB R2024a labels it.
+      miss = any (isnan (PBScore), 2);
+      NegLoss(miss,:) = NaN;
       NegLoss = this.STfun (NegLoss);
       [~, idx] = max (NegLoss, [], 2);
+      [~, top] = max (this.Prior);
+      idx(miss) = top;
       label = labelsFromIndex (this.ClassNames, idx);
 
     endfunction
@@ -738,6 +744,15 @@ endclassdef
 %! for j = 1:numel (S.BinaryLearners)
 %!   assert_equal (S.BinaryLearners{j}.Lambda, 1e-3, 1e-12);
 %! endfor
+
+%!test  # A row missing a predictor takes the class of largest prior
+%! X = [(1:12)', mod((1:12)', 3)];
+%! y = [1; 1; 1; 1; 1; 2; 2; 2; 2; 3; 3; 3];
+%! [label, NegLoss] = predict (compact (fitcecoc (X, y)), [NaN, 1]);
+%! assert_equal (label, 1);
+%! assert_equal (NegLoss, [NaN, NaN, NaN]);
+%! Mdl = compact (fitcecoc (X, y, 'Prior', [0.2, 0.2, 0.6]));
+%! assert_equal (predict (Mdl, [NaN, 1]), 3);
 
 %!error<CompactClassificationECOC.selectModels: too few input arguments.> ...
 %! load fisheriris; ...
