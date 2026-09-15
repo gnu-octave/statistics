@@ -224,10 +224,11 @@ function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, disp0)
   endif
 
   ## One further solve carries the gradient, all of it in the random effects
-  ## dimension: ZtViZ is Zx'*inv (V)*Zx, c is Zx'*inv (V)*r and B is
-  ## Zx'*inv (V)*X.
-  Zt = S.Rk' \ (S.Lf' * CP.ZtZ / disp0);
-  ZtViZ = CP.ZtZ / disp0 - Zt' * Zt;
+  ## dimension: c is Zx'*inv (V)*r and B is Zx'*inv (V)*X.  Of
+  ## ZtViZ = Zx'*inv (V)*Zx only the per-level diagonal blocks are needed,
+  ## taken entry by entry, since the whole product Zt'*Zt fills in.
+  LtZtZ = S.Lf' * CP.ZtZ / disp0;
+  Zt = S.Rk' \ LtZtZ(S.pk,:);
   B = CP.ZtX / disp0 - Zt' * S.Xt;
   c = (CP.Ztz / disp0 - Zt' * S.zt) - B * beta;
   if (isreml)
@@ -241,12 +242,20 @@ function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, disp0)
     m = q*(q+1)/2;
     Lk = tril_from_theta (theta(off+(1:m)), q);
     Sa = zeros (q);
+    base = col + (0:nlev(k)-1)' * q;
+    for j = 1:q
+      for i = 1:q
+        ci = base + i;
+        cj = base + j;
+        ZtZij = sum (CP.ZtZ(sub2ind (size (CP.ZtZ), ci, cj))) / disp0;
+        Sa(i,j) = full (ZtZij - sum (sum (Zt(:,ci) .* Zt(:,cj))));
+      endfor
+    endfor
     Sc = zeros (q);
     Sp = zeros (q);
     for l = 1:nlev(k)
       sel = col + (1:q);
       col += q;
-      Sa += ZtViZ(sel,sel);
       cs = c(sel);
       Sc += cs * cs';
       if (isreml)
@@ -297,8 +306,10 @@ function [beta, b, Psi, covbeta] = inner_solve (theta, X, z, Zx, qk, ...
   ## in the random effects dimension: with g = Zx'*inv (Dg)*r, it is
   ## g - Zt'*(Rk'\(L'*g)), so the n-vector is never formed.
   g = (CP.Ztz - CP.ZtX * beta) / disp0;
-  Zt = S.Rk' \ (S.Lf' * CP.ZtZ / disp0);
-  ZtVir = g - Zt' * (S.Rk' \ (S.Lf' * g));
+  Ltg = S.Lf' * g;
+  u = zeros (size (Ltg));
+  u(S.pk) = S.Rk \ (S.Rk' \ Ltg(S.pk));
+  ZtVir = g - (CP.ZtZ / disp0) * (S.Lf * u);
   b = S.Lf * (S.Lf' * ZtVir);
   ## The covariance of the fixed effects is genuinely an inverse, but it is
   ## the inverse of a matrix already factored, so take it from the factor.
@@ -319,7 +330,7 @@ endfunction
 function CP = weighted_cross (X, z, Zx, w)
   w = w(:);
   Zw = Zx .* w;
-  CP.ZtZ = full (Zw' * Zx);
+  CP.ZtZ = choose_storage (Zw' * Zx);
   CP.ZtX = Zw' * X;
   CP.Ztz = Zw' * z;
   CP.XtX = (X .* w)' * X;
@@ -332,40 +343,66 @@ endfunction
 ## V = Zx*L*L'*Zx' + disp*diag (1./w), none of them formed in the observation
 ## dimension.  The leading term is diagonal rather than a multiple of the
 ## identity, so inv (Dg) is diag (w)/disp and the Woodbury capacitance is
-## K = I_q + L'*(Zx'*diag (w)*Zx)*L/disp.  K is symmetric in exact arithmetic
-## but not bitwise, the two products being separate calls, and 'chol' reads one
-## triangle, so symmetrise before it is handed over.
+## K = I_q + L'*(Zx'*diag (w)*Zx)*L/disp.
 function S = wquad (theta, CP, qk, nlev, n, disp0)
   S.Lf = build_Lfull (theta, qk, nlev);
-  K = eye (columns (CP.ZtZ)) + (S.Lf' * CP.ZtZ * S.Lf) / disp0;
-  K = (K + K') / 2;
-  [S.Rk, flag] = chol (K);
+  [S.Rk, flag, S.pk] = factor_K (S.Lf, CP.ZtZ / disp0);
   S.ok = (flag == 0);
   if (! S.ok)
     return;
   endif
-  S.Xt = S.Rk' \ (S.Lf' * CP.ZtX / disp0);
-  S.zt = S.Rk' \ (S.Lf' * CP.Ztz / disp0);
+  LtZtX = S.Lf' * CP.ZtX / disp0;
+  LtZtz = S.Lf' * CP.Ztz / disp0;
+  S.Xt = S.Rk' \ LtZtX(S.pk,:);
+  S.zt = S.Rk' \ LtZtz(S.pk);
   S.XtViX = CP.XtX / disp0 - S.Xt' * S.Xt;
   S.XtViX = (S.XtViX + S.XtViX') / 2;
   S.XtViz = CP.Xtz / disp0 - S.Xt' * S.zt;
   S.ztViz = CP.ztz / disp0 - S.zt' * S.zt;
-  S.logdetV = n * log (disp0) - CP.logw + 2 * sum (log (diag (S.Rk)));
+  S.logdetV = n * log (disp0) - CP.logw + 2 * sum (log (full (diag (S.Rk))));
 endfunction
 
 ## Block-diagonal relative factor: L_k repeated over the nlev_k levels, held
 ## sparse so that products against it stay inside the block structure.
 function Lf = build_Lfull (theta, qk, nlev)
-  blocks = {};  off = 0;
+  blocks = cell (1, numel (qk));
+  off = 0;
   for k = 1:numel (qk)
     m = qk(k)*(qk(k)+1)/2;
     Lk = sparse (tril_from_theta (theta(off+(1:m)), qk(k)));
-    for l = 1:nlev(k)
-      blocks{end+1} = Lk;
-    endfor
+    blocks{k} = kron (speye (nlev(k)), Lk);
     off += m;
   endfor
   Lf = blkdiag (blocks{:});
+endfunction
+
+## Cholesky factor of K = I + Lf'*ZtZ*Lf, and the row order pk it was taken
+## in, so that Rk'*Rk is K(pk,pk).  K is sparse or full as ZtZ is.  It is
+## symmetric in exact arithmetic but not bitwise, the two products being
+## separate calls, and 'chol' reads one triangle, so symmetrise it first.
+function [Rk, flag, pk] = factor_K (Lf, ZtZ)
+  K = speye (columns (ZtZ)) + Lf' * ZtZ * Lf;
+  K = (K + K') / 2;
+  if (issparse (K))
+    [Rk, flag, pk] = chol (K, "vector");
+  else
+    [Rk, flag] = chol (K);
+    pk = 1:columns (K);
+  endif
+endfunction
+
+## K has the non-zero pattern of Zx'*Zx whatever theta is, so its storage is
+## chosen once from the fill of its Cholesky factor, estimated under an
+## approximate minimum degree order.  Sparse is faster up to about a fifth of
+## the triangle filled, as with nested or few-level crossed terms; crossed
+## terms with many levels each fill in, and dense is faster.
+function ZtZ = choose_storage (ZtZ)
+  q = columns (ZtZ);
+  P = spones (ZtZ) + speye (q);
+  o = amd (P);
+  if (sum (symbfact (P(o,o))) > 0.2 * q * (q + 1) / 2)
+    ZtZ = full (ZtZ);
+  endif
 endfunction
 
 function L = tril_from_theta (th, q)

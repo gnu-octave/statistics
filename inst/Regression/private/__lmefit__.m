@@ -98,11 +98,11 @@ function M = __lmefit__ (X, y, Z, G, method)
   ## which one it reads decides the factor and a threaded or blocked BLAS can
   ## disagree with a reference one.  Symmetrise before every factorisation.
   Lf = build_Lfull (theta, qk, nlev);
-  K = eye (columns (CP.ZtZ)) + Lf' * CP.ZtZ * Lf;
-  K = (K + K') / 2;
-  Rk = chol (K);
-  Xt = Rk' \ (Lf' * CP.ZtX);
-  yt = Rk' \ (Lf' * CP.Zty);
+  [Rk, ~, pk] = factor_K (Lf, CP.ZtZ);
+  LtZtX = Lf' * CP.ZtX;
+  LtZty = Lf' * CP.Zty;
+  Xt = Rk' \ LtZtX(pk,:);
+  yt = Rk' \ LtZty(pk);
   XtMiX = CP.XtX - Xt' * Xt;
   XtMiX = (XtMiX + XtMiX') / 2;
   XtMiy = CP.Xty - Xt' * yt;
@@ -121,7 +121,9 @@ function M = __lmefit__ (X, y, Z, G, method)
   ## formed.  The covariance is genuinely an inverse, but XtMiX is symmetric
   ## positive definite, so take it from a factor rather than a general inverse.
   g = CP.Zty - CP.ZtX * beta;
-  w = Rk \ (Rk' \ (Lf' * g));
+  Ltg = Lf' * g;
+  w = zeros (size (Ltg));
+  w(pk) = Rk \ (Rk' \ Ltg(pk));
   b = Lf * (Lf' * (g - CP.ZtZ * (Lf * w)));
   Rx = chol (XtMiX);
   covbeta = sigma2 * (Rx \ (Rx' \ eye (p)));
@@ -180,19 +182,17 @@ endfunction
 function [dev, grad] = profiled_deviance (theta, CP, qk, nlev, n, p, is_reml)
   Lf = build_Lfull (theta, qk, nlev);
   ## Lf is sparse block diagonal, which keeps both products inside the block
-  ## structure instead of costing a dense q cubed.  Symmetrise before
-  ## factorising for the same reason the n-by-n form did: the two products are
-  ## separate calls and chol reads one triangle.
-  K = eye (columns (CP.ZtZ)) + Lf' * CP.ZtZ * Lf;
-  K = (K + K') / 2;
-  [Rk, flag] = chol (K);
+  ## structure, and K is factorised sparse unless it fills in.
+  [Rk, flag, pk] = factor_K (Lf, CP.ZtZ);
   if (flag != 0)
     dev = Inf;
     grad = zeros (size (theta));
     return;
   endif
-  Xt = Rk' \ (Lf' * CP.ZtX);
-  yt = Rk' \ (Lf' * CP.Zty);
+  LtZtX = Lf' * CP.ZtX;
+  LtZty = Lf' * CP.Zty;
+  Xt = Rk' \ LtZtX(pk,:);
+  yt = Rk' \ LtZty(pk);
   XtMiX = CP.XtX - Xt' * Xt;
   XtMiX = (XtMiX + XtMiX') / 2;
   XtMiy = CP.Xty - Xt' * yt;
@@ -203,7 +203,7 @@ function [dev, grad] = profiled_deviance (theta, CP, qk, nlev, n, p, is_reml)
   ## deviance depends on beta only to second order because beta minimises it.
   beta = XtMiX \ XtMiy;
   rMir = ytMiy - XtMiy' * beta;
-  logdetM = 2 * sum (log (diag (Rk)));
+  logdetM = 2 * sum (log (full (diag (Rk))));
   if (is_reml)
     nu = n - p;
     Rx = chol (XtMiX);
@@ -217,10 +217,12 @@ function [dev, grad] = profiled_deviance (theta, CP, qk, nlev, n, p, is_reml)
     return;
   endif
 
-  ## One further triangular solve carries the whole gradient: ZtMiZ is
-  ## Zx'*inv (M)*Zx, c is Zx'*inv (M)*r and B is Zx'*inv (M)*X.
-  Zt = Rk' \ (Lf' * CP.ZtZ);
-  ZtMiZ = CP.ZtZ - Zt' * Zt;
+  ## One further triangular solve carries the whole gradient: c is
+  ## Zx'*inv (M)*r and B is Zx'*inv (M)*X.  Of ZtMiZ = Zx'*inv (M)*Zx only
+  ## the per-level diagonal blocks are needed, and they are taken entry by
+  ## entry, since the whole product Zt'*Zt fills in.
+  LtZtZ = Lf' * CP.ZtZ;
+  Zt = Rk' \ LtZtZ(pk,:);
   B = CP.ZtX - Zt' * Xt;
   c = (CP.Zty - Zt' * yt) - B * beta;
   if (is_reml)
@@ -234,12 +236,20 @@ function [dev, grad] = profiled_deviance (theta, CP, qk, nlev, n, p, is_reml)
     m = q*(q+1)/2;
     Lk = tril_from_theta (theta(off+(1:m)), q);
     Sa = zeros (q);
+    base = col + (0:nlev(k)-1)' * q;
+    for j = 1:q
+      for i = 1:q
+        ci = base + i;
+        cj = base + j;
+        Sa(i,j) = full (sum (CP.ZtZ(sub2ind (size (CP.ZtZ), ci, cj))) ...
+                        - sum (sum (Zt(:,ci) .* Zt(:,cj))));
+      endfor
+    endfor
     Sc = zeros (q);
     Sp = zeros (q);
     for l = 1:nlev(k)
       S = col + (1:q);
       col += q;
-      Sa += ZtMiZ(S,S);
       cs = c(S);
       Sc += cs * cs';
       if (is_reml)
@@ -270,10 +280,8 @@ endfunction
 
 ## The cross products the profiled deviance needs.  All are free of theta, so
 ## they are formed once per fit and the optimiser never touches X, y or Zx.
-## ZtZ is made full: the factorisations downstream work on dense q-by-q
-## matrices.
 function CP = cross_products (X, y, Zx)
-  CP.ZtZ = full (Zx' * Zx);
+  CP.ZtZ = choose_storage (Zx' * Zx);
   CP.ZtX = Zx' * X;
   CP.Zty = Zx' * y;
   CP.XtX = X' * X;
@@ -284,17 +292,44 @@ endfunction
 ## Block-diagonal relative factor: L_k repeated over the nlev_k levels, held
 ## sparse so that products against it stay inside the block structure.
 function Lf = build_Lfull (theta, qk, nlev)
-  blocks = {};
+  blocks = cell (1, numel (qk));
   off = 0;
   for k = 1:numel (qk)
     m = qk(k)*(qk(k)+1)/2;
     Lk = sparse (tril_from_theta (theta(off+(1:m)), qk(k)));
-    for l = 1:nlev(k)
-      blocks{end+1} = Lk;
-    endfor
+    blocks{k} = kron (speye (nlev(k)), Lk);
     off += m;
   endfor
   Lf = blkdiag (blocks{:});
+endfunction
+
+## Cholesky factor of K = I + Lf'*ZtZ*Lf, and the row order pk it was taken
+## in, so that Rk'*Rk is K(pk,pk).  K is sparse or full as ZtZ is.  It is
+## symmetric in exact arithmetic but not bitwise, the two products being
+## separate calls, and 'chol' reads one triangle, so symmetrise it first.
+function [Rk, flag, pk] = factor_K (Lf, ZtZ)
+  K = speye (columns (ZtZ)) + Lf' * ZtZ * Lf;
+  K = (K + K') / 2;
+  if (issparse (K))
+    [Rk, flag, pk] = chol (K, "vector");
+  else
+    [Rk, flag] = chol (K);
+    pk = 1:columns (K);
+  endif
+endfunction
+
+## K has the non-zero pattern of Zx'*Zx whatever theta is, so its storage is
+## chosen once from the fill of its Cholesky factor, estimated under an
+## approximate minimum degree order.  Sparse is faster up to about a fifth of
+## the triangle filled, as with nested or few-level crossed terms; crossed
+## terms with many levels each fill in, and dense is faster.
+function ZtZ = choose_storage (ZtZ)
+  q = columns (ZtZ);
+  P = spones (ZtZ) + speye (q);
+  o = amd (P);
+  if (sum (symbfact (P(o,o))) > 0.2 * q * (q + 1) / 2)
+    ZtZ = full (ZtZ);
+  endif
 endfunction
 
 ## Lower-triangular q-by-q factor from its q*(q+1)/2 entries (column-major
