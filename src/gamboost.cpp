@@ -92,13 +92,11 @@ struct BinnedPredictor
 // equally spaced positions through the sorted distinct values so the cuts stay
 // where the data is rather than where its range is.
 // The detection grid is coarser than the fitting grid and its size is fixed:
-// MATLAB reports 7 cut points, 8 equal-frequency bins, at 60, 250, 1000 and
-// 4000 observations alike, and they sit on the octiles to every digit.
+// MATLAB reports 7 cut points, 8 equal-frequency bins, at every sample size.
 static const octave_idx_type GAMB_PAIR_EDGES = 7;
 
 static BinnedPredictor
-gamb_bin (const ColumnVector& x, octave_idx_type maxedges,
-          bool detection = false)
+gamb_bin (const ColumnVector& x, octave_idx_type maxedges)
 {
   octave_idx_type n = x.numel ();
 
@@ -153,25 +151,19 @@ gamb_bin (const ColumnVector& x, octave_idx_type maxedges,
   }
   else
   {
-    // Above the cap the cuts are equally spaced through the observations
-    // rather than through the distinct values, so the bins carry equal counts.
-    // Each one is placed midway between the two order statistics that bracket
-    // its position, which keeps the convention the same as below the cap.
-    // MATLAB's grid is equal-frequency too but its interpolation differs:
-    // measured on 1000 standard normal draws the two agree to 0.067 at worst
-    // against 0.78 for a spread through the distinct values, so this is the
-    // right family and not the exact member.
-    //
-    // The detection grid follows R2024a exactly: cut k is the midpoint of the
-    // sorted values at 1-based positions ceil (k*n/8) and ceil (k*n/8) + 1,
-    // measured on 2026-09-15 for eight columns at n = 285 and 300, complete
-    // and with missing values.  Rounding the position down, as the fitting
-    // grid still does, moves every cut whose position is fractional.
+    // Above the cap the cuts are equally spaced through the observations, so
+    // the bins carry equal counts, and follow R2024a exactly: cut k is the
+    // midpoint of the sorted values at 1-based positions ceil (k*n/(m+1)) and
+    // ceil (k*n/(m+1)) + 1, m the number of cuts.  Where those two values are
+    // equal the cut moves up to the midpoint with the next larger value, and
+    // is dropped if there is none; repeated cuts are removed below.  Measured
+    // on 2026-09-15 for the fitting grid at n = 700 and 1000, with and without
+    // repeated values, and for the detection grid at n = 285 and 300.
+    octave_idx_type m = 0;
     for (octave_idx_type k = 0; k < ne; k++)
     {
       double r = (double) (k + 1) * nf / (double) (ne + 1);
-      octave_idx_type lo = detection ? (octave_idx_type) std::ceil (r) - 1
-                                     : (octave_idx_type) std::floor (r) - 1;
+      octave_idx_type lo = (octave_idx_type) std::ceil (r) - 1;
       if (lo < 0)
       {
         lo = 0;
@@ -180,7 +172,26 @@ gamb_bin (const ColumnVector& x, octave_idx_type maxedges,
       {
         lo = nf - 2;
       }
-      B.edges(k) = 0.5 * (sorted[lo] + sorted[lo + 1]);
+      octave_idx_type up = lo + 1;
+      while (up < nf && sorted[up] == sorted[lo])
+      {
+        up++;
+      }
+      if (up >= nf)
+      {
+        continue;
+      }
+      B.edges(m++) = 0.5 * (sorted[lo] + sorted[up]);
+    }
+    if (m < ne)
+    {
+      RowVector e (m);
+      for (octave_idx_type k = 0; k < m; k++)
+      {
+        e(k) = B.edges(k);
+      }
+      B.edges = e;
+      ne = m;
     }
   }
 
@@ -1420,7 +1431,7 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
     {
       xj(i) = X(i, j);
     }
-    F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES, true).edges;
+    F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES).edges;
   }
 
   F.term.resize ((std::size_t) np);

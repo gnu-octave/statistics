@@ -391,22 +391,24 @@ many trees produced it.\n\
 %! ## Above the cap the cuts are equally spaced through the OBSERVATIONS, not
 %! ## through the distinct values, so they crowd where the data is.  Values 1
 %! ## to 50 carry 1000 of these 1450 rows and values 51 to 500 carry one row
-%! ## each: the equal-frequency grid puts 58 cuts in that dense fifth of the
-%! ## range where a grid spread through the distinct values would put 25.
+%! ## each: R2024a puts 49 cuts in that dense fifth of the range, one between
+%! ## each pair of neighbouring values.
 %! x = [repmat((1:50)', 20, 1); (51:500)'];
 %! y = double (mod (1:1450, 2))';
 %! M = gamboosttrain (x, y, 1, 1, 1, 1);
-%! assert_equal (sum (M.BinEdges{1} < 50), 58);
+%! assert_equal (sum (M.BinEdges{1} < 50), 49);
 
 %!test
 %! ## Ties collapse cuts: two quantile positions inside one repeated value
 %! ## give the same cut, and the repeats are dropped, so a tied predictor ends
-%! ## with fewer than the cap allows rather than with duplicate edges.
+%! ## with fewer than the cap allows rather than with duplicate edges.  R2024a
+%! ## keeps 129 here, the first at 1.5.
 %! x = [repmat((1:50)', 20, 1); (51:500)'];
 %! y = double (mod (1:1450, 2))';
 %! M = gamboosttrain (x, y, 1, 1, 1, 1);
-%! assert_equal (numel (M.BinEdges{1}), 138);
-%! assert_equal (numel (unique (M.BinEdges{1})), 138);
+%! assert_equal (numel (M.BinEdges{1}), 129);
+%! assert_equal (numel (unique (M.BinEdges{1})), 129);
+%! assert_equal (M.BinEdges{1}(1:3), [1.5, 2.5, 3.5]);
 
 %!test
 %! ## The cap binds at 255 cut points however many distinct values there are.
@@ -461,6 +463,29 @@ many trees produced it.\n\
 %! V = evalc ('gamboosttrain (x, y, 1, 20, 1, 1, 0, 5);');
 %! assert_equal (isempty (strfind (V, '1D')), true);
 
+%!test
+%! ## Above 255 cuts the grid follows R2024a: cut k at the midpoint of the
+%! ## sorted values at positions ceil (k*n/256) and ceil (k*n/256) + 1.
+%! k = (1:700)';
+%! X = [sin(k), cos(2.3 * k)];
+%! M = gamboosttrain (X, X(:,1) + X(:,2), 2, 1, 1, 1);
+%! E = M.BinEdges{1};
+%! assert_equal (numel (E), 255);
+%! assert_equal (E([1, 2, 3, 100, 255]), ...
+%!               [-0.99991205908099445, -0.99963859878373096, ...
+%!                -0.99920743414670821, -0.32997659740324592, ...
+%!                0.99995116627924441], 1e-15);
+%!test
+%! ## Where the two values at a position are equal the cut moves up to the
+%! ## next larger value, and repeated cuts are dropped, as R2024a does.
+%! k = (1:1000)';
+%! x = round (sin (1.7 * k) * 300) / 300;
+%! M = gamboosttrain ([x, sin(k)], sin (k), 2, 1, 1, 1);
+%! E = M.BinEdges{1};
+%! assert_equal (numel (E), 231);
+%! assert_equal (E([1, 2, 3, 100, 231]), ...
+%!               [-0.99833333333333329, -0.995, -0.9916666666666667, ...
+%!                -0.19166666666666665, 0.99833333333333329], 1e-15);
 %!error<Invalid call> gamboosttrain (1, 2, 3)
 %!error<gamboosttrain: X must be a numeric matrix.> ...
 %! gamboosttrain ('a', [1;0], 1, 10, 1, 1)

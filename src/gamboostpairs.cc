@@ -107,7 +107,7 @@ which is what MATLAB reports for pair detection at every sample size.\n\
     {
       xj(i) = X(i, j);
     }
-    B[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES, true);
+    B[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES);
     edges(j) = octave_value (B[(std::size_t) j].edges);
   }
 
