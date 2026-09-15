@@ -113,6 +113,14 @@
 ## separates its two classes keeps that tree, as @code{fitcensemble} does;
 ## MATLAB keeps no tree and never predicts those classes from it.
 ##
+## Each binary learner is fitted with the weight its observations carry, which
+## the prior and any @qcode{'Weights'} decide.  The SVM, KNN, naive Bayes and
+## discriminant learners of this package take no observation weights, so when
+## those weights are unequal they are given instead the prior their two sides
+## hold, the prior MATLAB's learners report, and weights that vary within a
+## class, which no prior can express, are refused for them.  MATLAB weighs
+## each observation of those learners as well.
+##
 ## @seealso{ClassificationECOC, CompactClassificationECOC, designecoc,
 ## templateSVM, templateTree}
 ## @end deftypefn

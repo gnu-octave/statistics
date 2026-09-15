@@ -421,6 +421,17 @@ classdef ClassificationECOC
 
       ## One learner per column: the classes that column marks +1 against
       ## those it marks -1, the rest of the rows left out of the fit.
+      ## Whether the weights given vary within a class.  Weights that only
+      ## carry the prior are constant within each class, and a learner taking
+      ## no observation weights can be given that prior instead.
+      evenWithin = true;
+      for k = 1:classCount (F.ClassNames)
+        wk = F.Weights(F.gY == k);
+        if (! isempty (wk) && max (wk) - min (wk) > 1e-12 * max (wk))
+          evenWithin = false;
+        endif
+      endfor
+
       L = columns (M);
       this.BinaryLearners = cell (L, 1);
       this.LearnerWeights = zeros (1, L);
@@ -430,7 +441,7 @@ classdef ClassificationECOC
         this.BinaryLearners{j} = ...
           ClassificationECOC.ecocFitBinary (tmpl, F.X(take,:), by, ...
                                             F.W(take), PredictorNames, ...
-                                            CatPreds);
+                                            CatPreds, evenWithin);
         this.LearnerWeights(j) = sum (F.W(take));
       endfor
 
@@ -822,7 +833,8 @@ classdef ClassificationECOC
     ## Fit one binary learner.  Its two classes are given outright as -1 and
     ## +1 so that the second is always the one the column calls +1, which is
     ## the score the decoding reads.
-    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [])
+    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [], ...
+                                  evenWithin = true)
 
       ## An ensemble template carries the method, cycles and learners under
       ## names of its own, which the ensemble takes under fitcensemble's.
@@ -850,8 +862,25 @@ classdef ClassificationECOC
       if (! isempty (cats))
         args(end+1:end+2) = {'CategoricalPredictors', cats};
       endif
-      if (any (abs (w - w(1)) > 0))
-        args(end+1:end+2) = {'Weights', w};
+      ## Weights spread a prior over its classes one class at a time, so even
+      ## equal ones differ in the last bits; only a real spread counts.  Four
+      ## of the learners take no observation weights.  They are given the
+      ## share of the weight each side holds as their prior, which is the
+      ## prior MATLAB's learners report, and weights that vary within a class
+      ## have no such form and are refused.
+      if (max (w) - min (w) > 1e-12 * max (w))
+        if (any (strcmpi (tmpl.Method, {'svm', 'knn', 'naivebayes', ...
+                                        'discriminant'})))
+          if (! evenWithin)
+            error (strcat ("ClassificationECOC: the '%s' learners take no", ...
+                           " observation weights, so 'Weights' that vary", ...
+                           " within a class cannot be used with them."), ...
+                   tolower (tmpl.Method));
+          endif
+          args(end+1:end+2) = {'Prior', [sum(w(y == -1)), sum(w(y == 1))]};
+        else
+          args(end+1:end+2) = {'Weights', w};
+        endif
       endif
 
       if (ensemble && strcmp (tmpl.Method, 'Bag'))
@@ -1091,3 +1120,23 @@ endclassdef
 %!error<ClassificationDiscriminant: categorical predictors cannot be used for discriminant analysis.> ...
 %! ClassificationECOC (Xc, y3, 'CategoricalPredictors', 1, ...
 %!                     'Learners', 'discriminant')
+
+%!test  # equal weights that differ only by rounding reach any learner
+%! load fisheriris
+%! y = [ones(60, 1); 2 * ones(50, 1); 3 * ones(40, 1)];
+%! Mdl = ClassificationECOC (meas, y, 'Learners', 'knn');
+%! assert_equal (numel (Mdl.BinaryLearners), 3);
+%! Mdl = ClassificationECOC (meas, y);
+%! assert_equal (class (Mdl.BinaryLearners{1}), 'ClassificationSVM');
+
+%!test  # MATLAB parity: a learner without weights reports its side's prior
+%! load fisheriris
+%! y = [ones(60, 1); 2 * ones(50, 1); 3 * ones(40, 1)];
+%! Mdl = ClassificationECOC (meas, y, 'Learners', 'knn', 'Prior', 'uniform');
+%! assert_equal (Mdl.BinaryLearners{1}.Prior, [0.5, 0.5], 1e-12);
+%! Mdl = ClassificationECOC (meas(11:150,:), y(11:150));
+%! assert_equal (Mdl.BinaryLearners{1}.Prior, [50, 50] / 100, 1e-12);
+
+%!error<ClassificationECOC: the 'svm' learners take no observation weights, so 'Weights' that vary within a class cannot be used with them.> ...
+%! load fisheriris
+%! ClassificationECOC (meas, species, 'Weights', (1:150)')
