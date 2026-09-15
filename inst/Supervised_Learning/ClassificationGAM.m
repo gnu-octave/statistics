@@ -1180,7 +1180,9 @@ classdef ClassificationGAM
 
       ## An observation is dropped only when its response is missing.  A row
       ## whose predictors hold missing values is kept and reported as used,
-      ## while the fit below draws on the complete observations alone.
+      ## and the boosted-tree fit uses it, as R2024a does, the row sitting in
+      ## the root of each tree it cannot be split by; the spline fit below
+      ## draws on the complete observations alone.
       RowsUsed  = ! isnan (gY);
       ## Index the rows and not the elements: a response naming its
       ## classes in the rows of a character matrix has one column per
@@ -1197,7 +1199,11 @@ classdef ClassificationGAM
       endif
       this.X    = Xret;
       this.Y    = Yret;
-      cobs      = ! any (isnan (Xret), 2);
+      if (strcmp (FitMethod, 'boostedtrees'))
+        cobs    = true (rows (Xret), 1);
+      else
+        cobs    = ! any (isnan (Xret), 2);
+      endif
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
       Wfit      = Wret(cobs);
@@ -1409,7 +1415,7 @@ classdef ClassificationGAM
       ## with interactions added is the model the constructor would have built
       ## had it been asked for them.
       if (strcmp (this.FitMethod, 'boostedtrees'))
-        cobs = ! any (isnan (this.X), 2);
+        cobs = true (rows (this.X), 1);
         Xfit = this.X(cobs, :);
         gY = labelIndices (this.ClassNames, this.Y(cobs, :));
         Yfit = gY(:) - 1;
@@ -2174,8 +2180,8 @@ classdef ClassificationGAM
                        " positive integer scalar."));
       endif
 
-      ## The rows the fit saw, coded as the engine takes them.
-      cobs = ! any (isnan (this.X), 2);
+      ## The rows the fit saw, all of them, coded as the engine takes them.
+      cobs = true (rows (this.X), 1);
       X = this.X(cobs, :);
       gY = labelIndices (this.ClassNames, this.Y(cobs, :));
       Y = gY(:) - 1;
@@ -2345,7 +2351,7 @@ classdef ClassificationGAM
       f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
                            this.Intercept);
 
-      Wfit = this.W(! any (isnan (this.X), 2));
+      Wfit = this.W;
 
       ## Residuals of the predictor phase, which is what pairs are tested on.
       res = Y - 1 ./ (1 + exp (-f));
@@ -2421,7 +2427,7 @@ classdef ClassificationGAM
                                 MSI, LRP, LRI, MaxPValue, Verb, NPrint)
 
       ## The predictor phase, weighted by W over the rows the fit sees.
-      Wfit = this.W(! any (isnan (this.X), 2));
+      Wfit = this.W;
       M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint, [], Wfit);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
@@ -3112,6 +3118,20 @@ endfunction
 %! Mdl = ClassificationGAM (X, y > median (y), 'Weights', 1 + mod (k, 3), ...
 %!                          'NumTreesPerPredictor', 10);
 %! assert_equal (Mdl.Prior, [0.498753117207, 0.501246882793], 1e-12);
+
+%!test  # MATLAB parity: a row missing a predictor is fitted, not dropped
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! yc = y > median (y);
+%! X(1:5,1) = NaN;
+%! Mdl = ClassificationGAM (X, yc, 'NumTreesPerPredictor', 5);
+%! assert_equal (Mdl.Intercept, 0.0570640590529, 1e-10);
+%! [~, s] = resubPredict (Mdl);
+%! assert_equal (s(1:8,2)', [0.560351428119, 0.717900932422, ...
+%!                           0.93278347118, 0.717900932422, ...
+%!                           0.026714476491, 0.0252640986738, ...
+%!                           0.998403457947, 0.998403457947], 1e-10);
 
 %!error<ClassificationGAM.resume: Not enough input arguments.> ...
 %! load fisheriris; ...

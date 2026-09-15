@@ -534,6 +534,25 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
     B[j] = gamb_bin (xj, GAMB_MAX_EDGES);
   }
 
+  // Which predictors miss a value somewhere in the training rows.  A row
+  // missing a predictor takes no part in that predictor's splits, but it is
+  // still in the tree's root, as a tree keeps every row it was given, so it
+  // is fitted with the root's value.  Measured against R2024a on 2026-09-15:
+  // with rows missing x1, scores and resubstitution agree to twelve digits
+  // under this rule and not under one that leaves those rows out.
+  std::vector<bool> hasmiss (d, false);
+  for (octave_idx_type j = 0; j < d; j++)
+  {
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      if (B[j].bin(i) < 0)
+      {
+        hasmiss[j] = true;
+        break;
+      }
+    }
+  }
+
   GamBoostFit F;
   F.edges.resize (d);
   F.value.resize (d);
@@ -706,6 +725,24 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
           hess(i) = ww(i);
         }
 
+        // The root's value, which a row missing this predictor is fitted
+        // with.  Zero, and no work, for a predictor missing nothing.
+        double miss = 0.0;
+        if (hasmiss[j])
+        {
+          double Gr = 0.0;
+          double Hr = 0.0;
+          for (octave_idx_type i = 0; i < n; i++)
+          {
+            Gr += grad(i);
+            Hr += hess(i);
+          }
+          if (Hr > 1e-12)
+          {
+            miss = step * Gr / Hr;
+          }
+        }
+
         trial[j] = ColumnVector (B[j].nbins, 0.0);
         gamb_fit_tree (B[j], grad, hess, maxsplits, step, trial[j]);
 
@@ -715,6 +752,10 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
           if (B[j].bin(i) >= 0)
           {
             fnew(i) += trial[j](B[j].bin(i));
+          }
+          else
+          {
+            fnew(i) += miss;
           }
         }
 
@@ -743,9 +784,14 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
             sv += ww(i) * trial[j](B[j].bin(i));
           }
         }
-        if (sw > 0.0)
+        //
+        // A predictor missing a value is held to zero there instead, which is
+        // where R2024a holds it: a missing value then adds nothing from the
+        // term, as it does from a model fitted on complete rows, and its
+        // intercept is the one MATLAB reports.
+        if (hasmiss[j] || sw > 0.0)
         {
-          double m = sv / sw;
+          double m = hasmiss[j] ? miss : sv / sw;
           for (octave_idx_type b = 0; b < B[j].nbins; b++)
           {
             trial[j](b) -= m;

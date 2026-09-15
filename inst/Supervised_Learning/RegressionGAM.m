@@ -192,7 +192,7 @@ classdef RegressionGAM
     ## Number of observations
     ##
     ## A positive integer, the number of observations of the training data
-    ## the model was fitted on, rows with missing values excluded.  This
+    ## the model was fitted on, rows with a missing response excluded.  This
     ## property is read-only.
     ##
     ## @end deftp
@@ -926,7 +926,9 @@ classdef RegressionGAM
 
       ## An observation is dropped only when its response is missing.  A row
       ## whose predictors hold missing values is kept and reported as used,
-      ## while the fit below draws on the complete observations alone.
+      ## and the boosted-tree fit uses it, as R2024a does, the row sitting in
+      ## the root of each tree it cannot be split by; the spline fit below
+      ## draws on the complete observations alone.
       RowsUsed  = ! isnan (Y(:));
       Yret      = Y(RowsUsed);
       Xret      = X(RowsUsed, :);
@@ -938,12 +940,16 @@ classdef RegressionGAM
       endif
       this.X    = Xret;
       this.Y    = Yret;
-      cobs      = ! any (isnan (Xret), 2);
+      if (strcmp (FitMethod, 'boostedtrees'))
+        cobs    = true (rows (Xret), 1);
+      else
+        cobs    = ! any (isnan (Xret), 2);
+      endif
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
 
       ## Check X and Y contain valid data
-      if (! isnumeric (X) || ! all (isfinite (X(:))))
+      if (! isnumeric (X) || ! all (isfinite (X(:)) | isnan (X(:))))
         error ("RegressionGAM: invalid values in X.");
       endif
       if (! isnumeric (Y) || ! all (isfinite (Y(:))))
@@ -1118,7 +1124,7 @@ classdef RegressionGAM
       ## model with interactions added is the model the constructor would
       ## have built had it been asked for them.
       if (strcmp (this.FitMethod, 'boostedtrees'))
-        cobs = ! any (isnan (this.X), 2);
+        cobs = true (rows (this.X), 1);
         Xfit = this.X(cobs, :);
         Yfit = this.Y(cobs);
         MP = this.ModelParameters;
@@ -1762,8 +1768,8 @@ classdef RegressionGAM
                        " positive integer scalar."));
       endif
 
-      ## The rows the fit saw.
-      cobs = ! any (isnan (this.X), 2);
+      ## The rows the fit saw, which are all of them.
+      cobs = true (rows (this.X), 1);
       X = this.X(cobs, :);
       Y = this.Y(cobs);
 
@@ -1890,7 +1896,7 @@ classdef RegressionGAM
 
       ## Method 2 boosts the squared error, which is what a regression fits,
       ## weighted by W over the rows the fit sees.
-      Wfit = this.W(! any (isnan (this.X), 2));
+      Wfit = this.W;
       M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint, [], Wfit);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
@@ -2485,6 +2491,21 @@ endfunction
 %!                                  -0.705872562832], 1e-10);
 %! M5 = RegressionGAM (X, y, 'Weights', 5 * w);
 %! assert_equal (predict (M5, Q), predict (Mdl, Q), 1e-10);
+
+%!test  # MATLAB parity: a row missing a predictor is fitted, not dropped
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! X(1:5,1) = NaN;
+%! Q = [0.5, 0.2, 1; NaN, 0.2, 1; 0.5, NaN, 1; NaN, NaN, NaN; 0.1, 0.2, 1; ...
+%!      NaN, 0.7, 3; NaN, NaN, 1];
+%! Mdl = RegressionGAM (X, y);
+%! assert_equal (Mdl.NumObservations, 200);
+%! assert_equal (Mdl.Intercept, 1.28924934314, 1e-10);
+%! assert_equal (predict (Mdl, Q), [1.39295651846; 0.938063487647; ...
+%!                                  1.51847439653; 1.28924934314; ...
+%!                                  1.06837329164; 1.96571223429; ...
+%!                                  1.06358136571], 1e-10);
 
 %!error<RegressionGAM: 'Weights' must be a numeric vector.> ...
 %! RegressionGAM (ones (10, 2), (1:10)', 'Weights', 'a')
