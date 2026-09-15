@@ -1022,6 +1022,7 @@ classdef ClassificationKNN
       IncludeTies     = false;
       BucketSize      = 50;
       CacheSize       = 1000;
+      CatPreds        = [];
 
       ## Number of parameters for Standardize, Scale, Cov (maximum 1 allowed)
       SSC = 0;
@@ -1225,6 +1226,16 @@ classdef ClassificationKNN
                              " must be a positive integer."));
             endif
 
+          case 'categoricalpredictors'
+            ## Measured on R2024a, which takes either every predictor as
+            ## categorical or none.
+            CatPreds = varargin{2};
+            if (! (isempty (CatPreds)
+                   || (ischar (CatPreds) && strcmpi (CatPreds, 'all'))))
+              error (strcat ("ClassificationKNN: 'CategoricalPredictors'", ...
+                             " must be empty or 'all'."));
+            endif
+
           otherwise
             error (strcat ("ClassificationKNN: invalid parameter",...
                            " name in optional pair arguments."));
@@ -1248,6 +1259,9 @@ classdef ClassificationKNN
       this.NumPredictors  = NumPredictors;
       this.PredictorNames = PredictorNames;
       this.CategoricalPredictors = [];
+      if (! isempty (CatPreds))
+        this.CategoricalPredictors = 1:NumPredictors;
+      endif
       this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
@@ -1335,7 +1349,12 @@ classdef ClassificationKNN
 
       ## Get distance metric
       if (isempty (Distance))
-        Distance = 'euclidean';
+        ## Levels are compared for equality, as R2024a compares them.
+        if (isempty (CatPreds))
+          Distance = 'euclidean';
+        else
+          Distance = 'hamming';
+        endif
       endif
       this.Distance = Distance;
 
@@ -4490,3 +4509,39 @@ endfunction
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!shared XC, yb, y3
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! XC = [c1, c3];
+%! yb = 5 * (c1 == 2) + 0.5 * sin (k) - 3 * (c3 == 20) + 0.1 * cos (k) > 1;
+%! y3 = mod (c1 + floor (k / 7), 3) + 1;
+
+%!test  # MATLAB parity: every predictor categorical compares levels
+%! Mdl = ClassificationKNN (XC, yb, 'CategoricalPredictors', 'all');
+%! assert_equal (Mdl.Distance, 'hamming');
+%! assert_equal (Mdl.CategoricalPredictors, [1, 2]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1', 'x2'});
+%! [label, s] = predict (Mdl, [1, 10; 2, 20; 4, 10]);
+%! assert_equal (label, [false; true; false]);
+%! assert_equal (s, [1, 0; 0, 1; 1, 0]);
+
+%!test  # MATLAB parity: five neighbours by Hamming distance, three classes
+%! Mdl = ClassificationKNN (XC, y3, 'CategoricalPredictors', 'all', ...
+%!                          'NumNeighbors', 5);
+%! [label, s] = predict (Mdl, [1, 10; 2, 20; 4, 10]);
+%! assert_equal (label, [2; 1; 2]);
+%! assert_equal (s, [0, 0.6, 0.4; 0.6, 0.2, 0.2; 0.2, 0.4, 0.4], 1e-12);
+
+%!test  # a given distance is kept, and folds take 'all'
+%! Mdl = ClassificationKNN (XC, yb, 'CategoricalPredictors', 'all', ...
+%!                          'Distance', 'cityblock');
+%! assert_equal (Mdl.Distance, 'cityblock');
+%! CV = crossval (ClassificationKNN (XC, yb, 'CategoricalPredictors', ...
+%!                                   'all'), 'KFold', 3);
+%! assert_equal (CV.Trained{1}.Distance, 'hamming');
+%! assert_equal (CV.Trained{1}.CategoricalPredictors, [1, 2]);
+
+%!error<ClassificationKNN: 'CategoricalPredictors' must be empty or 'all'.> ...
+%! ClassificationKNN (XC, yb, 'CategoricalPredictors', 1)

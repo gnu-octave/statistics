@@ -107,7 +107,7 @@ classdef CompactClassificationECOC
     ## @deftp {CompactClassificationECOC} {property} CategoricalPredictors
     ##
     ## The columns of the training data that held categorical predictors,
-    ## always empty here.  This property is read-only.
+    ## empty when none did.  This property is read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];

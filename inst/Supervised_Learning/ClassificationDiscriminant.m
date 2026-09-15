@@ -1030,6 +1030,14 @@ classdef ClassificationDiscriminant
             endif
 
 
+          case 'categoricalpredictors'
+            ## Measured on R2024a, which refuses any categorical predictor.
+            if (! isempty (varargin{2}))
+              error (strcat ("ClassificationDiscriminant: categorical", ...
+                             " predictors cannot be used for discriminant", ...
+                             " analysis."));
+            endif
+
           otherwise
             error (strcat ("ClassificationDiscriminant: invalid", ...
                            " parameter name in optional pair arguments."));
@@ -4073,3 +4081,7 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!error<ClassificationDiscriminant: categorical predictors cannot be used for discriminant analysis.> ...
+%! ClassificationDiscriminant ([1, 2; 2, 1; 3, 2; 4, 1], [1; 1; 2; 2], ...
+%!                             'CategoricalPredictors', 1)

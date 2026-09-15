@@ -49,6 +49,11 @@
 ## @item @qcode{'Standardize'} @tab A boolean flag indicating whether
 ## the data in @var{X} should be standardized prior to training.
 ##
+## @item @qcode{'CategoricalPredictors'} @tab Empty (default) or @qcode{'all'},
+## which takes every predictor as categorical and makes @qcode{'hamming'} the
+## default distance, so observations are compared by the levels they share.
+## A list of some of the predictors is refused, as MATLAB refuses it.
+##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## specifying the predictor variable names.  The variable names are assumed to
 ## be in the same order as they appear in the training data @var{X}.

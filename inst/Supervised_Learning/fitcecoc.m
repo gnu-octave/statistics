@@ -72,6 +72,11 @@
 ## @item @qcode{'Weights'} @tab @tab A nonnegative numeric vector with one
 ## element per observation.  The default is uniform.
 ##
+## @item @qcode{'CategoricalPredictors'} @tab @tab The predictors whose values
+## are levels, as indices, a logical vector or @qcode{'all'}, passed as given
+## to every binary learner, which codes them its own way; a nearest neighbour
+## learner takes only @qcode{'all'} and a discriminant learner none.
+##
 ## @item @qcode{'PredictorNames'} @tab @tab A cellstr of predictor names.
 ##
 ## @item @qcode{'ResponseName'} @tab @tab The name of the response variable.

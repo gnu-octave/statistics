@@ -160,8 +160,8 @@ classdef ClassificationECOC
     ## -*- texinfo -*-
     ## @deftp {ClassificationECOC} {property} CategoricalPredictors
     ##
-    ## The columns holding categorical predictors, always empty here.  This
-    ## property is read-only.
+    ## The columns holding categorical predictors, empty when none is.  Every
+    ## binary learner was given them.  This property is read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];
@@ -325,6 +325,7 @@ classdef ClassificationECOC
       ClassNames = []; Cost = []; Prior = []; Weights = [];
       PredictorNames = {}; ResponseName = 'Y'; ScoreTransform = 'none';
       Coding = 'onevsone'; Learners = 'svm'; BinaryLoss = [];
+      CatPreds = [];
 
       for i = 1:2:numel (varargin)
         switch (tolower (varargin{i}))
@@ -348,6 +349,8 @@ classdef ClassificationECOC
             Learners = varargin{i+1};
           case 'binaryloss'
             BinaryLoss = varargin{i+1};
+          case 'categoricalpredictors'
+            CatPreds = varargin{i+1};
           case 'fitposterior'
             error (strcat ("ClassificationECOC: 'FitPosterior' is not", ...
                            " implemented, the binary learners having no", ...
@@ -404,6 +407,18 @@ classdef ClassificationECOC
       this.PredictorNames         = PredictorNames;
       this.ExpandedPredictorNames = PredictorNames;
 
+      ## Categorical predictors are checked here and handed to every binary
+      ## learner as given, which codes them its own way: the model keeps the
+      ## predictor names, the learners report the expanded ones, as in R2024a.
+      [Cod, errmsg] = dummyCoding (F.X, CatPreds, PredictorNames);
+      if (! isempty (errmsg))
+        error ("ClassificationECOC: %s", errmsg);
+      endif
+      this.CategoricalPredictors = [];
+      if (! isempty (Cod.Index))
+        this.CategoricalPredictors = Cod.Index;
+      endif
+
       ## One learner per column: the classes that column marks +1 against
       ## those it marks -1, the rest of the rows left out of the fit.
       L = columns (M);
@@ -414,7 +429,8 @@ classdef ClassificationECOC
         by = M(F.gY(take), j);
         this.BinaryLearners{j} = ...
           ClassificationECOC.ecocFitBinary (tmpl, F.X(take,:), by, ...
-                                            F.W(take), PredictorNames);
+                                            F.W(take), PredictorNames, ...
+                                            CatPreds);
         this.LearnerWeights(j) = sum (F.W(take));
       endfor
 
@@ -806,7 +822,7 @@ classdef ClassificationECOC
     ## Fit one binary learner.  Its two classes are given outright as -1 and
     ## +1 so that the second is always the one the column calls +1, which is
     ## the score the decoding reads.
-    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames)
+    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [])
 
       ## An ensemble template carries the method, cycles and learners under
       ## names of its own, which the ensemble takes under fitcensemble's.
@@ -831,6 +847,9 @@ classdef ClassificationECOC
       ## refuse the commonest fit there is.  A learner that cannot take them
       ## refuses under its own name, which is the right place for it.
       args(end+1:end+4) = {'PredictorNames', pnames, 'ClassNames', [-1; 1]};
+      if (! isempty (cats))
+        args(end+1:end+2) = {'CategoricalPredictors', cats};
+      endif
       if (any (abs (w - w(1)) > 0))
         args(end+1:end+2) = {'Weights', w};
       endif
@@ -1037,3 +1056,38 @@ endclassdef
 %! ClassificationECOC (ones (4, 2), [1; 2; 1; 2], 'Coding', [1, -1; -1, 1])
 %!error<ClassificationECOC: 'Coding' must be a character vector or a coding matrix.> ...
 %! ClassificationECOC (ones (4, 2), [1; 2; 1; 2], 'Coding', {1})
+
+%!shared Xc, y3
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! Xc = [c1, sin(k), c3];
+%! y3 = mod (c1 + floor (k / 7), 3) + 1;
+
+%!test  # MATLAB parity: every binary learner gets the categorical predictors
+%! Mdl = ClassificationECOC (Xc, y3, 'CategoricalPredictors', [1, 3]);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1', 'x2', 'x3'});
+%! L = Mdl.BinaryLearners{1};
+%! assert_equal (L.CategoricalPredictors, [1, 3]);
+%! assert_equal (L.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! assert_equal (compact (Mdl).CategoricalPredictors, [1, 3]);
+
+%!test  # tree learners take them too, and so do the folds
+%! Mdl = ClassificationECOC (Xc, y3, 'CategoricalPredictors', [1, 3], ...
+%!                           'Learners', 'tree');
+%! assert_equal (Mdl.BinaryLearners{1}.CategoricalPredictors, [1, 3]);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.Trained{1}.CategoricalPredictors, [1, 3]);
+
+%!test  # MATLAB parity: nearest neighbour learners compare levels
+%! Mdl = ClassificationECOC (Xc(:,[1, 3]), y3, 'CategoricalPredictors', ...
+%!                           'all', 'Learners', 'knn');
+%! assert_equal (Mdl.BinaryLearners{1}.Distance, 'hamming');
+
+%!error<ClassificationECOC: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationECOC (Xc, y3, 'CategoricalPredictors', 4)
+%!error<ClassificationDiscriminant: categorical predictors cannot be used for discriminant analysis.> ...
+%! ClassificationECOC (Xc, y3, 'CategoricalPredictors', 1, ...
+%!                     'Learners', 'discriminant')

@@ -111,7 +111,7 @@ classdef ClassificationPartitionedECOC
     ## -*- texinfo -*-
     ## @deftp {ClassificationPartitionedECOC} {property} CategoricalPredictors
     ##
-    ## The columns holding categorical predictors, always empty here.  This
+    ## The columns holding categorical predictors, empty when none is.  This
     ## property is read-only.
     ##
     ## @end deftp
@@ -291,6 +291,16 @@ classdef ClassificationPartitionedECOC
                'Cost', Mdl.Cost, 'BinaryLoss', Mdl.BinaryLoss, ...
                'ResponseName', Mdl.ResponseName, ...
                'PredictorNames', Mdl.PredictorNames};
+      ## A nearest neighbour learner takes 'all' and never a list of indices,
+      ## so a model whose every predictor is categorical passes it that way.
+      if (! isempty (Mdl.CategoricalPredictors))
+        if (numel (Mdl.CategoricalPredictors) == columns (Mdl.X))
+          fargs(end+1:end+2) = {'CategoricalPredictors', 'all'};
+        else
+          fargs(end+1:end+2) = {'CategoricalPredictors', ...
+                                Mdl.CategoricalPredictors};
+        endif
+      endif
 
       G = struct ();
       G.X = Mdl.X;

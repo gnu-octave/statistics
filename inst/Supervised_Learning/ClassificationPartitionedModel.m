@@ -664,6 +664,10 @@ classdef ClassificationPartitionedModel
           if (! isempty (Mdl.Mu))
             args = [args, {'Standardize', true}];
           endif
+          ## A categorical model takes every predictor as categorical
+          if (! isempty (Mdl.CategoricalPredictors))
+            args = [args, {'CategoricalPredictors', 'all'}];
+          endif
 
           ## Train model according to partition object
           for k = 1:this.KFold
