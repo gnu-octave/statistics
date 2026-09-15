@@ -53,6 +53,13 @@
 ## predictor data should be centred and scaled before training.  The same
 ## transformation is applied by @code{predict}.  The default is @qcode{false}.
 ##
+## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
+## levels, as indices, as a logical vector with one element per predictor, or as
+## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
+## ones per level seen in training, named as in @qcode{'x1 == 2'} in
+## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
+## An observation holding a level the training data did not has no prediction.
+##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## naming the predictors, in the order they appear in @var{X}.
 ##
@@ -444,6 +451,9 @@ classdef RegressionSVM
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ## The dummy coding of the categorical predictors, empty when none.
+    Coding_ = [];
+
     RTfun = @(y) y;
   endproperties
 
@@ -541,6 +551,7 @@ classdef RegressionSVM
       PredictorNames          = [];
 
       ## Parse extra parameters
+      CatPreds = [];
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
@@ -657,6 +668,9 @@ classdef RegressionSVM
               error ("RegressionSVM: 'Shrinking' must be either 0 or 1.");
             endif
 
+          case 'categoricalpredictors'
+            CatPreds = varargin{2};
+
           otherwise
             error (strcat ("RegressionSVM: invalid parameter name", ...
                            " in optional pair arguments."));
@@ -695,6 +709,25 @@ classdef RegressionSVM
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
 
+      ## Dummy code the categorical predictors on the rows the fit draws on.
+      ## X keeps the predictors as given; the fit and every prediction see
+      ## the coded columns.
+      cnames = PredictorNames;
+      if (isempty (cnames))
+        cnames = arrayfun (@(k) sprintf ('x%d', k), 1:columns (X), ...
+                           'UniformOutput', false);
+      endif
+      [Coding, errmsg] = dummyCoding (X, CatPreds, cnames);
+      if (! isempty (errmsg))
+        error ("RegressionSVM: %s", errmsg);
+      endif
+      X = dummyCoding (X, Coding);
+      if (! isempty (Coding.Index))
+        this.CategoricalPredictors = Coding.Index;
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.Coding_ = Coding;
+      endif
+
       ## Check X and Y contain valid data
       if (! (isnumeric (X) && isfinite (X)))
         error ("RegressionSVM: invalid values in X.");
@@ -723,6 +756,9 @@ classdef RegressionSVM
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.Mu(Coding.Dummy) = 0;
+        this.Sigma(Coding.Dummy) = 1;
         X = (X - this.Mu) ./ this.Sigma;
       else
         this.Sigma = [];
@@ -903,7 +939,10 @@ classdef RegressionSVM
                        " number of predictors as the trained model."));
       endif
 
-      ## Standardize (if necessary)
+      ## Code the categorical predictors and standardize (if necessary)
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -1238,6 +1277,7 @@ classdef RegressionSVM
       IsSupportVector         = this.IsSupportVector;
       SupportVectors          = this.SupportVectors;
       CategoricalPredictors   = this.CategoricalPredictors;
+      Coding_                 = this.Coding_;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       W                       = this.W;
       RTfun                  = this.RTfun;
@@ -1249,7 +1289,7 @@ classdef RegressionSVM
             'PredictorNames', 'ResponseName', 'ResponseTransform', ...
             'Epsilon', 'Sigma', 'Mu', 'ModelParameters', ...
             'Model', 'Alpha', 'Beta', 'Bias', 'IsSupportVector', ...
-            'SupportVectors', 'CategoricalPredictors', ...
+            'SupportVectors', 'CategoricalPredictors', 'Coding_', ...
             'ExpandedPredictorNames', 'KernelParameters', ...
             'BoxConstraints', 'W', 'RTfun', ...
             'HyperparameterOptimizationResults');
@@ -1903,3 +1943,44 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+%!shared Xc, Dc, yr, Xq, Dq
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yr = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
+%! yc = yr > 1;
+%! Xq = [1, 0, 10; 2, 0.5, 20];
+%! Dq = [1, 0, 0, 0, 1, 0; 0, 1, 0, 0.5, 0, 1];
+
+%!test  # MATLAB parity: a categorical predictor is dummy coded in its place
+%! Mdl = RegressionSVM (Xc, yr, 'CategoricalPredictors', [1, 3]);
+%! H = RegressionSVM (Dc, yr);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! assert_equal (Mdl.Beta, H.Beta, 1e-12);
+%! assert_equal (predict (Mdl, Xq), predict (H, Dq), 1e-12);
+%! assert_equal (isnan (predict (Mdl, [4, 0, 10])), true);
+
+%!test  # MATLAB parity: the coded columns are not standardized
+%! Mdl = RegressionSVM (Xc, yr, 'CategoricalPredictors', [1, 3], ...
+%!                      'Standardize', true);
+%! assert_equal (Mdl.Mu([1:3, 5:6]), zeros (1, 5));
+%! assert_equal (Mdl.Sigma([1:3, 5:6]), ones (1, 5));
+
+%!test  # the coding travels with saved models and cross-validation folds
+%! Mdl = RegressionSVM (Xc, yr, 'CategoricalPredictors', [1, 3]);
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, Xq), predict (Mdl, Xq));
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.Trained{1}.CategoricalPredictors, [1, 3]);
+
+%!error<RegressionSVM: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! RegressionSVM (Xc, yr, 'CategoricalPredictors', 4)

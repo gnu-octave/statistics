@@ -315,6 +315,9 @@ classdef CompactClassificationSVM
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ## The dummy coding of the categorical predictors, empty when none.
+    Coding_ = [];
+
     STfun = @(x) x;
   endproperties
 
@@ -361,6 +364,7 @@ classdef CompactClassificationSVM
       this.NumPredictors         = Mdl.NumPredictors;
       this.PredictorNames        = Mdl.PredictorNames;
       this.CategoricalPredictors = Mdl.CategoricalPredictors;
+      this.Coding_               = Mdl.Coding_;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
       this.ResponseName          = Mdl.ResponseName;
       this.ClassNames            = Mdl.ClassNames;
@@ -529,7 +533,10 @@ classdef CompactClassificationSVM
                        " SVM model."));
       endif
 
-      ## Standardize (if necessary)
+      ## Code the categorical predictors and standardize (if necessary)
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -625,6 +632,14 @@ classdef CompactClassificationSVM
       ## It used to be the latter only, so passing the labels the docstring
       ## promises reached LIBSVM as a cell array and raised its own message.
       Ypm = svmPlusMinus (Y, this.ClassNames);
+      ## The model scores the coded, standardized predictors, which is the
+      ## scale predict gives it; X taken as it stands was scored unscaled.
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
+      if (! isempty (this.Mu))
+        X = (X - this.Mu) ./ this.Sigma;
+      endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
       m = 2 * Ypm .* dec_values_L;
 
@@ -770,6 +785,14 @@ classdef CompactClassificationSVM
       ## Y may be the class labels, as this documents and MATLAB
       ## accepts, or already the solver's own +1/-1 coding.
       Ypm = svmPlusMinus (Y, this.ClassNames);
+      ## The model scores the coded, standardized predictors, which is the
+      ## scale predict gives it; X taken as it stands was scored unscaled.
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
+      if (! isempty (this.Mu))
+        X = (X - this.Mu) ./ this.Sigma;
+      endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
 
         ## Compute the margin
@@ -908,6 +931,7 @@ classdef CompactClassificationSVM
       SupportVectors      = this.SupportVectors;
       STfun              = this.STfun;
       CategoricalPredictors  = this.CategoricalPredictors;
+      Coding_                = this.Coding_;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
@@ -917,7 +941,7 @@ classdef CompactClassificationSVM
             'ScoreTransform', 'Sigma', 'Mu', ...
             'Model', 'Alpha', 'Beta', 'Bias', ...
             'SupportVectorLabels', 'SupportVectors', ...
-            'CategoricalPredictors', 'ExpandedPredictorNames', ...
+            'CategoricalPredictors', 'Coding_', 'ExpandedPredictorNames', ...
             'KernelParameters', 'STfun');
     endfunction
 
@@ -1315,3 +1339,29 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!shared Xc, Dc, yr, yc, Xq, Dq
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yr = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
+%! yc = yr > 1;
+%! Xq = [1, 0, 10; 2, 0.5, 20];
+%! Dq = [1, 0, 0, 0, 1, 0; 0, 1, 0, 0.5, 0, 1];
+
+%!test  # a compact model keeps the coding, margin and loss included
+%! Full = fitcsvm (Xc, yc, 'CategoricalPredictors', [1, 3], ...
+%!                'Standardize', true);
+%! Mdl = compact (Full);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (predict (Mdl, Xq), predict (Full, Xq));
+%! assert_equal (margin (Mdl, Xc, yc), margin (Full, Xc, yc), 1e-12);
+%! assert_equal (loss (Mdl, Xc, yc), resubLoss (Full));
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, Xq), predict (Mdl, Xq));

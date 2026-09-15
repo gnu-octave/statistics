@@ -48,6 +48,13 @@
 ## @item @qcode{'Standardize'} @tab A boolean flag indicating whether
 ## the data in @var{X} should be standardized prior to training.
 ##
+## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
+## levels, as indices, as a logical vector with one element per predictor, or as
+## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
+## ones per level seen in training, named as in @qcode{'x1 == 2'} in
+## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
+## An observation holding a level the training data did not has no score.
+##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## specifying the predictor variable names.  The variable names are assumed to
 ## be in the same order as they appear in the training data @var{X}.

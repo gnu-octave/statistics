@@ -516,6 +516,9 @@ classdef ClassificationSVM
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ## The dummy coding of the categorical predictors, empty when none.
+    Coding_ = [];
+
     STfun = @(x) x;
   endproperties
 
@@ -619,6 +622,14 @@ classdef ClassificationSVM
     ## @multitable @columnfractions 0.18 0.8
     ## @headitem @var{Name} @tab @var{Value}
     ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.  Each is dummy coded in its place, one
+    ## column of zeros and ones per level seen in training, named as in
+    ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
+    ## are not standardized.  An observation holding a level the training data
+    ## did not has no score.
+    ##
     ## @item @qcode{'PredictorNames'} @tab A cell array of character
     ## vectors specifying the names of the predictors. The length of this array
     ## must match the number of columns in @var{X}.
@@ -721,6 +732,7 @@ classdef ClassificationSVM
 
       ## Parse extra parameters
       SVMtype_override = true;
+      CatPreds = [];
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
@@ -881,6 +893,9 @@ classdef ClassificationSVM
               error ("ClassificationSVM: 'Shrinking' must be either 0 or 1.");
             endif
 
+          case 'categoricalpredictors'
+            CatPreds = varargin{2};
+
           otherwise
             error (strcat ("ClassificationSVM: invalid parameter name", ...
                            " in optional pair arguments."));
@@ -991,6 +1006,25 @@ classdef ClassificationSVM
         Y(Y == 2) = -1;
       endif
 
+      ## Dummy code the categorical predictors on the rows the fit draws on.
+      ## X keeps the predictors as given; the fit and every prediction see
+      ## the coded columns.
+      cnames = PredictorNames;
+      if (isempty (cnames))
+        cnames = arrayfun (@(k) sprintf ('x%d', k), 1:columns (X), ...
+                           'UniformOutput', false);
+      endif
+      [Coding, errmsg] = dummyCoding (X, CatPreds, cnames);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM: %s", errmsg);
+      endif
+      X = dummyCoding (X, Coding);
+      if (! isempty (Coding.Index))
+        this.CategoricalPredictors = Coding.Index;
+        this.ExpandedPredictorNames = Coding.ExpandedNames;
+        this.Coding_ = Coding;
+      endif
+
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
         error ("ClassificationSVM: invalid values in X.");
@@ -1029,6 +1063,9 @@ classdef ClassificationSVM
         Zs = X - this.Mu;
         this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.Mu(Coding.Dummy) = 0;
+        this.Sigma(Coding.Dummy) = 1;
         X = (X - this.Mu) ./ this.Sigma;
       else
         this.Sigma = [];
@@ -1049,11 +1086,12 @@ classdef ClassificationSVM
       this.PredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
-      ## No predictor is treated as categorical, so the expanded names are the
-      ## predictor names themselves, and every observation carries the same
-      ## weight, normalized to sum to one as MATLAB reports it.
-      this.CategoricalPredictors = [];
-      this.ExpandedPredictorNames = PredictorNames;
+      ## Without categorical predictors the expanded names are the predictor
+      ## names themselves.  Every observation carries the same weight,
+      ## normalized to sum to one as MATLAB reports it.
+      if (isempty (this.Coding_))
+        this.ExpandedPredictorNames = PredictorNames;
+      endif
       this.W = priorWeights (this.Prior, gY, this.NumObservations);
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
@@ -1280,7 +1318,10 @@ classdef ClassificationSVM
                        " predictors as the trained model."));
       endif
 
-      ## Standardize (if necessary)
+      ## Code the categorical predictors and standardize (if necessary)
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -1362,7 +1403,10 @@ classdef ClassificationSVM
       X = this.X;
       Y = this.Y;
 
-      ## Standardize (if necessary)
+      ## Code the categorical predictors and standardize (if necessary)
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         X = (X - this.Mu) ./ this.Sigma;
       endif
@@ -1461,6 +1505,14 @@ classdef ClassificationSVM
       ## It used to be the latter only, so passing the labels the docstring
       ## promises reached LIBSVM as a cell array and raised its own message.
       Ypm = svmPlusMinus (Y, this.ClassNames);
+      ## The model scores the coded, standardized predictors, which is the
+      ## scale predict gives it; X taken as it stands was scored unscaled.
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
+      if (! isempty (this.Mu))
+        X = (X - this.Mu) ./ this.Sigma;
+      endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
       m = 2 * Ypm .* dec_values_L;
 
@@ -1605,6 +1657,14 @@ classdef ClassificationSVM
       Ypm = svmPlusMinus (Y, this.ClassNames);
 
       ## Compute the classification score
+      ## The model scores the coded, standardized predictors, which is the
+      ## scale predict gives it; X taken as it stands was scored unscaled.
+      if (! isempty (this.Coding_))
+        X = dummyCoding (X, this.Coding_);
+      endif
+      if (! isempty (this.Mu))
+        X = (X - this.Mu) ./ this.Sigma;
+      endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
 
         ## Compute the margin
@@ -2041,6 +2101,7 @@ classdef ClassificationSVM
       Prior               = this.Prior;
       Cost                = this.Cost;
       CategoricalPredictors  = this.CategoricalPredictors;
+      Coding_                = this.Coding_;
       ExpandedPredictorNames = this.ExpandedPredictorNames;
 
       ## Save classdef name and all model properties as individual variables
@@ -2053,7 +2114,7 @@ classdef ClassificationSVM
             'ClassNames', 'ScoreTransform', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
-            'W', 'Prior', 'Cost', 'CategoricalPredictors', ...
+            'W', 'Prior', 'Cost', 'CategoricalPredictors', 'Coding_', ...
             'ExpandedPredictorNames', 'KernelParameters', ...
             'BoxConstraints', 'OutlierFraction', 'Nu', 'STfun', ...
             'HyperparameterOptimizationResults');
@@ -3266,3 +3327,65 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!shared Xc, Dc, yc, Xq, Dq
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yr = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
+%! yc = yr > 1;
+%! Xq = [1, 0, 10; 2, 0.5, 20];
+%! Dq = [1, 0, 0, 0, 1, 0; 0, 1, 0, 0.5, 0, 1];
+
+%!test  # MATLAB parity: a categorical predictor is dummy coded in its place
+%! Mdl = ClassificationSVM (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! H = ClassificationSVM (Dc, yc);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1 == 1', 'x1 == 2', ...
+%!               'x1 == 3', 'x2', 'x3 == 10', 'x3 == 20'});
+%! assert_equal (size (Mdl.X), [120, 3]);
+%! assert_equal (columns (Mdl.SupportVectors), 6);
+%! assert_equal (Mdl.Beta, H.Beta, 1e-12);
+%! [~, s] = predict (Mdl, Xq);
+%! [~, sh] = predict (H, Dq);
+%! assert_equal (s, sh, 1e-12);
+
+%!test  # MATLAB parity: a level the fit did not see has no score
+%! Mdl = ClassificationSVM (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! [~, s] = predict (Mdl, [4, 0, 10; 2.5, 0, 20]);
+%! assert_equal (all (isnan (s(:))), true);
+
+%!test  # MATLAB parity: the coded columns are not standardized
+%! Mdl = ClassificationSVM (Xc, yc, 'CategoricalPredictors', [1, 3], ...
+%!                          'Standardize', true);
+%! assert_equal (Mdl.Mu([1:3, 5:6]), zeros (1, 5));
+%! assert_equal (Mdl.Sigma([1:3, 5:6]), ones (1, 5));
+
+%!test  # the coding travels with saved models and cross-validation folds
+%! Mdl = ClassificationSVM (Xc, yc, 'CategoricalPredictors', [1, 3]);
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, Xq), predict (Mdl, Xq));
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.Trained{1}.CategoricalPredictors, [1, 3]);
+
+%!test  # margin and loss score the data on the scale the model was fitted on
+%! load fisheriris
+%! X = meas(51:150,:) * 10;
+%! Y = species(51:150);
+%! Mdl = ClassificationSVM (X, Y, 'Standardize', true);
+%! [~, s] = predict (Mdl, X);
+%! g = 1 + strcmp (Y, 'virginica');
+%! want = s(sub2ind (size (s), (1:100)', g)) ...
+%!        - s(sub2ind (size (s), (1:100)', 3 - g));
+%! assert_equal (margin (Mdl, X, Y), want, 1e-10);
+%! assert_equal (loss (Mdl, X, Y), resubLoss (Mdl));
+%! assert_equal (loss (Mdl, X, Y) < 0.1, true);
+
+%!error<ClassificationSVM: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationSVM (Xc, yc, 'CategoricalPredictors', 4)

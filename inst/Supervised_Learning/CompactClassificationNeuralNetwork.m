@@ -294,6 +294,9 @@ classdef CompactClassificationNeuralNetwork
   ## Readable by the counterpart class, which copies it, and kept out of
   ## the documented surface.
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ## The dummy coding of the categorical predictors, empty when none.
+    Coding_ = [];
+
     STfun = @(x) x;
   endproperties
 
@@ -366,6 +369,7 @@ classdef CompactClassificationNeuralNetwork
       this.Cost                   = Mdl.Cost;
       this.Prior                  = Mdl.Prior;
       this.CategoricalPredictors  = Mdl.CategoricalPredictors;
+      this.Coding_                = Mdl.Coding_;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
     endfunction
@@ -474,7 +478,10 @@ classdef CompactClassificationNeuralNetwork
                        " as the trained neural network model."));
       endif
 
-      ## Standardize (if necessary)
+      ## Code the categorical predictors and standardize (if necessary)
+      if (! isempty (this.Coding_))
+        XC = dummyCoding (XC, this.Coding_);
+      endif
       if (! isempty (this.Mu))
         XC = (XC - this.Mu) ./ this.Sigma;
       endif
@@ -485,6 +492,11 @@ classdef CompactClassificationNeuralNetwork
                                       this.Activations, ...
                                       this.OutputLayerActivation, ...
                                       XC, NumThreads);
+      ## A row missing a predictor, or holding a level the fit did not see,
+      ## has no score: a rectified missing value would make one up.
+      miss = any (isnan (XC), 2);
+      scores(miss,:) = NaN;
+      labels(miss) = 1;
 
       # Get class labels
       labels = labelsFromIndex (this.ClassNames, labels);
@@ -771,6 +783,7 @@ classdef CompactClassificationNeuralNetwork
       Cost                    = this.Cost;
       Prior                   = this.Prior;
       CategoricalPredictors   = this.CategoricalPredictors;
+      Coding_                 = this.Coding_;
       ExpandedPredictorNames  = this.ExpandedPredictorNames;
       STfun                  = this.STfun;
 
@@ -781,7 +794,7 @@ classdef CompactClassificationNeuralNetwork
             'Activations', 'OutputLayerActivation', ...
             ...
             'LayerWeights', 'LayerBiases', ...
-            'Cost', 'Prior', 'CategoricalPredictors', ...
+            'Cost', 'Prior', 'CategoricalPredictors', 'Coding_', ...
             'ExpandedPredictorNames', 'STfun');
     endfunction
 
@@ -1134,3 +1147,29 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+%!shared Xc, Dc, yr, yc, Xq, Dq
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! Xc = [c1, x2, c3];
+%! Dc = [c1 == 1, c1 == 2, c1 == 3, x2, c3 == 10, c3 == 20];
+%! yr = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
+%! yc = yr > 1;
+%! Xq = [1, 0, 10; 2, 0.5, 20];
+%! Dq = [1, 0, 0, 0, 1, 0; 0, 1, 0, 0.5, 0, 1];
+
+%!test  # a compact model keeps the coding
+%! Full = fitcnet (Xc, yc, 'CategoricalPredictors', [1, 3], 'LayerSizes', 4);
+%! Mdl = compact (Full);
+%! [~, s] = predict (Mdl, [Xq; 4, 0, 10]);
+%! [~, sf] = predict (Full, [Xq; 4, 0, 10]);
+%! assert_equal (s, sf);
+%! assert_equal (isnan (s(3,1)), true);
+%! fname = [tempname(), '.mdl'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! [~, s2] = predict (M2, Xq);
+%! assert_equal (s2, s(1:2,:));
