@@ -31,7 +31,7 @@ DEFUN_DLD(gamboostpredict, args, ,
 @var{ShapeValues}, @var{X}, @var{Intercept})\n\
 @deftypefnx {statistics} {@var{Y} =} gamboostpredict (@dots{}, @var{Link})\n\
 @deftypefnx {statistics} {@var{Y} =} gamboostpredict (@dots{}, @var{Link}, @\n\
-@var{PairBinEdges}, @var{PairValues}, @var{Pairs})\n\
+@var{PairEdges}, @var{PairValues}, @var{Pairs})\n\
 \n\
 Predict from a generalized additive model of boosted trees.\n\
 \n\
@@ -56,11 +56,12 @@ through: @qcode{0} returns it as it stands and @qcode{1} takes it as a\n\
 log-odds, returning the @math{Nx2} matrix of class probabilities whose\n\
 second column is the logistic function of it.  The default is @qcode{0}.\n\
 \n\
-@item @var{PairBinEdges}, @var{PairValues} and @var{Pairs} carry the\n\
+@item @var{PairEdges}, @var{PairValues} and @var{Pairs} carry the\n\
 interaction terms, as @code{gamboostinter} returns the first two and as it\n\
 was given the third.  Each pair contributes the value of the cell its two\n\
-predictors fall in, and a pair with either predictor missing contributes\n\
-nothing.  All three must be given together or none of them.\n\
+predictors fall in on the pair's own cut points, and a pair with either\n\
+predictor missing contributes nothing.  All three must be given together or\n\
+none of them.\n\
 @end itemize\n\
 \n\
 @seealso{gamboosttrain, gampredict, ClassificationGAM, RegressionGAM}\n\
@@ -162,17 +163,10 @@ nothing.  All three must be given together or none of them.\n\
   {
     if (! args(5).iscell () || ! args(6).iscell ())
     {
-      error ("gamboostpredict: PairBinEdges and PairValues must be cell "
-             "arrays.");
+      error ("gamboostpredict: PairEdges and PairValues must be cell arrays.");
     }
     Cell pedges = args(5).cell_value ();
     Cell pvals = args(6).cell_value ();
-
-    if (pedges.numel () != d)
-    {
-      error ("gamboostpredict: PairBinEdges must have one element per "
-             "additive term.");
-    }
 
     if (! args(7).isnumeric () || args(7).iscomplex ()
         || args(7).columns () != 2)
@@ -182,16 +176,10 @@ nothing.  All three must be given together or none of them.\n\
     }
     Matrix pairs = args(7).matrix_value ();
 
-    if (pairs.rows () != pvals.numel ())
+    if (pairs.rows () != pvals.numel () || pairs.rows () != pedges.numel ())
     {
-      error ("gamboostpredict: Pairs and PairValues must have the same "
-             "number of rows.");
-    }
-
-    std::vector<RowVector> pe ((std::size_t) d);
-    for (octave_idx_type j = 0; j < d; j++)
-    {
-      pe[(std::size_t) j] = pedges(j).row_vector_value ();
+      error ("gamboostpredict: Pairs, PairEdges and PairValues must describe "
+             "the same number of pairs.");
     }
 
     for (octave_idx_type q = 0; q < pairs.rows (); q++)
@@ -203,21 +191,29 @@ nothing.  All three must be given together or none of them.\n\
         error ("gamboostpredict: Pairs must hold predictor indices between "
                "1 and %d.", (int) d);
       }
+      if (! pedges(q).iscell () || pedges(q).numel () != 2)
+      {
+        error ("gamboostpredict: each element of PairEdges must be a cell of "
+               "two row vectors.");
+      }
+      Cell ep = pedges(q).cell_value ();
+      RowVector ej = ep(0).row_vector_value ();
+      RowVector ek = ep(1).row_vector_value ();
       Matrix V = pvals(q).matrix_value ();
+      if (V.rows () != ej.numel () + 1 || V.columns () != ek.numel () + 1)
+      {
+        error ("gamboostpredict: pair %d has a %dx%d surface for %d and %d "
+               "cut points.", (int) q + 1, (int) V.rows (),
+               (int) V.columns (), (int) ej.numel (), (int) ek.numel ());
+      }
 
       for (octave_idx_type i = 0; i < n; i++)
       {
-        octave_idx_type a = gamb_bin_of (pe[(std::size_t) j], X(i, j));
-        octave_idx_type b = gamb_bin_of (pe[(std::size_t) k], X(i, k));
+        octave_idx_type a = gamb_bin_of (ej, X(i, j));
+        octave_idx_type b = gamb_bin_of (ek, X(i, k));
         if (a < 0 || b < 0)
         {
           continue;
-        }
-        if (a >= V.rows () || b >= V.columns ())
-        {
-          error ("gamboostpredict: pair %d has a %dx%d surface, too small "
-                 "for its grid.", (int) q + 1, (int) V.rows (),
-                 (int) V.columns ());
         }
         y(i) += V(a, b);
       }
@@ -295,7 +291,7 @@ nothing.  All three must be given together or none of them.\n\
 %! ## A pair term adds the value of the cell its two predictors fall in.
 %! E = {zeros(1,0), zeros(1,0)};
 %! V = {0, 0};
-%! PE = {[1.5], [10]};
+%! PE = {{[1.5], [10]}};
 %! PV = {[1, 2; 3, 4]};
 %! X = [1, 5; 1, 20; 2, 5; 2, 20];
 %! assert_equal (gamboostpredict (E, V, X, 0, 0, PE, PV, [1, 2]), ...
@@ -305,7 +301,7 @@ nothing.  All three must be given together or none of them.\n\
 %! ## Interaction terms add to the additive part rather than replacing it.
 %! E = {[1.5], zeros(1,0)};
 %! V = {[10; 20], 0};
-%! PE = {[1.5], [10]};
+%! PE = {{[1.5], [10]}};
 %! PV = {[1, 2; 3, 4]};
 %! X = [1, 5; 2, 20];
 %! assert_equal (gamboostpredict (E, V, X, 100, 0, PE, PV, [1, 2]), ...
@@ -316,7 +312,7 @@ nothing.  All three must be given together or none of them.\n\
 %! ## with a value it cannot place.
 %! E = {zeros(1,0), zeros(1,0)};
 %! V = {0, 0};
-%! PE = {[1.5], [10]};
+%! PE = {{[1.5], [10]}};
 %! PV = {[1, 2; 3, 4]};
 %! assert_equal (gamboostpredict (E, V, [NaN, 5], 0, 0, PE, PV, [1, 2]), 0);
 
@@ -332,7 +328,7 @@ nothing.  All three must be given together or none of them.\n\
 %! f0 = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 %! I = gamboostinter (X, Y, f0, 1, [1, 2], 40, 1, 4);
 %! f1 = gamboostpredict (M.BinEdges, M.ShapeValues, X, ...
-%!                       M.Intercept + I.Intercept, 0, I.PairBinEdges, ...
+%!                       M.Intercept + I.Intercept, 0, I.PairEdges, ...
 %!                       I.PairValues, [1, 2]);
 %! assert_equal (Y - 1 ./ (1 + exp (-f1)), I.Residuals, 1e-12);
 
@@ -353,16 +349,19 @@ nothing.  All three must be given together or none of them.\n\
 %! gamboostpredict ({[1.5]}, {[1;2]}, [1;2], 0, 2)
 %!error<gamboostpredict: term 1 has 3 values for 1 cut points.> ...
 %! gamboostpredict ({[1.5]}, {[1;2;3]}, [1;2], 0)
-%!error<gamboostpredict: PairBinEdges and PairValues must be cell arrays.> ...
+%!error<gamboostpredict: PairEdges and PairValues must be cell arrays.> ...
 %! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, 1, ...
 %!                  {1}, [1, 2])
-%!error<gamboostpredict: PairBinEdges must have one element per additive term.> ...
+%!error<gamboostpredict: each element of PairEdges must be a cell of two row vectors.> ...
 %! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, {[1.5]}, ...
 %!                  {[1, 2; 3, 4]}, [1, 2])
+%!error<gamboostpredict: pair 1 has a 2x2 surface for 1 and 2 cut points.> ...
+%! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
+%!                  {{[1.5], [1, 2]}}, {[1, 2; 3, 4]}, [1, 2])
 %!error<gamboostpredict: Pairs must be a numeric matrix with two columns.> ...
 %! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
 %!                  {[1.5], [1.5]}, {[1, 2; 3, 4]}, [1, 2, 3])
-%!error<gamboostpredict: Pairs and PairValues must have the same number of rows.> ...
+%!error<gamboostpredict: Pairs, PairEdges and PairValues must describe the same number of pairs.> ...
 %! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
 %!                  {[1.5], [1.5]}, {[1, 2; 3, 4]}, [1, 2; 1, 2])
 */

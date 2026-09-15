@@ -1153,6 +1153,10 @@ classdef RegressionGAM
             ranked = ranked(1:wanted, :);
           endif
           pairs = ranked;
+          ## As in fitBoosted: a single split is no interaction.
+          if (MP.MaxNumSplitsPerInteraction < 2)
+            pairs = zeros (0, 2);
+          endif
           this.PairDetectionBinEdges = S.BinEdges(:);
         endif
 
@@ -1164,8 +1168,11 @@ classdef RegressionGAM
                              MP.InitialLearnRateForInteractions, ...
                              MP.MaxNumSplitsPerInteraction, this.W(cobs));
           this.Intercept = this.Intercept + I.Intercept;
-          this.PairDetectionBinEdges = I.PairBinEdges(:);
+          if (wanted <= 0)
+            this.PairDetectionBinEdges = I.PairBinEdges(:);
+          endif
           this.TreeModel.PairValues = I.PairValues;
+          this.TreeModel.PairEdges = I.PairEdges;
           this.TreeModel.PairIntercept = I.Intercept;
           reason.InteractionTrees = I.ReasonForTermination;
           ntrees.InteractionTrees = I.NumTrees;
@@ -1340,10 +1347,10 @@ classdef RegressionGAM
                                   this.TreeModel.ShapeValues, Xfit, ...
                                   interc);
         else
+          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           yFit = gamboostpredict (this.BinEdges, ...
                                   this.TreeModel.ShapeValues, Xfit, ...
-                                  interc, 0, ...
-                                  this.PairDetectionBinEdges, ...
+                                  interc, 0, PE, ...
                                   this.TreeModel.PairValues, ...
                                   this.TreeModel.Pairs);
         endif
@@ -1806,9 +1813,9 @@ classdef RegressionGAM
         ## The interaction phase ran last, so it is the one extended.  The
         ## running prediction includes the surfaces already fitted, and the
         ## new ones are added to them.
+        PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
         f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
-                             this.Intercept, 0, ...
-                             this.PairDetectionBinEdges, ...
+                             this.Intercept, 0, PE, ...
                              this.TreeModel.PairValues, ...
                              this.TreeModel.Pairs);
         I = gamboostinter (X, Y, f(:), 2, this.TreeModel.Pairs, numTrees, ...
@@ -1819,10 +1826,11 @@ classdef RegressionGAM
                          " training because the software was unable to", ...
                          " improve the model fit."));
         endif
-        pv = this.TreeModel.PairValues;
-        for k = 1:numel (pv)
-          pv{k} = pv{k} + I.PairValues{k};
-        endfor
+        ## The new trees cut where they cut, so the surfaces are added on the
+        ## union of both grids.
+        [pe, pv] = gamPairMerge (PE, this.TreeModel.PairValues, ...
+                                 I.PairEdges, I.PairValues);
+        Mdl.TreeModel.PairEdges = pe;
         Mdl.TreeModel.PairValues = pv;
         Mdl.TreeModel.PairIntercept = this.TreeModel.PairIntercept ...
                                       + I.Intercept;
@@ -1908,6 +1916,7 @@ classdef RegressionGAM
                        'InteractionTrees', 0);
       pairs = zeros (0, 2);
       pairValues = {};
+      pairEdges = {};
       pairShift = 0;
 
       wanted = -1;
@@ -1933,6 +1942,12 @@ classdef RegressionGAM
           ranked = ranked(1:wanted, :);
         endif
         pairs = ranked;
+        ## A pair tree allowed a single split can only cut along one
+        ## predictor, which is a main effect and no interaction, so no pair is
+        ## kept.  R2024a selects none and warns as below.
+        if (MSI < 2)
+          pairs = zeros (0, 2);
+        endif
         this.PairDetectionBinEdges = S.BinEdges(:);
         if (isempty (pairs))
           warning (strcat ("RegressionGAM: model does not include", ...
@@ -1947,8 +1962,13 @@ classdef RegressionGAM
         I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI, Wfit);
         this.Intercept = this.Intercept + I.Intercept;
         pairShift = I.Intercept;
-        this.PairDetectionBinEdges = I.PairBinEdges(:);
+        ## A requested pair list skips detection, so the grid it would have
+        ## used comes from the interaction phase instead.
+        if (wanted <= 0)
+          this.PairDetectionBinEdges = I.PairBinEdges(:);
+        endif
         pairValues = I.PairValues;
+        pairEdges = I.PairEdges;
         reason.InteractionTrees = I.ReasonForTermination;
         ntrees.InteractionTrees = I.NumTrees;
       endif
@@ -1963,6 +1983,7 @@ classdef RegressionGAM
       ## or it would answer with a constant the main effects never earned.
       this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
                                'PairValues', {pairValues}, ...
+                               'PairEdges', {pairEdges}, ...
                                'Pairs', pairs, ...
                                'PairIntercept', pairShift);
 
@@ -2507,6 +2528,46 @@ endfunction
 %!                                  1.06837329164; 1.96571223429; ...
 %!                                  1.06358136571], 1e-10);
 
+%!test  # MATLAB parity: a pair tree of one split selects no interaction
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! S = warning ('off', 'all');
+%! unwind_protect
+%!   Mdl = RegressionGAM (X, y, 'Interactions', 1, ...
+%!                        'MaxNumSplitsPerInteraction', 1);
+%! unwind_protect_cleanup
+%!   warning (S);
+%! end_unwind_protect
+%! assert_equal (Mdl.Interactions, zeros (0, 2));
+%! assert_equal (Mdl.Intercept, 1.09800542249, 1e-10);
+
+%!test  # MATLAB parity: pair trees are fitted to the rows, on their own grid
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! P = [0, -0.99, 0; 0, -0.42, 2; 0, 0.33, 1; 0, 0.78, 4];
+%! Mdl = RegressionGAM (X, y, 'Interactions', 1, ...
+%!                      'NumTreesPerInteraction', 1, ...
+%!                      'MaxNumSplitsPerInteraction', 4);
+%! assert_equal (Mdl.Interactions, [2, 3]);
+%! pc = predict (Mdl, P) - predict (Mdl, P, 'IncludeInteractions', false);
+%! assert_equal (pc, [-0.014545869; 0.0020626874; 0.013767507; ...
+%!                    -0.0043992362], 1e-8);
+
+%!test  # resuming the interaction phase adds trees a longer run would add
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! P = [0, -0.99, 0; 0, -0.42, 2; 0, 0.33, 1; 0, 0.78, 4];
+%! M1 = RegressionGAM (X, y, 'Interactions', 1, ...
+%!                     'NumTreesPerInteraction', 1, ...
+%!                     'MaxNumSplitsPerInteraction', 4);
+%! M2 = RegressionGAM (X, y, 'Interactions', 1, ...
+%!                     'NumTreesPerInteraction', 2, ...
+%!                     'MaxNumSplitsPerInteraction', 4);
+%! assert_equal (predict (resume (M1, 1), P), predict (M2, P), 1e-12);
+
 %!error<RegressionGAM: 'Weights' must be a numeric vector.> ...
 %! RegressionGAM (ones (10, 2), (1:10)', 'Weights', 'a')
 %!error<RegressionGAM: 'Weights' must have one element per row of X.> ...
@@ -2979,7 +3040,7 @@ endfunction
 %! Mdl = fitrgam (meas(:,2:4), y, 'FitMethod', 'boostedtrees');
 %! assert_equal (Mdl.Intercept, mean (y), 1e-12);
 
-## Interactions are detected and held on their own coarse grid.
+## Interactions are detected on their own coarse grid.
 %!test
 %! load fisheriris
 %! Mdl = fitrgam (meas(:,2:4), meas(:,1), 'FitMethod', 'boostedtrees', ...

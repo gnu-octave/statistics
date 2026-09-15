@@ -213,8 +213,9 @@ classdef CompactRegressionGAM
     ## -*- texinfo -*-
     ## @deftp {CompactRegressionGAM} {property} PairDetectionBinEdges
     ##
-    ## Coarse bin edges the interaction terms are held on, empty when the
-    ## model carries none.  This property is read-only.
+    ## Bin edges used to detect interactions, eight equal-frequency bins per
+    ## predictor, empty when the model carries none.  This property is
+    ## read-only.
     ##
     ## @end deftp
     PairDetectionBinEdges = [];
@@ -478,10 +479,10 @@ classdef CompactRegressionGAM
                                   this.TreeModel.ShapeValues, Xfit, ...
                                   interc);
         else
+          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           yFit = gamboostpredict (this.BinEdges, ...
                                   this.TreeModel.ShapeValues, Xfit, ...
-                                  interc, 0, ...
-                                  this.PairDetectionBinEdges, ...
+                                  interc, 0, PE, ...
                                   this.TreeModel.PairValues, ...
                                   this.TreeModel.Pairs);
         endif

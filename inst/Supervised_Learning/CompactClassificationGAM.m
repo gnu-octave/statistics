@@ -235,10 +235,11 @@ classdef CompactClassificationGAM
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} PairDetectionBinEdges
     ##
-    ## Bin edges the interaction terms are held on
+    ## Bin edges used to detect interactions
     ##
-    ## A cell array with one coarse row vector per predictor, empty when the
-    ## model carries no interaction terms.  This property is read-only.
+    ## A cell array with one row vector per predictor, the eight
+    ## equal-frequency bins pairs were tested on, empty when the model carries
+    ## no interaction terms.  This property is read-only.
     ##
     ## @end deftp
     PairDetectionBinEdges = [];
@@ -588,10 +589,10 @@ classdef CompactClassificationGAM
                                     this.TreeModel.ShapeValues, XC, ...
                                     interc);
         else
+          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           scores = gamboostpredict (this.BinEdges, ...
                                     this.TreeModel.ShapeValues, XC, ...
-                                    interc, 0, ...
-                                    this.PairDetectionBinEdges, ...
+                                    interc, 0, PE, ...
                                     this.TreeModel.PairValues, ...
                                     this.TreeModel.Pairs);
         endif

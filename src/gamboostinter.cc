@@ -65,12 +65,15 @@ weights, as @code{gamboosttrain} takes them.\n\
 @var{Mdl} is a structure with the following fields.\n\
 \n\
 @itemize\n\
-@item @qcode{PairBinEdges}, a @math{1xP} cell of the coarse cut points the\n\
-surfaces are held on.  Interactions are binned coarser than main effects: a\n\
-tree limited to @var{MaxNumSplits} splits carves no more regions than that,\n\
-so a finer grid buys nothing and costs memory in every pair.\n\
+@item @qcode{PairBinEdges}, a @math{1xP} cell of the detection grid, eight\n\
+equal-frequency bins per predictor, as MATLAB reports it.\n\
+@item @qcode{PairEdges}, a @math{1xM} cell with one element per pair, a\n\
+@math{1x2} cell of the cut points its trees used on its two predictors.  A\n\
+tree is fitted to the rows, cutting halfway between two values a node holds,\n\
+keeping at least five rows in a leaf and growing a layer at a time within\n\
+@var{MaxNumSplits}.\n\
 @item @qcode{PairValues}, a @math{1xM} cell of matrices, one value per\n\
-cell of the pair's grid.\n\
+cell of the pair's own grid.\n\
 @item @qcode{Intercept}, the constant the recentred surfaces gave up.  Add it\n\
 to the intercept of the predictor phase.\n\
 @item @qcode{NumTrees}, @qcode{ReasonForTermination}, @qcode{Deviance} and\n\
@@ -230,13 +233,19 @@ to the intercept of the predictor phase.\n\
 
   octave_idx_type np = (octave_idx_type) F.term.size ();
   Cell values (1, np);
+  Cell pedges (1, np);
   for (octave_idx_type q = 0; q < np; q++)
   {
     values(q) = octave_value (F.term[(std::size_t) q].value);
+    Cell ep (1, 2);
+    ep(0) = octave_value (F.term[(std::size_t) q].ej);
+    ep(1) = octave_value (F.term[(std::size_t) q].ek);
+    pedges(q) = octave_value (ep);
   }
 
   octave_scalar_map Mdl;
   Mdl.assign ("PairBinEdges", octave_value (edges));
+  Mdl.assign ("PairEdges", octave_value (pedges));
   Mdl.assign ("PairValues", octave_value (values));
   Mdl.assign ("Intercept", octave_value (F.shift));
   Mdl.assign ("NumTrees", octave_value ((double) F.ntrees));
@@ -249,15 +258,17 @@ to the intercept of the predictor phase.\n\
 
 /*
 %!test
-%! ## Every selected pair gets a surface on the coarse grid of its two
-%! ## predictors, and the phase reports the usual fields.
+%! ## Every selected pair gets a surface on the grid of the cut points its
+%! ## trees used, and the phase reports the usual fields.
 %! x = randn (200, 3);
 %! y = double (x(:,1) .* x(:,2) + 0.1 * randn (200, 1) > 0);
 %! M = gamboosttrain (x, y, 1, 20, 1, 1);
 %! f0 = gamboostpredict (M.BinEdges, M.ShapeValues, x, M.Intercept);
 %! I = gamboostinter (x, y, f0, 1, [1, 2], 20, 1, 4);
 %! assert_equal (numel (I.PairValues), 1);
-%! assert_equal (size (I.PairValues{1}), [8, 8]);
+%! assert_equal (numel (I.PairEdges), 1);
+%! assert_equal (size (I.PairValues{1}), ...
+%!               [numel(I.PairEdges{1}{1}), numel(I.PairEdges{1}{2})] + 1);
 %! assert_equal (numel (I.PairBinEdges), 3);
 %! assert_equal (numel (I.Residuals), 200);
 
