@@ -114,7 +114,7 @@ function [b, stats] = robustfit (X, y, wfun, tune, const)
   endif
   [n, p] = size (X);
   if (n <= p)
-    error ("robustfit: Not enough points to perform robust estimation.");
+    error ("robustfit: not enough observations for robust estimation.");
   endif
 
   ## Ordinary least squares start, leverages, and the OLS scale.
@@ -323,9 +323,8 @@ endfunction
 %!error <robustfit: CONST must be 'on' or 'off'.> ...
 %! robustfit (X, y, "huber", 1.345, "maybe")
 
-%!test
-%! ## Edge cases with empty arrays
-%!error<robustfit: Not enough points to perform robust estimation.> ...
+## Edge cases with empty arrays
+%!error <robustfit: not enough observations for robust estimation.> ...
 %! robustfit ([], [])
-%!error<robustfit: Not enough points to perform robust estimation.> ...
+%!error <robustfit: not enough observations for robust estimation.> ...
 %! robustfit (zeros(0,3), zeros(0,1))
