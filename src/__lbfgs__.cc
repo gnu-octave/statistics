@@ -148,11 +148,22 @@ inverse Hessian approximation is built from.\n\
 \n\
 @item @qcode{InitialStepSize} @tab @qcode{[]} @tab Step length tried first on\n\
 the opening iteration.  Scaled from the gradient when left empty.\n\
+\n\
+@item @qcode{Method} @tab @qcode{'lbfgs'} @tab @qcode{'lbfgs'} builds the\n\
+inverse Hessian from the last @qcode{HistorySize} curvature pairs;\n\
+@qcode{'bfgs'} keeps the full inverse Hessian, scaled by @math{s'y / y'y}\n\
+once before its first update.\n\
+\n\
+@item @qcode{LineSearch} @tab @qcode{'strongwolfe'} @tab\n\
+@qcode{'strongwolfe'} searches for a step meeting both strong Wolfe\n\
+conditions; @qcode{'weakwolfe'} bisects and doubles from a unit step until\n\
+the weak ones hold, as MATLAB's fitclinear does, and a search that cannot\n\
+is not retried.\n\
 @end multitable\n\
 \n\
 When more than one tolerance is met at the same iteration the reported\n\
-criterion follows MATLAB's order: gradient, then the relative change in the\n\
-iterate, then step, then loss.\n\
+criterion follows MATLAB's order: the relative change in the iterate, then\n\
+gradient, then step, then loss.\n\
 \n\
 @var{info} is a struct with fields @qcode{Iterations}, @qcode{FuncCount},\n\
 @qcode{Fval}, @qcode{Gradient}, @qcode{Step}, @qcode{RelativeChangeInBeta},\n\
@@ -266,6 +277,28 @@ This is an internal function and is not meant to be called directly.\n\
                    "scalar.");
           }
           opt.initial_step_size = val.double_value ();
+        }
+      }
+      else if (name == "Method" || name == "LineSearch")
+      {
+        std::string v = (val.is_string () ? val.string_value () : "");
+        if (name == "Method" && (v == "lbfgs" || v == "bfgs"))
+        {
+          opt.full_bfgs = (v == "bfgs");
+        }
+        else if (name == "LineSearch"
+                 && (v == "strongwolfe" || v == "weakwolfe"))
+        {
+          opt.weak_wolfe = (v == "weakwolfe");
+        }
+        else if (name == "Method")
+        {
+          error ("__lbfgs__: 'Method' must be 'lbfgs' or 'bfgs'.");
+        }
+        else
+        {
+          error ("__lbfgs__: 'LineSearch' must be 'strongwolfe' or "
+                 "'weakwolfe'.");
         }
       }
       else
@@ -564,12 +597,12 @@ This is an internal function and is not meant to be called directly.\n\
 %! assert_equal (info.Criterion, "beta");
 %! assert_equal (info.Iterations, 1);
 
-## Gradient outranks it, and it outranks step, which is MATLAB's order.
+## It outranks the gradient, which outranks step, as fitclinear orders them.
 %!test
 %! opt = struct ("GradientTolerance", 1e3, "BetaTolerance", 1e3, ...
 %!               "StepTolerance", 1e3);
 %! [x, info] = __lbfgs__ (@__rosen__, [-1.2; 1], opt);
-%! assert_equal (info.Criterion, "gradient");
+%! assert_equal (info.Criterion, "beta");
 %!test
 %! opt = struct ("BetaTolerance", 1e3, "StepTolerance", 1e3, ...
 %!               "LossTolerance", 1e3);
@@ -603,6 +636,19 @@ This is an internal function and is not meant to be called directly.\n\
 %! __lbfgs__ (@__rosen__, [1; 1], struct ("BetaTolerance", -1))
 %!error <__lbfgs__: 'HistorySize' must be a positive integer scalar.> ...
 %! __lbfgs__ (@__rosen__, [1; 1], struct ("HistorySize", 0))
+%!test
+%! ## Full BFGS and a weak Wolfe search reach the minimum of a quadratic.
+%! A = [4, 1; 1, 3];
+%! fcn = @(x) deal (0.5 * x' * A * x - [1; 2]' * x, A * x - [1; 2]);
+%! opt = struct ("Method", "bfgs", "LineSearch", "weakwolfe", ...
+%!               "LossTolerance", -Inf, "GradientTolerance", 1e-10);
+%! [x, info] = __lbfgs__ (fcn, [0; 0], opt);
+%! assert_equal (x, A \ [1; 2], 1e-8);
+%! assert_equal (info.Criterion, 'gradient');
+%!error <__lbfgs__: 'Method' must be 'lbfgs' or 'bfgs'.> ...
+%! __lbfgs__ (@__rosen__, [1; 1], struct ("Method", "newton"))
+%!error <__lbfgs__: 'LineSearch' must be 'strongwolfe' or 'weakwolfe'.> ...
+%! __lbfgs__ (@__rosen__, [1; 1], struct ("LineSearch", "exact"))
 %!error <__lbfgs__: 'InitialStepSize' must be a positive scalar.> ...
 %! __lbfgs__ (@__rosen__, [1; 1], struct ("InitialStepSize", -1))
 %!error <__lbfgs__: 'Bogus' is not a valid option.> ...

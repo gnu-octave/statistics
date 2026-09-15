@@ -1707,6 +1707,53 @@ endclassdef
 %! assert_equal (cellstr (Mchar.ClassNames), Mcell.ClassNames);
 %! assert_equal (cellstr (predict (Mchar, X)), predict (Mcell, X));
 
+%!test  # MATLAB parity: 'bfgs' keeps the full inverse Hessian
+%! load fisheriris
+%! [Mdl, FI] = fitclinear (meas(51:end,:), species(51:end), ...
+%!                         'Learner', 'logistic', 'Lambda', 1e-10, ...
+%!                         'Solver', 'bfgs');
+%! assert_equal (FI.NumIterations, 71);
+%! assert_equal (FI.TerminationCode, 1);
+%! assert_equal (Mdl.Beta', [-2.465354655400692, -6.680676306572678, ...
+%!                           9.429341643431608, 18.2859364726242], 1e-9);
+%! assert_equal (Mdl.Bias, -42.6370704726009, 1e-9);
+%!test  # MATLAB parity: 'lbfgs' keeps fifteen curvature pairs
+%! load fisheriris
+%! [Mdl, FI] = fitclinear (meas(51:end,:), species(51:end), ...
+%!                         'Learner', 'logistic', 'Lambda', 1e-10, ...
+%!                         'Solver', 'lbfgs');
+%! assert_equal (FI.NumIterations, 40);
+%! assert_equal (FI.TerminationCode, 1);
+%! assert_equal (Mdl.Beta', [-2.465511460111347, -6.67942802197831, ...
+%!                           9.429867603796366, 18.28403561808411], 1e-9);
+%! assert_equal (Mdl.Bias, -42.6390545166892, 1e-9);
+%!test  # MATLAB parity: the first step of 'bfgs' starts from a unit one
+%! load fisheriris
+%! [Mdl, FI] = fitclinear (100 * meas(51:end,:), species(51:end), ...
+%!                         'Learner', 'logistic', 'Lambda', 1e-10, ...
+%!                         'Solver', 'bfgs');
+%! assert_equal (FI.NumIterations, 46);
+%! assert_equal (Mdl.Beta', [-0.06327372376455137, -0.06618088890242214, ...
+%!                           0.0843323334344509, 0.1028323453382017], 1e-12);
+%!test  # MATLAB parity: 'sparsa' stops on the gradient with BetaTolerance 0
+%! load fisheriris
+%! [~, FI] = fitclinear (meas(51:end,:), species(51:end), ...
+%!                       'Learner', 'logistic', 'Lambda', 1e-10, ...
+%!                       'Regularization', 'lasso', 'Solver', 'sparsa', ...
+%!                       'BetaTolerance', 0);
+%! assert_equal (FI.TerminationCode, 2);
+%! assert_equal (FI.TerminationStatus, {'Tolerance on gradient satisfied.'});
+%! assert_equal (FI.RelativeChangeInBeta, NaN);
+%!test  # MATLAB parity: 'sparsa' with both tolerances 0 runs out of steps
+%! load fisheriris
+%! [~, FI] = fitclinear (meas(51:end,:), species(51:end), ...
+%!                       'Learner', 'logistic', 'Lambda', 1e-10, ...
+%!                       'Regularization', 'lasso', 'Solver', 'sparsa', ...
+%!                       'BetaTolerance', 0, 'GradientTolerance', 0);
+%! assert_equal (FI.TerminationCode, -11);
+%! assert_equal (FI.TerminationStatus, ...
+%!               {'Unable to find a step decreasing the objective.'});
+%! assert_equal (FI.NumIterations < FI.IterationLimit, true);
 %!test
 %! ## The default fit stops on the coefficients, as MATLAB's does, which is
 %! ## only true once the engine offers BetaTolerance.  Before it did, this
@@ -1780,7 +1827,7 @@ endclassdef
 %! assert_equal (b.BatchSize, []);
 %! assert_equal (b.PassLimit, []);
 %! assert_equal (b.IterationLimit, 1000);
-%! assert_equal (b.LineSearch, 'strongwolfe');
+%! assert_equal (b.LineSearch, 'weakwolfe');
 %! l = ClassificationLinear (X, Y, 'Solver', 'lbfgs').ModelParameters;
 %! assert_equal (l.HessianHistorySize, 15);
 %! g = ClassificationLinear (X, Y, 'Solver', 'sgd').ModelParameters;

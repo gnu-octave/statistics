@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, see <http://www.gnu.org/licenses/>.
 */
 
-// Limited-memory BFGS with a strong Wolfe line search.
+// Limited-memory or full BFGS with a strong or weak Wolfe line search.
 //
 // The engine is deliberately free of any Octave type so that it can serve two
 // callers with opposite needs: a compiled learner whose objective is C++ and
@@ -45,7 +45,8 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 //      tolerance of 0.5 against a first-iteration loss of 0.3551, MATLAB
 //      stopped at iteration 1.
 //   3. When several tolerances are met at once the reported criterion follows
-//      a fixed order: gradient, then step, then loss.
+//      a fixed order: relative change in the coefficients, gradient, step,
+//      loss.
 //   4. BetaTolerance is a RELATIVE change and is measured differently from
 //      the two above: the two-norm of the step over the two-norm of the
 //      iterate it landed on, with no guard on the denominator.  Measured on
@@ -98,6 +99,8 @@ namespace lbfgs
     int max_line_search;
     double wolfe_c1;
     double wolfe_c2;
+    bool full_bfgs;             // a dense inverse Hessian instead of pairs
+    bool weak_wolfe;            // bisect and double instead of zooming
 
     // Defaults are MATLAB's, read off fitcnet's ModelParameters on R2024a.
     // HistorySize is not exposed by fitcnet; 10 is what fmincon and the deep
@@ -107,7 +110,7 @@ namespace lbfgs
         loss_tolerance (1e-6), step_tolerance (1e-6), beta_tolerance (0.0),
         history_size (10),
         initial_step_size (0.0), max_line_search (25), wolfe_c1 (1e-4),
-        wolfe_c2 (0.9)
+        wolfe_c2 (0.9), full_bfgs (false), weak_wolfe (false)
     { }
   };
 
@@ -346,6 +349,49 @@ namespace lbfgs
     return false;
   }
 
+  // Weak Wolfe line search by bisection and doubling.  The step is halved
+  // towards the last one that decreased the objective too little, and doubled
+  // while the slope is still too steep, until both weak Wolfe conditions hold.
+  // This is fitclinear's 'bfgs' and 'lbfgs' search, which reports itself as
+  // 'weakwolfe': with c1 1e-4, c2 0.9 and a unit first step it reproduces
+  // R2024a's histories to the iteration and its coefficients to 6e-12, on a
+  // fixture whose first step is 2^-17 and whose second is 4.
+  template <class Objective>
+  bool weak_wolfe (Objective &fun, const vector<double> &x0,
+                   const vector<double> &d, double f0, double dphi0,
+                   double alpha0, const options &opt, vector<double> &x,
+                   vector<double> &g, double &f, double &alpha, int &nfev)
+  {
+    const size_t n = x0.size ();
+    double a = alpha0;
+    double lo = 0.0;
+    double hi = HUGE_VAL;
+    for (int i = 0; i < 100; i++)
+    {
+      for (size_t j = 0; j < n; j++)
+      {
+        x[j] = x0[j] + a * d[j];
+      }
+      f = fun (x, g);
+      nfev++;
+      if (! is_finite (f) || f > f0 + opt.wolfe_c1 * a * dphi0)
+      {
+        hi = a;
+      }
+      else if (dot (g, d) < opt.wolfe_c2 * dphi0)
+      {
+        lo = a;
+      }
+      else
+      {
+        alpha = a;
+        return true;
+      }
+      a = (hi < HUGE_VAL) ? 0.5 * (lo + hi) : 2.0 * lo;
+    }
+    return false;
+  }
+
   // Minimise fun starting from x, which is overwritten with the final point.
   template <class Objective>
   result minimize (Objective &fun, vector<double> &x, const options &opt)
@@ -361,6 +407,19 @@ namespace lbfgs
     int stored = 0, newest = -1;
     double gamma = 1.0;
 
+    // Full BFGS keeps the inverse Hessian itself, which starts as the
+    // identity and is scaled by s'y / y'y once, before the first update.
+    vector<vector<double> > Hinv;
+    if (opt.full_bfgs)
+    {
+      Hinv.assign (n, vector<double> (n, 0.0));
+      for (size_t i = 0; i < n; i++)
+      {
+        Hinv[i][i] = 1.0;
+      }
+    }
+    int updates = 0;
+
     result out;
     out.crit = CRIT_ITERATION_LIMIT;
     out.iterations = 0;
@@ -372,28 +431,44 @@ namespace lbfgs
 
     for (int k = 1; k <= opt.iteration_limit; k++)
     {
-      // Two-loop recursion, d = -H * g.
-      q = g;
-      for (int j = 0; j < stored; j++)
+      if (opt.full_bfgs)
       {
-        int idx = (newest - j + m) % m;
-        coef[idx] = rho[idx] * dot (S[idx], q);
         for (size_t i = 0; i < n; i++)
         {
-          q[i] -= coef[idx] * Y[idx][i];
+          double v = 0.0;
+          for (size_t j = 0; j < n; j++)
+          {
+            v += Hinv[i][j] * g[j];
+          }
+          q[i] = v;
         }
+        stored = 0;
       }
-      for (size_t i = 0; i < n; i++)
+      else
       {
-        q[i] *= gamma;
-      }
-      for (int j = stored - 1; j >= 0; j--)
-      {
-        int idx = (newest - j + m) % m;
-        double beta = rho[idx] * dot (Y[idx], q);
+        // Two-loop recursion, d = -H * g.
+        q = g;
+        for (int j = 0; j < stored; j++)
+        {
+          int idx = (newest - j + m) % m;
+          coef[idx] = rho[idx] * dot (S[idx], q);
+          for (size_t i = 0; i < n; i++)
+          {
+            q[i] -= coef[idx] * Y[idx][i];
+          }
+        }
         for (size_t i = 0; i < n; i++)
         {
-          q[i] += (coef[idx] - beta) * S[idx][i];
+          q[i] *= gamma;
+        }
+        for (int j = stored - 1; j >= 0; j--)
+        {
+          int idx = (newest - j + m) % m;
+          double beta = rho[idx] * dot (Y[idx], q);
+          for (size_t i = 0; i < n; i++)
+          {
+            q[i] += (coef[idx] - beta) * S[idx][i];
+          }
         }
       }
       for (size_t i = 0; i < n; i++)
@@ -415,6 +490,17 @@ namespace lbfgs
         stored = 0;
         newest = -1;
         gamma = 1.0;
+        if (opt.full_bfgs)
+        {
+          for (size_t i = 0; i < n; i++)
+          {
+            for (size_t j = 0; j < n; j++)
+            {
+              Hinv[i][j] = (i == j ? 1.0 : 0.0);
+            }
+          }
+          updates = 0;
+        }
       }
 
       // A zero slope down the steepest descent direction means the gradient
@@ -428,7 +514,15 @@ namespace lbfgs
       // A quasi-Newton step is unit-scaled once curvature information exists.
       // The first one has none, so it is scaled by the gradient instead.
       double alpha0 = 1.0;
-      if (stored == 0)
+      if (opt.weak_wolfe)
+      {
+        if (opt.initial_step_size > 0.0
+            && (opt.full_bfgs ? updates : stored) == 0)
+        {
+          alpha0 = opt.initial_step_size;
+        }
+      }
+      else if ((opt.full_bfgs ? updates : stored) == 0)
       {
         if (opt.initial_step_size > 0.0)
         {
@@ -446,14 +540,17 @@ namespace lbfgs
       // point actually accepted.
       double f_new = out.fval;
       double alpha = 0.0;
-      bool ok = line_search (fun, x, d, out.fval, dphi0, alpha0, opt, x_new,
-                             g_new, f_new, alpha, out.funcount);
+      bool ok = opt.weak_wolfe
+                ? weak_wolfe (fun, x, d, out.fval, dphi0, alpha0, opt, x_new,
+                              g_new, f_new, alpha, out.funcount)
+                : line_search (fun, x, d, out.fval, dphi0, alpha0, opt, x_new,
+                               g_new, f_new, alpha, out.funcount);
 
       // A failed search usually means the stored curvature has gone stale
       // rather than that the point is stationary, so the memory is dropped
       // and the step retried down the gradient before giving up.  Only a
       // second failure, with nothing left to blame, ends the iteration.
-      if (! ok && stored > 0)
+      if (! ok && stored > 0 && ! opt.weak_wolfe)
       {
         stored = 0;
         newest = -1;
@@ -492,7 +589,43 @@ namespace lbfgs
 
       // Keeping only pairs with positive curvature is what holds the implicit
       // inverse Hessian positive definite.
-      if (yy > 0.0 && sy > 1e-10 * yy)
+      if (opt.full_bfgs && yy > 0.0 && sy > 1e-10 * yy)
+      {
+        // H = (I - rho s y') H (I - rho y s') + rho s s', with H scaled by
+        // s'y / y'y before the first update.
+        double r = 1.0 / sy;
+        if (updates == 0)
+        {
+          double scale = sy / yy;
+          for (size_t i = 0; i < n; i++)
+          {
+            for (size_t j = 0; j < n; j++)
+            {
+              Hinv[i][j] *= scale;
+            }
+          }
+        }
+        vector<double> Hy (n, 0.0);
+        double yHy = 0.0;
+        for (size_t i = 0; i < n; i++)
+        {
+          for (size_t j = 0; j < n; j++)
+          {
+            Hy[i] += Hinv[i][j] * Y[idx][j];
+          }
+          yHy += Y[idx][i] * Hy[i];
+        }
+        for (size_t i = 0; i < n; i++)
+        {
+          for (size_t j = 0; j < n; j++)
+          {
+            Hinv[i][j] += r * ((1.0 + r * yHy) * S[idx][i] * S[idx][j]
+                               - Hy[i] * S[idx][j] - S[idx][i] * Hy[j]);
+          }
+        }
+        updates++;
+      }
+      else if (! opt.full_bfgs && yy > 0.0 && sy > 1e-10 * yy)
       {
         rho[idx] = 1.0 / sy;
         gamma = sy / yy;
@@ -530,17 +663,18 @@ namespace lbfgs
       r.rel_beta = out.rel_beta;
       out.history.push_back (r);
 
-      // MATLAB's order, verified on R2024a: gradient, then the relative
-      // change in the coefficients, then step, then loss.  The first two
-      // were measured on fitclinear, the rest on fitcnet.
-      if (out.gradient <= opt.gradient_tolerance)
-      {
-        out.crit = CRIT_GRADIENT;
-        break;
-      }
+      // MATLAB's order: the relative change in the coefficients, then the
+      // gradient, then step, then loss.  R2024a's fitclinear reports the
+      // coefficient tolerance at an iteration meeting both of the first two;
+      // the rest were measured on fitcnet.
       if (opt.beta_tolerance > 0.0 && out.rel_beta <= opt.beta_tolerance)
       {
         out.crit = CRIT_BETA;
+        break;
+      }
+      if (out.gradient <= opt.gradient_tolerance)
+      {
+        out.crit = CRIT_GRADIENT;
         break;
       }
       if (out.step <= opt.step_tolerance)

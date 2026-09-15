@@ -50,10 +50,8 @@
 ## by the rule that a tolerance of 0 switches its test off is a true
 ## statement rather than a missing one.
 ##
-## @qcode{LineSearch} reports @qcode{'strongwolfe'}, which is what
-## @code{__lbfgs__} performs.  MATLAB reports @qcode{'weakwolfe'} there.
-## The field names the line search that actually ran, so reporting MATLAB's
-## word for ours would be false.
+## @qcode{LineSearch} reports @qcode{'weakwolfe'}, the search
+## @code{__lbfgs__} runs for these solvers, as MATLAB reports it.
 ##
 ## @end deftypefn
 
@@ -88,7 +86,7 @@ function MP = linearModelParams (P, Solver, LambdaIn, EpsilonIn, Beta0, ...
   MP.Learner = P.Learner;
   MP.Lambda = LambdaIn;
   MP.LearnRate = pick (batch, P.LearnRate);
-  MP.LineSearch = pick (quasi, 'strongwolfe');
+  MP.LineSearch = pick (quasi, 'weakwolfe');
   MP.LossFunction = P.LossFunction;
   MP.NumCheckConvergence = pick (batch || dual, P.NumCheckConvergence);
   if (batch)

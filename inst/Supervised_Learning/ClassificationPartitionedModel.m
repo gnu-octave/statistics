@@ -1724,6 +1724,7 @@ endfunction
 %! X = [mod(k*7,11)-5, mod(k*3,11)-5, mod(k*5,11)-5];
 %! y = double (X(:,1).*X(:,2) > 0) + 1;
 %! Mdl = fitcgam (X, y, "Interactions", "all");
+%! rand ("state", 1);
 %! cv = crossval (Mdl, "KFold", 3);
 %! assert_equal (numel (cv.Trained), 3);
 %! assert_equal (cv.Trained{1}.Interactions, [1, 2; 1, 3; 2, 3]);

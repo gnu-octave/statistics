@@ -172,6 +172,12 @@ function [Beta, Bias, S] = solveQuasiNewton (X, y, w, P, Beta, Bias)
   opt.LossTolerance = -Inf;
   opt.HistorySize = P.HessianHistorySize;
   opt.BetaTolerance = P.BetaTolerance;
+  ## MATLAB's 'bfgs' keeps the full inverse Hessian and its 'lbfgs' the
+  ## curvature pairs; both search for a weak Wolfe step from a unit one.
+  ## With these, R2024a's fitclinear histories are reproduced to the
+  ## iteration and its coefficients to 6e-12.
+  opt.Method = P.Solver;
+  opt.LineSearch = 'weakwolfe';
 
   fcn = @(z) smoothPart (z, X, y, w, P);
   [z, info] = __lbfgs__ (fcn, z0, opt);
@@ -199,7 +205,10 @@ endfunction
 function [Beta, Bias, S] = solveSpaRSA (X, y, w, P, Beta, Bias)
 
   p = columns (X);
-  memory = 5;
+  ## Ten past objectives, measured on R2024a's fitclinear: with them its
+  ## step lengths are reproduced exactly for 60 iterations and more, after
+  ## which the non-monotone path amplifies rounding.  Five part at 30.
+  memory = 10;
   eta = 2;
   sigma = 0.01;
   alphaMin = 1e-30;
@@ -232,8 +241,11 @@ function [Beta, Bias, S] = solveSpaRSA (X, y, w, P, Beta, Bias)
       endif
       alpha *= eta;
     endfor
+    ## No step decreasing the objective: R2024a reports -11 here, and counts
+    ## only the iterations it completed.
     if (! accepted)
-      code = 0;
+      code = -11;
+      iter -= 1;
       break;
     endif
 
@@ -261,8 +273,17 @@ function [Beta, Bias, S] = solveSpaRSA (X, y, w, P, Beta, Bias)
       past(1) = [];
     endif
 
-    if (relChange <= P.BetaTolerance)
+    ## The coefficient test, then the gradient test, as the quasi-Newton
+    ## solvers order them.  A tolerance of zero switches its test off rather
+    ## than being met by a change of exactly zero: with both at zero R2024a
+    ## runs until no step decreases the objective, and with only
+    ## BetaTolerance at zero it stops on the gradient.
+    if (P.BetaTolerance > 0 && relChange <= P.BetaTolerance)
       code = 1;
+      break;
+    endif
+    if (P.GradientTolerance > 0 && max (abs (g)) <= P.GradientTolerance)
+      code = 2;
       break;
     endif
 
