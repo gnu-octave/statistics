@@ -161,6 +161,9 @@
 ## reports: the first round and then every @var{NumPrint} rounds.  The
 ## default is 10.
 ##
+## @item @qcode{'Weights'} @tab A numeric vector of non-negative observation
+## weights, one per row of @var{X}.  Only their proportions matter.
+##
 ## @end multitable
 ##
 ## You can parse either a @qcode{'formula'} or an @qcode{'interactions'}

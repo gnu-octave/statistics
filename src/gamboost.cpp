@@ -448,7 +448,8 @@ gamb_predict_row (const GamBoostFit& F, const Matrix& X, octave_idx_type i)
 // and which starts at 2 n log 2 for a balanced response; for a regression it
 // is the residual sum of squares, the Gaussian deviance up to the scale.
 static double
-gamb_deviance (const ColumnVector& Y, const ColumnVector& f, int method)
+gamb_deviance (const ColumnVector& Y, const ColumnVector& f, int method,
+               const ColumnVector& w)
 {
   octave_idx_type n = Y.numel ();
   double dev = 0.0;
@@ -468,7 +469,7 @@ gamb_deviance (const ColumnVector& Y, const ColumnVector& f, int method)
       {
         p = 1.0 - 1e-16;
       }
-      dev += Y(i) * std::log (p) + (1.0 - Y(i)) * std::log (1.0 - p);
+      dev += w(i) * (Y(i) * std::log (p) + (1.0 - Y(i)) * std::log (1.0 - p));
     }
     dev *= -2.0;
   }
@@ -477,11 +478,34 @@ gamb_deviance (const ColumnVector& Y, const ColumnVector& f, int method)
     for (octave_idx_type i = 0; i < n; i++)
     {
       double r = Y(i) - f(i);
-      dev += r * r;
+      dev += w(i) * r * r;
     }
   }
 
   return dev;
+}
+
+// Observation weights for a fit, rescaled to average one.  Without weights
+// every row weighs one, which is the unweighted fit exactly; with them the
+// rescaling leaves the Newton steps, the curvature guards and the minimum leaf
+// size, which counts rows and not weight, meaning what they meant before.
+static ColumnVector
+gamb_weights (octave_idx_type n, const ColumnVector *W)
+{
+  ColumnVector wt (n, 1.0);
+  if (W != nullptr)
+  {
+    double sw = 0.0;
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      sw += (*W)(i);
+    }
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      wt(i) = (*W)(i) * (double) n / sw;
+    }
+  }
+  return wt;
 }
 
 // Newton boosting of one tree per predictor per round.  METHOD 1 fits the
@@ -492,10 +516,12 @@ static GamBoostFit
 gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
             octave_idx_type maxtrees, double lrate, octave_idx_type maxsplits,
             int verbose, octave_idx_type numprint,
-            const ColumnVector *F0 = nullptr)
+            const ColumnVector *F0 = nullptr,
+            const ColumnVector *W = nullptr)
 {
   octave_idx_type n = X.rows ();
   octave_idx_type d = X.columns ();
+  ColumnVector wt = gamb_weights (n, W);
 
   std::vector<BinnedPredictor> B (d);
   for (octave_idx_type j = 0; j < d; j++)
@@ -548,7 +574,7 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
     double ybar = 0.0;
     for (octave_idx_type i = 0; i < n; i++)
     {
-      ybar += Y(i);
+      ybar += wt(i) * Y(i);
     }
     ybar /= (double) n;
 
@@ -576,7 +602,7 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
 
     f = ColumnVector (n, F.intercept);
   }
-  double dev = gamb_deviance (Y, f, method);
+  double dev = gamb_deviance (Y, f, method, wt);
 
   // The printed trace, in the columns MATLAB prints.  RelTol here is the
   // relative improvement the round bought, which is what the patience test
@@ -656,13 +682,13 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
         if (method == 1)
         {
           double p = 1.0 / (1.0 + std::exp (-f(i)));
-          ww(i) = p * (1.0 - p);
-          r0(i) = Y(i) - p;
+          ww(i) = wt(i) * p * (1.0 - p);
+          r0(i) = wt(i) * (Y(i) - p);
         }
         else
         {
-          ww(i) = 1.0;
-          r0(i) = Y(i) - f(i);
+          ww(i) = wt(i);
+          r0(i) = wt(i) * (Y(i) - f(i));
         }
       }
 
@@ -728,7 +754,7 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
         }
       }
 
-      double devnew = gamb_deviance (Y, fnew, method);
+      double devnew = gamb_deviance (Y, fnew, method, wt);
       double devold = dev;
 
       // A round only has to improve the deviance at all to be kept.  Whether
@@ -1161,11 +1187,13 @@ static GamInterFit
 gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
                   const ColumnVector& F0, int method, const Matrix& pairs,
                   octave_idx_type maxtrees, double lrate,
-                  octave_idx_type maxsplits)
+                  octave_idx_type maxsplits,
+                  const ColumnVector *W = nullptr)
 {
   octave_idx_type n = X.rows ();
   octave_idx_type d = X.columns ();
   octave_idx_type np = pairs.rows ();
+  ColumnVector wt = gamb_weights (n, W);
 
   std::vector<BinnedPredictor> B ((std::size_t) d);
   for (octave_idx_type j = 0; j < d; j++)
@@ -1201,7 +1229,7 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
   F.reason = "Terminated after training the requested number of trees.";
 
   ColumnVector f = F0;
-  double dev = gamb_deviance (Y, f, method);
+  double dev = gamb_deviance (Y, f, method, wt);
   std::vector<double> devhist;
   devhist.push_back (dev);
 
@@ -1242,6 +1270,8 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
             grad(i) = Y(i) - fnew(i);
             hess(i) = 1.0;
           }
+          grad(i) *= wt(i);
+          hess(i) *= wt(i);
         }
 
         trial[(std::size_t) q] = Matrix (Bj.nbins, Bk.nbins, 0.0);
@@ -1262,20 +1292,20 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
         // term carries only what the two predictors do together, and whatever
         // constant it picked up belongs to the intercept.
         double m = 0.0;
-        octave_idx_type cnt = 0;
+        double cnt = 0.0;
         for (octave_idx_type i = 0; i < n; i++)
         {
           octave_idx_type a = Bj.bin(i);
           octave_idx_type b = Bk.bin(i);
           if (a >= 0 && b >= 0)
           {
-            m += trial[(std::size_t) q](a, b);
-            cnt++;
+            m += wt(i) * trial[(std::size_t) q](a, b);
+            cnt += wt(i);
           }
         }
-        if (cnt > 0)
+        if (cnt > 0.0)
         {
-          m /= (double) cnt;
+          m /= cnt;
           for (octave_idx_type a = 0; a < Bj.nbins; a++)
           {
             for (octave_idx_type b = 0; b < Bk.nbins; b++)
@@ -1287,7 +1317,7 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
         }
       }
 
-      double devnew = gamb_deviance (Y, fnew, method);
+      double devnew = gamb_deviance (Y, fnew, method, wt);
 
       if (devnew < dev)
       {

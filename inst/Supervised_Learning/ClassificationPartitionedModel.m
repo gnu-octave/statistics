@@ -600,13 +600,19 @@ classdef ClassificationPartitionedModel
           ## kept, so a fold holding a class in a different proportion from
           ## the whole reports a different prior.  The other five take the
           ## parent's value unchanged.
+          ## One prior per entry of the model's own, which a response holding
+          ## a single class still carries two of.
           gY = labelIndices (this.ClassNames, this.Y);
-          nclass = classCount (this.ClassNames);
+          nclass = numel (this.Prior);
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            pf = gamFoldPrior (this.Prior, gY, nclass, idx);
-            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), args{:}, ...
-                           'Prior', pf);
+            pf = gamFoldPrior (this.W, gY, nclass, idx);
+            fargs = [args, {'Prior', pf}];
+            ## A boosted-tree fold also keeps the weights of the rows it holds.
+            if (strcmp (Mdl.FitMethod, 'boostedtrees'))
+              fargs = [fargs, {'Weights', this.W(idx)}];
+            endif
+            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -1449,18 +1455,17 @@ classdef ClassificationPartitionedModel
 
 endclassdef
 
-## The prior a GAM fold is fitted with.  The parent's prior is carried as an
-## observation weight, prior(k) over the class count, and the fold's prior is
-## the weight it retained, renormalised.  Measured on R2024a over ten folds of
-## three and seven with five distinct compositions, exact to eight digits; an
-## empirical parent prior makes the weight the same for every class, so the
-## fold's prior collapses to its own proportions, which is what a default fit
-## reports.
-function pf = gamFoldPrior (prior, gY, nclass, idx)
-  n = accumarray (gY(:), 1, [nclass, 1])';
+## The prior a GAM fold is fitted with.  The parent's prior is carried as the
+## observation weight W, prior(k) spread over class k in proportion to the
+## weights given, and the fold's prior is the weight it retained, renormalised.
+## Without weights W is prior(k) over the class count, measured on R2024a over
+## ten folds of three and seven with five distinct compositions, exact to eight
+## digits; an empirical parent prior makes the weight the same for every class,
+## so the fold's prior collapses to its own proportions, which is what a
+## default fit reports.
+function pf = gamFoldPrior (W, gY, nclass, idx)
   gf = gY(idx);
-  nf = accumarray (gf(:), 1, [nclass, 1])';
-  pf = prior(:)' .* (nf ./ n);
+  pf = accumarray (gf(:), W(idx), [nclass, 1])';
   pf = pf ./ sum (pf);
 endfunction
 
@@ -1737,6 +1742,17 @@ endfunction
 %! p = kfoldPredict (cvc);
 %! assert_equal (columns (p), 10);
 %! assert_equal (cellstr (p), kfoldPredict (cvs));
+
+%!test  # a GAM fold is fitted with the weights of the rows it holds
+%! k = (1:60)';
+%! X = [sin(k), cos(2 * k)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 > 1;
+%! w = 1 + mod (k, 3);
+%! CVMdl = crossval (ClassificationGAM (X, y, 'Weights', w), 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! F = fitcgam (X(idx,:), y(idx), 'Weights', w(idx));
+%! assert_equal (CVMdl.Trained{1}.Prior, F.Prior, 1e-12);
+%! assert_equal (CVMdl.Trained{1}.Intercept, F.Intercept, 1e-10);
 
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
 %! ClassificationPartitionedModel ()

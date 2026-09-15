@@ -423,7 +423,12 @@ classdef RegressionPartitionedModel
           endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitrgam (X(idx, :), Y(idx), args{:});
+            ## A boosted-tree fold keeps the weights of the rows it holds.
+            fargs = args;
+            if (strcmp (Mdl.FitMethod, 'boostedtrees'))
+              fargs = [fargs, {'Weights', this.W(idx)}];
+            endif
+            tmp = fitrgam (X(idx, :), Y(idx), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -946,6 +951,16 @@ endclassdef
 %! assert_equal (numfields (CVMdl.ModelParameters), 14);
 %! assert_equal (isfield (CVMdl.ModelParameters, 'NumTreesPerPredictor'), true);
 %! assert_equal (CVMdl.ModelParameters.Method, 'PartitionedModel');
+
+%!test  # a GAM fold is fitted with the weights of the rows it holds
+%! k = (1:60)';
+%! X = [sin(k), cos(2 * k)];
+%! y = 2 * sin (k) + X(:,2) .^ 2;
+%! w = 1 + mod (k, 3);
+%! CVMdl = crossval (RegressionGAM (X, y, 'Weights', w), 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! F = fitrgam (X(idx,:), y(idx), 'Weights', w(idx));
+%! assert_equal (CVMdl.Trained{1}.Intercept, F.Intercept, 1e-10);
 
 %!error<RegressionPartitionedModel: unsupported model type.> ...
 %! RegressionPartitionedModel (1, cvpartition (10, 'KFold', 2))

@@ -169,6 +169,10 @@
 ## reports: the first round and then every @var{NumPrint} rounds.  The
 ## default is 10.
 ##
+## @item @qcode{'Weights'} @tab A numeric vector of non-negative observation
+## weights, one per row of @var{X}.  Each class carries its @qcode{'Prior'},
+## spread over its observations in proportion to their weights.
+##
 ## @end multitable
 ## You can parse either a @qcode{'Formula'} or an @qcode{'Interactions'}
 ## optional parameter.  Parsing both parameters will result an error.

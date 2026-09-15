@@ -114,6 +114,7 @@ classdef RegressionGAM
 ## @item @qcode{'tol'} @tab (spline option) a positive scalar to set the
 ## tolerance for
 ## convergence during training. By default, it is set to @qcode{1e-3}.
+##
 ## @end multitable
 ##
 ## A row marked @qcode{(spline option)} belongs to the spline
@@ -274,7 +275,8 @@ classdef RegressionGAM
     ## Observation weights
     ##
     ## A numeric column vector with one entry per observation used for
-    ## training, normalised to sum to one.  This property is read-only.
+    ## training, the @qcode{'Weights'} normalised to sum to one, and equal
+    ## when none were given.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -645,6 +647,7 @@ classdef RegressionGAM
       Tol            = 1e-3;                  # Tolerance for convergence
       ResponseTransform = 'none';             # Name of the transform
       RTfun             = @(y) y;             # and the callable it names
+      Weights           = [];                 # Observation weights
 
       ## Boosted-tree defaults, MATLAB's own.  They are reported through
       ## ModelParameters, so they are part of the surface being matched and
@@ -846,6 +849,21 @@ classdef RegressionGAM
                              " greater than 0 and at most 1."));
             endif
 
+          case 'weights'
+            Weights = varargin{2};
+            if (! (isnumeric (Weights) && isreal (Weights)
+                   && isvector (Weights)))
+              error ("RegressionGAM: 'Weights' must be a numeric vector.");
+            endif
+            if (numel (Weights) != rows (X))
+              error (strcat ("RegressionGAM: 'Weights' must have one", ...
+                             " element per row of X."));
+            endif
+            if (any (Weights(:) < 0) || ! all (isfinite (Weights(:))))
+              error (strcat ("RegressionGAM: 'Weights' must hold", ...
+                             " finite non-negative values."));
+            endif
+
           case 'verbose'
             Verbose = varargin{2};
             if (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
@@ -885,7 +903,7 @@ classdef RegressionGAM
                   'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
                   'initiallearnrateforpredictors', ...
                   'initiallearnrateforinteractions', 'maxpvalue', ...
-                  'verbose', 'numprint'};
+                  'verbose', 'numprint', 'weights'};
       if (strcmp (FitMethod, 'boostedtrees'))
         clash = intersect (namesGiven, splineOnly);
         if (! isempty (clash))
@@ -912,6 +930,12 @@ classdef RegressionGAM
       RowsUsed  = ! isnan (Y(:));
       Yret      = Y(RowsUsed);
       Xret      = X(RowsUsed, :);
+      if (isempty (Weights))
+        Wret    = ones (rows (Xret), 1);
+      else
+        Wret    = Weights(RowsUsed);
+        Wret    = Wret(:);
+      endif
       this.X    = Xret;
       this.Y    = Yret;
       cobs      = ! any (isnan (Xret), 2);
@@ -978,7 +1002,9 @@ classdef RegressionGAM
       ## Bookkeeping MATLAB reports alongside the fit
       this.CategoricalPredictors  = [];
       this.ExpandedPredictorNames = PredictorNames;
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      ## The weights over their sum, as MATLAB reports them; the boosted fit
+      ## sees them on the rows it is fitted to.
+      this.W = Wret / sum (Wret);
       this.IsStandardDeviationFit = false;
 
       this.FitMethod = FitMethod;
@@ -1130,7 +1156,7 @@ classdef RegressionGAM
           I = gamboostinter (Xfit, Yfit, f, 2, pairs, ...
                              MP.NumTreesPerInteraction, ...
                              MP.InitialLearnRateForInteractions, ...
-                             MP.MaxNumSplitsPerInteraction);
+                             MP.MaxNumSplitsPerInteraction, this.W(cobs));
           this.Intercept = this.Intercept + I.Intercept;
           this.PairDetectionBinEdges = I.PairBinEdges(:);
           this.TreeModel.PairValues = I.PairValues;
@@ -1754,7 +1780,8 @@ classdef RegressionGAM
                              this.Intercept);
         M = gamboosttrain (X, Y, 2, numTrees, ...
                            MP.InitialLearnRateForPredictors, ...
-                           MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, f(:));
+                           MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, ...
+                           f(:), this.W(cobs));
         if (M.NumTrees == 0)
           error (strcat ("RegressionGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -1780,7 +1807,7 @@ classdef RegressionGAM
                              this.TreeModel.Pairs);
         I = gamboostinter (X, Y, f(:), 2, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
-                           MP.MaxNumSplitsPerInteraction);
+                           MP.MaxNumSplitsPerInteraction, this.W(cobs));
         if (I.NumTrees == 0)
           error (strcat ("RegressionGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -1861,8 +1888,10 @@ classdef RegressionGAM
     function this = fitBoosted (this, X, Y, Interactions, NTP, NTI, MSP, ...
                                 MSI, LRP, LRI, MaxPValue, Verb, NPrint)
 
-      ## Method 2 boosts the squared error, which is what a regression fits.
-      M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint);
+      ## Method 2 boosts the squared error, which is what a regression fits,
+      ## weighted by W over the rows the fit sees.
+      Wfit = this.W(! any (isnan (this.X), 2));
+      M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint, [], Wfit);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
       this.BinEdges  = M.BinEdges(:);   ## a column cell, as MATLAB reports it
@@ -1909,7 +1938,7 @@ classdef RegressionGAM
       endif
 
       if (! isempty (pairs))
-        I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI);
+        I = gamboostinter (X, Y, f, 2, pairs, NTI, LRI, MSI, Wfit);
         this.Intercept = this.Intercept + I.Intercept;
         pairShift = I.Intercept;
         this.PairDetectionBinEdges = I.PairBinEdges(:);
@@ -2443,6 +2472,29 @@ endfunction
 %!                      0.839784457781], 1e-10);
 %! assert_equal (yFit(4), Mdl.Intercept);
 
+%!test  # MATLAB parity: observation weights enter the fit
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! w = 1 + mod (k, 3);
+%! Q = [0.5, 0.2, 1; 0.1, 0.7, 3; -0.4, -0.2, 0];
+%! Mdl = RegressionGAM (X, y, 'Weights', w);
+%! assert_equal (Mdl.W, w / sum (w), 1e-15);
+%! assert_equal (Mdl.Intercept, 1.09607817728, 1e-10);
+%! assert_equal (predict (Mdl, Q), [1.32799066689; 2.22459947488; ...
+%!                                  -0.705872562832], 1e-10);
+%! M5 = RegressionGAM (X, y, 'Weights', 5 * w);
+%! assert_equal (predict (M5, Q), predict (Mdl, Q), 1e-10);
+
+%!error<RegressionGAM: 'Weights' must be a numeric vector.> ...
+%! RegressionGAM (ones (10, 2), (1:10)', 'Weights', 'a')
+%!error<RegressionGAM: 'Weights' must have one element per row of X.> ...
+%! RegressionGAM (ones (10, 2), (1:10)', 'Weights', [1, 2])
+%!error<RegressionGAM: 'Weights' must hold finite non-negative values.> ...
+%! RegressionGAM (ones (10, 2), (1:10)', 'Weights', -ones (10, 1))
+%!error<RegressionGAM: 'weights' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
+%! RegressionGAM ([(1:10)', mod((1:10)', 3)], (1:10)', ...
+%!                'Weights', ones (10, 1), 'FitMethod', 'splines')
 %!error<RegressionGAM.resume: Not enough input arguments.> ...
 %! load fisheriris; ...
 %! resume (fitrgam (meas, meas(:,1), 'NumTreesPerPredictor', 5))

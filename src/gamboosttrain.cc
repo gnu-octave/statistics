@@ -32,6 +32,8 @@ DEFUN_DLD(gamboosttrain, args, ,
 @deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@var{X}, @var{Y}, @\n\
 @var{Method}, @var{NumTrees}, @var{LearnRate}, @var{MaxNumSplits}, @\n\
 @var{Verbose}, @var{NumPrint}, @var{F0})\n\
+@deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@dots{}, @var{F0}, @\n\
+@var{W})\n\
 @deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@dots{}, @var{Verbose}, @\n\
 @var{NumPrint})\n\
 \n\
@@ -72,6 +74,14 @@ rounds.  The @qcode{RelTol} column is the relative improvement the round\n\
 bought, which is what the stopping rule reads.  MATLAB prints a column under\n\
 the same heading holding a quantity of its own that cannot be derived from\n\
 anything else it reports, so the two are not comparable.\n\
+\n\
+@item @var{F0}, if given and not empty, continues a fit: it is the prediction\n\
+the fit reached over these rows, and what comes back is the increment.\n\
+\n\
+@item @var{W}, if given, is an @math{Nx1} vector of non-negative observation\n\
+weights.  Only their proportions matter.  Every sum the fit takes over the\n\
+observations is weighted; the fewest observations a leaf may hold still\n\
+counts rows.\n\
 @end itemize\n\
 \n\
 @var{Mdl} is a structure with the following fields.\n\
@@ -97,7 +107,7 @@ many trees produced it.\n\
 @end deftypefn")
 {
   octave_idx_type nargin = args.length ();
-  if (nargin != 6 && nargin != 8 && nargin != 9)
+  if (nargin != 6 && nargin != 8 && nargin != 9 && nargin != 10)
   {
     print_usage ();
   }
@@ -177,7 +187,7 @@ many trees produced it.\n\
 
   int verbose = 0;
   octave_idx_type numprint = 10;
-  if (nargin == 8)
+  if (nargin >= 8)
   {
     if (! args(6).is_scalar_type () || ! args(6).isnumeric ()
         || args(6).iscomplex ())
@@ -206,7 +216,7 @@ many trees produced it.\n\
   // the increment to add to the shape values and the intercept already held.
   ColumnVector F0;
   bool resuming = false;
-  if (nargin == 9)
+  if (nargin >= 9 && ! args(8).isempty ())
   {
     if (! args(8).isnumeric () || args(8).iscomplex ()
         || args(8).columns () != 1 || args(8).rows () != X.rows ())
@@ -217,8 +227,37 @@ many trees produced it.\n\
     resuming = true;
   }
 
+  // Observation weights, one per row of X.  The fit depends only on their
+  // proportions, so their scale is free.
+  ColumnVector W;
+  bool weighted = false;
+  if (nargin == 10)
+  {
+    if (! args(9).isnumeric () || args(9).iscomplex ()
+        || args(9).columns () != 1 || args(9).rows () != X.rows ())
+    {
+      error ("gamboosttrain: W must be a numeric column vector with one element per row of X.");
+    }
+    W = args(9).column_vector_value ();
+    double sw = 0.0;
+    for (octave_idx_type i = 0; i < W.numel (); i++)
+    {
+      if (! (W(i) >= 0.0) || octave::math::isinf (W(i)))
+      {
+        error ("gamboosttrain: W must hold finite non-negative values.");
+      }
+      sw += W(i);
+    }
+    if (! (sw > 0.0))
+    {
+      error ("gamboosttrain: W must not sum to zero.");
+    }
+    weighted = true;
+  }
+
   GamBoostFit F = gamb_boost (X, Y, method, maxtrees, lrate, maxsplits,
-                              verbose, numprint, resuming ? &F0 : nullptr);
+                              verbose, numprint, resuming ? &F0 : nullptr,
+                              weighted ? &W : nullptr);
 
   Cell edges (1, d);
   Cell values (1, d);

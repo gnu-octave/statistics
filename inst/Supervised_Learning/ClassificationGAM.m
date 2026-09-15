@@ -300,9 +300,8 @@ classdef ClassificationGAM
     ## A numeric column vector with one entry per observation used for
     ## training, normalised to sum to one.  This property is read-only.
     ##
-    ## Each class carries its prior spread evenly over its own observations,
-    ## so an observation of a class weighs @qcode{Prior} for that class
-    ## divided by the number of observations it holds.
+    ## Each class carries its prior, spread over its own observations in
+    ## proportion to their @qcode{'Weights'}, and evenly when none were given.
     ##
     ## @end deftp
     W               = [];
@@ -738,7 +737,10 @@ classdef ClassificationGAM
     ## corresponds to the order of the classes in @qcode{ClassNames}.
     ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
     ## class probabilities or @qcode{'uniform'} to assume equal class
-    ## probabilities.
+    ## probabilities.  The prior weighs the boosted-tree fit: each class
+    ## carries its prior, spread over its observations in proportion to
+    ## @qcode{'Weights'}, and an empirical prior is each class's share of the
+    ## weight.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -822,6 +824,7 @@ classdef ClassificationGAM
       LearningRate   = 0.1;
       NumIterations  = 100;
       Cost           = [];
+      Weights        = [];
 
       ## Boosted-tree defaults, MATLAB's own.  They are reported through
       ## ModelParameters, so they are part of the surface being matched and
@@ -900,6 +903,21 @@ classdef ClassificationGAM
             endif
             if (isnumeric (Prior) && numel (Prior) != 2 && ! isstruct (Prior))
               error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
+            endif
+
+          case 'weights'
+            Weights = varargin{2};
+            if (! (isnumeric (Weights) && isreal (Weights)
+                   && isvector (Weights)))
+              error ("ClassificationGAM: 'Weights' must be a numeric vector.");
+            endif
+            if (numel (Weights) != rows (X))
+              error (strcat ("ClassificationGAM: 'Weights' must have one", ...
+                             " element per row of X."));
+            endif
+            if (any (Weights(:) < 0) || ! all (isfinite (Weights(:))))
+              error (strcat ("ClassificationGAM: 'Weights' must hold", ...
+                             " finite non-negative values."));
             endif
 
           case 'cost'
@@ -1123,7 +1141,7 @@ classdef ClassificationGAM
                   'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
                   'initiallearnrateforpredictors', ...
                   'initiallearnrateforinteractions', 'maxpvalue', ...
-                  'verbose', 'numprint'};
+                  'verbose', 'numprint', 'weights'};
       if (strcmp (FitMethod, 'boostedtrees'))
         clash = intersect (namesGiven, splineOnly);
         if (! isempty (clash))
@@ -1171,11 +1189,18 @@ classdef ClassificationGAM
       ## the two forms agree.
       Yret      = Y(RowsUsed, :);
       Xret      = X(RowsUsed, :);
+      if (isempty (Weights))
+        Wret    = ones (rows (Xret), 1);
+      else
+        Wret    = Weights(RowsUsed);
+        Wret    = Wret(:);
+      endif
       this.X    = Xret;
       this.Y    = Yret;
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
+      Wfit      = Wret(cobs);
 
       ## Renew groups in Y: the classes keep the type of Y, sorted or in the
       ## order ClassNames gives them.
@@ -1216,7 +1241,9 @@ classdef ClassificationGAM
         if (strcmpi (Prior, 'uniform'))
           this.Prior = [0.5, 0.5];
         elseif (strcmpi (Prior, 'empirical'))
-          counts = histc (gY, 1:2);
+          ## Each class's share of the weight, which is its share of the
+          ## observations when no weights were given.
+          counts = accumarray (gY(:), Wfit, [2, 1]);
           this.Prior = counts(:)' / sum (counts);
         endif
       else
@@ -1247,8 +1274,18 @@ classdef ClassificationGAM
       this.FitMethod = FitMethod;
 
       ## Bookkeeping MATLAB reports alongside the fit, whichever engine ran
-      this.W                     = priorWeights (this.Prior, gY, ...
-                                                 this.NumObservations);
+      ## Each class carries its prior, spread over its observations in
+      ## proportion to their weights: the W MATLAB reports and the weight the
+      ## boosted fit sees.  Every stored row gets one, those missing a
+      ## predictor included, so that W lines up with X.
+      gYall = labelIndices (this.ClassNames, this.Y);
+      this.W = zeros (this.NumObservations, 1);
+      for k = 1:2
+        idx = (gYall(:) == k);
+        if (sum (Wret(idx)) > 0)
+          this.W(idx) = this.Prior(k) * Wret(idx) / sum (Wret(idx));
+        endif
+      endfor
       this.CategoricalPredictors = [];
       this.ExpandedPredictorNames = this.PredictorNames;
 
@@ -2156,7 +2193,8 @@ classdef ClassificationGAM
                              this.Intercept);
         M = gamboosttrain (X, Y, 1, numTrees, ...
                            MP.InitialLearnRateForPredictors, ...
-                           MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, f(:));
+                           MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, ...
+                           f(:), this.W(cobs));
         if (M.NumTrees == 0)
           error (strcat ("ClassificationGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -2182,7 +2220,7 @@ classdef ClassificationGAM
                              this.TreeModel.Pairs);
         I = gamboostinter (X, Y, f(:), 1, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
-                           MP.MaxNumSplitsPerInteraction);
+                           MP.MaxNumSplitsPerInteraction, this.W(cobs));
         if (I.NumTrees == 0)
           error (strcat ("ClassificationGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -2307,6 +2345,8 @@ classdef ClassificationGAM
       f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
                            this.Intercept);
 
+      Wfit = this.W(! any (isnan (this.X), 2));
+
       ## Residuals of the predictor phase, which is what pairs are tested on.
       res = Y - 1 ./ (1 + exp (-f));
 
@@ -2344,7 +2384,7 @@ classdef ClassificationGAM
       reason = this.ReasonForTermination;
       ntrees = this.NumTrainedTrees;
       if (! isempty (pairs))
-        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI);
+        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI, Wfit);
         this.Intercept = this.Intercept + I.Intercept;
         this.PairDetectionBinEdges = I.PairBinEdges(:);
         this.TreeModel.PairValues = I.PairValues;
@@ -2380,8 +2420,9 @@ classdef ClassificationGAM
     function this = fitBoosted (this, X, Y, Interactions, NTP, NTI, MSP, ...
                                 MSI, LRP, LRI, MaxPValue, Verb, NPrint)
 
-      ## The predictor phase.
-      M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint);
+      ## The predictor phase, weighted by W over the rows the fit sees.
+      Wfit = this.W(! any (isnan (this.X), 2));
+      M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint, [], Wfit);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
       this.BinEdges  = M.BinEdges(:);   ## a column cell, as MATLAB reports it
@@ -2436,7 +2477,7 @@ classdef ClassificationGAM
       endif
 
       if (! isempty (pairs))
-        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI);
+        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI, Wfit);
         this.Intercept = this.Intercept + I.Intercept;
         pairShift = I.Intercept;
         this.PairDetectionBinEdges = I.PairBinEdges(:);
@@ -3046,6 +3087,32 @@ endfunction
 %! assert_equal (label', [true, false, true, true, true, true, false]);
 %! assert_equal (score(4,2), 1 / (1 + exp (-Mdl.Intercept)), 1e-14);
 
+%!test  # MATLAB parity: 'Prior' weighs the fit as the matching 'Weights' do
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! yc = y > median (y);
+%! w = 0.2 * ! yc / sum (! yc) + 0.8 * yc / sum (yc);
+%! M0 = ClassificationGAM (X, yc, 'NumTreesPerPredictor', 50);
+%! M1 = ClassificationGAM (X, yc, 'Prior', [0.2, 0.8], ...
+%!                         'NumTreesPerPredictor', 50);
+%! M2 = ClassificationGAM (X, yc, 'Weights', w, 'NumTreesPerPredictor', 50);
+%! M3 = ClassificationGAM (X, yc, 'Weights', 3 * w, ...
+%!                         'NumTreesPerPredictor', 50);
+%! assert_equal (M2.Prior, [0.2, 0.8], 1e-12);
+%! assert_equal ([sum(M1.W(! yc)), sum(M1.W(yc))], [0.2, 0.8], 1e-12);
+%! assert_equal (M2.Intercept, M1.Intercept, 1e-10);
+%! assert_equal (M3.Intercept, M1.Intercept, 1e-10);
+%! assert_equal (M1.Intercept != M0.Intercept, true);
+
+%!test  # MATLAB parity: an empirical prior is each class's share of the weight
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! Mdl = ClassificationGAM (X, y > median (y), 'Weights', 1 + mod (k, 3), ...
+%!                          'NumTreesPerPredictor', 10);
+%! assert_equal (Mdl.Prior, [0.498753117207, 0.501246882793], 1e-12);
+
 %!error<ClassificationGAM.resume: Not enough input arguments.> ...
 %! load fisheriris; ...
 %! resume (fitcgam (meas(51:150,:), species(51:150), 'NumTreesPerPredictor', 5))
@@ -3078,6 +3145,16 @@ endfunction
 %! bai = ! strcmp (species, "setosa");
 %! addInteractions (fitcgam (meas(bai,2:4), species(bai)), {1})
 
+%!error<ClassificationGAM: 'Weights' must be a numeric vector.> ...
+%! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], 'Weights', 'a')
+%!error<ClassificationGAM: 'Weights' must have one element per row of X.> ...
+%! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], 'Weights', [1, 2])
+%!error<ClassificationGAM: 'Weights' must hold finite non-negative values.> ...
+%! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], 'Weights', ...
+%!                    -ones (10, 1))
+%!error<ClassificationGAM: 'weights' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
+%! ClassificationGAM ([(1:10)', mod((1:10)', 3)], [ones(5,1); zeros(5,1)], ...
+%!                    'Weights', ones (10, 1), 'FitMethod', 'splines')
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
 %! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', [1])
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...

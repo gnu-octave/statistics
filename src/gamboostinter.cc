@@ -30,6 +30,7 @@ DEFUN_DLD(gamboostinter, args, ,
 @deftypefn {statistics} {@var{Mdl} =} gamboostinter (@var{X}, @var{Y}, @\n\
 @var{F0}, @var{Method}, @var{Pairs}, @var{NumTrees}, @var{LearnRate}, @\n\
 @var{MaxNumSplits})\n\
+@deftypefnx {statistics} {@var{Mdl} =} gamboostinter (@dots{}, @var{W})\n\
 \n\
 Boost trees over selected pairs of predictors.\n\
 \n\
@@ -56,6 +57,9 @@ and within range.  Choosing them is the caller's business; see\n\
 \n\
 @item @var{NumTrees}, @var{LearnRate} and @var{MaxNumSplits} are the\n\
 interaction phase's own budget, initial step and split limit.\n\
+\n\
+@item @var{W}, if given, is an @math{Nx1} vector of non-negative observation\n\
+weights, as @code{gamboosttrain} takes them.\n\
 @end itemize\n\
 \n\
 @var{Mdl} is a structure with the following fields.\n\
@@ -76,7 +80,8 @@ to the intercept of the predictor phase.\n\
 @seealso{gamboosttrain, gamboostpairs, gamboostpredict}\n\
 @end deftypefn")
 {
-  if (args.length () != 8)
+  octave_idx_type nargin = args.length ();
+  if (nargin != 8 && nargin != 9)
   {
     print_usage ();
   }
@@ -185,8 +190,37 @@ to the intercept of the predictor phase.\n\
     }
   }
 
+  // Observation weights, one per row of X.  The fit depends only on their
+  // proportions, so their scale is free.
+  ColumnVector W;
+  bool weighted = false;
+  if (nargin == 9)
+  {
+    if (! args(8).isnumeric () || args(8).iscomplex ()
+        || args(8).columns () != 1 || args(8).rows () != X.rows ())
+    {
+      error ("gamboostinter: W must be a numeric column vector with one element per row of X.");
+    }
+    W = args(8).column_vector_value ();
+    double sw = 0.0;
+    for (octave_idx_type i = 0; i < W.numel (); i++)
+    {
+      if (! (W(i) >= 0.0) || octave::math::isinf (W(i)))
+      {
+        error ("gamboostinter: W must hold finite non-negative values.");
+      }
+      sw += W(i);
+    }
+    if (! (sw > 0.0))
+    {
+      error ("gamboostinter: W must not sum to zero.");
+    }
+    weighted = true;
+  }
+
   GamInterFit F = gamb_boost_inter (X, Y, F0, method, pairs, maxtrees,
-                                    lrate, maxsplits);
+                                    lrate, maxsplits,
+                                    weighted ? &W : nullptr);
 
   Cell edges (1, d);
   for (octave_idx_type j = 0; j < d; j++)
