@@ -745,6 +745,7 @@ classdef ClassificationSVM
 
       ## Parse extra parameters
       SVMtype_override = true;
+      NuGiven = false;
       CatPreds = [];
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
@@ -894,6 +895,7 @@ classdef ClassificationSVM
 
           case 'nu'
             Nu = varargin{2};
+            NuGiven = true;
             if (SVMtype_override)
               SVMtype = 'one_class_svm';
             endif
@@ -1017,6 +1019,11 @@ classdef ClassificationSVM
                          " problem with only one class available."));
         endif
         SVMtype = 'one_class_svm';
+        ## A one-class fit keeps its Nu when OutlierFraction is given, the
+        ## fraction moving only the bias, as R2024a does.
+        if (OutlierFraction > 0 && ! NuGiven)
+          Nu = 0.5;
+        endif
         if (isempty (KernelFunction))
           KernelFunction = 'rbf';
         endif
@@ -1185,15 +1192,40 @@ classdef ClassificationSVM
       ## of misclassifying it, renormalized.  The default prior is the weighted
       ## frequency and the default cost one, so without weights every
       ## constraint is C and the fit is the same as with none.
-      adjPrior = Prior;
-      if (nclasses == 2 && ! strcmp (SVMtype, 'one_class_svm'))
-        adjPrior = Prior .* sum (Cost, 2)';
-        adjPrior = adjPrior / sum (adjPrior);
+      ## A one-class fit ignores the weights: measured on R2024a, its bias,
+      ## support vectors, scores and box constraints are the same with them as
+      ## without, although W still reports them.
+      if (strcmp (SVMtype, 'one_class_svm'))
+        instW = ones (rows (X), 1);
+      else
+        adjPrior = Prior;
+        if (nclasses == 2)
+          adjPrior = Prior .* sum (Cost, 2)';
+          adjPrior = adjPrior / sum (adjPrior);
+        endif
+        instW = rows (X) * priorNormalize (wc, gY, adjPrior);
       endif
-      instW = rows (X) * priorNormalize (wc, gY, adjPrior);
 
       ## Train the SVM model using svmtrain from libsvm
       Model = svmtrain (Y, X, svm_options, instW);
+      ## A one-class model's bias puts its least supported support vector on
+      ## the boundary: R2024a's bias is minus the smallest kernel sum over the
+      ## support vectors, which reproduces it to 1e-13 for linear and gaussian
+      ## kernels at every Nu measured.  LIBSVM's rho averages the free support
+      ## vectors instead, so it is replaced, and the scores follow.
+      ## With OutlierFraction the bias instead leaves that fraction of the
+      ## training rows below the boundary: minus the quantile of their kernel
+      ## sums, which R2024a reproduces to 1e-14 with Octave's default method.
+      if (strcmp (SVMtype, 'one_class_svm'))
+        if (OutlierFraction > 0)
+          [~, ~, dall] = svmpredict (ones (rows (X), 1), X, Model, '-q');
+          Model.rho = quantile (dall(:) + Model.rho, OutlierFraction);
+        else
+          [~, ~, dsv] = svmpredict (ones (rows (Model.SVs), 1), ...
+                                    full (Model.SVs), Model, '-q');
+          Model.rho = min (dsv + Model.rho);
+        endif
+      endif
       this.Model = Model;
 
       ## Populate ClassificationSVM object properties.  LIBSVM returns the
@@ -1202,6 +1234,9 @@ classdef ClassificationSVM
       ## SUPPORTVECTORLABELS, so the two are separated here.
       this.Alpha = abs (Model.sv_coef);
       this.Bias = Model.rho;
+      if (strcmp (SVMtype, 'one_class_svm'))
+        this.Bias = -Model.rho;
+      endif
 
       ## One label per support vector, in the order of SupportVectors, taking
       ## the sign from the coefficients themselves.  LIBSVM's sign is opposite
@@ -1376,7 +1411,13 @@ classdef ClassificationSVM
       ## per-observation class number keeps every response type on one path:
       ## assigning into a preallocated result instead has to know that a
       ## character matrix holds a name per row and not per element.
-      idx = 2 - (out == 1);
+      ## A one-class model labels every row with its one class, outliers
+      ## included, as R2024a does; the score tells them apart.
+      if (classCount (this.ClassNames) == 1)
+        idx = ones (rows (XC), 1);
+      else
+        idx = 2 - (out == 1);
+      endif
       ## A row missing a predictor has no score, and takes the class of
       ## largest prior, as MATLAB R2024a labels it whatever the cost.
       miss = isnan (scores(:,1));
@@ -1716,7 +1757,13 @@ classdef ClassificationSVM
         ## Compute the loss based on the specified loss function
         switch (LossFun)
           case 'classiferror'
-            L = sum ((margin <= 0) .* Weights);
+            ## A one-class model labels every row with its one class, so it
+            ## never misclassifies one; R2024a reports 0.
+            if (classCount (this.ClassNames) == 1)
+              L = 0;
+            else
+              L = sum ((margin <= 0) .* Weights);
+            endif
 
           case 'hinge'
             L = sum (max (0, 1 - margin) .* Weights);
@@ -2640,6 +2687,42 @@ endclassdef
 %! Mdl = fitcsvm (X, Y, 'Weights', w);
 %! assert_equal (Mdl.NumObservations, 98);
 
+## MATLAB parity: a one-class model labels every row with its one class and
+## ignores observation weights in the fit.  Measured on R2024a.
+%!test
+%! load fisheriris
+%! Xo = meas(51:100,[1, 3]);
+%! M = fitcsvm (Xo, ones (50, 1));
+%! [lab, s] = predict (M, [6, 4.3; 5, 3.5; 7, 4.7; 5.5, 5]);
+%! assert_equal (lab, ones (4, 1));
+%! assert_equal (size (s), [4, 1]);
+%! assert_equal (resubLoss (M), 0);
+%! Mw = fitcsvm (Xo, ones (50, 1), 'Weights', 1 + mod ((1:50)', 4));
+%! assert_equal (Mw.Bias, M.Bias);
+%! assert_equal (Mw.BoxConstraints, ones (50, 1));
+%! assert_equal (Mw.W(1:2)', [0.016, 0.024], 1e-15);
+%! lab = predict (fitcsvm (Xo, repmat ({'a'}, 50, 1)), [5, 3.5; 7, 4.7]);
+%! assert_equal (lab, {'a'; 'a'});
+## MATLAB parity: a one-class bias puts the least supported support vector
+## on the boundary, or, with OutlierFraction, leaves that fraction of the
+## training rows below it.  Values from R2024a (linear kernel, exact).
+%!test
+%! load fisheriris
+%! Xo = meas(51:100,[1, 3]);
+%! M = fitcsvm (Xo, ones (50, 1), 'KernelFunction', 'linear', 'Nu', 0.5);
+%! assert_equal (M.Bias, -998.52, 1e-10);
+%! assert_equal (sum (M.IsSupportVector), 25);
+%! M = fitcsvm (Xo, ones (50, 1), 'KernelFunction', 'linear', 'Nu', 0.1);
+%! assert_equal (M.Bias, -179.52, 1e-10);
+%! [~, s] = predict (M, Xo);
+%! assert_equal (min (s(M.IsSupportVector)), 0, 1e-10);
+%!test
+%! load fisheriris
+%! Xo = meas(51:100,[1, 3]);
+%! M = fitcsvm (Xo, ones (50, 1), 'OutlierFraction', 0.1);
+%! assert_equal (M.Nu, 0.5);
+%! [~, s] = predict (M, Xo);
+%! assert_equal (mean (s < 0), 0.1);
 %!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
 %!error<ClassificationSVM: 'Weights' must have one element per row in X.> ...

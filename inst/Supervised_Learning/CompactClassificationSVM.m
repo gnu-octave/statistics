@@ -553,7 +553,13 @@ classdef CompactClassificationSVM
       ## per-observation class number keeps every response type on one path:
       ## assigning into a preallocated result instead has to know that a
       ## character matrix holds a name per row and not per element.
-      idx = 2 - (out == 1);
+      ## A one-class model labels every row with its one class, outliers
+      ## included, as R2024a does; the score tells them apart.
+      if (classCount (this.ClassNames) == 1)
+        idx = ones (rows (XC), 1);
+      else
+        idx = 2 - (out == 1);
+      endif
       ## A row missing a predictor has no score, and takes the class of
       ## largest prior, as MATLAB R2024a labels it whatever the cost.
       miss = isnan (scores(:,1));
@@ -811,7 +817,13 @@ classdef CompactClassificationSVM
         ## Compute the loss based on the specified loss function
         switch (LossFun)
           case 'classiferror'
-            L = sum ((margin <= 0) .* Weights);
+            ## A one-class model labels every row with its one class, so it
+            ## never misclassifies one; R2024a reports 0.
+            if (classCount (this.ClassNames) == 1)
+              L = 0;
+            else
+              L = sum ((margin <= 0) .* Weights);
+            endif
 
           case 'hinge'
             L = sum (max (0, 1 - margin) .* Weights);
@@ -1077,6 +1089,14 @@ endclassdef
 %! Mdl = compact (ClassificationSVM (X, y, 'Prior', [0.3, 0.7]));
 %! assert_equal (predict (Mdl, [NaN, 1]), 2);
 
+## MATLAB parity: a compact one-class model labels every row with its class.
+%!test
+%! load fisheriris
+%! C = compact (fitcsvm (meas(51:100,[1, 3]), ones (50, 1)));
+%! [lab, s] = predict (C, [6, 4.3; 5, 3.5; 7, 4.7; 5.5, 5]);
+%! assert_equal (lab, ones (4, 1));
+%! assert_equal (size (s), [4, 1]);
+%! assert_equal (loss (C, meas(51:100,[1, 3]), ones (50, 1)), 0);
 %!error<CompactClassificationSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris
 %! keep = ! strcmp (species, "setosa");
