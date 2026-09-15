@@ -41,6 +41,7 @@ struct svm_problem
 	int l;
 	double *y;
 	struct svm_node **x;
+	double *W; /* instance weight */
 };
 
 enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */

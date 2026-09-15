@@ -131,6 +131,14 @@
 ## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
 ## tangent's shift. The default value for @qcode{'KernelOffset'} is 0.
 ##
+## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
+## weights, one per row of @var{X}.  Each observation's box constraint is
+## @math{n} times @qcode{BoxConstraint} times its weight, the weights scaled
+## so that each class carries its prior times the cost of misclassifying it.
+## An empirical prior sums the weights per class, standardization uses
+## weighted means and standard deviations, and a row of zero weight is left
+## out.
+##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
 ## for training @qcode{'C_SVC'} and @qcode{'one_class_SVM'} type of models.  It

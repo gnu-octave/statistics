@@ -329,9 +329,8 @@ classdef ClassificationSVM
     ## normalized to sum to one, as MATLAB reports it.  This property is
     ## read-only.
     ##
-    ## Each class carries its prior spread evenly over its own observations,
-    ## so an observation of a class weighs @qcode{Prior} for that class
-    ## divided by the number of observations it holds.
+    ## Each class carries its prior, spread over its own observations in
+    ## proportion to the @qcode{'Weights'} given, or evenly when none were.
     ##
     ## @end deftp
     W                   = [];
@@ -520,6 +519,10 @@ classdef ClassificationSVM
     Coding_ = [];
 
     STfun = @(x) x;
+
+    ## The observation weights as they were given, before any prior scaled
+    ## them.
+    RawWeights = [];
   endproperties
 
   ## Set methods for the properties a user may assign.
@@ -673,6 +676,14 @@ classdef ClassificationSVM
     ## @item @qcode{'KernelOffset'} @tab A non-negative scalar specifying
     ## the kernel offset parameter.  Default is 0.
     ##
+    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
+    ## weights, one per row of @var{X}.  Each observation's box constraint is
+    ## @math{n} times @qcode{BoxConstraint} times its weight, the weights scaled
+    ## so that each class carries its prior times the cost of misclassifying it.
+    ## An empirical prior sums the weights per class, standardization uses
+    ## weighted means and standard deviations, and a row of zero weight is left
+    ## out.
+    ##
     ## @item @qcode{'BoxConstraint'} @tab A positive scalar specifying the
     ## box constraint parameter.  Default is 1.
     ##
@@ -730,12 +741,29 @@ classdef ClassificationSVM
       ClassNames              = [];
       Prior                   = [];
       Cost                    = [];
+      Weights                 = [];
 
       ## Parse extra parameters
       SVMtype_override = true;
       CatPreds = [];
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
+
+          case 'weights'
+            Weights = varargin{2};
+            if (! (isnumeric (Weights) && isvector (Weights)
+                   && isreal (Weights)))
+              error (strcat ("ClassificationSVM: 'Weights' must be a real", ...
+                             " numeric vector."));
+            endif
+            if (numel (Weights) != rows (X))
+              error (strcat ("ClassificationSVM: 'Weights' must have one", ...
+                             " element per row in X."));
+            endif
+            if (any (Weights < 0) || ! (sum (Weights) > 0))
+              error (strcat ("ClassificationSVM: 'Weights' must be", ...
+                             " nonnegative and must not be all zero."));
+            endif
 
           case 'standardize'
             Standardize = varargin{2};
@@ -921,6 +949,10 @@ classdef ClassificationSVM
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
       RowsUsed  = ! isnan (gY);
+      ## A row of zero weight is dropped too, as R2024a drops it.
+      if (! isempty (Weights))
+        RowsUsed = RowsUsed & Weights(:) > 0;
+      endif
       ## Index the rows and not the elements: a response naming its
       ## classes in the rows of a character matrix has one column per
       ## character, and a linear index flattens the names into single
@@ -933,6 +965,14 @@ classdef ClassificationSVM
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
+      if (isempty (Weights))
+        RawWeights = ones (rows (Xret), 1);
+      else
+        RawWeights = double (Weights(RowsUsed));
+        RawWeights = RawWeights(:);
+      endif
+      this.RawWeights = RawWeights;
+      wc = RawWeights(cobs);
 
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model
@@ -949,7 +989,7 @@ classdef ClassificationSVM
         Prior = priorFromStruct (Prior, this.ClassNames, ...
                                  'ClassificationSVM');
       endif
-      freq = accumarray (gY(:), 1, [nclasses, 1])' / numel (gY);
+      freq = accumarray (gY(:), wc, [nclasses, 1])' / sum (wc);
       if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
         Prior = freq;
       elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
@@ -1049,14 +1089,16 @@ classdef ClassificationSVM
       ## The support vectors are therefore stored standardized too, which is
       ## the scale svmpredict receives.
       if (Standardize)
-        ## Mu and Sigma weight the complete observations so that each class
-        ## keeps the share of the observation weight it carried before any row
-        ## was set aside, which is what MATLAB reports.
+        ## Mu and Sigma weight the complete observations by their weights so
+        ## that each class keeps the share of the weight it carried before any
+        ## row was set aside, which is what MATLAB reports; the deviation is
+        ## unbiased for those weights, measured on R2024a to 4e-16.
         sw = zeros (rows (X), 1);
         for k = 1:nclasses
           ck = (gY == k);
           if (any (ck))
-            sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);
+            sw(ck) = (sum (RawWeights(gret == k)) / sum (RawWeights)) ...
+                     * wc(ck) / sum (wc(ck));
           endif
         endfor
         sw = sw / sum (sw);
@@ -1088,12 +1130,12 @@ classdef ClassificationSVM
       this.ResponseName   = ResponseName;
 
       ## Without categorical predictors the expanded names are the predictor
-      ## names themselves.  Every observation carries the same weight,
-      ## normalized to sum to one as MATLAB reports it.
+      ## names themselves.  Each class carries its prior, spread over its
+      ## observations in proportion to their weights, as MATLAB reports it.
       if (isempty (this.Coding_))
         this.ExpandedPredictorNames = PredictorNames;
       endif
-      this.W = priorWeights (this.Prior, gY, this.NumObservations);
+      this.W = priorNormalize (RawWeights, gret, this.Prior);
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
@@ -1137,26 +1179,21 @@ classdef ClassificationSVM
                              KernelOffset, BoxConstraint, Nu, ...
                              CacheSize, Tolerance, Shrinking);
 
-      ## Prior and Cost enter the fit through LIBSVM's per-class weights,
-      ## which scale the box constraint of each class: the weight of class i
-      ## is the cost it carries, Prior(i) times the cost of getting it wrong,
-      ## divided by how often it actually occurs.  The default prior is the
-      ## observed frequency and the default cost is one, so the default weight
-      ## is one for every class and the fit is the same as with no weights.
-      cw = ones (1, nclasses);
+      ## Prior, Cost and the observation weights enter the fit through one
+      ## box constraint per observation, n * C * w, as R2024a sets them: w is
+      ## the weight scaled so that each class carries its prior times the cost
+      ## of misclassifying it, renormalized.  The default prior is the weighted
+      ## frequency and the default cost one, so without weights every
+      ## constraint is C and the fit is the same as with none.
+      adjPrior = Prior;
       if (nclasses == 2 && ! strcmp (SVMtype, 'one_class_svm'))
-        cw = (Prior .* sum (Cost, 2)') ./ max (freq, eps);
-        cw = cw / mean (cw);
-        if (any (abs (cw - 1) > 1e-12))
-          ## LIBSVM names the classes by the labels it was given, which are
-          ## +1 and -1 here, in the order of ClassNames.
-          svm_options = sprintf ("%s -w1 %.16g -w-1 %.16g", svm_options, ...
-                                 cw(1), cw(2));
-        endif
+        adjPrior = Prior .* sum (Cost, 2)';
+        adjPrior = adjPrior / sum (adjPrior);
       endif
+      instW = rows (X) * priorNormalize (wc, gY, adjPrior);
 
       ## Train the SVM model using svmtrain from libsvm
-      Model = svmtrain (Y, X, svm_options);
+      Model = svmtrain (Y, X, svm_options, instW);
       this.Model = Model;
 
       ## Populate ClassificationSVM object properties.  LIBSVM returns the
@@ -1191,7 +1228,7 @@ classdef ClassificationSVM
       ## asked for.
       this.KernelParameters = svmKernelParams (KernelFunction, KernelScale, ...
                                                PolynomialOrder);
-      this.BoxConstraints = BoxConstraint * cw(gY)(:);
+      this.BoxConstraints = BoxConstraint * instW(:);
       this.OutlierFraction = OutlierFraction;
       if (strcmp (SVMtype, 'one_class_svm'))
         this.Nu = Nu;
@@ -1656,6 +1693,12 @@ classdef ClassificationSVM
       ## the docstring promises reached LIBSVM unmapped.
       Ypm = svmPlusMinus (Y, this.ClassNames);
 
+      ## The weights are scaled so that each class carries its prior and the
+      ## loss is their weighted sum, as in MATLAB.  The prior of a model fitted
+      ## with weights is the weighted class frequency, so counting every row
+      ## alike, as this did, disagreed with it.
+      Weights = priorNormalize (Weights(:), 1 + (Ypm(:) == -1), this.Prior);
+
       ## Compute the classification score
       ## The model scores the coded, standardized predictors, which is the
       ## scale predict gives it; X taken as it stands was scored unscaled.
@@ -1673,22 +1716,22 @@ classdef ClassificationSVM
         ## Compute the loss based on the specified loss function
         switch (LossFun)
           case 'classiferror'
-            L = mean ((margin <= 0) .* Weights);
+            L = sum ((margin <= 0) .* Weights);
 
           case 'hinge'
-            L = mean (max (0, 1 - margin) .* Weights);
+            L = sum (max (0, 1 - margin) .* Weights);
 
           case 'logit'
-            L = mean (log (1 + exp (-margin)) .* Weights);
+            L = sum (log (1 + exp (-margin)) .* Weights);
 
           case 'exponential'
-            L = mean (exp (-margin) .* Weights);
+            L = sum (exp (-margin) .* Weights);
 
           case 'quadratic'
-            L = mean (((1 - margin) .^2) .* Weights);
+            L = sum (((1 - margin) .^2) .* Weights);
 
           case 'binodeviance'
-            L = mean (log (1 + exp (-2 * margin)) .* Weights);
+            L = sum (log (1 + exp (-2 * margin)) .* Weights);
 
           case 'mincost'
             ## Each observation is assigned to the class of least expected
@@ -1703,7 +1746,6 @@ classdef ClassificationSVM
               [~, k] = min (scores(i,:) * this.Cost);
               L = L + Weights(i) * this.Cost(true_idx(i), k);
             endfor
-            L = L / rows (X);
 
           case 'classifcost'
             ## What the model's own prediction costs, given the true class
@@ -1715,7 +1757,6 @@ classdef ClassificationSVM
             for i = 1:rows (X)
               L = L + Weights(i) * this.Cost(true_idx(i), pred_idx(i));
             endfor
-            L = L / rows (X);
 
           otherwise
             error ("ClassificationSVM.loss: unsupported Loss function.");
@@ -1786,7 +1827,11 @@ classdef ClassificationSVM
 
       ## Set default values before parsing optional parameters
       LossFun = 'classiferror';
-      Weights = ones (size (this.X, 1), 1);
+      ## The training rows keep their weights unless others are given.
+      Weights = this.RawWeights;
+      if (isempty (Weights))
+        Weights = ones (size (this.X, 1), 1);
+      endif
 
       ## Parse extra parameters
       while (numel (varargin) > 0)
@@ -2045,7 +2090,8 @@ classdef ClassificationSVM
     ##
     ## @end deftypefn
     function e = resubEdge (this)
-      e = edge (this, this.X, this.Y);
+      ## The training rows keep their weights, as R2024a keeps them.
+      e = edge (this, this.X, this.Y, 'Weights', this.RawWeights);
     endfunction
 
     ## -*- texinfo -*-
@@ -2098,6 +2144,7 @@ classdef ClassificationSVM
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
       W                   = this.W;
+      RawWeights          = this.RawWeights;
       Prior               = this.Prior;
       Cost                = this.Cost;
       CategoricalPredictors  = this.CategoricalPredictors;
@@ -2114,7 +2161,8 @@ classdef ClassificationSVM
             'ClassNames', 'ScoreTransform', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
             'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', ...
-            'W', 'Prior', 'Cost', 'CategoricalPredictors', 'Coding_', ...
+            'W', 'RawWeights', 'Prior', 'Cost', 'CategoricalPredictors', ...
+            'Coding_', ...
             'ExpandedPredictorNames', 'KernelParameters', ...
             'BoxConstraints', 'OutlierFraction', 'Nu', 'STfun', ...
             'HyperparameterOptimizationResults');
@@ -2538,6 +2586,66 @@ endclassdef
 %! assert_equal (score(1,:), [NaN, NaN]);
 %! assert_equal (cost(1,:), [NaN, NaN]);
 
+## MATLAB parity: observation weights scale each observation's box
+## constraint, n * C * w with w normalized to the cost-adjusted prior; the
+## empirical prior sums them and W carries the prior.  Values from R2024a.
+%!test
+%! load fisheriris
+%! X = meas(51:150,[1, 3]);
+%! Y = species(51:150);
+%! k = (1:100)';
+%! w = (1 + mod (k, 4)) .* (1 + 2 * (k > 50));
+%! Mdl = fitcsvm (X, Y, 'Weights', w);
+%! assert_equal (Mdl.Prior, [0.25, 0.75], 1e-15);
+%! assert_equal (Mdl.W([1, 51])', [0.004, 0.024], 1e-15);
+%! assert_equal (Mdl.BoxConstraints([1, 2, 51])', [0.4, 0.6, 2.4], 1e-14);
+%! assert_equal (sum (Mdl.IsSupportVector), 33);
+%! assert_equal (resubLoss (Mdl), 0.036, 1e-15);
+%! assert_equal (loss (Mdl, X, Y), 0.035, 1e-15);
+%!test
+%! load fisheriris
+%! X = meas(51:150,[1, 3]);
+%! Y = species(51:150);
+%! k = (1:100)';
+%! w = (1 + mod (k, 4)) .* (1 + 2 * (k > 50));
+%! Mdl = fitcsvm (X, Y, 'Weights', w, 'Prior', 'uniform');
+%! assert_equal (Mdl.W([1, 51])', [0.008, 0.016], 1e-15);
+%! assert_equal (Mdl.BoxConstraints([1, 2, 51])', [0.8, 1.2, 1.6], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(51:150,[1, 3]);
+%! Y = species(51:150);
+%! k = (1:100)';
+%! w = (1 + mod (k, 4)) .* (1 + 2 * (k > 50));
+%! Mdl = fitcsvm (X, Y, 'Weights', w, 'Cost', [0, 1; 2, 0]);
+%! assert_equal (Mdl.W([1, 51])', [0.004, 0.024], 1e-15);
+%! assert_equal (Mdl.BoxConstraints([1, 51])', ...
+%!               [0.228571428571429, 2.74285714285714], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(51:150,[1, 3]);
+%! Y = species(51:150);
+%! k = (1:100)';
+%! w = (1 + mod (k, 4)) .* (1 + 2 * (k > 50));
+%! Mdl = fitcsvm (X, Y, 'Weights', w, 'Standardize', true);
+%! assert_equal (Mdl.Mu, [6.4276, 5.2492], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.614100287471456, 0.737655900905504], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(51:150,[1, 3]);
+%! Y = species(51:150);
+%! k = (1:100)';
+%! w = (1 + mod (k, 4)) .* (1 + 2 * (k > 50));
+%! w([2, 60]) = 0;
+%! Mdl = fitcsvm (X, Y, 'Weights', w);
+%! assert_equal (Mdl.NumObservations, 98);
+
+%!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationSVM: 'Weights' must have one element per row in X.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
+%!error<ClassificationSVM: 'Weights' must be nonnegative and must not be all zero.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', -ones (4, 1))
 %!error<ClassificationSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris
 %! keep = ! strcmp (species, "setosa");
@@ -2886,14 +2994,14 @@ endclassdef
 %! ## error rate agrees exactly and the rest sit within the LIBSVM against
 %! ## SMO difference of section 1.  The old values were an order of
 %! ## magnitude out, a 53%% error rate among them.
-%! assert_equal (L1, 0.1122, 1e-4);
+%! ## They moved again, by under 0.002, when loss began scaling the weights
+%! ## of each class to its prior, as MATLAB does.
+%! assert_equal (L1, 0.1125, 1e-4);
 %! assert_equal (L2, 0.0000, 1e-4);
-%! assert_equal (L3, 0.3135, 1e-4);
-%! assert_equal (L4, 0.1037, 1e-4);
-%! assert_equal (L5, 0.2652, 1e-4);
-%! ## L6 moved from 0.3218 when the folds began inheriting the model's
-%! ## prior; the other five stayed inside their tolerance.
-%! assert_equal (L6, 0.3215, 1e-4);
+%! assert_equal (L3, 0.3140, 1e-4);
+%! assert_equal (L4, 0.1039, 1e-4);
+%! assert_equal (L5, 0.2656, 1e-4);
+%! assert_equal (L6, 0.3200, 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
@@ -3184,7 +3292,7 @@ endclassdef
 %! Mdl = fitcsvm (meas(b,:), species(b));
 %! assert_equal (Mdl.KernelParameters, struct ('Function', 'linear', ...
 %!                                             'Scale', 1));
-%! assert_equal (Mdl.BoxConstraints, ones (100, 1));
+%! assert_equal (Mdl.BoxConstraints, ones (100, 1), 1e-14);
 %! assert_equal (Mdl.OutlierFraction, 0);
 %! assert_equal (Mdl.Nu, []);
 
@@ -3195,7 +3303,8 @@ endclassdef
 %!                'KernelScale', 2.5, 'BoxConstraint', 3);
 %! assert_equal (Mdl.KernelParameters.Function, 'gaussian');
 %! assert_equal (Mdl.KernelParameters.Scale, 2.5);
-%! assert_equal (unique (Mdl.BoxConstraints), 3);
+%! n = rows (Mdl.BoxConstraints);
+%! assert_equal (Mdl.BoxConstraints, 3 * ones (n, 1), 1e-14);
 
 %!test
 %! load fisheriris

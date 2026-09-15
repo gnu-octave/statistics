@@ -359,6 +359,7 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 DEFUN_DLD (svmtrain, args, nargout,
            "-*- texinfo -*- \n\n\
  @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, \"libsvm_options\")\n\
+ @deftypefnx {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, \"libsvm_options\", @var{weights})\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -375,6 +376,11 @@ It can be dense or sparse. (type must be double) \
 \n\
 @item @code{libsvm_options} : A string of testing options in the same format \
 as that of LIBSVM. \
+\n\
+\n\
+@item @var{weights} : An m by 1 vector of nonnegative instance weights, one \
+per instance.  Each scales the box constraint C of its instance, and an \
+instance of zero weight is left out of the training. (type must be double) \
 \n\
 \n\
 @end itemize \
@@ -519,7 +525,7 @@ probability of the instance being an inlier. \n\
 	}
 
 	// Transform the input Matrix to libsvm format
-	if(nrhs > 1 && nrhs < 4)
+	if(nrhs > 1 && nrhs < 5)
 	{
 		int err;
 
@@ -555,6 +561,47 @@ probability of the instance being an inlier. \n\
 			err = read_problem_dense(cv_lab, m_dat);
     }
 
+		// One weight per instance, 1 unless a fourth argument gives them.
+		// Each scales the instance's box constraint C.
+		prob.W = NULL;
+		if(! err)
+		{
+			if(nrhs == 4)
+			{
+				if(! args(3).is_double_type() || args(3).iscomplex()
+				   || args(3).numel() != prob.l)
+				{
+					svm_destroy_param(&param);
+					free(prob.y);
+					free(prob.x);
+					free(x_space);
+					error ("svmtrain: weights must be a real double vector with "
+					       "one element per instance.");
+				}
+				NDArray wv = args(3).array_value();
+				for(int wi = 0; wi < prob.l; wi++)
+				{
+					if(! (wv(wi) >= 0) || octave::math::isinf (wv(wi)))
+					{
+						svm_destroy_param(&param);
+						free(prob.y);
+						free(prob.x);
+						free(x_space);
+						error ("svmtrain: weights must be finite and nonnegative.");
+					}
+				}
+				prob.W = Malloc(double,prob.l);
+				for(int wi = 0; wi < prob.l; wi++)
+					prob.W[wi] = wv(wi);
+			}
+			else
+			{
+				prob.W = Malloc(double,prob.l);
+				for(int wi = 0; wi < prob.l; wi++)
+					prob.W[wi] = 1.0;
+			}
+		}
+
 		// svmtrain's original code
 		error_msg = svm_check_parameter(&prob, &param);
 
@@ -567,6 +614,7 @@ probability of the instance being an inlier. \n\
 			svm_destroy_param(&param);
 			free(prob.y);
 			free(prob.x);
+			free(prob.W);
 			free(x_space);
 			fake_answer(nlhs, plhs);
 			return plhs;
@@ -593,6 +641,7 @@ probability of the instance being an inlier. \n\
 		svm_destroy_param(&param);
 		free(prob.y);
 		free(prob.x);
+		free(prob.W);
 		free(x_space);
     return plhs;
 	}
@@ -645,7 +694,7 @@ probability of the instance being an inlier. \n\
 %!
 %! # Check argument count errors
 %!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
-%!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", "");
+%!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", ones (270, 1), 1);
 %!
 %! # Check argument type errors
 %!error <svmtrain: label vector and instance matrix must be double.> ...
@@ -655,6 +704,22 @@ probability of the instance being an inlier. \n\
 %!error <svmtrain: label vector must have same number of elements as rows in instance matrix.> ...
 %! model = svmtrain (L(1:end-1), D);
 %!
+%!test
+%! ## Instance weights scale the box constraint: unit weights change nothing,
+%! ## and weights of 2 are the same fit as doubling C.
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! m1 = svmtrain (L, D, '-t 0 -c 1 -q');
+%! m2 = svmtrain (L, D, '-t 0 -c 1 -q', ones (270, 1));
+%! assert_equal (m2.sv_coef, m1.sv_coef);
+%! assert_equal (m2.rho, m1.rho);
+%! m3 = svmtrain (L, D, '-t 0 -c 2 -q');
+%! m4 = svmtrain (L, D, '-t 0 -c 1 -q', 2 * ones (270, 1));
+%! assert_equal (m4.sv_coef, m3.sv_coef, 1e-12);
+%! assert_equal (m4.rho, m3.rho, 1e-12);
+%!error <svmtrain: weights must be a real double vector with one element per instance.> ...
+%! svmtrain ([1; -1; 1; -1], [1; 2; 3; 4], "-q", [1, 1])
+%!error <svmtrain: weights must be finite and nonnegative.> ...
+%! svmtrain ([1; -1; 1; -1], [1; 2; 3; 4], "-q", [1; -1; 1; 1])
 %! # Test 5: One-Class Probability Training (New LIBSVM 3.36 Feature)
 %! # This ensures svmtrain DOES NOT reject -s 2 combined with -b 1
 %! # and correctly populates the new ProbDensityMarks field.

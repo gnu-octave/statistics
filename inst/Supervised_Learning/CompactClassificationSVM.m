@@ -791,6 +791,10 @@ classdef CompactClassificationSVM
       ## Y may be the class labels, as this documents and MATLAB
       ## accepts, or already the solver's own +1/-1 coding.
       Ypm = svmPlusMinus (Y, this.ClassNames);
+
+      ## The weights are scaled so that each class carries its prior and the
+      ## loss is their weighted sum, as in MATLAB.
+      Weights = priorNormalize (Weights(:), 1 + (Ypm(:) == -1), this.Prior);
       ## The model scores the coded, standardized predictors, which is the
       ## scale predict gives it; X taken as it stands was scored unscaled.
       if (! isempty (this.Coding_))
@@ -807,22 +811,22 @@ classdef CompactClassificationSVM
         ## Compute the loss based on the specified loss function
         switch (LossFun)
           case 'classiferror'
-            L = mean ((margin <= 0) .* Weights);
+            L = sum ((margin <= 0) .* Weights);
 
           case 'hinge'
-            L = mean (max (0, 1 - margin) .* Weights);
+            L = sum (max (0, 1 - margin) .* Weights);
 
           case 'logit'
-            L = mean (log (1 + exp (-margin)) .* Weights);
+            L = sum (log (1 + exp (-margin)) .* Weights);
 
           case 'exponential'
-            L = mean (exp (-margin) .* Weights);
+            L = sum (exp (-margin) .* Weights);
 
           case 'quadratic'
-            L = mean (((1 - margin) .^2) .* Weights);
+            L = sum (((1 - margin) .^2) .* Weights);
 
           case 'binodeviance'
-            L = mean (log (1 + exp (-2 * margin)) .* Weights);
+            L = sum (log (1 + exp (-2 * margin)) .* Weights);
 
           case 'mincost'
             ## Each observation is assigned to the class of least expected
@@ -837,7 +841,6 @@ classdef CompactClassificationSVM
               [~, k] = min (scores(i,:) * this.Cost);
               L = L + Weights(i) * this.Cost(true_idx(i), k);
             endfor
-            L = L / rows (X);
 
           case 'classifcost'
             ## What the model's own prediction costs, given the true class
@@ -849,7 +852,6 @@ classdef CompactClassificationSVM
             for i = 1:rows (X)
               L = L + Weights(i) * this.Cost(true_idx(i), pred_idx(i));
             endfor
-            L = L / rows (X);
 
           otherwise
             error ("CompactClassificationSVM.loss: unsupported Loss function.");
@@ -1204,12 +1206,14 @@ endclassdef
 %! ## error rate agrees exactly and the rest sit within the LIBSVM against
 %! ## SMO difference of section 1.  The old values were an order of
 %! ## magnitude out, a 53%% error rate among them.
-%! assert_equal (L1, 0.1122, 1e-4);
+%! ## They moved again, by under 0.002, when loss began scaling the weights
+%! ## of each class to its prior, as MATLAB does.
+%! assert_equal (L1, 0.1125, 1e-4);
 %! assert_equal (L2, 0.0000, 1e-4);
-%! assert_equal (L3, 0.3135, 1e-4);
-%! assert_equal (L4, 0.1037, 1e-4);
-%! assert_equal (L5, 0.2652, 1e-4);
-%! assert_equal (L6, 0.3218, 1e-4);
+%! assert_equal (L3, 0.3140, 1e-4);
+%! assert_equal (L4, 0.1038, 1e-4);
+%! assert_equal (L5, 0.2656, 1e-4);
+%! assert_equal (L6, 0.3199, 1e-4);
 
 ## Test input validation for loss method
 %!error<CompactClassificationSVM.loss: too few input arguments.> ...
