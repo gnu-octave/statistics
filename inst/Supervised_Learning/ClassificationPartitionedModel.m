@@ -545,7 +545,8 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcdiscr (this.X(idx, :), this.Y(idx,:), args{:});
+            tmp = fitcdiscr (this.X(idx, :), this.Y(idx,:), args{:}, ...
+                             'Weights', Mdl.RawWeights(idx));
             this.Trained{k} = compact (tmp);
           endfor
 

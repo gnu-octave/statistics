@@ -61,9 +61,9 @@ classdef ClassificationDiscriminant
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per observation used for fitting.
-    ## Every observation carries the same weight, so the vector sums
-    ## to one.  This property is read-only.
+    ## A numeric column vector with one entry per observation used for fitting:
+    ## the @qcode{'Weights'} given, or equal weights, scaled to sum to one.  The
+    ## prior does not enter them.  This property is read-only.
     ##
     ## @end deftp
     W               = [];
@@ -581,6 +581,10 @@ classdef ClassificationDiscriminant
     ## Coeffs are all derived from it, so assigning DiscrimType within the
     ## family re-derives rather than refits.
     BaseSigma = [];
+
+    ## The observation weights as they were given, before the prior scaled
+    ## them, so that reassigning Prior can re-derive W.
+    RawWeights = [];
   endproperties
 
   ## Set methods for the properties a user may assign after fitting.
@@ -612,9 +616,14 @@ classdef ClassificationDiscriminant
       if (strcmpi ('uniform', Prior))
         this.Prior = ones (1, K) ./ K;
       elseif (isempty (Prior) || strcmpi ('empirical', Prior))
-        pr = [];
+        ## Empirical over the weights, which are counts when none were given.
+        pr = zeros (K, 1);
         for i = 1:K
-          pr = [pr; sum(gY==i)];
+          if (isempty (this.RawWeights))
+            pr(i) = sum (gY == i);
+          else
+            pr(i) = sum (this.RawWeights(gY == i));
+          endif
         endfor
         this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (Prior))
@@ -870,6 +879,12 @@ classdef ClassificationDiscriminant
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
+    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
+    ## weights, one per row of @var{X}.  They weigh the class means and
+    ## covariances, the covariances being unbiased for them, and an empirical
+    ## prior sums them per class.  Only their proportions matter, and a row of
+    ## zero weight is left out of the fit.
+    ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
     ## specifying the transformation applied to predicted classification scores.
@@ -937,6 +952,7 @@ classdef ClassificationDiscriminant
       ResponseName   = 'Y';
       Prior          = 'empirical';
       FillCoeffs     = 'on';
+      Weights        = [];
 
       ## Parse optional parameters
       while (numel (varargin) > 0)
@@ -983,6 +999,22 @@ classdef ClassificationDiscriminant
                        || strcmpi (Prior, 'uniform')))))
               error (strcat ("ClassificationDiscriminant: 'Prior' must", ...
                              " be either a numeric or a character vector."));
+            endif
+
+          case 'weights'
+            Weights = varargin{2};
+            if (! (isnumeric (Weights) && isvector (Weights)
+                   && isreal (Weights)))
+              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
+                             " be a real numeric vector."));
+            endif
+            if (numel (Weights) != rows (X))
+              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
+                             " have one element per row in X."));
+            endif
+            if (any (Weights < 0) || ! (sum (Weights) > 0))
+              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
+                             " be nonnegative and must not be all zero."));
             endif
 
           case 'cost'
@@ -1072,13 +1104,24 @@ classdef ClassificationDiscriminant
       ## An observation is dropped only when its response is missing.  A row
       ## whose predictors hold missing values is kept, and each estimate below
       ## uses whatever part of it is present.
+      ## A row of zero weight is dropped too, as R2024a drops it.
       RowsUsed  = ! isnan (gY);
+      if (! isempty (Weights))
+        RowsUsed = RowsUsed & Weights(:) > 0;
+      endif
       Y         = Y(RowsUsed, :);
       X         = X(RowsUsed, :);
+      if (isempty (Weights))
+        RawWeights = ones (rows (X), 1);
+      else
+        RawWeights = double (Weights(RowsUsed));
+        RawWeights = RawWeights(:);
+      endif
 
       ## Store the retained observations
       this.X = X;
       this.Y = Y;
+      this.RawWeights = RawWeights;
 
       ## Renew groups in Y: the classes keep the type of Y, sorted or in the
       ## order ClassNames gives them
@@ -1103,9 +1146,10 @@ classdef ClassificationDiscriminant
       ## Handle Cost and Prior
       this.Cost  = Cost;
       this.Prior = Prior;
-      ## A discriminant weighs every observation alike; the prior enters
-      ## prediction rather than the fit, which is what MATLAB reports.
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      ## The weights scaled to sum to one.  The prior enters prediction rather
+      ## than the weights: measured on R2024a, W is the same under an
+      ## empirical, a uniform, a given or a reassigned prior.
+      this.W = RawWeights / sum (RawWeights);
 
       ## Assign DiscrimType
       ## Reconcile the type with the regularization before anything is
@@ -1135,20 +1179,23 @@ classdef ClassificationDiscriminant
       num_features = columns (X);
       ## Each class mean uses every observation where that predictor is
       ## present, so a row missing one predictor still counts towards the rest
+      ## The means are weighted, measured on R2024a to 3e-15.
       this.Mu = zeros (num_classes, num_features);
       for i = 1:num_classes
         Xi = X(gY == i, :);
+        wi = RawWeights(gY == i);
         for j = 1:num_features
           xj = Xi(:, j);
-          this.Mu(i, j) = mean (xj(! isnan (xj)));
+          ok = ! isnan (xj);
+          this.Mu(i, j) = sum (wi(ok) .* xj(ok)) / sum (wi(ok));
         endfor
       endfor
 
       ## The between-class covariance of the means about the overall mean,
-      ## weighted by class size and divided by the unbiased weighted-covariance
-      ## denominator.  It reads the class sizes rather than Prior, which is why
-      ## assigning a prior does not move it.
-      nk = accumarray (gY(:), 1, [num_classes, 1]);
+      ## weighted by the total weight of each class and divided by the unbiased
+      ## weighted-covariance denominator.  It reads the weights rather than
+      ## Prior, which is why assigning a prior does not move it.
+      nk = accumarray (gY(:), RawWeights, [num_classes, 1]);
       pk = nk ./ sum (nk);
       D = this.Mu - pk' * this.Mu;
       this.BetweenSigma = (D' * (D .* nk)) ./ (sum (nk) * (1 - sum (pk .^ 2)));
@@ -1168,12 +1215,15 @@ classdef ClassificationDiscriminant
       ## MinGamma is taken from it.  Only complete observations enter it,
       ## reweighted so that each class keeps the total weight it carried
       ## before any was dropped.
+      ## The weights are reliability weights: the covariance is unbiased for
+      ## them, which R2024a's fit reproduces to 4e-16, and not a count of
+      ## repeated rows.
       cw   = zeros (rows (X), 1);
       Wk   = zeros (num_classes, 1);
       for i = 1:num_classes
-        Wk(i) = sum (gY == i) / rows (X);
+        Wk(i) = sum (RawWeights(gY == i)) / sum (RawWeights);
         ci = (gY == i) & cobs;
-        cw(ci) = Wk(i) / sum (ci);
+        cw(ci) = Wk(i) * RawWeights(ci) / sum (RawWeights(ci));
       endfor
       den = 1;
       for i = 1:num_classes
@@ -1202,7 +1252,8 @@ classdef ClassificationDiscriminant
         for i = 1:num_classes
           ci = (gY == i) & cobs;
           Zi = this.XCentered(ci, :);
-          this.BaseSigma(:,:,i) = (Zi' * Zi) / (sum (ci) - 1);
+          wi = RawWeights(ci) / sum (RawWeights(ci));
+          this.BaseSigma(:,:,i) = (Zi .* wi)' * Zi / (1 - sum (wi .^ 2));
 
           zwcv = find (diag (this.BaseSigma(:,:,i)) == 0);
           if (! isempty (zwcv) && strcmp (this.DiscrimType, 'quadratic'))
@@ -2214,11 +2265,13 @@ classdef ClassificationDiscriminant
     ## Classification edge of the model on its own training data.
     ##
     ## @code{@var{e} = resubEdge (@var{obj})} is @code{edge} applied to the
-    ## observations the model was fitted on, the mean of @code{resubMargin}.
+    ## observations the model was fitted on, the mean of @code{resubMargin}
+    ## weighted by the training weights.
     ##
     ## @end deftypefn
     function e = resubEdge (this)
-      e = edge (this, this.X, this.Y);
+      ## The training rows keep their weights, as R2024a keeps them.
+      e = edge (this, this.X, this.Y, 'Weights', this.RawWeights);
     endfunction
 
     ## -*- texinfo -*-
@@ -2229,7 +2282,8 @@ classdef ClassificationDiscriminant
     ##
     ## @code{@var{L} = resubLoss (@var{obj})} is @code{loss} applied to the
     ## observations the model was fitted on, defaulting to
-    ## @qcode{'mincost'}, and it accepts the same @qcode{Name-Value} pairs.
+    ## @qcode{'mincost'} and to the training weights, and it accepts the same
+    ## @qcode{Name-Value} pairs.
     ##
     ## Being a resubstitution quantity it is a lower bound on the error rather
     ## than an estimate of it.  It is worth least on a lazy learner: a
@@ -2238,7 +2292,9 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      L = loss (this, this.X, this.Y, varargin{:});
+      ## The training rows keep their weights unless others are given.
+      L = loss (this, this.X, this.Y, 'Weights', this.RawWeights, ...
+                varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -2270,6 +2326,7 @@ classdef ClassificationDiscriminant
       Y = encodeLabels (this.Y);
       NumObservations = this.NumObservations;
       W               = this.W;
+      RawWeights      = this.RawWeights;
       RowsUsed        = this.RowsUsed;
       NumPredictors   = this.NumPredictors;
       PredictorNames  = this.PredictorNames;
@@ -2298,7 +2355,8 @@ classdef ClassificationDiscriminant
       ## Save classdef name and all model properties as individual variables
       HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'W', 'RowsUsed', 'NumPredictors', 'PredictorNames', 'BinEdges', ...
+            'W', 'RawWeights', 'RowsUsed', 'NumPredictors', ...
+            'PredictorNames', 'BinEdges', ...
             'ResponseName', ...
             'ClassNames', 'ScoreTransform', 'Prior', 'Cost', 'Sigma', ...
             'BaseSigma', 'Mu', ...
@@ -2750,6 +2808,12 @@ endclassdef
 %! load fisheriris
 %! nLinearCoeffs (fitcdiscr (meas, species), "a")
 
+%!error<ClassificationDiscriminant: 'Weights' must be a real numeric vector.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationDiscriminant: 'Weights' must have one element per row in X.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
+%!error<ClassificationDiscriminant: 'Weights' must be nonnegative and must not be all zero.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', -ones (4, 1))
 %!error<ClassificationDiscriminant: too few input arguments.> ClassificationDiscriminant ()
 %!error<ClassificationDiscriminant: too few input arguments.> ...
 %! ClassificationDiscriminant (ones (4, 1))
@@ -3199,6 +3263,85 @@ endclassdef
 %! assert_equal (Mdl.NumObservations, 150);
 %! assert_equal (rows (Mdl.X), 150);
 %! assert_equal (sum (isnan (Mdl.X(:))), 1);
+
+## MATLAB parity: observation weights enter the means and covariances as
+## reliability weights, the empirical prior sums them per class, and W is
+## the weights over their sum whatever the prior.  Values from R2024a.
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcdiscr (X, Y, 'Weights', w);
+%! assert_equal (Mdl.Prior, [0.185185185185185, 0.37037037037037, ...
+%!                           0.444444444444444], 1e-14);
+%! assert_equal (Mdl.W([1, 51, 101])', [2, 8, 8] / 675, 1e-15);
+%! assert_equal (Mdl.Mu, [4.9832, 1.4472; 5.9456, 4.2536; ...
+%!                        6.61333333333333, 5.64133333333333], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.409670341318635, 0.303326062849595; ...
+%!                           0.303326062849595, 0.307940102085745], 1e-14);
+%! assert_equal (Mdl.BetweenSigma, [0.563597620869565, 1.42708708173913; ...
+%!                                  1.42708708173913, 3.65290384695652], ...
+%!               1e-13);
+%! [~, s] = predict (Mdl, [6, 4.5; 6.5, 5.2]);
+%! assert_equal (s, [2.8720869604692e-15, 0.945382202857469, ...
+%!                   0.0546177971425277; 4.32813750825658e-20, ...
+%!                   0.182682233471567, 0.817317766528433], 1e-12);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcdiscr (X, Y, 'Weights', w, 'Prior', 'uniform');
+%! assert_equal (Mdl.W([1, 51, 101])', [2, 8, 8] / 675, 1e-15);
+%! assert_equal (Mdl.Sigma, [0.409670341318635, 0.303326062849595; ...
+%!                           0.303326062849595, 0.307940102085745], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcdiscr (X, Y, 'Weights', w, 'DiscrimType', 'quadratic');
+%! assert_equal (Mdl.Sigma(:,:,3), [0.619863013698631, 0.507571269900037; ...
+%!                                  0.507571269900037, 0.487067752684191], ...
+%!               1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! w([2, 60]) = 0;
+%! Mdl = fitcdiscr (X, Y, 'Weights', w);
+%! assert_equal (Mdl.NumObservations, 128);
+%! assert_equal (Mdl.RowsUsed([1, 2, 60]), [true; false; false]);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! M1 = fitcdiscr (X, Y, 'Weights', w);
+%! M5 = fitcdiscr (X, Y, 'Weights', 5 * w);
+%! assert_equal (M5.Sigma, M1.Sigma, 1e-14);
+%! assert_equal (M5.W, M1.W, 1e-15);
+
+## MATLAB parity: resubstitution weighs the training rows by their weights.
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcdiscr (X, Y, 'Weights', w);
+%! assert_equal (resubLoss (Mdl), 0.0503703703703704, 1e-14);
+%! assert_equal (resubEdge (Mdl), 0.860269668211995, 1e-13);
+%! assert_equal (resubLoss (Mdl, 'LossFun', 'binodeviance'), ...
+%!               0.153822057071369, 1e-13);
+%! assert_equal (loss (Mdl, X, Y), 0.0518518518518519, 1e-14);
 
 ## Prior is a row of class frequencies and W stays uniform: a discriminant
 ## applies the prior when it predicts, not to the fit.  Values from R2024a.
