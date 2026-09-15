@@ -107,7 +107,7 @@ which is what MATLAB reports for pair detection at every sample size.\n\
     {
       xj(i) = X(i, j);
     }
-    B[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES);
+    B[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES, true);
     edges(j) = octave_value (B[(std::size_t) j].edges);
   }
 
@@ -200,6 +200,16 @@ which is what MATLAB reports for pair detection at every sample size.\n\
 %! S = gamboostpairs (x, randn (200, 1));
 %! assert_equal (S.DF2 > 0, true);
 %! assert_equal (S.DF1 > 0, true);
+
+%!test
+%! ## The detection grid places cut k at the midpoint of the sorted values at
+%! ## positions ceil (k*n/8) and ceil (k*n/8) + 1, as R2024a does.
+%! k = (1:300)';
+%! S = gamboostpairs ([sin(k), cos(2 * k)], k / 300);
+%! e = [-0.92677666250429258, -0.70864210760326785, -0.37141809543750642, ...
+%!      0.0044253079075048506, 0.38778038850556862, 0.70866977421076549, ...
+%!      0.92681284546023668];
+%! assert_equal (S.BinEdges{1}, e, 1e-15);
 
 %!error<Invalid call> gamboostpairs (1)
 %!error<gamboostpairs: X must be a numeric matrix.> ...

@@ -97,7 +97,8 @@ struct BinnedPredictor
 static const octave_idx_type GAMB_PAIR_EDGES = 7;
 
 static BinnedPredictor
-gamb_bin (const ColumnVector& x, octave_idx_type maxedges)
+gamb_bin (const ColumnVector& x, octave_idx_type maxedges,
+          bool detection = false)
 {
   octave_idx_type n = x.numel ();
 
@@ -160,10 +161,17 @@ gamb_bin (const ColumnVector& x, octave_idx_type maxedges)
     // measured on 1000 standard normal draws the two agree to 0.067 at worst
     // against 0.78 for a spread through the distinct values, so this is the
     // right family and not the exact member.
+    //
+    // The detection grid follows R2024a exactly: cut k is the midpoint of the
+    // sorted values at 1-based positions ceil (k*n/8) and ceil (k*n/8) + 1,
+    // measured on 2026-09-15 for eight columns at n = 285 and 300, complete
+    // and with missing values.  Rounding the position down, as the fitting
+    // grid still does, moves every cut whose position is fractional.
     for (octave_idx_type k = 0; k < ne; k++)
     {
       double r = (double) (k + 1) * nf / (double) (ne + 1);
-      octave_idx_type lo = (octave_idx_type) std::floor (r) - 1;
+      octave_idx_type lo = detection ? (octave_idx_type) std::ceil (r) - 1
+                                     : (octave_idx_type) std::floor (r) - 1;
       if (lo < 0)
       {
         lo = 0;
@@ -1412,7 +1420,7 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
     {
       xj(i) = X(i, j);
     }
-    F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES).edges;
+    F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES, true).edges;
   }
 
   F.term.resize ((std::size_t) np);
