@@ -358,7 +358,10 @@ classdef CompactRegressionGAM
     ## predicted responses, @var{yFit}, for the predictor data in matrix
     ## @var{Xfit} based on the Generalized Additive Model in @var{obj}.
     ## @var{Xfit} must have the same number of features/variables as the
-    ## training data in @var{obj}.
+    ## training data in @var{obj}.  Every row is predicted.  Under boosted
+    ## trees a missing value adds nothing from its term, so a row missing
+    ## every predictor predicts the intercept; under splines a row holding a
+    ## missing value is predicted as @code{NaN}.
     ##
     ## @itemize
     ## @item
@@ -415,10 +418,6 @@ classdef CompactRegressionGAM
         error (strcat ("CompactRegressionGAM.predict: Xfit must have the", ...
                        " same number of features (columns) as in the GAM model."));
       endif
-
-      ## Clean Xfit data
-      notnansf  = ! logical (sum (isnan (Xfit), 2));
-      Xfit      = Xfit(notnansf, :);
 
       ## Default values for Name-Value Pairs
       alpha = 0.05;
@@ -766,6 +765,26 @@ endfunction
 %!
 %! mdl = fitrgam (X, Y)
 %! cmdl = compact (mdl)
+
+%!test  # a row missing a predictor is kept, and its spline term has no value
+%! x = linspace (0, 1, 30)';
+%! X = [x, cos(4 * x)];
+%! y = sin (3 * x) + X(:,2);
+%! Mdl = compact (RegressionGAM (X, y, 'FitMethod', 'splines'));
+%! yFit = predict (Mdl, [0.5, 0.2; NaN, 0.2; 0.5, 0.2]);
+%! assert_equal (size (yFit), [3, 1]);
+%! assert_equal (isnan (yFit)', [false, true, false]);
+
+%!test  # a row missing every predictor predicts the intercept
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! Q = [0.5, 0.2, 1; NaN, 0.2, 1; 0.5, NaN, 1; NaN, NaN, NaN; 0.1, 0.2, 1; ...
+%!      NaN, 0.7, 3; NaN, NaN, 1];
+%! Mdl = compact (RegressionGAM (X, y));
+%! yFit = predict (Mdl, Q);
+%! assert_equal (size (yFit), [7, 1]);
+%! assert_equal (yFit(4), Mdl.Intercept);
 
 ## Test input validation for constructor
 %!error<CompactRegressionGAM: invalid regression object.> ...

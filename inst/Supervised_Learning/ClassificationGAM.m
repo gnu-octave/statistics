@@ -1420,7 +1420,10 @@ classdef ClassificationGAM
     ##
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
     ## returns @var{score}, which contains the predicted class scores or
-    ## posterior probabilities for each observation.
+    ## posterior probabilities for each observation.  Every row is predicted.
+    ## Under boosted trees a missing value adds nothing from its term; under
+    ## splines a row holding a missing value is scored @code{NaN} and takes
+    ## the class of largest prior.
     ##
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC},
     ## 'IncludeInteractions', @var{includeInteractions})} allows you to specify
@@ -1455,10 +1458,6 @@ classdef ClassificationGAM
                        " XC must have the same number of", ...
                        " predictors as the trained model."));
       endif
-
-      ## Clean XC data
-      notnansf  = ! logical (sum (isnan (XC), 2));
-      XC        = XC(notnansf, :);
 
       ## Default values for Name-Value Pairs
       ## Which store holds the interaction terms depends on the engine: the
@@ -1597,8 +1596,12 @@ classdef ClassificationGAM
         endfor
       endfor
 
-      ## Select the class with the minimum expected misclassification cost
+      ## Select the class with the minimum expected misclassification cost.
+      ## A spline term has no value at a missing predictor, so such a row has
+      ## no score, and takes the class of largest prior as other learners do.
       [~, minIdx] = min (CE, [], 2);
+      [~, top] = max (this.Prior);
+      minIdx(isnan (scores(:,1))) = top;
       labels = labelsFromIndex (this.ClassNames, minIdx);
 
       ## Apply ScoreTransform
@@ -3020,6 +3023,28 @@ endfunction
 %! B = resume (A, 10);
 %! assert_equal (A.ModelParameters.NumTreesPerPredictor, 5);
 %! assert_equal (B.ModelParameters.NumTreesPerPredictor, 15);
+
+%!test  # a row missing a predictor is kept, and without a spline score it
+%! ## takes the class of largest prior
+%! x = linspace (0, 1, 30)';
+%! X = [x, cos(4 * x)];
+%! y = [ones(18, 1); 2 * ones(12, 1)];
+%! Mdl = ClassificationGAM (X, y, 'FitMethod', 'splines');
+%! [label, score] = predict (Mdl, [0.5, 0.2; NaN, 0.2]);
+%! assert_equal (size (label), [2, 1]);
+%! assert_equal (label(2), 1);
+%! assert_equal (score(2,:), [NaN, NaN]);
+
+%!test  # MATLAB parity: a missing value adds nothing from its term
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! Q = [0.5, 0.2, 1; NaN, 0.2, 1; 0.5, NaN, 1; NaN, NaN, NaN; 0.1, 0.2, 1; ...
+%!      NaN, 0.7, 3; NaN, NaN, 1];
+%! Mdl = ClassificationGAM (X, y > median (y));
+%! [label, score] = predict (Mdl, Q);
+%! assert_equal (label', [true, false, true, true, true, true, false]);
+%! assert_equal (score(4,2), 1 / (1 + exp (-Mdl.Intercept)), 1e-14);
 
 %!error<ClassificationGAM.resume: Not enough input arguments.> ...
 %! load fisheriris; ...
