@@ -291,8 +291,7 @@ endfunction
 %!error<nnmf: unknown parameter name 'bogus'.> nnmf (ones (4, 3), 2, "bogus", 1)
 %!error<nnmf: 'Options' must be a structure.> nnmf (ones (4, 3), 2, "Options", 5)
 
-%!test
-%! ## Edge cases with empty arrays
+## Edge cases with empty arrays
 %!error <nnmf: k must be a positive integer no larger than the number> ...
 %! nnmf ([], 1)
 %!error <nnmf: k must be a positive integer no larger than the number> ...
