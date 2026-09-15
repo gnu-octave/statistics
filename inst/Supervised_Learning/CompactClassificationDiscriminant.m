@@ -938,7 +938,8 @@ classdef CompactClassificationDiscriminant
       Weights = [];
 
       ## Validate Y
-      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      valid_types = {'char', 'string', 'logical', 'single', 'double', ...
+                     'cell', 'categorical'};
       if (! (any (strcmp (class (Y), valid_types))))
         error (strcat ("CompactClassificationDiscriminant.loss:", ...
                        " Y must be of a valid type."));
@@ -1025,15 +1026,19 @@ classdef CompactClassificationDiscriminant
       ## Convert Y to a cell array of strings
       if (ischar (Y))
         Y = cellstr (Y);
+      elseif (isa (Y, 'string'))
+        Y = cellstr (Y);
       elseif (isnumeric (Y))
         Y = cellstr (num2str (Y));
       elseif (islogical (Y))
         Y = cellstr (num2str (double (Y)));
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
-      else
+      elseif (! isa (Y, 'categorical'))
+        ## A categorical is matched to the classes by name as it stands.
         error (strcat ("CompactClassificationDiscriminant.loss: Y must be", ...
-                       " a numeric, logical, char, string, or cell array."));
+                       " a numeric, logical, char, string, categorical or", ...
+                       " cell array."));
       endif
 
       ## Check if Y contains correct classes
@@ -1051,8 +1056,10 @@ classdef CompactClassificationDiscriminant
       unique_classes = this.ClassNames;
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
+      ## Labels are matched to the classes by name, whatever their type.
+      gYw = labelIndices (unique_classes, Y);
       for i = 1:classCount (unique_classes)
-        class_idx = classMembers (Y, unique_classes, i);
+        class_idx = (gYw == i);
         if (sum (Weights(class_idx)) > 0)
           norm_weights(class_idx) = ...
           Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
@@ -1065,6 +1072,7 @@ classdef CompactClassificationDiscriminant
 
       ## Predict classification scores
       [label, scores] = predict (this, X);
+      gLab = labelIndices (this.ClassNames, label);
 
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
@@ -1111,7 +1119,7 @@ classdef CompactClassificationDiscriminant
         case 'classiferror'
           L = 0;
           for i = 1:n
-            L = L + Weights(i) * (! isequal (Y(i), label(i)));
+            L = L + Weights(i) * (gYidx(i) != gLab(i));
           endfor
         case 'mincost'
           Cost = this.Cost;
@@ -1181,7 +1189,8 @@ classdef CompactClassificationDiscriminant
       endif
 
       ## Validate Y
-      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      valid_types = {'char', 'string', 'logical', 'single', 'double', ...
+                     'cell', 'categorical'};
       if (! (any (strcmp (class (Y), valid_types))))
         error (strcat ("CompactClassificationDiscriminant.margin:", ...
                        " Y must be of a valid type."));
@@ -1203,15 +1212,19 @@ classdef CompactClassificationDiscriminant
       ## Convert Y to a cell array of strings
       if (ischar (Y))
         Y = cellstr (Y);
+      elseif (isa (Y, 'string'))
+        Y = cellstr (Y);
       elseif (isnumeric (Y))
         Y = cellstr (num2str (Y));
       elseif (islogical (Y))
         Y = cellstr (num2str (double (Y)));
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
-      else
+      elseif (! isa (Y, 'categorical'))
+        ## A categorical is matched to the classes by name as it stands.
         error (strcat ("CompactClassificationDiscriminant.margin: Y must", ...
-                       " be a numeric, logical, char, string, or cell array."));
+                       " be a numeric, logical, char, string, categorical", ...
+                       " or cell array."));
       endif
 
       ## Check if Y contains correct classes
@@ -1676,6 +1689,18 @@ endclassdef
 %! rand ("state", 1); randn ("state", 1); Cs = compact (fitcdiscr (Xch, Ycell));
 %! assert_equal (loss (Cc, Xch, Ych), loss (Cs, Xch, Ycell), 1e-12);
 
+## loss and margin match labels to the classes by name, whatever their type.
+%!test
+%! load fisheriris
+%! X = meas(51:150, 1:2);
+%! ys = species(51:150);
+%! yc = categorical (ys);
+%! C = compact (fitcdiscr (X, yc));
+%! assert_equal (loss (C, X, ys), 0.25, 1e-15);
+%! assert_equal (loss (C, X, yc), 0.25, 1e-15);
+%! L = loss (C, X, string (ys), 'LossFun', 'classiferror');
+%! assert_equal (L, 0.25, 1e-15);
+%! assert_equal (margin (C, X, yc), margin (C, X, ys), 1e-15);
 %!error<CompactClassificationDiscriminant.nLinearCoeffs: DELTA must be a real numeric value.> ...
 %! load fisheriris
 %! nLinearCoeffs (compact (fitcdiscr (meas, species)), "a")

@@ -1569,7 +1569,8 @@ classdef ClassificationDiscriminant
       Weights = [];
 
       ## Validate Y
-      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      valid_types = {'char', 'string', 'logical', 'single', 'double', ...
+                     'cell', 'categorical'};
       if (! (any (strcmp (class (Y), valid_types))))
         error ("ClassificationDiscriminant.loss: Y must be of a valid type.");
       endif
@@ -1656,11 +1657,6 @@ classdef ClassificationDiscriminant
         classes = cellstr (classes);
       endif
 
-      ## Check that Y is of the same type as ClassNames
-      if (! strcmp (class (Y), class (classes)))
-        error (strcat ("ClassificationDiscriminant.loss: Y must be", ...
-                       " the same data type as the model's ClassNames."));
-      endif
 
       ## Check if Y contains correct classes
       if (! labelsKnown (Y, classes))
@@ -1677,8 +1673,10 @@ classdef ClassificationDiscriminant
       K = classCount (classes);
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
+      ## Labels are matched to the classes by name, whatever their type.
+      gYw = labelIndices (classes, Y);
       for i = 1:K
-        class_idx = ismember (Y, classes(i));
+        class_idx = (gYw == i);
         if (sum (Weights(class_idx)) > 0)
           norm_weights(class_idx) = ...
           Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
@@ -1691,6 +1689,7 @@ classdef ClassificationDiscriminant
 
       ## Predict classification scores
       [label, scores] = predict (this, X);
+      gLab = labelIndices (classes, label);
 
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
@@ -1736,7 +1735,7 @@ classdef ClassificationDiscriminant
         case 'classiferror'
           L = 0;
           for i = 1:n
-            L = L + Weights(i) * (! isequal (Y(i), label(i)));
+            L = L + Weights(i) * (gYw(i) != gLab(i));
           endfor
         case 'mincost'
           Cost = this.Cost;
@@ -1814,7 +1813,8 @@ classdef ClassificationDiscriminant
       endif
 
       ## Validate Y
-      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      valid_types = {'char', 'string', 'logical', 'single', 'double', ...
+                     'cell', 'categorical'};
       if (! (any (strcmp (class (Y), valid_types))))
         error ("ClassificationDiscriminant.margin: Y must be of a valid type.");
       endif
@@ -1838,11 +1838,6 @@ classdef ClassificationDiscriminant
         classes = cellstr (classes);
       endif
 
-      ## Check that Y is of the same type as ClassNames
-      if (! strcmp (class (Y), class (classes)))
-        error (strcat ("ClassificationDiscriminant.margin: Y must be", ...
-                       " the same data type as the model's ClassNames."));
-      endif
 
       ## Check if Y contains correct classes
       if (! labelsKnown (Y, classes))
@@ -2804,6 +2799,17 @@ endclassdef
 %! rand ("state", 2); cvs = crossval (Ms, "KFold", 3);
 %! assert_equal (cellstr (kfoldPredict (cvc)), kfoldPredict (cvs));
 
+## MATLAB parity: loss and margin match labels to the classes by name,
+## whatever their type.  Values from R2024a.
+%!test
+%! load fisheriris
+%! Xd = meas(51:150, 1:2);
+%! ys = species(51:150);
+%! yc = categorical (ys);
+%! Mdl = fitcdiscr (Xd, yc);
+%! assert_equal (loss (Mdl, Xd, ys), 0.25, 1e-15);
+%! assert_equal (loss (Mdl, Xd, yc), 0.25, 1e-15);
+%! assert_equal (numel (margin (Mdl, Xd, ys)), 100);
 %!error<ClassificationDiscriminant.nLinearCoeffs: DELTA must be a real numeric value.> ...
 %! load fisheriris
 %! nLinearCoeffs (fitcdiscr (meas, species), "a")

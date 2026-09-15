@@ -2967,6 +2967,13 @@ endfunction
 %! assert_equal (class (Mdl.ClassNames), 'categorical');
 
 ## Test input validation
+## MATLAB parity: a categorical response keeps only the categories it holds.
+%!test
+%! load fisheriris
+%! Mdl = fitctree (meas(51:150,:), categorical (species(51:150)));
+%! assert_equal (categories (Mdl.ClassNames), {'versicolor'; 'virginica'});
+%! assert_equal (categories (predict (Mdl, meas(51,:))), ...
+%!               {'versicolor'; 'virginica'});
 %!error<ClassificationTree: too few input arguments.> ClassificationTree ()
 %!error<ClassificationTree: too few input arguments.>
 %! ClassificationTree (ones (4, 2))

@@ -36,6 +36,11 @@ function [C, gY] = classOrder (Y, ClassNames)
     [~, first] = unique (pos, 'first');
     C = C(pos(sort (first)),:);
   endif
+  ## A categorical response reports only the categories it holds, as R2024a
+  ## does: an unused category is not a class of the fit.
+  if (isa (C, 'categorical'))
+    C = removecats (C);
+  endif
   gY = labelIndices (C, Y);
 
 endfunction

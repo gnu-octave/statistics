@@ -1793,7 +1793,8 @@ classdef ClassificationKNN
       Weights = [];
 
       ## Validate Y
-      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      valid_types = {'char', 'string', 'logical', 'single', 'double', ...
+                     'cell', 'categorical'};
       if (! (any (strcmp (class (Y), valid_types))))
         error ("ClassificationKNN.loss: Y must be of a valid type.");
       endif
@@ -1875,11 +1876,6 @@ classdef ClassificationKNN
         classes = cellstr (classes);
       endif
 
-      ## Check that Y is of the same type as ClassNames
-      if (! strcmp (class (Y), class (classes)))
-        error (strcat ("ClassificationKNN.loss: Y must be the", ...
-                       " same data type as the model's ClassNames."));
-      endif
 
       ## Check if Y contains correct classes
       if (! labelsKnown (Y, this.ClassNames))
@@ -1896,8 +1892,10 @@ classdef ClassificationKNN
       K = classCount (classes);
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
+      ## Labels are matched to the classes by name, whatever their type.
+      gYw = labelIndices (classes, Y);
       for i = 1:K
-        class_idx = ismember (Y, classes(i));
+        class_idx = (gYw == i);
         if (sum (Weights(class_idx)) > 0)
           norm_weights(class_idx) = ...
           Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
@@ -1913,6 +1911,7 @@ classdef ClassificationKNN
       if (ischar (label))
         label = cellstr (label);
       endif
+      gLab = labelIndices (classes, label);
 
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
@@ -1958,7 +1957,7 @@ classdef ClassificationKNN
         case 'classiferror'
           L = 0;
           for i = 1:n
-            L = L + Weights(i) * (! isequal (Y(i), label(i)));
+            L = L + Weights(i) * (gYw(i) != gLab(i));
           endfor
         case 'mincost'
           Cost = this.Cost;
@@ -2033,7 +2032,8 @@ classdef ClassificationKNN
       endif
 
       ## Validate Y
-      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      valid_types = {'char', 'string', 'logical', 'single', 'double', ...
+                     'cell', 'categorical'};
       if (! (any (strcmp (class (Y), valid_types))))
         error ("ClassificationKNN.margin: Y must be of a valid type.");
       endif
@@ -2057,11 +2057,6 @@ classdef ClassificationKNN
         classes = cellstr (classes);
       endif
 
-      ## Check that Y is of the same type as ClassNames
-      if (! strcmp (class (Y), class (classes)))
-        error (strcat ("ClassificationKNN.margin: Y must be the", ...
-                       " same data type as the model's ClassNames."));
-      endif
 
       ## Check if Y contains correct classes
       if (! labelsKnown (Y, classes))
@@ -2204,14 +2199,9 @@ classdef ClassificationKNN
         classes = cellstr (classes);
       endif
 
-      ## Check that Y is of the same type as ClassNames
-      if (! strcmp (class (Labels), class (classes)))
-        error (strcat ("ClassificationKNN.margin: LABELS must be the", ...
-                       " same data type as the model's ClassNames."));
-      endif
 
       ## Additional validation to match ClassNames
-      if (! all (ismember (Labels, classes)))
+      if (! labelsKnown (Labels, classes))
         error (strcat ("ClassificationKNN.partialDependence: LABELS must", ...
                        " match the class names in the model's ClassNames."));
       endif
@@ -2360,12 +2350,12 @@ classdef ClassificationKNN
       ## Compute partial dependence
       if (numel (Vars) == 1)
         if (numel (Labels) == 1)
-          classIndex = find (ismember (classes, Labels));
+          classIndex = labelIndices (classes, Labels);
           pd = predictions(:, classIndex)';
         else
           pd = zeros (numel (Labels), numel (QueryPoints));
           for j = 1:numel (Labels)
-            classIndex = find (ismember (classes, Labels(j)));
+            classIndex = labelIndices (classes, Labels(j));
             pd(j, :) = predictions(:, classIndex)';
           endfor
         endif
@@ -2373,14 +2363,14 @@ classdef ClassificationKNN
         y = [];
       else
         if (numel (Labels) == 1)
-          classIndex = find (ismember (classes, Labels));
+          classIndex = labelIndices (classes, Labels);
           pd = reshape (predictions(:, classIndex), numel (QueryPoints{1}), ...
                         numel (QueryPoints{2}));
         else
           pd = zeros (numel (Labels), numel (QueryPoints{1}), ...
                       numel (QueryPoints{2}));
           for j = 1:numel (Labels)
-            classIndex = find (ismember (classes, Labels(j)));
+            classIndex = labelIndices (classes, Labels(j));
             pd(j, :, :) = reshape (predictions(:, classIndex), ...
                                    numel (QueryPoints{1}), ...
                                    numel (QueryPoints{2}));
@@ -2990,6 +2980,20 @@ endfunction
 %! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
 %! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
 %! assert_equal (resubEdge (Mdl), 0.86407659007327, 1e-13);
+## MATLAB parity: loss, margin and edge match labels to the classes by name,
+## whatever their type.  Values from R2024a.
+%!test
+%! load fisheriris
+%! X = meas(51:150, 1:2);
+%! ys = species(51:150);
+%! yc = categorical (ys);
+%! Mdl = fitcknn (X, yc);
+%! assert_equal (loss (Mdl, X, ys), 0.12, 1e-15);
+%! assert_equal (loss (Mdl, X, string (ys)), 0.12, 1e-15);
+%! assert_equal (loss (Mdl, X, yc), 0.12, 1e-15);
+%! assert_equal (numel (margin (Mdl, X, ys)), 100);
+%! assert_equal (edge (Mdl, X, ys), edge (Mdl, X, yc), 1e-15);
+%! assert_equal (loss (fitcknn (X, ys), X, yc), 0.12, 1e-15);
 %!error<ClassificationKNN: 'Weights' must be a real numeric vector.> ...
 %! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
 %!error<ClassificationKNN: 'Weights' must have one element per row in X.> ...

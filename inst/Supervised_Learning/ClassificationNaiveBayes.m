@@ -658,6 +658,11 @@ classdef ClassificationNaiveBayes
         endif
       endif
 
+      ## A categorical response reports only the categories it holds, as
+      ## R2024a does.
+      if (isa (C, 'categorical'))
+        C = removecats (C);
+      endif
       this.ClassNames = C;
       nObs = rows (Xf);
       nCls = rows (C);
@@ -1801,6 +1806,11 @@ endclassdef
 %! assert_equal (l2, l1);
 %! assert_equal (s2, s1);
 
+## MATLAB parity: a categorical response keeps only the categories it holds.
+%!test
+%! load fisheriris
+%! Mdl = fitcnb (meas(51:150,:), categorical (species(51:150)));
+%! assert_equal (categories (Mdl.ClassNames), {'versicolor'; 'virginica'});
 %!error<ClassificationNaiveBayes.savemodel: too few input arguments.> ...
 %! savemodel (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
 %!error<ClassificationNaiveBayes.savemodel: FNAME must be a character vector.> ...
