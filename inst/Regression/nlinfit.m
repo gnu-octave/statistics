@@ -128,7 +128,7 @@ function [beta, R, J, CovB, MSE, ErrorModelInfo] = nlinfit (X, y, modelfun, ...
     error ("nlinfit: Y must be a real numeric vector.");
   endif
   if (! isvector (y) || rows (X) != rows (y))
-    error ("nlinfit: Y must be a vector with the same number of rows as X.");
+    error ("nlinfit: y must be a vector with the same number of rows as X.");
   endif
 
   beta0 = beta0(:);
@@ -246,8 +246,8 @@ function [beta, R, J] = lm_fit (X, y, modelfun, beta0, w, opts)
   beta   = beta0;
   yhat   = modelfun (beta, X);
   if (! isequal (size (yhat), size (y)))
-    error (strcat ("nlinfit: Nonlinear regression model function must return", ...
-                   " a vector of the same size as Y."));
+    error (strcat ("nlinfit: nonlinear regression model function", ...
+                   " must return a vector of the same size as y."));
   endif
   R      = y - yhat;
   sse    = sum (w .* R .^ 2);
@@ -616,11 +616,10 @@ endfunction
 %! assert_equal (bhub, [-0.032803877294096; 2.016488145372473], 1e-7);
 %! assert_equal (bboth, bhub, 1e-12);
 
-%!test
 %! ## Edge cases with empty arrays
-%!error <Y must be a vector with the same number of rows as X.> ...
+%!error <nlinfit: y must be a vector with the same number of rows as X.> ...
 %! nlinfit ([], [], @(b,x) b(1).*x, [1])
-%!error <vector of the same size as Y.> ...
+%!error <nlinfit: nonlinear regression model function must return a vector of the same size as y.> ...
 %! nlinfit (zeros(0,3), zeros(0,1), @(b,x) b(1).*x, [1])
 
 %!error<nlinfit: unknown RobustWgtFun 'bad'.> ...
