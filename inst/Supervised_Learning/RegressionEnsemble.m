@@ -151,8 +151,8 @@ classdef RegressionEnsemble
     ##
     ## Indices of categorical predictors
     ##
-    ## Always empty, categorical predictors not being implemented.  This
-    ## property is read-only.
+    ## The predictors every tree treats as categorical, empty when none
+    ## is.  This property is read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];
@@ -380,6 +380,7 @@ classdef RegressionEnsemble
 
       Method = 'LSBoost'; NLearn = 100; Learners = 'tree'; LearnRate = [];
       NPrint = 0; Weights = []; PredictorNames = {}; ResponseName = 'Y';
+      CatPreds = [];
       ResponseTransform = 'none'; FResample = []; Replace = [];
       Resample = false;
 
@@ -457,10 +458,7 @@ classdef RegressionEnsemble
               error ("%s: 'Resample' must be 'on' or 'off'.", caller);
             endif
           case 'categoricalpredictors'
-            if (! isempty (val))
-              error ("%s: 'CategoricalPredictors' is not implemented.", ...
-                     caller);
-            endif
+            CatPreds = val;
           case {'numbins', 'optimizehyperparameters', ...
                 'hyperparameteroptimizationoptions', 'options'}
             error ("%s: '%s' is not implemented.", caller, name);
@@ -535,6 +533,16 @@ classdef RegressionEnsemble
                        " character vectors with one element per column", ...
                        " of X."), caller);
       endif
+      ## Categorical predictors reach every tree
+      [Cod, errmsg] = dummyCoding (F.X, CatPreds, PredictorNames);
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
+      CatIdx = [];
+      if (! isempty (Cod.Index))
+        CatIdx = Cod.Index;
+        TreeArgs = [{'CategoricalPredictors', CatIdx}, TreeArgs];
+      endif
 
       this.X = F.X;
       this.Y = double (F.Y);
@@ -547,6 +555,7 @@ classdef RegressionEnsemble
       this.ResponseTransform = ResponseTransform;
       this.Method = Method;
       this.TreeArgs = TreeArgs;
+      this.CategoricalPredictors = CatIdx;
       this.Trained = cell (0, 1);
       this.TrainedWeights = zeros (0, 1);
       this.ModelParameters = struct ('Type', 'regression', ...
@@ -1306,8 +1315,6 @@ endfunction
 %! RegressionEnsemble (X, y, 'Replace', true)
 %!error<RegressionEnsemble: 'Resample' must be 'on' or 'off'.> ...
 %! RegressionEnsemble (X, y, 'Resample', true)
-%!error<RegressionEnsemble: 'CategoricalPredictors' is not implemented.> ...
-%! RegressionEnsemble (X, y, 'CategoricalPredictors', 1)
 %!error<RegressionEnsemble: 'NumBins' is not implemented.> ...
 %! RegressionEnsemble (X, y, 'NumBins', 10)
 %!error<RegressionEnsemble: 'Learners' must be 'tree' or a tree template.> ...
@@ -1488,3 +1495,26 @@ endfunction
 %! cvshrink (E)
 %!error<RegressionEnsemble.cvshrink: invalid parameter name in optional pair arguments.> ...
 %! cvshrink (E, 'Lambda', 0.1, 'Foo', 1)
+
+%!shared X, yr
+%! k = (0:119)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! x2 = mod (k * 7, 10);
+%! X = [c, x2];
+%! yb = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0) ...
+%!      | (x2 > 7);
+%! yr = [3; 1; 4; 1.5];
+%! yr = yr(c) + 0.1 * sin (k) + 0.2 * x2;
+%! Xq = [1, 0; 3, 5; 5, 0; NaN, 2; 2.5, 9];
+
+%!test  # bagged regression trees and folds take the categorical predictors
+%! Mdl = fitrensemble (X, yr, 'Method', 'Bag', 'NumLearningCycles', 3, ...
+%!                     'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.Trained{1}.CategoricalPredictors, 1);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.Trained{1}.Trained{1}.CategoricalPredictors, 1);
+
+%!error<RegressionEnsemble: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! RegressionEnsemble (X, yr, 'CategoricalPredictors', 3)

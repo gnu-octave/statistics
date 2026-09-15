@@ -49,8 +49,8 @@ classdef CompactRegressionEnsemble
     ##
     ## Indices of categorical predictors
     ##
-    ## Always empty, categorical predictors not being implemented.  This
-    ## property is read-only.
+    ## The predictors every tree treats as categorical, empty when none
+    ## is.  This property is read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];

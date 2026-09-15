@@ -47,9 +47,10 @@
 ##
 ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
 ## levels, as indices, as a logical vector with one element per predictor, or
-## as @qcode{'all'}.  Such a predictor is split into two sets of levels, those
-## of lower mean response on the left, and an observation whose level a node
-## did not see stops there.
+## as @qcode{'all'}.  Such a predictor is split into two sets of levels, the
+## lower mean response on the left, and an observation whose level a node did
+## not see stops there.  MATLAB does not always keep that side, and equally
+## good splits may be chosen differently.
 ##
 ## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, recorded in
 ## @code{ModelParameters}.  The default is 10.  Ordering the levels by their

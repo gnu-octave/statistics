@@ -143,8 +143,8 @@ classdef ClassificationEnsemble
     ##
     ## Indices of categorical predictors
     ##
-    ## Always empty, categorical predictors not being implemented.  This
-    ## property is read-only.
+    ## The predictors every tree treats as categorical, empty when none
+    ## is.  This property is read-only.
     ##
     ## @end deftp
     CategoricalPredictors = [];
@@ -434,6 +434,7 @@ classdef ClassificationEnsemble
       NPred = []; AllCombinations = false;
       NPrint = 0; ClassNames = []; Cost = []; Prior = []; Weights = [];
       PredictorNames = {}; ResponseName = 'Y'; ScoreTransform = 'none';
+      CatPreds = [];
       FResample = []; Replace = []; Resample = false; Ratio = [];
       MarginPrecision = [];
 
@@ -520,10 +521,7 @@ classdef ClassificationEnsemble
               error ("%s: 'Resample' must be 'on' or 'off'.", caller);
             endif
           case 'categoricalpredictors'
-            if (! isempty (val))
-              error ("%s: 'CategoricalPredictors' is not implemented.", ...
-                     caller);
-            endif
+            CatPreds = val;
           case 'ratiotosmallest'
             if (! (isnumeric (val) && isvector (val) && isreal (val)
                    && all (isfinite (val)) && all (val >= 0) && any (val > 0)))
@@ -718,6 +716,20 @@ classdef ClassificationEnsemble
                        " character vectors with one element per column", ...
                        " of X."), caller);
       endif
+      ## Categorical predictors reach every tree, and no other learner
+      [Cod, errmsg] = dummyCoding (F.X, CatPreds, PredictorNames);
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
+      CatIdx = [];
+      if (! isempty (Cod.Index))
+        if (issub)
+          error (strcat ("%s: 'CategoricalPredictors' cannot be used with", ...
+                         " the 'Subspace' method."), caller);
+        endif
+        CatIdx = Cod.Index;
+        TreeArgs = [{'CategoricalPredictors', CatIdx}, TreeArgs];
+      endif
 
       this.X = F.X;
       this.Y = F.Y;
@@ -757,6 +769,7 @@ classdef ClassificationEnsemble
       this.ScoreTransform = ScoreTransform;
       this.Method = Method;
       this.TreeArgs = TreeArgs;
+      this.CategoricalPredictors = CatIdx;
       this.Trained = cell (0, 1);
       this.TrainedWeights = zeros (0, 1);
       this.ModelParameters = struct ('Type', 'classification', ...
@@ -1736,8 +1749,6 @@ endfunction
 %! ClassificationEnsemble (X2, Y2, 'Replace', 1)
 %!error<ClassificationEnsemble: 'Resample' must be 'on' or 'off'.> ...
 %! ClassificationEnsemble (X2, Y2, 'Resample', 1)
-%!error<ClassificationEnsemble: 'CategoricalPredictors' is not implemented.> ...
-%! ClassificationEnsemble (X2, Y2, 'CategoricalPredictors', 1)
 %!error<ClassificationEnsemble: 'RatioToSmallest' must be a vector of nonnegative numbers with a positive element.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method', 'RUSBoost', ...
 %!                         'RatioToSmallest', [0, 0])
@@ -1858,3 +1869,34 @@ endfunction
 %! load fisheriris
 %! resume (ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
 %!         'NumLearningCycles', 'AllPredictorCombinations'), 1)
+
+%!shared X, yb
+%! k = (0:119)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! x2 = mod (k * 7, 10);
+%! X = [c, x2];
+%! yb = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0) ...
+%!      | (x2 > 7);
+%! yr = [3; 1; 4; 1.5];
+%! yr = yr(c) + 0.1 * sin (k) + 0.2 * x2;
+%! Xq = [1, 0; 3, 5; 5, 0; NaN, 2; 2.5, 9];
+
+%!test  # the categorical predictors travel to compact models and folds
+%! Mdl = ClassificationEnsemble (X, yb, 'Method', 'AdaBoostM1', ...
+%!                               'NumLearningCycles', 3, ...
+%!                               'CategoricalPredictors', logical ([1, 0]));
+%! assert_equal (compact (Mdl).CategoricalPredictors, 1);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (CV.CategoricalPredictors, 1);
+%! assert_equal (CV.Trained{1}.Trained{1}.CategoricalPredictors, 1);
+
+%!test  # a tree template's categorical options reach every tree
+%! t = templateTree ('MaxNumCategories', 3, 'MaxNumSplits', 3);
+%! Mdl = ClassificationEnsemble (X, yb, 'Method', 'AdaBoostM1', ...
+%!                               'NumLearningCycles', 2, 'Learners', t, ...
+%!                               'CategoricalPredictors', 1);
+%! assert_equal (Mdl.Trained{1}.CategoricalPredictors, 1);
+
+%!error<ClassificationEnsemble: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationEnsemble (X, yb, 'CategoricalPredictors', 3)

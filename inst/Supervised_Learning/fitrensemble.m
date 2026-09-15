@@ -84,8 +84,11 @@
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{RegressionPartitionedEnsemble}.
 ##
-## Categorical predictors, binning and hyperparameter optimization are not
-## implemented, and an option asking for one of them is refused.  An ensemble is
+## Binning and hyperparameter optimization are not implemented, and an option
+## asking for one of them is refused.  @qcode{'CategoricalPredictors'}, as
+## indices, as a logical vector with one element per predictor, or as
+## @qcode{'all'}, is passed on to every tree, which splits those predictors
+## into sets of levels as @code{fitrtree} does.  An ensemble is
 ## regularized and shrunk afterwards with the @code{regularize}, @code{shrink}
 ## and @code{cvshrink} methods.
 ##
@@ -262,3 +265,25 @@ endfunction
 %! assert_equal (class (M), 'RegressionBaggedEnsemble');
 %! assert_equal (M.Method, 'LSBoost');
 %! assert_equal (M.CombineWeights, 'WeightedSum');
+
+%!shared X, yr, Xq
+%! k = (0:119)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! x2 = mod (k * 7, 10);
+%! X = [c, x2];
+%! yb = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0) ...
+%!      | (x2 > 7);
+%! yr = [3; 1; 4; 1.5];
+%! yr = yr(c) + 0.1 * sin (k) + 0.2 * x2;
+%! Xq = [1, 0; 3, 5; 5, 0; NaN, 2; 2.5, 9];
+
+%!test  # MATLAB parity: LSBoost trees split a categorical predictor
+%! Mdl = fitrensemble (X, yr, 'Method', 'LSBoost', 'NumLearningCycles', 4, ...
+%!                     'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.Trained{1}.CutCategories(1,:), {[2, 4], [1, 3]});
+%! ## The first two rows pass a node of the fourth tree where two partitions
+%! ## gain the same to 5e-15, which rounding decides; the others do not.
+%! yhat = predict (Mdl, Xq);
+%! assert_equal (yhat(3:5)', [3.2692634, 3.2028144, 3.4104563], 1e-6);

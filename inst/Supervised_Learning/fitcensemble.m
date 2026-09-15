@@ -167,6 +167,10 @@
 ## above the linear program LPBoost needs the smallest edge to stay, and how
 ## far below the smallest edge TotalBoost holds every edge.  The default is
 ## 0.01.  LPBoost and TotalBoost only.
+## @item @qcode{'CategoricalPredictors'} @tab @tab The predictors whose values
+## are levels, as indices, as a logical vector with one element per
+## predictor, or as @qcode{'all'}.  Every tree splits them into sets of
+## levels, as @code{fitctree} does.  Not with @qcode{'Subspace'}.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
 ## learner draws, greater than 0 and no greater than 1.  The default is 1.
 ## Given with a boosting method, the ensemble resamples.
@@ -197,9 +201,12 @@
 ## them, fits the ensemble and cross-validates it as @code{crossval} does,
 ## returning a @code{ClassificationPartitionedEnsemble}.
 ##
-## The method @qcode{'RobustBoost'}, categorical predictors, binning and
-## hyperparameter optimization are not implemented, and an option asking for
-## one of them is refused.
+## The method @qcode{'RobustBoost'}, binning and hyperparameter optimization
+## are not implemented, and an option asking for one of them is refused.
+## @qcode{'CategoricalPredictors'} cannot be used with @qcode{'Subspace'}, its
+## nearest neighbour and discriminant learners taking no categorical
+## predictors here; MATLAB passes them to its nearest neighbour learners and
+## drops them, with a warning, from its discriminant ones.
 ##
 ## @seealso{ClassificationEnsemble, ClassificationBaggedEnsemble,
 ## CompactClassificationEnsemble, templateTree, TreeBagger}
@@ -892,3 +899,36 @@ endfunction
 %! fitcensemble (Xt, Yt, 'Method', 'AdaBoostM1', 'MarginPrecision', 0.1)
 %!error<ClassificationEnsemble: resampling with the 'TotalBoost' method is not implemented.> ...
 %! fitcensemble (Xt, Yt, 'Method', 'TotalBoost', 'Resample', 'on')
+
+%!shared X, yb, Xq
+%! k = (0:119)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! x2 = mod (k * 7, 10);
+%! X = [c, x2];
+%! yb = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0) ...
+%!      | (x2 > 7);
+%! yr = [3; 1; 4; 1.5];
+%! yr = yr(c) + 0.1 * sin (k) + 0.2 * x2;
+%! Xq = [1, 0; 3, 5; 5, 0; NaN, 2; 2.5, 9];
+
+%!test  # MATLAB parity: AdaBoostM1 trees split a categorical predictor
+%! Mdl = fitcensemble (X, yb, 'Method', 'AdaBoostM1', 'NumLearningCycles', ...
+%!                     5, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.Trained{1}.CategoricalPredictors, 1);
+%! assert_equal (Mdl.Trained{1}.CutCategories(1,:), {[1, 2], [3, 4]});
+%! [~, s] = predict (Mdl, Xq);
+%! assert_equal (s, [-2.91316, 2.91316; 0.131366, -0.131366; ...
+%!                   -2.91316, 2.91316; -2.91316, 2.91316; ...
+%!                   -2.91316, 2.91316], 1e-5);
+
+%!test  # MATLAB parity: 'all' names every predictor for the trees
+%! Mdl = fitcensemble (X, yb, 'Method', 'Bag', 'NumLearningCycles', 3, ...
+%!                     'CategoricalPredictors', 'all');
+%! assert_equal (Mdl.CategoricalPredictors, [1, 2]);
+%! assert_equal (Mdl.Trained{1}.CategoricalPredictors, [1, 2]);
+%! assert_equal (Mdl.ExpandedPredictorNames, {'x1', 'x2'});
+
+%!error<ClassificationEnsemble: 'CategoricalPredictors' cannot be used with the 'Subspace' method.> ...
+%! fitcensemble (X, yb, 'Method', 'Subspace', 'CategoricalPredictors', 1)

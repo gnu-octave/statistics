@@ -552,15 +552,16 @@ classdef TreeBagger
     ## default, 0, prints nothing.
     ## @end multitable
     ##
+    ## @qcode{'CategoricalPredictors'}, @qcode{'MaxNumCategories'},
     ## @qcode{'MaxNumSplits'}, @qcode{'MergeLeaves'}, @qcode{'Prune'},
     ## @qcode{'PruneCriterion'} and @qcode{'SplitCriterion'} are passed on to
-    ## every tree, and so is @qcode{'QuadraticErrorTolerance'} for regression;
+    ## every tree, and so are @qcode{'AlgorithmForCategorical'} for
+    ## classification and @qcode{'QuadraticErrorTolerance'} for regression;
     ## see @code{fitctree} and @code{fitrtree}.  Merging leaves is allowed but
     ## warned against.
     ##
-    ## Categorical predictors, surrogate splits, parallel growth and tall
-    ## arrays are not implemented, and an option asking for one of them is
-    ## refused.
+    ## Surrogate splits, parallel growth and tall arrays are not implemented,
+    ## and an option asking for one of them is refused.
     ##
     ## MATLAB returns classification labels as a cell array of character
     ## vectors whatever the type of the response; this ensemble returns them,
@@ -711,9 +712,14 @@ classdef TreeBagger
             PredictorNames = Value(:)';
 
           case 'categoricalpredictors'
-            if (! isempty (Value))
-              error (strcat ("TreeBagger: 'CategoricalPredictors' is not", ...
-                             " implemented."));
+            pnames = arrayfun (@(k) sprintf ('x%d', k), 1:columns (X), ...
+                               'UniformOutput', false);
+            [Cod, errmsg] = dummyCoding (X, Value, pnames);
+            if (! isempty (errmsg))
+              error ("TreeBagger: %s", errmsg);
+            endif
+            if (! isempty (Cod.Index))
+              TreeArgs(end+1:end+2) = {'CategoricalPredictors', Cod.Index};
             endif
 
           case 'numprint'
@@ -725,16 +731,15 @@ classdef TreeBagger
             NumPrint = double (Value);
 
           case {'maxnumsplits', 'mergeleaves', 'prune', 'prunecriterion', ...
-                'splitcriterion'}
+                'splitcriterion', 'maxnumcategories', ...
+                'algorithmforcategorical'}
             TreeArgs(end+1:end+2) = {name, Value};
 
           case 'quadraticerrortolerance'
             TreeArgs(end+1:end+2) = {name, Value};
             givenReg{end+1} = name;
 
-          case {'surrogate', 'predictorselection', ...
-                'algorithmforcategorical', 'maxnumcategories', 'options', ...
-                'chunksize'}
+          case {'surrogate', 'predictorselection', 'options', 'chunksize'}
             error ("TreeBagger: '%s' is not implemented.", name);
 
           otherwise
@@ -2539,8 +2544,6 @@ endfunction
 %! TreeBagger (1, x, y, 'OOBPredictorImportance', 1)
 %!error<TreeBagger: 'PredictorNames' must be a cell array of character vectors with one element per column of X.> ...
 %! TreeBagger (1, x, y, 'PredictorNames', {'a'})
-%!error<TreeBagger: 'CategoricalPredictors' is not implemented.> ...
-%! TreeBagger (1, x, y, 'CategoricalPredictors', 1)
 %!error<TreeBagger: 'NumPrint' must be a nonnegative integer.> ...
 %! TreeBagger (1, x, y, 'NumPrint', -1)
 %!error<TreeBagger: 'Surrogate' is not implemented.> ...
@@ -2717,3 +2720,29 @@ endfunction
 %! Y = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
 %! B = TreeBagger (2, meas, Y, 'ClassNames', {'3', '1', '2'});
 %! assert_equal (B.ClassNames, [3; 1; 2]);
+
+%!shared X, yb, yr
+%! k = (0:119)';
+%! c = mod (k, 4) + 1;
+%! j = floor (k / 4);
+%! x2 = mod (k * 7, 10);
+%! X = [c, x2];
+%! yb = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0) ...
+%!      | (x2 > 7);
+%! yr = [3; 1; 4; 1.5];
+%! yr = yr(c) + 0.1 * sin (k) + 0.2 * x2;
+%! Xq = [1, 0; 3, 5; 5, 0; NaN, 2; 2.5, 9];
+
+%!test  # every bagged tree takes the categorical predictors and options
+%! B = TreeBagger (3, X, yb, 'CategoricalPredictors', 1, ...
+%!                 'MaxNumCategories', 3, 'AlgorithmForCategorical', 'pca');
+%! assert_equal (B.Trees{1}.CategoricalPredictors, 1);
+%! assert_equal (any (strcmpi (B.TreeArguments, 'MaxNumCategories')), true);
+%! assert_equal (any (strcmpi (B.TreeArguments, 'AlgorithmForCategorical')), ...
+%!               true);
+%! Br = TreeBagger (3, X, yr, 'Method', 'regression', ...
+%!                  'CategoricalPredictors', 1);
+%! assert_equal (Br.Trees{1}.CategoricalPredictors, 1);
+
+%!error<TreeBagger: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! TreeBagger (3, X, yb, 'CategoricalPredictors', 3)

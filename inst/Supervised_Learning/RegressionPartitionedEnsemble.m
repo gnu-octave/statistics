@@ -291,6 +291,10 @@ classdef RegressionPartitionedEnsemble
       F.X = Mdl.X;
       F.Y = Mdl.Y;
       F.Weights = Mdl.W;
+      if (! isempty (Mdl.CategoricalPredictors))
+        fargs(end+1:end+2) = {'CategoricalPredictors', ...
+                              Mdl.CategoricalPredictors};
+      endif
       this.Trainable = foldModels (class (Mdl), F, Partition, fargs);
       this = compactFolds (this);
 

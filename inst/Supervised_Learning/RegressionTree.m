@@ -43,9 +43,11 @@ classdef RegressionTree
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
   ##
-  ## A categorical predictor is split into two sets of levels, those of lower
-  ## mean response on the left, and an observation whose level a node did not
-  ## see stops there, as one missing the predictor does.
+  ## A categorical predictor is split into two sets of levels by ordering the
+  ## levels by their mean response, and an observation whose level a node did
+  ## not see stops there, as one missing the predictor does.  The lower means
+  ## go left; MATLAB does not always keep that side, and equally good splits
+  ## may be chosen differently, so a node's sides and numbering may differ.
   ##
   ## @strong{What this class does not do yet.}  Surrogate splits are not
   ## implemented, and an option asking for them is refused rather than
