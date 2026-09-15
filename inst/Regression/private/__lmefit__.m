@@ -51,26 +51,27 @@ function M = __lmefit__ (X, y, Z, G, method)
 
   ## Build the expanded random design Zx (n-by-N, N = sum_k q_k*nlev_k) and the
   ## per-term bookkeeping.  Column block for (term k, level l) holds the rows of
-  ## Z{k} that belong to level l and zeros elsewhere.
-  Zx = [];
+  ## Z{k} that belong to level l and zeros elsewhere, so each row has only
+  ## sum_k q_k non-zeros and Zx is held sparse.
+  N = 0;
   qk = zeros (1, nt);
   nlev = zeros (1, nt);
   levels = cell (1, nt);
   gidx = cell (1, nt);
+  I = J = V = cell (1, nt);
   for k = 1:nt
     qk(k) = columns (Z{k});
     [lev, ~, gi] = unique (G{k}(:));
     nlev(k) = numel (lev);
     levels{k} = lev;
     gidx{k} = gi;
-    blk = zeros (n, qk(k) * nlev(k));
-    for l = 1:nlev(k)
-      rows_l = (gi == l);
-      cols_l = (l-1)*qk(k) + (1:qk(k));
-      blk(rows_l, cols_l) = Z{k}(rows_l, :);
-    endfor
-    Zx = [Zx, blk];
+    I{k} = repmat ((1:n)', qk(k), 1);
+    J{k} = N + repmat ((gi - 1) * qk(k), qk(k), 1) ...
+           + kron ((1:qk(k))', ones (n, 1));
+    V{k} = Z{k}(:);
+    N += qk(k) * nlev(k);
   endfor
+  Zx = sparse (vertcat (I{:}), vertcat (J{:}), vertcat (V{:}), n, N);
 
   ## theta layout: lower-triangular Cholesky entries of the *relative*
   ## covariance D_k = L_k*L_k' (Psi_k = sigma2*D_k) per term, concatenated.
@@ -269,8 +270,10 @@ endfunction
 
 ## The cross products the profiled deviance needs.  All are free of theta, so
 ## they are formed once per fit and the optimiser never touches X, y or Zx.
+## ZtZ is made full: the factorisations downstream work on dense q-by-q
+## matrices.
 function CP = cross_products (X, y, Zx)
-  CP.ZtZ = Zx' * Zx;
+  CP.ZtZ = full (Zx' * Zx);
   CP.ZtX = Zx' * X;
   CP.Zty = Zx' * y;
   CP.XtX = X' * X;

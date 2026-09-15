@@ -475,8 +475,8 @@ classdef GeneralizedLinearMixedModel
 
     ## -*- texinfo -*-
     ## @deftypefn {GeneralizedLinearMixedModel} {@var{D} =} designMatrix (@var{glme}, @var{type})
-    ## Return the fixed (@qcode{"Fixed"}, default) or random (@qcode{"Random"})
-    ## design matrix.
+    ## Return the fixed (@qcode{"Fixed"}, default) design matrix as a full
+    ## matrix, or the random (@qcode{"Random"}) design matrix as a sparse one.
     ## @end deftypefn
     function D = designMatrix (this, type)
       if (nargin < 2), type = "Fixed"; endif
@@ -579,6 +579,8 @@ endfunction
 %!test  # designMatrix and ModelCriterion
 %! assert_equal (size (designMatrix (glme, "Fixed")), [42, 2]);
 %! assert_equal (size (designMatrix (glme, "Random")), [42, 6]);
+%! assert_equal (issparse (designMatrix (glme, "Fixed")), false);
+%! assert_equal (issparse (designMatrix (glme, "Random")), true);
 %! assert_equal (glme.ModelCriterion.Deviance, -2 * glme.LogLikelihood, 1e-10);
 
 ## Error handling

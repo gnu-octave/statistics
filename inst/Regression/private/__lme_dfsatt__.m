@@ -50,7 +50,7 @@ function df = __lme_dfsatt__ (X, y, Zx, qk, nlev, Psi, sigma2, method, L)
   ## Every cross product below is free of eta, and the finite differences ask
   ## for O(ne^2) deviances, so forming them once is what keeps the whole
   ## Satterthwaite calculation out of the observation dimension.
-  CP.ZtZ = Zx' * Zx;
+  CP.ZtZ = full (Zx' * Zx);
   CP.ZtX = Zx' * X;
   CP.Zty = Zx' * y;
   CP.XtX = X' * X;

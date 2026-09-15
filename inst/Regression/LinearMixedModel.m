@@ -664,8 +664,8 @@ classdef LinearMixedModel
     ## @deftypefn {LinearMixedModel} {@var{D} =} designMatrix (@var{lme}, @var{type})
     ##
     ## Return the fixed-effects design matrix (@var{type} = @qcode{"Fixed"},
-    ## default) or the expanded random-effects design matrix
-    ## (@var{type} = @qcode{"Random"}).
+    ## default) as a full matrix, or the expanded random-effects design matrix
+    ## (@var{type} = @qcode{"Random"}) as a sparse matrix.
     ##
     ## @end deftypefn
     function D = designMatrix (this, type)
@@ -823,6 +823,8 @@ endclassdef
 %!            -0.7955462; 0.2545924], 1e-4);   # BLUPs vs MATLAB
 %! assert_equal (size (designMatrix (lme, "Fixed")), [42, 3]);
 %! assert_equal (size (designMatrix (lme, "Random")), [42, 6]);
+%! assert_equal (issparse (designMatrix (lme, "Fixed")), false);
+%! assert_equal (issparse (designMatrix (lme, "Random")), true);
 
 %!test  # R-squared and sums of squares (MATLAB SST = SSE + SSR convention)
 %! assert_equal (lme.Rsquared.Ordinary, 0.8758549, 1e-6);

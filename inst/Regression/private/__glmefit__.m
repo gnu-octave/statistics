@@ -156,21 +156,23 @@ function beta = glm_irls (X, y, distr, link)
   endfor
 endfunction
 
-## ---- expanded random design (shared with the LMM engine's convention) ----
+## ---- expanded random design, sparse (shared with the LMM engine) ----
 function [Zx, qk, nlev, levels, gidx] = expand_random (Z, G, n)
   nt = numel (Z);
-  Zx = [];  qk = zeros (1, nt);  nlev = zeros (1, nt);
+  N = 0;  qk = zeros (1, nt);  nlev = zeros (1, nt);
   levels = cell (1, nt);  gidx = cell (1, nt);
+  I = J = V = cell (1, nt);
   for k = 1:nt
     qk(k) = columns (Z{k});
     [lev, ~, gi] = unique (G{k}(:));
     nlev(k) = numel (lev);  levels{k} = lev;  gidx{k} = gi;
-    blk = zeros (n, qk(k) * nlev(k));
-    for l = 1:nlev(k)
-      blk (gi == l, (l-1)*qk(k) + (1:qk(k))) = Z{k}(gi == l, :);
-    endfor
-    Zx = [Zx, blk];
+    I{k} = repmat ((1:n)', qk(k), 1);
+    J{k} = N + repmat ((gi - 1) * qk(k), qk(k), 1) ...
+           + kron ((1:qk(k))', ones (n, 1));
+    V{k} = Z{k}(:);
+    N += qk(k) * nlev(k);
   endfor
+  Zx = sparse (vertcat (I{:}), vertcat (J{:}), vertcat (V{:}), n, N);
 endfunction
 
 ## ---- weighted mixed-model inner solver / objective ----
@@ -317,7 +319,7 @@ endfunction
 function CP = weighted_cross (X, z, Zx, w)
   w = w(:);
   Zw = Zx .* w;
-  CP.ZtZ = Zw' * Zx;
+  CP.ZtZ = full (Zw' * Zx);
   CP.ZtX = Zw' * X;
   CP.Ztz = Zw' * z;
   CP.XtX = (X .* w)' * X;
@@ -408,7 +410,7 @@ function ll = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, link)
   for g = 1:nlev(1)
     idx = (gi == g);
     Xg = X(idx, :);
-    Zg = Zx(idx, (g-1)*q + (1:q));
+    Zg = full (Zx(idx, (g-1)*q + (1:q)));
     yg = y(idx);
     bg = zeros (q, 1);
     if (! degenerate)
