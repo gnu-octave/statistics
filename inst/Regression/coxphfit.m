@@ -162,11 +162,12 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   endif
 
   ## --- X and T -----------------------------------------------------------
-  if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ! isempty (X)))
+  if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
     error ("coxphfit: X must be a real numeric matrix.");
   endif
-  if (! (isnumeric (T) && isreal (T) && ! isempty (T)))
-    error ("coxphfit: T must be a real numeric vector.");
+  if (! (isnumeric (T) && isreal (T)
+                       && (isvector (T) || (ismatrix (T) && columns (T) == 2))))
+    error ("coxphfit: T must be a vector or 2-column matrix of real numbers.");
   endif
   ## T is either a vector of event times or, in the counting process form, an
   ## N-by-2 matrix whose rows give a (start, stop] interval of exposure.
@@ -291,7 +292,11 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
     n = numel (T);
   endif
   if (n == 0)
-    error ("coxphfit: no complete observations remain after removing NaNs.");
+    if (isempty (X) || isempty (T))
+      error ("coxphfit: x and t must contain at least one observation.");
+    else
+      error ("coxphfit: no complete observations remain after removing NaNs.");
+    endif
   endif
 
   ## A column with no variation carries no information.  Globally, that is a
@@ -834,7 +839,7 @@ endfunction
 %!error<coxphfit: each row of T must give a \(start, stop\] interval with start strictly less than stop.> ...
 %! coxphfit (X, [T, T])
 
-%!error<coxphfit: T must be a vector of event times or an N-by-2 matrix of \(start, stop\] intervals.> ...
+%!error<coxphfit: T must be a vector or 2-column matrix of real numbers.> ...
 %! coxphfit (X, ones (10, 3))
 
 ## Stratified fits, against R2024a
@@ -947,3 +952,9 @@ endfunction
 ## A constant column is reported, not silently absorbed
 %!warning<coxphfit: the Cox model cannot have a constant term in X.> ...
 %! coxphfit ([X, ones(10,1)], T);
+
+## Edge cases with empty arrays
+%!error <T must be a vector or 2-column matrix of real numbers.> ...
+%! coxphfit ([], [])
+%!error <coxphfit: x and t must contain at least one observation.> ...
+%! coxphfit (zeros(0,3), zeros(0,1))
