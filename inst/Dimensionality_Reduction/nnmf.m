@@ -83,8 +83,9 @@ function [W, H, D] = nnmf (A, K, varargin)
 
   [n, m] = size (A);
 
-  if (! (isscalar (K) && isnumeric (K) && K >= 1 && K == fix (K)))
-    error ("nnmf: K must be a positive integer.");
+  if (! (isscalar (K) && isnumeric (K) && K >= 1 && K <= min (n, m) && K == fix (K)))
+    error (strcat ("nnmf: k must be a positive integer no larger than the number", ...
+                   " of rows or columns in a."));
   endif
 
   ## Defaults and Name/Value parsing
@@ -276,8 +277,9 @@ endfunction
 %!error<nnmf: A must be a numeric matrix.> nnmf ({1, 2}, 1)
 %!error<nnmf: A must be real and finite.> nnmf ([1, Inf; 2, 3], 1)
 %!error<nnmf: A must be real and finite.> nnmf ([1+2i, 3; 4, 5], 1)
-%!error<nnmf: K must be a positive integer.> nnmf (ones (4, 3), 0)
-%!error<nnmf: K must be a positive integer.> nnmf (ones (4, 3), 1.5)
+%!error <nnmf: k must be a positive integer no larger than the number> nnmf (ones (4, 3), 0)
+%!error <nnmf: k must be a positive integer no larger than the number> nnmf (ones (4, 3), 1.5)
+%!error <nnmf: k must be a positive integer no larger than the number> nnmf (ones (4, 3), 5)
 %!error<nnmf: 'Algorithm' must be 'als' or 'mult'.> ...
 %! nnmf (ones (4, 3), 2, "Algorithm", "foo")
 %!error<nnmf: 'W0' must be an 4-by-2 matrix.> ...
@@ -288,3 +290,10 @@ endfunction
 %! nnmf (ones (4, 3), 2, "Replicates", 0)
 %!error<nnmf: unknown parameter name 'bogus'.> nnmf (ones (4, 3), 2, "bogus", 1)
 %!error<nnmf: 'Options' must be a structure.> nnmf (ones (4, 3), 2, "Options", 5)
+
+%!test
+%! ## Edge cases with empty arrays
+%!error <nnmf: k must be a positive integer no larger than the number> ...
+%! nnmf ([], 1)
+%!error <nnmf: k must be a positive integer no larger than the number> ...
+%! nnmf (zeros(0,3), 1)
