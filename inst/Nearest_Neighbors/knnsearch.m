@@ -605,6 +605,17 @@ endfunction
 %! assert_equal (rows (idx{2}), 1);
 
 ## Test input validation
+## Neighbours at equal distance come in row order, as R2024a returns them,
+## and the K-th neighbour is the earlier of two tied rows.
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! [idx, D] = knnsearch (X, [6.3, 4.9], 'K', 5);
+%! assert_equal (idx, [73, 124, 127, 57, 128]);
+%! assert_equal (D(4), D(5));
+%! assert_equal (knnsearch (X, [6.3, 4.9], 'K', 4), [73, 124, 127, 57]);
+%! idx = knnsearch (X, [6.3, 4.9], 'K', 4, 'NSMethod', 'exhaustive');
+%! assert_equal (idx, [73, 124, 127, 57]);
 %!error<knnsearch: too few input arguments.> knnsearch (1)
 %!error<knnsearch: number of columns in X and Y must match.> ...
 %! knnsearch (ones (4, 5), ones (4))

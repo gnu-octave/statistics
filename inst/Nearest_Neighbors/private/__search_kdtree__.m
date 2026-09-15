@@ -71,6 +71,21 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
   indices = [];
   distances = [];
   search (node, 0);
+  ## Neighbours at equal distance come in row order, as R2024a returns them:
+  ## on fisheriris two points 0.20000000000000018 from a query come back as
+  ## rows 57 then 128, and the K-th neighbour is the earlier row.  A range
+  ## search comes back in row order outright, which is what an unsorted
+  ## search returns, and a caller sorting it by distance keeps ties in it.
+  if (is_range)
+    [indices, o] = sort (indices);
+    distances = distances(o);
+  endif
+
+  function byDistanceThenRow ()
+    [~, o] = sortrows ([distances(:), indices(:)]);
+    distances = distances(o);
+    indices = indices(o);
+  endfunction
 
   function search (node, depth)
 
@@ -87,13 +102,13 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
         distances = [distances; dists(mask)];
       elseif (length (distances) >= k)
         ## The list is already full, so only a candidate beating its worst
-        ## member is worth merging, and most leaves supply none.
-        mask = dists < distances(end);
+        ## member, or tying it from an earlier row, is worth merging, and most
+        ## leaves supply none.
+        mask = dists <= distances(end);
         if (any (mask))
           indices = [indices; leaf_indices(mask)'];
           distances = [distances; dists(mask)];
-          [distances, sort_idx] = sort (distances);
-          indices = indices(sort_idx);
+          byDistanceThenRow ();
           distances = distances(1:k);
           indices = indices(1:k);
         endif
@@ -101,8 +116,7 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
         indices = [indices; leaf_indices'];
         distances = [distances; dists];
         if (length (distances) >= k)
-          [distances, sort_idx] = sort (distances);
-          indices = indices(sort_idx);
+          byDistanceThenRow ();
           if (length (distances) > k)
             distances = distances(1:k);
             indices = indices(1:k);
@@ -129,7 +143,9 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
         if (plane_dist <= r)
           search (further, depth + 1);
         endif
-      elseif (length (distances) < k || plane_dist < distances(end))
+      elseif (length (distances) < k || plane_dist <= distances(end))
+        ## A plane at exactly the worst distance may still hide a tie from an
+        ## earlier row, so that side is searched too.
         search (further, depth + 1);
       endif
     endif

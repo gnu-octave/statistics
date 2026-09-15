@@ -2978,6 +2978,18 @@ endfunction
 %! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
 %! assert_equal (Mdl.NumObservations, 128);
 
+## MATLAB parity: of two neighbours at equal distance the earlier row counts.
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! Mdl = fitcknn (X, Y, 'NumNeighbors', 4);
+%! [~, s] = predict (Mdl, [6.3, 4.9]);
+%! assert_equal (s, [0, 0.5, 0.5], 1e-15);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
+%! assert_equal (resubEdge (Mdl), 0.86407659007327, 1e-13);
 %!error<ClassificationKNN: 'Weights' must be a real numeric vector.> ...
 %! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
 %!error<ClassificationKNN: 'Weights' must have one element per row in X.> ...
