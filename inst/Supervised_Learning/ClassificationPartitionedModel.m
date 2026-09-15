@@ -679,7 +679,8 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            this.Trained{k} = fitcknn (this.X(idx, :), this.Y(idx,:), args{:});
+            this.Trained{k} = fitcknn (this.X(idx, :), this.Y(idx,:), ...
+                                       args{:}, 'Weights', Mdl.RawWeights(idx));
           endfor
 
         case 'NaiveBayes'
@@ -1796,11 +1797,11 @@ endfunction
 %! assert_equal (cvModel.ModelParameters.NSMethod, "exhaustive");
 %! assert_equal (cvModel.ModelParameters.Distance, "euclidean");
 %! assert_equal (isempty (cvModel.Trained{1}.Mu), true);
-%! assert_equal (label, {'b'; 'b'; 'a'; 'a'});
-%! assert_equal (score, [0.3333, 0.6667; 0.3333, 0.6667; 0.6667, 0.3333; ...
-%!          0.6667, 0.3333], 1e-4);
-%! assert_equal (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; ...
-%!          0.3333, 0.6667], 1e-4);
+%! ## Each fold keeps the parent's prior, so a fold holding one 'a' and two
+%! ## 'b' rows gives the classes equal votes; values from R2024a.
+%! assert_equal (label, {'a'; 'a'; 'a'; 'a'});
+%! assert_equal (score, 0.5 * ones (4, 2), 1e-15);
+%! assert_equal (cost, 0.5 * ones (4, 2), 1e-15);
 
 ## Test input validation for kfoldPredict
 

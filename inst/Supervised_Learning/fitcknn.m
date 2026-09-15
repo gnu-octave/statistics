@@ -70,6 +70,13 @@
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
+## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
+## weights, one per row of @var{X}.  Each class carries its prior, spread
+## over its observations in proportion to their weights, and a neighbour
+## votes with that weight.  An empirical prior sums the weights per class,
+## standardization uses weighted means and standard deviations, and a row of
+## zero weight is left out.
+##
 ## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is

@@ -48,13 +48,9 @@ classdef ClassificationKNN
     ## Observation weights
     ##
     ## A numeric column vector with one entry per observation used for fitting.
-    ## Each class carries its prior spread evenly over its own
-    ## observations, so an observation of class @math{k} weighs
-    ## @qcode{Prior(k)} divided by the number of observations in that class.  This property is read-only.
-    ##
-    ## Each class carries its prior spread evenly over its own observations,
-    ## so an observation of a class weighs @qcode{Prior} for that class
-    ## divided by the number of observations it holds.
+    ## Each class carries its prior, spread over its own observations in
+    ## proportion to the @qcode{'Weights'} given, or evenly when none were.
+    ## Reassigning @qcode{Prior} re-derives it.  This property is read-only.
     ##
     ## @end deftp
     W               = [];
@@ -622,6 +618,10 @@ classdef ClassificationKNN
     ## legitimately singular on data whose predictors are collinear.
     Fitted = false;
     STfun = @(x) x;
+
+    ## The observation weights as they were given, before the prior scaled
+    ## them, so that reassigning Prior can re-derive W.
+    RawWeights = [];
   endproperties
 
   ## Set methods for the properties a user may assign.
@@ -651,9 +651,14 @@ classdef ClassificationKNN
       if (strcmpi ('uniform', val))
         this.Prior = ones (1, K) ./ K;
       elseif (isempty (val) || strcmpi ('empirical', val))
-        pr = [];
+        ## Empirical over the weights, which are counts when none were given.
+        pr = zeros (K, 1);
         for i = 1:K
-          pr = [pr; sum(gY==i)];
+          if (isempty (this.RawWeights))
+            pr(i) = sum (gY == i);
+          else
+            pr(i) = sum (this.RawWeights(gY == i));
+          endif
         endfor
         this.Prior = pr(:)' ./ sum (pr);
       elseif (isnumeric (val))
@@ -664,7 +669,11 @@ classdef ClassificationKNN
         this.Prior = val(:)' ./ sum (val);
       endif
       ## The weights follow the prior, so they are rebuilt with it
-      this.W = priorWeights (this.Prior, gY, numel (gY));
+      if (isempty (this.RawWeights))
+        this.W = priorWeights (this.Prior, gY, numel (gY));
+      else
+        this.W = priorNormalize (this.RawWeights, gY, this.Prior);
+      endif
     endfunction
 
     ## The six properties a fitted model may be reassigned.  All of them are
@@ -915,6 +924,13 @@ classdef ClassificationKNN
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
+    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
+    ## weights, one per row of @var{X}.  Each class carries its prior, spread
+    ## over its observations in proportion to their weights, and a neighbour
+    ## votes with that weight.  An empirical prior sums the weights per class,
+    ## standardization uses weighted means and standard deviations, and a row
+    ## of zero weight is left out.
+    ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
     ## specifying the transformation applied to predicted classification scores.
@@ -1023,6 +1039,7 @@ classdef ClassificationKNN
       BucketSize      = 50;
       CacheSize       = 1000;
       CatPreds        = [];
+      Weights         = [];
 
       ## Number of parameters for Standardize, Scale, Cov (maximum 1 allowed)
       SSC = 0;
@@ -1030,6 +1047,22 @@ classdef ClassificationKNN
       ## Parse extra parameters
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
+
+          case 'weights'
+            Weights = varargin{2};
+            if (! (isnumeric (Weights) && isvector (Weights)
+                   && isreal (Weights)))
+              error (strcat ("ClassificationKNN: 'Weights' must be a real", ...
+                             " numeric vector."));
+            endif
+            if (numel (Weights) != rows (X))
+              error (strcat ("ClassificationKNN: 'Weights' must have one", ...
+                             " element per row in X."));
+            endif
+            if (any (Weights < 0) || ! (sum (Weights) > 0))
+              error (strcat ("ClassificationKNN: 'Weights' must be", ...
+                             " nonnegative and must not be all zero."));
+            endif
 
           case 'standardize'
             if (SSC < 1)
@@ -1275,10 +1308,20 @@ classdef ClassificationKNN
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
       RowsUsed  = ! isnan (gY);
+      ## A row of zero weight is dropped too, as R2024a drops it.
+      if (! isempty (Weights))
+        RowsUsed = RowsUsed & Weights(:) > 0;
+      endif
       Yret      = Y(RowsUsed, :);
       Xret      = X(RowsUsed, :);
       this.X    = Xret;
       this.Y    = Yret;
+      if (isempty (Weights))
+        this.RawWeights = ones (rows (Xret), 1);
+      else
+        this.RawWeights = double (Weights(RowsUsed));
+        this.RawWeights = this.RawWeights(:);
+      endif
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
@@ -1305,25 +1348,6 @@ classdef ClassificationKNN
         this.RowsUsed = RowsUsed;
       endif
 
-      ## Handle the Standardize option
-      if (Standardize)
-        ## A lazy learner standardizes at predict time, so each predictor is
-        ## summarized from every observation where it is present, whatever is
-        ## missing elsewhere in the row.  This is what MATLAB reports.
-        this.Mu    = zeros (1, columns (this.X));
-        this.Sigma = zeros (1, columns (this.X));
-        for j = 1:columns (this.X)
-          xj = this.X(:,j);
-          xj = xj(! isnan (xj));
-          this.Mu(j)    = mean (xj);
-          this.Sigma(j) = std (xj);
-        endfor
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
-      else
-        this.Sigma = [];
-        this.Mu = [];
-      endif
-
       ## Handle BreakTies
       if (isempty (BreakTies))
         this.BreakTies = 'smallest';
@@ -1334,8 +1358,34 @@ classdef ClassificationKNN
       ## Handle Cost and Prior
       this.Cost  = Cost;
       this.Prior = Prior;
-      ## Each class carries its prior, spread over its own observations
-      this.W = priorWeights (this.Prior, gY, this.NumObservations);
+      ## Each class carries its prior, spread over its own observations in
+      ## proportion to their weights.  Every retained row gets one, those
+      ## missing a predictor included, so that W lines up with X.
+      this.W = priorNormalize (this.RawWeights, gret, this.Prior);
+
+      ## Handle the Standardize option
+      if (Standardize)
+        ## A lazy learner standardizes at predict time, so each predictor is
+        ## summarized from every observation where it is present, whatever is
+        ## missing elsewhere in the row.  The mean and standard deviation are
+        ## weighted by W, the latter unbiased for reliability weights, which
+        ## R2024a reproduces to 4e-15.
+        this.Mu    = zeros (1, columns (this.X));
+        this.Sigma = zeros (1, columns (this.X));
+        for j = 1:columns (this.X)
+          xj = this.X(:,j);
+          ok = ! isnan (xj);
+          wj = this.W(ok) / sum (this.W(ok));
+          xj = xj(ok);
+          this.Mu(j)    = sum (wj .* xj);
+          this.Sigma(j) = sqrt (sum (wj .* (xj - this.Mu(j)) .^ 2) ...
+                                / (1 - sum (wj .^ 2)));
+        endfor
+        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
+      else
+        this.Sigma = [];
+        this.Mu = [];
+      endif
 
       ## Get number of neighbors
       if (isempty (NumNeighbors))
@@ -1598,6 +1648,10 @@ classdef ClassificationKNN
           ## turning every share into a ratio of infinities.
           w = double (isinf (w));
         endif
+        ## Each neighbour also votes with its observation weight, W, which
+        ## carries the prior: measured on R2024a, this reproduces its scores
+        ## with and without weights, under any prior, to 4e-16.
+        w = w .* this.W(NN_idx(:))';
         for c = 1:rows (this.ClassNames)
           freq(c) = sum (w(kNNgY == c));
         endfor
@@ -2545,7 +2599,8 @@ classdef ClassificationKNN
     ##
     ## @end deftypefn
     function e = resubEdge (this)
-      e = edge (this, this.X, this.Y);
+      ## The training rows keep their weights, as R2024a keeps them.
+      e = edge (this, this.X, this.Y, 'Weights', this.RawWeights);
     endfunction
 
     ## -*- texinfo -*-
@@ -2565,7 +2620,9 @@ classdef ClassificationKNN
     ##
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      L = loss (this, this.X, this.Y, varargin{:});
+      ## The training rows keep their weights unless others are given.
+      L = loss (this, this.X, this.Y, 'Weights', this.RawWeights, ...
+                varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -2598,6 +2655,7 @@ classdef ClassificationKNN
       Y = encodeLabels (this.Y);
       NumObservations = this.NumObservations;
       W               = this.W;
+      RawWeights      = this.RawWeights;
       RowsUsed        = this.RowsUsed;
       Sigma           = this.Sigma;
       BinEdges        = this.BinEdges;
@@ -2627,7 +2685,7 @@ classdef ClassificationKNN
       ## Save classdef name and all model properties as individual variables
       HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
-            'W', 'RowsUsed', 'Sigma', 'Mu', 'NumPredictors', ...
+            'W', 'RawWeights', 'RowsUsed', 'Sigma', 'Mu', 'NumPredictors', ...
             'PredictorNames', 'BinEdges', 'ResponseName', 'ClassNames', ...
             'Prior', 'Cost', ...
             'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
@@ -2814,6 +2872,118 @@ endfunction
 %! Mdl = ClassificationKNN (X, y, 'Prior', [0.3, 0.7]);
 %! assert_equal (predict (Mdl, [NaN, 1]), 2);
 
+## MATLAB parity: a neighbour votes with its weight, W, which carries the
+## prior.  Values from R2024a.
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Q = [5, 1.5; 6, 4.5; 6.5, 5.2; 5.8, 4.9; 6.3, 4.9; 5.7, 4.5];
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
+%! assert_equal (Mdl.Prior, [0.185185185185185, 0.37037037037037, ...
+%!                           0.444444444444444], 1e-14);
+%! assert_equal (Mdl.W([1, 51, 101])', [2, 8, 8] / 675, 1e-15);
+%! [~, s] = predict (Mdl, Q);
+%! assert_equal (s, [1, 0, 0;
+%!                   0, 1, 0;
+%!                   0, 0.157894736842105, 0.842105263157895;
+%!                   0, 0.133333333333333, 0.866666666666667;
+%!                   0, 0.25, 0.75;
+%!                   0, 1, 0], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Q = [5, 1.5; 6, 4.5; 6.5, 5.2; 5.8, 4.9; 6.3, 4.9; 5.7, 4.5];
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5, 'Prior', 'uniform');
+%! [~, s] = predict (Mdl, Q);
+%! assert_equal (s, [1, 0, 0;
+%!                   0, 1, 0;
+%!                   0, 0.183673469387755, 0.816326530612245;
+%!                   0, 0.155844155844156, 0.844155844155844;
+%!                   0, 0.285714285714286, 0.714285714285714;
+%!                   0, 1, 0], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Q = [5, 1.5; 6, 4.5; 6.5, 5.2; 5.8, 4.9; 6.3, 4.9; 5.7, 4.5];
+%! Mdl = fitcknn (X, Y, 'NumNeighbors', 5, 'Prior', 'uniform');
+%! [~, s] = predict (Mdl, Q);
+%! assert_equal (s, [1, 0, 0;
+%!                   0, 1, 0;
+%!                   0, 0.130434782608696, 0.869565217391304;
+%!                   0, 0.130434782608696, 0.869565217391304;
+%!                   0, 0.285714285714286, 0.714285714285714;
+%!                   0, 1, 0], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Q = [5, 1.5; 6, 4.5; 6.5, 5.2; 5.8, 4.9; 6.3, 4.9; 5.7, 4.5];
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5, ...
+%!                'DistanceWeight', 'inverse');
+%! [~, s] = predict (Mdl, Q);
+%! assert_equal (s, [1, 0, 0;
+%!                   0, 1, 0;
+%!                   0, 0.080216792482354, 0.919783207517646;
+%!                   0, 0.165685424949237, 0.834314575050763;
+%!                   0, 0.5, 0.5;
+%!                   0, 1, 0], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5, 'Standardize', true);
+%! assert_equal (Mdl.Mu, [6.06414814814815, 4.35066666666667], 1e-13);
+%! assert_equal (Mdl.Sigma, [0.872766097166902, 1.62323758619346], 1e-13);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Q = [5, 1.5; 6, 4.5; 6.5, 5.2; 5.8, 4.9; 6.3, 4.9; 5.7, 4.5];
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
+%! Mdl.Prior = [0.2, 0.3, 0.5];
+%! assert_equal (Mdl.W([1, 51, 101])', [0.0032, 0.0096, ...
+%!                                     0.0133333333333333], 1e-15);
+%! [~, s] = predict (Mdl, Q);
+%! assert_equal (s, [1, 0, 0;
+%!                   0, 1, 0;
+%!                   0, 0.118942731277533, 0.881057268722467;
+%!                   0, 0.0997229916897507, 0.900277008310249;
+%!                   0, 0.193548387096774, 0.806451612903226;
+%!                   0, 1, 0], 1e-14);
+%!test
+%! load fisheriris
+%! X = meas(1:130,[1, 3]);
+%! Y = species(1:130);
+%! k = (1:130)';
+%! w = (1 + mod (k, 4)) .* (1 + (k > 50) + 2 * (k > 100));
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
+%! assert_equal (resubLoss (Mdl), 0.0681481481481481, 1e-14);
+%! assert_equal (loss (Mdl, X, Y), 0.0592592592592593, 1e-14);
+%! w([2, 60]) = 0;
+%! Mdl = fitcknn (X, Y, 'Weights', w, 'NumNeighbors', 5);
+%! assert_equal (Mdl.NumObservations, 128);
+
+%!error<ClassificationKNN: 'Weights' must be a real numeric vector.> ...
+%! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationKNN: 'Weights' must have one element per row in X.> ...
+%! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
+%!error<ClassificationKNN: 'Weights' must be nonnegative and must not be all zero.> ...
+%! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', -ones (4, 1))
 %!error<ClassificationKNN: invalid function handle for distance metric.> ...
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
@@ -3333,8 +3503,8 @@ endfunction
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);
 %! [l, s, c] = predict (obj, xc);
 %! assert_equal (l, {'versicolor'; 'versicolor'; 'virginica'})
-%! assert_equal (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1])
-%! assert_equal (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0])
+%! assert_equal (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1], 1e-15)
+%! assert_equal (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0], 1e-15)
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'mahalanobis');
@@ -4490,7 +4660,7 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
 %! [~, score, cost] = predict (Mdl, meas([1, 60, 120],:));
-%! assert_equal (cost, 1 - score);
+%! assert_equal (cost, 1 - score, 1e-15);
 
 ## Every documented score transform reaches the scores that are reported, and
 ## none of them moves the label: a transform reshapes what is reported, not
