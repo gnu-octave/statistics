@@ -498,9 +498,10 @@ classdef CompactClassificationGAM
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
     ## returns @var{score}, which contains the predicted class scores or
     ## posterior probabilities for each observation.  Every row is predicted.
-    ## Under boosted trees a missing value adds nothing from its term; under
-    ## splines a row holding a missing value is scored @code{NaN} and takes
-    ## the class of largest prior.
+    ## Under boosted trees a missing value adds nothing from a main effect,
+    ## and an interaction term takes the value its trees give a row missing
+    ## that predictor; under splines a row holding a missing value is scored
+    ## @code{NaN} and takes the class of largest prior.
     ##
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC},
     ## 'IncludeInteractions', @var{includeInteractions})} allows you to specify
@@ -589,12 +590,12 @@ classdef CompactClassificationGAM
                                     this.TreeModel.ShapeValues, XC, ...
                                     interc);
         else
-          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
+          [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           scores = gamboostpredict (this.BinEdges, ...
                                     this.TreeModel.ShapeValues, XC, ...
                                     interc, 0, PE, ...
                                     this.TreeModel.PairValues, ...
-                                    this.TreeModel.Pairs);
+                                    this.TreeModel.Pairs, PM);
         endif
         scores = [-scores, scores];
 

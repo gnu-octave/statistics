@@ -32,6 +32,8 @@ DEFUN_DLD(gamboostpredict, args, ,
 @deftypefnx {statistics} {@var{Y} =} gamboostpredict (@dots{}, @var{Link})\n\
 @deftypefnx {statistics} {@var{Y} =} gamboostpredict (@dots{}, @var{Link}, @\n\
 @var{PairEdges}, @var{PairValues}, @var{Pairs})\n\
+@deftypefnx {statistics} {@var{Y} =} gamboostpredict (@dots{}, @var{Pairs}, @\n\
+@var{PairMissing})\n\
 \n\
 Predict from a generalized additive model of boosted trees.\n\
 \n\
@@ -59,16 +61,19 @@ second column is the logistic function of it.  The default is @qcode{0}.\n\
 @item @var{PairEdges}, @var{PairValues} and @var{Pairs} carry the\n\
 interaction terms, as @code{gamboostinter} returns the first two and as it\n\
 was given the third.  Each pair contributes the value of the cell its two\n\
-predictors fall in on the pair's own cut points, and a pair with either\n\
-predictor missing contributes nothing.  All three must be given together or\n\
-none of them.\n\
+predictors fall in on the pair's own cut points.  All three must be given\n\
+together or none of them.\n\
+\n\
+@item @var{PairMissing}, as @code{gamboostinter} returns it, gives what a row\n\
+missing either predictor of a pair, or both, takes.  Without it such a pair\n\
+contributes nothing.\n\
 @end itemize\n\
 \n\
 @seealso{gamboosttrain, gampredict, ClassificationGAM, RegressionGAM}\n\
 @end deftypefn")
 {
   octave_idx_type nargin = args.length ();
-  if (nargin != 4 && nargin != 5 && nargin != 8)
+  if (nargin != 4 && nargin != 5 && nargin != 8 && nargin != 9)
   {
     print_usage ();
   }
@@ -159,7 +164,7 @@ none of them.\n\
     y(i) = gamb_predict_row (F, X, i);
   }
 
-  if (nargin == 8)
+  if (nargin >= 8)
   {
     if (! args(5).iscell () || ! args(6).iscell ())
     {
@@ -180,6 +185,18 @@ none of them.\n\
     {
       error ("gamboostpredict: Pairs, PairEdges and PairValues must describe "
              "the same number of pairs.");
+    }
+
+    bool with_missing = (nargin == 9);
+    Cell pmiss;
+    if (with_missing)
+    {
+      if (! args(8).iscell () || args(8).numel () != pairs.rows ())
+      {
+        error ("gamboostpredict: PairMissing must be a cell array with one "
+               "element per pair.");
+      }
+      pmiss = args(8).cell_value ();
     }
 
     for (octave_idx_type q = 0; q < pairs.rows (); q++)
@@ -207,15 +224,50 @@ none of them.\n\
                (int) V.columns (), (int) ej.numel (), (int) ek.numel ());
       }
 
+      RowVector mj;
+      RowVector mk;
+      double mb = 0.0;
+      if (with_missing)
+      {
+        if (! pmiss(q).iscell () || pmiss(q).numel () != 3)
+        {
+          error ("gamboostpredict: pair %d has missing-value entries that do "
+                 "not match its surface.", (int) q + 1);
+        }
+        Cell pm = pmiss(q).cell_value ();
+        mj = pm(0).row_vector_value ();
+        mk = pm(1).row_vector_value ();
+        mb = pm(2).scalar_value ();
+        if (mj.numel () != V.columns () || mk.numel () != V.rows ())
+        {
+          error ("gamboostpredict: pair %d has missing-value entries that do "
+                 "not match its surface.", (int) q + 1);
+        }
+      }
+
       for (octave_idx_type i = 0; i < n; i++)
       {
         octave_idx_type a = gamb_bin_of (ej, X(i, j));
         octave_idx_type b = gamb_bin_of (ek, X(i, k));
-        if (a < 0 || b < 0)
+        if (a >= 0 && b >= 0)
         {
-          continue;
+          y(i) += V(a, b);
         }
-        y(i) += V(a, b);
+        else if (with_missing)
+        {
+          if (a < 0 && b < 0)
+          {
+            y(i) += mb;
+          }
+          else if (a < 0)
+          {
+            y(i) += mj(b);
+          }
+          else
+          {
+            y(i) += mk(a);
+          }
+        }
       }
     }
   }
@@ -317,6 +369,18 @@ none of them.\n\
 %! assert_equal (gamboostpredict (E, V, [NaN, 5], 0, 0, PE, PV, [1, 2]), 0);
 
 %!test
+%! ## A pair with a predictor missing takes the value stored for that case: by
+%! ## cell of the other predictor, or one value when both are missing.
+%! E = {zeros(1,0), zeros(1,0)};
+%! V = {0, 0};
+%! PE = {{[1.5], [10]}};
+%! PV = {[1, 2; 3, 4]};
+%! PM = {{[5, 6], [7, 8], 9}};
+%! X = [NaN, 5; NaN, 20; 1, NaN; 2, NaN; NaN, NaN; 2, 20];
+%! assert_equal (gamboostpredict (E, V, X, 0, 0, PE, PV, [1, 2], PM), ...
+%!               [5; 6; 7; 8; 9; 4], 1e-14);
+
+%!test
 %! ## The assembled model reproduces what the interaction phase itself
 %! ## computed: same residuals, so the stored surfaces and the recentring
 %! ## bookkeeping are consistent with the fit they came from.
@@ -361,6 +425,13 @@ none of them.\n\
 %!error<gamboostpredict: Pairs must be a numeric matrix with two columns.> ...
 %! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
 %!                  {[1.5], [1.5]}, {[1, 2; 3, 4]}, [1, 2, 3])
+%!error<gamboostpredict: PairMissing must be a cell array with one element per pair.> ...
+%! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
+%!                  {{[1.5], [1.5]}}, {[1, 2; 3, 4]}, [1, 2], 1)
+%!error<gamboostpredict: pair 1 has missing-value entries that do not match its surface.> ...
+%! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
+%!                  {{[1.5], [1.5]}}, {[1, 2; 3, 4]}, [1, 2], ...
+%!                  {{[1, 2, 3], [1, 2], 0}})
 %!error<gamboostpredict: Pairs, PairEdges and PairValues must describe the same number of pairs.> ...
 %! gamboostpredict ({[1.5], [1.5]}, {[1;2], [1;2]}, [1, 1], 0, 0, ...
 %!                  {[1.5], [1.5]}, {[1, 2; 3, 4]}, [1, 2; 1, 2])

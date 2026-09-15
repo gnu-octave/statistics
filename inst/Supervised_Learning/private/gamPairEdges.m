@@ -17,30 +17,43 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {@var{PE} =} gamPairEdges (@var{TreeModel}, @var{DetectionEdges})
+## @deftypefn {Private Function} {[@var{PE}, @var{PM}] =} gamPairEdges (@var{TreeModel}, @var{DetectionEdges})
 ##
-## The cut points each interaction pair of a boosted-tree GAM is held on.
+## The cut points and missing-value entries of a boosted-tree GAM's pairs.
 ##
 ## @var{PE} has one element per row of @code{@var{TreeModel}.Pairs}, each a
-## @math{1x2} cell of the cut points on the pair's two predictors, as
-## @code{gamboostinter} returns them in @qcode{PairEdges}.  A model saved
-## before pair terms had grids of their own carries none; its surfaces are
-## held on the detection grid @var{DetectionEdges}, one row vector per
-## predictor, which is then read for both predictors of each pair.
+## @math{1x2} cell of the cut points on the pair's two predictors, and @var{PM}
+## the matching @math{1x3} cells of what a row missing the first predictor,
+## the second or both takes, as @code{gamboostinter} returns them in
+## @qcode{PairEdges} and @qcode{PairMissing}.  A model saved before pair terms
+## had grids of their own holds its surfaces on the detection grid
+## @var{DetectionEdges}, one row vector per predictor, which is then read for
+## both predictors of each pair; a model saved before pairs held missing
+## values gets zeros for them, so such a pair still contributes nothing.
 ##
 ## @end deftypefn
 
-function PE = gamPairEdges (TreeModel, DetectionEdges)
+function [PE, PM] = gamPairEdges (TreeModel, DetectionEdges)
 
   pairs = TreeModel.Pairs;
-  if (isfield (TreeModel, 'PairEdges')
-      && numel (TreeModel.PairEdges) == rows (pairs))
+  np = rows (pairs);
+  if (isfield (TreeModel, 'PairEdges') && numel (TreeModel.PairEdges) == np)
     PE = TreeModel.PairEdges;
-    return;
+  else
+    PE = cell (1, np);
+    for q = 1:np
+      PE{q} = {DetectionEdges{pairs(q,1)}(:)', DetectionEdges{pairs(q,2)}(:)'};
+    endfor
   endif
-  PE = cell (1, rows (pairs));
-  for q = 1:rows (pairs)
-    PE{q} = {DetectionEdges{pairs(q,1)}(:)', DetectionEdges{pairs(q,2)}(:)'};
-  endfor
+  if (isfield (TreeModel, 'PairMissing')
+      && numel (TreeModel.PairMissing) == np)
+    PM = TreeModel.PairMissing;
+  else
+    PM = cell (1, np);
+    for q = 1:np
+      [nj, nk] = size (TreeModel.PairValues{q});
+      PM{q} = {zeros(1, nk), zeros(1, nj), 0};
+    endfor
+  endif
 
 endfunction

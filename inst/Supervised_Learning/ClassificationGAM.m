@@ -1464,9 +1464,10 @@ classdef ClassificationGAM
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
     ## returns @var{score}, which contains the predicted class scores or
     ## posterior probabilities for each observation.  Every row is predicted.
-    ## Under boosted trees a missing value adds nothing from its term; under
-    ## splines a row holding a missing value is scored @code{NaN} and takes
-    ## the class of largest prior.
+    ## Under boosted trees a missing value adds nothing from a main effect,
+    ## and an interaction term takes the value its trees give a row missing
+    ## that predictor; under splines a row holding a missing value is scored
+    ## @code{NaN} and takes the class of largest prior.
     ##
     ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC},
     ## 'IncludeInteractions', @var{includeInteractions})} allows you to specify
@@ -1557,12 +1558,12 @@ classdef ClassificationGAM
                                     this.TreeModel.ShapeValues, XC, ...
                                     interc);
         else
-          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
+          [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           scores = gamboostpredict (this.BinEdges, ...
                                     this.TreeModel.ShapeValues, XC, ...
                                     interc, 0, PE, ...
                                     this.TreeModel.PairValues, ...
-                                    this.TreeModel.Pairs);
+                                    this.TreeModel.Pairs, PM);
         endif
         scores = [-scores, scores];
 
@@ -2219,11 +2220,11 @@ classdef ClassificationGAM
         ## The interaction phase ran last, so it is the one extended.  The
         ## running prediction includes the surfaces already fitted, and the
         ## new ones are added to them.
-        PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
+        [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
         f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
                              this.Intercept, 0, PE, ...
                              this.TreeModel.PairValues, ...
-                             this.TreeModel.Pairs);
+                             this.TreeModel.Pairs, PM);
         I = gamboostinter (X, Y, f(:), 1, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
                            MP.MaxNumSplitsPerInteraction, this.W(cobs));
@@ -2234,10 +2235,12 @@ classdef ClassificationGAM
         endif
         ## The new trees cut where they cut, so the surfaces are added on the
         ## union of both grids.
-        [pe, pv] = gamPairMerge (PE, this.TreeModel.PairValues, ...
-                                 I.PairEdges, I.PairValues);
+        [pe, pv, pm] = gamPairMerge (PE, this.TreeModel.PairValues, PM, ...
+                                     I.PairEdges, I.PairValues, ...
+                                     I.PairMissing);
         Mdl.TreeModel.PairEdges = pe;
         Mdl.TreeModel.PairValues = pv;
+        Mdl.TreeModel.PairMissing = pm;
         Mdl.TreeModel.PairIntercept = this.TreeModel.PairIntercept ...
                                       + I.Intercept;
         Mdl.Intercept = this.Intercept + I.Intercept;
@@ -2404,6 +2407,7 @@ classdef ClassificationGAM
         endif
         this.TreeModel.PairValues = I.PairValues;
         this.TreeModel.PairEdges = I.PairEdges;
+        this.TreeModel.PairMissing = I.PairMissing;
         this.TreeModel.PairIntercept = I.Intercept;
         reason.InteractionTrees = I.ReasonForTermination;
         ntrees.InteractionTrees = I.NumTrees;
@@ -2450,6 +2454,7 @@ classdef ClassificationGAM
       pairs = zeros (0, 2);
       pairValues = {};
       pairEdges = {};
+      pairMissing = {};
       pairShift = 0;
 
       ## How many pairs were asked for.  A count or 'all' means search; an
@@ -2510,6 +2515,7 @@ classdef ClassificationGAM
         endif
         pairValues = I.PairValues;
         pairEdges = I.PairEdges;
+        pairMissing = I.PairMissing;
         reason.InteractionTrees = I.ReasonForTermination;
         ntrees.InteractionTrees = I.NumTrees;
       endif
@@ -2525,6 +2531,7 @@ classdef ClassificationGAM
       this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
                                'PairValues', {pairValues}, ...
                                'PairEdges', {pairEdges}, ...
+                               'PairMissing', {pairMissing}, ...
                                'Pairs', pairs, ...
                                'PairIntercept', pairShift);
 
@@ -3201,6 +3208,28 @@ endfunction
 %! [~, s1] = predict (resume (M1, 1), P);
 %! [~, s2] = predict (M2, P);
 %! assert_equal (s1, s2, 1e-12);
+
+%!test  # MATLAB parity: a missing value stops at the node that splits on it
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! yc = y > median (y);
+%! X(1:5,1) = NaN;
+%! X(6:10,3) = NaN;
+%! P = [-0.99, 0, 0; -0.33, 0, 2; 0.33, 0, 4; 0.99, 0, 1; ...
+%!      NaN, 0, 0; -0.9, 0, NaN; 0.9, 0, NaN; NaN, 0, NaN];
+%! Mdl = ClassificationGAM (X, yc, 'NumTreesPerPredictor', 5, ...
+%!                          'Interactions', logical ([1, 0, 1]), ...
+%!                          'NumTreesPerInteraction', 2, ...
+%!                          'MaxNumSplitsPerInteraction', 4);
+%! assert_equal (Mdl.Interactions, [1, 3]);
+%! assert_equal (Mdl.Intercept, 0.193222952248, 1e-10);
+%! [~, s1] = predict (Mdl, P);
+%! [~, s0] = predict (Mdl, P, 'IncludeInteractions', false);
+%! pc = log (s1(:,2) ./ s1(:,1)) - log (s0(:,2) ./ s0(:,1));
+%! assert_equal (pc, [-2.768730478; -1.120470644; 3.467791398; ...
+%!                    2.253371556; 0.09617229376; -1.145305518; ...
+%!                    1.63875225; 0.09617229376], 1e-8);
 
 %!error<ClassificationGAM.resume: Not enough input arguments.> ...
 %! load fisheriris; ...

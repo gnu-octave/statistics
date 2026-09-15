@@ -1037,17 +1037,24 @@ gamb_pair_stat (const BinnedPredictor& Bj, const BinnedPredictor& Bk,
 // 5e-10: a node is cut halfway between two adjacent values of the rows it
 // holds, a leaf keeps at least GAMB_MIN_LEAF rows, the tree grows a layer at a
 // time and a layer that would exceed the split budget keeps the splits of
-// largest gain, and a leaf takes the Newton step of its rows.  A row missing
-// either predictor takes no part in the pair.
+// largest gain, and a node takes the Newton step of the rows it holds.
 //
-// The accepted trees are kept as leaf rectangles and flattened at the end into
-// a grid whose cut points are the ones the pair's trees used, so prediction
-// stays a lookup.  MATLAB's detection grid of eight bins per predictor only
-// chooses the pairs; the fit is not held on it.
-struct PairLeaf
+// A row missing the predictor a node splits on goes no further: it takes that
+// node's value, in training and in prediction, and the gain of a split counts
+// only the rows holding its predictor.  Of 19 maps measured this way 18 agree
+// to 5e-10.  The exception is a regression fitted with missing values whose
+// second interaction tree R2024a roots on residuals equal to ours but not at
+// the split of largest gain; no rule tried reproduces that choice.
+//
+// The accepted trees are flattened at the end into a grid over the cut points
+// they used, plus what a row missing either predictor or both takes, so
+// prediction stays a lookup.
+struct PairTreeNode
 {
-  double lj, hj;                    // lj < x_j <= hj
-  double lk, hk;                    // lk < x_k <= hk
+  int dim;                          // -1 for a leaf, else 0 (j) or 1 (k)
+  double cut;
+  octave_idx_type left;
+  octave_idx_type right;
   double value;
 };
 
@@ -1055,49 +1062,50 @@ struct GamInterTerm
 {
   octave_idx_type j;
   octave_idx_type k;
-  std::vector<PairLeaf> leaves;     // every accepted tree, recentred
+  std::vector<std::vector<PairTreeNode>> trees;   // accepted, recentred
   RowVector ej;                     // the pair's cut points on predictor j
   RowVector ek;                     // and on predictor k
   Matrix value;                     // numel (ej) + 1 by numel (ek) + 1
-};
-
-// A pair tree node while it grows: the rows it holds and its rectangle.
-struct PairNode
-{
-  std::vector<octave_idx_type> rows;
-  PairLeaf box;
+  RowVector missj;                  // x_j missing, one value per cell of x_k
+  RowVector missk;                  // x_k missing, one value per cell of x_j
+  double missboth;                  // both missing
 };
 
 // The best cut of a node over both predictors.  Returns the gain, or -1 when
-// no cut leaves GAMB_MIN_LEAF rows on each side, and sets DIM (0 for j, 1 for
-// k) and CUT, halfway between two adjacent values the node holds.  A tie keeps
-// the first cut found, scanning j before k.
+// no cut leaves GAMB_MIN_LEAF rows holding the predictor on each side, and
+// sets DIM (0 for j, 1 for k) and CUT, halfway between two adjacent values.
+// The gain is taken over the rows holding the predictor.  A tie keeps the
+// first cut found, scanning j before k.
 static double
-gamb_pair_best_cut (const PairNode& node, const Matrix& X, octave_idx_type j,
-                    octave_idx_type k, const ColumnVector& grad,
-                    const ColumnVector& hess, int& dim, double& cut)
+gamb_pair_best_cut (const std::vector<octave_idx_type>& rows, const Matrix& X,
+                    octave_idx_type j, octave_idx_type k,
+                    const ColumnVector& grad, const ColumnVector& hess,
+                    int& dim, double& cut)
 {
   double best = -1.0;
   dim = -1;
   cut = 0.0;
-  octave_idx_type m = (octave_idx_type) node.rows.size ();
-  if (m < 2 * GAMB_MIN_LEAF)
-  {
-    return best;
-  }
 
-  double G = 0.0;
-  double H = 0.0;
-  for (octave_idx_type r : node.rows)
-  {
-    G += grad(r);
-    H += hess(r);
-  }
-
-  std::vector<octave_idx_type> srt (node.rows);
   for (int dd = 0; dd < 2; dd++)
   {
     octave_idx_type col = (dd == 0) ? j : k;
+    std::vector<octave_idx_type> srt;
+    double G = 0.0;
+    double H = 0.0;
+    for (octave_idx_type r : rows)
+    {
+      if (! octave::math::isnan (X(r, col)))
+      {
+        srt.push_back (r);
+        G += grad(r);
+        H += hess(r);
+      }
+    }
+    octave_idx_type m = (octave_idx_type) srt.size ();
+    if (m < 2 * GAMB_MIN_LEAF)
+    {
+      continue;
+    }
     std::stable_sort (srt.begin (), srt.end (),
                       [&X, col] (octave_idx_type a, octave_idx_type b)
                       {
@@ -1132,18 +1140,21 @@ gamb_pair_best_cut (const PairNode& node, const Matrix& X, octave_idx_type j,
   return best;
 }
 
-// Grow one pair tree over ROWS and return its leaves, each carrying the Newton
-// step of its rows scaled by STEP.
-static std::vector<PairLeaf>
-gamb_pair_tree (const std::vector<octave_idx_type>& rows, const Matrix& X,
-                octave_idx_type j, octave_idx_type k,
+// Grow one pair tree over every row and return its nodes, the root first,
+// each carrying the Newton step of the rows it holds scaled by STEP.
+static std::vector<PairTreeNode>
+gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
                 const ColumnVector& grad, const ColumnVector& hess,
                 octave_idx_type maxsplits, double step)
 {
-  const double inf = octave::numeric_limits<double>::Inf ();
-  std::vector<PairNode> leaves (1);
-  leaves[0].rows = rows;
-  leaves[0].box = {-inf, inf, -inf, inf, 0.0};
+  octave_idx_type n = X.rows ();
+  std::vector<PairTreeNode> nodes (1, PairTreeNode {-1, 0.0, -1, -1, 0.0});
+  std::vector<std::vector<octave_idx_type>> held (1);
+  held[0].resize ((std::size_t) n);
+  for (octave_idx_type i = 0; i < n; i++)
+  {
+    held[0][(std::size_t) i] = i;
+  }
 
   struct Cand
   {
@@ -1153,6 +1164,7 @@ gamb_pair_tree (const std::vector<octave_idx_type>& rows, const Matrix& X,
     double cut;
   };
 
+  std::vector<octave_idx_type> leaves (1, 0);
   octave_idx_type budget = maxsplits;
   while (budget > 0)
   {
@@ -1161,8 +1173,8 @@ gamb_pair_tree (const std::vector<octave_idx_type>& rows, const Matrix& X,
     {
       int dim;
       double cut;
-      double g = gamb_pair_best_cut (leaves[l], X, j, k, grad, hess, dim,
-                                     cut);
+      double g = gamb_pair_best_cut (held[(std::size_t) leaves[l]], X, j, k,
+                                     grad, hess, dim, cut);
       if (dim >= 0 && g > 0.0)
       {
         cand.push_back ({g, l, dim, cut});
@@ -1190,103 +1202,117 @@ gamb_pair_tree (const std::vector<octave_idx_type>& rows, const Matrix& X,
       pick[cand[c].leaf] = (int) c;
     }
 
-    std::vector<PairNode> next;
+    std::vector<octave_idx_type> next;
     for (std::size_t l = 0; l < leaves.size (); l++)
     {
+      octave_idx_type id = leaves[l];
       if (pick[l] < 0)
       {
-        next.push_back (leaves[l]);
+        next.push_back (id);
         continue;
       }
-      const Cand& c = cand[(std::size_t) pick[l]];
+      const Cand c = cand[(std::size_t) pick[l]];
       octave_idx_type col = (c.dim == 0) ? j : k;
-      PairNode lo;
-      PairNode hi;
-      lo.box = leaves[l].box;
-      hi.box = leaves[l].box;
-      if (c.dim == 0)
+      std::vector<octave_idx_type> lo;
+      std::vector<octave_idx_type> hi;
+      for (octave_idx_type r : held[(std::size_t) id])
       {
-        lo.box.hj = c.cut;
-        hi.box.lj = c.cut;
-      }
-      else
-      {
-        lo.box.hk = c.cut;
-        hi.box.lk = c.cut;
-      }
-      for (octave_idx_type r : leaves[l].rows)
-      {
-        if (X(r, col) <= c.cut)
+        double v = X(r, col);
+        if (octave::math::isnan (v))
         {
-          lo.rows.push_back (r);
+          continue;
+        }
+        if (v <= c.cut)
+        {
+          lo.push_back (r);
         }
         else
         {
-          hi.rows.push_back (r);
+          hi.push_back (r);
         }
       }
-      next.push_back (lo);
-      next.push_back (hi);
+      octave_idx_type lid = (octave_idx_type) nodes.size ();
+      nodes.push_back (PairTreeNode {-1, 0.0, -1, -1, 0.0});
+      nodes.push_back (PairTreeNode {-1, 0.0, -1, -1, 0.0});
+      held.push_back (lo);
+      held.push_back (hi);
+      nodes[(std::size_t) id].dim = c.dim;
+      nodes[(std::size_t) id].cut = c.cut;
+      nodes[(std::size_t) id].left = lid;
+      nodes[(std::size_t) id].right = lid + 1;
+      next.push_back (lid);
+      next.push_back (lid + 1);
     }
     budget -= (octave_idx_type) cand.size ();
     leaves.swap (next);
   }
 
-  std::vector<PairLeaf> out;
-  for (const PairNode& node : leaves)
+  for (std::size_t id = 0; id < nodes.size (); id++)
   {
     double G = 0.0;
     double H = 0.0;
-    for (octave_idx_type r : node.rows)
+    for (octave_idx_type r : held[id])
     {
       G += grad(r);
       H += hess(r);
     }
-    PairLeaf leaf = node.box;
-    leaf.value = (H > 1e-12) ? step * G / H : 0.0;
-    out.push_back (leaf);
+    nodes[id].value = (H > 1e-12) ? step * G / H : 0.0;
   }
 
-  return out;
+  return nodes;
 }
 
-// The value a set of leaves gives the point (XJ, XK).
+// The value a pair tree gives the point (XJ, XK).  A missing value stops at
+// the first node that splits on its predictor.
 static double
-gamb_pair_value (const std::vector<PairLeaf>& leaves, double xj, double xk)
+gamb_pair_tree_value (const std::vector<PairTreeNode>& tree, double xj,
+                      double xk)
+{
+  std::size_t id = 0;
+  while (tree[id].dim >= 0)
+  {
+    double v = (tree[id].dim == 0) ? xj : xk;
+    if (octave::math::isnan (v))
+    {
+      return tree[id].value;
+    }
+    id = (std::size_t) ((v <= tree[id].cut) ? tree[id].left : tree[id].right);
+  }
+  return tree[id].value;
+}
+
+// The summed value of a pair's trees at (XJ, XK).
+static double
+gamb_pair_value (const std::vector<std::vector<PairTreeNode>>& trees,
+                 double xj, double xk)
 {
   double v = 0.0;
-  for (const PairLeaf& L : leaves)
+  for (const std::vector<PairTreeNode>& t : trees)
   {
-    if (L.lj < xj && xj <= L.hj && L.lk < xk && xk <= L.hk)
-    {
-      v += L.value;
-    }
+    v += gamb_pair_tree_value (t, xj, xk);
   }
   return v;
 }
 
-// Flatten a pair's leaves into a lookup grid.  The cut points on each
-// predictor are every finite bound a leaf carries, and each cell takes the sum
-// of the leaves containing it, read at a point strictly inside the cell.
+// Flatten a pair's trees into a lookup: a grid over every cut point its trees
+// used, read at a point strictly inside each cell, and the values a row
+// missing x_j, x_k or both takes, read the same way.
 static void
 gamb_pair_flatten (GamInterTerm& T)
 {
   std::vector<double> cj;
   std::vector<double> ck;
-  for (const PairLeaf& L : T.leaves)
+  for (const std::vector<PairTreeNode>& t : T.trees)
   {
-    for (double b : {L.lj, L.hj})
+    for (const PairTreeNode& node : t)
     {
-      if (octave::math::isfinite (b))
+      if (node.dim == 0)
       {
-        cj.push_back (b);
+        cj.push_back (node.cut);
       }
-    }
-    for (double b : {L.lk, L.hk})
-    {
-      if (octave::math::isfinite (b))
+      else if (node.dim == 1)
       {
-        ck.push_back (b);
+        ck.push_back (node.cut);
       }
     }
   }
@@ -1323,16 +1349,27 @@ gamb_pair_flatten (GamInterTerm& T)
     return 0.5 * (c[a - 1] + c[a]);
   };
 
-  T.value = Matrix ((octave_idx_type) cj.size () + 1,
-                    (octave_idx_type) ck.size () + 1, 0.0);
-  for (std::size_t a = 0; a <= cj.size (); a++)
+  const double nan = octave::numeric_limits<double>::NaN ();
+  octave_idx_type nj = (octave_idx_type) cj.size () + 1;
+  octave_idx_type nk = (octave_idx_type) ck.size () + 1;
+  T.value = Matrix (nj, nk, 0.0);
+  T.missj = RowVector (nk, 0.0);
+  T.missk = RowVector (nj, 0.0);
+  for (octave_idx_type a = 0; a < nj; a++)
   {
-    for (std::size_t b = 0; b <= ck.size (); b++)
+    double xj = inside (cj, (std::size_t) a);
+    for (octave_idx_type b = 0; b < nk; b++)
     {
-      T.value((octave_idx_type) a, (octave_idx_type) b)
-        = gamb_pair_value (T.leaves, inside (cj, a), inside (ck, b));
+      T.value(a, b) = gamb_pair_value (T.trees, xj,
+                                       inside (ck, (std::size_t) b));
     }
+    T.missk(a) = gamb_pair_value (T.trees, xj, nan);
   }
+  for (octave_idx_type b = 0; b < nk; b++)
+  {
+    T.missj(b) = gamb_pair_value (T.trees, nan, inside (ck, (std::size_t) b));
+  }
+  T.missboth = gamb_pair_value (T.trees, nan, nan);
 }
 
 // What the interaction phase produces.
@@ -1378,22 +1415,11 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
     F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES).edges;
   }
 
-  // The rows each pair can use, those holding both of its predictors.
-  std::vector<std::vector<octave_idx_type>> prow ((std::size_t) np);
   F.term.resize ((std::size_t) np);
   for (octave_idx_type q = 0; q < np; q++)
   {
-    octave_idx_type j = (octave_idx_type) pairs(q, 0) - 1;
-    octave_idx_type k = (octave_idx_type) pairs(q, 1) - 1;
-    F.term[(std::size_t) q].j = j;
-    F.term[(std::size_t) q].k = k;
-    for (octave_idx_type i = 0; i < n; i++)
-    {
-      if (! octave::math::isnan (X(i, j)) && ! octave::math::isnan (X(i, k)))
-      {
-        prow[(std::size_t) q].push_back (i);
-      }
-    }
+    F.term[(std::size_t) q].j = (octave_idx_type) pairs(q, 0) - 1;
+    F.term[(std::size_t) q].k = (octave_idx_type) pairs(q, 1) - 1;
   }
 
   F.shift = 0.0;
@@ -1414,14 +1440,13 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
 
     for (int h = 0; h <= GAMB_MAX_HALVINGS; h++)
     {
-      std::vector<std::vector<PairLeaf>> trial ((std::size_t) np);
+      std::vector<std::vector<PairTreeNode>> trial ((std::size_t) np);
       ColumnVector fnew = f;
       double shift = 0.0;
 
       for (octave_idx_type q = 0; q < np; q++)
       {
         const GamInterTerm& T = F.term[(std::size_t) q];
-        const std::vector<octave_idx_type>& rows = prow[(std::size_t) q];
 
         for (octave_idx_type i = 0; i < n; i++)
         {
@@ -1444,31 +1469,24 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
           hess(i) *= wt(i);
         }
 
-        std::vector<PairLeaf> tree
-          = gamb_pair_tree (rows, X, T.j, T.k, grad, hess, maxsplits, step);
+        std::vector<PairTreeNode> tree
+          = gamb_pair_tree (X, T.j, T.k, grad, hess, maxsplits, step);
 
-        // What the tree adds at each row it holds, and the curvature-weighted
-        // mean of that, which R2024a moves into the intercept: its Intercept
-        // shifts by exactly this amount while the pair contribution it
-        // predicts stays the tree's own.  For squared error it is the row mean.
-        double sv = 0.0;
-        double sh = 0.0;
-        for (octave_idx_type i : rows)
+        // Every row takes a value, a row missing a predictor that of the node
+        // splitting on it.  R2024a moves the root's value into the intercept:
+        // its Intercept shifts by exactly that, with or without missing values,
+        // while the pair contribution it predicts stays the tree's own.  On
+        // complete rows the root value is the tree's curvature-weighted mean.
+        for (octave_idx_type i = 0; i < n; i++)
         {
-          double v = gamb_pair_value (tree, X(i, T.j), X(i, T.k));
-          fnew(i) += v;
-          sv += hess(i) * v;
-          sh += hess(i);
+          fnew(i) += gamb_pair_tree_value (tree, X(i, T.j), X(i, T.k));
         }
-        if (sh > 0.0)
+        double m = tree[0].value;
+        for (PairTreeNode& node : tree)
         {
-          double m = sv / sh;
-          for (PairLeaf& L : tree)
-          {
-            L.value -= m;
-          }
-          shift += m;
+          node.value -= m;
         }
+        shift += m;
         trial[(std::size_t) q] = tree;
       }
 
@@ -1478,9 +1496,7 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
       {
         for (octave_idx_type q = 0; q < np; q++)
         {
-          std::vector<PairLeaf>& acc = F.term[(std::size_t) q].leaves;
-          acc.insert (acc.end (), trial[(std::size_t) q].begin (),
-                      trial[(std::size_t) q].end ());
+          F.term[(std::size_t) q].trees.push_back (trial[(std::size_t) q]);
         }
         F.shift += shift;
         f = fnew;

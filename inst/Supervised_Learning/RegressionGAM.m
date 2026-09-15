@@ -1173,6 +1173,7 @@ classdef RegressionGAM
           endif
           this.TreeModel.PairValues = I.PairValues;
           this.TreeModel.PairEdges = I.PairEdges;
+          this.TreeModel.PairMissing = I.PairMissing;
           this.TreeModel.PairIntercept = I.Intercept;
           reason.InteractionTrees = I.ReasonForTermination;
           ntrees.InteractionTrees = I.NumTrees;
@@ -1220,9 +1221,11 @@ classdef RegressionGAM
     ## @var{Xfit} based on the Generalized Additive Model in @var{obj}.
     ## @var{Xfit} must have the same number of features/variables as the
     ## training data in @var{obj}.  Every row is predicted.  Under boosted
-    ## trees a missing value adds nothing from its term, so a row missing
-    ## every predictor predicts the intercept; under splines a row holding a
-    ## missing value is predicted as @code{NaN}.
+    ## trees a missing value adds nothing from a main effect, and an
+    ## interaction term takes the value its trees give a row missing that
+    ## predictor, so a row missing every predictor predicts the intercept;
+    ## under splines a row holding a missing value is predicted as
+    ## @code{NaN}.
     ##
     ## @itemize
     ## @item
@@ -1347,12 +1350,12 @@ classdef RegressionGAM
                                   this.TreeModel.ShapeValues, Xfit, ...
                                   interc);
         else
-          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
+          [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           yFit = gamboostpredict (this.BinEdges, ...
                                   this.TreeModel.ShapeValues, Xfit, ...
                                   interc, 0, PE, ...
                                   this.TreeModel.PairValues, ...
-                                  this.TreeModel.Pairs);
+                                  this.TreeModel.Pairs, PM);
         endif
         yFit = this.RTfun (yFit);
         if (nargout > 1)
@@ -1813,11 +1816,11 @@ classdef RegressionGAM
         ## The interaction phase ran last, so it is the one extended.  The
         ## running prediction includes the surfaces already fitted, and the
         ## new ones are added to them.
-        PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
+        [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
         f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
                              this.Intercept, 0, PE, ...
                              this.TreeModel.PairValues, ...
-                             this.TreeModel.Pairs);
+                             this.TreeModel.Pairs, PM);
         I = gamboostinter (X, Y, f(:), 2, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
                            MP.MaxNumSplitsPerInteraction, this.W(cobs));
@@ -1828,10 +1831,12 @@ classdef RegressionGAM
         endif
         ## The new trees cut where they cut, so the surfaces are added on the
         ## union of both grids.
-        [pe, pv] = gamPairMerge (PE, this.TreeModel.PairValues, ...
-                                 I.PairEdges, I.PairValues);
+        [pe, pv, pm] = gamPairMerge (PE, this.TreeModel.PairValues, PM, ...
+                                     I.PairEdges, I.PairValues, ...
+                                     I.PairMissing);
         Mdl.TreeModel.PairEdges = pe;
         Mdl.TreeModel.PairValues = pv;
+        Mdl.TreeModel.PairMissing = pm;
         Mdl.TreeModel.PairIntercept = this.TreeModel.PairIntercept ...
                                       + I.Intercept;
         Mdl.Intercept = this.Intercept + I.Intercept;
@@ -1917,6 +1922,7 @@ classdef RegressionGAM
       pairs = zeros (0, 2);
       pairValues = {};
       pairEdges = {};
+      pairMissing = {};
       pairShift = 0;
 
       wanted = -1;
@@ -1969,6 +1975,7 @@ classdef RegressionGAM
         endif
         pairValues = I.PairValues;
         pairEdges = I.PairEdges;
+        pairMissing = I.PairMissing;
         reason.InteractionTrees = I.ReasonForTermination;
         ntrees.InteractionTrees = I.NumTrees;
       endif
@@ -1984,6 +1991,7 @@ classdef RegressionGAM
       this.TreeModel = struct ('ShapeValues', {M.ShapeValues}, ...
                                'PairValues', {pairValues}, ...
                                'PairEdges', {pairEdges}, ...
+                               'PairMissing', {pairMissing}, ...
                                'Pairs', pairs, ...
                                'PairIntercept', pairShift);
 
@@ -2564,6 +2572,39 @@ endfunction
 %!                     'NumTreesPerInteraction', 1, ...
 %!                     'MaxNumSplitsPerInteraction', 4);
 %! M2 = RegressionGAM (X, y, 'Interactions', 1, ...
+%!                     'NumTreesPerInteraction', 2, ...
+%!                     'MaxNumSplitsPerInteraction', 4);
+%! assert_equal (predict (resume (M1, 1), P), predict (M2, P), 1e-12);
+
+%!test  # MATLAB parity: a missing value stops at the node that splits on it
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! X(1:5,1) = NaN;
+%! X(6:10,3) = NaN;
+%! P = [-0.99, 0, 0; -0.33, 0, 2; 0.33, 0, 4; 0.99, 0, 1; ...
+%!      NaN, 0, 0; -0.9, 0, NaN; 0.9, 0, NaN; NaN, 0, NaN];
+%! Mdl = RegressionGAM (X, y, 'Interactions', logical ([1, 0, 1]), ...
+%!                      'NumTreesPerInteraction', 1, ...
+%!                      'MaxNumSplitsPerInteraction', 4);
+%! assert_equal (Mdl.Interactions, [1, 3]);
+%! assert_equal (Mdl.Intercept, 1.27402212251, 1e-10);
+%! pc = predict (Mdl, P) - predict (Mdl, P, 'IncludeInteractions', false);
+%! assert_equal (pc, [0.004044014047; -0.01436832448; 0.01780996877; ...
+%!                    -0.01436832448; -0.0001224643025; -0.002123518423; ...
+%!                    -0.002123518423; -0.0001224643025], 1e-9);
+
+%!test  # resuming keeps what a row missing a pair predictor takes
+%! k = (1:200)';
+%! X = [sin(k), cos(2 * k), mod(k, 5)];
+%! y = 2 * sin (k) + X(:,2) .^ 2 + 0.3 * X(:,3);
+%! X(1:5,1) = NaN;
+%! X(6:10,3) = NaN;
+%! P = [-0.99, 0, 0; 0.33, 0, 4; NaN, 0, 0; -0.9, 0, NaN; NaN, 0, NaN];
+%! M1 = RegressionGAM (X, y, 'Interactions', logical ([1, 0, 1]), ...
+%!                     'NumTreesPerInteraction', 1, ...
+%!                     'MaxNumSplitsPerInteraction', 4);
+%! M2 = RegressionGAM (X, y, 'Interactions', logical ([1, 0, 1]), ...
 %!                     'NumTreesPerInteraction', 2, ...
 %!                     'MaxNumSplitsPerInteraction', 4);
 %! assert_equal (predict (resume (M1, 1), P), predict (M2, P), 1e-12);

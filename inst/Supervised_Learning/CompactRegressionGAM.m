@@ -360,9 +360,11 @@ classdef CompactRegressionGAM
     ## @var{Xfit} based on the Generalized Additive Model in @var{obj}.
     ## @var{Xfit} must have the same number of features/variables as the
     ## training data in @var{obj}.  Every row is predicted.  Under boosted
-    ## trees a missing value adds nothing from its term, so a row missing
-    ## every predictor predicts the intercept; under splines a row holding a
-    ## missing value is predicted as @code{NaN}.
+    ## trees a missing value adds nothing from a main effect, and an
+    ## interaction term takes the value its trees give a row missing that
+    ## predictor, so a row missing every predictor predicts the intercept;
+    ## under splines a row holding a missing value is predicted as
+    ## @code{NaN}.
     ##
     ## @itemize
     ## @item
@@ -479,12 +481,12 @@ classdef CompactRegressionGAM
                                   this.TreeModel.ShapeValues, Xfit, ...
                                   interc);
         else
-          PE = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
+          [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
           yFit = gamboostpredict (this.BinEdges, ...
                                   this.TreeModel.ShapeValues, Xfit, ...
                                   interc, 0, PE, ...
                                   this.TreeModel.PairValues, ...
-                                  this.TreeModel.Pairs);
+                                  this.TreeModel.Pairs, PM);
         endif
         yFit = this.RTfun (yFit);
         return;

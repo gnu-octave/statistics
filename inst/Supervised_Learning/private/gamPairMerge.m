@@ -17,23 +17,27 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{PE}, @var{PV}] =} gamPairMerge (@var{PE1}, @var{PV1}, @var{PE2}, @var{PV2})
+## @deftypefn {Private Function} {[@var{PE}, @var{PV}, @var{PM}] =} gamPairMerge (@var{PE1}, @var{PV1}, @var{PM1}, @var{PE2}, @var{PV2}, @var{PM2})
 ##
 ## Add two sets of interaction surfaces held on different grids.
 ##
 ## Each pair's two surfaces are read on the union of their cut points, at a
 ## point strictly inside every cell, and summed, so the result predicts what
-## the two sets predict together.  @var{PE1} and @var{PE2} are cells of
-## per-pair cut points as @code{gamPairEdges} returns them, and @var{PV1} and
-## @var{PV2} the matching cells of surfaces.
+## the two sets predict together.  What a row missing one predictor takes is
+## read and summed the same way on the union of the other predictor's cut
+## points, and what a row missing both takes is summed.  @var{PE1} and
+## @var{PE2} are cells of per-pair cut points and @var{PM1} and @var{PM2} of
+## missing-value entries, as @code{gamPairEdges} returns them, and @var{PV1}
+## and @var{PV2} the matching cells of surfaces.
 ##
 ## @end deftypefn
 
-function [PE, PV] = gamPairMerge (PE1, PV1, PE2, PV2)
+function [PE, PV, PM] = gamPairMerge (PE1, PV1, PM1, PE2, PV2, PM2)
 
   np = numel (PV1);
   PE = cell (1, np);
   PV = cell (1, np);
+  PM = cell (1, np);
   for q = 1:np
     ej = unique ([PE1{q}{1}(:); PE2{q}{1}(:)])';
     ek = unique ([PE1{q}{2}(:); PE2{q}{2}(:)])';
@@ -42,6 +46,11 @@ function [PE, PV] = gamPairMerge (PE1, PV1, PE2, PV2)
     PV{q} = surfaceAt (PE1{q}, PV1{q}, xj, xk) ...
             + surfaceAt (PE2{q}, PV2{q}, xj, xk);
     PE{q} = {ej, ek};
+    ## A row missing the first predictor is read by cell of the second, and
+    ## the other way round.
+    mj = lineAt (PE1{q}{2}, PM1{q}{1}, xk) + lineAt (PE2{q}{2}, PM2{q}{1}, xk);
+    mk = lineAt (PE1{q}{1}, PM1{q}{2}, xj) + lineAt (PE2{q}{1}, PM2{q}{2}, xj);
+    PM{q} = {mj, mk, PM1{q}{3} + PM2{q}{3}};
   endfor
 
 endfunction
@@ -63,5 +72,14 @@ function V = surfaceAt (E, S, xj, xk)
   a = 1 + sum (xj(:) > E{1}(:)', 2);
   b = 1 + sum (xk(:) > E{2}(:)', 2);
   V = S(a, b);
+
+endfunction
+
+## The values L held on the cut points E, read at every point of X.
+function v = lineAt (E, L, x)
+
+  idx = 1 + sum (x(:) > E(:)', 2);
+  v = L(idx);
+  v = v(:)';
 
 endfunction

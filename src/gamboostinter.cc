@@ -74,6 +74,11 @@ keeping at least five rows in a leaf and growing a layer at a time within\n\
 @var{MaxNumSplits}.\n\
 @item @qcode{PairValues}, a @math{1xM} cell of matrices, one value per\n\
 cell of the pair's own grid.\n\
+@item @qcode{PairMissing}, a @math{1xM} cell, one element per pair: a\n\
+@math{1x3} cell of what a row missing the first predictor takes, one value\n\
+per cell of the second; what a row missing the second takes, one value per\n\
+cell of the first; and what a row missing both takes.  A row missing the\n\
+predictor a node splits on stops there, in training as in prediction.\n\
 @item @qcode{Intercept}, the constant the recentred surfaces gave up.  Add it\n\
 to the intercept of the predictor phase.\n\
 @item @qcode{NumTrees}, @qcode{ReasonForTermination}, @qcode{Deviance} and\n\
@@ -234,19 +239,27 @@ to the intercept of the predictor phase.\n\
   octave_idx_type np = (octave_idx_type) F.term.size ();
   Cell values (1, np);
   Cell pedges (1, np);
+  Cell pmiss (1, np);
   for (octave_idx_type q = 0; q < np; q++)
   {
-    values(q) = octave_value (F.term[(std::size_t) q].value);
+    const GamInterTerm& T = F.term[(std::size_t) q];
+    values(q) = octave_value (T.value);
     Cell ep (1, 2);
-    ep(0) = octave_value (F.term[(std::size_t) q].ej);
-    ep(1) = octave_value (F.term[(std::size_t) q].ek);
+    ep(0) = octave_value (T.ej);
+    ep(1) = octave_value (T.ek);
     pedges(q) = octave_value (ep);
+    Cell pm (1, 3);
+    pm(0) = octave_value (T.missj);
+    pm(1) = octave_value (T.missk);
+    pm(2) = octave_value (T.missboth);
+    pmiss(q) = octave_value (pm);
   }
 
   octave_scalar_map Mdl;
   Mdl.assign ("PairBinEdges", octave_value (edges));
   Mdl.assign ("PairEdges", octave_value (pedges));
   Mdl.assign ("PairValues", octave_value (values));
+  Mdl.assign ("PairMissing", octave_value (pmiss));
   Mdl.assign ("Intercept", octave_value (F.shift));
   Mdl.assign ("NumTrees", octave_value ((double) F.ntrees));
   Mdl.assign ("ReasonForTermination", octave_value (F.reason));
@@ -269,9 +282,22 @@ to the intercept of the predictor phase.\n\
 %! assert_equal (numel (I.PairEdges), 1);
 %! assert_equal (size (I.PairValues{1}), ...
 %!               [numel(I.PairEdges{1}{1}), numel(I.PairEdges{1}{2})] + 1);
+%! assert_equal (numel (I.PairMissing{1}{1}), numel (I.PairEdges{1}{2}) + 1);
+%! assert_equal (numel (I.PairMissing{1}{2}), numel (I.PairEdges{1}{1}) + 1);
 %! assert_equal (numel (I.PairBinEdges), 3);
 %! assert_equal (numel (I.Residuals), 200);
 
+%!test
+%! ## A row missing a predictor of the pair still takes part in the fit.
+%! x = randn (200, 2);
+%! y = double (x(:,1) .* x(:,2) > 0);
+%! x(1:10,1) = NaN;
+%! M = gamboosttrain (x, y, 1, 20, 1, 1);
+%! f0 = gamboostpredict (M.BinEdges, M.ShapeValues, x, M.Intercept);
+%! I = gamboostinter (x, y, f0, 1, [1, 2], 5, 1, 4);
+%! assert_equal (all (isfinite (I.Residuals)), true);
+%! assert_equal (all (isfinite ([I.PairMissing{1}{1}, I.PairMissing{1}{2}, ...
+%!                               I.PairMissing{1}{3}])), true);
 %!test
 %! ## The phase starts from the deviance the predictor phase left, so it can
 %! ## only improve on it.
