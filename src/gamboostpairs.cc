@@ -27,7 +27,9 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 DEFUN_DLD(gamboostpairs, args, ,
           "-*- texinfo -*-\n\
-@deftypefn {statistics} {@var{S} =} gamboostpairs (@var{X}, @var{R})\n\
+@deftypefn  {statistics} {@var{S} =} gamboostpairs (@var{X}, @var{R})\n\
+@deftypefnx {statistics} {@var{S} =} gamboostpairs (@var{X}, @var{R}, @\n\
+@var{Categorical})\n\
 \n\
 Score every pair of predictors for an interaction.\n\
 \n\
@@ -49,6 +51,10 @@ keep is policy and belongs beside that.\n\
 be at least 2 for any pair to exist.\n\
 \n\
 @item @var{R} is the @math{Nx1} residual vector of the additive fit.\n\
+\n\
+@item @var{Categorical}, if given, flags the columns holding level codes, as\n\
+@code{gamboosttrain} takes it.  Such a predictor is laid on its levels\n\
+rather than on eight bins.\n\
 @end itemize\n\
 \n\
 @var{S} is a structure with the following fields, one row per pair, ordered\n\
@@ -69,7 +75,7 @@ which is what MATLAB reports for pair detection at every sample size.\n\
 @seealso{gamboosttrain, gamboostpredict, fcdf, ClassificationGAM}\n\
 @end deftypefn")
 {
-  if (args.length () != 2)
+  if (args.length () != 2 && args.length () != 3)
   {
     print_usage ();
   }
@@ -98,6 +104,13 @@ which is what MATLAB reports for pair detection at every sample size.\n\
     error ("gamboostpairs: X must have at least two columns.");
   }
 
+  // Which columns are categorical, holding level codes.
+  std::vector<bool> cat ((std::size_t) d, false);
+  if (args.length () == 3)
+  {
+    cat = gamb_categorical_arg (args(2), X, "gamboostpairs");
+  }
+
   std::vector<BinnedPredictor> B ((std::size_t) d);
   Cell edges (1, d);
   for (octave_idx_type j = 0; j < d; j++)
@@ -107,7 +120,7 @@ which is what MATLAB reports for pair detection at every sample size.\n\
     {
       xj(i) = X(i, j);
     }
-    B[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES);
+    B[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES, cat[(std::size_t) j]);
     edges(j) = octave_value (B[(std::size_t) j].edges);
   }
 
@@ -211,6 +224,16 @@ which is what MATLAB reports for pair detection at every sample size.\n\
 %!      0.92681284546023668];
 %! assert_equal (S.BinEdges{1}, e, 1e-15);
 
+%!test
+%! ## A categorical predictor keeps every level as a bin of its own.
+%! k = (1:240)';
+%! S = gamboostpairs ([mod(k, 12) + 1, sin(k)], cos (k), [true, false]);
+%! assert_equal (S.BinEdges{1}, 1.5:11.5);
+%! assert_equal (numel (S.BinEdges{2}), 7);
+%!error<gamboostpairs: Categorical must be a logical vector with one element per column of X.> ...
+%! gamboostpairs ([1, 2; 3, 4; 5, 6; 7, 8], [1; 2; 3; 4], true)
+%!error<gamboostpairs: a categorical column must hold positive integer codes.> ...
+%! gamboostpairs ([1.5, 2; 3, 4; 5, 6; 7, 8], [1; 2; 3; 4], [true, false])
 %!error<Invalid call> gamboostpairs (1)
 %!error<gamboostpairs: X must be a numeric matrix.> ...
 %! gamboostpairs ('a', [1;2])

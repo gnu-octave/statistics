@@ -853,6 +853,7 @@ classdef ClassificationGAM
       F_I = 0;
 
       ## Parse extra parameters
+      CategoricalPredictors = [];
       while (numel (varargin) > 0)
         namesGiven{end+1} = tolower (varargin{1});
         switch (tolower (varargin {1}))
@@ -904,6 +905,9 @@ classdef ClassificationGAM
             if (isnumeric (Prior) && numel (Prior) != 2 && ! isstruct (Prior))
               error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
             endif
+
+          case 'categoricalpredictors'
+            CategoricalPredictors = varargin{2};
 
           case 'weights'
             Weights = varargin{2};
@@ -1141,7 +1145,8 @@ classdef ClassificationGAM
                   'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
                   'initiallearnrateforpredictors', ...
                   'initiallearnrateforinteractions', 'maxpvalue', ...
-                  'verbose', 'numprint', 'weights'};
+                  'verbose', 'numprint', 'weights', ...
+                  'categoricalpredictors'};
       if (strcmp (FitMethod, 'boostedtrees'))
         clash = intersect (namesGiven, splineOnly);
         if (! isempty (clash))
@@ -1292,7 +1297,20 @@ classdef ClassificationGAM
           this.W(idx) = this.Prior(k) * Wret(idx) / sum (Wret(idx));
         endif
       endfor
+      ## A categorical predictor is fitted on the indices of its levels,
+      ## which the engine is handed in place of the values.
       this.CategoricalPredictors = [];
+      if (! isempty (CategoricalPredictors))
+        [CP, errmsg] = dummyCoding (X, CategoricalPredictors, ...
+                                    this.PredictorNames);
+        if (! isempty (errmsg))
+          error ("ClassificationGAM: %s", errmsg);
+        endif
+        this.CategoricalPredictors = CP.Index;
+        Levels = cell (1, columns (X));
+        Levels(CP.Index) = CP.Levels(CP.Index);
+        this.TreeModel = struct ('CategoricalLevels', {Levels});
+      endif
       this.ExpandedPredictorNames = this.PredictorNames;
 
       if (strcmp (FitMethod, 'boostedtrees'))
@@ -1549,18 +1567,19 @@ classdef ClassificationGAM
       if (strcmp (this.FitMethod, 'boostedtrees') && ! isempty (this.TreeModel))
         ## Excluding the interactions means excluding the constant they
         ## handed the intercept as well.
+        [Xb, E] = gamCatCode (this.TreeModel, XC, this.BinEdges);
         interc = this.Intercept;
         if (! incInt && isfield (this.TreeModel, 'PairIntercept'))
           interc = interc - this.TreeModel.PairIntercept;
         endif
         if (! incInt || isempty (this.TreeModel.Pairs))
-          scores = gamboostpredict (this.BinEdges, ...
-                                    this.TreeModel.ShapeValues, XC, ...
+          scores = gamboostpredict (E, ...
+                                    this.TreeModel.ShapeValues, Xb, ...
                                     interc);
         else
           [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
-          scores = gamboostpredict (this.BinEdges, ...
-                                    this.TreeModel.ShapeValues, XC, ...
+          scores = gamboostpredict (E, ...
+                                    this.TreeModel.ShapeValues, Xb, ...
                                     interc, 0, PE, ...
                                     this.TreeModel.PairValues, ...
                                     this.TreeModel.Pairs, PM);
@@ -2183,7 +2202,8 @@ classdef ClassificationGAM
 
       ## The rows the fit saw, all of them, coded as the engine takes them.
       cobs = true (rows (this.X), 1);
-      X = this.X(cobs, :);
+      [X, E, cat] = gamCatCode (this.TreeModel, this.X(cobs, :), ...
+                               this.BinEdges);
       gY = labelIndices (this.ClassNames, this.Y(cobs, :));
       Y = gY(:) - 1;
 
@@ -2196,12 +2216,12 @@ classdef ClassificationGAM
         ## No interaction phase ever ran, so the predictor phase is the one
         ## still open.  The engine is handed the prediction reached so far and
         ## returns the increment to add to it.
-        f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
+        f = gamboostpredict (E, this.TreeModel.ShapeValues, X, ...
                              this.Intercept);
         M = gamboosttrain (X, Y, 1, numTrees, ...
                            MP.InitialLearnRateForPredictors, ...
                            MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, ...
-                           f(:), this.W(cobs));
+                           f(:), this.W(cobs), cat);
         if (M.NumTrees == 0)
           error (strcat ("ClassificationGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -2221,13 +2241,13 @@ classdef ClassificationGAM
         ## running prediction includes the surfaces already fitted, and the
         ## new ones are added to them.
         [PE, PM] = gamPairEdges (this.TreeModel, this.PairDetectionBinEdges);
-        f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
+        f = gamboostpredict (E, this.TreeModel.ShapeValues, X, ...
                              this.Intercept, 0, PE, ...
                              this.TreeModel.PairValues, ...
                              this.TreeModel.Pairs, PM);
         I = gamboostinter (X, Y, f(:), 1, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
-                           MP.MaxNumSplitsPerInteraction, this.W(cobs));
+                           MP.MaxNumSplitsPerInteraction, this.W(cobs), cat);
         if (I.NumTrees == 0)
           error (strcat ("ClassificationGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -2352,7 +2372,8 @@ classdef ClassificationGAM
     function this = fitBoostedInteractions (this, X, Y, Interactions, NTI, ...
                                             MSI, LRI, MaxPValue)
 
-      f = gamboostpredict (this.BinEdges, this.TreeModel.ShapeValues, X, ...
+      [X, E, cat] = gamCatCode (this.TreeModel, X, this.BinEdges);
+      f = gamboostpredict (E, this.TreeModel.ShapeValues, X, ...
                            this.Intercept);
 
       Wfit = this.W;
@@ -2371,7 +2392,7 @@ classdef ClassificationGAM
       endif
 
       if (wanted > 0 && columns (X) > 1)
-        S = gamboostpairs (X, res);
+        S = gamboostpairs (X, res, cat);
         pval = 1 - fcdf (S.F, S.DF1, S.DF2);
         pval(S.DF1 <= 0) = 1;
         [pval, ord] = sort (pval);
@@ -2388,6 +2409,7 @@ classdef ClassificationGAM
           pairs = zeros (0, 2);
         endif
         this.PairDetectionBinEdges = S.BinEdges(:);
+        this.PairDetectionBinEdges(cat) = {[]};
         if (isempty (pairs))
           warning (strcat ("ClassificationGAM: model does not include", ...
                            " interaction terms because all interaction", ...
@@ -2400,10 +2422,24 @@ classdef ClassificationGAM
       reason = this.ReasonForTermination;
       ntrees = this.NumTrainedTrees;
       if (! isempty (pairs))
-        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI, Wfit);
+        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI, Wfit, cat);
+        ## A pair tree splitting on one predictor alone is a main effect and
+        ## adds nothing, so a fit made only of such trees keeps no pair, as
+        ## R2024a keeps none.
+        if (I.NumTrees == 0)
+          pairs = zeros (0, 2);
+          warning (strcat ("ClassificationGAM: model does not include", ...
+                           " interaction terms because all interaction", ...
+                           " terms have p-values greater than the", ...
+                           " 'MaxPValue' value, or the software was unable", ...
+                           " to improve the model fit."));
+        endif
+      endif
+      if (! isempty (pairs))
         this.Intercept = this.Intercept + I.Intercept;
         if (wanted <= 0)
           this.PairDetectionBinEdges = I.PairBinEdges(:);
+          this.PairDetectionBinEdges(cat) = {[]};
         endif
         this.TreeModel.PairValues = I.PairValues;
         this.TreeModel.PairEdges = I.PairEdges;
@@ -2442,10 +2478,13 @@ classdef ClassificationGAM
 
       ## The predictor phase, weighted by W over the rows the fit sees.
       Wfit = this.W;
-      M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint, [], Wfit);
+      [X, ~, cat, Levels] = gamCatCode (this.TreeModel, X);
+      M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint, [], Wfit, ...
+                         cat);
       f = gamboostpredict (M.BinEdges, M.ShapeValues, X, M.Intercept);
 
       this.BinEdges  = M.BinEdges(:);   ## a column cell, as MATLAB reports it
+      this.BinEdges(cat) = {[]};
       this.Intercept = M.Intercept;
       reason = struct ('PredictorTrees', M.ReasonForTermination, ...
                        'InteractionTrees', '');
@@ -2474,7 +2513,7 @@ classdef ClassificationGAM
       endif
 
       if (wanted > 0 && columns (X) > 1)
-        S = gamboostpairs (X, M.Residuals);
+        S = gamboostpairs (X, M.Residuals, cat);
         ## The F ratio becomes a probability through the package's own fcdf,
         ## which is verified against MATLAB; the engine deliberately does not
         ## carry a second incomplete beta of its own.
@@ -2495,6 +2534,7 @@ classdef ClassificationGAM
           pairs = zeros (0, 2);
         endif
         this.PairDetectionBinEdges = S.BinEdges(:);
+        this.PairDetectionBinEdges(cat) = {[]};
         if (isempty (pairs))
           warning (strcat ("ClassificationGAM: model does not include", ...
                            " interaction terms because all interaction", ...
@@ -2505,13 +2545,27 @@ classdef ClassificationGAM
       endif
 
       if (! isempty (pairs))
-        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI, Wfit);
+        I = gamboostinter (X, Y, f, 1, pairs, NTI, LRI, MSI, Wfit, cat);
+        ## A pair tree splitting on one predictor alone is a main effect and
+        ## adds nothing, so a fit made only of such trees keeps no pair, as
+        ## R2024a keeps none.
+        if (I.NumTrees == 0)
+          pairs = zeros (0, 2);
+          warning (strcat ("ClassificationGAM: model does not include", ...
+                           " interaction terms because all interaction", ...
+                           " terms have p-values greater than the", ...
+                           " 'MaxPValue' value, or the software was unable", ...
+                           " to improve the model fit."));
+        endif
+      endif
+      if (! isempty (pairs))
         this.Intercept = this.Intercept + I.Intercept;
         pairShift = I.Intercept;
         ## A requested pair list skips detection, so the grid it would have
         ## used comes from the interaction phase instead.
         if (wanted <= 0)
           this.PairDetectionBinEdges = I.PairBinEdges(:);
+          this.PairDetectionBinEdges(cat) = {[]};
         endif
         pairValues = I.PairValues;
         pairEdges = I.PairEdges;
@@ -2533,7 +2587,8 @@ classdef ClassificationGAM
                                'PairEdges', {pairEdges}, ...
                                'PairMissing', {pairMissing}, ...
                                'Pairs', pairs, ...
-                               'PairIntercept', pairShift);
+                               'PairIntercept', pairShift, ...
+                               'CategoricalLevels', {Levels});
 
       ## MATLAB reports the request rather than the selection here, and the
       ## selection through the Interactions property.  NumPrint and
@@ -3149,6 +3204,36 @@ endfunction
 %!                          'NumTreesPerPredictor', 10);
 %! assert_equal (Mdl.Prior, [0.498753117207, 0.501246882793], 1e-12);
 
+%!test  # MATLAB parity: categorical predictors are split by sets of levels
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! X = [c1, x2, c3];
+%! y = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
+%! Q = [1, 0, 10; 2, 0, 10; 3, 0, 10; 1, 0, 20; 1, 0.5, 10; 4, 0, 10; ...
+%!      NaN, 0, 10; 2.5, 0, 20];
+%! Mdl = ClassificationGAM (X, y > 1, 'CategoricalPredictors', [1, 3], ...
+%!                          'NumTreesPerPredictor', 1);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 3]);
+%! assert_equal (Mdl.BinEdges{1}, []);
+%! [~, s] = predict (Mdl, Q);
+%! assert_equal (s(:,2), [0.11920292; 0.88079708; 0.11920292; 0.11920292; ...
+%!                        0.11920292; 0.33924363; 0.33924363; ...
+%!                        0.33924363], 1e-8);
+
+%!test  # MATLAB parity: categorical predictors with the default budget
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = 10 * (mod (floor (k / 2), 2) + 1);
+%! X = [c1, x2, c3];
+%! y = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
+%! Q = [1, 0, 10; 2, 0, 10; 3, 0, 10; 1, 0, 20; 1, 0.5, 10; 4, 0, 10; ...
+%!      NaN, 0, 10; 2.5, 0, 20];
+%! Mdl = ClassificationGAM (X, y > 1, 'CategoricalPredictors', [1, 3]);
+%! assert_equal (predict (Mdl, Q), logical ([0; 1; 0; 0; 0; 0; 0; 0]));
+
 %!test  # MATLAB parity: a row missing a predictor is fitted, not dropped
 %! k = (1:200)';
 %! X = [sin(k), cos(2 * k), mod(k, 5)];
@@ -3263,6 +3348,12 @@ endfunction
 %! bai = ! strcmp (species, "setosa");
 %! addInteractions (fitcgam (meas(bai,2:4), species(bai)), {1})
 
+%!error<ClassificationGAM: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
+%! ClassificationGAM (ones (10, 2), [0; 1; 0; 1; 0; 1; 0; 1; 0; 1], ...
+%!                    'CategoricalPredictors', 3)
+%!error<ClassificationGAM: 'categoricalpredictors' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
+%! ClassificationGAM (ones (10, 2), [0; 1; 0; 1; 0; 1; 0; 1; 0; 1], ...
+%!                    'FitMethod', 'splines', 'CategoricalPredictors', 1)
 %!error<ClassificationGAM: 'Weights' must be a numeric vector.> ...
 %! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], 'Weights', 'a')
 %!error<ClassificationGAM: 'Weights' must have one element per row of X.> ...

@@ -96,7 +96,8 @@ struct BinnedPredictor
 static const octave_idx_type GAMB_PAIR_EDGES = 7;
 
 static BinnedPredictor
-gamb_bin (const ColumnVector& x, octave_idx_type maxedges)
+gamb_bin (const ColumnVector& x, octave_idx_type maxedges,
+          bool categorical = false)
 {
   octave_idx_type n = x.numel ();
 
@@ -117,6 +118,12 @@ gamb_bin (const ColumnVector& x, octave_idx_type maxedges)
   octave_idx_type nd = (octave_idx_type) v.size ();
   octave_idx_type nf = (octave_idx_type) sorted.size ();
   BinnedPredictor B;
+
+  // A categorical predictor keeps every level as a bin of its own.
+  if (categorical)
+  {
+    maxedges = nd;
+  }
 
   // A constant predictor admits no split at all: one bin, no cut points.
   if (nd < 2)
@@ -283,7 +290,8 @@ gamb_gain (double GL, double HL, double GR, double HR)
 static double
 gamb_best_cut (const std::vector<double>& G, const std::vector<double>& H,
                const std::vector<double>& C, octave_idx_type lo,
-               octave_idx_type hi, octave_idx_type& cut)
+               octave_idx_type hi, octave_idx_type& cut,
+               bool categorical = false)
 {
   double best = -1.0;
   cut = -1;
@@ -302,7 +310,9 @@ gamb_best_cut (const std::vector<double>& G, const std::vector<double>& H,
     double GL = G[b + 1] - G[lo];
     double HL = H[b + 1] - H[lo];
     double g = gamb_gain (GL, HL, Gtot - GL, Htot - HL);
-    if (g > best)
+    // Cuts between categorical levels often tie up to rounding, and the
+    // first in the order of the levels is kept, as R2024a keeps it.
+    if (categorical ? (g > best + 1e-9 * std::abs (best)) : (g > best))
     {
       best = g;
       cut = b;
@@ -320,7 +330,7 @@ gamb_best_cut (const std::vector<double>& G, const std::vector<double>& H,
 static void
 gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
                const ColumnVector& hess, octave_idx_type maxsplits,
-               double step, ColumnVector& val)
+               double step, ColumnVector& val, bool categorical = false)
 {
   octave_idx_type n = grad.numel ();
   octave_idx_type nb = B.nbins;
@@ -341,6 +351,39 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
     H[b + 1] += hess(i);
     C[b + 1] += 1.0;
   }
+  // A categorical predictor has no order of its own: its levels are sorted
+  // by the Newton step each would take alone, so a cut between neighbours in
+  // that order splits the levels into two sets.  Measured against R2024a on
+  // 2026-09-15, this reproduces fitrgam and fitcgam with categorical
+  // predictors to 2e-9 where the natural order of the levels does not.
+  std::vector<octave_idx_type> order ((std::size_t) nb);
+  for (octave_idx_type b = 0; b < nb; b++)
+  {
+    order[(std::size_t) b] = b;
+  }
+  if (categorical)
+  {
+    std::vector<double> g0 (G.begin () + 1, G.end ());
+    std::vector<double> h0 (H.begin () + 1, H.end ());
+    std::vector<double> c0 (C.begin () + 1, C.end ());
+    auto ratio = [&g0, &h0] (octave_idx_type b) -> double
+    {
+      return (h0[(std::size_t) b] > 1e-12)
+             ? g0[(std::size_t) b] / h0[(std::size_t) b]
+             : octave::numeric_limits<double>::Inf ();
+    };
+    std::stable_sort (order.begin (), order.end (),
+                      [&ratio] (octave_idx_type a, octave_idx_type b)
+                      {
+                        return ratio (a) < ratio (b);
+                      });
+    for (octave_idx_type q = 0; q < nb; q++)
+    {
+      G[(std::size_t) q + 1] = g0[(std::size_t) order[(std::size_t) q]];
+      H[(std::size_t) q + 1] = h0[(std::size_t) order[(std::size_t) q]];
+      C[(std::size_t) q + 1] = c0[(std::size_t) order[(std::size_t) q]];
+    }
+  }
   for (octave_idx_type b = 0; b < nb; b++)
   {
     G[b + 1] += G[b];
@@ -352,7 +395,8 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
   BinRegion root;
   root.lo = 0;
   root.hi = nb - 1;
-  root.gain = gamb_best_cut (G, H, C, root.lo, root.hi, root.cut);
+  root.gain = gamb_best_cut (G, H, C, root.lo, root.hi, root.cut,
+                             categorical);
   leaves.push_back (root);
 
   for (octave_idx_type s = 0; s < maxsplits; s++)
@@ -378,8 +422,10 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
     left.hi = leaves[pick].cut;
     right.lo = leaves[pick].cut + 1;
     right.hi = leaves[pick].hi;
-    left.gain = gamb_best_cut (G, H, C, left.lo, left.hi, left.cut);
-    right.gain = gamb_best_cut (G, H, C, right.lo, right.hi, right.cut);
+    left.gain = gamb_best_cut (G, H, C, left.lo, left.hi, left.cut,
+                               categorical);
+    right.gain = gamb_best_cut (G, H, C, right.lo, right.hi, right.cut,
+                                categorical);
 
     leaves[pick] = left;
     leaves.push_back (right);
@@ -397,7 +443,7 @@ gamb_fit_tree (const BinnedPredictor& B, const ColumnVector& grad,
     double leaf = step * Gk / Hk;
     for (octave_idx_type b = leaves[k].lo; b <= leaves[k].hi; b++)
     {
-      val(b) += leaf;
+      val(order[(std::size_t) b]) += leaf;
     }
   }
 }
@@ -527,6 +573,39 @@ gamb_weights (octave_idx_type n, const ColumnVector *W)
   return wt;
 }
 
+// The categorical mask a wrapper was handed, validated: one flag per column of
+// X, and every value of a flagged column a positive integer code or missing.
+static std::vector<bool>
+gamb_categorical_arg (const octave_value& arg, const Matrix& X, const char *who)
+{
+  octave_idx_type d = X.columns ();
+  if (! (arg.islogical () || arg.isnumeric ()) || arg.numel () != d)
+  {
+    error ("%s: Categorical must be a logical vector with one element per "
+           "column of X.", who);
+  }
+  NDArray flags = arg.array_value ();
+  std::vector<bool> cat ((std::size_t) d, false);
+  for (octave_idx_type j = 0; j < d; j++)
+  {
+    cat[(std::size_t) j] = (flags(j) != 0.0);
+    if (! cat[(std::size_t) j])
+    {
+      continue;
+    }
+    for (octave_idx_type i = 0; i < X.rows (); i++)
+    {
+      double v = X(i, j);
+      if (! octave::math::isnan (v) && (v < 1.0 || v != std::floor (v)))
+      {
+        error ("%s: a categorical column must hold positive integer codes.",
+               who);
+      }
+    }
+  }
+  return cat;
+}
+
 // Newton boosting of one tree per predictor per round.  METHOD 1 fits the
 // logistic deviance, as a classifier is fitted, and METHOD 2 the squared
 // error, as a regression is fitted; the two differ only in the seed, the
@@ -536,7 +615,8 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
             octave_idx_type maxtrees, double lrate, octave_idx_type maxsplits,
             int verbose, octave_idx_type numprint,
             const ColumnVector *F0 = nullptr,
-            const ColumnVector *W = nullptr)
+            const ColumnVector *W = nullptr,
+            const std::vector<bool> *cat = nullptr)
 {
   octave_idx_type n = X.rows ();
   octave_idx_type d = X.columns ();
@@ -550,7 +630,8 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
     {
       xj(i) = X(i, j);
     }
-    B[j] = gamb_bin (xj, GAMB_MAX_EDGES);
+    B[j] = gamb_bin (xj, GAMB_MAX_EDGES,
+                     cat != nullptr && (*cat)[(std::size_t) j]);
   }
 
   // Which predictors miss a value somewhere in the training rows.  A row
@@ -763,7 +844,8 @@ gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
         }
 
         trial[j] = ColumnVector (B[j].nbins, 0.0);
-        gamb_fit_tree (B[j], grad, hess, maxsplits, step, trial[j]);
+        gamb_fit_tree (B[j], grad, hess, maxsplits, step, trial[j],
+                       cat != nullptr && (*cat)[(std::size_t) j]);
 
         // The model value the tree just added, before any bookkeeping.
         for (octave_idx_type i = 0; i < n; i++)
@@ -1065,9 +1147,15 @@ gamb_pair_stat (const BinnedPredictor& Bj, const BinnedPredictor& Bk,
 // second interaction tree R2024a roots on residuals equal to ours but not at
 // the split of largest gain; no rule tried reproduces that choice.
 //
+// A categorical predictor of a pair is split into two sets of levels: at each
+// node its levels are sorted by the Newton step each would take alone and cut
+// between neighbours, as a predictor's own trees cut them.  A level none of
+// the node's rows holds belongs to neither set and stops there, as a missing
+// value does; R2024a gives such a level the node's value.
+//
 // The accepted trees are flattened at the end into a grid over the cut points
-// they used, plus what a row missing either predictor or both takes, so
-// prediction stays a lookup.
+// they used, every level of a categorical predictor, plus what a row missing
+// either predictor or both takes, so prediction stays a lookup.
 struct PairTreeNode
 {
   int dim;                          // -1 for a leaf, else 0 (j) or 1 (k)
@@ -1075,12 +1163,18 @@ struct PairTreeNode
   octave_idx_type left;
   octave_idx_type right;
   double value;
+  std::vector<char> inleft;         // categorical split: 1 left, 2 right,
+                                    // 0 a code the node never held
 };
 
 struct GamInterTerm
 {
   octave_idx_type j;
   octave_idx_type k;
+  bool catj;
+  bool catk;
+  octave_idx_type levj;             // levels of a categorical predictor
+  octave_idx_type levk;
   std::vector<std::vector<PairTreeNode>> trees;   // accepted, recentred
   RowVector ej;                     // the pair's cut points on predictor j
   RowVector ek;                     // and on predictor k
@@ -1092,22 +1186,26 @@ struct GamInterTerm
 
 // The best cut of a node over both predictors.  Returns the gain, or -1 when
 // no cut leaves GAMB_MIN_LEAF rows holding the predictor on each side, and
-// sets DIM (0 for j, 1 for k) and CUT, halfway between two adjacent values.
-// The gain is taken over the rows holding the predictor.  A tie keeps the
-// first cut found, scanning j before k.
+// sets DIM (0 for j, 1 for k) with either CUT, halfway between two adjacent
+// values, or for a categorical predictor INLEFT, the codes sent left.  The
+// gain is taken over the rows holding the predictor.  A tie keeps the first
+// cut found, scanning j before k.
 static double
 gamb_pair_best_cut (const std::vector<octave_idx_type>& rows, const Matrix& X,
-                    octave_idx_type j, octave_idx_type k,
-                    const ColumnVector& grad, const ColumnVector& hess,
-                    int& dim, double& cut)
+                    octave_idx_type j, octave_idx_type k, bool catj,
+                    bool catk, const ColumnVector& grad,
+                    const ColumnVector& hess, int& dim, double& cut,
+                    std::vector<char>& inleft)
 {
   double best = -1.0;
   dim = -1;
   cut = 0.0;
+  inleft.clear ();
 
   for (int dd = 0; dd < 2; dd++)
   {
     octave_idx_type col = (dd == 0) ? j : k;
+    bool iscat = (dd == 0) ? catj : catk;
     std::vector<octave_idx_type> srt;
     double G = 0.0;
     double H = 0.0;
@@ -1125,6 +1223,75 @@ gamb_pair_best_cut (const std::vector<octave_idx_type>& rows, const Matrix& X,
     {
       continue;
     }
+
+    if (iscat)
+    {
+      octave_idx_type L = 0;
+      for (octave_idx_type r : srt)
+      {
+        L = std::max (L, (octave_idx_type) X(r, col));
+      }
+      std::vector<double> lg ((std::size_t) L + 1, 0.0);
+      std::vector<double> lh ((std::size_t) L + 1, 0.0);
+      std::vector<octave_idx_type> lc ((std::size_t) L + 1, 0);
+      for (octave_idx_type r : srt)
+      {
+        std::size_t c = (std::size_t) X(r, col);
+        lg[c] += grad(r);
+        lh[c] += hess(r);
+        lc[c]++;
+      }
+      std::vector<octave_idx_type> lev;
+      for (octave_idx_type c = 1; c <= L; c++)
+      {
+        if (lc[(std::size_t) c] > 0)
+        {
+          lev.push_back (c);
+        }
+      }
+      auto ratio = [&lg, &lh] (octave_idx_type c) -> double
+      {
+        return (lh[(std::size_t) c] > 1e-12)
+               ? lg[(std::size_t) c] / lh[(std::size_t) c]
+               : octave::numeric_limits<double>::Inf ();
+      };
+      std::stable_sort (lev.begin (), lev.end (),
+                        [&ratio] (octave_idx_type a, octave_idx_type b)
+                        {
+                          return ratio (a) < ratio (b);
+                        });
+      double GL = 0.0;
+      double HL = 0.0;
+      octave_idx_type CL = 0;
+      for (std::size_t q = 0; q + 1 < lev.size (); q++)
+      {
+        std::size_t c = (std::size_t) lev[q];
+        GL += lg[c];
+        HL += lh[c];
+        CL += lc[c];
+        if (CL < GAMB_MIN_LEAF || m - CL < GAMB_MIN_LEAF)
+        {
+          continue;
+        }
+        // Fitting a pair's cells leaves residual sums that cancel exactly,
+        // so two cuts often have the same gain up to rounding.  The first in
+        // the order of the levels is kept, as R2024a keeps it.
+        double g = gamb_gain (GL, HL, G - GL, H - HL);
+        if (g > best + 1e-9 * std::abs (best))
+        {
+          best = g;
+          dim = dd;
+          cut = 0.0;
+          inleft.assign ((std::size_t) L + 1, 0);
+          for (std::size_t t = 0; t < lev.size (); t++)
+          {
+            inleft[(std::size_t) lev[t]] = (t <= q) ? 1 : 2;
+          }
+        }
+      }
+      continue;
+    }
+
     std::stable_sort (srt.begin (), srt.end (),
                       [&X, col] (octave_idx_type a, octave_idx_type b)
                       {
@@ -1152,6 +1319,7 @@ gamb_pair_best_cut (const std::vector<octave_idx_type>& rows, const Matrix& X,
         best = g;
         dim = dd;
         cut = 0.5 * (v + w);
+        inleft.clear ();
       }
     }
   }
@@ -1159,15 +1327,35 @@ gamb_pair_best_cut (const std::vector<octave_idx_type>& rows, const Matrix& X,
   return best;
 }
 
+// Where a node sends the value V: -1 left, 1 right, 0 nowhere, for a level
+// of a categorical split that none of the node's rows held.
+static inline int
+gamb_pair_side (const PairTreeNode& node, double v)
+{
+  if (node.inleft.empty ())
+  {
+    return (v <= node.cut) ? -1 : 1;
+  }
+  octave_idx_type c = (octave_idx_type) v;
+  if (c < 0 || (std::size_t) c >= node.inleft.size ())
+  {
+    return 0;
+  }
+  char side = node.inleft[(std::size_t) c];
+  return (side == 1) ? -1 : ((side == 2) ? 1 : 0);
+}
+
 // Grow one pair tree over every row and return its nodes, the root first,
 // each carrying the Newton step of the rows it holds scaled by STEP.
 static std::vector<PairTreeNode>
 gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
-                const ColumnVector& grad, const ColumnVector& hess,
-                octave_idx_type maxsplits, double step)
+                bool catj, bool catk, const ColumnVector& grad,
+                const ColumnVector& hess, octave_idx_type maxsplits,
+                double step)
 {
   octave_idx_type n = X.rows ();
-  std::vector<PairTreeNode> nodes (1, PairTreeNode {-1, 0.0, -1, -1, 0.0});
+  std::vector<PairTreeNode> nodes (1);
+  nodes[0] = PairTreeNode {-1, 0.0, -1, -1, 0.0, {}};
   std::vector<std::vector<octave_idx_type>> held (1);
   held[0].resize ((std::size_t) n);
   for (octave_idx_type i = 0; i < n; i++)
@@ -1181,6 +1369,7 @@ gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
     std::size_t leaf;
     int dim;
     double cut;
+    std::vector<char> inleft;
   };
 
   std::vector<octave_idx_type> leaves (1, 0);
@@ -1192,11 +1381,13 @@ gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
     {
       int dim;
       double cut;
+      std::vector<char> inleft;
       double g = gamb_pair_best_cut (held[(std::size_t) leaves[l]], X, j, k,
-                                     grad, hess, dim, cut);
+                                     catj, catk, grad, hess, dim, cut,
+                                     inleft);
       if (dim >= 0 && g > 0.0)
       {
-        cand.push_back ({g, l, dim, cut});
+        cand.push_back ({g, l, dim, cut, inleft});
       }
     }
     if (cand.empty ())
@@ -1230,8 +1421,11 @@ gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
         next.push_back (id);
         continue;
       }
-      const Cand c = cand[(std::size_t) pick[l]];
+      const Cand& c = cand[(std::size_t) pick[l]];
       octave_idx_type col = (c.dim == 0) ? j : k;
+      nodes[(std::size_t) id].dim = c.dim;
+      nodes[(std::size_t) id].cut = c.cut;
+      nodes[(std::size_t) id].inleft = c.inleft;
       std::vector<octave_idx_type> lo;
       std::vector<octave_idx_type> hi;
       for (octave_idx_type r : held[(std::size_t) id])
@@ -1241,7 +1435,7 @@ gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
         {
           continue;
         }
-        if (v <= c.cut)
+        if (gamb_pair_side (nodes[(std::size_t) id], v) < 0)
         {
           lo.push_back (r);
         }
@@ -1251,12 +1445,10 @@ gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
         }
       }
       octave_idx_type lid = (octave_idx_type) nodes.size ();
-      nodes.push_back (PairTreeNode {-1, 0.0, -1, -1, 0.0});
-      nodes.push_back (PairTreeNode {-1, 0.0, -1, -1, 0.0});
+      nodes.push_back (PairTreeNode {-1, 0.0, -1, -1, 0.0, {}});
+      nodes.push_back (PairTreeNode {-1, 0.0, -1, -1, 0.0, {}});
       held.push_back (lo);
       held.push_back (hi);
-      nodes[(std::size_t) id].dim = c.dim;
-      nodes[(std::size_t) id].cut = c.cut;
       nodes[(std::size_t) id].left = lid;
       nodes[(std::size_t) id].right = lid + 1;
       next.push_back (lid);
@@ -1282,7 +1474,8 @@ gamb_pair_tree (const Matrix& X, octave_idx_type j, octave_idx_type k,
 }
 
 // The value a pair tree gives the point (XJ, XK).  A missing value stops at
-// the first node that splits on its predictor.
+// the first node that splits on its predictor, and so does a level that node
+// never held.
 static double
 gamb_pair_tree_value (const std::vector<PairTreeNode>& tree, double xj,
                       double xk)
@@ -1295,7 +1488,12 @@ gamb_pair_tree_value (const std::vector<PairTreeNode>& tree, double xj,
     {
       return tree[id].value;
     }
-    id = (std::size_t) ((v <= tree[id].cut) ? tree[id].left : tree[id].right);
+    int side = gamb_pair_side (tree[id], v);
+    if (side == 0)
+    {
+      return tree[id].value;
+    }
+    id = (std::size_t) ((side < 0) ? tree[id].left : tree[id].right);
   }
   return tree[id].value;
 }
@@ -1314,8 +1512,8 @@ gamb_pair_value (const std::vector<std::vector<PairTreeNode>>& trees,
 }
 
 // Flatten a pair's trees into a lookup: a grid over every cut point its trees
-// used, read at a point strictly inside each cell, and the values a row
-// missing x_j, x_k or both takes, read the same way.
+// used, or every level of a categorical predictor, read at a point inside each
+// cell, and the values a row missing x_j, x_k or both takes, read the same way.
 static void
 gamb_pair_flatten (GamInterTerm& T)
 {
@@ -1325,14 +1523,28 @@ gamb_pair_flatten (GamInterTerm& T)
   {
     for (const PairTreeNode& node : t)
     {
-      if (node.dim == 0)
+      if (node.dim == 0 && ! T.catj)
       {
         cj.push_back (node.cut);
       }
-      else if (node.dim == 1)
+      else if (node.dim == 1 && ! T.catk)
       {
         ck.push_back (node.cut);
       }
+    }
+  }
+  if (T.catj)
+  {
+    for (octave_idx_type c = 1; c < T.levj; c++)
+    {
+      cj.push_back (c + 0.5);
+    }
+  }
+  if (T.catk)
+  {
+    for (octave_idx_type c = 1; c < T.levk; c++)
+    {
+      ck.push_back (c + 0.5);
     }
   }
   std::sort (cj.begin (), cj.end ());
@@ -1351,8 +1563,14 @@ gamb_pair_flatten (GamInterTerm& T)
     T.ek((octave_idx_type) b) = ck[b];
   }
 
-  auto inside = [] (const std::vector<double>& c, std::size_t a) -> double
+  // A point inside cell A: the level itself for a categorical predictor.
+  auto inside = [] (const std::vector<double>& c, std::size_t a,
+                    bool categorical) -> double
   {
+    if (categorical)
+    {
+      return (double) a + 1.0;
+    }
     if (c.empty ())
     {
       return 0.0;
@@ -1376,17 +1594,18 @@ gamb_pair_flatten (GamInterTerm& T)
   T.missk = RowVector (nj, 0.0);
   for (octave_idx_type a = 0; a < nj; a++)
   {
-    double xj = inside (cj, (std::size_t) a);
+    double xj = inside (cj, (std::size_t) a, T.catj);
     for (octave_idx_type b = 0; b < nk; b++)
     {
       T.value(a, b) = gamb_pair_value (T.trees, xj,
-                                       inside (ck, (std::size_t) b));
+                                       inside (ck, (std::size_t) b, T.catk));
     }
     T.missk(a) = gamb_pair_value (T.trees, xj, nan);
   }
   for (octave_idx_type b = 0; b < nk; b++)
   {
-    T.missj(b) = gamb_pair_value (T.trees, nan, inside (ck, (std::size_t) b));
+    T.missj(b) = gamb_pair_value (T.trees, nan,
+                                  inside (ck, (std::size_t) b, T.catk));
   }
   T.missboth = gamb_pair_value (T.trees, nan, nan);
 }
@@ -1414,12 +1633,17 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
                   const ColumnVector& F0, int method, const Matrix& pairs,
                   octave_idx_type maxtrees, double lrate,
                   octave_idx_type maxsplits,
-                  const ColumnVector *W = nullptr)
+                  const ColumnVector *W = nullptr,
+                  const std::vector<bool> *cat = nullptr)
 {
   octave_idx_type n = X.rows ();
   octave_idx_type d = X.columns ();
   octave_idx_type np = pairs.rows ();
   ColumnVector wt = gamb_weights (n, W);
+  auto iscat = [cat] (octave_idx_type j) -> bool
+  {
+    return cat != nullptr && (*cat)[(std::size_t) j];
+  };
 
   // The detection grid, reported with the fit as MATLAB reports it.
   GamInterFit F;
@@ -1431,14 +1655,31 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
     {
       xj(i) = X(i, j);
     }
-    F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES).edges;
+    F.edges[(std::size_t) j] = gamb_bin (xj, GAMB_PAIR_EDGES,
+                                         iscat (j)).edges;
   }
 
   F.term.resize ((std::size_t) np);
   for (octave_idx_type q = 0; q < np; q++)
   {
-    F.term[(std::size_t) q].j = (octave_idx_type) pairs(q, 0) - 1;
-    F.term[(std::size_t) q].k = (octave_idx_type) pairs(q, 1) - 1;
+    GamInterTerm& T = F.term[(std::size_t) q];
+    T.j = (octave_idx_type) pairs(q, 0) - 1;
+    T.k = (octave_idx_type) pairs(q, 1) - 1;
+    T.catj = iscat (T.j);
+    T.catk = iscat (T.k);
+    T.levj = 0;
+    T.levk = 0;
+    for (octave_idx_type i = 0; i < n; i++)
+    {
+      if (T.catj && ! octave::math::isnan (X(i, T.j)))
+      {
+        T.levj = std::max (T.levj, (octave_idx_type) X(i, T.j));
+      }
+      if (T.catk && ! octave::math::isnan (X(i, T.k)))
+      {
+        T.levk = std::max (T.levk, (octave_idx_type) X(i, T.k));
+      }
+    }
   }
 
   F.shift = 0.0;
@@ -1489,7 +1730,24 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
         }
 
         std::vector<PairTreeNode> tree
-          = gamb_pair_tree (X, T.j, T.k, grad, hess, maxsplits, step);
+          = gamb_pair_tree (X, T.j, T.k, T.catj, T.catk, grad, hess,
+                            maxsplits, step);
+        // A tree that splits on only one of the pair's predictors is a main
+        // effect rather than an interaction, and adds nothing.  Measured
+        // against R2024a on 2026-09-15: with 'Interactions', 'all' its fit
+        // skips such trees round by round, reproduced to 5e-11, and a pair
+        // whose trees are all of this kind is never fitted at all.
+        bool usesj = false;
+        bool usesk = false;
+        for (const PairTreeNode& node : tree)
+        {
+          usesj = usesj || (node.dim == 0);
+          usesk = usesk || (node.dim == 1);
+        }
+        if (! (usesj && usesk))
+        {
+          continue;
+        }
 
         // Every row takes a value, a row missing a predictor that of the node
         // splitting on it.  R2024a moves the root's value into the intercept:
@@ -1515,7 +1773,10 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
       {
         for (octave_idx_type q = 0; q < np; q++)
         {
-          F.term[(std::size_t) q].trees.push_back (trial[(std::size_t) q]);
+          if (! trial[(std::size_t) q].empty ())
+          {
+            F.term[(std::size_t) q].trees.push_back (trial[(std::size_t) q]);
+          }
         }
         F.shift += shift;
         f = fnew;

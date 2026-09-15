@@ -31,6 +31,8 @@ DEFUN_DLD(gamboostinter, args, ,
 @var{F0}, @var{Method}, @var{Pairs}, @var{NumTrees}, @var{LearnRate}, @\n\
 @var{MaxNumSplits})\n\
 @deftypefnx {statistics} {@var{Mdl} =} gamboostinter (@dots{}, @var{W})\n\
+@deftypefnx {statistics} {@var{Mdl} =} gamboostinter (@dots{}, @var{W}, @\n\
+@var{Categorical})\n\
 \n\
 Boost trees over selected pairs of predictors.\n\
 \n\
@@ -59,7 +61,11 @@ and within range.  Choosing them is the caller's business; see\n\
 interaction phase's own budget, initial step and split limit.\n\
 \n\
 @item @var{W}, if given, is an @math{Nx1} vector of non-negative observation\n\
-weights, as @code{gamboosttrain} takes them.\n\
+weights, as @code{gamboosttrain} takes them, and may be empty.\n\
+\n\
+@item @var{Categorical}, if given, flags the columns holding level codes, as\n\
+@code{gamboosttrain} takes it.  A pair tree splits such a predictor into two\n\
+sets of levels, and its grid holds every level.\n\
 @end itemize\n\
 \n\
 @var{Mdl} is a structure with the following fields.\n\
@@ -71,7 +77,12 @@ equal-frequency bins per predictor, as MATLAB reports it.\n\
 @math{1x2} cell of the cut points its trees used on its two predictors.  A\n\
 tree is fitted to the rows, cutting halfway between two values a node holds,\n\
 keeping at least five rows in a leaf and growing a layer at a time within\n\
-@var{MaxNumSplits}.\n\
+@var{MaxNumSplits}.  A categorical predictor is cut into two sets of levels\n\
+after sorting them by the step each would take alone; of cuts with equal\n\
+gain the first in that order is kept, and a level none of a node's rows\n\
+holds stops at that node.  A tree that splits on only one of the pair's\n\
+predictors is a main effect and adds nothing, so a round may leave a pair\n\
+untouched.\n\
 @item @qcode{PairValues}, a @math{1xM} cell of matrices, one value per\n\
 cell of the pair's own grid.\n\
 @item @qcode{PairMissing}, a @math{1xM} cell, one element per pair: a\n\
@@ -89,7 +100,7 @@ to the intercept of the predictor phase.\n\
 @end deftypefn")
 {
   octave_idx_type nargin = args.length ();
-  if (nargin != 8 && nargin != 9)
+  if (nargin != 8 && nargin != 9 && nargin != 10)
   {
     print_usage ();
   }
@@ -202,7 +213,7 @@ to the intercept of the predictor phase.\n\
   // proportions, so their scale is free.
   ColumnVector W;
   bool weighted = false;
-  if (nargin == 9)
+  if (nargin >= 9 && ! args(8).isempty ())
   {
     if (! args(8).isnumeric () || args(8).iscomplex ()
         || args(8).columns () != 1 || args(8).rows () != X.rows ())
@@ -226,9 +237,17 @@ to the intercept of the predictor phase.\n\
     weighted = true;
   }
 
+  // Which columns are categorical, holding level codes.
+  std::vector<bool> cat;
+  if (nargin == 10)
+  {
+    cat = gamb_categorical_arg (args(9), X, "gamboostinter");
+  }
+
   GamInterFit F = gamb_boost_inter (X, Y, F0, method, pairs, maxtrees,
                                     lrate, maxsplits,
-                                    weighted ? &W : nullptr);
+                                    weighted ? &W : nullptr,
+                                    cat.empty () ? nullptr : &cat);
 
   Cell edges (1, d);
   for (octave_idx_type j = 0; j < d; j++)
@@ -347,6 +366,18 @@ to the intercept of the predictor phase.\n\
 %! I = gamboostinter (x, y, f0, 2, [1, 2], 40, 1, 4);
 %! assert_equal (I.Deviance < M.Deviance, true);
 
+%!test
+%! ## A categorical predictor of a pair is split by sets of levels, and its
+%! ## grid holds every level.
+%! k = (1:300)';
+%! c = mod (k, 4) + 1;
+%! x = sin (k);
+%! y = (c == 2 | c == 4) .* x + 0.1 * cos (k);
+%! M = gamboosttrain ([c, x], y, 2, 20, 1, 1, 0, 10, [], [], [true, false]);
+%! f = gamboostpredict (M.BinEdges, M.ShapeValues, [c, x], M.Intercept);
+%! I = gamboostinter ([c, x], y, f, 2, [1, 2], 10, 1, 4, [], [true, false]);
+%! assert_equal (I.PairEdges{1}{1}, [1.5, 2.5, 3.5]);
+%! assert_equal (I.Deviance < M.Deviance, true);
 %!error<Invalid call> gamboostinter (1, 2, 3)
 %!error<gamboostinter: X must be a numeric matrix.> ...
 %! gamboostinter ('a', [1;0], [0;0], 1, [1,2], 10, 1, 4)

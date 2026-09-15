@@ -399,7 +399,8 @@ classdef RegressionPartitionedModel
           ## the parent: the two have disjoint argument surfaces and each
           ## refuses the other's, so the fold is refitted with its own.
           if (strcmp (Mdl.FitMethod, 'boostedtrees'))
-            GAMparams = {'PredictorNames', 'ResponseName'};
+            GAMparams = {'PredictorNames', 'ResponseName', ...
+                         'CategoricalPredictors'};
           else
             GAMparams = {'PredictorNames', 'ResponseName', 'Formula', ...
                          'Knots', 'Order', 'Tol'};

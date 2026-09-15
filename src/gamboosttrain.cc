@@ -34,6 +34,8 @@ DEFUN_DLD(gamboosttrain, args, ,
 @var{Verbose}, @var{NumPrint}, @var{F0})\n\
 @deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@dots{}, @var{F0}, @\n\
 @var{W})\n\
+@deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@dots{}, @var{F0}, @\n\
+@var{W}, @var{Categorical})\n\
 @deftypefnx {statistics} {@var{Mdl} =} gamboosttrain (@dots{}, @var{Verbose}, @\n\
 @var{NumPrint})\n\
 \n\
@@ -81,7 +83,13 @@ the fit reached over these rows, and what comes back is the increment.\n\
 @item @var{W}, if given, is an @math{Nx1} vector of non-negative observation\n\
 weights.  Only their proportions matter.  Every sum the fit takes over the\n\
 observations is weighted; the fewest observations a leaf may hold still\n\
-counts rows.\n\
+counts rows.  @var{F0} and @var{W} may each be empty.\n\
+\n\
+@item @var{Categorical}, if given, is a logical vector with one element per\n\
+column of @var{X}.  A flagged column holds level codes, positive integers,\n\
+with a missing or unseen level @qcode{NaN}.  Each level is a bin of its own,\n\
+and a tree sorts the levels by the step each would take alone before it\n\
+chooses its cut, as R2024a does.\n\
 @end itemize\n\
 \n\
 @var{Mdl} is a structure with the following fields.\n\
@@ -107,7 +115,8 @@ many trees produced it.\n\
 @end deftypefn")
 {
   octave_idx_type nargin = args.length ();
-  if (nargin != 6 && nargin != 8 && nargin != 9 && nargin != 10)
+  if (nargin != 6 && nargin != 8 && nargin != 9 && nargin != 10
+      && nargin != 11)
   {
     print_usage ();
   }
@@ -231,7 +240,7 @@ many trees produced it.\n\
   // proportions, so their scale is free.
   ColumnVector W;
   bool weighted = false;
-  if (nargin == 10)
+  if (nargin >= 10 && ! args(9).isempty ())
   {
     if (! args(9).isnumeric () || args(9).iscomplex ()
         || args(9).columns () != 1 || args(9).rows () != X.rows ())
@@ -255,9 +264,17 @@ many trees produced it.\n\
     weighted = true;
   }
 
+  // Which columns are categorical, holding level codes.
+  std::vector<bool> cat;
+  if (nargin == 11)
+  {
+    cat = gamb_categorical_arg (args(10), X, "gamboosttrain");
+  }
+
   GamBoostFit F = gamb_boost (X, Y, method, maxtrees, lrate, maxsplits,
                               verbose, numprint, resuming ? &F0 : nullptr,
-                              weighted ? &W : nullptr);
+                              weighted ? &W : nullptr,
+                              cat.empty () ? nullptr : &cat);
 
   Cell edges (1, d);
   Cell values (1, d);
@@ -486,6 +503,25 @@ many trees produced it.\n\
 %! assert_equal (E([1, 2, 3, 100, 231]), ...
 %!               [-0.99833333333333329, -0.995, -0.9916666666666667, ...
 %!                -0.19166666666666665, 0.99833333333333329], 1e-15);
+%!test
+%! ## MATLAB parity: a categorical predictor's levels are sorted by the step
+%! ## each would take alone before a tree chooses its cut.  Level codes stand
+%! ## for the levels, and a missing or unseen level is NaN.
+%! k = (0:119)';
+%! c1 = mod (k, 3) + 1;
+%! x2 = sin (k);
+%! c3 = mod (floor (k / 2), 2) + 1;
+%! y = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 2) + 0.1 * cos (k);
+%! M = gamboosttrain ([c1, x2, c3], y, 2, 1, 1, 1, 0, 10, [], [], ...
+%!                    [true, false, true]);
+%! assert_equal (M.BinEdges{1}, [1.5, 2.5]);
+%! assert_equal (M.Intercept, 0.1666859425, 1e-10);
+%! Q = [1, 0, 1; 2, 0, 1; 3, 0, 1; 1, 0, 2; 1, 0.5, 1; NaN, 0, 1; ...
+%!      NaN, 0, 1; NaN, 0, 2];
+%! yq = gamboostpredict (M.BinEdges, M.ShapeValues, Q, M.Intercept);
+%! assert_equal (yq', [-0.3546416246, 4.645371152, -0.3546416246, ...
+%!                     -3.30728817, 0.4241346437, 1.312029301, ...
+%!                     1.312029301, -1.640617244], 1e-9);
 %!error<Invalid call> gamboosttrain (1, 2, 3)
 %!error<gamboosttrain: X must be a numeric matrix.> ...
 %! gamboosttrain ('a', [1;0], 1, 10, 1, 1)

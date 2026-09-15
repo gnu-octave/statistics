@@ -169,6 +169,13 @@
 ## reports: the first round and then every @var{NumPrint} rounds.  The
 ## default is 10.
 ##
+## @item @qcode{'CategoricalPredictors'} @tab The predictors to treat as
+## categorical: a vector of column indices, a logical vector with one element
+## per predictor, or @qcode{'all'}.  A tree splits a categorical predictor
+## into two sets of levels, and a level not seen in training predicts as a
+## missing value.  Its @qcode{BinEdges} and @qcode{PairDetectionBinEdges} are
+## empty.  The default is none.
+##
 ## @item @qcode{'Weights'} @tab A numeric vector of non-negative observation
 ## weights, one per row of @var{X}.  Each class carries its @qcode{'Prior'},
 ## spread over its observations in proportion to their weights.
