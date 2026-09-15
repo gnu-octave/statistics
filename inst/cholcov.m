@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{T} =} cholcov (@var{sigma})
-## @deftypefnx {statistics} {[@var{T}, @var{p} =} cholcov (@var{sigma})
+## @deftypefnx {statistics} {[@var{T}, @var{p}] =} cholcov (@var{sigma})
 ## @deftypefnx {statistics} {[@dots{}] =} cholcov (@var{sigma}, @var{flag})
 ##
 ## Cholesky-like decomposition for covariance matrix.
@@ -35,13 +35,13 @@
 ##
 ## The tolerance is calculated as @code{10 * eps (max (abs (diag (sigma))))}.
 ##
-## @code{[@var{T}, @var{p} = cholcov (@var{sigma})} returns in @var{p} the
+## @code{[@var{T}, @var{p}] = cholcov (@var{sigma})} returns in @var{p} the
 ## number of negative eigenvalues of @var{sigma}.  If @var{p} > 0, then @var{T}
 ## is empty, whereas if @var{p} = 0, @var{sigma}) is positive semi-definite.
 ##
 ## If @var{sigma} is not square and symmetric, P is NaN and T is empty.
 ##
-## @code{[@var{T}, @var{p} = cholcov (@var{sigma}, 0)} returns @var{p} = 0 if
+## @code{[@var{T}, @var{p}] = cholcov (@var{sigma}, 0)} returns @var{p} = 0 if
 ## @var{sigma} is positive definite, in which case @var{T} is the Cholesky
 ## factor.  If @var{sigma} is not positive definite, @var{p} is a positive
 ## integer and @var{T} is empty.
