@@ -119,15 +119,8 @@ function [P, s] = build_P (eta, qk, nlev)
   for k = 1:numel (qk)
     q = qk(k);
     m = q*(q+1)/2;
-    Pk = zeros (q, q);
-    idx = 0;
-    for j = 1:q
-      for i = j:q
-        idx += 1;
-        Pk(i, j) = eta(off+idx);
-        Pk(j, i) = eta(off+idx);
-      endfor
-    endfor
+    Pk = tril_from_theta (eta(off+(1:m)), q);
+    Pk = Pk + tril (Pk, -1)';
     for l = 1:nlev(k)
       blocks{end+1} = Pk;
     endfor
@@ -182,8 +175,7 @@ function [L, psd] = build_L (eta, qk, nlev)
   for k = 1:numel (qk)
     q = qk(k);
     m = q*(q+1)/2;
-    Pk = zeros (q, q);
-    Pk(tril (true (q))) = eta(off+(1:m));
+    Pk = tril_from_theta (eta(off+(1:m)), q);
     Pk = Pk + tril (Pk, -1)';
     [U, E] = eig (Pk);
     if (any (diag (E) < 0))
@@ -240,33 +232,4 @@ endfunction
 function C = fixed_cov (eta, qk, nlev, CP)
   XtViX = vquad (eta, qk, nlev, CP, 1);
   C = inv (XtViX);
-endfunction
-
-## Cholesky factor of K = I + L'*ZtZ*L, and the row order pk it was taken in,
-## so that Rk'*Rk is K(pk,pk).  K is sparse or full as ZtZ is.  It is
-## symmetric in exact arithmetic but not bitwise, the two products being
-## separate calls, and 'chol' reads one triangle, so symmetrise it first.
-function [Rk, flag, pk] = factor_K (L, ZtZ)
-  K = speye (columns (ZtZ)) + L' * ZtZ * L;
-  K = (K + K') / 2;
-  if (issparse (K))
-    [Rk, flag, pk] = chol (K, "vector");
-  else
-    [Rk, flag] = chol (K);
-    pk = 1:columns (K);
-  endif
-endfunction
-
-## K has the non-zero pattern of Zx'*Zx whatever eta is, so its storage is
-## chosen once from the fill of its Cholesky factor, estimated under an
-## approximate minimum degree order.  Sparse is faster up to about a fifth of
-## the triangle filled; crossed terms with many levels each fill in, and dense
-## is faster.
-function ZtZ = choose_storage (ZtZ)
-  q = columns (ZtZ);
-  P = spones (ZtZ) + speye (q);
-  o = amd (P);
-  if (sum (symbfact (P(o,o))) > 0.2 * q * (q + 1) / 2)
-    ZtZ = full (ZtZ);
-  endif
 endfunction

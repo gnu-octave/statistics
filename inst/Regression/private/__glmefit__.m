@@ -156,25 +156,6 @@ function beta = glm_irls (X, y, distr, link)
   endfor
 endfunction
 
-## ---- expanded random design, sparse (shared with the LMM engine) ----
-function [Zx, qk, nlev, levels, gidx] = expand_random (Z, G, n)
-  nt = numel (Z);
-  N = 0;  qk = zeros (1, nt);  nlev = zeros (1, nt);
-  levels = cell (1, nt);  gidx = cell (1, nt);
-  I = J = V = cell (1, nt);
-  for k = 1:nt
-    qk(k) = columns (Z{k});
-    [lev, ~, gi] = unique (G{k}(:));
-    nlev(k) = numel (lev);  levels{k} = lev;  gidx{k} = gi;
-    I{k} = repmat ((1:n)', qk(k), 1);
-    J{k} = N + repmat ((gi - 1) * qk(k), qk(k), 1) ...
-           + kron ((1:qk(k))', ones (n, 1));
-    V{k} = Z{k}(:);
-    N += qk(k) * nlev(k);
-  endfor
-  Zx = sparse (vertcat (I{:}), vertcat (J{:}), vertcat (V{:}), n, N);
-endfunction
-
 ## ---- weighted mixed-model inner solver / objective ----
 function [theta, disp0] = inner_fit (theta0, X, z, Zx, qk, nlev, w, ...
                                      isreml, fixed_disp)
@@ -360,58 +341,6 @@ function S = wquad (theta, CP, qk, nlev, n, disp0)
   S.XtViz = CP.Xtz / disp0 - S.Xt' * S.zt;
   S.ztViz = CP.ztz / disp0 - S.zt' * S.zt;
   S.logdetV = n * log (disp0) - CP.logw + 2 * sum (log (full (diag (S.Rk))));
-endfunction
-
-## Block-diagonal relative factor: L_k repeated over the nlev_k levels, held
-## sparse so that products against it stay inside the block structure.
-function Lf = build_Lfull (theta, qk, nlev)
-  blocks = cell (1, numel (qk));
-  off = 0;
-  for k = 1:numel (qk)
-    m = qk(k)*(qk(k)+1)/2;
-    Lk = sparse (tril_from_theta (theta(off+(1:m)), qk(k)));
-    blocks{k} = kron (speye (nlev(k)), Lk);
-    off += m;
-  endfor
-  Lf = blkdiag (blocks{:});
-endfunction
-
-## Cholesky factor of K = I + Lf'*ZtZ*Lf, and the row order pk it was taken
-## in, so that Rk'*Rk is K(pk,pk).  K is sparse or full as ZtZ is.  It is
-## symmetric in exact arithmetic but not bitwise, the two products being
-## separate calls, and 'chol' reads one triangle, so symmetrise it first.
-function [Rk, flag, pk] = factor_K (Lf, ZtZ)
-  K = speye (columns (ZtZ)) + Lf' * ZtZ * Lf;
-  K = (K + K') / 2;
-  if (issparse (K))
-    [Rk, flag, pk] = chol (K, "vector");
-  else
-    [Rk, flag] = chol (K);
-    pk = 1:columns (K);
-  endif
-endfunction
-
-## K has the non-zero pattern of Zx'*Zx whatever theta is, so its storage is
-## chosen once from the fill of its Cholesky factor, estimated under an
-## approximate minimum degree order.  Sparse is faster up to about a fifth of
-## the triangle filled, as with nested or few-level crossed terms; crossed
-## terms with many levels each fill in, and dense is faster.
-function ZtZ = choose_storage (ZtZ)
-  q = columns (ZtZ);
-  P = spones (ZtZ) + speye (q);
-  o = amd (P);
-  if (sum (symbfact (P(o,o))) > 0.2 * q * (q + 1) / 2)
-    ZtZ = full (ZtZ);
-  endif
-endfunction
-
-function L = tril_from_theta (th, q)
-  L = zeros (q, q);  idx = 0;
-  for j = 1:q
-    for i = j:q
-      idx += 1;  L(i, j) = th(idx);
-    endfor
-  endfor
 endfunction
 
 function theta0 = init_theta (qk)
