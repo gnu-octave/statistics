@@ -54,7 +54,8 @@
 ## the response @var{y} to the predictor data @var{X}, an @math{N*P} numeric
 ## or logical matrix.  By default, the predictors are named @qcode{'x1'},
 ## @qcode{'x2'}, @dots{}, @qcode{'xP'} and the response is named
-## @qcode{'y'}.
+## @qcode{'y'}.  @var{y} is a vector with one element per row of @var{X}; a
+## row vector is taken as a column.
 ## @end itemize
 ##
 ## @subheading Initial Model, and Lower/Upper Bounds
@@ -2453,3 +2454,11 @@ endfunction
 %! ## adjrsquared's, 0 and -0.05, the negative one
 %! assert_equal (isa (stepwiselm (X, y, 'Criterion', 'adjrsquared', 'Verbose', 0), ...
 %!                    'LinearModel'), true);
+
+%!test
+%! ## a row vector Y is taken as a column
+%! Xr = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yr = [1.2 2.1 3.9 4.2 5.8 6.1 8.2 7.9];
+%! m1 = stepwiselm (Xr, yr, 'Verbose', 0);
+%! m2 = stepwiselm (Xr, yr', 'Verbose', 0);
+%! assert_equal (m1.Coefficients.Estimate, m2.Coefficients.Estimate);

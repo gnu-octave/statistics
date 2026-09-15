@@ -40,7 +40,8 @@
 ##
 ## @itemize
 ## @item
-## @var{y} is the @code{y} in the model
+## @var{y} is the @code{y} in the model, a vector; a row vector is taken as a
+## column
 ## @item
 ## @var{X} is the @code{X} in the model
 ## @item
@@ -92,9 +93,10 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     error ("regress: X must be a numeric matrix");
   endif
 
-  if (columns (y) != 1)
-    error ("regress: y must be a column vector");
+  if (! isvector (y))
+    error ("regress: y must be a vector.");
   endif
+  y = y(:);
 
   if (rows (y) != rows (X))
     error ("regress: y and X must contain the same number of rows");
@@ -214,3 +216,8 @@ endfunction
 %! assert_equal (stats(1),Rsq,1e-12);
 %! assert_equal (stats(2),F,3e-8);
 %! assert_equal (((bint(:,1)-bint(:,2))/2)/tinv (alpha/2,9),V(:,2),-1e-11);
+%!test
+%! X = [ones(6, 1), (1:6)'];
+%! y = [1.1 1.9 3.2 3.9 5.1 6.2];
+%! assert_equal (regress (y, X), regress (y', X));
+%!error <regress: y must be a vector.> regress (ones (3, 2), ones (3, 2))

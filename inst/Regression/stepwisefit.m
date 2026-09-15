@@ -47,7 +47,8 @@
 ## @var{X} is an @var{n}-by-@var{p} numeric matrix of predictor variables.
 ##
 ## @item
-## @var{y} is an @var{n}-by-1 numeric response vector.
+## @var{y} is a numeric response vector of @var{n} elements.  A row vector is
+## taken as a column, where MATLAB refuses it.
 ##
 ## @item
 ## Optional Name-Value pairs may be supplied to control the stepwise
@@ -142,8 +143,8 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   if (! ismatrix (X))
     error ("stepwisefit: X must be a matrix.");
   endif
-  if (! iscolumn (y))
-    error ("stepwisefit: Y must be a column vector.");
+  if (! isvector (y))
+    error ("stepwisefit: Y must be a vector.");
   endif
 
   y = y(:);
@@ -690,6 +691,11 @@ endfunction
 %! assert_equal (history.df0, []);
 %! assert_equal (history.rmse, []);
 %! assert_equal (history.B, zeros (3, 0));
+%!test
+%! X = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! y = [1.2 2.1 3.9 4.2 5.8 6.1 8.2 7.9];
+%! assert_equal (stepwisefit (X, y, 'Display', 'off'), ...
+%!               stepwisefit (X, y', 'Display', 'off'));
 %!error <stepwisefit: Keep length must match number of predictors> ...
 %!       stepwisefit (randn (20,4), randn (20,1), 'Keep', [true false])
 
@@ -698,8 +704,10 @@ endfunction
 %!       stepwisefit ()
 %!error <stepwisefit: X must be a matrix.> ...
 %!       stepwisefit (ones (2,2,2), [1;2])
-%!error <stepwisefit: Y must be a column vector.> ...
+%!error <stepwisefit: Y must be a vector.> ...
 %!       stepwisefit ([], [], 'Display', 'off')
+%!error <stepwisefit: Y must be a vector.> ...
+%!       stepwisefit (ones (4,2), ones (4,2), 'Display', 'off')
 %!error <stepwisefit: X and Y must have the same number of rows.> ...
 %!       stepwisefit (ones (3,2), ones (2,1))
 %!error <stepwisefit: unrecognized input arguments> ...

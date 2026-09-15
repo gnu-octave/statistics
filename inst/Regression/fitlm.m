@@ -52,9 +52,9 @@
 ## single categorical predictor.  In this case @var{y} must be supplied as the
 ## next argument, and the predictor is named @qcode{'x1'} by default.
 ## @item
-## @var{y} is an @math{N*1} numeric or logical vector of response values, and
-## must have the same number of observations (rows) as @var{X}.  By default,
-## the response is named @qcode{'y'}.
+## @var{y} is a numeric or logical vector of @math{N} response values, one for
+## each row of @var{X}; a row vector is taken as a column.  By default, the
+## response is named @qcode{'y'}.
 ## @end itemize
 ##
 ## @code{@var{mdl} = fitlm (@var{tbl})} fits a linear regression model using
@@ -715,3 +715,9 @@ endfunction
 %!error <fitlm: Name-Value arguments must be in pairs.> fitlm (T2, 'y ~ x1', 'linear')
 %!error <fitlm: Name-Value arguments must be in pairs.> fitlm (T1, 'linear', 'Weights')
 %!error <fitlm: Name-Value arguments must be in pairs.> fitlm (T2, [0 0; 1 0], 'Weights')
+%!test
+%! Xr = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4];
+%! yr = [1.1 1.9 3.2 3.9 5.1 6.2];
+%! m1 = fitlm (Xr, yr);
+%! m2 = fitlm (Xr, yr');
+%! assert_equal (m1.Coefficients.Estimate, m2.Coefficients.Estimate);

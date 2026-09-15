@@ -28,7 +28,9 @@
 ## @var{b} of a linear regression of the response @var{y} on the predictors
 ## @var{X}, fitted by robust M-estimation (iteratively reweighted least squares)
 ## so that outlying observations are downweighted.  A column of ones is added to
-## @var{X} by default, so @code{@var{b}(1)} is the intercept.
+## @var{X} by default, so @code{@var{b}(1)} is the intercept.  @var{y} is a
+## vector with one element per row of @var{X}; a row vector is taken as a
+## column.
 ##
 ## @code{@var{b} = robustfit (@var{X}, @var{y}, @var{wfun}, @var{tune},
 ## @var{const})} selects the weight function @var{wfun}, its tuning constant
@@ -311,6 +313,12 @@ endfunction
 %! yf = 3 * xf + 1e-3 * [1; -1; 0; 1; -1];
 %! [bf, stats] = robustfit (xf, yf, 'andrews', [], 'off');
 %! assert_equal (stats.w', [0.958242, 0.868203, 1, 0.868203, 0.958242], 1e-6);
+
+## A row vector Y is taken as a column.
+%!test
+%! xf = [1; 2; 3; 4; 5; 6];
+%! yf = [1.1 1.9 3.2 3.9 5.1 6.2];
+%! assert_equal (robustfit (xf, yf), robustfit (xf, yf'));
 
 ## Test input validation
 %!error <Invalid call to robustfit> robustfit (1)

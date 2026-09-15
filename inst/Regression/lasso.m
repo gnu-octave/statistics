@@ -27,6 +27,8 @@
 ## a sequence of values of the regularization parameter @var{Lambda}.  @var{B}
 ## is a @math{P*L} matrix whose column @math{k} holds the coefficient estimates
 ## for the @math{k}-th @var{Lambda}, in ascending order of @var{Lambda}.
+## @var{y} is a vector with one element per row of @var{X}; a row vector is
+## taken as a column.
 ##
 ## @code{[@var{B}, @var{FitInfo}] = lasso (@dots{})} additionally returns a
 ## structure @var{FitInfo} with fields @code{Intercept}, @code{Lambda},
@@ -441,6 +443,11 @@ endfunction
 
 %!warning <lasso: when the 'Intercept' value is false, the 'Standardize' value is set to false.> ...
 %! lasso (X, y, "Lambda", 0.1, "Intercept", false);
+
+%!test  # a row vector Y is taken as a column
+%! Xr = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4];
+%! yr = [1.1 1.9 3.2 3.9 5.1 6.2];
+%! assert_equal (lasso (Xr, yr, "Lambda", 0.1), lasso (Xr, yr', "Lambda", 0.1));
 
 ## Test input validation
 %!error <Invalid call to lasso> lasso (1)
