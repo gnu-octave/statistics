@@ -685,25 +685,43 @@ classdef LinearMixedModel
   methods (Access = private)
 
     ## Diagonal of the covariance of the conditional residuals, for standardized
-    ## residuals: r_c = Mc*y with Mc = (I - Hx) - Zx*Dabs*Zx'*P.
+    ## residuals.  With V = sigma2*I + Zx*D*Zx' and
+    ## P = inv (V) - inv (V)*X*inv (X'*inv (V)*X)*X'*inv (V), the conditional
+    ## residuals are sigma2*P*y and P*V*P = P, so their covariance is
+    ## sigma2^2*P.  With D = sigma2*L*L' and A = Zx*L, sigma2*inv (V) is
+    ## I - A*inv (K)*A' for K = I + A'*A, which gives diag (P) without an
+    ## n-by-n matrix.
     function v = cond_resid_var (this)
-      n = this.NumObservations;
-      ## rebuild the marginal covariance V and the absolute RE covariance Dabs
-      blocks = {};
-      for k = 1:numel (this.qk_)
-        for l = 1:this.nlev_(k)
-          blocks{end+1} = this.Psi_{k};
-        endfor
-      endfor
-      Dabs = blkdiag (blocks{:});
-      V = this.Zx_ * Dabs * this.Zx_' + this.sigma2_ * eye (n);
-      Vi = inv (V);
+      s = this.sigma2_;
       X = this.X_;
-      XtViX = X' * Vi * X;
-      Hx = X * (XtViX \ (X' * Vi));
-      P = Vi - Vi * X * (XtViX \ (X' * Vi));
-      Mc = (eye (n) - Hx) - this.Zx_ * Dabs * this.Zx_' * P;
-      v = diag (Mc * V * Mc');
+      n = rows (X);
+      blocks = cell (1, numel (this.qk_));
+      for k = 1:numel (this.qk_)
+        [U, E] = eig ((this.Psi_{k} + this.Psi_{k}') / (2 * s));
+        Lk = sparse (U * diag (sqrt (max (diag (E), 0))));
+        blocks{k} = kron (speye (this.nlev_(k)), Lk);
+      endfor
+      A = this.Zx_ * blkdiag (blocks{:});
+      q = columns (A);
+      K = speye (q) + A' * A;
+      [Rk, ~, pk] = chol ((K + K') / 2, "vector");
+      ## sigma2*diag (inv (V)), in row chunks that hold about 1e7 entries of
+      ## the triangular solve at a time.
+      dVi = zeros (n, 1);
+      step = max (1, floor (1e7 / q));
+      for r0 = 1:step:n
+        r = r0:min (n, r0 + step - 1);
+        W = Rk' \ A(r,pk)';
+        dVi(r) = 1 - full (sum (W .^ 2, 1))';
+      endfor
+      ## sigma2*inv (V)*X, then the fixed-effects term of diag (P).
+      AtX = A' * X;
+      w = zeros (size (AtX));
+      w(pk,:) = Rk \ (Rk' \ AtX(pk,:));
+      ViX = X - A * w;
+      XtViX = X' * ViX;
+      T = ViX / chol ((XtViX + XtViX') / 2);
+      v = s * (dVi - sum (T .^ 2, 2));
     endfunction
 
   endmethods

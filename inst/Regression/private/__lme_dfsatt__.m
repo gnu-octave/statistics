@@ -50,7 +50,7 @@ function df = __lme_dfsatt__ (X, y, Zx, qk, nlev, Psi, sigma2, method, L)
   ## Every cross product below is free of eta, and the finite differences ask
   ## for O(ne^2) deviances, so forming them once is what keeps the whole
   ## Satterthwaite calculation out of the observation dimension.
-  CP.ZtZ = full (Zx' * Zx);
+  CP.ZtZ = choose_storage (Zx' * Zx);
   CP.ZtX = Zx' * X;
   CP.Zty = Zx' * y;
   CP.XtX = X' * X;
@@ -138,16 +138,74 @@ function [P, s] = build_P (eta, qk, nlev)
 endfunction
 
 ## X'*inv (V)*X, X'*inv (V)*y, y'*inv (V)*y and logdet (V), all in the random
-## effects dimension.  ok is false where the old code's chol of V would have
-## set the flag.
+## effects dimension, and ok false where V is not positive definite.  When
+## every Psi_k is positive semidefinite, P = L*L' and, with A = Zx*L,
+## V = sigma2*I + A*A', so K = I + A'*A/sigma2 carries every quantity as it
+## does in the fit, factorised sparse unless it fills in.  A finite difference
+## that drives a small variance component negative leaves P without such a
+## factor, and vquad_eig takes over.
 function [XtViX, XtViy, ytViy, logdetV, ok] = vquad (eta, qk, nlev, CP, n)
+  XtViX = XtViy = ytViy = logdetV = [];
+  ok = false;
+  s = eta(end);
+  if (s <= 0)
+    return;
+  endif
+  [L, psd] = build_L (eta, qk, nlev);
+  if (! psd)
+    [XtViX, XtViy, ytViy, logdetV, ok] = vquad_eig (eta, qk, nlev, CP, n);
+    return;
+  endif
+  [Rk, flag, pk] = factor_K (L, CP.ZtZ / s);
+  if (flag != 0)
+    return;
+  endif
+  ok = true;
+  logdetV = n * log (s) + 2 * sum (log (full (diag (Rk))));
+  LtZtX = L' * CP.ZtX / s;
+  LtZty = L' * CP.Zty / s;
+  Xt = Rk' \ LtZtX(pk,:);
+  yt = Rk' \ LtZty(pk);
+  XtViX = CP.XtX / s - Xt' * Xt;
+  XtViX = (XtViX + XtViX') / 2;
+  XtViy = CP.Xty / s - Xt' * yt;
+  ytViy = CP.yty / s - yt' * yt;
+endfunction
+
+## Sparse factor L of the block-diagonal P read out of eta, with P = L*L', and
+## whether it exists: it does not when any Psi_k has a negative eigenvalue.
+function [L, psd] = build_L (eta, qk, nlev)
+  blocks = cell (1, numel (qk));
+  off = 0;
+  psd = true;
+  L = [];
+  for k = 1:numel (qk)
+    q = qk(k);
+    m = q*(q+1)/2;
+    Pk = zeros (q, q);
+    Pk(tril (true (q))) = eta(off+(1:m));
+    Pk = Pk + tril (Pk, -1)';
+    [U, E] = eig (Pk);
+    if (any (diag (E) < 0))
+      psd = false;
+      return;
+    endif
+    blocks{k} = kron (speye (nlev(k)), sparse (U * sqrt (E)));
+    off += m;
+  endfor
+  L = blkdiag (blocks{:});
+endfunction
+
+## The same through the eigenvalues of P*G, for a P with no real factor.  ok
+## is false exactly where V is not positive definite.
+function [XtViX, XtViy, ytViy, logdetV, ok] = vquad_eig (eta, qk, nlev, CP, n)
   [P, s] = build_P (eta, qk, nlev);
   XtViX = XtViy = ytViy = logdetV = [];
   ok = false;
   if (s <= 0)
     return;
   endif
-  PG = P * CP.ZtZ;
+  PG = P * full (CP.ZtZ);
   lam = real (eig (PG));
   if (any (1 + lam / s <= 0))
     return;
@@ -182,4 +240,33 @@ endfunction
 function C = fixed_cov (eta, qk, nlev, CP)
   XtViX = vquad (eta, qk, nlev, CP, 1);
   C = inv (XtViX);
+endfunction
+
+## Cholesky factor of K = I + L'*ZtZ*L, and the row order pk it was taken in,
+## so that Rk'*Rk is K(pk,pk).  K is sparse or full as ZtZ is.  It is
+## symmetric in exact arithmetic but not bitwise, the two products being
+## separate calls, and 'chol' reads one triangle, so symmetrise it first.
+function [Rk, flag, pk] = factor_K (L, ZtZ)
+  K = speye (columns (ZtZ)) + L' * ZtZ * L;
+  K = (K + K') / 2;
+  if (issparse (K))
+    [Rk, flag, pk] = chol (K, "vector");
+  else
+    [Rk, flag] = chol (K);
+    pk = 1:columns (K);
+  endif
+endfunction
+
+## K has the non-zero pattern of Zx'*Zx whatever eta is, so its storage is
+## chosen once from the fill of its Cholesky factor, estimated under an
+## approximate minimum degree order.  Sparse is faster up to about a fifth of
+## the triangle filled; crossed terms with many levels each fill in, and dense
+## is faster.
+function ZtZ = choose_storage (ZtZ)
+  q = columns (ZtZ);
+  P = spones (ZtZ) + speye (q);
+  o = amd (P);
+  if (sum (symbfact (P(o,o))) > 0.2 * q * (q + 1) / 2)
+    ZtZ = full (ZtZ);
+  endif
 endfunction
