@@ -616,7 +616,7 @@ endfunction
 %! assert_equal (bhub, [-0.032803877294096; 2.016488145372473], 1e-7);
 %! assert_equal (bboth, bhub, 1e-12);
 
-%! ## Edge cases with empty arrays
+## Edge cases with empty arrays
 %!error <nlinfit: y must be a vector with the same number of rows as X.> ...
 %! nlinfit ([], [], @(b,x) b(1).*x, [1])
 %!error <nlinfit: nonlinear regression model function must return a vector of the same size as y.> ...
