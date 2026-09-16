@@ -36,7 +36,11 @@
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their
 ## difference, where the bounds are for 95% confidence intervals. Column 6-8 are
 ## the multiplicity adjusted p-values for each individual comparison, the test
-## statistic and the degrees of freedom.
+## statistic and the degrees of freedom. For @var{STATS} from kruskalwallis or
+## friedman, the comparisons use a z statistic, and the degrees of freedom are
+## reported as @code{Inf}, which is how the normal reference distribution is
+## signalled; @code{tcdf} and @code{tinv} at @code{Inf} agree with
+## @code{normcdf} and @code{norminv}.
 ## All tests by multcompare are two-tailed.
 ##
 ## @qcode{multcompare} can take a number of optional parameters as name-value
