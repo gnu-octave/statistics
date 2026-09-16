@@ -69,7 +69,6 @@ Hypothesis Testing
  regression_ftest
  regression_ttest
  runstest
- sampsizepwr
  signrank
  signtest
  swtest
@@ -84,6 +83,7 @@ Experimental Design
  ff2n
  fullfact
  parseWilkinsonFormula
+ sampsizepwr
  sigma_pts
  x2fx
 Regression
