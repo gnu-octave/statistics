@@ -124,7 +124,7 @@
 ## from 0 to 1, specifying the critical @math{alpha}-value of the respective
 ## test, and it is 0.05 by default.  For the @qcode{'quartiles'} method, the
 ## detection threshold factor replaces the number of interquartile ranges, which
-## is 1.5 by default. 
+## is 1.5 by default.
 ##
 ## @item @qcode{'MaxNumOutliers'} is only relevant to the @qcode{'gesd'} method
 ## and it must be a positive integer scalar specifying the maximum number of
@@ -165,6 +165,7 @@
 ## @var{C} is the average between @var{U} and @var{L} thresholds.  For the
 ## @qcode{'quartiles'} method, @var{C} is the average of the 25th and 75th
 ## percentiles.
+## @end itemize
 ##
 ## @seealso{filloutliers, rmoutliers, ismissing}
 ## @end deftypefn
