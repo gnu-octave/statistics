@@ -84,7 +84,7 @@
 ## and kurtosis are undefined), @var{jbstat} is @qcode{NaN}; in this case
 ## @var{p} is reported as @math{0} and @var{h} as @math{1}.
 ##
-## @seealso{kstest, adtest, lillietest}
+## @seealso{adtest, kstest, lillietest, swtest}
 ## @end deftypefn
 
 function [h, p, jbstat, critval] = jbtest (x, alpha, mctol)

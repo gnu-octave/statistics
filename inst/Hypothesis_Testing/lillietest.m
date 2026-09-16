@@ -65,7 +65,7 @@
 ## p-value reported as @math{0.001} or @math{0.5} there may be a bound rather
 ## than an estimate, with nothing to say so.
 ##
-## @seealso{kstest, adtest, jbtest}
+## @seealso{adtest, jbtest, kstest, swtest}
 ## @end deftypefn
 
 function [h, p, kstat, critval] = lillietest (x, varargin)

@@ -99,7 +99,7 @@
 ## @var{ksstat} with @var{cv} may occasionally lead to a different conclusion
 ## than a comparison of @var{p} with "alpha".
 ##
-## @seealso{kstest2, cdfplot}
+## @seealso{kstest2, cdfplot, adtest, jbtest, lillietest, swtest}
 ## @end deftypefn
 
 function [H, pValue, ksstat, cV] = kstest (x, varargin)

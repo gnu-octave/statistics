@@ -71,6 +71,7 @@ Hypothesis Testing
  sampsizepwr
  signrank
  signtest
+ swtest
  ttest
  ttest2
  vartest

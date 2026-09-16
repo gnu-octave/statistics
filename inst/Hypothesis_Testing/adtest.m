@@ -107,7 +107,7 @@
 ## distribution and @math{Fn} is the empirical CDF based on the data sample with
 ## @math{n} sample points.
 ##
-## @seealso{kstest}
+## @seealso{jbtest, kstest, lillietest, swtest}
 ## @end deftypefn
 
 function [H, pVal, ADStat, CV] = adtest (x, varargin)
