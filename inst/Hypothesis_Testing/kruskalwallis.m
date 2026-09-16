@@ -33,7 +33,9 @@
 ## @item
 ## @var{x} contains the data and it can either be a vector or matrix.
 ## If @var{x} is a matrix, then each column is treated as a separate group.
-## If @var{x} is a vector, then the @var{group} argument is mandatory.
+## If @var{x} is a vector, it is a single group whichever way it lies, unless
+## @var{group} is given; with one group there is nothing to compare, so
+## @var{p} is @qcode{NaN}.
 ## @item
 ## @var{group} contains the names for each group.  If @var{x} is a matrix, then
 ## @var{group} can either be a cell array of strings of a character array, with
@@ -104,9 +106,13 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
     group = group';
   endif
 
-  ## If X is a matrix, convert it to column vector and create a
-  ## corresponding column vector for groups
-  if (length (x) < prod (size (x)))
+  ## A vector is one group whichever way it lies, and each column of a matrix
+  ## is a group of its own.  With GROUP given, a vector is grouped by it
+  ## instead, one element per observation.
+  if (isvector (x))
+    x = x(:);
+  endif
+  if (isempty (group) || ! isvector (x))
     [n, m] = size (x);
     x = x(:);
     gi = reshape (repmat ((1:m), n, 1), n*m, 1);
@@ -148,6 +154,13 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   gm = mean (xr);                         ## Grand mean of groups
   dfm = length (xm) - 1;                  ## degrees of freedom for model
   dfe = lx - dfm - 1;                     ## degrees of freedom for error
+  ## With no observations there is nothing to partition.  Counting the groups
+  ## less one, and the samples less that, puts both below zero, which has no
+  ## reading; MATLAB reports the negative numbers.
+  if (lx == 0)
+    dfm = 0;
+    dfe = 0;
+  endif
   SSM = xs .* (xm - gm) * (xm - gm)';     ## Sum of Squares for Model
   SST = (xr(:) - gm)' * (xr(:) - gm);     ## Sum of Squares Total
   SSE = SST - SSM;                        ## Sum of Squares Error
@@ -166,7 +179,15 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   if (tieadj > 0)
     ChiSq = ChiSq / (1 - 2 * tieadj / (lx ^ 3 - lx));
   endif
-  p = 1 - chi2cdf (ChiSq, dfm);
+  if (dfm <= 0)
+    ## Fewer than two groups leaves nothing to compare, so the statistic has
+    ## no reference distribution and the test is undefined rather than
+    ## significant.
+    ChiSq = NaN;
+    p = NaN;
+  else
+    p = 1 - chi2cdf (ChiSq, dfm);
+  endif
 
   ## Create results table (if requested)
   if (nargout > 1)
@@ -290,3 +311,20 @@ endfunction
 %! assert_equal (stats.meanranks, means, 1e-6);
 %! assert_equal (length (stats.gnames), 10, 0);
 %! assert_equal (stats.n, N, 0);
+
+## A vector without GROUP is one group whichever way it lies, and an empty X
+## is answered rather than raised, with no degrees of freedom below zero.
+%!test
+%! [p, tbl] = kruskalwallis ((1:5)', [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), [0, 0; 10, 4; 10, 4]);
+
+%!test
+%! [p, tbl] = kruskalwallis (1:5, [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), [0, 0; 10, 4; 10, 4]);
+
+%!test
+%! [p, tbl] = kruskalwallis ([], [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), zeros (3, 2));

@@ -36,7 +36,8 @@
 ## @var{group} argument that is a categorical variable, vector, string array, or
 ## cell array of strings with one row for each element of @var{x}.  Values of
 ## @var{x} corresponding to the same value of @var{group} are placed in the same
-## group.
+## group.  Without @var{group}, a vector @var{x} is a single group, whichever
+## way it lies, and the test has nothing to compare, so @var{p} is @qcode{NaN}.
 ##
 ## @code{vartestn} treats NaNs as missing values, and ignores them.
 ##
@@ -110,8 +111,10 @@ function [p, stats] = vartestn (x, group, varargin)
     varargin = [{group} varargin];
     group = [];
   endif
-  if (isvector (x) && (nargin < 2 || isempty (group )))
-    error ("vartestn: if X is a vector then a group vector is required.");
+  ## A test of variance needs something to measure it on.  MATLAB refuses an
+  ## empty X here too, where ANOVA1 and KRUSKALWALLIS answer.
+  if (isempty (x))
+    error ("vartestn: X is empty.");
   endif
   ## Add defaults
   plotdata = true;
@@ -151,9 +154,13 @@ function [p, stats] = vartestn (x, group, varargin)
   if (size (group, 1) == 1)
     group = group';
   endif
-  ## If x is a matrix, convert it to column vector and create a
-  ## corresponding column vector for groups
-  if (length (x) < prod (size (x)))
+  ## A vector is one group whichever way it lies, and each column of a matrix
+  ## is a group of its own.  With GROUP given, a vector is grouped by it
+  ## instead, one element per observation.
+  if (isvector (x))
+    x = x(:);
+  endif
+  if (isempty (group) || ! isvector (x))
     [n, m] = size (x);
     x = x(:);
     gi = reshape (repmat ((1:m), n, 1), n*m, 1);
@@ -208,8 +215,13 @@ function [p, stats] = vartestn (x, group, varargin)
       else
         F = NaN;
       endif
-      ## Compute p-value
-      p = 1 - chi2cdf (F, Bdf);
+      ## Compute p-value.  Fewer than two groups leaves nothing to compare,
+      ## so the test is undefined rather than significant.
+      if (Bdf > 0)
+        p = 1 - chi2cdf (F, Bdf);
+      else
+        p = NaN;
+      endif
       testname = 'Bartlett''s statistic            ';
       if (nargout > 1)
         stats = struct ('chisqstat', F, 'df', Bdf);
@@ -364,14 +376,8 @@ endfunction
 ## Test input validation
 %!error<vartestn: too few input arguments.> vartestn ();
 %!error<vartestn: X must be a vector or a matrix.> vartestn (1);
-%!error<vartestn: if X is a vector then a group vector is required.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7]);
-%!error<vartestn: if X is a vector then a group vector is required.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7], []);
-%!error<vartestn: if X is a vector then a group vector is required.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7], 'TestType', 'LeveneAbsolute');
-%!error<vartestn: if X is a vector then a group vector is required.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7], [], 'TestType', 'LeveneAbsolute');
+%!error<vartestn: X is empty.> vartestn ([]);
+%!error<vartestn: X is empty.> vartestn (zeros (0, 3));
 %!error<vartestn: invalid value for display.> ...
 %! vartestn ([1, 2, 3, 4, 5, 6, 7], [1, 1, 1, 2, 2, 2, 2], 'Display', 'some');
 %!error<vartestn: invalid value for display.> ...
@@ -415,3 +421,14 @@ endfunction
 %! assert_equal (p, 8.235660885480556e-07, 1e-14);
 %! assert_equal (stat.fstat, 8.6766, 1e-4);
 %! assert_equal (stat.df, [4, 595]);
+
+## A vector without GROUP is one group whichever way it lies, so there is
+## nothing to compare.
+%!test
+%! [p, stats] = vartestn ((1:5)', [], 'Display', 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (stats.df, 0);
+
+%!test
+%! p = vartestn (1:5, [], 'Display', 'off');
+%! assert_equal (p, NaN);

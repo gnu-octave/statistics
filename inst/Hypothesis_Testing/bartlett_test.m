@@ -41,7 +41,9 @@
 ## @item
 ## @var{x} contains the data and it can either be a vector or matrix.
 ## If @var{x} is a matrix, then each column is treated as a separate group.
-## If @var{x} is a vector, then the @var{group} argument is mandatory.
+## If @var{x} is a vector, it is a single group whichever way it lies, unless
+## @var{group} is given; with one group there is nothing to compare, so
+## @var{pval} is @qcode{NaN}.
 ## NaN values are omitted.
 ##
 ## @item
@@ -117,9 +119,18 @@ function [h, pval, chisq, df] = bartlett_test (x, varargin)
     group = group';
   endif
 
-  ## If x is a matrix, convert it to column vector and create a
-  ## corresponding column vector for groups
-  if (length (x) < prod (size (x)))
+  ## A test of variance needs something to measure it on.
+  if (isempty (x))
+    error ("bartlett_test: X is empty.");
+  endif
+
+  ## A vector is one group whichever way it lies, and each column of a matrix
+  ## is a group of its own.  With GROUP given, a vector is grouped by it
+  ## instead, one element per observation.
+  if (isvector (x))
+    x = x(:);
+  endif
+  if (isempty (group) || ! isvector (x))
     [n, m] = size (x);
     x = x(:);
     gi = reshape (repmat ((1:m), n, 1), n*m, 1);
@@ -183,9 +194,15 @@ function [h, pval, chisq, df] = bartlett_test (x, varargin)
   B_den = 1 + (1 / (3 * (k - 1))) * (sum (1 ./ (n_i - 1)) - (1 / (N - k)));
   chisq = B_nom / B_den;
 
-  ## Calculate p-value from the chi-square distribution
+  ## Calculate p-value from the chi-square distribution.  Fewer than two
+  ## groups leaves nothing to compare, so the test is undefined rather than
+  ## significant.
   df = k - 1;
-  pval = 1 - chi2cdf (chisq, df);
+  if (df > 0)
+    pval = 1 - chi2cdf (chisq, df);
+  else
+    pval = NaN;
+  endif
 
   ## Determine the test outcome
   h = double (pval < alpha);
@@ -249,3 +266,17 @@ endfunction
 %! assert_equal (pval, 0.01791, 1e-5);
 %! assert_equal (chisq, 5.60486, 1e-5);
 %! assert_equal (df, 1);
+
+## A vector without GROUP is one group whichever way it lies, so there is
+## nothing to compare.
+%!test
+%! [h, pval] = bartlett_test ((1:5)');
+%! assert_equal (h, 0);
+%! assert_equal (pval, NaN);
+
+%!test
+%! [h, pval] = bartlett_test (1:5);
+%! assert_equal (pval, NaN);
+
+%!error<bartlett_test: X is empty.> bartlett_test ([])
+%!error<bartlett_test: X is empty.> bartlett_test (zeros (0, 3))
