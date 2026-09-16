@@ -133,7 +133,7 @@ dummyvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1325
+# length: 1612
 statistics: D = dummyvar ( group )
 
 Create dummy variables.
@@ -152,7 +152,12 @@ a positive integer vector representing the different group levels in
 the ordered range 1:max ( group ) .
 a positive integer matrix with each column corresponding to a separate
 grouping variable and the integer values representing the group levels within
-that grouping variable in the ordered range 1:max ( group ) .
+that grouping variable in the ordered range 1:max ( group ) . A
+NaN in a column produces a row of NaN values in that column&rsquo;s
+own block of dummy variables in D , without affecting the columns
+produced by any other grouping variable. A column that is entirely
+NaN has no levels, so it produces no dummy variables at all and a
+warning names it.
 a categorical column vector, in which case the number and order
 of columns in D correspond to the categories returned by
 categories ( group ) . Categories that are defined but not present
@@ -519,7 +524,7 @@ isoutlier
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6605
+# length: 6621
 statistics: TF = isoutlier ( x )
 statistics: TF = isoutlier ( x , method )
 statistics: TF = isoutlier ( x , 'percentiles' , threshold )
@@ -619,8 +624,7 @@ the number of standard deviations, which is 3 by default. For methods
 from 0 to 1, specifying the critical alpha -value of the respective
 test, and it is 0.05 by default. For the 'quartiles' method, the
 detection threshold factor replaces the number of interquartile ranges, which
-is 1.5 by default. 'ThresholdFactor' is not supported for the
-'quartiles' method.
+is 1.5 by default.
 'MaxNumOutliers' is only relevant to the 'gesd' method
 and it must be a positive integer scalar specifying the maximum number of
 outliers returned by the 'gesd' method. By default, it is the
@@ -652,7 +656,9 @@ x . For 'median' , 'movmedian' , 'mean' , and
 'movmean' methods, C is computed by taking into account the
 outlier values. For 'grubbs' and 'gesd' methods, C is
 computed by excluding the outliers. For the 'percentiles' method,
-C is the average between U and L thresholds.
+C is the average between U and L thresholds. For the
+'quartiles' method, C is the average of the 25th and 75th
+percentiles.
 
 See also:
 filloutliers,

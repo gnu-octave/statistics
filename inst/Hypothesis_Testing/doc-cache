@@ -747,7 +747,7 @@ anova1
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3727
+# length: 3814
 statistics: p = anova1 ( x )
 statistics: p = anova1 ( x , group )
 statistics: p = anova1 ( x , group , displayopt )
@@ -764,7 +764,9 @@ anova1 can take up to three input arguments:
 
 x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
-If x is a vector, then the group argument is mandatory.
+If x is a vector, it is a single group whichever way it lies, unless
+group is given; with one group there is nothing to compare, so
+p is NaN .
 
 group contains the names for each group. If x is a matrix, then
 group can either be a cell array of strings of a character array, with
@@ -1268,7 +1270,7 @@ bartlett_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1823
+# length: 1913
 statistics: h = bartlett_test ( x )
 statistics: h = bartlett_test ( x , group )
 statistics: h = bartlett_test ( x , alpha )
@@ -1291,7 +1293,9 @@ Input Arguments:
 
 x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
-If x is a vector, then the group argument is mandatory.
+If x is a vector, it is a single group whichever way it lies, unless
+group is given; with one group there is nothing to compare, so
+pval is NaN .
 NaN values are omitted.
 
 group contains the names for each group. If x is a vector, then
@@ -2112,7 +2116,7 @@ kruskalwallis
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2239
+# length: 2326
 statistics: p = kruskalwallis ( x )
 statistics: p = kruskalwallis ( x , group )
 statistics: p = kruskalwallis ( x , group , displayopt )
@@ -2128,7 +2132,9 @@ kruskalwallis can take up to three input arguments:
 
 x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
-If x is a vector, then the group argument is mandatory.
+If x is a vector, it is a single group whichever way it lies, unless
+group is given; with one group there is nothing to compare, so
+p is NaN .
 
 group contains the names for each group. If x is a matrix, then
 group can either be a cell array of strings of a character array, with
@@ -2357,7 +2363,7 @@ levene_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2415
+# length: 2505
 statistics: h = levene_test ( x )
 statistics: h = levene_test ( x , group )
 statistics: h = levene_test ( x , alpha )
@@ -2383,7 +2389,9 @@ Input Arguments:
 
 x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
-If x is a vector, then the group argument is mandatory.
+If x is a vector, it is a single group whichever way it lies, unless
+group is given; with one group there is nothing to compare, so
+pval is NaN .
 NaN values are omitted.
 
 group contains the names for each group. If x is a vector, then
@@ -3683,7 +3691,7 @@ vartestn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2744
+# length: 2864
 statistics: vartestn ( x )
 statistics: vartestn ( x , group )
 statistics: vartestn (&hellip;, name , value )
@@ -3704,7 +3712,8 @@ vartestn ( x , group ) requires a vector x , and a
 group argument that is a categorical variable, vector, string array, or
 cell array of strings with one row for each element of x . Values of
 x corresponding to the same value of group are placed in the same
-group.
+group. Without group , a vector x is a single group, whichever
+way it lies, and the test has nothing to compare, so p is NaN .
 
 vartestn treats NaNs as missing values, and ignores them.
 
