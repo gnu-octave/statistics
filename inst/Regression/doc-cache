@@ -2708,18 +2708,18 @@ GeneralizedLinearMixedModel.designMatrix
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 138
+# length: 190
 GeneralizedLinearMixedModel: D = designMatrix ( glme , type )
 
-Return the fixed ( "Fixed" , default) or random ( "Random" )
-design matrix.
+Return the fixed ( "Fixed" , default) design matrix as a full
+matrix, or the random ( "Random" ) design matrix as a sparse one.
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 71
-Return the fixed ("Fixed", default) or random ("Random") design matrix.
+# length: 123
+Return the fixed ("Fixed", default) design matrix as a full matrix, or the random ("Random") design matrix as a sparse one.
 
 
 
@@ -5551,19 +5551,19 @@ LinearMixedModel.designMatrix
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 183
+# length: 220
 LinearMixedModel: D = designMatrix ( lme , type )
 
 Return the fixed-effects design matrix ( type = "Fixed" ,
-default) or the expanded random-effects design matrix
-( type = "Random" ).
+default) as a full matrix, or the expanded random-effects design matrix
+( type = "Random" ) as a sparse matrix.
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 128
-Return the fixed-effects design matrix (type = "Fixed", default) or the expanded random-effects design matrix (type = "Random").
+# length: 165
+Return the fixed-effects design matrix (type = "Fixed", default) as a full matrix, or the expanded random-effects design matrix (type = "Random") as a sparse matrix.
 
 
 
@@ -9598,7 +9598,7 @@ fitlm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 9616
+# length: 9606
 statistics: mdl = fitlm ( X , y )
 statistics: mdl = fitlm ( tbl )
 statistics: mdl = fitlm ( tbl , ResponseVarName )
@@ -9632,9 +9632,9 @@ X can also be a categorical vector of length N , representing a
 single categorical predictor. In this case y must be supplied as the
 next argument, and the predictor is named 'x1' by default.
 
-y is an N&times;1 numeric or logical vector of response values, and
-must have the same number of observations (rows) as X . By default,
-the response is named 'y' .
+y is a numeric or logical vector of N response values, one for
+each row of X ; a row vector is taken as a column. By default, the
+response is named 'y' .
 
 mdl = fitlm ( tbl ) fits a linear regression model using
 the variables contained in the table (or dataset) tbl . By default,
@@ -10251,7 +10251,7 @@ lasso
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2546
+# length: 2627
 statistics: B = lasso ( X , y )
 statistics: [ B , FitInfo ] = lasso ( X , y )
 statistics: [&hellip;] = lasso (&hellip;, Name , Value )
@@ -10263,6 +10263,8 @@ models of the response y on the predictor matrix X by lasso, over
 a sequence of values of the regularization parameter Lambda . B
 is a P&times;L matrix whose column k holds the coefficient estimates
 for the k -th Lambda , in ascending order of Lambda .
+y is a vector with one element per row of X ; a row vector is
+taken as a column.
 
 [ B , FitInfo ] = lasso (&hellip;) additionally returns a
 structure FitInfo with fields Intercept , Lambda ,
@@ -11213,7 +11215,7 @@ regress
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1135
+# length: 1180
 statistics: [ b , bint , r , rint , stats ] = regress ( y , X , [ alpha ])
 
 Multiple Linear Regression using Least Squares Fit of y on X
@@ -11232,7 +11234,8 @@ e is a column vector of random errors
 
 Arguments are
 
-y is the y in the model
+y is the y in the model, a vector; a row vector is taken as a
+column
 
 X is the X in the model
 
@@ -11438,7 +11441,7 @@ robustfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2097
+# length: 2178
 statistics: b = robustfit ( X , y )
 statistics: b = robustfit ( X , y , wfun )
 statistics: b = robustfit ( X , y , wfun , tune )
@@ -11451,7 +11454,9 @@ b = robustfit ( X , y ) returns the coefficient vector
 b of a linear regression of the response y on the predictors
 X , fitted by robust M-estimation (iteratively reweighted least squares)
 so that outlying observations are downweighted. A column of ones is added to
-X by default, so b (1) is the intercept.
+X by default, so b (1) is the intercept. y is a
+vector with one element per row of X ; a row vector is taken as a
+column.
 
 b = robustfit ( X , y , wfun , tune ,
 const ) selects the weight function wfun , its tuning constant
@@ -11505,7 +11510,7 @@ stepwisefit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3057
+# length: 3122
 statistics: stepwisefit ( X , y )
 statistics: b = stepwisefit ( X , y )
 statistics: b , se , pval , finalmodel , stats , nextstep , history = stepwisefit ( X , y , varargin )
@@ -11532,7 +11537,8 @@ Arguments
 
 X is an n -by- p numeric matrix of predictor variables.
 
-y is an n -by-1 numeric response vector.
+y is a numeric response vector of n elements. A row vector is
+taken as a column, where MATLAB refuses it.
 
 Optional Name-Value pairs may be supplied to control the stepwise
 selection procedure.
@@ -11737,7 +11743,7 @@ stepwiselm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 9276
+# length: 9357
 statistics: mdl = stepwiselm ( tbl )
 statistics: mdl = stepwiselm ( tbl , ResponseVarName )
 statistics: mdl = stepwiselm ( tbl , y )
@@ -11774,7 +11780,8 @@ mdl = stepwiselm ( X , y ) fits a stepwise model of
 the response y to the predictor data X , an N&times;P numeric
 or logical matrix. By default, the predictors are named 'x1' ,
 'x2' , &hellip;, 'xP' and the response is named
-'y' .
+'y' . y is a vector with one element per row of X ; a
+row vector is taken as a column.
 
 Initial Model, and Lower/Upper Bounds
 

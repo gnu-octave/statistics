@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 22
+# columns: 23
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -125,6 +125,121 @@ Vol. 52, 1998, pp 119-126
 # elements: 1
 # length: 41
 Confidence level of multinomial portions.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+corr
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3861
+statistics: rho = corr ( x )
+statistics: rho = corr ( x , y )
+statistics: rho = corr (&hellip;, name , value )
+statistics: [ rho , pval ] = corr (&hellip;)
+
+Linear or rank correlation coefficients.
+
+rho = corr ( x ) returns the matrix of pairwise correlation
+coefficients between the columns of x , whose rows are observations and
+whose columns are variables. For an n -by- k matrix x ,
+rho is k -by- k and rho (i,j) is the
+correlation between the i -th and the j -th column of x .
+
+rho = corr ( x , y ) returns the correlations between
+the columns of x and the columns of y . For an
+n -by- k1 matrix x and an n -by- k2 matrix
+y , rho is k1 -by- k2 and rho (i,j) is the
+correlation between the i -th column of x and the j -th
+column of y . x and y must have the same number of rows.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'Type' The coefficient to compute: 'Pearson'
+(default) for the linear correlation coefficient, 'Kendall' for
+Kendall&rsquo;s tau-b, or 'Spearman' for Spearman&rsquo;s rho.
+'Rows' How missing values are handled: 'all'
+(default) uses every row, so an entry is NaN whenever either of its
+columns holds a NaN ; 'complete' first removes every row
+holding a NaN in any column; 'pairwise' computes each entry
+from the rows where its own pair of columns is present.
+'Tail' The alternative hypothesis of the test reported in
+pval : 'both' (default) for a correlation different from zero,
+'right' for a positive one, or 'left' for a negative one.
+'Weights' A column vector of n nonnegative
+observation weights. The default weights every observation equally.
+
+Option values are matched without regard to case, and an unambiguous
+abbreviation is accepted, so 'spear' selects 'Spearman' .
+
+[ rho , pval ] = corr (&hellip;) also returns pval , the
+p-value of a test of the null hypothesis that the corresponding correlation
+is zero, against the alternative named by 'Tail' . A pval entry
+is NaN wherever its rho entry is, and every entry is
+NaN when 'Weights' is given.
+
+The p-value is computed as follows:
+
+'Pearson' : from a Student&rsquo;s t distribution with n-2
+degrees of freedom applied to
+t = rho * sqrt ((n - 2) / (1 - rho ^2)) , which is
+exact when the data are normally distributed.
+'Kendall' : from the exact permutation distribution when
+n < 10 , and for a sample of fewer than 50 observations holding no
+tied values; otherwise from a normal approximation with a continuity
+correction and the usual correction for ties.
+'Spearman' : from the exact permutation distribution when
+n < 10 ; from the approximation of Best and Roberts (algorithm AS 89)
+for a larger sample holding no tied values; and from the same Student&rsquo;s t
+transformation as the Pearson coefficient for a larger sample that does
+hold them.
+
+The exact p-value is the proportion of the n! orderings of one
+variable giving a coefficient as extreme as the observed one, so tied
+values need no special treatment there.
+
+A column of constant values has no defined correlation, so its entries,
+the diagonal one included, are NaN . Inf makes a Pearson
+coefficient NaN , while the rank coefficients order it like any other
+value.
+
+Two deviations from MATLAB. A character array is refused, where MATLAB
+correlates the character codes; its acceptance there is incidental,
+correlation having no meaning for text. An array of more than two
+dimensions is refused, where MATLAB refuses most of them from inside a
+matrix multiplication but flattens a leading singleton dimension and
+answers NaN ; core Octave&rsquo;s corr answers NaN there
+too.
+
+References:
+
+M. G. Kendall. A new measure of rank correlation. Biometrika ,
+30(1-2):81&ndash;93, 1938.
+
+D. J. Best and D. E. Roberts. Algorithm AS 89: the upper tail probabilities
+of Spearman&rsquo;s rho. Applied Statistics , 24(3):377&ndash;379, 1975.
+
+See also:
+corrcoef,
+cov,
+partialcorr,
+tiedrank,
+kendall,
+spearman
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Linear or rank correlation coefficients.
 
 
 
@@ -1222,7 +1337,7 @@ partialcorr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2609
+# length: 3107
 statistics: rho = partialcorr ( x )
 statistics: rho = partialcorr ( x , z )
 statistics: rho = partialcorr ( x , y , z )
@@ -1280,6 +1395,14 @@ the controlling variables (with an intercept) and correlating the residuals.
 The p-value uses a Student&rsquo;s t statistic with n - 2 - k degrees
 of freedom, where k is the number of controlling variables and n
 the number of observations used.
+
+The data are centered, and the controlling variables rescaled, before the
+regression, which leaves the result unchanged in exact arithmetic and keeps
+it accurate in floating point. Shifting or rescaling a controlling
+variable, or giving the two variables very different scales, does not
+change the coefficient. MATLAB&rsquo;s coefficient does change in those cases:
+a large shift gives a different value, a small-scaled controlling variable
+is dropped, and very different scales overflow to NaN .
 
 See also:
 partialcorri,

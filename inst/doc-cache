@@ -13,9 +13,9 @@ cholcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1299
+# length: 1305
 statistics: T = cholcov ( sigma )
-statistics: [ T , p = cholcov ( sigma )
+statistics: [ T , p ] = cholcov ( sigma )
 statistics: [&hellip;] = cholcov ( sigma , flag )
 
 Cholesky-like decomposition for covariance matrix.
@@ -33,13 +33,13 @@ If any remaining eigenvalues are negative, T is empty.
 
 The tolerance is calculated as 10 * eps (max (abs (diag (sigma)))) .
 
-[ T , p = cholcov ( sigma ) returns in p the
+[ T , p ] = cholcov ( sigma ) returns in p the
 number of negative eigenvalues of sigma . If p > 0, then T
 is empty, whereas if p = 0, sigma ) is positive semi-definite.
 
 If sigma is not square and symmetric, P is NaN and T is empty.
 
-[ T , p = cholcov ( sigma , 0) returns p = 0 if
+[ T , p ] = cholcov ( sigma , 0) returns p = 0 if
 sigma is positive definite, in which case T is the Cholesky
 factor. If sigma is not positive definite, p is a positive
 integer and T is empty.

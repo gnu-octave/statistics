@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 5
+# columns: 6
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -228,6 +228,137 @@ present, and so cannot fit the reference group.
 # elements: 1
 # length: 73
 Parse and expand statistical model formulae using the Wilkinson notation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+sampsizepwr
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5259
+statistics: n = sampsizepwr ( testtype , params , p1 )
+statistics: n = sampsizepwr ( testtype , params , p1 , power )
+statistics: power = sampsizepwr ( testtype , params , p1 , [], n )
+statistics: p1 = sampsizepwr ( testtype , params , [], power , n )
+statistics: [ n1 , n2 ] = sampsizepwr ( 't2' , params , p1 , power )
+statistics: [&hellip;] = sampsizepwr ( testtype , params , p1 , power , n , name , value )
+
+Sample size and power calculation for hypothesis test.
+
+sampsizepwr computes the sample size, power, or alternative parameter
+value for a hypothesis test, given the other two values. For example, you can
+compute the sample size required to obtain a particular power for a
+hypothesis test, given the parameter value of the alternative hypothesis.
+
+n = sampsizepwr ( testtype , params , p1 ) returns
+the sample size N required for a two-sided test of the specified type to have
+a power (probability of rejecting the null hypothesis when the alternative is
+true) of 0.90 when the significance level (probability of rejecting the null
+hypothesis when the null hypothesis is true) is 0.05. params specifies
+the parameter values under the null hypothesis. P1 specifies the value of
+the single parameter being tested under the alternative hypothesis. For the
+two-sample t-test, N is the value of the equal sample size for both samples,
+params specifies the parameter values of the first sample under the
+null and alternative hypotheses, and P1 specifies the value of the single
+parameter from the other sample under the alternative hypothesis.
+
+The following TESTTYPE values are available:
+
+"z" one-sample z-test for normally distributed data with
+known standard deviation. params is a two-element vector [MU0 SIGMA0]
+of the mean and standard deviation, respectively, under the null hypothesis.
+P1 is the value of the mean under the alternative hypothesis.
+"t" one-sample t-test or paired t-test for normally
+distributed data with unknown standard deviation. params is a
+two-element vector [MU0 SIGMA0] of the mean and standard deviation,
+respectively, under the null hypothesis. P1 is the value of the mean under
+the alternative hypothesis.
+"t2" two-sample pooled t-test (test for equal means) for
+normally distributed data with equal unknown standard deviations.
+params is a two-element vector [MU0 SIGMA0] of the mean and standard
+deviation of the first sample under the null and alternative hypotheses. P1
+is the the mean of the second sample under the alternative hypothesis.
+"var" chi-square test of variance for normally distributed
+data. params is the variance under the null hypothesis. P1 is the
+variance under the alternative hypothesis.
+"p" test of the P parameter (success probability) for a
+binomial distribution. params is the value of P under the null
+hypothesis. P1 is the value of P under the alternative hypothesis.
+"r" test of the correlation coefficient parameter for
+significance. params is the value of r under the null hypothesis.
+P1 is the value of r under the alternative hypothesis.
+
+The "p" test for the binomial distribution is a discrete test for which
+increasing the sample size does not always increase the power. For N values
+larger than 200, there may be values smaller than the returned N value that
+also produce the desired power.
+
+n = sampsizepwr ( testtype , params , p1 ,
+power ) returns the sample size N such that the power is power
+for the parameter value P1. For the two-sample t-test, N is the equal sample
+size of both samples.
+
+[ n1 , n2 ] = sampsizepwr ("t2", params , p1 ,
+power ) returns the sample sizes n1 and n2 for the two
+samples. These values are the same unless the "ratio" parameter,
+ratio = n2 / n2 , is set to a value other than
+the default (See the name/value pair definition of ratio below).
+
+power = sampsizepwr ( testtype , params , p1 , [],
+n ) returns the power achieved for a sample size of n when the
+true parameter value is p1 . For the two-sample t-test, n is the
+smaller one of the two sample sizes.
+
+p1 = sampsizepwr ( testtype , params , [], power ,
+n ) returns the parameter value detectable with the specified sample
+size n and power power . For the two-sample t-test, n is
+the smaller one of the two sample sizes. When computing p1 for the "p"
+test, if no alternative can be rejected for a given params , n and
+power value, the function displays a warning message and returns NaN.
+
+[&hellip;] = sampsizepwr (&hellip;, n , name , value )
+specifies one or more of the following name / value pairs:
+
+Name Value
+"alpha" significance level of the test (default is 0.05)
+"tail" the type of test which can be:
+
+"both" two-sided test for an alternative p1 not equal
+to params
+"right" one-sided test for an alternative p1 larger
+than params
+"left" one-sided test for an alternative p1 smaller
+than params
+
+"ratio" desired ratio n2 / n2 of the larger
+sample size n2 to the smaller sample size n1 . Used only for the
+two-sample t-test. The value of ratio is greater than or equal
+to 1 (default is 1).
+
+sampsizepwr computes the sample size, power, or alternative hypothesis
+value given values for the other two. Specify one of these as [] to compute
+it. The remaining parameters (and ALPHA, RATIO) can be scalars or arrays of
+the same size.
+
+See also:
+vartest,
+ttest,
+ttest2,
+ztest,
+binocdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Sample size and power calculation for hypothesis test.
 
 
 

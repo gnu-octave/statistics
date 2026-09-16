@@ -168,8 +168,10 @@ gamboostinter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1643
+# length: 2893
 statistics: Mdl = gamboostinter ( X , Y , F0 , Method , Pairs , NumTrees , LearnRate , MaxNumSplits )
+statistics: Mdl = gamboostinter (&hellip;, W )
+statistics: Mdl = gamboostinter (&hellip;, W , Categorical )
 
 Boost trees over selected pairs of predictors.
 
@@ -191,15 +193,33 @@ and within range. Choosing them is the caller&rsquo;s business; see
 gamboostpairs .
 NumTrees , LearnRate and MaxNumSplits are the
 interaction phase&rsquo;s own budget, initial step and split limit.
+W , if given, is an Nx1 vector of non-negative observation
+weights, as gamboosttrain takes them, and may be empty.
+Categorical , if given, flags the columns holding level codes, as
+gamboosttrain takes it. A pair tree splits such a predictor into two
+sets of levels, and its grid holds every level.
 
 Mdl is a structure with the following fields.
 
-PairBinEdges , a 1xP cell of the coarse cut points the
-surfaces are held on. Interactions are binned coarser than main effects: a
-tree limited to MaxNumSplits splits carves no more regions than that,
-so a finer grid buys nothing and costs memory in every pair.
+PairBinEdges , a 1xP cell of the detection grid, eight
+equal-frequency bins per predictor, as MATLAB reports it.
+PairEdges , a 1xM cell with one element per pair, a
+1x2 cell of the cut points its trees used on its two predictors. A
+tree is fitted to the rows, cutting halfway between two values a node holds,
+keeping at least five rows in a leaf and growing a layer at a time within
+MaxNumSplits . A categorical predictor is cut into two sets of levels
+after sorting them by the step each would take alone; of cuts with equal
+gain the first in that order is kept, and a level none of a node&rsquo;s rows
+holds stops at that node. A tree that splits on only one of the pair&rsquo;s
+predictors is a main effect and adds nothing, so a round may leave a pair
+untouched.
 PairValues , a 1xM cell of matrices, one value per
-cell of the pair&rsquo;s grid.
+cell of the pair&rsquo;s own grid.
+PairMissing , a 1xM cell, one element per pair: a
+1x3 cell of what a row missing the first predictor takes, one value
+per cell of the second; what a row missing the second takes, one value per
+cell of the first; and what a row missing both takes. A row missing the
+predictor a node splits on stops there, in training as in prediction.
 Intercept , the constant the recentred surfaces gave up. Add it
 to the intercept of the predictor phase.
 NumTrees , ReasonForTermination , Deviance and
@@ -214,8 +234,8 @@ gamboostpredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 55
-F0, Method, Pairs, NumTrees, LearnRate, @ MaxNumSplits)
+# length: 176
+F0, Method, Pairs, NumTrees, LearnRate, @ MaxNumSplits) @deftypefnx {statistics} {Mdl =} gamboostinter (, W) @deftypefnx {statistics} {Mdl =} gamboostinter (, W, @ Categorical)
 
 
 
@@ -229,8 +249,9 @@ gamboostpairs
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1497
+# length: 1707
 statistics: S = gamboostpairs ( X , R )
+statistics: S = gamboostpairs ( X , R , Categorical )
 
 Score every pair of predictors for an interaction.
 
@@ -250,6 +271,9 @@ keep is policy and belongs beside that.
 X is an NxP numeric matrix of predictors, and P must
 be at least 2 for any pair to exist.
 R is the Nx1 residual vector of the additive fit.
+Categorical , if given, flags the columns holding level codes, as
+gamboosttrain takes it. Such a predictor is laid on its levels
+rather than on eight bins.
 
 S is a structure with the following fields, one row per pair, ordered
 as nchoosek orders them.
@@ -274,8 +298,8 @@ ClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 50
-Score every pair of predictors for an interaction.
+# length: 12
+Categorical)
 
 
 
@@ -289,10 +313,11 @@ gamboostpredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1622
+# length: 1810
 statistics: Y = gamboostpredict ( BinEdges , ShapeValues , X , Intercept )
 statistics: Y = gamboostpredict (&hellip;, Link )
-statistics: Y = gamboostpredict (&hellip;, Link , PairBinEdges , PairValues , Pairs )
+statistics: Y = gamboostpredict (&hellip;, Link , PairEdges , PairValues , Pairs )
+statistics: Y = gamboostpredict (&hellip;, Pairs , PairMissing )
 
 Predict from a generalized additive model of boosted trees.
 
@@ -312,11 +337,14 @@ Link , if given, selects what the additive prediction is mapped
 through: 0 returns it as it stands and 1 takes it as a
 log-odds, returning the Nx2 matrix of class probabilities whose
 second column is the logistic function of it. The default is 0 .
-PairBinEdges , PairValues and Pairs carry the
+PairEdges , PairValues and Pairs carry the
 interaction terms, as gamboostinter returns the first two and as it
 was given the third. Each pair contributes the value of the cell its two
-predictors fall in, and a pair with either predictor missing contributes
-nothing. All three must be given together or none of them.
+predictors fall in on the pair&rsquo;s own cut points. All three must be given
+together or none of them.
+PairMissing , as gamboostinter returns it, gives what a row
+missing either predictor of a pair, or both, takes. Without it such a pair
+contributes nothing.
 
 See also:
 gamboosttrain,
@@ -328,8 +356,8 @@ RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 173
-ShapeValues, X, Intercept) @deftypefnx {statistics} {Y =} gamboostpredict (, Link) @deftypefnx {statistics} {Y =} gamboostpredict (, Link, @ PairBinEdges, PairValues, Pairs)
+# length: 242
+ShapeValues, X, Intercept) @deftypefnx {statistics} {Y =} gamboostpredict (, Link) @deftypefnx {statistics} {Y =} gamboostpredict (, Link, @ PairEdges, PairValues, Pairs) @deftypefnx {statistics} {Y =} gamboostpredict (, Pairs, @ PairMissing)
 
 
 
@@ -343,9 +371,11 @@ gamboosttrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2676
+# length: 3485
 statistics: Mdl = gamboosttrain ( X , Y , Method , NumTrees , LearnRate , MaxNumSplits )
 statistics: Mdl = gamboosttrain ( X , Y , Method , NumTrees , LearnRate , MaxNumSplits , Verbose , NumPrint , F0 )
+statistics: Mdl = gamboosttrain (&hellip;, F0 , W )
+statistics: Mdl = gamboosttrain (&hellip;, F0 , W , Categorical )
 statistics: Mdl = gamboosttrain (&hellip;, Verbose , NumPrint )
 
 Fit a generalized additive model of boosted trees.
@@ -378,6 +408,17 @@ rounds. The RelTol column is the relative improvement the round
 bought, which is what the stopping rule reads. MATLAB prints a column under
 the same heading holding a quantity of its own that cannot be derived from
 anything else it reports, so the two are not comparable.
+F0 , if given and not empty, continues a fit: it is the prediction
+the fit reached over these rows, and what comes back is the increment.
+W , if given, is an Nx1 vector of non-negative observation
+weights. Only their proportions matter. Every sum the fit takes over the
+observations is weighted; the fewest observations a leaf may hold still
+counts rows. F0 and W may each be empty.
+Categorical , if given, is a logical vector with one element per
+column of X . A flagged column holds level codes, positive integers,
+with a missing or unseen level NaN . Each level is a bin of its own,
+and a tree sorts the levels by the step each would take alone before it
+chooses its cut, as R2024a does.
 
 Mdl is a structure with the following fields.
 
@@ -406,8 +447,8 @@ RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 237
-Method, NumTrees, LearnRate, MaxNumSplits) @deftypefnx {statistics} {Mdl =} gamboosttrain (X, Y, @ Method, NumTrees, LearnRate, MaxNumSplits, @ Verbose, NumPrint, F0) @deftypefnx {statistics} {Mdl =} gamboosttrain (, Verbose, @ NumPrint)
+# length: 368
+Method, NumTrees, LearnRate, MaxNumSplits) @deftypefnx {statistics} {Mdl =} gamboosttrain (X, Y, @ Method, NumTrees, LearnRate, MaxNumSplits, @ Verbose, NumPrint, F0) @deftypefnx {statistics} {Mdl =} gamboosttrain (, F0, @ W) @deftypefnx {statistics} {Mdl =} gamboosttrain (, F0, @ W, Categorical) @deftypefnx {statistics} {Mdl =} gamboosttrain (, Verbose, @ NumPrint)
 
 
 
@@ -638,14 +679,16 @@ svmtrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3279
+# length: 3564
 statistics: model = svmtrain ( labels , data , "libsvm_options")
+statistics: model = svmtrain ( labels , data , "libsvm_options", weights )
 
 This function trains an SVM model based on known labels and their corresponding data which comprise an instance matrix.
 
 labels : An m by 1 vector of prediction labels. (type must be double)
 data : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double)
 libsvm_options : A string of testing options in the same format as that of LIBSVM.
+weights : An m by 1 vector of nonnegative instance weights, one per instance. Each scales the box constraint C of its instance, and an instance of zero weight is left out of the training. (type must be double)
 
 libsvm_options :
 
@@ -717,8 +760,9 @@ treepredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1069
+# length: 1381
 statistics: V = treepredict ( X , Children , CutPredictorIndex , CutPoint , Value )
+statistics: V = treepredict (&hellip;, CutCategories )
 statistics: [ V , node ] = treepredict (&hellip;)
 
 Evaluate a binary decision tree on new data.
@@ -743,6 +787,11 @@ A row is stopped by the first node whose split predictor it is missing, and
 takes that node&rsquo;s value, which is how such a row was held back rather than
 sent to a child while the tree was grown.
 
+CutCategories , the Mx2 cell array treetrain returns,
+gives the levels a categorical cut sends left and right. A row goes the way
+its level is listed, and a row whose level is in neither list, one the node
+never saw, is stopped there like a missing value.
+
 See also:
 treetrain
 
@@ -750,8 +799,8 @@ treetrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 89
-CutPredictorIndex, CutPoint, Value) @deftypefnx {statistics} {[V, node] =} treepredict ()
+# length: 150
+CutPredictorIndex, CutPoint, Value) @deftypefnx {statistics} {V =} treepredict (, CutCategories) @deftypefnx {statistics} {[V, node] =} treepredict ()
 
 
 
@@ -765,7 +814,7 @@ treetrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1338
+# length: 2215
 statistics: Mdl = treetrain ( X , Y , W , opts )
 
 Grow a binary decision tree by recursive partitioning.
@@ -787,9 +836,27 @@ SplitCriterion is "gdi" or "deviance" for a
 classifier and "mse" for a regression, and it is what selects
 between the two.
 
+NumVariablesToSample , when present, is the number of predictors
+each node chooses its split from, drawn afresh at every node, and
+Seed , an integer from 0 to 2^32-1 , seeds that draw, so the
+same seed grows the same tree. A node whose predictors hold no valid split
+is a leaf. Without NumVariablesToSample every predictor is tried and
+nothing is drawn.
+
+CategoricalPredictors , when present, lists the columns of X
+that hold levels rather than numbers, and such a column is split into two
+sets of levels. A regression orders the levels by mean response and two
+classes by the probability of the first class. More classes search every
+partition when the node holds at most MaxNumCategories levels, 10
+by default, and otherwise take MATLAB&rsquo;s heuristics, as
+AlgorithmForCategorical selects: "auto" (default),
+"exact" , "pullleft" , "pca" or
+"ovabyclass" .
+
 The returned structure holds Children , Parent ,
-CutPredictorIndex , CutPoint , IsBranchNode ,
-NodeSize , NodeWeight and NumNodes , plus
+CutPredictorIndex , CutPoint , CutCategories ,
+IsBranchNode , NodeSize , NodeWeight and
+NumNodes , plus
 ClassWeight and ClassCount for a classifier or
 NodeMean and NodeError for a regression.
 Nodes are numbered as they are created, so a parent always precedes its

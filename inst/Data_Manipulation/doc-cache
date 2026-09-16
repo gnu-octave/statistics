@@ -37,7 +37,7 @@ crosstab
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 576
+# length: 864
 statistics: t = crosstab ( x1 , x2 )
 statistics: t = crosstab ( x1 , &hellip;, xn )
 statistics: [ t , chisq , p , labels ] = crosstab (&hellip;)
@@ -51,6 +51,12 @@ cell array of character vectors.
 As additional return values crosstab returns the chi-square statistics
 chisq , its p-value p and a cell array labels , containing
 the labels of each input argument.
+
+A categorical input has a row or column for every one of its categories,
+an unused one included, holding zeros. The chi-square statistic and its
+p-value are computed over the rows and columns that hold observations,
+where MATLAB returns NaN for both whenever any row or column is
+empty.
 
 See also:
 grp2idx,
