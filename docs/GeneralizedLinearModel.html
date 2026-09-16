@@ -47,6 +47,49 @@
             window.location.pathname + window.location.search);
         }
       });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
     </script>
     <style>
     h5.fs {
@@ -90,6 +133,19 @@
     }
     [id^="togList"]:checked ~ .list{
       display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
     }
     </style>
   </head>
@@ -148,6 +204,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
@@ -234,9 +291,9 @@
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
 					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
@@ -258,6 +315,7 @@
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -320,29 +378,44 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationBaggedEnsemble</small></a></li>
 					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
 					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
 					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
 					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
 					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
 					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
 					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
 					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
 					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
 					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
 					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
 					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
 					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
 					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
 					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
 					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
 					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
@@ -350,29 +423,47 @@
 					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
 					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
 					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
 					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
 					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
 					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
 					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
 					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
 					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
 					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
 					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -1019,7 +1110,7 @@
   <a href="glmval.html">glmval</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/GeneralizedLinearModel.m">GeneralizedLinearModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/GeneralizedLinearModel.m">GeneralizedLinearModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>GeneralizedLinearModel</code> class contains the following properties:</p>
@@ -1027,8 +1118,8 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
-              aria-expanded="false" aria-controls="collapseProperty1">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Coefficients"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Coefficients">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1040,7 +1131,7 @@ Coefficient values
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty1">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Coefficients">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1106,8 +1197,8 @@ Coefficient values
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
-              aria-expanded="false" aria-controls="collapseProperty2">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_CoefficientNames"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_CoefficientNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1119,7 +1210,7 @@ Names of the coefficients
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty2">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_CoefficientNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1175,8 +1266,8 @@ Names of the coefficients
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
-              aria-expanded="false" aria-controls="collapseProperty3">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_CoefficientCovariance"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_CoefficientCovariance">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1188,7 +1279,7 @@ Covariance matrix of the coefficient estimates
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty3">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_CoefficientCovariance">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1243,8 +1334,8 @@ Covariance matrix of the coefficient estimates
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
-              aria-expanded="false" aria-controls="collapseProperty4">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_NumCoefficients"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_NumCoefficients">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1256,7 +1347,7 @@ Number of coefficients
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty4">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumCoefficients">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1310,8 +1401,8 @@ Number of coefficients
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
-              aria-expanded="false" aria-controls="collapseProperty5">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_NumEstimatedCoefficients"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_NumEstimatedCoefficients">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1323,7 +1414,7 @@ Number of coefficients actually estimated
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty5">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumEstimatedCoefficients">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1378,8 +1469,8 @@ Number of coefficients actually estimated
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
-              aria-expanded="false" aria-controls="collapseProperty6">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_NumPredictors"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_NumPredictors">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1391,7 +1482,7 @@ Number of predictor variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty6">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumPredictors">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1445,8 +1536,8 @@ Number of predictor variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
-              aria-expanded="false" aria-controls="collapseProperty7">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_NumObservations"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_NumObservations">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1458,7 +1549,7 @@ Number of observations used in the fit
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty7">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumObservations">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1512,8 +1603,8 @@ Number of observations used in the fit
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
-              aria-expanded="false" aria-controls="collapseProperty8">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Deviance"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Deviance">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1525,7 +1616,7 @@ Deviance of the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty8">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Deviance">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1580,8 +1671,8 @@ Deviance of the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
-              aria-expanded="false" aria-controls="collapseProperty9">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_DFE"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_DFE">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1593,7 +1684,7 @@ Error degrees of freedom
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty9">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_DFE">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1646,8 +1737,8 @@ Error degrees of freedom
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Dispersion"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Dispersion">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1659,7 +1750,7 @@ Dispersion parameter
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Dispersion">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1715,8 +1806,8 @@ Dispersion parameter
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_DispersionEstimated"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_DispersionEstimated">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1728,7 +1819,7 @@ Whether the dispersion was estimated
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_DispersionEstimated">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1783,8 +1874,8 @@ Whether the dispersion was estimated
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Distribution"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Distribution">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1796,7 +1887,7 @@ The response distribution
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Distribution">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1852,8 +1943,8 @@ The response distribution
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Link"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Link">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1865,7 +1956,7 @@ The link function
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Link">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1920,8 +2011,8 @@ The link function
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Fitted"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Fitted">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1933,7 +2024,7 @@ Fitted values
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Fitted">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1991,8 +2082,8 @@ Fitted values
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Residuals"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Residuals">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2004,7 +2095,7 @@ Residuals for the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Residuals">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2069,8 +2160,8 @@ Residuals for the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Diagnostics"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Diagnostics">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2082,7 +2173,7 @@ Per-observation diagnostics
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Diagnostics">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2138,8 +2229,8 @@ Per-observation diagnostics
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_LogLikelihood"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_LogLikelihood">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2151,7 +2242,7 @@ Log-likelihood of the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_LogLikelihood">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2205,8 +2296,8 @@ Log-likelihood of the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
-              aria-expanded="false" aria-controls="collapseProperty18">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_ModelCriterion"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_ModelCriterion">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2218,7 +2309,7 @@ Information criteria
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty18">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_ModelCriterion">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2273,8 +2364,8 @@ Information criteria
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
-              aria-expanded="false" aria-controls="collapseProperty19">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Rsquared"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Rsquared">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2286,7 +2377,7 @@ Measures of fit
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty19">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Rsquared">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2344,8 +2435,8 @@ Measures of fit
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty20"
-              aria-expanded="false" aria-controls="collapseProperty20">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_SSE"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_SSE">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2357,7 +2448,7 @@ Error sum of squares
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty20">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_SSE">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2411,8 +2502,8 @@ Error sum of squares
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty21"
-              aria-expanded="false" aria-controls="collapseProperty21">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_SSR"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_SSR">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2424,7 +2515,7 @@ Regression sum of squares
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty21">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_SSR">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2478,8 +2569,8 @@ Regression sum of squares
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty22"
-              aria-expanded="false" aria-controls="collapseProperty22">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_SST"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_SST">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2491,7 +2582,7 @@ Total sum of squares
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty22">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_SST">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2545,8 +2636,8 @@ Total sum of squares
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty23"
-              aria-expanded="false" aria-controls="collapseProperty23">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Offset"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Offset">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2558,7 +2649,7 @@ Offset added to the linear predictor
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty23">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Offset">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2613,8 +2704,8 @@ Offset added to the linear predictor
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty24"
-              aria-expanded="false" aria-controls="collapseProperty24">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_LikelihoodPenalty"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_LikelihoodPenalty">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2626,7 +2717,7 @@ Penalty applied to the likelihood
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty24">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_LikelihoodPenalty">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2680,8 +2771,8 @@ Penalty applied to the likelihood
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty25"
-              aria-expanded="false" aria-controls="collapseProperty25">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_ResponseName"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_ResponseName">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2693,7 +2784,7 @@ Name of the response variable
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty25">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_ResponseName">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2747,8 +2838,8 @@ Name of the response variable
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty26"
-              aria-expanded="false" aria-controls="collapseProperty26">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_PredictorNames"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_PredictorNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2760,7 +2851,7 @@ Names of the predictor variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty26">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_PredictorNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2814,8 +2905,8 @@ Names of the predictor variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty27"
-              aria-expanded="false" aria-controls="collapseProperty27">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_VariableNames"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_VariableNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2827,7 +2918,7 @@ Names of all the variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty27">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_VariableNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2880,8 +2971,8 @@ Names of all the variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty28"
-              aria-expanded="false" aria-controls="collapseProperty28">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_NumVariables"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_NumVariables">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2893,7 +2984,7 @@ Number of variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty28">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumVariables">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2947,8 +3038,8 @@ Number of variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty29"
-              aria-expanded="false" aria-controls="collapseProperty29">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_VariableInfo"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_VariableInfo">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2960,7 +3051,7 @@ Per-variable information
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty29">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_VariableInfo">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3016,8 +3107,8 @@ Per-variable information
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty30"
-              aria-expanded="false" aria-controls="collapseProperty30">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Variables"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Variables">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3029,7 +3120,7 @@ The data the model was built from
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty30">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Variables">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3083,8 +3174,8 @@ The data the model was built from
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty31"
-              aria-expanded="false" aria-controls="collapseProperty31">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_ObservationInfo"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_ObservationInfo">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3096,7 +3187,7 @@ Per-observation status
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty31">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_ObservationInfo">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3152,8 +3243,8 @@ Per-observation status
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty32"
-              aria-expanded="false" aria-controls="collapseProperty32">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_ObservationNames"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_ObservationNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3165,7 +3256,7 @@ Names of the observations
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty32">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_ObservationNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3218,8 +3309,8 @@ Names of the observations
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty33"
-              aria-expanded="false" aria-controls="collapseProperty33">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Formula"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Formula">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3231,7 +3322,7 @@ The model formula
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty33">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Formula">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3288,8 +3379,8 @@ The model formula
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty34"
-              aria-expanded="false" aria-controls="collapseProperty34">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_Steps"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_Steps">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3301,7 +3392,7 @@ Stepwise fitting information
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty34">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_Steps">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3390,8 +3481,8 @@ Stepwise fitting information
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
-              aria-expanded="false" aria-controls="colapsibleConstructor">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_GeneralizedLinearModel"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_GeneralizedLinearModel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3404,7 +3495,7 @@ Fit a generalized linear model.  Prefer the <code>fitglm</code> function, which
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="colapsibleConstructor">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_GeneralizedLinearModel">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (<var>data</var>, <var>resp</var>, <var>modelspec</var>)</code></h5></dt>
@@ -3455,8 +3546,8 @@ Fit a generalized linear model.  Prefer the <code>fitglm</code> function, which
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
-              aria-expanded="false" aria-controls="collapseMethod1">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_predict"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_predict">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3472,7 +3563,7 @@ Predict the response of the model <var>mdl</var> at the new predictor data
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod1">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_predict">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
@@ -3524,8 +3615,8 @@ Predict the response of the model <var>mdl</var> at the new predictor data
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
-              aria-expanded="false" aria-controls="collapseMethod2">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_feval"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_feval">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3539,7 +3630,7 @@ Predict the response by passing each predictor as a separate argument (a
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_feval">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;)</code></h5></dt>
@@ -3589,8 +3680,8 @@ Predict the response by passing each predictor as a separate argument (a
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
-              aria-expanded="false" aria-controls="collapseMethod3">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_coefCI"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_coefCI">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3605,7 +3696,7 @@ Confidence intervals for the coefficient estimates.  <var>ci</var> is a
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod3">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_coefCI">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
@@ -3656,8 +3747,8 @@ Confidence intervals for the coefficient estimates.  <var>ci</var> is a
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
-              aria-expanded="false" aria-controls="collapseMethod4">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_coefTest"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_coefTest">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3673,7 +3764,7 @@ Wald test of the linear hypothesis <em class="math">H b = 0</em> on the coeffici
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod4">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_coefTest">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
@@ -3724,8 +3815,8 @@ Wald test of the linear hypothesis <em class="math">H b = 0</em> on the coeffici
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
-              aria-expanded="false" aria-controls="collapseMethod5">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_devianceTest"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_devianceTest">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3741,7 +3832,7 @@ Likelihood-ratio (deviance) test of the fitted model against the
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod5">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_devianceTest">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>tbl</var> = <b>devianceTest</b> (<var>mdl</var>)</code></h5></dt>
@@ -3791,8 +3882,8 @@ Likelihood-ratio (deviance) test of the fitted model against the
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
-              aria-expanded="false" aria-controls="collapseMethod6">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_random"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_random">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3807,7 +3898,7 @@ Simulate responses from the fitted model.  With one argument the fitted
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod6">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_random">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>)</code></h5></dt>
@@ -3858,8 +3949,8 @@ Simulate responses from the fitted model.  With one argument the fitted
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
-              aria-expanded="false" aria-controls="collapseMethod7">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_plotResiduals"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_plotResiduals">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3875,7 +3966,7 @@ Plot the model residuals.  <var>plottype</var> is one of <code>'histogram'</code
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod7">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotResiduals">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></h5></dt>
@@ -3927,8 +4018,8 @@ Plot the model residuals.  <var>plottype</var> is one of <code>'histogram'</code
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
-              aria-expanded="false" aria-controls="collapseMethod8">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_plotDiagnostics"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_plotDiagnostics">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3942,7 +4033,7 @@ Plot observation diagnostics.  <var>plottype</var> is <code>'leverage'</code>
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod8">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotDiagnostics">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></h5></dt>
@@ -3993,8 +4084,8 @@ Plot observation diagnostics.  <var>plottype</var> is <code>'leverage'</code>
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
-              aria-expanded="false" aria-controls="collapseMethod9">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_plotEffects"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_plotEffects">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4008,7 +4099,7 @@ Main-effects plot: for each predictor, the change in the fitted mean
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod9">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotEffects">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotEffects</b> (<var>mdl</var>)</code></h5></dt>
@@ -4058,8 +4149,8 @@ Main-effects plot: for each predictor, the change in the fitted mean
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod10"
-              aria-expanded="false" aria-controls="collapseMethod10">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_plotAdjustedResponse"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_plotAdjustedResponse">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4074,7 +4165,7 @@ Adjusted-response plot for the predictor <var>var</var> (a name or index): the
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod10">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotAdjustedResponse">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>
@@ -4124,8 +4215,8 @@ Adjusted-response plot for the predictor <var>var</var> (a name or index): the
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod11"
-              aria-expanded="false" aria-controls="collapseMethod11">
+              data-bs-toggle="collapse" data-bs-target="#GeneralizedLinearModel_plotAdded"
+              aria-expanded="false" aria-controls="GeneralizedLinearModel_plotAdded">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4140,7 +4231,7 @@ Added-variable (partial-regression) plot for the predictor <var>var</var> (a
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod11">
+          <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotAdded">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotAdded</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>

@@ -47,6 +47,49 @@
             window.location.pathname + window.location.search);
         }
       });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
     </script>
     <style>
     h5.fs {
@@ -90,6 +133,19 @@
     }
     [id^="togList"]:checked ~ .list{
       display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
     }
     </style>
   </head>
@@ -148,6 +204,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
@@ -234,9 +291,9 @@
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
 					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
@@ -258,6 +315,7 @@
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -320,29 +378,44 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationBaggedEnsemble</small></a></li>
 					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
 					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
 					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
 					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
 					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
 					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
 					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
 					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
 					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
 					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
 					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
 					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
 					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
 					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
 					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
 					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
 					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
@@ -350,29 +423,47 @@
 					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
 					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
 					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
 					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
 					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
 					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
 					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
 					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
 					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
 					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
 					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -1011,7 +1102,7 @@
   <a href="fitcgam.html">fitcgam</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Supervised_Learning/ClassificationGAM.m">ClassificationGAM</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/ClassificationGAM.m">ClassificationGAM</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationGAM</code> class contains the following properties:</p>
@@ -1019,8 +1110,8 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
-              aria-expanded="false" aria-controls="collapseProperty1">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_X"
+              aria-expanded="false" aria-controls="ClassificationGAM_X">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1032,7 +1123,7 @@ Predictor data
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty1">
+          <div class="collapse multi-collapse" id="ClassificationGAM_X">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1064,7 +1155,18 @@ Predictor data
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1072,8 +1174,7 @@ Predictor data
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1093,8 +1194,8 @@ Predictor data
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
-              aria-expanded="false" aria-controls="collapseProperty2">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Y"
+              aria-expanded="false" aria-controls="ClassificationGAM_Y">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1106,7 +1207,7 @@ Class labels
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty2">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Y">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1139,7 +1240,18 @@ Class labels
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1147,8 +1259,7 @@ Class labels
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1168,8 +1279,8 @@ Class labels
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
-              aria-expanded="false" aria-controls="collapseProperty3">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_NumObservations"
+              aria-expanded="false" aria-controls="ClassificationGAM_NumObservations">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1181,7 +1292,7 @@ Number of observations
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty3">
+          <div class="collapse multi-collapse" id="ClassificationGAM_NumObservations">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1213,7 +1324,18 @@ Number of observations
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1221,8 +1343,7 @@ Number of observations
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1242,8 +1363,8 @@ Number of observations
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
-              aria-expanded="false" aria-controls="collapseProperty4">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_RowsUsed"
+              aria-expanded="false" aria-controls="ClassificationGAM_RowsUsed">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1255,7 +1376,7 @@ Rows used for fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty4">
+          <div class="collapse multi-collapse" id="ClassificationGAM_RowsUsed">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1289,7 +1410,18 @@ Rows used for fitting
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1297,8 +1429,7 @@ Rows used for fitting
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1318,8 +1449,8 @@ Rows used for fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
-              aria-expanded="false" aria-controls="collapseProperty5">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_NumPredictors"
+              aria-expanded="false" aria-controls="ClassificationGAM_NumPredictors">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1331,7 +1462,7 @@ Number of predictors
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty5">
+          <div class="collapse multi-collapse" id="ClassificationGAM_NumPredictors">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1363,7 +1494,18 @@ Number of predictors
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1371,8 +1513,7 @@ Number of predictors
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1392,8 +1533,8 @@ Number of predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
-              aria-expanded="false" aria-controls="collapseProperty6">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_PredictorNames"
+              aria-expanded="false" aria-controls="ClassificationGAM_PredictorNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1405,7 +1546,7 @@ Names of predictor variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty6">
+          <div class="collapse multi-collapse" id="ClassificationGAM_PredictorNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1437,7 +1578,18 @@ Names of predictor variables
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1445,8 +1597,7 @@ Names of predictor variables
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1466,8 +1617,8 @@ Names of predictor variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
-              aria-expanded="false" aria-controls="collapseProperty7">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ResponseName"
+              aria-expanded="false" aria-controls="ClassificationGAM_ResponseName">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1479,7 +1630,7 @@ Response variable name
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty7">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ResponseName">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1510,7 +1661,18 @@ Response variable name
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1518,8 +1680,7 @@ Response variable name
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1539,8 +1700,8 @@ Response variable name
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
-              aria-expanded="false" aria-controls="collapseProperty8">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ClassNames"
+              aria-expanded="false" aria-controls="ClassificationGAM_ClassNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1552,12 +1713,13 @@ Names of classes in the response variable
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty8">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ClassNames">
             <div class="border-bottom py-2">
 
 <p> </p>
 <p> An array of unique values of the response variable <var>Y</var>, which has the
- same data types as the data in <var>Y</var>.  This property is read-only.
+ same data types as the data in <var>Y</var>, sorted or in the order given by
+ the <code>'ClassNames'</code> option.  This property is read-only.
  <code>ClassNames</code> can have any of the following datatypes:
 </p>
 <ul>
@@ -1591,7 +1753,18 @@ Names of classes in the response variable
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1599,8 +1772,7 @@ Names of classes in the response variable
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1620,8 +1792,8 @@ Names of classes in the response variable
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
-              aria-expanded="false" aria-controls="collapseProperty9">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Prior"
+              aria-expanded="false" aria-controls="ClassificationGAM_Prior">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1633,7 +1805,7 @@ Prior probability for each class
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty9">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Prior">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1671,7 +1843,18 @@ Prior probability for each class
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1679,8 +1862,7 @@ Prior probability for each class
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1700,8 +1882,8 @@ Prior probability for each class
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Formula"
+              aria-expanded="false" aria-controls="ClassificationGAM_Formula">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1713,7 +1895,7 @@ Model specification formula
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Formula">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1746,7 +1928,18 @@ Model specification formula
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1754,8 +1947,7 @@ Model specification formula
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1775,8 +1967,8 @@ Model specification formula
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Interactions"
+              aria-expanded="false" aria-controls="ClassificationGAM_Interactions">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1788,7 +1980,7 @@ Two-way interaction terms of the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Interactions">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1826,7 +2018,18 @@ Two-way interaction terms of the fitted model
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1834,8 +2037,7 @@ Two-way interaction terms of the fitted model
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1855,8 +2057,8 @@ Two-way interaction terms of the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Knots"
+              aria-expanded="false" aria-controls="ClassificationGAM_Knots">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1868,7 +2070,7 @@ Knots for spline fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Knots">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1899,7 +2101,18 @@ Knots for spline fitting
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1907,8 +2120,7 @@ Knots for spline fitting
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -1928,8 +2140,8 @@ Knots for spline fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Order"
+              aria-expanded="false" aria-controls="ClassificationGAM_Order">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1941,7 +2153,7 @@ Order of spline fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Order">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1972,7 +2184,18 @@ Order of spline fitting
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -1980,8 +2203,7 @@ Order of spline fitting
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2001,8 +2223,8 @@ Order of spline fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_DoF"
+              aria-expanded="false" aria-controls="ClassificationGAM_DoF">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2014,7 +2236,7 @@ Degrees of freedom for spline fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
+          <div class="collapse multi-collapse" id="ClassificationGAM_DoF">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2045,7 +2267,18 @@ Degrees of freedom for spline fitting
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2053,8 +2286,7 @@ Degrees of freedom for spline fitting
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2074,8 +2306,8 @@ Degrees of freedom for spline fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_LearningRate"
+              aria-expanded="false" aria-controls="ClassificationGAM_LearningRate">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2087,7 +2319,7 @@ Learning rate for gradient boosting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
+          <div class="collapse multi-collapse" id="ClassificationGAM_LearningRate">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2118,7 +2350,18 @@ Learning rate for gradient boosting
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2126,8 +2369,7 @@ Learning rate for gradient boosting
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2147,8 +2389,8 @@ Learning rate for gradient boosting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_NumIterations"
+              aria-expanded="false" aria-controls="ClassificationGAM_NumIterations">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2160,7 +2402,7 @@ Maximum number of iterations
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
+          <div class="collapse multi-collapse" id="ClassificationGAM_NumIterations">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2191,7 +2433,18 @@ Maximum number of iterations
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2199,8 +2452,7 @@ Maximum number of iterations
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2220,8 +2472,8 @@ Maximum number of iterations
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Intercept"
+              aria-expanded="false" aria-controls="ClassificationGAM_Intercept">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2233,7 +2485,7 @@ Intercept of the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Intercept">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2264,7 +2516,18 @@ Intercept of the fitted model
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2272,8 +2535,7 @@ Intercept of the fitted model
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2293,8 +2555,8 @@ Intercept of the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
-              aria-expanded="false" aria-controls="collapseProperty18">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_W"
+              aria-expanded="false" aria-controls="ClassificationGAM_W">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2306,16 +2568,15 @@ Observation weights
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty18">
+          <div class="collapse multi-collapse" id="ClassificationGAM_W">
             <div class="border-bottom py-2">
 
 <p> </p>
 <p> A numeric column vector with one entry per observation used for
  training, normalised to sum to one.  This property is read-only.
 </p>
-<p> Each class carries its prior spread evenly over its own observations,
- so an observation of a class weighs <code>Prior</code> for that class
- divided by the number of observations it holds.
+<p> Each class carries its prior, spread over its own observations in
+ proportion to their <code>'Weights'</code>, and evenly when none were given.
 </p>
 
         <div class="card rounded my-4">
@@ -2341,7 +2602,18 @@ Observation weights
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2349,8 +2621,7 @@ Observation weights
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2370,8 +2641,8 @@ Observation weights
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
-              aria-expanded="false" aria-controls="collapseProperty19">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_CategoricalPredictors"
+              aria-expanded="false" aria-controls="ClassificationGAM_CategoricalPredictors">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2383,7 +2654,7 @@ Indices of the categorical predictors
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty19">
+          <div class="collapse multi-collapse" id="ClassificationGAM_CategoricalPredictors">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2414,7 +2685,18 @@ Indices of the categorical predictors
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2422,8 +2704,7 @@ Indices of the categorical predictors
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2443,8 +2724,8 @@ Indices of the categorical predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty20"
-              aria-expanded="false" aria-controls="collapseProperty20">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ExpandedPredictorNames"
+              aria-expanded="false" aria-controls="ClassificationGAM_ExpandedPredictorNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2456,7 +2737,7 @@ Names of the expanded predictor variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty20">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ExpandedPredictorNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2489,7 +2770,18 @@ Names of the expanded predictor variables
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2497,8 +2789,7 @@ Names of the expanded predictor variables
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2518,8 +2809,8 @@ Names of the expanded predictor variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty21"
-              aria-expanded="false" aria-controls="collapseProperty21">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_BaseModel"
+              aria-expanded="false" aria-controls="ClassificationGAM_BaseModel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2531,7 +2822,7 @@ Base model parameters
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty21">
+          <div class="collapse multi-collapse" id="ClassificationGAM_BaseModel">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2564,7 +2855,18 @@ Base model parameters
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2572,8 +2874,7 @@ Base model parameters
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2593,8 +2894,8 @@ Base model parameters
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty22"
-              aria-expanded="false" aria-controls="collapseProperty22">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ModelwInt"
+              aria-expanded="false" aria-controls="ClassificationGAM_ModelwInt">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2606,7 +2907,7 @@ Model parameters with interactions
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty22">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ModelwInt">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2638,7 +2939,18 @@ Model parameters with interactions
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2646,8 +2958,7 @@ Model parameters with interactions
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2667,8 +2978,8 @@ Model parameters with interactions
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty23"
-              aria-expanded="false" aria-controls="collapseProperty23">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_IntMatrix"
+              aria-expanded="false" aria-controls="ClassificationGAM_IntMatrix">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2680,7 +2991,7 @@ Every term the model fits
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty23">
+          <div class="collapse multi-collapse" id="ClassificationGAM_IntMatrix">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2718,7 +3029,18 @@ Every term the model fits
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2726,8 +3048,7 @@ Every term the model fits
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2747,8 +3068,8 @@ Every term the model fits
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty24"
-              aria-expanded="false" aria-controls="collapseProperty24">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_BinEdges"
+              aria-expanded="false" aria-controls="ClassificationGAM_BinEdges">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2760,7 +3081,7 @@ Bin edges of the predictors
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty24">
+          <div class="collapse multi-collapse" id="ClassificationGAM_BinEdges">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2797,7 +3118,18 @@ Bin edges of the predictors
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2805,8 +3137,7 @@ Bin edges of the predictors
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2826,8 +3157,8 @@ Bin edges of the predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty25"
-              aria-expanded="false" aria-controls="collapseProperty25">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_PairDetectionBinEdges"
+              aria-expanded="false" aria-controls="ClassificationGAM_PairDetectionBinEdges">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2839,7 +3170,7 @@ Bin edges used to detect interactions
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty25">
+          <div class="collapse multi-collapse" id="ClassificationGAM_PairDetectionBinEdges">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2876,7 +3207,18 @@ Bin edges used to detect interactions
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2884,8 +3226,7 @@ Bin edges used to detect interactions
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2905,8 +3246,8 @@ Bin edges used to detect interactions
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty26"
-              aria-expanded="false" aria-controls="collapseProperty26">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ModelParameters"
+              aria-expanded="false" aria-controls="ClassificationGAM_ModelParameters">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2918,7 +3259,7 @@ Parameters the model was fitted with
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty26">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ModelParameters">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2965,7 +3306,18 @@ Parameters the model was fitted with
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -2973,8 +3325,7 @@ Parameters the model was fitted with
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -2994,8 +3345,8 @@ Parameters the model was fitted with
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty27"
-              aria-expanded="false" aria-controls="collapseProperty27">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ReasonForTermination"
+              aria-expanded="false" aria-controls="ClassificationGAM_ReasonForTermination">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3007,7 +3358,7 @@ Why each fitting phase stopped
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty27">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ReasonForTermination">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3047,7 +3398,18 @@ Why each fitting phase stopped
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3055,8 +3417,7 @@ Why each fitting phase stopped
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3076,8 +3437,8 @@ Why each fitting phase stopped
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty28"
-              aria-expanded="false" aria-controls="collapseProperty28">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_FitMethod"
+              aria-expanded="false" aria-controls="ClassificationGAM_FitMethod">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3089,7 +3450,7 @@ Which engine fitted the model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty28">
+          <div class="collapse multi-collapse" id="ClassificationGAM_FitMethod">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3131,7 +3492,18 @@ Which engine fitted the model
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3139,8 +3511,7 @@ Which engine fitted the model
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3160,8 +3531,8 @@ Which engine fitted the model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty29"
-              aria-expanded="false" aria-controls="collapseProperty29">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_TreeModel"
+              aria-expanded="false" aria-controls="ClassificationGAM_TreeModel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3173,7 +3544,7 @@ The fitted shape functions and interaction surfaces
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty29">
+          <div class="collapse multi-collapse" id="ClassificationGAM_TreeModel">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3216,7 +3587,18 @@ The fitted shape functions and interaction surfaces
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3224,8 +3606,7 @@ The fitted shape functions and interaction surfaces
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3245,8 +3626,8 @@ The fitted shape functions and interaction surfaces
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty30"
-              aria-expanded="false" aria-controls="collapseProperty30">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_HyperparameterOptimizationResults"
+              aria-expanded="false" aria-controls="ClassificationGAM_HyperparameterOptimizationResults">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3258,7 +3639,7 @@ Results of the hyperparameter optimization
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty30">
+          <div class="collapse multi-collapse" id="ClassificationGAM_HyperparameterOptimizationResults">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3291,7 +3672,18 @@ Results of the hyperparameter optimization
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3299,8 +3691,7 @@ Results of the hyperparameter optimization
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3320,8 +3711,8 @@ Results of the hyperparameter optimization
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty31"
-              aria-expanded="false" aria-controls="collapseProperty31">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_Cost"
+              aria-expanded="false" aria-controls="ClassificationGAM_Cost">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3333,7 +3724,7 @@ Cost of Misclassification
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty31">
+          <div class="collapse multi-collapse" id="ClassificationGAM_Cost">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3388,7 +3779,18 @@ Cost of Misclassification
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3396,8 +3798,7 @@ Cost of Misclassification
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3417,8 +3818,8 @@ Cost of Misclassification
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty32"
-              aria-expanded="false" aria-controls="collapseProperty32">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ScoreTransform"
+              aria-expanded="false" aria-controls="ClassificationGAM_ScoreTransform">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3430,7 +3831,7 @@ Transformation function for classification scores
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty32">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ScoreTransform">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3497,7 +3898,18 @@ Transformation function for classification scores
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 284 column 11
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3505,8 +3917,7 @@ Transformation function for classification scores
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3528,8 +3939,8 @@ Transformation function for classification scores
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
-              aria-expanded="false" aria-controls="colapsibleConstructor">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_ClassificationGAM"
+              aria-expanded="false" aria-controls="ClassificationGAM_ClassificationGAM">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3542,7 +3953,7 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="colapsibleConstructor">
+          <div class="collapse multi-collapse" id="ClassificationGAM_ClassificationGAM">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationGAM</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
@@ -3580,7 +3991,8 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
  name of the response variable.</td></tr>
 <tr><td width="18%"><code>'ClassNames'</code></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the GAM model.
- <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
+ <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.
+ The model keeps the classes in this order; by default they are sorted.</td></tr>
 <tr><td width="18%"><code>'Cost'</code></td><td width="80%">An <em class="math">N&times;R</em> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var>, where
  <em class="math">R</em> is the number of unique categories in <var>Y</var>.  If an instance
@@ -3593,7 +4005,10 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
  corresponds to the order of the classes in <code>ClassNames</code>.
  Alternatively, you can specify <code>'empirical'</code> to use the empirical
  class probabilities or <code>'uniform'</code> to assume equal class
- probabilities.</td></tr>
+ probabilities.  The prior weighs the boosted-tree fit: each class
+ carries its prior, spread over its observations in proportion to
+ <code>'Weights'</code>, and an empirical prior is each class&rsquo;s share of the
+ weight.</td></tr>
 <tr><td width="18%"><code>'ScoreTransform'</code></td><td width="80%">A user-defined function handle
  or a character vector specifying one of the following builtin functions
  specifying the transformation applied to predicted classification scores.
@@ -3660,7 +4075,18 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 354 column 7
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3668,8 +4094,7 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3689,8 +4114,8 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
-              aria-expanded="false" aria-controls="collapseMethod1">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_addInteractions"
+              aria-expanded="false" aria-controls="ClassificationGAM_addInteractions">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3702,7 +4127,7 @@ Add interaction terms to a fitted model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod1">
+          <div class="collapse multi-collapse" id="ClassificationGAM_addInteractions">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>obj</var> = <b>addInteractions</b> (<var>obj</var>, <var>interactions</var>)</code></h5></dt>
@@ -3757,7 +4182,18 @@ Add interaction terms to a fitted model.
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3765,8 +4201,7 @@ Add interaction terms to a fitted model.
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3786,8 +4221,8 @@ Add interaction terms to a fitted model.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
-              aria-expanded="false" aria-controls="collapseMethod2">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_predict"
+              aria-expanded="false" aria-controls="ClassificationGAM_predict">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3800,7 +4235,7 @@ Predict labels for new data using the Generalized Additive Model (GAM)
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
+          <div class="collapse multi-collapse" id="ClassificationGAM_predict">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
@@ -3814,7 +4249,11 @@ Predict labels for new data using the Generalized Additive Model (GAM)
 </p>
 <p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>)</code> also
  returns <var>score</var>, which contains the predicted class scores or
- posterior probabilities for each observation.
+ posterior probabilities for each observation.  Every row is predicted.
+ Under boosted trees a missing value adds nothing from a main effect,
+ and an interaction term takes the value its trees give a row missing
+ that predictor; under splines a row holding a missing value is scored
+ <code>NaN</code> and takes the class of largest prior.
 </p>
 <p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>,
  'IncludeInteractions', <var>includeInteractions</var>)</code> allows you to specify
@@ -3859,7 +4298,18 @@ Predict labels for new data using the Generalized Additive Model (GAM)
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3867,8 +4317,7 @@ Predict labels for new data using the Generalized Additive Model (GAM)
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3888,8 +4337,8 @@ Predict labels for new data using the Generalized Additive Model (GAM)
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
-              aria-expanded="false" aria-controls="collapseMethod3">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_crossval"
+              aria-expanded="false" aria-controls="ClassificationGAM_crossval">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3901,7 +4350,7 @@ Cross Validate a Generalized Additive Model classification object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod3">
+          <div class="collapse multi-collapse" id="ClassificationGAM_crossval">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
@@ -3964,7 +4413,18 @@ Cross Validate a Generalized Additive Model classification object.
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -3972,8 +4432,7 @@ Cross Validate a Generalized Additive Model classification object.
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -3993,8 +4452,8 @@ Cross Validate a Generalized Additive Model classification object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
-              aria-expanded="false" aria-controls="collapseMethod4">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_compact"
+              aria-expanded="false" aria-controls="ClassificationGAM_compact">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4006,7 +4465,7 @@ Create a CompactClassificationGAM object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod4">
+          <div class="collapse multi-collapse" id="ClassificationGAM_compact">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
@@ -4044,7 +4503,18 @@ Create a CompactClassificationGAM object.
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4052,8 +4522,7 @@ Create a CompactClassificationGAM object.
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4073,8 +4542,8 @@ Create a CompactClassificationGAM object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
-              aria-expanded="false" aria-controls="collapseMethod5">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_margin"
+              aria-expanded="false" aria-controls="ClassificationGAM_margin">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4086,7 +4555,7 @@ Classification margin of a generalized additive model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod5">
+          <div class="collapse multi-collapse" id="ClassificationGAM_margin">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
@@ -4100,9 +4569,9 @@ Classification margin of a generalized additive model.
 </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-edge, 
-loss, 
-predict
+  <a href="ClassificationGAM.html#ClassificationGAM_edge">ClassificationGAM.edge</a>, 
+  <a href="ClassificationGAM.html#ClassificationGAM_loss">ClassificationGAM.loss</a>, 
+  <a href="ClassificationGAM.html#ClassificationGAM_predict">ClassificationGAM.predict</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4179,8 +4648,8 @@ predict
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
-              aria-expanded="false" aria-controls="collapseMethod6">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_edge"
+              aria-expanded="false" aria-controls="ClassificationGAM_edge">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4192,7 +4661,7 @@ Classification edge of a generalized additive model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod6">
+          <div class="collapse multi-collapse" id="ClassificationGAM_edge">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
@@ -4207,9 +4676,9 @@ Classification edge of a generalized additive model.
 </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-margin, 
-loss, 
-predict
+  <a href="ClassificationGAM.html#ClassificationGAM_margin">ClassificationGAM.margin</a>, 
+  <a href="ClassificationGAM.html#ClassificationGAM_loss">ClassificationGAM.loss</a>, 
+  <a href="ClassificationGAM.html#ClassificationGAM_predict">ClassificationGAM.predict</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4287,8 +4756,8 @@ predict
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
-              aria-expanded="false" aria-controls="collapseMethod7">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_loss"
+              aria-expanded="false" aria-controls="ClassificationGAM_loss">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4300,7 +4769,7 @@ Classification loss of a generalized additive model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod7">
+          <div class="collapse multi-collapse" id="ClassificationGAM_loss">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
@@ -4330,9 +4799,9 @@ Classification loss of a generalized additive model.
 
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-margin, 
-edge, 
-predict
+  <a href="ClassificationGAM.html#ClassificationGAM_margin">ClassificationGAM.margin</a>, 
+  <a href="ClassificationGAM.html#ClassificationGAM_edge">ClassificationGAM.edge</a>, 
+  <a href="ClassificationGAM.html#ClassificationGAM_predict">ClassificationGAM.predict</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4447,8 +4916,8 @@ logit         0.3142</pre>
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
-              aria-expanded="false" aria-controls="collapseMethod8">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_resubPredict"
+              aria-expanded="false" aria-controls="ClassificationGAM_resubPredict">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4461,7 +4930,7 @@ Classify the training data with the generalized additive model it was
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod8">
+          <div class="collapse multi-collapse" id="ClassificationGAM_resubPredict">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>label</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
@@ -4473,7 +4942,7 @@ Classify the training data with the generalized additive model it was
 </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-predict
+  <a href="ClassificationGAM.html#ClassificationGAM_predict">ClassificationGAM.predict</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4499,7 +4968,18 @@ predict
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4507,8 +4987,7 @@ predict
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4528,8 +5007,8 @@ predict
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
-              aria-expanded="false" aria-controls="collapseMethod9">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_resubMargin"
+              aria-expanded="false" aria-controls="ClassificationGAM_resubMargin">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4542,7 +5021,7 @@ Classification margin of a generalized additive model on its training
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod9">
+          <div class="collapse multi-collapse" id="ClassificationGAM_resubMargin">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>m</var> = <b>resubMargin</b> (<var>obj</var>)</code></h5></dt>
@@ -4550,7 +5029,7 @@ Classification margin of a generalized additive model on its training
 <p> </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-margin
+  <a href="ClassificationGAM.html#ClassificationGAM_margin">ClassificationGAM.margin</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4576,7 +5055,18 @@ margin
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4584,8 +5074,7 @@ margin
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4605,8 +5094,8 @@ margin
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod10"
-              aria-expanded="false" aria-controls="collapseMethod10">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_resubEdge"
+              aria-expanded="false" aria-controls="ClassificationGAM_resubEdge">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4619,7 +5108,7 @@ Classification edge of a generalized additive model on its training
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod10">
+          <div class="collapse multi-collapse" id="ClassificationGAM_resubEdge">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>e</var> = <b>resubEdge</b> (<var>obj</var>)</code></h5></dt>
@@ -4627,7 +5116,7 @@ Classification edge of a generalized additive model on its training
 <p> </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-edge
+  <a href="ClassificationGAM.html#ClassificationGAM_edge">ClassificationGAM.edge</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4653,7 +5142,18 @@ edge
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4661,8 +5161,7 @@ edge
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4682,8 +5181,8 @@ edge
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod11"
-              aria-expanded="false" aria-controls="collapseMethod11">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_resubLoss"
+              aria-expanded="false" aria-controls="ClassificationGAM_resubLoss">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4696,7 +5195,7 @@ Classification loss of a generalized additive model on its training
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod11">
+          <div class="collapse multi-collapse" id="ClassificationGAM_resubLoss">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
@@ -4705,7 +5204,7 @@ Classification loss of a generalized additive model on its training
 <p> </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-loss
+  <a href="ClassificationGAM.html#ClassificationGAM_loss">ClassificationGAM.loss</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4731,7 +5230,18 @@ loss
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4739,8 +5249,7 @@ loss
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4760,8 +5269,8 @@ loss
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod12"
-              aria-expanded="false" aria-controls="collapseMethod12">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_savemodel"
+              aria-expanded="false" aria-controls="ClassificationGAM_savemodel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4773,7 +5282,7 @@ Save a ClassificationGAM object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod12">
+          <div class="collapse multi-collapse" id="ClassificationGAM_savemodel">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
@@ -4815,7 +5324,18 @@ Save a ClassificationGAM object.
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4823,8 +5343,7 @@ Save a ClassificationGAM object.
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4844,8 +5363,8 @@ Save a ClassificationGAM object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod13"
-              aria-expanded="false" aria-controls="collapseMethod13">
+              data-bs-toggle="collapse" data-bs-target="#ClassificationGAM_resume"
+              aria-expanded="false" aria-controls="ClassificationGAM_resume">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4857,7 +5376,7 @@ Resume training a generalized additive model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod13">
+          <div class="collapse multi-collapse" id="ClassificationGAM_resume">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">ClassificationGAM: <var>Mdl</var> = <b>resume</b> (<var>obj</var>, <var>numTrees</var>)</code></h5></dt>
@@ -4883,7 +5402,7 @@ Resume training a generalized additive model.
 <p> <strong>See also: </strong>
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
   <a href="fitcgam.html">fitcgam</a>, 
-addInteractions
+  <a href="ClassificationGAM.html#ClassificationGAM_addInteractions">ClassificationGAM.addInteractions</a>
 </p>
 
         <div class="card rounded my-4">
@@ -4909,7 +5428,18 @@ addInteractions
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 410 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4917,8 +5447,7 @@ addInteractions
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
@@ -4960,7 +5489,17 @@ Train a GAM classifier for binary classification using specific data and plot th
      1; 1; 1; 1; 1];</pre>
                 <p>Train the GAM model</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
+warning: called from
+    fitBoosted at line 2554 column 11
+    ClassificationGAM at line 1328 column 9
+    fitcgam at line 209 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    classdef_texi2html at line 489 column 9
+    package_texi2html at line 344 column 11
+
+obj =
 
   ClassificationGAM
 
@@ -4968,8 +5507,7 @@ Train a GAM classifier for binary classification using specific data and plot th
                ClassNames: [0 1]
            ScoreTransform: 'logit'
           NumObservations: 10
-            NumPredictors: 2
-             Interactions: [1x2 double]</pre>
+            NumPredictors: 2</pre>
                 <p>Create a grid of values for prediction</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];

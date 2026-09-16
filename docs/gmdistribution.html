@@ -47,6 +47,49 @@
             window.location.pathname + window.location.search);
         }
       });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
     </script>
     <style>
     h5.fs {
@@ -90,6 +133,19 @@
     }
     [id^="togList"]:checked ~ .list{
       display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
     }
     </style>
   </head>
@@ -148,6 +204,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
@@ -234,9 +291,9 @@
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
 					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
@@ -258,6 +315,7 @@
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -320,29 +378,44 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationBaggedEnsemble</small></a></li>
 					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
 					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
 					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
 					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
 					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
 					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
 					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
 					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
 					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
 					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
 					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
 					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
 					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
 					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
 					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
 					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
 					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
@@ -350,29 +423,47 @@
 					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
 					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
 					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
 					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
 					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
 					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
 					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
 					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
 					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
 					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
 					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -992,7 +1083,7 @@
   <a href="fitgmdist.html">fitgmdist</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/gmdistribution.m">gmdistribution</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Clustering/gmdistribution.m">gmdistribution</a>
 </p>
 </div>
         <p class="lead my-3">The <code>gmdistribution</code> class contains the following properties:</p>
@@ -1000,8 +1091,8 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
-              aria-expanded="false" aria-controls="collapseProperty1">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_mu"
+              aria-expanded="false" aria-controls="gmdistribution_mu">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1013,7 +1104,7 @@ Component means
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty1">
+          <div class="collapse multi-collapse" id="gmdistribution_mu">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1030,8 +1121,8 @@ Component means
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
-              aria-expanded="false" aria-controls="collapseProperty2">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_Sigma"
+              aria-expanded="false" aria-controls="gmdistribution_Sigma">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1043,7 +1134,7 @@ Component covariances
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty2">
+          <div class="collapse multi-collapse" id="gmdistribution_Sigma">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1062,8 +1153,8 @@ Component covariances
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
-              aria-expanded="false" aria-controls="collapseProperty3">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_ComponentProportion"
+              aria-expanded="false" aria-controls="gmdistribution_ComponentProportion">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1075,7 +1166,7 @@ Mixing proportions
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty3">
+          <div class="collapse multi-collapse" id="gmdistribution_ComponentProportion">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1092,8 +1183,8 @@ Mixing proportions
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
-              aria-expanded="false" aria-controls="collapseProperty4">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_DistributionName"
+              aria-expanded="false" aria-controls="gmdistribution_DistributionName">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1105,7 +1196,7 @@ Name of the distribution
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty4">
+          <div class="collapse multi-collapse" id="gmdistribution_DistributionName">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1121,8 +1212,8 @@ Name of the distribution
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
-              aria-expanded="false" aria-controls="collapseProperty5">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_NumComponents"
+              aria-expanded="false" aria-controls="gmdistribution_NumComponents">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1134,7 +1225,7 @@ Number of mixture components
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty5">
+          <div class="collapse multi-collapse" id="gmdistribution_NumComponents">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1150,8 +1241,8 @@ Number of mixture components
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
-              aria-expanded="false" aria-controls="collapseProperty6">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_NumVariables"
+              aria-expanded="false" aria-controls="gmdistribution_NumVariables">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1163,7 +1254,7 @@ Number of variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty6">
+          <div class="collapse multi-collapse" id="gmdistribution_NumVariables">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1179,8 +1270,8 @@ Number of variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
-              aria-expanded="false" aria-controls="collapseProperty7">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_CovarianceType"
+              aria-expanded="false" aria-controls="gmdistribution_CovarianceType">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1192,7 +1283,7 @@ Form of the component covariances
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty7">
+          <div class="collapse multi-collapse" id="gmdistribution_CovarianceType">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1209,8 +1300,8 @@ Form of the component covariances
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
-              aria-expanded="false" aria-controls="collapseProperty8">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_SharedCovariance"
+              aria-expanded="false" aria-controls="gmdistribution_SharedCovariance">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1222,7 +1313,7 @@ Whether the components share one covariance
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty8">
+          <div class="collapse multi-collapse" id="gmdistribution_SharedCovariance">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1239,8 +1330,8 @@ Whether the components share one covariance
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
-              aria-expanded="false" aria-controls="collapseProperty9">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_AIC"
+              aria-expanded="false" aria-controls="gmdistribution_AIC">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1252,7 +1343,7 @@ Akaike information criterion
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty9">
+          <div class="collapse multi-collapse" id="gmdistribution_AIC">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1269,8 +1360,8 @@ Akaike information criterion
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_BIC"
+              aria-expanded="false" aria-controls="gmdistribution_BIC">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1282,7 +1373,7 @@ Bayesian information criterion
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
+          <div class="collapse multi-collapse" id="gmdistribution_BIC">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1300,8 +1391,8 @@ Bayesian information criterion
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_Converged"
+              aria-expanded="false" aria-controls="gmdistribution_Converged">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1313,7 +1404,7 @@ Whether the fit converged
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
+          <div class="collapse multi-collapse" id="gmdistribution_Converged">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1330,8 +1421,8 @@ Whether the fit converged
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_NegativeLogLikelihood"
+              aria-expanded="false" aria-controls="gmdistribution_NegativeLogLikelihood">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1343,7 +1434,7 @@ Negative log-likelihood at the fit
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
+          <div class="collapse multi-collapse" id="gmdistribution_NegativeLogLikelihood">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1360,8 +1451,8 @@ Negative log-likelihood at the fit
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_NumIterations"
+              aria-expanded="false" aria-controls="gmdistribution_NumIterations">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1373,7 +1464,7 @@ Iterations the fit took
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
+          <div class="collapse multi-collapse" id="gmdistribution_NumIterations">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1389,8 +1480,8 @@ Iterations the fit took
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_RegularizationValue"
+              aria-expanded="false" aria-controls="gmdistribution_RegularizationValue">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1402,7 +1493,7 @@ Regularization added to the covariance diagonal
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
+          <div class="collapse multi-collapse" id="gmdistribution_RegularizationValue">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1421,8 +1512,8 @@ Regularization added to the covariance diagonal
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
-              aria-expanded="false" aria-controls="colapsibleConstructor">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_gmdistribution"
+              aria-expanded="false" aria-controls="gmdistribution_gmdistribution">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1434,7 +1525,7 @@ Create a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="colapsibleConstructor">
+          <div class="collapse multi-collapse" id="gmdistribution_gmdistribution">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>)</code></h5></dt>
@@ -1470,8 +1561,8 @@ Create a Gaussian mixture distribution.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
-              aria-expanded="false" aria-controls="collapseMethod1">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_cdf"
+              aria-expanded="false" aria-controls="gmdistribution_cdf">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1483,7 +1574,7 @@ Cumulative distribution function of a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod1">
+          <div class="collapse multi-collapse" id="gmdistribution_cdf">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>cdf</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
@@ -1505,8 +1596,8 @@ Cumulative distribution function of a Gaussian mixture distribution.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
-              aria-expanded="false" aria-controls="collapseMethod2">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_cluster"
+              aria-expanded="false" aria-controls="gmdistribution_cluster">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1518,7 +1609,7 @@ Assign each observation to a mixture component.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
+          <div class="collapse multi-collapse" id="gmdistribution_cluster">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>idx</var> = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
@@ -1549,8 +1640,8 @@ Assign each observation to a mixture component.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
-              aria-expanded="false" aria-controls="collapseMethod3">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_mahal"
+              aria-expanded="false" aria-controls="gmdistribution_mahal">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1562,7 +1653,7 @@ Squared Mahalanobis distance to each mixture component.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod3">
+          <div class="collapse multi-collapse" id="gmdistribution_mahal">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>D</var> = <b>mahal</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
@@ -1583,8 +1674,8 @@ Squared Mahalanobis distance to each mixture component.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
-              aria-expanded="false" aria-controls="collapseMethod4">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_pdf"
+              aria-expanded="false" aria-controls="gmdistribution_pdf">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1596,7 +1687,7 @@ Probability density function of a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod4">
+          <div class="collapse multi-collapse" id="gmdistribution_pdf">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>pdf</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
@@ -1617,8 +1708,8 @@ Probability density function of a Gaussian mixture distribution.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
-              aria-expanded="false" aria-controls="collapseMethod5">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_posterior"
+              aria-expanded="false" aria-controls="gmdistribution_posterior">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1630,7 +1721,7 @@ Posterior probability of each mixture component.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod5">
+          <div class="collapse multi-collapse" id="gmdistribution_posterior">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>posterior</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
@@ -1650,8 +1741,8 @@ Posterior probability of each mixture component.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
-              aria-expanded="false" aria-controls="collapseMethod6">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_random"
+              aria-expanded="false" aria-controls="gmdistribution_random">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1663,7 +1754,7 @@ Random numbers from a Gaussian mixture distribution.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod6">
+          <div class="collapse multi-collapse" id="gmdistribution_random">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>)</code></h5></dt>
@@ -1684,8 +1775,8 @@ Random numbers from a Gaussian mixture distribution.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
-              aria-expanded="false" aria-controls="collapseMethod7">
+              data-bs-toggle="collapse" data-bs-target="#gmdistribution_fit"
+              aria-expanded="false" aria-controls="gmdistribution_fit">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1697,7 +1788,7 @@ Fit a Gaussian mixture distribution to data.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod7">
+          <div class="collapse multi-collapse" id="gmdistribution_fit">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>)</code></h5></dt>

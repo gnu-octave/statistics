@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: ClassificationBaggedEnsemble</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
+        }
+      });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
+    </script>
+    <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
+    h6:hover {
+      color: gray;
+    }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
+    var {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
+    }
+    td {
+      vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Supervised Learning">
+                    <i class="fas fa-list-alt"></i>
+                    Supervised Learning
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="row flex-nowrap" style="min-height:0">
+        <div class="col-md-2 bg-light" style="overflow-y: scroll; width: 250px;">
+          <div class="p-2" style="text-align: center;">
+            <h3>Categories &</h3>
+            <h4 style="color: blue">Functions List</h4>
+          </div>
+			<div class="row">
+				<input id="togList1" type="checkbox">
+				<label for="togList1">
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList2" type="checkbox">
+				<label for="togList2">
+					<span><h6>Data Manipulation</h6></span>
+					<span><h6>Data Manipulation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="combnk.html" class="text-decoration-none font-monospace"><small>combnk</small></a></li>
+					<li><a href="crosstab.html" class="text-decoration-none font-monospace"><small>crosstab</small></a></li>
+					<li><a href="datasample.html" class="text-decoration-none font-monospace"><small>datasample</small></a></li>
+					<li><a href="dummyvar.html" class="text-decoration-none font-monospace"><small>dummyvar</small></a></li>
+					<li><a href="fillmissing.html" class="text-decoration-none font-monospace"><small>fillmissing</small></a></li>
+					<li><a href="grp2idx.html" class="text-decoration-none font-monospace"><small>grp2idx</small></a></li>
+					<li><a href="ismissing.html" class="text-decoration-none font-monospace"><small>ismissing</small></a></li>
+					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
+					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
+					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
+					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
+					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox">
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox" checked>
+				<label for="togList6">
+					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Supervised Learning</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationBaggedEnsemble</small></a></li>
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList7" type="checkbox">
+				<label for="togList7">
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList8" type="checkbox">
+				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
+					<span><h6>Distribution Fitting</h6></span>
+					<span><h6>Distribution Fitting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betafit.html" class="text-decoration-none font-monospace"><small>betafit</small></a></li>
+					<li><a href="betalike.html" class="text-decoration-none font-monospace"><small>betalike</small></a></li>
+					<li><a href="binofit.html" class="text-decoration-none font-monospace"><small>binofit</small></a></li>
+					<li><a href="binolike.html" class="text-decoration-none font-monospace"><small>binolike</small></a></li>
+					<li><a href="bisafit.html" class="text-decoration-none font-monospace"><small>bisafit</small></a></li>
+					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
+					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
+					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
+					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
+					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
+					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
+					<li><a href="explike.html" class="text-decoration-none font-monospace"><small>explike</small></a></li>
+					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
+					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
+					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
+					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
+					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
+					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
+					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
+					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
+					<li><a href="gumbellike.html" class="text-decoration-none font-monospace"><small>gumbellike</small></a></li>
+					<li><a href="hnfit.html" class="text-decoration-none font-monospace"><small>hnfit</small></a></li>
+					<li><a href="hnlike.html" class="text-decoration-none font-monospace"><small>hnlike</small></a></li>
+					<li><a href="invgfit.html" class="text-decoration-none font-monospace"><small>invgfit</small></a></li>
+					<li><a href="invglike.html" class="text-decoration-none font-monospace"><small>invglike</small></a></li>
+					<li><a href="logifit.html" class="text-decoration-none font-monospace"><small>logifit</small></a></li>
+					<li><a href="logilike.html" class="text-decoration-none font-monospace"><small>logilike</small></a></li>
+					<li><a href="loglfit.html" class="text-decoration-none font-monospace"><small>loglfit</small></a></li>
+					<li><a href="logllike.html" class="text-decoration-none font-monospace"><small>logllike</small></a></li>
+					<li><a href="lognfit.html" class="text-decoration-none font-monospace"><small>lognfit</small></a></li>
+					<li><a href="lognlike.html" class="text-decoration-none font-monospace"><small>lognlike</small></a></li>
+					<li><a href="nakafit.html" class="text-decoration-none font-monospace"><small>nakafit</small></a></li>
+					<li><a href="nakalike.html" class="text-decoration-none font-monospace"><small>nakalike</small></a></li>
+					<li><a href="nbinfit.html" class="text-decoration-none font-monospace"><small>nbinfit</small></a></li>
+					<li><a href="nbinlike.html" class="text-decoration-none font-monospace"><small>nbinlike</small></a></li>
+					<li><a href="normfit.html" class="text-decoration-none font-monospace"><small>normfit</small></a></li>
+					<li><a href="normlike.html" class="text-decoration-none font-monospace"><small>normlike</small></a></li>
+					<li><a href="poissfit.html" class="text-decoration-none font-monospace"><small>poissfit</small></a></li>
+					<li><a href="poisslike.html" class="text-decoration-none font-monospace"><small>poisslike</small></a></li>
+					<li><a href="raylfit.html" class="text-decoration-none font-monospace"><small>raylfit</small></a></li>
+					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
+					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
+					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
+					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
+					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
+					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
+					<li><a href="unifit.html" class="text-decoration-none font-monospace"><small>unifit</small></a></li>
+					<li><a href="wblfit.html" class="text-decoration-none font-monospace"><small>wblfit</small></a></li>
+					<li><a href="wbllike.html" class="text-decoration-none font-monospace"><small>wbllike</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
+					<span><h6>Distribution Functions</h6></span>
+					<span><h6>Distribution Functions</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betacdf.html" class="text-decoration-none font-monospace"><small>betacdf</small></a></li>
+					<li><a href="betainv.html" class="text-decoration-none font-monospace"><small>betainv</small></a></li>
+					<li><a href="betapdf.html" class="text-decoration-none font-monospace"><small>betapdf</small></a></li>
+					<li><a href="betarnd.html" class="text-decoration-none font-monospace"><small>betarnd</small></a></li>
+					<li><a href="binocdf.html" class="text-decoration-none font-monospace"><small>binocdf</small></a></li>
+					<li><a href="binoinv.html" class="text-decoration-none font-monospace"><small>binoinv</small></a></li>
+					<li><a href="binopdf.html" class="text-decoration-none font-monospace"><small>binopdf</small></a></li>
+					<li><a href="binornd.html" class="text-decoration-none font-monospace"><small>binornd</small></a></li>
+					<li><a href="bisacdf.html" class="text-decoration-none font-monospace"><small>bisacdf</small></a></li>
+					<li><a href="bisainv.html" class="text-decoration-none font-monospace"><small>bisainv</small></a></li>
+					<li><a href="bisapdf.html" class="text-decoration-none font-monospace"><small>bisapdf</small></a></li>
+					<li><a href="bisarnd.html" class="text-decoration-none font-monospace"><small>bisarnd</small></a></li>
+					<li><a href="burrcdf.html" class="text-decoration-none font-monospace"><small>burrcdf</small></a></li>
+					<li><a href="burrinv.html" class="text-decoration-none font-monospace"><small>burrinv</small></a></li>
+					<li><a href="burrpdf.html" class="text-decoration-none font-monospace"><small>burrpdf</small></a></li>
+					<li><a href="burrrnd.html" class="text-decoration-none font-monospace"><small>burrrnd</small></a></li>
+					<li><a href="bvncdf.html" class="text-decoration-none font-monospace"><small>bvncdf</small></a></li>
+					<li><a href="bvtcdf.html" class="text-decoration-none font-monospace"><small>bvtcdf</small></a></li>
+					<li><a href="cauchycdf.html" class="text-decoration-none font-monospace"><small>cauchycdf</small></a></li>
+					<li><a href="cauchyinv.html" class="text-decoration-none font-monospace"><small>cauchyinv</small></a></li>
+					<li><a href="cauchypdf.html" class="text-decoration-none font-monospace"><small>cauchypdf</small></a></li>
+					<li><a href="cauchyrnd.html" class="text-decoration-none font-monospace"><small>cauchyrnd</small></a></li>
+					<li><a href="chi2cdf.html" class="text-decoration-none font-monospace"><small>chi2cdf</small></a></li>
+					<li><a href="chi2inv.html" class="text-decoration-none font-monospace"><small>chi2inv</small></a></li>
+					<li><a href="chi2pdf.html" class="text-decoration-none font-monospace"><small>chi2pdf</small></a></li>
+					<li><a href="chi2rnd.html" class="text-decoration-none font-monospace"><small>chi2rnd</small></a></li>
+					<li><a href="copulacdf.html" class="text-decoration-none font-monospace"><small>copulacdf</small></a></li>
+					<li><a href="copulapdf.html" class="text-decoration-none font-monospace"><small>copulapdf</small></a></li>
+					<li><a href="copularnd.html" class="text-decoration-none font-monospace"><small>copularnd</small></a></li>
+					<li><a href="evcdf.html" class="text-decoration-none font-monospace"><small>evcdf</small></a></li>
+					<li><a href="evinv.html" class="text-decoration-none font-monospace"><small>evinv</small></a></li>
+					<li><a href="evpdf.html" class="text-decoration-none font-monospace"><small>evpdf</small></a></li>
+					<li><a href="evrnd.html" class="text-decoration-none font-monospace"><small>evrnd</small></a></li>
+					<li><a href="expcdf.html" class="text-decoration-none font-monospace"><small>expcdf</small></a></li>
+					<li><a href="expinv.html" class="text-decoration-none font-monospace"><small>expinv</small></a></li>
+					<li><a href="exppdf.html" class="text-decoration-none font-monospace"><small>exppdf</small></a></li>
+					<li><a href="exprnd.html" class="text-decoration-none font-monospace"><small>exprnd</small></a></li>
+					<li><a href="fcdf.html" class="text-decoration-none font-monospace"><small>fcdf</small></a></li>
+					<li><a href="finv.html" class="text-decoration-none font-monospace"><small>finv</small></a></li>
+					<li><a href="fpdf.html" class="text-decoration-none font-monospace"><small>fpdf</small></a></li>
+					<li><a href="frnd.html" class="text-decoration-none font-monospace"><small>frnd</small></a></li>
+					<li><a href="gamcdf.html" class="text-decoration-none font-monospace"><small>gamcdf</small></a></li>
+					<li><a href="gaminv.html" class="text-decoration-none font-monospace"><small>gaminv</small></a></li>
+					<li><a href="gampdf.html" class="text-decoration-none font-monospace"><small>gampdf</small></a></li>
+					<li><a href="gamrnd.html" class="text-decoration-none font-monospace"><small>gamrnd</small></a></li>
+					<li><a href="geocdf.html" class="text-decoration-none font-monospace"><small>geocdf</small></a></li>
+					<li><a href="geoinv.html" class="text-decoration-none font-monospace"><small>geoinv</small></a></li>
+					<li><a href="geopdf.html" class="text-decoration-none font-monospace"><small>geopdf</small></a></li>
+					<li><a href="geornd.html" class="text-decoration-none font-monospace"><small>geornd</small></a></li>
+					<li><a href="gevcdf.html" class="text-decoration-none font-monospace"><small>gevcdf</small></a></li>
+					<li><a href="gevinv.html" class="text-decoration-none font-monospace"><small>gevinv</small></a></li>
+					<li><a href="gevpdf.html" class="text-decoration-none font-monospace"><small>gevpdf</small></a></li>
+					<li><a href="gevrnd.html" class="text-decoration-none font-monospace"><small>gevrnd</small></a></li>
+					<li><a href="gpcdf.html" class="text-decoration-none font-monospace"><small>gpcdf</small></a></li>
+					<li><a href="gpinv.html" class="text-decoration-none font-monospace"><small>gpinv</small></a></li>
+					<li><a href="gppdf.html" class="text-decoration-none font-monospace"><small>gppdf</small></a></li>
+					<li><a href="gprnd.html" class="text-decoration-none font-monospace"><small>gprnd</small></a></li>
+					<li><a href="gumbelcdf.html" class="text-decoration-none font-monospace"><small>gumbelcdf</small></a></li>
+					<li><a href="gumbelinv.html" class="text-decoration-none font-monospace"><small>gumbelinv</small></a></li>
+					<li><a href="gumbelpdf.html" class="text-decoration-none font-monospace"><small>gumbelpdf</small></a></li>
+					<li><a href="gumbelrnd.html" class="text-decoration-none font-monospace"><small>gumbelrnd</small></a></li>
+					<li><a href="hncdf.html" class="text-decoration-none font-monospace"><small>hncdf</small></a></li>
+					<li><a href="hninv.html" class="text-decoration-none font-monospace"><small>hninv</small></a></li>
+					<li><a href="hnpdf.html" class="text-decoration-none font-monospace"><small>hnpdf</small></a></li>
+					<li><a href="hnrnd.html" class="text-decoration-none font-monospace"><small>hnrnd</small></a></li>
+					<li><a href="hygecdf.html" class="text-decoration-none font-monospace"><small>hygecdf</small></a></li>
+					<li><a href="hygeinv.html" class="text-decoration-none font-monospace"><small>hygeinv</small></a></li>
+					<li><a href="hygepdf.html" class="text-decoration-none font-monospace"><small>hygepdf</small></a></li>
+					<li><a href="hygernd.html" class="text-decoration-none font-monospace"><small>hygernd</small></a></li>
+					<li><a href="invgcdf.html" class="text-decoration-none font-monospace"><small>invgcdf</small></a></li>
+					<li><a href="invginv.html" class="text-decoration-none font-monospace"><small>invginv</small></a></li>
+					<li><a href="invgpdf.html" class="text-decoration-none font-monospace"><small>invgpdf</small></a></li>
+					<li><a href="invgrnd.html" class="text-decoration-none font-monospace"><small>invgrnd</small></a></li>
+					<li><a href="iwishpdf.html" class="text-decoration-none font-monospace"><small>iwishpdf</small></a></li>
+					<li><a href="iwishrnd.html" class="text-decoration-none font-monospace"><small>iwishrnd</small></a></li>
+					<li><a href="jsucdf.html" class="text-decoration-none font-monospace"><small>jsucdf</small></a></li>
+					<li><a href="jsupdf.html" class="text-decoration-none font-monospace"><small>jsupdf</small></a></li>
+					<li><a href="laplacecdf.html" class="text-decoration-none font-monospace"><small>laplacecdf</small></a></li>
+					<li><a href="laplaceinv.html" class="text-decoration-none font-monospace"><small>laplaceinv</small></a></li>
+					<li><a href="laplacepdf.html" class="text-decoration-none font-monospace"><small>laplacepdf</small></a></li>
+					<li><a href="laplacernd.html" class="text-decoration-none font-monospace"><small>laplacernd</small></a></li>
+					<li><a href="logicdf.html" class="text-decoration-none font-monospace"><small>logicdf</small></a></li>
+					<li><a href="logiinv.html" class="text-decoration-none font-monospace"><small>logiinv</small></a></li>
+					<li><a href="logipdf.html" class="text-decoration-none font-monospace"><small>logipdf</small></a></li>
+					<li><a href="logirnd.html" class="text-decoration-none font-monospace"><small>logirnd</small></a></li>
+					<li><a href="loglcdf.html" class="text-decoration-none font-monospace"><small>loglcdf</small></a></li>
+					<li><a href="loglinv.html" class="text-decoration-none font-monospace"><small>loglinv</small></a></li>
+					<li><a href="loglpdf.html" class="text-decoration-none font-monospace"><small>loglpdf</small></a></li>
+					<li><a href="loglrnd.html" class="text-decoration-none font-monospace"><small>loglrnd</small></a></li>
+					<li><a href="logncdf.html" class="text-decoration-none font-monospace"><small>logncdf</small></a></li>
+					<li><a href="logninv.html" class="text-decoration-none font-monospace"><small>logninv</small></a></li>
+					<li><a href="lognpdf.html" class="text-decoration-none font-monospace"><small>lognpdf</small></a></li>
+					<li><a href="lognrnd.html" class="text-decoration-none font-monospace"><small>lognrnd</small></a></li>
+					<li><a href="mnpdf.html" class="text-decoration-none font-monospace"><small>mnpdf</small></a></li>
+					<li><a href="mnrnd.html" class="text-decoration-none font-monospace"><small>mnrnd</small></a></li>
+					<li><a href="mvncdf.html" class="text-decoration-none font-monospace"><small>mvncdf</small></a></li>
+					<li><a href="mvnpdf.html" class="text-decoration-none font-monospace"><small>mvnpdf</small></a></li>
+					<li><a href="mvnrnd.html" class="text-decoration-none font-monospace"><small>mvnrnd</small></a></li>
+					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
+					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
+					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
+					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
+					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
+					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
+					<li><a href="nakarnd.html" class="text-decoration-none font-monospace"><small>nakarnd</small></a></li>
+					<li><a href="nbincdf.html" class="text-decoration-none font-monospace"><small>nbincdf</small></a></li>
+					<li><a href="nbininv.html" class="text-decoration-none font-monospace"><small>nbininv</small></a></li>
+					<li><a href="nbinpdf.html" class="text-decoration-none font-monospace"><small>nbinpdf</small></a></li>
+					<li><a href="nbinrnd.html" class="text-decoration-none font-monospace"><small>nbinrnd</small></a></li>
+					<li><a href="ncfcdf.html" class="text-decoration-none font-monospace"><small>ncfcdf</small></a></li>
+					<li><a href="ncfinv.html" class="text-decoration-none font-monospace"><small>ncfinv</small></a></li>
+					<li><a href="ncfpdf.html" class="text-decoration-none font-monospace"><small>ncfpdf</small></a></li>
+					<li><a href="ncfrnd.html" class="text-decoration-none font-monospace"><small>ncfrnd</small></a></li>
+					<li><a href="nctcdf.html" class="text-decoration-none font-monospace"><small>nctcdf</small></a></li>
+					<li><a href="nctinv.html" class="text-decoration-none font-monospace"><small>nctinv</small></a></li>
+					<li><a href="nctpdf.html" class="text-decoration-none font-monospace"><small>nctpdf</small></a></li>
+					<li><a href="nctrnd.html" class="text-decoration-none font-monospace"><small>nctrnd</small></a></li>
+					<li><a href="ncx2cdf.html" class="text-decoration-none font-monospace"><small>ncx2cdf</small></a></li>
+					<li><a href="ncx2inv.html" class="text-decoration-none font-monospace"><small>ncx2inv</small></a></li>
+					<li><a href="ncx2pdf.html" class="text-decoration-none font-monospace"><small>ncx2pdf</small></a></li>
+					<li><a href="ncx2rnd.html" class="text-decoration-none font-monospace"><small>ncx2rnd</small></a></li>
+					<li><a href="normcdf.html" class="text-decoration-none font-monospace"><small>normcdf</small></a></li>
+					<li><a href="norminv.html" class="text-decoration-none font-monospace"><small>norminv</small></a></li>
+					<li><a href="normpdf.html" class="text-decoration-none font-monospace"><small>normpdf</small></a></li>
+					<li><a href="normrnd.html" class="text-decoration-none font-monospace"><small>normrnd</small></a></li>
+					<li><a href="plcdf.html" class="text-decoration-none font-monospace"><small>plcdf</small></a></li>
+					<li><a href="plinv.html" class="text-decoration-none font-monospace"><small>plinv</small></a></li>
+					<li><a href="plpdf.html" class="text-decoration-none font-monospace"><small>plpdf</small></a></li>
+					<li><a href="plrnd.html" class="text-decoration-none font-monospace"><small>plrnd</small></a></li>
+					<li><a href="poisscdf.html" class="text-decoration-none font-monospace"><small>poisscdf</small></a></li>
+					<li><a href="poissinv.html" class="text-decoration-none font-monospace"><small>poissinv</small></a></li>
+					<li><a href="poisspdf.html" class="text-decoration-none font-monospace"><small>poisspdf</small></a></li>
+					<li><a href="poissrnd.html" class="text-decoration-none font-monospace"><small>poissrnd</small></a></li>
+					<li><a href="raylcdf.html" class="text-decoration-none font-monospace"><small>raylcdf</small></a></li>
+					<li><a href="raylinv.html" class="text-decoration-none font-monospace"><small>raylinv</small></a></li>
+					<li><a href="raylpdf.html" class="text-decoration-none font-monospace"><small>raylpdf</small></a></li>
+					<li><a href="raylrnd.html" class="text-decoration-none font-monospace"><small>raylrnd</small></a></li>
+					<li><a href="ricecdf.html" class="text-decoration-none font-monospace"><small>ricecdf</small></a></li>
+					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
+					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
+					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
+					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
+					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
+					<li><a href="trnd.html" class="text-decoration-none font-monospace"><small>trnd</small></a></li>
+					<li><a href="tlscdf.html" class="text-decoration-none font-monospace"><small>tlscdf</small></a></li>
+					<li><a href="tlsinv.html" class="text-decoration-none font-monospace"><small>tlsinv</small></a></li>
+					<li><a href="tlspdf.html" class="text-decoration-none font-monospace"><small>tlspdf</small></a></li>
+					<li><a href="tlsrnd.html" class="text-decoration-none font-monospace"><small>tlsrnd</small></a></li>
+					<li><a href="tricdf.html" class="text-decoration-none font-monospace"><small>tricdf</small></a></li>
+					<li><a href="triinv.html" class="text-decoration-none font-monospace"><small>triinv</small></a></li>
+					<li><a href="tripdf.html" class="text-decoration-none font-monospace"><small>tripdf</small></a></li>
+					<li><a href="trirnd.html" class="text-decoration-none font-monospace"><small>trirnd</small></a></li>
+					<li><a href="unidcdf.html" class="text-decoration-none font-monospace"><small>unidcdf</small></a></li>
+					<li><a href="unidinv.html" class="text-decoration-none font-monospace"><small>unidinv</small></a></li>
+					<li><a href="unidpdf.html" class="text-decoration-none font-monospace"><small>unidpdf</small></a></li>
+					<li><a href="unidrnd.html" class="text-decoration-none font-monospace"><small>unidrnd</small></a></li>
+					<li><a href="unifcdf.html" class="text-decoration-none font-monospace"><small>unifcdf</small></a></li>
+					<li><a href="unifinv.html" class="text-decoration-none font-monospace"><small>unifinv</small></a></li>
+					<li><a href="unifpdf.html" class="text-decoration-none font-monospace"><small>unifpdf</small></a></li>
+					<li><a href="unifrnd.html" class="text-decoration-none font-monospace"><small>unifrnd</small></a></li>
+					<li><a href="vmcdf.html" class="text-decoration-none font-monospace"><small>vmcdf</small></a></li>
+					<li><a href="vminv.html" class="text-decoration-none font-monospace"><small>vminv</small></a></li>
+					<li><a href="vmpdf.html" class="text-decoration-none font-monospace"><small>vmpdf</small></a></li>
+					<li><a href="vmrnd.html" class="text-decoration-none font-monospace"><small>vmrnd</small></a></li>
+					<li><a href="wblcdf.html" class="text-decoration-none font-monospace"><small>wblcdf</small></a></li>
+					<li><a href="wblinv.html" class="text-decoration-none font-monospace"><small>wblinv</small></a></li>
+					<li><a href="wblpdf.html" class="text-decoration-none font-monospace"><small>wblpdf</small></a></li>
+					<li><a href="wblrnd.html" class="text-decoration-none font-monospace"><small>wblrnd</small></a></li>
+					<li><a href="wienrnd.html" class="text-decoration-none font-monospace"><small>wienrnd</small></a></li>
+					<li><a href="wishpdf.html" class="text-decoration-none font-monospace"><small>wishpdf</small></a></li>
+					<li><a href="wishrnd.html" class="text-decoration-none font-monospace"><small>wishrnd</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
+					<span><h6>Distribution Statistics</h6></span>
+					<span><h6>Distribution Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betastat.html" class="text-decoration-none font-monospace"><small>betastat</small></a></li>
+					<li><a href="binostat.html" class="text-decoration-none font-monospace"><small>binostat</small></a></li>
+					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
+					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
+					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
+					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
+					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
+					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
+					<li><a href="gamstat.html" class="text-decoration-none font-monospace"><small>gamstat</small></a></li>
+					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
+					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
+					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
+					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
+					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
+					<li><a href="logistat.html" class="text-decoration-none font-monospace"><small>logistat</small></a></li>
+					<li><a href="loglstat.html" class="text-decoration-none font-monospace"><small>loglstat</small></a></li>
+					<li><a href="lognstat.html" class="text-decoration-none font-monospace"><small>lognstat</small></a></li>
+					<li><a href="nakastat.html" class="text-decoration-none font-monospace"><small>nakastat</small></a></li>
+					<li><a href="nbinstat.html" class="text-decoration-none font-monospace"><small>nbinstat</small></a></li>
+					<li><a href="ncfstat.html" class="text-decoration-none font-monospace"><small>ncfstat</small></a></li>
+					<li><a href="nctstat.html" class="text-decoration-none font-monospace"><small>nctstat</small></a></li>
+					<li><a href="ncx2stat.html" class="text-decoration-none font-monospace"><small>ncx2stat</small></a></li>
+					<li><a href="normstat.html" class="text-decoration-none font-monospace"><small>normstat</small></a></li>
+					<li><a href="plstat.html" class="text-decoration-none font-monospace"><small>plstat</small></a></li>
+					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
+					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
+					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
+					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
+					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
+					<li><a href="unidstat.html" class="text-decoration-none font-monospace"><small>unidstat</small></a></li>
+					<li><a href="unifstat.html" class="text-decoration-none font-monospace"><small>unifstat</small></a></li>
+					<li><a href="wblstat.html" class="text-decoration-none font-monospace"><small>wblstat</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
+					<span><h6>Distribution Wrappers</h6></span>
+					<span><h6>Distribution Wrappers</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdf.html" class="text-decoration-none font-monospace"><small>cdf</small></a></li>
+					<li><a href="fitdist.html" class="text-decoration-none font-monospace"><small>fitdist</small></a></li>
+					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
+					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
+					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
+					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
+					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
+					<span><h6>I/O</h6></span>
+					<span><h6>I/O</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
+					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
+					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
+				</ul>
+				</div>
+			</div>
+
+			  </div>
+			  <div class="col-md-10">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <h3 class="d-inline-block mr-2">
+                Class&nbsp;Definition: <b><code>ClassificationBaggedEnsemble</code></b>
+                </h3>
+              </div>
+            </div>
+            <div class="card-body">
+<dl><code><h5 class="description">statistics: ClassificationBaggedEnsemble</h5></code></dl>
+<p> Bagged ensemble of decision trees for classification
+</p>
+<div class="ms-5">
+<p> A <code>ClassificationBaggedEnsemble</code> object holds decision trees each
+ grown on a sample drawn from the training data in proportion to the
+ observation weights, each split chosen from <code>ceil (sqrt (P))</code>
+ predictors drawn afresh at every node.  It predicts by averaging its
+ trees&rsquo; class probabilities.
+</p>
+<p> Create one with <code>fitcensemble</code> and <code>'Method'</code> set to
+ <code>'Bag'</code>.  It carries everything a <code>ClassificationEnsemble</code>
+ does, and which rows each tree drew.  A boosting method that resamples,
+ asked for with <code>'Resample'</code>, <code>'FResample'</code> or
+ <code>'Replace'</code>, returns this class too: its trees are boosted and
+ summed by their weights, each grown on the rows it drew.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcensemble.html">fitcensemble</a>, 
+  <a href="ClassificationEnsemble.html">ClassificationEnsemble</a>, 
+  <a href="CompactClassificationEnsemble.html">CompactClassificationEnsemble</a>, 
+  <a href="TreeBagger.html">TreeBagger</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/ClassificationBaggedEnsemble.m">ClassificationBaggedEnsemble</a>
+</p>
+</div>
+        <p class="lead my-3">The <code>ClassificationBaggedEnsemble</code> class contains the following properties:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_FResample"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_FResample">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>FResample</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Share of the observations each tree draws
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_FResample">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A number greater than 0 and no greater than 1, each tree drawing
+ <code>ceil (FResample * N)</code> observations.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_Replace"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_Replace">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Replace</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Whether the trees draw with replacement
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_Replace">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A logical scalar, true by default.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_UseObsForLearner"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_UseObsForLearner">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>UseObsForLearner</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which observations each tree drew
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_UseObsForLearner">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> An <em class="math">NxNumTrained</em> logical matrix, true where a tree&rsquo;s sample holds
+ an observation.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_X"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_X">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>X</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Predictor data
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_X">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The predictors the ensemble was fitted on, one row per observation, a
+ row missing a value or a class having been left out.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_Y"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_Y">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Y</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Class labels
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_Y">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The labels the ensemble was fitted on, in the type they were given in.
+ This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_RowsUsed"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_RowsUsed">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>RowsUsed</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Rows of the data that were used
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_RowsUsed">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A logical column over the rows as supplied.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_W"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_W">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>W</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Observation weights
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_W">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The weights given, scaled so that the observations of each class sum
+ to its prior probability.  A cost matrix is not folded into them.
+ This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ModelParameters"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ModelParameters">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ModelParameters</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Parameters of the fit
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ModelParameters">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A structure with the fields <code>Type</code>, <code>Method</code>,
+ <code>LearnerTemplates</code>, the tree template the learners were grown
+ from, <code>NLearn</code>, the number of learning cycles asked for in all,
+ and <code>LearnRate</code>.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_NumObservations"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_NumObservations">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumObservations</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of observations used
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_NumObservations">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_BinEdges"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_BinEdges">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BinEdges</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Bin edges of the predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_BinEdges">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> Always empty, binning not being implemented.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_HyperparameterOptimizationResults"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_HyperparameterOptimizationResults">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>HyperparameterOptimizationResults</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Results of optimizing the hyperparameters
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_HyperparameterOptimizationResults">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> Always empty, such optimization not being implemented.  This property
+ is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_PredictorNames"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_PredictorNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>PredictorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_PredictorNames">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A cell array of character vectors.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_CategoricalPredictors"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_CategoricalPredictors">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CategoricalPredictors</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Indices of categorical predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_CategoricalPredictors">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The predictors every tree treats as categorical, empty when none
+ is.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ResponseName"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ResponseName">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ResponseName</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Name of the response variable
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ResponseName">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ExpandedPredictorNames"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ExpandedPredictorNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ExpandedPredictorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the predictors as the learners saw them
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ExpandedPredictorNames">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The same as <code>PredictorNames</code>.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ClassNames"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ClassNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ClassNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the classes
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ClassNames">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> The classes, in the type of the response, sorted or in the order given
+ by the <code>'ClassNames'</code> option; the columns of the scores take them
+ in that order.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_Prior"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_Prior">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Prior</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Prior probabilities of the classes
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_Prior">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A row vector with one probability per class.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_Cost"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_Cost">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Cost</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Misclassification costs
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_Cost">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A square matrix, <code>Cost(i,j)</code> being the cost of classifying an
+ observation of class <em class="math">i</em> as class <em class="math">j</em>.  A boosting method
+ starts from observation weights multiplied by the total cost of
+ misclassifying each observation&rsquo;s class.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_Method"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_Method">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Method</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Ensemble method
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_Method">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> <code>'AdaBoostM1'</code>, <code>'AdaBoostM2'</code>, <code>'GentleBoost'</code>,
+ <code>'LogitBoost'</code>, <code>'RUSBoost'</code>, <code>'LPBoost'</code>,
+ <code>'TotalBoost'</code>, <code>'Bag'</code> or <code>'Subspace'</code>.  This
+ property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_LearnerNames"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_LearnerNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LearnerNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the weak learners
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_LearnerNames">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> <code>{'Tree'}</code>, or for Subspace <code>{'KNN'}</code> or
+ <code>{'Discriminant'}</code>.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ReasonForTermination"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ReasonForTermination">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ReasonForTermination</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Why the fit stopped adding learners
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ReasonForTermination">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A character vector.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_FitInfo"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_FitInfo">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>FitInfo</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit information
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_FitInfo">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A column with one element per learner: the weighted classification error
+ for AdaBoostM1, the weighted pseudo-loss for AdaBoostM2 and RUSBoost, and
+ the weighted mean squared error of the regression tree for GentleBoost
+ and LogitBoost.  For LPBoost and TotalBoost a matrix with a row per
+ learner: its margin on each observation, and its edge last.  Empty for
+ Bag.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_FitInfoDescription"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_FitInfoDescription">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>FitInfoDescription</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Description of <code>FitInfo</code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_FitInfoDescription">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_UsePredForLearner"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_UsePredForLearner">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>UsePredForLearner</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which predictors each learner uses
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_UsePredForLearner">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> For the <code>'Subspace'</code> method, a logical matrix with one row per
+ predictor and one column per learner.  Empty for tree learners, as
+ MATLAB returns it.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_NumTrained"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_NumTrained">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumTrained</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of trained weak learners
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_NumTrained">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_Trained"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_Trained">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Trained</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Trained weak learners
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_Trained">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A column cell array of compact trees, as described under
+ <code>CompactClassificationEnsemble.Trained</code>.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_TrainedWeights"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_TrainedWeights">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>TrainedWeights</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Weights of the trained weak learners
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_TrainedWeights">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> A column with one weight per learner.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_CombineWeights"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_CombineWeights">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CombineWeights</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+How the weak learners are combined
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_CombineWeights">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> <code>'WeightedSum'</code> for boosting, <code>'WeightedAverage'</code> for
+ Bag.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ScoreTransform"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ScoreTransform">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ScoreTransform</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Transform applied to the predicted scores
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ScoreTransform">
+            <div class="border-bottom py-2">
+
+<p> </p>
+<p> See <code>CompactClassificationEnsemble.ScoreTransform</code>.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <p class="lead my-3">The <code>ClassificationBaggedEnsemble</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_ClassificationBaggedEnsemble"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_ClassificationBaggedEnsemble">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ClassificationBaggedEnsemble</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit a bagged ensemble of decision trees.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_ClassificationBaggedEnsemble">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>obj</var> = <b>ClassificationBaggedEnsemble</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>obj</var> = <b>ClassificationBaggedEnsemble</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> <code>fitcensemble</code> with <code>'Method'</code> set to <code>'Bag'</code> is the
+ documented way in, and its help lists the options both take.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcensemble.html">fitcensemble</a>, 
+  <a href="ClassificationEnsemble.html">ClassificationEnsemble</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_crossval"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_crossval">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>crossval</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Cross-validate a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_crossval">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>ClassificationEnsemble.crossval</code>, returning a
+ <code>ClassificationPartitionedEnsemble</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationPartitionedEnsemble.html">ClassificationPartitionedEnsemble</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_compact"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_compact">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>compact</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Drop the training data from a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_compact">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>CMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Returns a <code>CompactClassificationEnsemble</code>, as
+ <code>ClassificationEnsemble.compact</code> does.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="CompactClassificationEnsemble.html">CompactClassificationEnsemble</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_resume"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_resume">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resume</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Grow more trees in a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_resume">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>B</var> = <b>resume</b> (<var>obj</var>, <var>NumLearningCycles</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>B</var> = <b>resume</b> (&hellip;, &rsquo;NPrint&rsquo;, <var>n</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>ClassificationEnsemble.resume</code>, the new trees&rsquo; samples
+ added to <code>UseObsForLearner</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationEnsemble.html#ClassificationEnsemble_resume">ClassificationEnsemble.resume</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_predict"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_predict">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>predict</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classify new data with a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_predict">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: [<var>label</var>, <var>scores</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: [&hellip;] = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>CompactClassificationEnsemble.predict</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="CompactClassificationEnsemble.html#CompactClassificationEnsemble_predict">CompactClassificationEnsemble.predict</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_loss"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_loss">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>loss</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification loss of a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_loss">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>CompactClassificationEnsemble.loss</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="CompactClassificationEnsemble.html#CompactClassificationEnsemble_loss">CompactClassificationEnsemble.loss</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_edge"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_edge">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>edge</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification edge of a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_edge">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>e</var> = <b>edge</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>CompactClassificationEnsemble.edge</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="CompactClassificationEnsemble.html#CompactClassificationEnsemble_edge">CompactClassificationEnsemble.edge</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_margin"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_margin">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>margin</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification margins of a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_margin">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>m</var> = <b>margin</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>CompactClassificationEnsemble.margin</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="CompactClassificationEnsemble.html#CompactClassificationEnsemble_margin">CompactClassificationEnsemble.margin</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_resubPredict"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_resubPredict">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubPredict</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classify the training data with a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_resubPredict">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>label</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: [<var>label</var>, <var>scores</var>] = <b>resubPredict</b> (&hellip;)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>ClassificationEnsemble.resubPredict</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationEnsemble.html#ClassificationEnsemble_resubPredict">ClassificationEnsemble.resubPredict</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_resubLoss"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_resubLoss">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubLoss</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification loss of a bagged ensemble on the training data.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_resubLoss">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>ClassificationEnsemble.resubLoss</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationEnsemble.html#ClassificationEnsemble_resubLoss">ClassificationEnsemble.resubLoss</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_resubEdge"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_resubEdge">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubEdge</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification edge of a bagged ensemble on the training data.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_resubEdge">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>e</var> = <b>resubEdge</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>e</var> = <b>resubEdge</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>ClassificationEnsemble.resubEdge</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationEnsemble.html#ClassificationEnsemble_resubEdge">ClassificationEnsemble.resubEdge</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_resubMargin"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_resubMargin">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>resubMargin</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Classification margins of the training data of a bagged ensemble.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_resubMargin">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>m</var> = <b>resubMargin</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>m</var> = <b>resubMargin</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Behaves as <code>ClassificationEnsemble.resubMargin</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationEnsemble.html#ClassificationEnsemble_resubMargin">ClassificationEnsemble.resubMargin</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_predictorImportance"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_predictorImportance">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>predictorImportance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Estimate the importance of each predictor.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_predictorImportance">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>imp</var> = <b>predictorImportance</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: [<var>imp</var>, <var>ma</var>] = <b>predictorImportance</b> (<var>obj</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> The mean over the trees of each tree&rsquo;s <code>predictorImportance</code>, as
+ <code>CompactClassificationEnsemble.predictorImportance</code> computes it.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationBaggedEnsemble.html#ClassificationBaggedEnsemble_oobPermutedPredictorImportance">ClassificationBaggedEnsemble.oobPermutedPredictorImportance</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_oobPredict"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_oobPredict">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>oobPredict</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Out-of-bag predictions for the training data.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_oobPredict">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>label</var> = <b>oobPredict</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: [<var>label</var>, <var>scores</var>] = <b>oobPredict</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: [&hellip;] = <b>oobPredict</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> Each training observation is classified by the trees whose samples
+ left it out, as <code>predict</code> classifies it with
+ <code>'UseObsForLearner'</code> set to <code>! UseObsForLearner</code>.  An
+ observation in the sample of every tree used has <code>NaN</code> scores and
+ is given the class of greatest prior probability.  <code>'Learners'</code>
+ restricts the trees.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationBaggedEnsemble.html#ClassificationBaggedEnsemble_oobLoss">ClassificationBaggedEnsemble.oobLoss</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_oobLoss"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_oobLoss">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>oobLoss</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Out-of-bag classification loss.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_oobLoss">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>L</var> = <b>oobLoss</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>L</var> = <b>oobLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> The loss of the out-of-bag scores against <code>Y</code>, weighted by
+ <code>W</code>, an observation in the sample of every tree used being left
+ out.  <code>'LossFun'</code> and <code>'Mode'</code> are taken as by
+ <code>CompactClassificationEnsemble.loss</code>, and <code>'Learners'</code>
+ restricts the trees.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationBaggedEnsemble.html#ClassificationBaggedEnsemble_oobPredict">ClassificationBaggedEnsemble.oobPredict</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_oobEdge"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_oobEdge">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>oobEdge</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Out-of-bag classification edge.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_oobEdge">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>e</var> = <b>oobEdge</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>e</var> = <b>oobEdge</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> The weighted mean of the out-of-bag margins, weighted by <code>W</code>.
+ <code>'Mode'</code> and <code>'Learners'</code> are taken as by <code>oobLoss</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationBaggedEnsemble.html#ClassificationBaggedEnsemble_oobMargin">ClassificationBaggedEnsemble.oobMargin</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_oobMargin"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_oobMargin">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>oobMargin</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Out-of-bag classification margins.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_oobMargin">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>m</var> = <b>oobMargin</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>m</var> = <b>oobMargin</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> The margin of each training observation under its out-of-bag scores,
+ <code>NaN</code> for one in the sample of every tree used.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationBaggedEnsemble.html#ClassificationBaggedEnsemble_oobEdge">ClassificationBaggedEnsemble.oobEdge</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#ClassificationBaggedEnsemble_oobPermutedPredictorImportance"
+              aria-expanded="false" aria-controls="ClassificationBaggedEnsemble_oobPermutedPredictorImportance">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>oobPermutedPredictorImportance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Out-of-bag predictor importance by permutation.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="ClassificationBaggedEnsemble_oobPermutedPredictorImportance">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>imp</var> = <b>oobPermutedPredictorImportance</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationBaggedEnsemble: <var>imp</var> = <b>oobPermutedPredictorImportance</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></h5></dt>
+</dl>
+<p> </p>
+<p> For each tree, the values of each predictor are permuted among the
+ observations out of its bag, and the tree&rsquo;s misclassification rate on
+ them, weighted by <code>W</code>, is taken before and after.  <var>imp</var> holds,
+ for each predictor, the mean of the rise over the trees divided by its
+ standard deviation over the trees, zero where the mean is zero.
+ <code>'Learners'</code> restricts the trees.
+</p>
+<p> <strong>See also: </strong>
+  <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>, 
+  <a href="ClassificationBaggedEnsemble.html#ClassificationBaggedEnsemble_predictorImportance">ClassificationBaggedEnsemble.predictorImportance</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

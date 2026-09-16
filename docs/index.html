@@ -47,6 +47,49 @@
             window.location.pathname + window.location.search);
         }
       });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
     </script>
     <style>
     h5.fs {
@@ -91,6 +134,19 @@
     [id^="togList"]:checked ~ .list{
       display:block;                        /* SHOW LIST (IF CHECKED) */
     }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
+    }
     </style>
   </head>
   <body>
@@ -134,7 +190,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.9.2&nbsp;2026-09-03</b>
+              <b>1.9.3&nbsp;2026-09-16</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -188,6 +244,14 @@
                    </code></b>
                  </td>
                  <td>Confidence level of multinomial portions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="corr.html">corr</a>
+                   </code></b>
+                 </td>
+                 <td>Linear or rank correlation coefficients.</td>
                </tr>
                <tr>
                  <td>
@@ -734,14 +798,6 @@ family-wise error rate (FWER) or false discovery rate (FDR).</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="sampsizepwr.html">sampsizepwr</a>
-                   </code></b>
-                 </td>
-                 <td>Sample size and power calculation for hypothesis test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="signrank.html">signrank</a>
                    </code></b>
                  </td>
@@ -754,6 +810,14 @@ family-wise error rate (FWER) or false discovery rate (FDR).</td>
                    </code></b>
                  </td>
                  <td>Signed test for median.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="swtest.html">swtest</a>
+                   </code></b>
+                 </td>
+                 <td>Shapiro-Wilk hypothesis test of composite normality.</td>
                </tr>
                <tr>
                  <td>
@@ -842,6 +906,14 @@ hypothesis that the groups are drawn from distributions with the same mean.</td>
                    </code></b>
                  </td>
                  <td>Parse and expand statistical model formulae using the Wilkinson notation.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="sampsizepwr.html">sampsizepwr</a>
+                   </code></b>
+                 </td>
+                 <td>Sample size and power calculation for hypothesis test.</td>
                </tr>
                <tr>
                  <td>
@@ -1189,10 +1261,34 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Bagged ensemble of decision trees for classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
                    </code></b>
                  </td>
                  <td>Discriminant analysis classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationECOC.html">ClassificationECOC</a>
+                   </code></b>
+                 </td>
+                 <td>A multiclass model built from binary learners.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationEnsemble.html">ClassificationEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Boosted ensemble of decision trees for classification</td>
                </tr>
                <tr>
                  <td>
@@ -1245,6 +1341,22 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="ClassificationPartitionedECOC.html">ClassificationPartitionedECOC</a>
+                   </code></b>
+                 </td>
+                 <td>A cross-validated multiclass model built from binary learners.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationPartitionedEnsemble.html">ClassificationPartitionedEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated ensemble of decision trees for classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="ClassificationPartitionedKernel.html">ClassificationPartitionedKernel</a>
                    </code></b>
                  </td>
@@ -1277,10 +1389,34 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="ClassificationTree.html">ClassificationTree</a>
+                   </code></b>
+                 </td>
+                 <td>Binary decision tree for classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="CompactClassificationDiscriminant.html">CompactClassificationDiscriminant</a>
                    </code></b>
                  </td>
                  <td>Compact discriminant analysis classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationECOC.html">CompactClassificationECOC</a>
+                   </code></b>
+                 </td>
+                 <td>A multiclass model built from binary learners, without its training data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactClassificationEnsemble.html">CompactClassificationEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Compact ensemble of weak learners for classification</td>
                </tr>
                <tr>
                  <td>
@@ -1317,10 +1453,26 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="CompactClassificationTree.html">CompactClassificationTree</a>
+                   </code></b>
+                 </td>
+                 <td>Compact binary decision tree for classification</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="CompactRegressionGAM.html">CompactRegressionGAM</a>
                    </code></b>
                  </td>
                  <td>Compact generalized additive model regression</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactRegressionEnsemble.html">CompactRegressionEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Compact ensemble of regression trees</td>
                </tr>
                <tr>
                  <td>
@@ -1349,6 +1501,30 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="CompactRegressionTree.html">CompactRegressionTree</a>
+                   </code></b>
+                 </td>
+                 <td>Compact binary decision tree for regression</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CompactTreeBagger.html">CompactTreeBagger</a>
+                   </code></b>
+                 </td>
+                 <td>Compact ensemble of bagged decision trees</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="designecoc.html">designecoc</a>
+                   </code></b>
+                 </td>
+                 <td>Coding design matrix for an error correcting output codes model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="fcnnpredict.html">fcnnpredict</a>
                    </code></b>
                  </td>
@@ -1369,6 +1545,22 @@ X * beta + e’.
                    </code></b>
                  </td>
                  <td>Fit a Linear Discriminant Analysis classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcecoc.html">fitcecoc</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a multiclass model from binary learners.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcensemble.html">fitcensemble</a>
+                   </code></b>
+                 </td>
+                 <td>Fit an ensemble of decision trees for classification.</td>
                </tr>
                <tr>
                  <td>
@@ -1429,6 +1621,22 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="fitctree.html">fitctree</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a binary decision tree for classification.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrensemble.html">fitrensemble</a>
+                   </code></b>
+                 </td>
+                 <td>Fit an ensemble of regression trees.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="fitrgam.html">fitrgam</a>
                    </code></b>
                  </td>
@@ -1473,6 +1681,14 @@ X * beta + e’.
                    </code></b>
                  </td>
                  <td>Fit a support vector machine regression model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrtree.html">fitrtree</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a binary decision tree for regression.</td>
                </tr>
                <tr>
                  <td>
@@ -1525,6 +1741,22 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="RegressionBaggedEnsemble.html">RegressionBaggedEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Bagged ensemble of regression trees</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RegressionEnsemble.html">RegressionEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Boosted ensemble of regression trees</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="RegressionGAM.html">RegressionGAM</a>
                    </code></b>
                  </td>
@@ -1567,6 +1799,14 @@ model.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="RegressionPartitionedEnsemble.html">RegressionPartitionedEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Cross-validated ensemble of regression trees</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="RegressionPartitionedKernel.html">RegressionPartitionedKernel</a>
                    </code></b>
                  </td>
@@ -1601,6 +1841,14 @@ model.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="RegressionTree.html">RegressionTree</a>
+                   </code></b>
+                 </td>
+                 <td>Binary decision tree for regression</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="svmpredict.html">svmpredict</a>
                    </code></b>
                  </td>
@@ -1617,6 +1865,94 @@ MODEL created with ‘svmtrain’.
                  </td>
                  <td>This function trains an SVM MODEL based on known LABELS and their corresponding
 DATA which comprise an instance matrix.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateDiscriminant.html">templateDiscriminant</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a discriminant analysis classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateEnsemble.html">templateEnsemble</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for an ensemble learner.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateKernel.html">templateKernel</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a kernel classifier using random feature expansion.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateKNN.html">templateKNN</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a nearest neighbour classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateLinear.html">templateLinear</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a linear classifier for high dimensional data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateNaiveBayes.html">templateNaiveBayes</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a naive Bayes classifier.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateSVM.html">templateSVM</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a support vector machine.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="templateTree.html">templateTree</a>
+                   </code></b>
+                 </td>
+                 <td>Create a template for a binary decision tree.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="TreeBagger.html">TreeBagger</a>
+                   </code></b>
+                 </td>
+                 <td>Ensemble of bagged decision trees</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="treepredict.html">treepredict</a>
+                   </code></b>
+                 </td>
+                 <td>Evaluate a binary decision tree on new data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="treetrain.html">treetrain</a>
+                   </code></b>
+                 </td>
+                 <td>Grow a binary decision tree by recursive partitioning.</td>
                </tr>
              </tbody>
            </table>

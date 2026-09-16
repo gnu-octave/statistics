@@ -47,6 +47,49 @@
             window.location.pathname + window.location.search);
         }
       });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
     </script>
     <style>
     h5.fs {
@@ -90,6 +133,19 @@
     }
     [id^="togList"]:checked ~ .list{
       display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
     }
     </style>
   </head>
@@ -148,6 +204,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
@@ -234,9 +291,9 @@
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
-					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
 					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
@@ -258,6 +315,7 @@
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -320,29 +378,44 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationBaggedEnsemble</small></a></li>
 					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
 					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
 					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
 					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
 					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
 					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
 					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
 					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
 					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
 					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
 					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
 					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
 					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
 					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
 					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
 					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
 					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
@@ -350,29 +423,47 @@
 					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
 					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
 					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
 					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
 					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace fw-bolder"><small>RegressionGAM</small></a></li>
 					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
 					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
 					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
 					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
 					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
 					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -1050,7 +1141,7 @@
  convergence during training. By default, it is set to <code>1e-3</code>.</td></tr>
 </table>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Supervised_Learning/RegressionGAM.m">RegressionGAM</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionGAM.m">RegressionGAM</a>
 </p>
 </div>
 
@@ -1103,7 +1194,7 @@
   <a href="regress_gp.html">regress_gp</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Supervised_Learning/RegressionGAM.m">RegressionGAM</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionGAM.m">RegressionGAM</a>
 </p>
 </div>
         <p class="lead my-3">The <code>RegressionGAM</code> class contains the following properties:</p>
@@ -1111,8 +1202,8 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
-              aria-expanded="false" aria-controls="collapseProperty1">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_X"
+              aria-expanded="false" aria-controls="RegressionGAM_X">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1124,7 +1215,7 @@ Predictor data
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty1">
+          <div class="collapse multi-collapse" id="RegressionGAM_X">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1253,8 +1344,8 @@ Predictor data
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
-              aria-expanded="false" aria-controls="collapseProperty2">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Y"
+              aria-expanded="false" aria-controls="RegressionGAM_Y">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1266,7 +1357,7 @@ Response data
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty2">
+          <div class="collapse multi-collapse" id="RegressionGAM_Y">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1395,8 +1486,8 @@ Response data
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
-              aria-expanded="false" aria-controls="collapseProperty3">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_NumObservations"
+              aria-expanded="false" aria-controls="RegressionGAM_NumObservations">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1408,12 +1499,12 @@ Number of observations
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty3">
+          <div class="collapse multi-collapse" id="RegressionGAM_NumObservations">
             <div class="border-bottom py-2">
 
 <p> </p>
 <p> A positive integer, the number of observations of the training data
- the model was fitted on, rows with missing values excluded.  This
+ the model was fitted on, rows with a missing response excluded.  This
  property is read-only.
 </p>
 
@@ -1538,8 +1629,8 @@ Number of observations
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
-              aria-expanded="false" aria-controls="collapseProperty4">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_RowsUsed"
+              aria-expanded="false" aria-controls="RegressionGAM_RowsUsed">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1551,7 +1642,7 @@ Rows used for fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty4">
+          <div class="collapse multi-collapse" id="RegressionGAM_RowsUsed">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1683,8 +1774,8 @@ Rows used for fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
-              aria-expanded="false" aria-controls="collapseProperty5">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_NumPredictors"
+              aria-expanded="false" aria-controls="RegressionGAM_NumPredictors">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1696,7 +1787,7 @@ Number of predictors
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty5">
+          <div class="collapse multi-collapse" id="RegressionGAM_NumPredictors">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1825,8 +1916,8 @@ Number of predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
-              aria-expanded="false" aria-controls="collapseProperty6">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_PredictorNames"
+              aria-expanded="false" aria-controls="RegressionGAM_PredictorNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1838,7 +1929,7 @@ Names of the predictor variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty6">
+          <div class="collapse multi-collapse" id="RegressionGAM_PredictorNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -1967,8 +2058,8 @@ Names of the predictor variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
-              aria-expanded="false" aria-controls="collapseProperty7">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_ResponseName"
+              aria-expanded="false" aria-controls="RegressionGAM_ResponseName">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -1980,7 +2071,7 @@ Response variable name
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty7">
+          <div class="collapse multi-collapse" id="RegressionGAM_ResponseName">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2109,8 +2200,8 @@ Response variable name
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
-              aria-expanded="false" aria-controls="collapseProperty8">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_CategoricalPredictors"
+              aria-expanded="false" aria-controls="RegressionGAM_CategoricalPredictors">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2122,7 +2213,7 @@ Indices of the categorical predictors
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty8">
+          <div class="collapse multi-collapse" id="RegressionGAM_CategoricalPredictors">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2251,8 +2342,8 @@ Indices of the categorical predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
-              aria-expanded="false" aria-controls="collapseProperty9">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_ExpandedPredictorNames"
+              aria-expanded="false" aria-controls="RegressionGAM_ExpandedPredictorNames">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2264,7 +2355,7 @@ Names of the expanded predictor variables
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty9">
+          <div class="collapse multi-collapse" id="RegressionGAM_ExpandedPredictorNames">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2395,8 +2486,8 @@ Names of the expanded predictor variables
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_W"
+              aria-expanded="false" aria-controls="RegressionGAM_W">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2408,12 +2499,13 @@ Observation weights
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
+          <div class="collapse multi-collapse" id="RegressionGAM_W">
             <div class="border-bottom py-2">
 
 <p> </p>
 <p> A numeric column vector with one entry per observation used for
- training, normalised to sum to one.  This property is read-only.
+ training, the <code>'Weights'</code> normalised to sum to one, and equal
+ when none were given.  This property is read-only.
 </p>
 
         <div class="card rounded my-4">
@@ -2537,8 +2629,8 @@ Observation weights
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Intercept"
+              aria-expanded="false" aria-controls="RegressionGAM_Intercept">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2550,7 +2642,7 @@ Intercept of the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
+          <div class="collapse multi-collapse" id="RegressionGAM_Intercept">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2679,8 +2771,8 @@ Intercept of the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Formula"
+              aria-expanded="false" aria-controls="RegressionGAM_Formula">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2692,7 +2784,7 @@ Formula of the model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
+          <div class="collapse multi-collapse" id="RegressionGAM_Formula">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2822,8 +2914,8 @@ Formula of the model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Interactions"
+              aria-expanded="false" aria-controls="RegressionGAM_Interactions">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2835,7 +2927,7 @@ Two-way interaction terms of the fitted model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
+          <div class="collapse multi-collapse" id="RegressionGAM_Interactions">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -2971,8 +3063,8 @@ Two-way interaction terms of the fitted model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Knots"
+              aria-expanded="false" aria-controls="RegressionGAM_Knots">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -2984,7 +3076,7 @@ Knots of the spline fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
+          <div class="collapse multi-collapse" id="RegressionGAM_Knots">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3114,8 +3206,8 @@ Knots of the spline fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Order"
+              aria-expanded="false" aria-controls="RegressionGAM_Order">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3127,7 +3219,7 @@ Order of the spline fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
+          <div class="collapse multi-collapse" id="RegressionGAM_Order">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3256,8 +3348,8 @@ Order of the spline fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_DoF"
+              aria-expanded="false" aria-controls="RegressionGAM_DoF">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3269,7 +3361,7 @@ Degrees of freedom of the spline fitting
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
+          <div class="collapse multi-collapse" id="RegressionGAM_DoF">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3398,8 +3490,8 @@ Degrees of freedom of the spline fitting
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_Tol"
+              aria-expanded="false" aria-controls="RegressionGAM_Tol">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3411,7 +3503,7 @@ Tolerance for convergence
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
+          <div class="collapse multi-collapse" id="RegressionGAM_Tol">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3541,8 +3633,8 @@ Tolerance for convergence
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
-              aria-expanded="false" aria-controls="collapseProperty18">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_IsStandardDeviationFit"
+              aria-expanded="false" aria-controls="RegressionGAM_IsStandardDeviationFit">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3554,7 +3646,7 @@ Flag for a fitted standard deviation model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty18">
+          <div class="collapse multi-collapse" id="RegressionGAM_IsStandardDeviationFit">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3684,8 +3776,8 @@ Flag for a fitted standard deviation model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty19"
-              aria-expanded="false" aria-controls="collapseProperty19">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_BaseModel"
+              aria-expanded="false" aria-controls="RegressionGAM_BaseModel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3697,7 +3789,7 @@ Model without interaction terms
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty19">
+          <div class="collapse multi-collapse" id="RegressionGAM_BaseModel">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3828,8 +3920,8 @@ Model without interaction terms
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty20"
-              aria-expanded="false" aria-controls="collapseProperty20">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_ModelwInt"
+              aria-expanded="false" aria-controls="RegressionGAM_ModelwInt">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3841,7 +3933,7 @@ Model with interaction terms
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty20">
+          <div class="collapse multi-collapse" id="RegressionGAM_ModelwInt">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -3971,8 +4063,8 @@ Model with interaction terms
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty21"
-              aria-expanded="false" aria-controls="collapseProperty21">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_IntMatrix"
+              aria-expanded="false" aria-controls="RegressionGAM_IntMatrix">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -3984,7 +4076,7 @@ Every term the model fits
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty21">
+          <div class="collapse multi-collapse" id="RegressionGAM_IntMatrix">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -4120,8 +4212,8 @@ Every term the model fits
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty22"
-              aria-expanded="false" aria-controls="collapseProperty22">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_BinEdges"
+              aria-expanded="false" aria-controls="RegressionGAM_BinEdges">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4133,7 +4225,7 @@ Bin edges of the predictors
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty22">
+          <div class="collapse multi-collapse" id="RegressionGAM_BinEdges">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -4268,8 +4360,8 @@ Bin edges of the predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty23"
-              aria-expanded="false" aria-controls="collapseProperty23">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_PairDetectionBinEdges"
+              aria-expanded="false" aria-controls="RegressionGAM_PairDetectionBinEdges">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4281,7 +4373,7 @@ Bin edges used to detect interactions
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty23">
+          <div class="collapse multi-collapse" id="RegressionGAM_PairDetectionBinEdges">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -4416,8 +4508,8 @@ Bin edges used to detect interactions
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty24"
-              aria-expanded="false" aria-controls="collapseProperty24">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_ModelParameters"
+              aria-expanded="false" aria-controls="RegressionGAM_ModelParameters">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4429,7 +4521,7 @@ Parameters the model was fitted with
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty24">
+          <div class="collapse multi-collapse" id="RegressionGAM_ModelParameters">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -4562,8 +4654,8 @@ Parameters the model was fitted with
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty25"
-              aria-expanded="false" aria-controls="collapseProperty25">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_ReasonForTermination"
+              aria-expanded="false" aria-controls="RegressionGAM_ReasonForTermination">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4575,7 +4667,7 @@ Why each fitting phase stopped
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty25">
+          <div class="collapse multi-collapse" id="RegressionGAM_ReasonForTermination">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -4708,8 +4800,8 @@ Why each fitting phase stopped
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty26"
-              aria-expanded="false" aria-controls="collapseProperty26">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_FitMethod"
+              aria-expanded="false" aria-controls="RegressionGAM_FitMethod">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4721,7 +4813,7 @@ Which engine fitted the model
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty26">
+          <div class="collapse multi-collapse" id="RegressionGAM_FitMethod">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -4857,8 +4949,8 @@ Which engine fitted the model
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty27"
-              aria-expanded="false" aria-controls="collapseProperty27">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_TreeModel"
+              aria-expanded="false" aria-controls="RegressionGAM_TreeModel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -4870,7 +4962,7 @@ The fitted shape functions and interaction surfaces
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty27">
+          <div class="collapse multi-collapse" id="RegressionGAM_TreeModel">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -5004,8 +5096,8 @@ The fitted shape functions and interaction surfaces
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty28"
-              aria-expanded="false" aria-controls="collapseProperty28">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_HyperparameterOptimizationResults"
+              aria-expanded="false" aria-controls="RegressionGAM_HyperparameterOptimizationResults">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5017,7 +5109,7 @@ Results of the hyperparameter optimization
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty28">
+          <div class="collapse multi-collapse" id="RegressionGAM_HyperparameterOptimizationResults">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -5148,8 +5240,8 @@ Results of the hyperparameter optimization
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty29"
-              aria-expanded="false" aria-controls="collapseProperty29">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_ResponseTransform"
+              aria-expanded="false" aria-controls="RegressionGAM_ResponseTransform">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5161,7 +5253,7 @@ Transformation applied to the predicted response
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty29">
+          <div class="collapse multi-collapse" id="RegressionGAM_ResponseTransform">
             <div class="border-bottom py-2">
 
 <p> </p>
@@ -5295,8 +5387,8 @@ Transformation applied to the predicted response
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
-              aria-expanded="false" aria-controls="colapsibleConstructor">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_RegressionGAM"
+              aria-expanded="false" aria-controls="RegressionGAM_RegressionGAM">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5308,7 +5400,7 @@ Fit a generalized additive model for regression.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="colapsibleConstructor">
+          <div class="collapse multi-collapse" id="RegressionGAM_RegressionGAM">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>obj</var> = <b>RegressionGAM</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
@@ -5447,8 +5539,8 @@ Fit a generalized additive model for regression.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
-              aria-expanded="false" aria-controls="collapseMethod1">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_addInteractions"
+              aria-expanded="false" aria-controls="RegressionGAM_addInteractions">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5460,7 +5552,7 @@ Add interaction terms to a fitted model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod1">
+          <div class="collapse multi-collapse" id="RegressionGAM_addInteractions">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>obj</var> = <b>addInteractions</b> (<var>obj</var>, <var>interactions</var>)</code></h5></dt>
@@ -5613,8 +5705,8 @@ Add interaction terms to a fitted model.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
-              aria-expanded="false" aria-controls="collapseMethod2">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_predict"
+              aria-expanded="false" aria-controls="RegressionGAM_predict">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5627,7 +5719,7 @@ Predict new data points using generalized additive model regression
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod2">
+          <div class="collapse multi-collapse" id="RegressionGAM_predict">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>yFit</var> = <b>predict</b> (<var>obj</var>, <var>Xfit</var>)</code></h5></dt>
@@ -5639,7 +5731,12 @@ Predict new data points using generalized additive model regression
  predicted responses, <var>yFit</var>, for the predictor data in matrix
  <var>Xfit</var> based on the Generalized Additive Model in <var>obj</var>.
  <var>Xfit</var> must have the same number of features/variables as the
- training data in <var>obj</var>.
+ training data in <var>obj</var>.  Every row is predicted.  Under boosted
+ trees a missing value adds nothing from a main effect, and an
+ interaction term takes the value its trees give a row missing that
+ predictor, so a row missing every predictor predicts the intercept;
+ under splines a row holding a missing value is predicted as
+ <code>NaN</code>.
 </p>
 <ul>
 <li>
@@ -5806,8 +5903,8 @@ Predict new data points using generalized additive model regression
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
-              aria-expanded="false" aria-controls="collapseMethod3">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_loss"
+              aria-expanded="false" aria-controls="RegressionGAM_loss">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5819,7 +5916,7 @@ Regression loss of a generalized additive model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod3">
+          <div class="collapse multi-collapse" id="RegressionGAM_loss">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
@@ -5846,7 +5943,7 @@ Regression loss of a generalized additive model.
 <p> <strong>See also: </strong>
   <a href="RegressionGAM.html">RegressionGAM</a>, 
   <a href="fitrgam.html">fitrgam</a>, 
-predict
+  <a href="RegressionGAM.html#RegressionGAM_predict">RegressionGAM.predict</a>
 </p>
 
         <div class="card rounded my-4">
@@ -5906,7 +6003,7 @@ predict
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [resubLoss(fitrgam (X, Y)), resubLoss(fitrgam (X, Y, 'Interactions', 'all'))]</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
 
-   1.6330e-02   8.8563e-03</pre>
+   1.6330e-02   1.3237e-03</pre>
 
             </div>
           </div>
@@ -5953,8 +6050,8 @@ predict
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
-              aria-expanded="false" aria-controls="collapseMethod4">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_resubPredict"
+              aria-expanded="false" aria-controls="RegressionGAM_resubPredict">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -5966,7 +6063,7 @@ Predict the training response with the model it was fitted on.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod4">
+          <div class="collapse multi-collapse" id="RegressionGAM_resubPredict">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>yFit</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
@@ -5978,7 +6075,7 @@ Predict the training response with the model it was fitted on.
 <p> <strong>See also: </strong>
   <a href="RegressionGAM.html">RegressionGAM</a>, 
   <a href="fitrgam.html">fitrgam</a>, 
-predict
+  <a href="RegressionGAM.html#RegressionGAM_predict">RegressionGAM.predict</a>
 </p>
 
         <div class="card rounded my-4">
@@ -6102,8 +6199,8 @@ predict
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod5"
-              aria-expanded="false" aria-controls="collapseMethod5">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_resubLoss"
+              aria-expanded="false" aria-controls="RegressionGAM_resubLoss">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -6115,7 +6212,7 @@ Regression loss of a generalized additive model on its training data.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod5">
+          <div class="collapse multi-collapse" id="RegressionGAM_resubLoss">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
@@ -6129,7 +6226,7 @@ Regression loss of a generalized additive model on its training data.
 <p> <strong>See also: </strong>
   <a href="RegressionGAM.html">RegressionGAM</a>, 
   <a href="fitrgam.html">fitrgam</a>, 
-loss
+  <a href="RegressionGAM.html#RegressionGAM_loss">RegressionGAM.loss</a>
 </p>
 
         <div class="card rounded my-4">
@@ -6253,8 +6350,8 @@ loss
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod6"
-              aria-expanded="false" aria-controls="collapseMethod6">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_crossval"
+              aria-expanded="false" aria-controls="RegressionGAM_crossval">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -6266,7 +6363,7 @@ Cross validate a Generalized Additive Model regression object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod6">
+          <div class="collapse multi-collapse" id="RegressionGAM_crossval">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
@@ -6427,8 +6524,8 @@ Cross validate a Generalized Additive Model regression object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod7"
-              aria-expanded="false" aria-controls="collapseMethod7">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_compact"
+              aria-expanded="false" aria-controls="RegressionGAM_compact">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -6440,7 +6537,7 @@ Create a <code>CompactRegressionGAM</code> object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod7">
+          <div class="collapse multi-collapse" id="RegressionGAM_compact">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>CMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
@@ -6576,8 +6673,8 @@ Create a <code>CompactRegressionGAM</code> object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod8"
-              aria-expanded="false" aria-controls="collapseMethod8">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_savemodel"
+              aria-expanded="false" aria-controls="RegressionGAM_savemodel">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -6589,7 +6686,7 @@ Save a RegressionGAM object.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod8">
+          <div class="collapse multi-collapse" id="RegressionGAM_savemodel">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
@@ -6725,8 +6822,8 @@ Save a RegressionGAM object.
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod9"
-              aria-expanded="false" aria-controls="collapseMethod9">
+              data-bs-toggle="collapse" data-bs-target="#RegressionGAM_resume"
+              aria-expanded="false" aria-controls="RegressionGAM_resume">
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
@@ -6738,7 +6835,7 @@ Resume training a generalized additive model.
                 </div>
               </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseMethod9">
+          <div class="collapse multi-collapse" id="RegressionGAM_resume">
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <var>Mdl</var> = <b>resume</b> (<var>obj</var>, <var>numTrees</var>)</code></h5></dt>
@@ -6764,7 +6861,7 @@ Resume training a generalized additive model.
 <p> <strong>See also: </strong>
   <a href="RegressionGAM.html">RegressionGAM</a>, 
   <a href="fitrgam.html">fitrgam</a>, 
-addInteractions
+  <a href="RegressionGAM.html#RegressionGAM_addInteractions">RegressionGAM.addInteractions</a>
 </p>
 
         <div class="card rounded my-4">
