@@ -165,9 +165,8 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
     error ("coxphfit: X must be a real numeric matrix.");
   endif
-  if (! (isnumeric (T) && isreal (T)
-                       && (isvector (T) || (ismatrix (T) && columns (T) == 2))))
-    error ("coxphfit: T must be a vector or 2-column matrix of real numbers.");
+  if (! (isnumeric (T) && isreal (T)))
+    error ("coxphfit: T must be a real numeric vector.");
   endif
   ## T is either a vector of event times or, in the counting process form, an
   ## N-by-2 matrix whose rows give a (start, stop] interval of exposure.
@@ -178,7 +177,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
       error (strcat ("coxphfit: each row of T must give a (start, stop]", ...
                      " interval with start strictly less than stop."));
     endif
-  elseif (isvector (T))
+  elseif (isvector (T) || isempty (T))
     T = T(:);
     Tstart = -Inf (numel (T), 1);
   else
@@ -188,6 +187,9 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   n = numel (T);
   if (rows (X) != n)
     error ("coxphfit: T must have one element for each row of X.");
+  endif
+  if (n == 0)
+    error ("coxphfit: X and T must contain at least one observation.");
   endif
   p = columns (X);
 
@@ -292,11 +294,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
     n = numel (T);
   endif
   if (n == 0)
-    if (isempty (X) || isempty (T))
-      error ("coxphfit: x and t must contain at least one observation.");
-    else
-      error ("coxphfit: no complete observations remain after removing NaNs.");
-    endif
+    error ("coxphfit: no complete observations remain after removing NaNs.");
   endif
 
   ## A column with no variation carries no information.  Globally, that is a
@@ -839,7 +837,7 @@ endfunction
 %!error<coxphfit: each row of T must give a \(start, stop\] interval with start strictly less than stop.> ...
 %! coxphfit (X, [T, T])
 
-%!error<coxphfit: T must be a vector or 2-column matrix of real numbers.> ...
+%!error<coxphfit: T must be a vector of event times or an N-by-2 matrix of \(start, stop\] intervals.> ...
 %! coxphfit (X, ones (10, 3))
 
 ## Stratified fits, against R2024a
@@ -954,7 +952,7 @@ endfunction
 %! coxphfit ([X, ones(10,1)], T);
 
 ## Edge cases with empty arrays
-%!error <T must be a vector or 2-column matrix of real numbers.> ...
+%!error <coxphfit: X and T must contain at least one observation.> ...
 %! coxphfit ([], [])
-%!error <coxphfit: x and t must contain at least one observation.> ...
-%! coxphfit (zeros(0,3), zeros(0,1))
+%!error <coxphfit: X and T must contain at least one observation.> ...
+%! coxphfit (zeros (0, 3), zeros (0, 1))
