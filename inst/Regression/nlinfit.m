@@ -127,6 +127,13 @@ function [beta, R, J, CovB, MSE, ErrorModelInfo] = nlinfit (X, y, modelfun, ...
   if (! (isnumeric (y) && isreal (y)))
     error ("nlinfit: Y must be a real numeric vector.");
   endif
+  if (! isvector (y))
+    error ("nlinfit: Y must be a vector.");
+  endif
+
+  if (! isequal (size (modelfun (beta0(:), X)), size (y)))
+    error ("nlinfit: MODELFUN must return a vector of the same size as Y.");
+  endif
 
   beta0 = beta0(:);
   y     = y(:);
@@ -242,6 +249,7 @@ function [beta, R, J] = lm_fit (X, y, modelfun, beta0, w, opts)
 
   beta   = beta0;
   yhat   = modelfun (beta, X);
+  yhat   = yhat(:);
   R      = y - yhat;
   sse    = sum (w .* R .^ 2);
   lambda = 1e-2;                           # Marquardt damping
@@ -260,7 +268,8 @@ function [beta, R, J] = lm_fit (X, y, modelfun, beta0, w, opts)
       A     = JtJ + lambda * diagJtJ;
       delta = pinv (A) * Jtr;
       bnew  = beta + delta;
-      rnew  = y - modelfun (bnew, X);
+      ynew  = modelfun (bnew, X);
+      rnew  = y - ynew(:);
       ssenew = sum (w .* rnew .^ 2);
       if (isfinite (ssenew) && ssenew < sse)
         stepok = true;
@@ -608,6 +617,12 @@ endfunction
 %! assert_equal (bon, [0.040259809225918; 1.996768212418451], 1e-7);
 %! assert_equal (bhub, [-0.032803877294096; 2.016488145372473], 1e-7);
 %! assert_equal (bboth, bhub, 1e-12);
+
+## Edge cases with empty arrays
+%!error <nlinfit: MODELFUN must return a vector of the same size as Y.> ...
+%! nlinfit ([], zeros (0, 1), @(b,x) b(1).*x, [1])
+%!error <nlinfit: MODELFUN must return a vector of the same size as Y.> ...
+%! nlinfit (zeros (0, 3), zeros (0, 1), @(b,x) b(1).*x, [1])
 
 %!error<nlinfit: unknown RobustWgtFun 'bad'.> ...
 %! nlinfit ([1;2], [1;2], @(b, x) b(1) * ones (2, 1), 1, "RobustWgtFun", "bad")
