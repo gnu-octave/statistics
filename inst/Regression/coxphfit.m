@@ -188,9 +188,11 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   if (rows (X) != n)
     error ("coxphfit: T must have one element for each row of X.");
   endif
+
   if (n == 0)
     error ("coxphfit: X and T must contain at least one observation.");
   endif
+
   p = columns (X);
 
   ## --- name/value pairs --------------------------------------------------
