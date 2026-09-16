@@ -211,6 +211,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   if (! isscalar (K) || ! isnumeric (K) || K < 1 || K != round (K))
     error ("knnsearch: invalid value of K.");
   endif
+  K = min (K, rows (X));
   if (! isscalar (P) || ! isnumeric (P) || P <= 0)
     error ("knnsearch: invalid value of Minkowski Exponent.");
   endif
@@ -603,6 +604,11 @@ endfunction
 %! assert_equal (size (D), [2, 1]);
 %! assert_equal (rows (idx{1}), 1);
 %! assert_equal (rows (idx{2}), 1);
+
+%!test
+%! [idx, D] = knnsearch ([1, 2; 3, 4; 5, 6], [1, 2], 'K', 5);
+%! assert_equal (idx, [1, 2, 3]);
+%! assert_equal (D, [0, 2*sqrt(2), 4*sqrt(2)], 1e-14);
 
 ## Test input validation
 ## Neighbours at equal distance come in row order, as R2024a returns them,
