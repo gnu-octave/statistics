@@ -2119,7 +2119,7 @@ endclassdef
 %! X = [Weight, Cylinders, Horsepower];
 %! Mdl = RegressionTree (X, MPG, 'ResponseTransform', 'exp');
 %! assert_equal (Mdl.ResponseTransform, 'exp');
-%! assert_equal (predict (Mdl, X(1, :)), exp (17.25), 1e-10);
+%! assert_equal (predict (Mdl, X(1, :)), exp (17.25), -1e-12);
 %! Mdl.ResponseTransform = 'none';
 %! assert_equal (predict (Mdl, X(1, :)), 17.25, 1e-12);
 

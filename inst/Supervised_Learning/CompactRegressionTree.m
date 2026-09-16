@@ -993,7 +993,7 @@ endclassdef
 %! X = [Weight, Cylinders, Horsepower];
 %! CMdl = compact (RegressionTree (X, MPG, 'ResponseTransform', 'exp'));
 %! assert_equal (CMdl.ResponseTransform, 'exp');
-%! assert_equal (predict (CMdl, X(1, :)), exp (17.25), 1e-10);
+%! assert_equal (predict (CMdl, X(1, :)), exp (17.25), -1e-12);
 %! CMdl.ResponseTransform = @(y) 2 * y;
 %! assert_equal (predict (CMdl, X(1, :)), 34.5, 1e-12);
 

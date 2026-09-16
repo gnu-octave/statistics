@@ -1743,12 +1743,16 @@ endclassdef
 %! assert_equal (FI.TerminationCode, 2);
 %! assert_equal (FI.TerminationStatus, {'Tolerance on gradient satisfied.'});
 %! assert_equal (FI.RelativeChangeInBeta, NaN);
-%!test  # MATLAB parity: 'sparsa' with both tolerances 0 runs out of steps
+%!test
+%! ## MATLAB parity: 'sparsa' with both tolerances 0 runs out of steps.  Where
+%! ## the search gives up varies by platform, so the limit is raised well past
+%! ## it rather than left at the default, which some platforms reach first.
 %! load fisheriris
 %! [~, FI] = fitclinear (meas(51:end,:), species(51:end), ...
 %!                       'Learner', 'logistic', 'Lambda', 1e-10, ...
 %!                       'Regularization', 'lasso', 'Solver', 'sparsa', ...
-%!                       'BetaTolerance', 0, 'GradientTolerance', 0);
+%!                       'BetaTolerance', 0, 'GradientTolerance', 0, ...
+%!                       'IterationLimit', 10000);
 %! assert_equal (FI.TerminationCode, -11);
 %! assert_equal (FI.TerminationStatus, ...
 %!               {'Unable to find a step decreasing the objective.'});
