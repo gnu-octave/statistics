@@ -83,7 +83,8 @@ function [W, H, D] = nnmf (A, K, varargin)
 
   [n, m] = size (A);
 
-  if (! (isscalar (K) && isnumeric (K) && K >= 1 && K <= min (n, m) && K == fix (K)))
+  if (! (isscalar (K) && isnumeric (K) && K >= 1 && K <= min (n, m)
+                                       && K == fix (K)))
     error (strcat ("nnmf: K must be a positive integer no larger than the", ...
                    " number of rows or columns in A."));
   endif
