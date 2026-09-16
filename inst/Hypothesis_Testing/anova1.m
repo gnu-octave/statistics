@@ -35,7 +35,9 @@
 ## @item
 ## @var{x} contains the data and it can either be a vector or matrix.
 ## If @var{x} is a matrix, then each column is treated as a separate group.
-## If @var{x} is a vector, then the @var{group} argument is mandatory.
+## If @var{x} is a vector, it is a single group whichever way it lies, unless
+## @var{group} is given; with one group there is nothing to compare, so
+## @var{p} is @qcode{NaN}.
 ##
 ## @item
 ## @var{group} contains the names for each group.  If @var{x} is a matrix, then
@@ -146,9 +148,13 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     group = group';
   endif
 
-  ## If x is a matrix, convert it to column vector and create a
-  ## corresponding column vector for groups
-  if (length (x) < prod (size (x)))
+  ## A vector is one group whichever way it lies, and each column of a matrix
+  ## is a group of its own.  With GROUP given, a vector is grouped by it
+  ## instead, one element per observation.
+  if (isvector (x))
+    x = x(:);
+  endif
+  if (isempty (group) || ! isvector (x))
     [n, m] = size (x);
     x = x(:);
     gi = reshape (repmat ((1:m), n, 1), n*m, 1);
@@ -218,6 +224,13 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   gm = mean (xr);                         ## Grand mean of groups
   dfm = length (xm) - 1;                  ## degrees of freedom for model
   dfe = lx - dfm - 1;                     ## degrees of freedom for error
+  ## With no observations there is nothing to partition.  Counting the groups
+  ## less one, and the samples less that, puts both below zero, which has no
+  ## reading; MATLAB reports the negative numbers.
+  if (lx == 0)
+    dfm = 0;
+    dfe = 0;
+  endif
   SSM = xs .* (xm - gm) * (xm - gm)';     ## Sum of Squares for Model
   SST = (xr(:) - gm)' * (xr(:) - gm);     ## Sum of Squares Total
   SSE = SST - SSM;                        ## Sum of Squares Error
@@ -508,3 +521,31 @@ endfunction
 %! assert_equal (tbl{3,3}, 2, 0);
 %! assert_equal (tbl{4,3}, 3, 0);
 %! assert_equal (stats.n, [2, 2], 0);
+
+## A vector without GROUP is one group whichever way it lies, and an empty X
+## is answered rather than raised, with no degrees of freedom below zero.
+%!test
+%! [p, tbl] = anova1 ((1:5)', [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), [0, 0; 10, 4; 10, 4]);
+
+%!test
+%! [p, tbl] = anova1 (1:5, [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), [0, 0; 10, 4; 10, 4]);
+
+%!test
+%! [p, tbl, stats] = anova1 ((1:5)', [], 'off');
+%! assert_equal (stats.n, 5);
+%! assert_equal (stats.means, 3);
+%! assert_equal (stats.df, 4);
+
+%!test
+%! [p, tbl] = anova1 ([], [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), zeros (3, 2));
+
+%!test
+%! [p, tbl] = anova1 (zeros (0, 3), [], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (cell2mat (tbl(2:4,2:3)), zeros (3, 2));
