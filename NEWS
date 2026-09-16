@@ -1165,3 +1165,756 @@
     the fitting path forms no explicit inverse.  On a balanced one-way fixture,
     where REML must equal the ANOVA estimate exactly, the variance component
     was 6.9e-07 out and is now 1.4e-09.
+
+ Summary of important user-visible changes for statistics 1.9.3:
+-------------------------------------------------------------------
+
+ Important Notice: Update dependency to datatypes 1.4.2.
+
+ New functions and methods:
+ ==========================
+
+ ** fitctree, ClassificationTree, CompactClassificationTree:
+    a CART binary decision tree for classification, over the new compiled
+    `treetrain` and `treepredict` engine.  It grows on a numeric predictor
+    matrix with a numeric, logical, character or cellstring response, honours
+    `Prior`, `Cost` and `Weights`, merges leaves and estimates the cost
+    complexity pruning sequence, and reports the property surface MATLAB
+    reports.  Its methods are `predict`, `prune`, `predictorImportance`,
+    `nodeVariableRange`, `view`, `margin`, `edge`, `loss`, the four `resub`
+    forms, `compact`, `crossval`, `cvloss` and `savemodel`.  `compact` returns
+    a `CompactClassificationTree`, the tree without the observations it was
+    fitted on, carrying the 33 properties MATLAB reports.  `crossval` returns
+    a `ClassificationPartitionedModel` over compact folds, taking `KFold`,
+    `Holdout`, `Leaveout` or `CVPartition`, each fold grown with the parent's
+    class names, prior, cost and observation weights.  `cvloss` returns the
+    cross-validated loss of the tree and of its subtrees, with the standard
+    error, the leaf count of each subtree and the pruning level chosen by
+    `'TreeSize'`; its standard error is the standard error over the folds,
+    which is not the quantity MATLAB reports under that name.
+
+    Categorical predictors are taken with `'CategoricalPredictors'`,
+    `'MaxNumCategories'` and `'AlgorithmForCategorical'`.  Such a predictor is
+    split into two sets of levels, reported in `CutType`, `CutCategories` and
+    `CategoricalSplit` and shown by `view` and `nodeVariableRange`; a level a
+    node did not see stops an observation there.  Two classes order the
+    levels, more classes search every partition up to `MaxNumCategories`
+    levels and otherwise take the best of the PullLeft, PCA and OVAbyClass
+    heuristics.  Splits match MATLAB R2024a but for ties and, on nodes with
+    more than `MaxNumCategories` levels, the heuristic splits and their sides.
+
+    Not implemented, and refused rather than ignored: surrogate splits,
+    predictor subsampling, the `'twoing'` split criterion, the `'impurity'`
+    pruning criterion, and binning.
+
+ ** fitrtree, RegressionTree, CompactRegressionTree:
+    a CART binary decision tree for regression, over the same compiled engine.
+    It grows on a numeric predictor matrix and a numeric response, honours
+    `Weights` and `QuadraticErrorTolerance`, merges leaves and estimates the
+    cost complexity pruning sequence, and reports the 36 properties MATLAB
+    reports.  Its methods are `predict`, `prune`, `predictorImportance`,
+    `nodeVariableRange`, `view`, `loss`, `resubPredict`, `resubLoss`,
+    `compact`, `crossval`, `cvloss` and `savemodel`.  `compact` returns a
+    `CompactRegressionTree`, carrying the 28 properties MATLAB reports;
+    `crossval` returns a `RegressionPartitionedModel` over compact folds, each
+    grown with the parent's growth parameters and a slice of its observation
+    weights; `cvloss` returns the cross-validated mean squared error of the
+    tree and of its subtrees, with the same standard error caveat as the
+    classification tree.
+
+    Categorical predictors are taken with `'CategoricalPredictors'` and
+    `'MaxNumCategories'`, the levels being ordered as for two classes.  Splits
+    match MATLAB R2024a but for ties and the sides a split's levels take.
+
+    Not implemented, and refused rather than ignored: surrogate splits,
+    predictor subsampling and binning.
+
+ ** fitcensemble, ClassificationEnsemble, ClassificationBaggedEnsemble,
+    CompactClassificationEnsemble:
+    ensembles of decision trees for classification, boosted with AdaBoostM1,
+    AdaBoostM2, GentleBoost, LogitBoost, LPBoost, TotalBoost or RUSBoost, or
+    bagged.  `predict`, `loss`, `edge`, `margin` with `Learners`, `Mode` and
+    `UseObsForLearner`, the `resub*` methods, `compact`, `resume`,
+    `removeLearners` and `predictorImportance`; `oobPredict`, `oobLoss`,
+    `oobEdge`, `oobMargin` and `oobPermutedPredictorImportance` on the bagged
+    ensemble.  The `Subspace` method fits nearest neighbour or discriminant
+    learners on random predictor subsets, or on every combination with
+    `AllPredictorCombinations`, and averages their scores; weights that are
+    not uniform are refused, the learners taking none.  `RUSBoost` grows each
+    tree on a weighted, class-balanced sample sized by `RatioToSmallest`.
+    A boosting method resamples its observations when `'Resample'` is `'on'`
+    or `'FResample'` or `'Replace'` is given, returning the bagged ensemble,
+    which records the rows each learner drew and estimates out-of-bag error.
+    `'CategoricalPredictors'` is passed on to every tree, which splits those
+    predictors into sets of levels, and is carried to compact models and
+    cross-validation folds; the `Subspace` method refuses them, its learners
+    taking none here, where MATLAB passes them to nearest neighbour learners
+    and drops them from discriminant ones.
+
+    `LPBoost` grows each tree on the dual weights of a linear program over the
+    trees, whose solution gives the learner weights, and stops when the
+    smallest edge is within `'MarginPrecision'` of the program's value.
+    `TotalBoost` takes one quadratic step towards the least relative entropy
+    under edge constraints, stops when no tree can improve the margin, and
+    maximises the smallest margin with GLPK.  Both follow MATLAB R2024a; where
+    a program has several solutions the trees grown next, or the weights
+    chosen, can differ.  MATLAB R2024a stops as if `'MarginPrecision'` were at
+    least 0.01, where a smaller value is taken as given here.  A perfect weak
+    learner is kept and ends the fit, where MATLAB drops it; GentleBoost
+    applies `LearnRate` to the fit; `resume` continues AdaBoostM2 exactly.
+
+ ** fitrensemble, RegressionEnsemble, RegressionBaggedEnsemble,
+    CompactRegressionEnsemble:
+    ensembles of regression trees, boosted with LSBoost or bagged.  `predict`
+    and `loss` with `Learners`, `Mode` and `UseObsForLearner`, `resubPredict`,
+    `resubLoss`, `compact`, `resume`, `removeLearners` and
+    `predictorImportance`; `oobPredict`, `oobLoss` and
+    `oobPermutedPredictorImportance` on the bagged ensemble, which a boosting
+    method returns when `'Resample'` is `'on'` or `'FResample'` or `'Replace'`
+    is given.  `'CategoricalPredictors'` is passed on to every tree and
+    carried to compact models and folds.
+
+    `regularize` finds non-negative lasso weights for the trees over a path of
+    `Lambda` values, `shrink` returns a compact ensemble of the trees a column
+    of those weights keeps, and `cvshrink` cross-validates that choice; all
+    three are on the bagged ensemble too.  `regularize` returns the minimum of
+    the lasso objective, where MATLAB's solver can stop short of it at small
+    `Lambda`.
+
+ ** ClassificationPartitionedEnsemble, RegressionPartitionedEnsemble:
+    cross-validated ensembles, from `fitcensemble` or `fitrensemble` given
+    `CrossVal`, `KFold`, `Holdout`, `Leaveout` or `CVPartition`, or from the
+    `crossval` method of an ensemble.  `kfoldPredict`, `kfoldLoss` with
+    `Folds` and the modes `average`, `individual` and `cumulative`, `kfoldfun`
+    and `resume`, and for classification `kfoldEdge` and `kfoldMargin`.  A
+    regression `ResponseTransform` is applied once, where MATLAB applies it
+    twice.
+
+ ** fitcecoc, ClassificationECOC, CompactClassificationECOC:
+    multiclass classification from binary learners.  A coding matrix says
+    which classes each binary learner calls +1, which it calls -1 and which
+    sit it out; a new observation goes to every learner and takes the class
+    whose row of that matrix its scores match most closely.  Seven learners
+    are accepted, `svm`, `tree`, `knn`, `naivebayes`, `discriminant`, `linear`
+    and `kernel`, either by name or as a template carrying the options to fit
+    them with.  Seven coding designs, seven binary losses and both decoding
+    schemes.  A linear or kernel learner keeps no training data, so the fit
+    returns the compact model for those two, as MATLAB does.
+    `discardSupportVectors` empties the support vectors of every binary
+    learner that is a support vector machine on a linear kernel, whose linear
+    model stands in for them exactly, and warns when none of them is;
+    `selectModels` narrows every binary learner to a subset of its fitted
+    regularization strengths.  `'CategoricalPredictors'` is passed as given to
+    every binary learner, which codes the predictors its own way; the model
+    reports the indices.
+
+ ** ClassificationPartitionedECOC:
+    cross-validated ECOC models, from `crossval` or from `fitcecoc` given
+    `KFold`, `Holdout`, `Leaveout` or `CVPartition`.  It carries the coding
+    matrix, the binary loss and what each observation was to each learner,
+    which the general cross-validated class has nowhere to put and without
+    which a fold's scores cannot be decoded.  `kfoldPredict`, `kfoldMargin`,
+    `kfoldEdge`, `kfoldLoss` and `kfoldfun`.
+
+ ** TreeBagger, CompactTreeBagger:
+    random forests of bagged decision trees, for classification and
+    regression.  Each tree is grown on a bootstrap sample and chooses every
+    split from a random subset of the predictors.  `predict`, `error`,
+    `margin` and `meanMargin`, their out-of-bag counterparts `oobPredict`,
+    `oobError`, `oobMargin` and `oobMeanMargin`, and `compact`, `growTrees`,
+    `append`, `combine` and `setDefaultYfit`.  Out-of-bag predictor importance
+    by permutation, the split criterion contributions and split counts of each
+    predictor, quantile regression with `quantilePredict`, `quantileError`,
+    `oobQuantilePredict` and `oobQuantileError`, and the proximity matrix with
+    `fillprox`, `mdsprox`, `proximity` and `outlierMeasure`.
+    `'CategoricalPredictors'`, `'MaxNumCategories'` and
+    `'AlgorithmForCategorical'` are passed to its trees.
+
+    Labels come back in the type of the response, where MATLAB returns a cell
+    array of character vectors.  `oobQuantileError` in `individual` mode
+    judges each tree on its own out-of-bag observations, where MATLAB R2024a
+    fails, and `growTrees` empties a filled proximity matrix, where MATLAB
+    keeps the one computed for the earlier trees.
+
+ ** templateSVM, templateTree, templateKNN, templateNaiveBayes,
+    templateDiscriminant, templateLinear, templateKernel, templateEnsemble:
+    learner templates, which name a learner and the options it is to be fitted
+    with without fitting anything.  `fitcecoc` takes one as its `Learners`;
+    `'Learners', 'ensemble'` asks for a LogitBoost ensemble of 100 trees.  The
+    default binary loss follows the method, as in MATLAB.  A RUSBoost
+    learner's scores, which MATLAB can read with no binary loss and so cannot
+    predict with, are divided by the total weight of its trees, as R's ebmc
+    and adabag and scikit-learn scale a boosted ensemble's votes, and read
+    with `quadratic`.
+
+ ** designecoc:
+    the coding design matrix on its own, over seven designs.
+
+ ** treetrain, treepredict:
+    the compiled engine for decision trees, shared by the classification and
+    the regression learner.  `treetrain` grows a binary tree by recursive
+    partitioning, merges the leaf pairs that lower no misclassification and
+    computes the cost complexity pruning sequence; `treepredict` evaluates
+    one, and both take the level sets of a categorical predictor.  A row
+    missing the split predictor descends to neither child and is stopped at
+    that node when predicting.  Neither is meant to be called directly.
+
+ ** swtest:
+    the Shapiro-Wilk test of normality, by Royston's algorithm AS R94, for
+    3 to 5000 values; `'Method', 'shapiro-francia'` gives the Shapiro-Francia
+    test instead, for 5 to 5000 values.  MATLAB has no such test.
+
+ ** corr:
+    correlation coefficients with their p-values, as MATLAB computes them:
+    `'Type'` Pearson, Kendall or Spearman, `'Rows'`, `'Tail'` and
+    `'Weights'`.  It shadows core Octave's `corr`, which offers the Pearson
+    coefficient alone and no p-value.  Two deviations: a character array is
+    refused, where MATLAB correlates the character codes, and an array of
+    more than two dimensions is refused, where MATLAB and core Octave answer
+    `NaN` for some of them.
+
+ ** fitcknn, ClassificationKNN:
+    `'CategoricalPredictors'`, empty or `'all'` as in MATLAB: with every
+    predictor categorical the default distance is `'hamming'`.
+
+ ** fitcsvm, fitrsvm, fitcnet, fitrnet (and their classes):
+    `'CategoricalPredictors'`, as indices, a logical vector or `'all'`.  Each
+    categorical predictor is dummy coded in place, one column per level seen
+    in training, named as in `'x1 == 2'` in `ExpandedPredictorNames`, and left
+    unstandardized; `X` keeps the predictors as given, and compact models,
+    saved models and cross-validation folds carry the coding.  A level not
+    seen in training gives no score or prediction.
+
+ Bug fixes:
+ ==========
+
+ ** kmeans:
+    an empty `'Replicates'` or `'MaxIter'` raised "invalid number of
+    replicates" and "invalid MaxIter", where MATLAB takes an empty value as a
+    request for the default.  Both now use the default, 1 replicate and 100
+    iterations, and an empty `'Replicates'` beside a three-dimensional
+    `'Start'` takes the replicate count from its third dimension.
+
+ ** ClassificationGAM, RegressionGAM, fitcgam, fitrgam:
+    the bin grids of a boosted-tree fit, `BinEdges` for a predictor with more
+    distinct values than cuts and `PairDetectionBinEdges`, placed some cuts
+    between different observations from MATLAB's whenever the bin position
+    was fractional, and handled repeated values differently.  Each cut is now
+    the midpoint of the two observations MATLAB uses, moved up to the next
+    distinct value where they are equal, so such fits now agree with MATLAB.
+
+ ** ClassificationGAM, RegressionGAM, fitcgam, fitrgam:
+    in an interaction term a missing value added nothing, and a training row
+    missing one of the pair's predictors took no part in its trees.  As in
+    MATLAB, such a row now stops at the node splitting on its missing
+    predictor and takes that node's value, in training and in prediction.
+    One case is known to differ: a regression fitted with missing values can
+    start its second interaction tree with a different split from MATLAB's.
+
+ ** ClassificationGAM, RegressionGAM, fitcgam, fitrgam:
+    interaction terms were fitted on the coarse grid used to detect them, so
+    their surfaces differed from MATLAB's.  Pair trees are now fitted to the
+    rows, as in MATLAB: a node is cut between two values it holds, a leaf
+    keeps at least five rows, trees grow a layer at a time within
+    `'MaxNumSplitsPerInteraction'`, and each pair's curvature-weighted mean
+    moves into the intercept.  `PairDetectionBinEdges` reports only the
+    detection grid.  With `'MaxNumSplitsPerInteraction'` 1 no interaction is
+    selected, and a warning says so.
+
+ ** ClassificationGAM, RegressionGAM, fitcgam, fitrgam:
+    a training row missing a predictor was left out of the boosted-tree fit.
+    It is now fitted, as in MATLAB: it takes no part in that predictor's
+    splits and is fitted with the value of the tree's root, and a predictor
+    with missing values is held to zero at a missing value, so the intercept
+    is the one MATLAB reports.  The spline fit still uses complete rows.
+
+ ** ClassificationGAM, RegressionGAM, fitcgam, fitrgam:
+    `'Prior'` did not reach the boosted-tree fit, so it changed only the
+    reported prior, and neither learner took a fit-time `'Weights'`.  The fit
+    now weighs each class by its prior, spread over its observations in
+    proportion to `'Weights'`, as MATLAB does; an empirical prior is each
+    class's share of the weight, and `W` reports the weights the fit used.
+    Cross-validation folds keep the weights of the rows they hold.
+    `'Weights'` is refused with `'FitMethod'` `'splines'`.
+
+ ** stepwisefit:
+    data with no complete observation, empty or all missing, failed with
+    "operator +: nonconformant arguments"; it now returns the result MATLAB
+    does, with `NaN` coefficients, `stats.df0` -1, `stats.dfe` 0 and an empty
+    `history`.  X and Y with different numbers of rows now get their own
+    message (#484).
+
+ ** ClassificationGAM, RegressionGAM and their compact classes:
+    `predict` dropped every row holding a missing value, so it returned fewer
+    rows than it was given, and `loss`, `margin` and `edge` failed on such
+    data.  Every row is now kept.  Under boosted trees a missing value adds
+    nothing from its term; under splines the row has no score (`NaN`), and a
+    classifier gives it the class of largest `Prior`.
+
+ ** fitcecoc, ClassificationECOC:
+    a model whose binary learners take no observation weights (SVM, KNN, naive
+    Bayes, discriminant) failed with "invalid parameter name" on classes of
+    unequal size, and its cross-validation failed whenever a fold's classes
+    were unequal: the class weights, equal or not, were passed to learners
+    that cannot take them.  Such a learner is now given the prior its two
+    sides hold, as MATLAB's learners report it; `'Weights'` that vary within a
+    class are refused for them with a message that says why.
+
+ ** ClassificationSVM, CompactClassificationSVM:
+    `margin`, `loss`, `edge` and `resubLoss` scored the data without the
+    standardization the model was fitted with, so on a model fitted with
+    `'Standardize'` they gave wrong margins and losses.
+
+ ** ClassificationNeuralNetwork, RegressionNeuralNetwork and their compact
+    classes: a row missing a predictor was given a score or a prediction with
+    the default ReLU activation, the missing value being rectified to zero; its
+    scores are now `NaN`.
+
+ ** ClassificationLinear, ClassificationKernel, ClassificationSVM,
+    ClassificationNeuralNetwork, ClassificationKNN, ClassificationECOC,
+    their compact classes, and the matching regression models:
+    a row missing a predictor was labelled with the first or second class, or
+    given finite KNN scores and zero ECOC losses, or a `NaN` prediction.  As in
+    MATLAB, a classifier now gives it `NaN` scores (and `NaN` cost) and the
+    class of largest `Prior`, and a regression model predicts the weighted lower
+    median of the training response.  `fitrgp` keeps such rows in `X` and
+    `NumObservations`, as MATLAB does, but leaves them out of the fit.
+
+ ** fitclinear, fitckernel, fitrlinear, fitrkernel, fitrgp:
+    `'CategoricalPredictors'` was stored but ignored, so a categorical
+    predictor was fitted as a number.  Each categorical predictor is now
+    dummy coded in place, one column per level seen in training, named as in
+    `'x1 == 2'` in `ExpandedPredictorNames`, and left unstandardized; new data
+    is coded the same way, a level not seen in training giving `NaN`.  The
+    option also takes `'all'`, and indices beyond the predictors are refused.
+
+ ** ClassificationECOC, ClassificationEnsemble, ClassificationKernel,
+    ClassificationLinear, ClassificationSVM, and the fitc functions that
+    build them:
+    classes given as text were laid out in the order they first appear in
+    `Y` instead of sorted, so `ClassNames`, the score columns and per-class
+    options such as `Prior`, `Cost` and `RatioToSmallest` disagreed with
+    MATLAB and with the other classifiers.  They are now sorted.
+
+ ** ClassificationDiscriminant, ClassificationECOC, ClassificationEnsemble,
+    ClassificationGAM, ClassificationKernel, ClassificationKNN,
+    ClassificationLinear, ClassificationNeuralNetwork, ClassificationSVM,
+    ClassificationTree, and the fitc functions that build them:
+    `'ClassNames'` chose which classes to fit but not their order; the model
+    now keeps the order given, as MATLAB and ClassificationNaiveBayes do.
+
+ ** ClassificationDiscriminant, ClassificationECOC, ClassificationEnsemble,
+    ClassificationGAM, ClassificationKernel, ClassificationKNN,
+    ClassificationLinear, ClassificationNaiveBayes,
+    ClassificationNeuralNetwork, ClassificationSVM, ClassificationTree,
+    TreeBagger, and the fitc functions that build them:
+    `'ClassNames'` whose type differed from the labels' failed with an
+    internal error or was matched wrongly.  Numeric names for text labels
+    now raise "not all 'ClassNames' are present in Y." in every classifier;
+    text names match numeric labels by their text, in naive Bayes and
+    TreeBagger too, and logical labels as `'true'` and `'false'`; the
+    ensembles, ECOC, kernel and linear classifiers now refuse a name absent
+    from the labels like the others.
+
+ ** ClassificationTree, RegressionTree, fitctree, fitrtree:
+    when `MaxNumSplits` ran out partway through a layer of the tree, the nodes
+    left unsplit were the last ones of that layer, whatever their splits were
+    worth.  They are now the ones whose splits gain the least, as MATLAB
+    documents, so such a tree grows the splits MATLAB grows:
+    `fitrtree (meas(:,2:4), meas(:,1), 'MaxNumSplits', 10, 'MinLeafSize', 5)`
+    has a resubstitution MSE of 0.0791 where it had 0.0837.
+
+ ** partialcorr:
+    a controlling variable shifted by a large constant or scaled by a small
+    one, or two variables of very different scales, gave a wrong coefficient
+    or `NaN`: `partialcorr (X, [1e8 + t, t.^2])` differed from
+    `partialcorr (X, [t, t.^2])` by half.  The data are now centered and
+    rescaled before the regression, so the coefficient no longer changes.
+    MATLAB's does.  Patch by Dmitri Sergatskov (#483).
+
+ ** ClassificationSVM, fitcsvm:
+    a two-class problem whose labels are the numbers -1 and +1 was fitted with
+    every class the other way round, so `predict` returned the wrong label for
+    every observation and `resubLoss` was 1 where it should have been 0.  Any
+    other labels were unaffected, numeric or textual, which is why nothing
+    caught it.  The solver is now given the class indices rather than the
+    labels themselves.
+
+ ** anova (LinearMixedModel), DFMethod satterthwaite:
+    a model whose random-effects terms are confounded, such as
+    `(1|g) + (1|g:g2)` where `g2` is a function of `g`, reported DF2 of 0 and a
+    meaningless p-value.  It now reports the degrees of freedom of the
+    equivalent reduced model.
+
+ ** nanmean, nansum, nanvar, nanstd, nanmedian:
+    an empty input that is not 0 by 0 keeps its shape instead of collapsing to a
+    scalar.  `nansum (zeros (0,3))` gives `[0 0 0]`, `nanmean ([], 2)` a 0 by 1
+    empty and `nanvar (ones (2,0,3,2), 0, 2)` a 2 by 1 by 3 by 2, as MATLAB
+    returns; each gave a scalar.  A 0 by 0 input with no dimension given still
+    gives the scalar.
+
+ ** nanmax, nanmin:
+    an empty input gives an empty result.  The all-NaN mask was assigned into an
+    empty array, which grew it, so `nanmax ([])` answered `NaN` and
+    `nanmax (zeros (0,3))` a 1 by 3 of `NaN`, values that were never in the
+    data.  A dimension vector applied to an empty input no longer errors.
+
+ ** nancov:
+    an N-D input is refused with `Inputs must be 2-D.` instead of failing on an
+    out-of-bound index.  An explicitly empty `Y`, as in `nancov (x, [])`, is
+    taken as given and its length checked, where it was discarded and the
+    variance of `X` returned.  `nancov (zeros (0,3), zeros (0,3))` gives a 2 by
+    2 of `NaN`, the two arguments being paired into two columns, not a 3 by 3.
+    `nancov ([])` gives `NaN`, not an empty.
+
+ ** ranksum:
+    `stats` always carries a `zval` field, empty for the exact method, so
+    reading it no longer errors on the method that computes no z-statistic.
+    Its fields are ordered `ranksum` then `zval`, as MATLAB orders them; `zval`
+    came first on every method.
+
+ ** lillietest, jbtest:
+    the Monte-Carlo p-value requested through `MCTol` is no longer smoothed by
+    an added one, so it reaches exactly 0 and exactly 1 as MATLAB's does.  The
+    smallest value either could return was `1 / (reps + 1)`.
+
+ ** jbtest:
+    a sample with zero variance no longer aborts with an internal indexing
+    error.  Skewness and kurtosis are undefined there, so `jbstat` is NaN, and
+    `p` is 0 and `h` is 1.
+
+ ** datasample:
+    `k` may be 0, returning an empty of the sampled orientation, as MATLAB
+    returns; it was refused as not positive.
+
+ ** makima:
+    sample points where `x` or `y` is NaN are dropped in pairs before the fit,
+    with a warning, where a single NaN made every returned value NaN.  A NaN in
+    one series of a matrix or N-D `y` drops that sample point from all of them,
+    as MATLAB does.
+
+ ** ztest:
+    a matrix or N-D array is tested along the operating dimension instead of
+    being collapsed to a single test, and a scalar is tested rather than
+    answering an empty.  `ztest ([1 2; 3 4; 5 6], 3, 1)` gives `[0 0]` and
+    `ztest (5, 0, 1)` gives 1, where the first gave the scalar 1 and the second
+    a 1 by 0 empty; with `dim` given and a NaN present the call raised
+    `nonconformant arguments`.  An empty input keeps its shape and a group with
+    no data gives NaN, where every empty gave the scalar 0.
+
+ ** grpstats:
+    an empty X keeps its columns and has no groups, where every empty gave a
+    0 by 0 whatever the statistic asked for: `grpstats (zeros (0,3), zeros
+    (0,1))` gives a 0 by 3, `'meanci'` a 0 by 3 by 2 and `'gname'` an empty
+    cell column, as MATLAB returns.  A grouping variable whose values are all
+    missing now leaves no groups instead of raising `'group_mean' undefined`,
+    and a row missing in any of several grouping variables is dropped rather
+    than indexing the group names with NaN.  `'gname'` with no grouping
+    variable returns `{'1'}` where it raised `'g_names' undefined`.
+
+ ** grpstats:
+    `'sem'` on a matrix divides each column by its own count instead of
+    solving a least squares system, which collapsed every column onto one
+    value: `grpstats ([1 10; 2 20; 3 30], [1 1 1], 'sem')` gives
+    `[0.5774 5.7735]` where it gave `[3.1754 3.1754]`.  Columns of equal
+    spread hid it.  The table route was already right.
+
+ ** grpstats:
+    `'VarNames'` renames the variables of the output table instead of raising
+    `table.renamevars: too few input arguments.`
+
+ ** grpstats:
+    a function handle in WHICHSTATS works on a matrix, where it raised
+    `binary operator '>' not implemented for 'function handle' by 'scalar'`
+    before any statistic was computed.  It is applied to each column of each
+    group on the values that are not NaN, as MATLAB applies it, and a table
+    names the new variable after the function rather than after `@mean`; the
+    table route was passing the NaNs through, so `@mean` answered NaN for a
+    group holding one and `@numel` counted them.
+
+ ** dwtest, runstest:
+    an empty input gives a result instead of raising.  `dwtest` returns `p = 0`
+    and `d = NaN`, `runstest` returns `h = 0`, `pval = 1` and a `stats` of
+    `nruns` and `z` both NaN with `n1` and `n0` both 0, as MATLAB returns.
+    `dwtest (zeros (0,1), zeros (0,2))` died with `A(0,_): subscripts must be
+    either integers 1 to (2^63)-1 or logicals`, a zero-length vector clearing
+    the vector check and reaching the body; the other empty shapes raised a
+    validation error.  Two deliberate differences from MATLAB: `d` is NaN for
+    every empty input, where MATLAB gives 0 for some of them and NaN for
+    others, and a character array is refused, where MATLAB accepts one and
+    returns the empty result.
+
+ ** ClassificationKNN, fitcknn:
+    `predict` on a model fitted to a categorical response raised
+    `cat: categorical/vertcat method failed` instead of returning labels.  The
+    labels now come back as a categorical array, in the type of the response,
+    as they already did for every other response type.
+
+ ** fitcdiscr, fitcgam, fitcknn, fitcnb, fitcsvm:
+    a `Prior` given as a structure was refused for a response held in a
+    character matrix or a categorical array, the first with "'ClassNames' in
+    the 'Prior' structure must name every class of the model" and the second
+    with an error from `categorical.eq`.  The structure's class names are now
+    matched by text for both, and may themselves be a character matrix.
+
+ ** crossval, kfoldPredict:
+    a classifier fitted to a categorical or string response could not be
+    cross-validated: `crossval` passed the model's own class names back to the
+    learner, whose constructor accepted 'ClassNames' only as a cell array of
+    character vectors, a logical or numeric vector or a character array.  All
+    eight classifier constructors now accept categorical and string
+    'ClassNames', and `kfoldPredict` returns labels in the type of the
+    response, missing ones as `<undefined>` or `<missing>`.
+
+ ** savemodel, loadmodel (classification models):
+    a classifier fitted to a categorical or string response did not survive a
+    save.  `savemodel` warned that classdef objects cannot be saved and wrote
+    its class names and response as structures, after which the SVM, linear
+    and kernel classifiers loaded with `ClassNames` a structure and predicted
+    structures, and the KNN, naive Bayes, discriminant, GAM and neural network
+    classifiers refused the file.  Both types now save without a warning and
+    load back as they were, and files saved by 1.9.2 load too.
+
+ ** fitcsvm, fitcgam, fitckernel, fitclinear, fitcecoc:
+    a categorical response carrying a category with no observations, such as a
+    subset of a categorical array, counted that category as a class.  The four
+    binary learners refused the fit and `fitcecoc` built a coding matrix for a
+    class with no data.  Unused categories are no longer classes, as in the
+    other classifiers.
+
+ ** fitcnb, ClassificationNaiveBayes:
+    'ClassNames' given as a cell array of character vectors was refused for a
+    categorical or string response with "no observation belongs to the named
+    classes".  Class names and labels of any textual type are now matched by
+    their text.
+
+ ** grp2idx:
+    a categorical grouping variable was numbered over the values it held,
+    sorted by name, while the names returned listed every category, so the
+    numbers and the names disagreed whenever a category was unused or the
+    categories were not in alphabetical order, and the levels lost their
+    category order and ordinality.  It is now numbered by category code, over
+    every category and in category order, as MATLAB does.
+
+ ** anova:
+    the fitted values of a one-way model grouped by a categorical array with an
+    unused category, or with categories out of alphabetical order, were taken
+    from the wrong group's mean.  Each observation now takes the mean of its
+    own group.
+
+ ** grpstats:
+    grouped by a categorical array with an unused category, or with categories
+    out of alphabetical order, the statistics were reported against the wrong
+    group names.  Each group now carries its own statistics, one per category
+    in category order, as MATLAB reports.
+
+ ** crosstab:
+    the rows and columns of a categorical variable are laid out in category
+    order, as MATLAB lays them out, where they were sorted by name.
+
+ Improvements:
+ =============
+
+ ** fitcdiscr, ClassificationDiscriminant:
+    `'CategoricalPredictors'` is refused with a message saying that
+    discriminant analysis cannot use categorical predictors, instead of as an
+    invalid parameter name.
+
+ ** @seealso, package wide:
+    a class member named in an `@seealso` is now written qualified,
+    `Class.member`, where 122 of them were bare.  `help margin` finds nothing
+    while `help ClassificationTree.margin` prints the method, so a bare name
+    told the reader to type something that does not work; the online pages
+    link a qualified member to its own page or to the class page and the
+    collapsible holding it.  A reference to a function keeps its bare name.
+
+ ** ClassificationPartitionedModel:
+    accepts a `ClassificationTree`, reporting `CrossValidatedModel` as `Tree`
+    and storing a `CompactClassificationTree` per fold.  `Cost` cannot be
+    assigned on one, as it cannot on a cross-validated `ClassificationSVM`,
+    the cost being consumed while the tree is fitted.
+
+ ** RegressionPartitionedModel:
+    accepts a `RegressionTree`, reporting `CrossValidatedModel` as `Tree` and
+    storing a `CompactRegressionTree` per fold.
+
+ ** fitlme, fitlmematrix, fitglme:
+    the fits no longer form a matrix whose size is the number of observations.
+    At 12800 observations and 20 random effects `fitlme` takes 0.10 seconds and
+    0.17 GiB where it took 114 seconds and 3.8 GiB; at 6400 observations
+    `fitglme` takes 0.15 seconds and 0.18 GiB where it took 134 seconds and
+    1.4 GiB.  Peak memory no longer grows with the number of observations, so
+    fits above about 25000 observations are possible where they previously were
+    not.
+
+ ** cmdscale:
+    points that are all coincident give a single column of zeros rather than an
+    empty matrix, whose shape varied with how the input was given: a 4 by 0 for
+    `cmdscale (zeros (4,4))` and a 0 by 2 for `cmdscale (0)`.  With `p` given,
+    the single column is kept and `e` keeps its length of `p`.
+
+ ** grpstats:
+    `grpstats (tbl)` summarises a table with no grouping variable, every
+    variable being a data variable and the single group named `All`, as
+    MATLAB does; it raised `table.removevars: too few input arguments.`
+
+ ** grpstats:
+    `[means, sem, counts, gname] = grpstats (x, group)` returns the four
+    default statistics without naming any, as MATLAB does; up to four outputs
+    were an error unless WHICHSTATS listed exactly that many.
+
+ ** dwtest:
+    a design matrix of full rank leaves no residual degrees of freedom and the
+    statistic has no null distribution.  The p-value was 0.5 by the exact
+    method, from an empty coefficient set, and the approximate method reported
+    0 for an undefined value.  It is now 0, 1 or 0 by tail for the exact method
+    and NaN for the approximate one.
+
+ ** regress:
+    a row vector `y` is taken as a column, as in `robustfit`, `lasso`,
+    `fitlm`, `stepwiselm` and `stepwisefit`; it was refused.
+
+ ** fitcgam, fitrgam, ClassificationGAM, RegressionGAM:
+    accept `'CategoricalPredictors'` under the boosted-tree engine, as indices,
+    a logical vector or `'all'`.  A tree splits a categorical predictor into two
+    sets of levels, a level not seen in training predicts as a missing value,
+    and its `BinEdges` and `PairDetectionBinEdges` are empty, as in MATLAB.
+    `gamboosttrain`, `gamboostinter` and `gamboostpairs` take a matching
+    logical argument flagging columns of level codes.
+
+ ** fitcgam, fitrgam, ClassificationGAM, RegressionGAM:
+    under the boosted-tree engine an interaction tree that splits on only one
+    of its pair's predictors adds nothing, and a pair left with no tree is
+    dropped with a warning, as in MATLAB.  Such trees were kept, so
+    `'Interactions', 'all'` fits moved away from MATLAB's after the first
+    round.
+
+ ** fitclinear, fitrlinear, fitckernel, fitrkernel:
+    the 'bfgs' solver keeps the full inverse Hessian and both quasi-Newton
+    solvers take MATLAB's weak Wolfe line search, so fits reach MATLAB's
+    iterations and coefficients; they differed in the fourth significant digit.
+    `ModelParameters.LineSearch` reports 'weakwolfe'.  The coefficient
+    tolerance is tested before the gradient tolerance, as in MATLAB.
+
+ ** fitclinear, fitrlinear (lasso, 'sparsa'):
+    the solver tests the gradient tolerance, a tolerance of 0 switches its test
+    off, and a line search that finds no decrease reports code -11.  With both
+    tolerances at 0 it reported the coefficient tolerance satisfied.
+
+ ** fitcdiscr, ClassificationDiscriminant:
+    accept `'Weights'`.  The class means and covariances are weighted, an
+    empirical prior sums the weights per class, a row of zero weight is left
+    out, and `W` holds the weights over their sum, as in MATLAB.
+    Cross-validation folds keep the weights of their rows.
+
+ ** fitcknn, ClassificationKNN:
+    accept `'Weights'`.  Each class carries its prior spread over its rows in
+    proportion to their weights, and a neighbour votes with that weight; an
+    empirical prior sums the weights, standardization is weighted, and a row
+    of zero weight is left out, as in MATLAB.  Scores under a prior other than
+    the empirical one now follow it: a neighbour always voted as one.
+
+ ** knnsearch, rangesearch, KDTreeSearcher, fitcknn:
+    the kd-tree search returns neighbours at equal distance in row order and
+    keeps the earlier row as the K-th neighbour, as MATLAB does.  It returned
+    them in the order it met them and could return a later row instead, so a
+    KNN classifier could vote with a different neighbour.
+
+ ** isoutlier:
+    the `'percentiles'` method works on a matrix.  It took both thresholds from
+    one `quantile` call and indexed the result linearly, which only holds for a
+    vector, so every column was tested against the first column's pair and the
+    outlier mask was wrong without saying so.  An option that needs a value now
+    says which one is missing; `'movmean'`, `'movmedian'`, `'percentiles'`,
+    `'SamplePoints'`, `'ThresholdFactor'` and `'MaxNumOutliers'` all failed on
+    an internal subscript error instead.
+
+ ** isoutlier:
+    the `'quartiles'` method works.  It passed the operating dimension to
+    `quantile` where the probability belongs, so every call raised
+    `Q(3): out of bound 2`.  `'ThresholdFactor'` applies to it, and the help
+    text no longer says otherwise.
+
+ ** dummyvar:
+    a `NaN` in a numeric grouping variable is missing data, filling that
+    variable's own block of columns with `NaN` and leaving the others alone, as
+    MATLAB does; it raised.  A column that is entirely `NaN` has no levels, so
+    it produces no columns and a warning names it.
+
+ ** anova1, kruskalwallis, vartestn, levene_test, bartlett_test:
+    a vector `X` without `GROUP` is a single group, whichever way it lies, as
+    MATLAB reads it; all five raised instead.  With one group there is nothing
+    to compare, so `p` is `NaN`; `kruskalwallis` and `vartestn` returned 0.
+    An empty `X` gives `anova1` and `kruskalwallis` an answer with no degrees
+    of freedom below zero, where MATLAB reports negative ones, and the three
+    variance tests refuse it by name, as MATLAB's `vartestn` does.
+
+ ** knnsearch:
+    `'K'` above the number of observations returns all of them, as MATLAB does;
+    it raised a nonconformant error on `'kdtree'` and named a range on
+    `'exhaustive'`.  This also settles `'K', Inf`, which ran out of memory, and
+    a single-row `X`, which returned that one point K times.  An empty `X` or
+    `Y` returns empty rather than raising.
+
+ ** LIBSVM:
+    the bundled `svm.cpp` and `svm.h` move to the instance-weights variant
+    3.37.  Nothing in the two files changed from 3.36 but the version
+    constant.
+
+ ** fitcsvm, ClassificationSVM, svmtrain:
+    accept observation weights.  `svmtrain` takes a fourth argument of
+    instance weights, each scaling its instance's box constraint, from LIBSVM's
+    instance-weights variant.  `fitcsvm` gives each observation the box
+    constraint n * C * w, w its weight scaled to the cost-adjusted prior; an
+    empirical prior sums the weights, standardization is weighted, and a row
+    of zero weight is left out, as in MATLAB.  Prior and Cost now enter the fit
+    the same way with or without weights, and `loss` scales the weights of
+    each class to its prior, as MATLAB does; it counted every row alike.
+
+ ** fitcsvm, ClassificationSVM, CompactClassificationSVM (one-class):
+    `predict` labels every row with the model's one class and returns one
+    score column, as MATLAB does; it failed with an index error whenever a
+    row was an outlier.  A one-class fit ignores observation weights, and its
+    classification error is 0, as in MATLAB.
+    Its bias puts the least supported support vector on the boundary, or with
+    `'OutlierFraction'` leaves that fraction of the training rows below it
+    while keeping `Nu`, as MATLAB does; it was LIBSVM's average over the free
+    support vectors, and `'OutlierFraction'` refitted the model with that `Nu`.
+
+ ** crosstab:
+    a categorical group gives an unused category its zero row or column, as
+    MATLAB does, so the table lines up with `labels`; the table dropped the
+    row while `labels` kept its name, so every later row was mislabelled.
+    The chi-square statistic and p-value are computed over the rows and
+    columns holding observations, where MATLAB returns NaN when any is empty.
+
+ ** Classifiers with a categorical response:
+    `ClassNames`, and the labels `predict` returns, carry only the categories
+    the response holds, as MATLAB reports them; an unused category stayed in
+    their category list.
+
+ ** ClassificationKNN, ClassificationDiscriminant,
+    CompactClassificationDiscriminant:
+    `loss`, `margin` and `edge` match the true labels to the classes by name,
+    whatever their type, as every other classifier does and as MATLAB does;
+    cellstr, string or categorical labels of another type than `ClassNames`
+    were refused.
+
+ ** ClassificationSVM, CompactClassificationSVM (one-class):
+    `margin`, and so `edge` and `resubEdge`, return NaN, as MATLAB does; they
+    returned twice the score.  `resubLoss` with `'classifcost'` returns 0, as
+    MATLAB does; it failed with an index error when a training row was an
+    outlier.
+
+ ** fitlme, fitlmematrix, fitglme, LinearMixedModel,
+    GeneralizedLinearMixedModel:
+    the random-effects design is held as a sparse matrix, and the fit factorises
+    its covariance in sparse form unless crossed terms make it fill in, so large
+    fits with many groups use far less memory and run much faster;
+    `designMatrix` returns it sparse for `'Random'`, as MATLAB does.
+
+ ** LinearMixedModel:
+    `residuals` with `'ResidualType', 'Standardized'` no longer builds
+    n-by-n matrices; it took 35 s and 7.7 GB at 12000 observations and could
+    not run on large data sets, and now takes milliseconds.  `anova` with
+    `'DFMethod', 'Satterthwaite'` runs 10 to 250 times faster with many groups.
