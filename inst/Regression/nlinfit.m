@@ -131,6 +131,10 @@ function [beta, R, J, CovB, MSE, ErrorModelInfo] = nlinfit (X, y, modelfun, ...
     error ("nlinfit: Y must be a vector.");
   endif
 
+  if (! isequal (size (modelfun (beta0(:), X)), size (y)))
+    error ("nlinfit: MODELFUN must return a vector of the same size as Y.");
+  endif
+
   beta0 = beta0(:);
   y     = y(:);
   n     = numel (y);
@@ -245,10 +249,7 @@ function [beta, R, J] = lm_fit (X, y, modelfun, beta0, w, opts)
 
   beta   = beta0;
   yhat   = modelfun (beta, X);
-  if (! isvector (yhat) || numel (yhat) != numel (y))
-    error ("nlinfit: MODELFUN must return a vector of the same size as Y.");
-  endif
-  yhat = yhat(:);
+  yhat   = yhat(:);
   R      = y - yhat;
   sse    = sum (w .* R .^ 2);
   lambda = 1e-2;                           # Marquardt damping
