@@ -199,6 +199,10 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     n = numel (UY);            ## number of unique response categories
   endif
 
+  if (isempty (Y))
+    error ("mnrfit: X and Y must contain at least one observation.");
+  endif
+
   if (isnumeric (Y))
     if (! (all (Y > 0) && all (fix (Y) == Y)))
       error ("mnrfit: Y must contain positive integer category numbers.")
@@ -661,3 +665,8 @@ endfunction
 %!error<mnrfit: 'estdisp' must be 'on' or 'off'.> ...
 %! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'estdisp', 'maybe')
 
+## Edge cases with empty arrays
+%!error <mnrfit: X and Y must contain at least one observation.> ...
+%! mnrfit ([], [])
+%!error <mnrfit: X and Y must contain at least one observation.> ...
+%! mnrfit (zeros (0, 3), zeros (0, 1))
