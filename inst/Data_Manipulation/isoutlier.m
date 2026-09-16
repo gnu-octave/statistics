@@ -230,26 +230,35 @@ function [TF, L, U, C] = isoutlier (x, varargin)
 
         case 'movmedian'
           method = 'movmedian';
+          if (numel (varargin) < 2)
+            error ("isoutlier: specify a window length after 'movmedian'.");
+          endif
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
             error (strcat ("isoutlier: WINDOW must be a positive scalar", ...
-                           " or a two-element vector of positive values"));
+                           " or a two-element vector of positive values."));
           endif
           varargin([1:2]) = [];
 
         case 'movmean'
           method = 'movmean';
+          if (numel (varargin) < 2)
+            error ("isoutlier: specify a window length after 'movmean'.");
+          endif
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
             error (strcat ("isoutlier: WINDOW must be a positive scalar", ...
-                           " or a two-element vector of positive values"));
+                           " or a two-element vector of positive values."));
           endif
           varargin([1:2]) = [];
 
         case 'percentiles'
           method = 'percentiles';
+          if (numel (varargin) < 2)
+            error ("isoutlier: specify a threshold pair after 'percentiles'.");
+          endif
           threshold = varargin{2};
           if (! isnumeric (threshold) || ! (numel (threshold) == 2))
             error (strcat ("isoutlier: THRESHOLD must be a two-element", ...
@@ -265,6 +274,9 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           varargin([1:2]) = [];
 
         case 'samplepoints'
+          if (numel (varargin) < 2)
+            error ("isoutlier: 'SamplePoints' must be followed by a value.");
+          endif
           SamplePoints = varargin{2};
           if (! isvector (SamplePoints) || isscalar (SamplePoints))
             error ("isoutlier: sample points must be a vector.");
@@ -278,6 +290,9 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           varargin([1:2]) = [];
 
         case 'thresholdfactor'
+          if (numel (varargin) < 2)
+            error ("isoutlier: 'ThresholdFactor' must be followed by a value.");
+          endif
           ThresholdFactor = varargin{2};
           if (! isscalar (ThresholdFactor) || ThresholdFactor <= 0)
             error ("isoutlier: threshold factor must be a nonnegative scalar.");
@@ -285,6 +300,9 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           varargin([1:2]) = [];
 
         case 'maxnumoutliers'
+          if (numel (varargin) < 2)
+            error ("isoutlier: 'MaxNumOutliers' must be followed by a value.");
+          endif
           MaxNumOutliers = varargin{2};
           if (! isscalar (MaxNumOutliers) || MaxNumOutliers <= 0 ||
               ! (fix (MaxNumOutliers) == MaxNumOutliers))
@@ -634,10 +652,11 @@ endfunction
 
 ## Find lower and upper outlier thresholds with percentiles method
 function [L, U, C] = percentiles_method (x, dim, threshold)
-  P = [threshold(1)/100, threshold(2)/100];
-  Q = quantile (x, P, dim);
-  L = Q(1);
-  U = Q(2);
+  ## Each threshold is asked for on its own.  Taking both from one call and
+  ## indexing the result linearly only works for a vector: on a matrix it
+  ## takes two numbers out of the first column and applies them to all of it.
+  L = quantile (x, threshold(1)/100, dim);
+  U = quantile (x, threshold(2)/100, dim);
   C = (L + U) / 2;
 endfunction
 
@@ -852,6 +871,54 @@ endfunction
 %! assert_equal (L, 52, 1e-12)
 %! assert_equal (U, 68, 1e-12)
 %! assert_equal (C, 60, 1e-12)
+
+## Percentiles method: a matrix gets a threshold pair per column or per row,
+## not the first column's pair applied to all of it.
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'percentiles', [25 75]);
+%! assert_equal (TF, logical ([1 0 0 1 0 0 1 0 1 0 1 0 1 0 1]))
+%! assert_equal (L, 58, 1e-12)
+%! assert_equal (U, 61.75, 1e-12)
+%! assert_equal (C, 59.875, 1e-12)
+%!test
+%! B = magic (5) + diag (200 * ones (1, 5));
+%! [TF, L, U, C] = isoutlier (B, 'percentiles', [25 75], 1);
+%! assert_equal (L, [8.5, 10.5, 5.5, 6.5, 12], 1e-12)
+%! assert_equal (U, [71.5, 69.25, 72, 70.25, 68.75], 1e-12)
+%! assert_equal (C, [40, 39.875, 38.75, 38.375, 40.375], 1e-12)
+%!test
+%! B = magic (5) + diag (200 * ones (1, 5));
+%! [TF, L, U, C] = isoutlier (B, 'percentiles', [25 75], 2);
+%! assert_equal (L, [6.25; 12.25; 5.5; 8.25; 8.75], 1e-12)
+%! assert_equal (U, [72.25; 68.5; 69.75; 69.5; 71], 1e-12)
+%! assert_equal (C, [39.25; 40.375; 37.625; 38.875; 39.875], 1e-12)
+%!test
+%! B = magic (5) + diag (200 * ones (1, 5));
+%! [TF, L, U, C] = isoutlier (B, 'percentiles', [10 90], 1);
+%! assert_equal (TF, false (5))
+%! assert_equal (L, [4, 6, 1, 2, 3], 1e-12)
+%! assert_equal (U, [217, 205, 213, 221, 209], 1e-12)
+%!test
+%! [TF, L, U, C] = isoutlier ([1 2; 3 NaN; 5 6; 100 8], ...
+%!                            'percentiles', [25 75], 1);
+%! assert_equal (TF, logical ([1 1; 0 0; 0 0; 1 1]))
+%! assert_equal (L, [2, 3], 1e-12)
+%! assert_equal (U, [52.5, 7.5], 1e-12)
+
+## An option that needs a value says so instead of failing on varargin{2}.
+%!error<isoutlier: specify a window length after 'movmean'.> ...
+%! isoutlier ([1 2 3 4 5], 'movmean')
+%!error<isoutlier: specify a window length after 'movmedian'.> ...
+%! isoutlier ([1 2 3 4 5], 'movmedian')
+%!error<isoutlier: specify a threshold pair after 'percentiles'.> ...
+%! isoutlier ([1 2 3 4 5], 'percentiles')
+%!error<isoutlier: 'SamplePoints' must be followed by a value.> ...
+%! isoutlier ([1 2 3 4 5], 'SamplePoints')
+%!error<isoutlier: 'ThresholdFactor' must be followed by a value.> ...
+%! isoutlier ([1 2 3 4 5], 'ThresholdFactor')
+%!error<isoutlier: 'MaxNumOutliers' must be followed by a value.> ...
+%! isoutlier ([1 2 3 4 5], 'MaxNumOutliers')
 
 ## Test input validation
 %!shared A
