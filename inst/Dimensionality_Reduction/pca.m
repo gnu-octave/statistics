@@ -674,26 +674,30 @@ endfunction
 %!error <variable weights must be> pca ([1 2; 3 4], 'VariableWeights', 'xxx')
 %!error <unknown property> pca ([1 2; 3 4], 'XXX', 1)
 
+## Edge cases with empty arrays
 %!test
-%! ## Edge cases with empty arrays
 %! [c,s,l,t,e,m] = pca ([]);
-%! assert_equal (size(c), [0 0]);
-%! assert_equal (size(s), [0 0]);
-%! assert_equal (size(l), [0 1]);
-%! assert_equal (size(t), [0 1]);
-%! assert_equal (size(e), [0 0]);
-%! assert_equal (size(m), [0 0]);
+%! assert_equal (size (c), [0 0]);
+%! assert_equal (size (s), [0 0]);
+%! assert_equal (size (l), [0 1]);
+%! assert_equal (size (t), [0 1]);
+%! assert_equal (size (e), [0 0]);
+%! assert_equal (size (m), [0 0]);
+
+%!test
 %! [c,s,l,t,e,m] = pca (zeros (0, 3));
-%! assert_equal (size(c), [3 0]);
-%! assert_equal (size(s), [0 0]);
-%! assert_equal (size(l), [0 1]);
-%! assert_equal (size(t), [0 1]);
-%! assert_equal (size(e), [0 0]);
-%! assert_equal (size(m), [0 0]);
+%! assert_equal (size (c), [3 0]);
+%! assert_equal (size (s), [0 0]);
+%! assert_equal (size (l), [0 1]);
+%! assert_equal (size (t), [0 1]);
+%! assert_equal (size (e), [0 0]);
+%! assert_equal (size (m), [0 0]);
+
+%!test
 %! [c,s,l,t,e,m] = pca (zeros (3, 0));
-%! assert_equal (size(c), [0 0]);
-%! assert_equal (size(s), [3 0]);
-%! assert_equal (size(l), [0 1]);
-%! assert_equal (size(t), [3 1]);
-%! assert_equal (size(e), [0 0]);
-%! assert_equal (size(m), [0 0]);
+%! assert_equal (size (c), [0 0]);
+%! assert_equal (size (s), [3 0]);
+%! assert_equal (size (l), [0 1]);
+%! assert_equal (size (t), [3 1]);
+%! assert_equal (size (e), [0 0]);
+%! assert_equal (size (m), [0 0]);
