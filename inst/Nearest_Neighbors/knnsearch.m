@@ -276,6 +276,23 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   X = cast (X, cls);
   Y = cast (Y, cls);
 
+  ## With no observations to search, or no query points to search for, there
+  ## is nothing to compute.  K is already capped at ROWS (X), so ROWS (Y) by K
+  ## gives the shapes MATLAB returns in both cases and in the case where both
+  ## are empty.  This returns before the search, which cannot take an empty
+  ## argument: the Kd-tree indexes its first point and the compiled exhaustive
+  ## search refuses one outright.
+  if (rows (X) == 0 || rows (Y) == 0)
+    if (InclTies)
+      idx = repmat ({zeros(1, 0)}, rows (Y), 1);
+      dist = repmat ({zeros(1, 0, cls)}, rows (Y), 1);
+    else
+      idx = zeros (rows (Y), K);
+      dist = zeros (rows (Y), K, cls);
+    endif
+    return;
+  endif
+
   ## Check for NSMethod
   if (strcmpi (NSMethod, 'kdtree'))
     ## Build kdtree and search the query point
@@ -609,6 +626,40 @@ endfunction
 %! [idx, D] = knnsearch ([1, 2; 3, 4; 5, 6], [1, 2], 'K', 5);
 %! assert_equal (idx, [1, 2, 3]);
 %! assert_equal (D, [0, 2*sqrt(2), 4*sqrt(2)], 1e-14);
+
+## An empty X or Y returns empty, as R2024a does, rather than raising: the
+## shape is rows (Y) by K, K being already capped at rows (X).
+%!test
+%! [idx, D] = knnsearch (zeros (0, 2), [1, 2; 3, 4], 'K', 3);
+%! assert_equal (size (idx), [2, 0]);
+%! assert_equal (size (D), [2, 0]);
+
+%!test
+%! [idx, D] = knnsearch (zeros (0, 2), [1, 2], 'NSMethod', 'exhaustive');
+%! assert_equal (size (idx), [1, 0]);
+%! assert_equal (size (D), [1, 0]);
+
+%!test
+%! [idx, D] = knnsearch ([1, 2; 3, 4], zeros (0, 2), 'K', 3);
+%! assert_equal (size (idx), [0, 2]);
+%! assert_equal (size (D), [0, 2]);
+
+%!test
+%! [idx, D] = knnsearch (zeros (0, 2), zeros (0, 2), 'K', 3);
+%! assert_equal (size (idx), [0, 0]);
+%! assert_equal (size (D), [0, 0]);
+
+%!test
+%! [idx, D] = knnsearch (zeros (0, 2), [1, 2; 3, 4], 'K', 3, ...
+%!                       'IncludeTies', true);
+%! assert_equal (size (idx), [2, 1]);
+%! assert_equal (idx{1}, zeros (1, 0));
+%! assert_equal (D{2}, zeros (1, 0));
+
+%!test
+%! [idx, D] = knnsearch (single (zeros (0, 2)), [1, 2]);
+%! assert_equal (class (idx), 'double');
+%! assert_equal (class (D), 'single');
 
 ## Test input validation
 ## Neighbours at equal distance come in row order, as R2024a returns them,
