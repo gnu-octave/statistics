@@ -9,8 +9,8 @@
 ##
 ## This program is distributed in the hope that it will be useful, but WITHOUT
 ## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-## details.
+## FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+## more details.
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
@@ -26,8 +26,8 @@
 ## @math{N * M} matrix @var{A} into nonnegative factors @var{W} (@math{N *
 ## @var{K}}) and @var{H} (@math{@var{K} * M}) whose product approximates
 ## @var{A}, by minimizing the root-mean-square residual between @var{A} and
-## @code{@var{W} * @var{H}}.  @var{K}, the number of factors, is typically smaller
-## than @math{N} and @math{M}.
+## @code{@var{W} * @var{H}}.  @var{K}, the number of factors, is typically
+## smaller than @math{N} and @math{M}.
 ##
 ## @code{[@var{W}, @var{H}, @var{D}] = nnmf (@dots{})} also returns the
 ## root-mean-square residual @var{D}, that is @code{norm (@var{A} - @var{W} *
@@ -62,7 +62,8 @@
 ##
 ## @item @qcode{'Options'}
 ## A structure of algorithm options (as returned by @code{statset}) whose
-## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields control the iteration.
+## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields control the
+## iteration.
 ## @end table
 ##
 ## @seealso{pca, statset}
@@ -83,10 +84,12 @@ function [W, H, D] = nnmf (A, K, varargin)
 
   [n, m] = size (A);
 
-  if (! (isscalar (K) && isnumeric (K) && K >= 1 && K <= min (n, m)
-                                       && K == fix (K)))
-    error (strcat ("nnmf: K must be a positive integer no larger than the", ...
-                   " number of rows or columns in A."));
+  if (! (isscalar (K) && isnumeric (K)))
+    error ("nnmf: K must be a numeric scalar.");
+  elseif (K < 1 || K != fix (K))
+    error ("nnmf: K must be a positive integer.");
+  elseif (K > min (n, m))
+    error ("nnmf: K must be no larger than the number of rows or columns in A.");
   endif
 
   ## Defaults and Name/Value parsing
@@ -278,13 +281,14 @@ endfunction
 %!error<nnmf: A must be a numeric matrix.> nnmf ({1, 2}, 1)
 %!error<nnmf: A must be real and finite.> nnmf ([1, Inf; 2, 3], 1)
 %!error<nnmf: A must be real and finite.> nnmf ([1+2i, 3; 4, 5], 1)
-%!error <nnmf: K must be a positive integer no larger than the number of rows or columns in A.> ...
-%! nnmf (ones (4, 3), 0)
-%!error <nnmf: K must be a positive integer no larger than the number of rows or columns in A.> ...
-%! nnmf (ones (4, 3), 1.5)
-%!error <nnmf: K must be a positive integer no larger than the number of rows or columns in A.> ...
+%!error<nnmf: K must be a numeric scalar.> nnmf (ones (4, 3), 'd')
+%!error<nnmf: K must be a numeric scalar.> nnmf (ones (4, 3), [1, 2])
+%!error <nnmf: K must be a positive integer.> nnmf (ones (4, 3), 1.5)
+%!error <nnmf: K must be a positive integer.> nnmf (ones (4, 3), 0)
+%!error <nnmf: K must be a positive integer.> nnmf (ones (4, 3), -1)
+%!error <nnmf: K must be no larger than the number of rows or columns in A.> ...
 %! nnmf (ones (4, 3), 5)
-%!error <nnmf: K must be a positive integer no larger than the number of rows or columns in A.> ...
+%!error <nnmf: K must be no larger than the number of rows or columns in A.> ...
 %! nnmf (ones (4, 3), 4)
 %!error<nnmf: 'Algorithm' must be 'als' or 'mult'.> ...
 %! nnmf (ones (4, 3), 2, "Algorithm", "foo")
@@ -298,7 +302,7 @@ endfunction
 %!error<nnmf: 'Options' must be a structure.> nnmf (ones (4, 3), 2, "Options", 5)
 
 ## Edge cases with empty arrays
-%!error <nnmf: K must be a positive integer no larger than the number of rows or columns in A.> ...
+%!error <nnmf: K must be no larger than the number of rows or columns in A.> ...
 %! nnmf ([], 1)
-%!error <nnmf: K must be a positive integer no larger than the number of rows or columns in A.> ...
+%!error <nnmf: K must be no larger than the number of rows or columns in A.> ...
 %! nnmf (zeros (0, 3), 1)
