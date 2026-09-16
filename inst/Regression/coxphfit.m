@@ -162,10 +162,10 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   endif
 
   ## --- X and T -----------------------------------------------------------
-  if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ! isempty (X)))
+  if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
     error ("coxphfit: X must be a real numeric matrix.");
   endif
-  if (! (isnumeric (T) && isreal (T) && ! isempty (T)))
+  if (! (isnumeric (T) && isreal (T)))
     error ("coxphfit: T must be a real numeric vector.");
   endif
   ## T is either a vector of event times or, in the counting process form, an
@@ -177,7 +177,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
       error (strcat ("coxphfit: each row of T must give a (start, stop]", ...
                      " interval with start strictly less than stop."));
     endif
-  elseif (isvector (T))
+  elseif (isvector (T) || isempty (T))
     T = T(:);
     Tstart = -Inf (numel (T), 1);
   else
@@ -188,6 +188,11 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   if (rows (X) != n)
     error ("coxphfit: T must have one element for each row of X.");
   endif
+
+  if (n == 0)
+    error ("coxphfit: X and T must contain at least one observation.");
+  endif
+
   p = columns (X);
 
   ## --- name/value pairs --------------------------------------------------
@@ -947,3 +952,9 @@ endfunction
 ## A constant column is reported, not silently absorbed
 %!warning<coxphfit: the Cox model cannot have a constant term in X.> ...
 %! coxphfit ([X, ones(10,1)], T);
+
+## Edge cases with empty arrays
+%!error <coxphfit: X and T must contain at least one observation.> ...
+%! coxphfit ([], [])
+%!error <coxphfit: X and T must contain at least one observation.> ...
+%! coxphfit (zeros (0, 3), zeros (0, 1))
