@@ -2,6 +2,7 @@ statistics >> Statistics
 Descriptive Statistics
  cdfcalc
  cl_multinom
+ corr
  dcov
  ecdf
  geomean
