@@ -2632,14 +2632,18 @@ endfunction
 %! Q = [A(:), B(:), C(:)];
 %! Q = Q([1, 7, 13, 19, 28, 34, 45, 52, 59, 67],:);
 %! Mdl = RegressionGAM (X, y, 'CategoricalPredictors', [1, 3], ...
-%!                      'Interactions', 'all', 'NumTreesPerInteraction', 20);
+%!                      'Interactions', 'all', 'NumTreesPerInteraction', 5);
 %! assert_equal (Mdl.Interactions, [1, 3; 2, 3; 1, 2]);
 %! d = predict (Mdl, Q) - predict (Mdl, Q, 'IncludeInteractions', false);
-%! ## The pair trees change the predictions, but by how much is not portable:
-%! ## with FMA contraction the boosting residuals differ in their last bits and
-%! ## twenty rounds compound that into a different fit, so element 2 even
-%! ## changes sign between toolchains.  Only the contribution is asserted.
-%! assert_equal (max (abs (d)) > 0.1, true);
+%! ## Five rounds, not twenty: a fit long enough to compound its rounding
+%! ## parts company with a toolchain that contracts multiply-add pairs, and
+%! ## then no tolerance holds, one element changing sign.  Measured on R2024a,
+%! ## 2026-09-16, and agreeing to thirteen digits or better.
+%! assert_equal (d, [0.14496260366867; 0.00289829354386018; ...
+%!                   -0.125368787144964; 0.0691339453924824; ...
+%!                   0.5053322741541; -0.0581889291447562; ...
+%!                   0.00447142646759335; 0.15228433993982; ...
+%!                   0.0385020050553703; 0.0838177432700107], 1e-9);
 
 %!test  # MATLAB parity: a pair whose trees split one predictor alone is dropped
 %! k = (0:119)';
