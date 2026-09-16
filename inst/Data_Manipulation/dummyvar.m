@@ -40,7 +40,9 @@
 ## that grouping variable in the ordered range @code{1:max (@var{group})}.  A
 ## @code{NaN} in a column produces a row of @code{NaN} values in that column's
 ## own block of dummy variables in @var{D}, without affecting the columns
-## produced by any other grouping variable.
+## produced by any other grouping variable.  A column that is entirely
+## @code{NaN} has no levels, so it produces no dummy variables at all and a
+## warning names it.
 ##
 ## @item a @qcode{categorical} column vector, in which case the number and order
 ## of columns in @var{D} correspond to the categories returned by
@@ -112,6 +114,17 @@ function D = dummyvar (g)
     endif
 
     K = max (g, [], 1, "omitnan");
+    ## A grouping variable that is nothing but NaN has no levels, so it earns
+    ## no columns and the ones the other variables earn are unaffected.  MAX
+    ## returns NaN for such a column, which SUM would carry into ZEROS.
+    allnan = find (isnan (K));
+    if (! isempty (allnan))
+      cols = sprintf ("%d, ", allnan);
+      warning (strcat ("dummyvar: the following columns of GROUP contain", ...
+                       " all NaNs and produce no dummy variables: %s."), ...
+               cols(1:end-2));
+      K(allnan) = 0;
+    endif
     D = zeros (nr, sum (K));
 
     ij = 0;
@@ -229,6 +242,23 @@ endfunction
 %! g = [1, 1; 2, NaN; 1, 2; 2, 1];
 %! D = dummyvar (g);
 %! assert_equal (D, [1, 0, 1, 0; 0, 1, NaN, NaN; 1, 0, 0, 1; 0, 1, 1, 0]);
+
+## A grouping variable that is entirely NaN has no levels, so it produces no
+## dummy variables and the columns of the others are unaffected.
+%!test
+%! D = dummyvar ([1, NaN; 2, NaN]);
+%! assert_equal (D, [1, 0; 0, 1]);
+%!test
+%! D = dummyvar ([1, NaN, 2; 2, NaN, 1]);
+%! assert_equal (D, [1, 0, 0, 1; 0, 1, 1, 0]);
+%!test
+%! D = dummyvar ([NaN; NaN]);
+%! assert_equal (size (D), [2, 0]);
+
+%!warning<dummyvar: .* no dummy variables: 2\.> ...
+%! dummyvar ([1, NaN; 2, NaN]);
+%!warning<dummyvar: .* no dummy variables: 1, 2, 3\.> ...
+%! dummyvar ([NaN, NaN, NaN; NaN, NaN, NaN]);
 
 ## Test input validation
 %!error dummyvar ()
