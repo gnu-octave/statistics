@@ -3,7 +3,7 @@
 ## Copyright (C) 2015-2016 Lachlan Andrew <lachlanbis@gmail.com>
 ## Copyright (C) 2016 Michael Bentley <mikebentley15@gmail.com>
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -26,11 +26,11 @@
 ## @deftypefnx {statistics} {[@var{idx}, @var{centers}, @var{sumd}] =} kmeans (@var{data}, @var{k})
 ## @deftypefnx {statistics} {[@var{idx}, @var{centers}, @var{sumd}, @var{dist}] =} kmeans (@var{data}, @var{k})
 ## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
-## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, [], @qcode{'start'}, @var{start}, @dots{})
+## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, [], @qcode{'Start'}, @var{start}, @dots{})
 ##
 ## Perform a @var{k}-means clustering of the @math{N*D} matrix @var{data}.
 ##
-## If parameter @qcode{'start'} is specified, then @var{k} may be empty
+## If parameter @qcode{'Start'} is specified, then @var{k} may be empty
 ## in which case @var{k} is set to the number of rows of @var{start}.
 ##
 ## The outputs are:
@@ -109,7 +109,7 @@
 ## @var{data}.
 ## @end multitable
 ##
-## @multitable @columnfractions 0.15 0.838
+## @multitable @columnfractions 0.19 0.79
 ## @headitem Name @tab Description
 ## @item @qcode{'EmptyAction'} @tab What to do when a centroid is not the
 ## closest to any data sample.
@@ -145,78 +145,71 @@
 ## @item @qcode{'Replicates'} @tab A positive integer specifying the number
 ## of independent clusterings to perform.  The output values are the values for
 ## the best clustering, i.e., the one with the smallest value of @var{sumd}.
-## If @var{Start} is numeric, then @var{Replicates} defaults to
-## (and must equal) the size of the third dimension of @var{Start}.
+## If @qcode{'Start'} is numeric, then @qcode{'Replicates'} defaults to
+## (and must equal) the size of the third dimension of @var{start}.
 ## Otherwise it defaults to 1.
 ## @item @qcode{'MaxIter'} @tab The maximum number of iterations to perform
 ## for each replicate.  If the maximum change of any centroid is less than
-## 0.001, then the replicate terminates even if @var{MaxIter} iterations have no
-## occurred.  The default is 100.
+## 0.001, then the replicate terminates even if @qcode{'MaxIter'} iterations
+## have not occurred.  The default is 100.
 ## @end multitable
 ##
 ## Example:
 ##
-## [~,c] = kmeans (rand(10, 3), 2, "emptyaction", "singleton");
+## [~, c] = kmeans (rand (10, 3), 2, 'EmptyAction', 'singleton');
 ##
 ## @seealso{linkage}
 ## @end deftypefn
 
 function [classes, centers, sumd, D] = kmeans (data, k, varargin)
-  [reg, prop] = parseparams (varargin);
 
-  ## defaults for options
-  emptyaction = 'singleton';
-  start       = 'plus';
-  replicates  = 1;
-  max_iter    = 100;
-  distance    = 'sqeuclidean';
-  display     = 'off';
+  ## Parse optional Name-Value paired arguments
+  optNames = {'EmptyAction', 'Start', 'MaxIter', 'Distance', ...
+              'Replicates', 'Display'};
+  dfValues = {'singleton', 'plus', 100, 'sqeuclidean', 1, 'off'};
+  [emptyaction, start, max_iter, distance, replicates, display, args] = ...
+                      parsePairedArguments (optNames, dfValues, varargin(:));
 
-  replicates_set_explicitly = false;
+  ## The 'Start' check below distinguishes a 'Replicates' the caller gave from
+  ## the default, which the parsed value cannot show on its own.
+  optargNames = varargin(1:2:end);
+  replicates_set_explicitly = any (cellfun (@(x) ischar (x) ...
+                              && strcmpi (x, 'Replicates'), optargNames));
+
+  ## Input checking, validate the matrix
+  if (! (isnumeric (data) && ismatrix (data) && isreal (data)))
+    error ("kmeans: first input argument must be a DxN real data matrix.");
+  endif
 
   ## Remove rows containing NaN / NA, but record which rows are used
   data_idx      = ! any (isnan (data), 2);
   original_rows = rows (data);
   data          = data(data_idx,:);
 
-  #used for getting the number of samples
-  n_rows = rows (data);
-
-  #used for convergence of the centroids
-  err = 1;
-
-  ## Input checking, validate the matrix
-  if (! isnumeric (data) || ! ismatrix (data) || ! isreal (data))
-    error ("kmeans: first input argument must be a DxN real data matrix");
-  elseif (! isnumeric (k))
-    error ("kmeans: second argument must be numeric");
+  if (isempty (data))
+    error ("kmeans: DATA must not be empty.");
   endif
 
-  ## Parse options
-  while (length (prop) > 0)
-    if (length (prop) < 2)
-      error ("kmeans: Option '%s' has no argument", prop{1});
+  ## Number of samples, counted after the missing rows have been removed
+  n_rows = rows (data);
+
+  ## Used for convergence of the centroids
+  err = 1;
+
+  ## Anything left over is an unimplemented option, which is ignored with a
+  ## warning, a known name given without a value, or an unknown name.
+  while (! isempty (args))
+    name = args{1};
+    if (! ischar (name))
+      error ("kmeans: optional arguments must be Name-Value pairs.");
+    elseif (any (strcmpi (name, {'OnlinePhase', 'Options'})))
+      warning ("kmeans: Ignoring unimplemented option '%s'.", name);
+      args(1:min (2, numel (args))) = [];
+    elseif (any (strcmpi (name, optNames)))
+      error ("kmeans: option '%s' has no argument.", name);
+    else
+      error ("kmeans: unknown option '%s'.", name);
     endif
-    switch (lower (prop{1}))
-      case 'emptyaction'
-        emptyaction = prop{2};
-      case 'start'
-        start = prop{2};
-      case 'maxiter'
-        max_iter = prop{2};
-      case 'distance'
-        distance = prop{2};
-      case 'replicates'
-        replicates = prop{2};
-        replicates_set_explicitly = true;
-      case 'display'
-        display = prop{2};
-      case {'onlinephase', 'options'}
-        warning ("kmeans: Ignoring unimplemented option '%s'", prop{1});
-      otherwise
-        error ("kmeans: Unknown option %s", prop{1});
-    endswitch
-    prop = {prop{3:end}};
   endwhile
 
   ## Process options
@@ -226,31 +219,38 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     case {'singleton', 'error', 'drop'}
       ;
     otherwise
-      d = [', ' disp(emptyaction)] (1:end-1);  # strip trailing \n
+      d = strtrim (disp (emptyaction));
       if (length (d) > 20)
         d = '';
       endif
-      error ("kmeans: unsupported empty cluster action parameter%s", d);
+      error ("kmeans: unsupported empty cluster action parameter '%s'.", d);
   endswitch
 
-  ## check for the 'replicates' property
-  if (! isnumeric (replicates) || ! isscalar (replicates)
+  ## check for the 'replicates' property.  An empty value asks for the
+  ## default, as MATLAB does, so it does not count as explicitly set.
+  if (isempty (replicates))
+    replicates = 1;
+    replicates_set_explicitly = false;
+  elseif (! isnumeric (replicates) || ! isscalar (replicates)
      || ! isreal (replicates) || replicates < 1)
-    d = [', ' disp(replicates)] (1:end-1);     # strip trailing \n
+    d = strtrim (disp (replicates));
     if (length (d) > 20)
       d = '';
     endif
-    error ("kmeans: invalid number of replicates%s", d);
+    error ("kmeans: invalid number of replicates '%s'.", d);
   endif
 
-  ## check for the 'MaxIter' property
-  if (! isnumeric (max_iter) || ! isscalar (max_iter)
+  ## check for the 'MaxIter' property.  An empty value asks for the default,
+  ## as MATLAB does.
+  if (isempty (max_iter))
+    max_iter = 100;
+  elseif (! isnumeric (max_iter) || ! isscalar (max_iter)
      || ! isreal (max_iter) || max_iter < 1)
-    d = [', ' disp(max_iter)] (1:end-1);       # strip trailing \n
+    d = strtrim (disp (max_iter));
     if (length (d) > 20)
       d = '';
     endif
-    error ("kmeans: invalid MaxIter%s", d);
+    error ("kmeans: invalid MaxIter '%s'.", d);
   endif
 
   ## check for the 'start' property
@@ -263,21 +263,27 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       range = max (data) - min_data;
     otherwise
       if (! isnumeric (start))
-        d = [', ' disp(start)] (1:end-1);       # strip trailing \n
+        d = strtrim (disp (start));
         if (length (d) > 20)
           d = '';
         endif
-        error ("kmeans: invalid start parameter%s", d);
+        error ("kmeans: invalid start parameter '%s'.", d);
+      endif
+      if (columns (start) != columns (data))
+        error (strcat ("kmeans: the 'Start' matrix must have the same", ...
+                       " number of columns as DATA."));
       endif
       if (isempty (k))
         k = rows (start);
       elseif (rows (start) != k)
-        error (strcat ("kmeans: Number of initializers (%d)", " should match number of centroids (%d)"), rows (start), k);
+        error (strcat ("kmeans: number of initializers (%d) should match", ...
+                       " the number of centroids (%d)."), rows (start), k);
       endif
       if (replicates_set_explicitly)
         if (replicates != size (start, 3))
-           error (strcat ("kmeans: The third dimension of the initializer (%d)", " should match the number of replicates (%d)"), ...
-                   size (start, 3), replicates);
+           error (strcat ("kmeans: the third dimension of the initializer", ...
+                          " (%d) should match the number of replicates", ...
+                          " (%d)."), size (start, 3), replicates);
         endif
       else
         replicates = size (start, 3);
@@ -315,7 +321,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       dist     = @(x, c) sum (bsxfun (@ne, x, c), 2);
       centroid = @(x) median (x, 1);
     otherwise
-      error ("kmeans: unsupported distance parameter %s", distance);
+      error ("kmeans: unsupported distance parameter '%s'.", distance);
   endswitch
 
   ## check for the 'display' property
@@ -326,7 +332,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       case 'iter'
         printf ("%6s\t%6s\t%8s\t%12s\n", 'iter', 'phase', 'num', 'sum');
       otherwise
-        error ("kmeans: invalid display parameter %s", display);
+        error ("kmeans: invalid display parameter '%s'.", display);
     endswitch
   endif
 
@@ -334,9 +340,15 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   ## Done processing options
   ########################################
 
-  ## Now that  k  has been set (possibly by 'replicates' option), check/use it.
-  if (! isscalar (k))
-    error ("kmeans: second input argument must be a scalar");
+  ## K is checked here because the 'Start' option may have set it above.
+  if (isempty (k))
+    error ("kmeans: you must specify the number of clusters, K.");
+  elseif (! (isscalar (k) && isnumeric (k)))
+    error ("kmeans: K must be a numeric scalar.");
+  elseif (k < 1 || k != fix (k))
+    error ("kmeans: K must be a positive integer.");
+  elseif (k > n_rows)
+    error ("kmeans: K cannot exceed the actual observations in DATA.");
   endif
 
   ## used to hold the distances from each sample to each class
@@ -409,7 +421,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
            ## if 'error' then throw the error
             otherwise
-              error ("kmeans: empty cluster created");
+              error ("kmeans: empty cluster created.");
           endswitch
        endif ## end check for empty clusters
 
@@ -438,7 +450,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     endwhile
     ## throw a warning if the algorithm did not converge
     if (iter > max_iter && err > 0.001 && n_changes != 0)
-      warning ("kmeans: failed to converge in %d iterations", max_iter);
+      warning ("kmeans: failed to converge in %d iterations.", max_iter);
     endif
 
     if (sum (sumd) < sum (best) || isinf (best))
@@ -449,7 +461,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     ## display final results
     if (strcmp (display, 'final'))
       printf ("Replicate %d, %d iterations, total sum of distances = %.3f.\n", ...
-        rep, iter, sum (sumd));
+              rep, iter, sum (sumd));
     endif
   endfor
   centers = best_centers;
@@ -650,21 +662,97 @@ endfunction
 %!test
 %! kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'singleton');
 
+## An empty 'Replicates' or 'MaxIter' asks for the default, as in MATLAB
+%!test
+%! x = [1 1; 1.2 1.1; 8 8; 8.3 8.1];
+%! idx = kmeans (x, 2, 'Replicates', []);
+%! assert_equal (numel (idx), 4);
+%! assert_equal (numel (unique (idx)), 2);
+%!test
+%! x = [1 1; 1.2 1.1; 8 8; 8.3 8.1];
+%! idx = kmeans (x, 2, 'MaxIter', []);
+%! assert_equal (numel (idx), 4);
+%! assert_equal (numel (unique (idx)), 2);
+
+## Rows holding a missing value are dropped, and reported as NA in IDX
+%!test
+%! idx = kmeans ([NaN; 3; 4; NaN], 2);
+%! assert_equal (numel (idx), 4);
+%! assert_equal (isna (idx([1, 4])), [true; true]);
+%! assert_equal (isna (idx([2, 3])), [false; false]);
+%! assert_equal (numel (unique (idx([2, 3]))), 2);
+%!test
+%! idx = kmeans ([1 1; NaN NaN; 8 8; 9 9], 2);
+%! assert_equal (isna (idx), [false; true; false; false]);
+%! assert_equal (idx(3), idx(4));
+
+## An unimplemented option is ignored with a warning
+%!warning<kmeans: Ignoring unimplemented option 'OnlinePhase'.> ...
+%! kmeans ([1 1; 1.2 1.1; 8 8; 8.3 8.1], 2, 'OnlinePhase', 'on');
+%!warning<kmeans: Ignoring unimplemented option 'Options'.> ...
+%! kmeans ([1 1; 1.2 1.1; 8 8; 8.3 8.1], 2, 'Options', struct ());
+
+## A replicate that runs out of iterations warns
+%!warning<kmeans: failed to converge in 1 iterations.> ...
+%! kmeans ([1 1; 2 2; 3 3; 9 9; 9.5 9.6; 20 20], 3, 'MaxIter', 1, ...
+%!         'Start', [1 1; 2 2; 3 3]);
+
 ## Test input validation
-%!error kmeans (rand (3,2), 4);
-%!error kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'panic');
-%!error kmeans (rand (4,3), 2, 'start', rand (2,3, 5), 'replicates', 1);
-%!error kmeans (rand (4,3), 2, 'start', rand (2,2));
-%!error kmeans (rand (4,3), 2, 'distance', 'manhattan');
-%!error kmeans (rand (3,4), 2, 'start', 'normal');
-%!error kmeans (rand (4,3), 2, 'replicates', i);
-%!error kmeans (rand (4,3), 2, 'replicates', -1);
-%!error kmeans (rand (4,3), 2, 'replicates', []);
-%!error kmeans (rand (4,3), 2, 'replicates', [1 2]);
-%!error kmeans (rand (4,3), 2, 'replicates', 'one');
-%!error kmeans (rand (4,3), 2, 'MAXITER', i);
-%!error kmeans (rand (4,3), 2, 'MaxIter', -1);
-%!error kmeans (rand (4,3), 2, 'maxiter', []);
-%!error kmeans (rand (4,3), 2, 'maxiter', [1 2]);
-%!error kmeans (rand (4,3), 2, 'maxiter', 'one');
-%!error <empty cluster created> kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'error');
+%!error<kmeans: first input argument must be a DxN real data matrix.> ...
+%! kmeans ('a', 1)
+%!error<kmeans: first input argument must be a DxN real data matrix.> ...
+%! kmeans (rand (2, 2, 2), 1)
+%!error<kmeans: first input argument must be a DxN real data matrix.> ...
+%! kmeans ([2i; 2; 2], 1)
+%!error<kmeans: DATA must not be empty.> kmeans ([], 1)
+%!error<kmeans: DATA must not be empty.> kmeans (NaN (5, 2), 3)
+%!error<kmeans: you must specify the number of clusters, K.> ...
+%! kmeans (rand (5, 2), [])
+%!error<kmeans: you must specify the number of clusters, K.> ...
+%! kmeans (rand (5, 2), [], 'start', 'plus')
+%!error<kmeans: K must be a numeric scalar.> kmeans (rand (5, 2), {3})
+%!error<kmeans: K must be a numeric scalar.> kmeans (rand (5, 2), 't')
+%!error<kmeans: K must be a positive integer.> kmeans (rand (5, 2), 1.5)
+%!error<kmeans: K must be a positive integer.> kmeans (rand (5, 2), 0)
+%!error<kmeans: K must be a positive integer.> kmeans (rand (5, 2), -1)
+%!error<kmeans: K cannot exceed the actual observations in DATA.> ...
+%! kmeans ([NaN; 3; 4; NaN], 3)
+%!error<kmeans: K cannot exceed the actual observations in DATA.> ...
+%! kmeans (rand (3, 2), 5)
+%!error<kmeans: option 'Distance' has no argument.> ...
+%! kmeans (rand (4, 3), 2, 'Distance')
+%!error<kmeans: unknown option 'bogus'.> kmeans (rand (4, 3), 2, 'bogus', 1)
+%!error<kmeans: optional arguments must be Name-Value pairs.> ...
+%! kmeans (rand (4, 3), 2, 42)
+%!error<kmeans: number of initializers \(3\) should match the number of centroids \(2\).> ...
+%! kmeans (rand (4, 3), 2, 'Start', rand (3, 3))
+%!error<kmeans: invalid display parameter 'verbose'.> ...
+%! kmeans (rand (4, 3), 2, 'Display', 'verbose')
+%!error<kmeans: unsupported empty cluster action parameter 'panic'.> ...
+%! kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'panic')
+%!error<kmeans: the third dimension of the initializer \(5\) should match the number of replicates \(1\)\.> ...
+%! kmeans (rand (4,3), 2, 'start', rand (2,3, 5), 'replicates', 1)
+%!error<kmeans: the 'Start' matrix must have the same number of columns as DATA.> ...
+%! kmeans (rand (4,3), 2, 'start', rand (2,2))
+%!error<kmeans: unsupported distance parameter 'manhattan'.> ...
+%! kmeans (rand (4,3), 2, 'distance', 'manhattan')
+%!error<kmeans: invalid start parameter 'normal'.> ...
+%! kmeans (rand (3,4), 2, 'start', 'normal')
+%!error<kmeans: invalid number of replicates '0 \+ 1i'.> ...
+%! kmeans (rand (4,3), 2, 'replicates', i)
+%!error<kmeans: invalid number of replicates '-1'.> ...
+%! kmeans (rand (4,3), 2, 'replicates', -1)
+%!error<kmeans: invalid number of replicates '1   2'.> ...
+%! kmeans (rand (4,3), 2, 'replicates', [1 2])
+%!error<kmeans: invalid number of replicates 'one'.> ...
+%! kmeans (rand (4,3), 2, 'replicates', 'one')
+%!error<kmeans: invalid MaxIter '0 \+ 1i'.> ...
+%! kmeans (rand (4,3), 2, 'MAXITER', i)
+%!error<kmeans: invalid MaxIter '-1'.> ...
+%! kmeans (rand (4,3), 2, 'MaxIter', -1)
+%!error<kmeans: invalid MaxIter '1   2'.> ...
+%! kmeans (rand (4,3), 2, 'maxiter', [1 2])
+%!error<kmeans: invalid MaxIter 'one'.> ...
+%! kmeans (rand (4,3), 2, 'maxiter', 'one')
+%!error <kmeans: empty cluster created.> ...
+%! kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'error')
