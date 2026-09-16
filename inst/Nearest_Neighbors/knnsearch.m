@@ -208,9 +208,10 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   if (PSC > 1)
     error ("knnsearch: only a single distance parameter can be defined.");
   endif
-  if (! isscalar (K) || ! isnumeric (K) || K < 1 || K != round (K) || K > rows (X))
+  if (! isscalar (K) || ! isnumeric (K) || K < 1 || K != round (K))
     error ("knnsearch: invalid value of K.");
   endif
+  K = min (K, rows (X));
   if (! isscalar (P) || ! isnumeric (P) || P <= 0)
     error ("knnsearch: invalid value of Minkowski Exponent.");
   endif
@@ -604,6 +605,11 @@ endfunction
 %! assert_equal (rows (idx{1}), 1);
 %! assert_equal (rows (idx{2}), 1);
 
+%!test
+%! [idx, D] = knnsearch ([1, 2; 3, 4; 5, 6], [1, 2], 'K', 5);
+%! assert_equal (idx, [1, 2, 3]);
+%! assert_equal (D, [0, 2*sqrt(2), 4*sqrt(2)], 1e-14);
+
 ## Test input validation
 ## Neighbours at equal distance come in row order, as R2024a returns them,
 ## and the K-th neighbour is the earlier of two tied rows.
@@ -622,11 +628,7 @@ endfunction
 %!error<knnsearch: invalid NAME in optional pairs of arguments.> ...
 %! knnsearch (ones (4, 2), ones (3, 2), 'Distance', 'euclidean', 'some', 'some')
 %!error<knnsearch: only a single distance parameter can be defined.> ...
-%! knnsearch (ones (4, 5), ones (1, 5), 'scale', ones (1, 5), 'P', 3)
-%!error<knnsearch: invalid value of K.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'K', 0)
-%!error<knnsearch: invalid value of K.> ...
-%! knnsearch (ones (3, 2), ones (1, 2), "K", 4)
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'P', -2)
 %!error<knnsearch: invalid value in Scale or the size of Scale.> ...
