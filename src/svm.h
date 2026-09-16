@@ -2,6 +2,7 @@
 Copyright (C) 2025 Chih-Chung Chang and Chih-Jen Lin
 
 This file is part of the statistics package for GNU Octave.
+
 Permission granted by Chih-Jen Lin to the package maintainer to include this
 file and double license under GPLv3 by means of personal communication.
 
@@ -11,9 +12,8 @@ Foundation; either version 3 of the License, or (at your option) any later
 version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-details.
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, see <http://www.gnu.org/licenses/>.
