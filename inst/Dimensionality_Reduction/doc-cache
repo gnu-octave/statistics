@@ -1068,8 +1068,8 @@ Nonnegative matrix factorization.
 N &times; M matrix A into nonnegative factors W ( N &times;
 K ) and H ( K &times; M ) whose product approximates
 A , by minimizing the root-mean-square residual between A and
-W * H . K , the number of factors, is typically smaller
-than N and M .
+W * H . K , the number of factors, is typically
+smaller than N and M .
 
 [ W , H , D ] = nnmf (&hellip;) also returns the
 root-mean-square residual D , that is norm ( A - W *
@@ -1099,7 +1099,8 @@ points, keeping the result with the smallest residual. The default is 1.
 Ignored for a starting point fixed by both 'W0' and 'H0' .
 'Options'
 A structure of algorithm options (as returned by statset ) whose
-MaxIter , TolFun , and TolX fields control the iteration.
+MaxIter , TolFun , and TolX fields control the
+iteration.
 
 See also:
 pca,

@@ -3496,17 +3496,17 @@ kmeans
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4586
+# length: 4619
 statistics: idx = kmeans ( data , k )
 statistics: [ idx , centers ] = kmeans ( data , k )
 statistics: [ idx , centers , sumd ] = kmeans ( data , k )
 statistics: [ idx , centers , sumd , dist ] = kmeans ( data , k )
 statistics: [&hellip;] = kmeans ( data , k , param1 , value1 , &hellip;)
-statistics: [&hellip;] = kmeans ( data , [], 'start' , start , &hellip;)
+statistics: [&hellip;] = kmeans ( data , [], 'Start' , start , &hellip;)
 
 Perform a k -means clustering of the N&times;D matrix data .
 
-If parameter 'start' is specified, then k may be empty
+If parameter 'Start' is specified, then k may be empty
 in which case k is set to the number of rows of start .
 
 The outputs are:
@@ -3599,17 +3599,17 @@ Name Value
 'Replicates' A positive integer specifying the number
 of independent clusterings to perform. The output values are the values for
 the best clustering, i.e., the one with the smallest value of sumd .
-If Start is numeric, then Replicates defaults to
-(and must equal) the size of the third dimension of Start .
+If 'Start' is numeric, then 'Replicates' defaults to
+(and must equal) the size of the third dimension of start .
 Otherwise it defaults to 1.
 'MaxIter' The maximum number of iterations to perform
 for each replicate. If the maximum change of any centroid is less than
-0.001, then the replicate terminates even if MaxIter iterations have no
-occurred. The default is 100.
+0.001, then the replicate terminates even if 'MaxIter' iterations
+have not occurred. The default is 100.
 
 Example:
 
-[~,c] = kmeans (rand(10, 3), 2, "emptyaction", "singleton");
+[~, c] = kmeans (rand (10, 3), 2, &rsquo;EmptyAction&rsquo;, &rsquo;singleton&rsquo;);
 
 See also:
 linkage
