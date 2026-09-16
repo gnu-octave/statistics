@@ -318,6 +318,21 @@ endfunction
 %! assert_equal (p, 0.592971063346381, 1e-12);
 %! assert_equal (W, 0.925681475433048, 1e-12);
 %! assert_equal (c, 0.782592834233546, 1e-12);
+%!test  # Shapiro-Francia, n = 200, measured with R's nortest sf.test
+%! [h, p, W] = swtest (sqrt (1:200), 'Method', 'shapiro-francia');
+%! assert_equal (h, 1);
+%! assert_equal (p, 8.0650594412092e-06, -1e-10);
+%! assert_equal (W, 0.950552730992928, -1e-10);
+%!test  # Shapiro-Francia on a strong skew, measured with R's nortest sf.test
+%! [h, p, W] = swtest (exp ((1:20) / 5), 'Method', 'shapiro-francia');
+%! assert_equal (h, 1);
+%! assert_equal (p, 0.00305794323924647, -1e-10);
+%! assert_equal (W, 0.824238460116288, -1e-10);
+%!test  # Shapiro-Francia on bounded data, measured with R's nortest sf.test
+%! [h, p, W] = swtest (sin (1:30), 'Method', 'shapiro-francia');
+%! assert_equal (h, 1);
+%! assert_equal (p, 0.018296975230196, -1e-10);
+%! assert_equal (W, 0.911248253555032, -1e-10);
 %!test  # Alpha sets the critical value and leaves P unchanged
 %! [h, p, W, c] = swtest (log (1:25), 'Alpha', 0.01);
 %! assert_equal (h, 1);
