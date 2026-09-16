@@ -4,7 +4,7 @@ Copyright (C) 2025 Avanish Salunke <avanishsalunke16@gmail.com>
 
 Based on the Octave LIBSVM wrapper created by Alan Meeson (2014) based on an
 earlier version of the LIBSVM (3.18) library for MATLAB. Current implementation
-is based on LIBSVM 3.36 (2025) by Chih-Chung Chang and Chih-Jen Lin.
+is based on LIBSVM 3.37 (2025) by Chih-Chung Chang and Chih-Jen Lin.
 
 This file is part of the statistics package for GNU Octave.
 
