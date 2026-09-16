@@ -1,0 +1,19 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: pr0m1th3as/octave-ci/.github/workflows/package-test.yml@v1
+    with:
+      dependencies: 'datatypes'
