@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 55
+# columns: 56
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2428,6 +2428,72 @@ pdist
 # elements: 1
 # length: 72
 Compute the silhouette values of clustered data and show them on a plot.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+swarmchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1756
+statistics: swarmchart ( x , y )
+statistics: swarmchart ( x , y , sz )
+statistics: swarmchart ( x , y , sz , c )
+statistics: swarmchart (&hellip;, 'filled' )
+statistics: swarmchart (&hellip;, name , value )
+statistics: swarmchart ( ax , &hellip;)
+statistics: s = swarmchart (&hellip;)
+
+Draw a swarm chart.
+
+swarmchart ( x , y ) draws the points of y against
+x , spread sideways where they would otherwise sit on top of one
+another, so that the shape of each column shows where its values gather.
+sz sets the marker area and c its colour, as they do for
+scatter , and 'filled' fills the markers.
+
+s is the scatter object drawn, and carries XJitter ,
+YJitter , XJitterWidth and YJitterWidth besides
+everything a scatter object carries. Setting any of them spreads the
+points again and redraws.
+
+Name Value
+'XJitter' How the points are spread sideways:
+'density' , the default here, spreads each point by a uniform draw
+weighted by how many of its neighbours share its value, so a crowded part
+of a column spreads wide and a lone point hardly moves;
+'rand' spreads every point alike; 'randn' draws the
+offsets from a normal distribution; 'none' leaves them in a line.
+'YJitter' The same, upwards. The default is
+'none' .
+'XJitterWidth' How far a point may be moved
+sideways, in the units of the axis. The default is nine tenths of the
+smallest gap between distinct values of x .
+'YJitterWidth' The same, upwards.
+
+MATLAB leaves XData as it was given and spreads the points as it
+draws them. Octave&rsquo;s scatter object has no such step, so this moves the
+values themselves: XData holds where each point was drawn rather
+than where it came from. The difference shows in XData and
+nowhere else, the chart being the same.
+
+See also:
+scatter,
+boxchart,
+gscatter
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Draw a swarm chart.
 
 
 

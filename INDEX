@@ -475,6 +475,7 @@ Plotting
  qqplot
  scatterhist
  silhouette
+ swarmchart
  violin
  wblplot
 I/O
