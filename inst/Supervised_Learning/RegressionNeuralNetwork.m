@@ -147,7 +147,7 @@
 ## @seealso{fitrnet, ClassificationNeuralNetwork, fcnntrain, fcnnpredict}
 ## @end deftypefn
 
-classdef RegressionNeuralNetwork
+classdef RegressionNeuralNetwork < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

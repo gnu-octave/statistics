@@ -42,7 +42,7 @@
 ## @seealso{RegressionGP, fitrgp}
 ## @end deftp
 
-classdef CompactRegressionGP
+classdef CompactRegressionGP < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

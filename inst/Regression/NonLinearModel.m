@@ -58,7 +58,7 @@
 ## GeneralizedLinearModel}
 ## @end deftypefn
 
-classdef NonLinearModel
+classdef NonLinearModel < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

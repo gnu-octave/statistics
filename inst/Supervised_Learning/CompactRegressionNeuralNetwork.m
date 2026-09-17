@@ -38,7 +38,7 @@
 ## @seealso{RegressionNeuralNetwork, fitrnet}
 ## @end deftp
 
-classdef CompactRegressionNeuralNetwork
+classdef CompactRegressionNeuralNetwork < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

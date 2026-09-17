@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-classdef RegressionGAM
+classdef RegressionGAM < PredictiveModel
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{obj} =} RegressionGAM (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} RegressionGAM (@dots{}, @var{name}, @var{value})

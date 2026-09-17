@@ -127,7 +127,7 @@
 ## @seealso{fitrsvm, ClassificationSVM, RegressionNeuralNetwork}
 ## @end deftypefn
 
-classdef RegressionSVM
+classdef RegressionSVM < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-

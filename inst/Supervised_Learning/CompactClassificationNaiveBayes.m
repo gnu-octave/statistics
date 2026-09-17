@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 
-classdef CompactClassificationNaiveBayes
+classdef CompactClassificationNaiveBayes < PredictiveModel
 
   ## -*- texinfo -*-
   ## @deftp {statistics} CompactClassificationNaiveBayes

@@ -186,6 +186,7 @@ Supervised Learning
  gamboosttrain
  gampredict
  gamtrain
+ PredictiveModel
  RegressionBaggedEnsemble
  RegressionEnsemble
  RegressionGAM

@@ -43,7 +43,7 @@
 ## @seealso{fitrlinear, RegressionKernel, RegressionSVM}
 ## @end deftp
 
-classdef RegressionLinear
+classdef RegressionLinear < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

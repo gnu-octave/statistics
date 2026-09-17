@@ -34,7 +34,7 @@
 ## @seealso{fitglme, fitlme, GeneralizedLinearModel}
 ## @end deftypefn
 
-classdef GeneralizedLinearMixedModel
+classdef GeneralizedLinearMixedModel < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

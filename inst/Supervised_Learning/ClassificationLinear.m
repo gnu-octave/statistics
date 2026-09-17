@@ -43,7 +43,7 @@
 ## @seealso{fitclinear, ClassificationKernel, ClassificationSVM}
 ## @end deftp
 
-classdef ClassificationLinear
+classdef ClassificationLinear < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

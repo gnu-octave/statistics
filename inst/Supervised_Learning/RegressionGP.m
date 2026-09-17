@@ -169,7 +169,7 @@
 ## @seealso{fitrgp, CompactRegressionGP, RegressionSVM, RegressionGAM}
 ## @end deftypefn
 
-classdef RegressionGP
+classdef RegressionGP < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

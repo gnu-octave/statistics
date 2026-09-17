@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1451
+# columns: 1452
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -32177,6 +32177,42 @@ CompactTreeBagger.predict
 # elements: 1
 # length: 61
 Set the prediction for an observation no tree may answer for.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+PredictiveModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 640
+statistics: PredictiveModel
+
+A fitted model that answers for new observations.
+
+PredictiveModel is the superclass of every classification and
+regression model in this package that carries a predict method,
+and of nothing else. The cross-validated classes answer through
+kfoldPredict over their folds rather than through predict ,
+and so do not derive from it.
+
+The class is abstract and cannot be instantiated. It holds no data of
+its own: it is where behaviour shared by all those models is written
+once rather than once per class, and isa ( obj ,
+'PredictiveModel' ) is how to ask whether an object is a model
+that can be told to predict.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+A fitted model that answers for new observations.
 
 
 

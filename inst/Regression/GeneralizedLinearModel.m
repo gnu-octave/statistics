@@ -71,7 +71,7 @@
 ## @seealso{fitglm, LinearModel, glmfit, glmval}
 ## @end deftp
 
-classdef GeneralizedLinearModel
+classdef GeneralizedLinearModel < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 

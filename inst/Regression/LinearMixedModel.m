@@ -43,7 +43,7 @@
 ## @seealso{fitlmematrix, fitlm}
 ## @end deftypefn
 
-classdef LinearMixedModel
+classdef LinearMixedModel < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected)
 
