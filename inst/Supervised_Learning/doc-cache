@@ -32190,16 +32190,17 @@ PredictiveModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 640
+# length: 720
 statistics: PredictiveModel
 
 A fitted model that answers for new observations.
 
 PredictiveModel is the superclass of every classification and
 regression model in this package that carries a predict method,
-and of nothing else. The cross-validated classes answer through
-kfoldPredict over their folds rather than through predict ,
-and so do not derive from it.
+and of nothing else. The models fitted by fitlm and its
+relatives derive from it as the learners do. The cross-validated
+classes answer through kfoldPredict over their folds rather than
+through predict , and so do not derive from it.
 
 The class is abstract and cannot be instantiated. It holds no data of
 its own: it is where behaviour shared by all those models is written

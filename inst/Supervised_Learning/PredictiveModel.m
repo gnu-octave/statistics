@@ -23,9 +23,10 @@ classdef (Abstract) PredictiveModel
   ##
   ## @code{PredictiveModel} is the superclass of every classification and
   ## regression model in this package that carries a @code{predict} method,
-  ## and of nothing else.  The cross-validated classes answer through
-  ## @code{kfoldPredict} over their folds rather than through @code{predict},
-  ## and so do not derive from it.
+  ## and of nothing else.  The models fitted by @code{fitlm} and its
+  ## relatives derive from it as the learners do.  The cross-validated
+  ## classes answer through @code{kfoldPredict} over their folds rather than
+  ## through @code{predict}, and so do not derive from it.
   ##
   ## The class is abstract and cannot be instantiated.  It holds no data of
   ## its own: it is where behaviour shared by all those models is written
@@ -35,6 +36,10 @@ classdef (Abstract) PredictiveModel
   ##
   ## @end deftp
 
+  ## Subclasses in another directory reach this file only because
+  ## post_install.m puts this directory on the path before Octave rebuilds
+  ## the doc-cache at install time; see that file before moving this one.
+  ##
   ## The shared behaviour of the models goes here.  The block stays while it
   ## is empty: a class body holding no block at all gets no help text, help
   ## synthesising a default constructor instead of reading the class block
@@ -54,3 +59,8 @@ endclassdef
 %! assert_equal (isa (Mdl, 'PredictiveModel'), true);
 %! assert_equal (isa (compact (Mdl), 'PredictiveModel'), true);
 %! assert_equal (isa (crossval (Mdl, 'KFold', 2), 'PredictiveModel'), false);
+
+%!test  # a model fitted by fitlm derives from it too, across directories
+%! X = [1, 2; 2, 3; 3, 4; 1, 5; 2, 6; 3, 7];
+%! y = [2.5; 3.1; 4.8; 2.2; 3.9; 5.1];
+%! assert_equal (isa (fitlm (X, y), 'PredictiveModel'), true);
