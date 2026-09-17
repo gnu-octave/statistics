@@ -455,7 +455,6 @@ Plotting
  bar3
  bar3h
  biplot
- BoxChart
  boxchart
  boxplot
  cdfplot
@@ -475,6 +474,7 @@ Plotting
  qqplot
  scatterhist
  silhouette
+ stats.chart.BoxChart
  swarmchart
  violin
  wblplot

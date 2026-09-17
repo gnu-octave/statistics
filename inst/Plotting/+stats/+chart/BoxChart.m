@@ -16,14 +16,15 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftp {statistics} BoxChart
+## @deftp {statistics} stats.chart.BoxChart
 ##
 ## A box chart, as @code{boxchart} draws it.
 ##
-## A @code{BoxChart} holds the data a box chart is drawn from and the choices
-## it is drawn with, and redraws itself whenever one of them is set.  It is
-## what @code{boxchart} returns, and the documented way to reach it; one is
-## returned per colour group where @qcode{'GroupByColor'} names one.
+## A @code{stats.chart.BoxChart} holds the data a box chart is drawn from and
+## the choices it is drawn with, and redraws itself whenever one of them is
+## set.  It is what @code{boxchart} returns, and the documented way to reach
+## it; one is returned per colour group where @qcode{'GroupByColor'} names
+## one.
 ##
 ## The data comes either from vectors or from a table, never from both, and
 ## the object says which through @code{XDataMode} and @code{YDataMode}.
@@ -328,7 +329,7 @@ classdef BoxChart < handle
   methods (Hidden)
 
     function disp (this)
-      printf ('\n  BoxChart\n\n');
+      printf ('\n  BoxChart with properties:\n\n');
       printf ('%22s: %d\n', 'observations', numel (this.YData));
       printf ('%22s: %d\n', 'boxes', numel (bcPositions (this)));
       printf ('%22s: %s\n', 'Orientation', this.Orientation);
@@ -353,8 +354,8 @@ classdef BoxChart < handle
     ## fills both sides through these same setters and must not trip them.
     function set.YData (this, val)
       if (this.Drawn_ && ! isempty (this.YVariable))
-        error (strcat ("BoxChart: setting 'YData' while 'YVariable' names", ...
-                       " a column is not supported."));
+        error (strcat ("stats.chart.BoxChart: setting 'YData' while", ...
+                       " 'YVariable' names a column is not supported."));
       endif
       this.YData = bcCheckData (val, 'YData');
       this.YDataMode = 'manual';
@@ -363,8 +364,8 @@ classdef BoxChart < handle
 
     function set.XData (this, val)
       if (this.Drawn_ && ! isempty (this.XVariable))
-        error (strcat ("BoxChart: setting 'XData' while 'XVariable' names", ...
-                       " a column is not supported."));
+        error (strcat ("stats.chart.BoxChart: setting 'XData' while", ...
+                       " 'XVariable' names a column is not supported."));
       endif
       this.XData = val;
       if (! isempty (val))
@@ -382,8 +383,8 @@ classdef BoxChart < handle
       endif
       if (this.Drawn_ && strcmp (this.YDataMode, 'manual')
           && ! isempty (this.YData))
-        error (strcat ("BoxChart: setting 'YVariable' while 'YDataMode' is", ...
-                       " 'manual' is not supported."));
+        error (strcat ("stats.chart.BoxChart: setting 'YVariable' while", ...
+                       " 'YDataMode' is 'manual' is not supported."));
       endif
       this.YVariable = bcCheckName (val, 'YVariable');
       reread (this);
@@ -396,8 +397,8 @@ classdef BoxChart < handle
       endif
       if (this.Drawn_ && strcmp (this.XDataMode, 'manual')
           && ! isempty (this.XData))
-        error (strcat ("BoxChart: setting 'XVariable' while 'XDataMode' is", ...
-                       " 'manual' is not supported."));
+        error (strcat ("stats.chart.BoxChart: setting 'XVariable' while", ...
+                       " 'XDataMode' is 'manual' is not supported."));
       endif
       this.XVariable = bcCheckName (val, 'XVariable');
       reread (this);
@@ -407,7 +408,7 @@ classdef BoxChart < handle
     ## after the chart was drawn is picked up, as R2026a picks it up
     function set.SourceTable (this, val)
       if (! (isempty (val) || istable (val)))
-        error ("BoxChart: 'SourceTable' must be a table.");
+        error ("stats.chart.BoxChart: 'SourceTable' must be a table.");
       endif
       this.SourceTable = val;
       reread (this);
@@ -504,11 +505,13 @@ classdef BoxChart < handle
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn {BoxChart} {@var{obj} =} BoxChart (@var{hax}, @var{spec}, @var{args})
+    ## @deftypefn {stats.chart.BoxChart} {@var{obj} =} stats.chart.BoxChart (@var{hax}, @var{spec}, @var{args})
     ##
-    ## Create a @code{BoxChart} object.
+    ## Create a @code{stats.chart.BoxChart} object.
     ##
-    ## @var{hax} is the axes to draw into, @var{spec} a structure carrying
+    ## @var{hax} is the axes to draw into, or empty for the current axes,
+    ## which is resolved only once every value has been accepted.  @var{spec}
+    ## is a structure carrying
     ## the data as @code{boxchart} resolved it, with the fields
     ## @qcode{XData}, @qcode{YData}, @qcode{SourceTable}, @qcode{XVariable},
     ## @qcode{YVariable} and @qcode{XDataMode}, and @var{args} the
@@ -520,13 +523,12 @@ classdef BoxChart < handle
     function this = BoxChart (hax, spec, args)
 
       if (nargin < 2)
-        error ("BoxChart: too few input arguments.");
+        error ("stats.chart.BoxChart: too few input arguments.");
       endif
       if (nargin < 3)
         args = {};
       endif
 
-      this.Parent = hax;
       this.XData = spec.XData;
       this.YData = spec.YData;
       this.SourceTable = spec.SourceTable;
@@ -541,6 +543,12 @@ classdef BoxChart < handle
         value = args{k+1};
         this.(name) = value;
       endfor
+
+      ## The axes comes last, so a rejected value leaves no figure behind
+      if (isempty (hax))
+        hax = gca ();
+      endif
+      this.Parent = hax;
 
       this.Drawn_ = true;
       redraw (this);
@@ -664,7 +672,8 @@ classdef BoxChart < handle
       t = this.SourceTable;
       names = t.Properties.VariableNames;
       if (! any (strcmp (names, this.YVariable)))
-        error ("BoxChart: the table holds no variable '%s'.", this.YVariable);
+        error (strcat ("stats.chart.BoxChart: the table holds no", ...
+                       " variable '%s'."), this.YVariable);
       endif
       drawn = this.Drawn_;
       this.Drawn_ = false;
@@ -673,8 +682,8 @@ classdef BoxChart < handle
         this.YDataMode = 'auto';
         if (! isempty (this.XVariable))
           if (! any (strcmp (names, this.XVariable)))
-            error ("BoxChart: the table holds no variable '%s'.", ...
-                   this.XVariable);
+            error (strcat ("stats.chart.BoxChart: the table holds no", ...
+                           " variable '%s'."), this.XVariable);
           endif
           this.XData = t.(this.XVariable);
           this.XDataMode = 'auto';
@@ -694,7 +703,7 @@ endclassdef
 function v = bcCheckData (val, name)
 
   if (! (isnumeric (val) && isreal (val) && isvector (val)) && ! isempty (val))
-    error ("BoxChart: '%s' must be a real numeric vector.", name);
+    error ("stats.chart.BoxChart: '%s' must be a real numeric vector.", name);
   endif
   v = double (val(:));
 
@@ -714,7 +723,7 @@ function v = bcCheckName (val, name)
   elseif (isa (val, 'string') && isscalar (val))
     v = char (val);
   else
-    error ("BoxChart: '%s' must name one table variable.", name);
+    error ("stats.chart.BoxChart: '%s' must name one table variable.", name);
   endif
 
 endfunction
@@ -723,7 +732,7 @@ endfunction
 function v = bcCheckPositive (val, name)
 
   if (! (isnumeric (val) && isscalar (val) && isreal (val) && val > 0))
-    error ("BoxChart: '%s' must be a positive scalar.", name);
+    error ("stats.chart.BoxChart: '%s' must be a positive scalar.", name);
   endif
   v = double (val);
 
@@ -734,7 +743,8 @@ function v = bcCheckUnit (val, name)
 
   if (! (isnumeric (val) && isscalar (val) && isreal (val)
          && val >= 0 && val <= 1))
-    error ("BoxChart: '%s' must be a scalar between 0 and 1.", name);
+    error (strcat ("stats.chart.BoxChart: '%s' must be a scalar between", ...
+                   " 0 and 1."), name);
   endif
   v = double (val);
 
@@ -760,8 +770,8 @@ function v = bcCheckColor (val, name)
       return;
     endif
   endif
-  error (strcat ("BoxChart: '%s' must be an RGB triplet or a colour", ...
-                 " name."), name);
+  error (strcat ("stats.chart.BoxChart: '%s' must be an RGB triplet", ...
+                 " or a colour name."), name);
 
 endfunction
 
@@ -769,7 +779,7 @@ endfunction
 function v = bcCheckOneOf (val, allowed, name)
 
   if (! (ischar (val) && isrow (val) && any (strcmpi (allowed, val))))
-    error ("BoxChart: '%s' must be one of %s.", name, ...
+    error ("stats.chart.BoxChart: '%s' must be one of %s.", name, ...
            strjoin (strcat ("'", allowed, "'"), ', '));
   endif
   v = lower (val);

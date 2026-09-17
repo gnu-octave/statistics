@@ -6,800 +6,6 @@
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8
-BoxChart
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1542
-statistics: BoxChart
-
-A box chart, as boxchart draws it.
-
-A BoxChart holds the data a box chart is drawn from and the choices
-it is drawn with, and redraws itself whenever one of them is set. It is
-what boxchart returns, and the documented way to reach it; one is
-returned per colour group where 'GroupByColor' names one.
-
-The data comes either from vectors or from a table, never from both, and
-the object says which through XDataMode and YDataMode .
-Where the data came from vectors these read 'manual' and
-XVariable and YVariable are empty; where it came from a
-table they read 'auto' and naming a variable is what chooses the
-column. Setting YData on an object holding a table is refused, and
-so is naming a variable on one holding vectors, as MATLAB R2026a refuses
-them. Assigning SourceTable again re-reads the columns, so a table
-changed after the chart was drawn is picked up.
-
-The box spans the lower and upper quartiles with the median across it, the
-whiskers reach the furthest values within one and a half interquartile
-ranges of the box, and whatever lies beyond is drawn as a marker. These
-are the quartiles quantile computes and the rule
-isoutlier applies with 'quartiles' .
-
-MATLAB&rsquo;s object carries the properties every graphics object carries,
-Annotation and DataTipTemplate among them. This one is a
-handle class drawing with ordinary primitives rather than a graphics
-object of its own, so it carries what belongs to a box chart and leaves
-the rest to the primitives it draws.
-
-See also:
-boxchart,
-swarmchart,
-boxplot
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 34
-A box chart, as boxchart draws it.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 17
-BoxChart.BoxChart
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 370
-BoxChart: obj = BoxChart ( hax , spec , args )
-
-Create a BoxChart object.
-
-hax is the axes to draw into, spec a structure carrying
-the data as boxchart resolved it, with the fields
-XData , YData , SourceTable , XVariable ,
-YVariable and XDataMode , and args the
-name-value pairs left to set. The documented way to reach this
-constructor is boxchart .
-
-See also:
-boxchart
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 25
-Create a BoxChart object.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 21
-BoxChart.BoxEdgeColor
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 106
-BoxChart: property BoxEdgeColor
-
-Colour of the box outline. Setting it puts
-BoxEdgeColorMode at 'manual' .
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 26
-Colour of the box outline.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 25
-BoxChart.BoxEdgeColorMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 97
-BoxChart: property BoxEdgeColorMode
-
-Whether BoxEdgeColor was chosen. This property is read-only.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 32
-Whether BoxEdgeColor was chosen.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 21
-BoxChart.BoxFaceAlpha
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 93
-BoxChart: property BoxFaceAlpha
-
-How opaque the box fill is, from 0 to 1. The default is 0.2.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 40
-How opaque the box fill is, from 0 to 1.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 21
-BoxChart.BoxFaceColor
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 132
-BoxChart: property BoxFaceColor
-
-Colour the boxes are filled with, as an RGB triplet. Setting it puts
-BoxFaceColorMode at 'manual' .
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 52
-Colour the boxes are filled with, as an RGB triplet.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 25
-BoxChart.BoxFaceColorMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 139
-BoxChart: property BoxFaceColorMode
-
-Whether BoxFaceColor was chosen, 'manual' , or left to
-the chart, 'auto' . This property is read-only.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 72
-Whether BoxFaceColor was chosen, 'manual', or left to the chart, 'auto'.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 27
-BoxChart.BoxMedianLineColor
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 130
-BoxChart: property BoxMedianLineColor
-
-Colour of the line marking the median. Setting it puts
-BoxMedianLineColorMode at 'manual' .
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 38
-Colour of the line marking the median.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 31
-BoxChart.BoxMedianLineColorMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 109
-BoxChart: property BoxMedianLineColorMode
-
-Whether BoxMedianLineColor was chosen. This property is
-read-only.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 38
-Whether BoxMedianLineColor was chosen.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 17
-BoxChart.BoxWidth
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 104
-BoxChart: property BoxWidth
-
-Width of each box, in the units of the horizontal axis. The default
-is 0.5.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 55
-Width of each box, in the units of the horizontal axis.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 17
-BoxChart.CapWidth
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 131
-BoxChart: property CapWidth
-
-Width of the cap at the end of each whisker, in the units of the
-horizontal axis. The default is 0.25.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 81
-Width of the cap at the end of each whisker, in the units of the horizontal axis.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 21
-BoxChart.CapWidthMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 89
-BoxChart: property CapWidthMode
-
-Whether CapWidth was chosen. This property is read-only.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 28
-Whether CapWidth was chosen.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 23
-BoxChart.JitterOutliers
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 144
-BoxChart: property JitterOutliers
-
-Whether outlier markers are spread across the width of the box rather
-than drawn in a line, 'off' by default.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 109
-Whether outlier markers are spread across the width of the box rather than drawn in a line, 'off' by default.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 18
-BoxChart.LineWidth
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 83
-BoxChart: property LineWidth
-
-Width of the box and whisker lines. The default is 1.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 35
-Width of the box and whisker lines.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 20
-BoxChart.MarkerColor
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 106
-BoxChart: property MarkerColor
-
-Colour of an outlier marker. Setting it puts
-MarkerColorMode at 'manual' .
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 28
-Colour of an outlier marker.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 24
-BoxChart.MarkerColorMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 95
-BoxChart: property MarkerColorMode
-
-Whether MarkerColor was chosen. This property is read-only.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 31
-Whether MarkerColor was chosen.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 19
-BoxChart.MarkerSize
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 75
-BoxChart: property MarkerSize
-
-Size of an outlier marker. The default is 6.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 26
-Size of an outlier marker.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 20
-BoxChart.MarkerStyle
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 104
-BoxChart: property MarkerStyle
-
-Marker an outlier is drawn with, 'o' by default, or
-'none' to draw none.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 72
-Marker an outlier is drawn with, 'o' by default, or 'none' to draw none.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 14
-BoxChart.Notch
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 253
-BoxChart: property Notch
-
-Whether the box is notched about its median, 'off' by default.
-A notch spans the median plus and minus
-1.57 IQR / sqrt (n) , so two boxes whose notches do not overlap
-have medians that differ at roughly the five per cent level.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 62
-Whether the box is notched about its median, 'off' by default.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 20
-BoxChart.Orientation
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 103
-BoxChart: property Orientation
-
-Whether the boxes stand 'vertical' , the default, or lie
-'horizontal' .
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 69
-Whether the boxes stand 'vertical', the default, or lie 'horizontal'.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 15
-BoxChart.Parent
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 88
-BoxChart: property Parent
-
-The axes the chart is drawn into. This property is read-only.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 33
-The axes the chart is drawn into.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 20
-BoxChart.SourceTable
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 227
-BoxChart: property SourceTable
-
-The table the data is read from, empty where it came from vectors.
-Assigning it again re-reads the columns XVariable and
-YVariable name, so a table changed after the chart was drawn is
-picked up.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 66
-The table the data is read from, empty where it came from vectors.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 25
-BoxChart.WhiskerLineColor
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 75
-BoxChart: property WhiskerLineColor
-
-Colour of the whiskers and their caps.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 38
-Colour of the whiskers and their caps.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 25
-BoxChart.WhiskerLineStyle
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 113
-BoxChart: property WhiskerLineStyle
-
-Line style of the whiskers: '-' by default, or '--' ,
-':' , '-.' or 'none' .
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 73
-Line style of the whiskers: '-' by default, or '--', ':', '-.' or 'none'.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 14
-BoxChart.XData
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 340
-BoxChart: property XData
-
-Where each observation&rsquo;s box stands, one value per observation: a
-grouping variable, numeric or categorical. Where no grouping was
-given every observation shares one position and this is a
-categorical of one level. Setting it is refused while
-XVariable names a column, the data coming from the table
-instead.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 108
-Where each observation's box stands, one value per observation: a grouping variable, numeric or categorical.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 18
-BoxChart.XDataMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 261
-BoxChart: property XDataMode
-
-Where XData came from: 'manual' where it was given as a
-grouping vector, and 'auto' where the chart derived it, from a
-table or from there being no grouping at all. This property is
-read-only, where MATLAB allows it to be assigned.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 164
-Where XData came from: 'manual' where it was given as a grouping vector, and 'auto' where the chart derived it, from a table or from there being no grouping at all.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 18
-BoxChart.XVariable
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 165
-BoxChart: property XVariable
-
-The column of SourceTable the boxes are grouped by, empty where
-none was named. Naming one is refused while the data came from
-vectors.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 79
-The column of SourceTable the boxes are grouped by, empty where none was named.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 14
-BoxChart.YData
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 135
-BoxChart: property YData
-
-The observations themselves, one value per observation. Setting it is
-refused while YVariable names a column.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 55
-The observations themselves, one value per observation.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 18
-BoxChart.YDataMode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 202
-BoxChart: property YDataMode
-
-Where YData came from: 'manual' where it was given as a
-vector and 'auto' where it was read from a table. This
-property is read-only, where MATLAB allows it to be assigned.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 105
-Where YData came from: 'manual' where it was given as a vector and 'auto' where it was read from a table.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 18
-BoxChart.YVariable
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 137
-BoxChart: property YVariable
-
-The column of SourceTable holding the observations. Naming one
-is refused while the data came from vectors.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 51
-The column of SourceTable holding the observations.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
 # length: 11
 andrewsplot
 
@@ -1144,7 +350,7 @@ boxchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1458
+# length: 1506
 statistics: boxchart ( ydata )
 statistics: boxchart ( xgroupdata , ydata )
 statistics: boxchart (&hellip;, 'GroupByColor' , cgroupdata )
@@ -1170,19 +376,20 @@ boxchart ( tbl , xvar , yvar ) take the observations,
 and where asked the grouping, from the named columns of a table. The
 chart keeps the table, so assigning SourceTable again re-reads it.
 
-b = boxchart (&hellip;) returns the BoxChart object
-drawn, whose properties may be set afterwards to redraw it; see
-BoxChart . Where 'GroupByColor' names a grouping, one
-object is returned per colour group, in the order of its distinct values.
+b = boxchart (&hellip;) returns the
+stats.chart.BoxChart object drawn, whose properties may be set
+afterwards to redraw it; see stats.chart.BoxChart . Where
+'GroupByColor' names a grouping, one object is returned per
+colour group, in the order of its distinct values.
 
 'GroupByColor' cannot be given with a table, which MATLAB R2026a
 refuses as well.
 
 Every other name-value pair sets the property of that name on the object;
-see BoxChart for what each takes.
+see stats.chart.BoxChart for what each takes.
 
 See also:
-BoxChart,
+stats.chart.BoxChart,
 boxplot,
 swarmchart
 
@@ -2428,6 +1635,803 @@ pdist
 # elements: 1
 # length: 72
 Compute the silhouette values of clustered data and show them on a plot.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+stats.chart.BoxChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1566
+statistics: stats.chart.BoxChart
+
+A box chart, as boxchart draws it.
+
+A stats.chart.BoxChart holds the data a box chart is drawn from and
+the choices it is drawn with, and redraws itself whenever one of them is
+set. It is what boxchart returns, and the documented way to reach
+it; one is returned per colour group where 'GroupByColor' names
+one.
+
+The data comes either from vectors or from a table, never from both, and
+the object says which through XDataMode and YDataMode .
+Where the data came from vectors these read 'manual' and
+XVariable and YVariable are empty; where it came from a
+table they read 'auto' and naming a variable is what chooses the
+column. Setting YData on an object holding a table is refused, and
+so is naming a variable on one holding vectors, as MATLAB R2026a refuses
+them. Assigning SourceTable again re-reads the columns, so a table
+changed after the chart was drawn is picked up.
+
+The box spans the lower and upper quartiles with the median across it, the
+whiskers reach the furthest values within one and a half interquartile
+ranges of the box, and whatever lies beyond is drawn as a marker. These
+are the quartiles quantile computes and the rule
+isoutlier applies with 'quartiles' .
+
+MATLAB&rsquo;s object carries the properties every graphics object carries,
+Annotation and DataTipTemplate among them. This one is a
+handle class drawing with ordinary primitives rather than a graphics
+object of its own, so it carries what belongs to a box chart and leaves
+the rest to the primitives it draws.
+
+See also:
+boxchart,
+swarmchart,
+boxplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+A box chart, as boxchart draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.BoxChart.BoxChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 499
+stats.chart.BoxChart: obj = stats.chart.BoxChart ( hax , spec , args )
+
+Create a stats.chart.BoxChart object.
+
+hax is the axes to draw into, or empty for the current axes,
+which is resolved only once every value has been accepted. spec
+is a structure carrying
+the data as boxchart resolved it, with the fields
+XData , YData , SourceTable , XVariable ,
+YVariable and XDataMode , and args the
+name-value pairs left to set. The documented way to reach this
+constructor is boxchart .
+
+See also:
+boxchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Create a stats.chart.BoxChart object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.BoxChart.BoxEdgeColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 106
+BoxChart: property BoxEdgeColor
+
+Colour of the box outline. Setting it puts
+BoxEdgeColorMode at 'manual' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Colour of the box outline.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.BoxChart.BoxEdgeColorMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 97
+BoxChart: property BoxEdgeColorMode
+
+Whether BoxEdgeColor was chosen. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Whether BoxEdgeColor was chosen.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.BoxChart.BoxFaceAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 93
+BoxChart: property BoxFaceAlpha
+
+How opaque the box fill is, from 0 to 1. The default is 0.2.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+How opaque the box fill is, from 0 to 1.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.BoxChart.BoxFaceColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 132
+BoxChart: property BoxFaceColor
+
+Colour the boxes are filled with, as an RGB triplet. Setting it puts
+BoxFaceColorMode at 'manual' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+Colour the boxes are filled with, as an RGB triplet.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.BoxChart.BoxFaceColorMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 139
+BoxChart: property BoxFaceColorMode
+
+Whether BoxFaceColor was chosen, 'manual' , or left to
+the chart, 'auto' . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 72
+Whether BoxFaceColor was chosen, 'manual', or left to the chart, 'auto'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.BoxChart.BoxMedianLineColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 130
+BoxChart: property BoxMedianLineColor
+
+Colour of the line marking the median. Setting it puts
+BoxMedianLineColorMode at 'manual' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Colour of the line marking the median.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.BoxChart.BoxMedianLineColorMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 109
+BoxChart: property BoxMedianLineColorMode
+
+Whether BoxMedianLineColor was chosen. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Whether BoxMedianLineColor was chosen.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.BoxChart.BoxWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+BoxChart: property BoxWidth
+
+Width of each box, in the units of the horizontal axis. The default
+is 0.5.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+Width of each box, in the units of the horizontal axis.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.BoxChart.CapWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 131
+BoxChart: property CapWidth
+
+Width of the cap at the end of each whisker, in the units of the
+horizontal axis. The default is 0.25.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+Width of the cap at the end of each whisker, in the units of the horizontal axis.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.BoxChart.CapWidthMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+BoxChart: property CapWidthMode
+
+Whether CapWidth was chosen. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Whether CapWidth was chosen.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+stats.chart.BoxChart.JitterOutliers
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+BoxChart: property JitterOutliers
+
+Whether outlier markers are spread across the width of the box rather
+than drawn in a line, 'off' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 109
+Whether outlier markers are spread across the width of the box rather than drawn in a line, 'off' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.BoxChart.LineWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 83
+BoxChart: property LineWidth
+
+Width of the box and whisker lines. The default is 1.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Width of the box and whisker lines.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.BoxChart.MarkerColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 106
+BoxChart: property MarkerColor
+
+Colour of an outlier marker. Setting it puts
+MarkerColorMode at 'manual' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+Colour of an outlier marker.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.BoxChart.MarkerColorMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+BoxChart: property MarkerColorMode
+
+Whether MarkerColor was chosen. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Whether MarkerColor was chosen.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.BoxChart.MarkerSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+BoxChart: property MarkerSize
+
+Size of an outlier marker. The default is 6.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Size of an outlier marker.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.BoxChart.MarkerStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+BoxChart: property MarkerStyle
+
+Marker an outlier is drawn with, 'o' by default, or
+'none' to draw none.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 72
+Marker an outlier is drawn with, 'o' by default, or 'none' to draw none.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+stats.chart.BoxChart.Notch
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 253
+BoxChart: property Notch
+
+Whether the box is notched about its median, 'off' by default.
+A notch spans the median plus and minus
+1.57 IQR / sqrt (n) , so two boxes whose notches do not overlap
+have medians that differ at roughly the five per cent level.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Whether the box is notched about its median, 'off' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.BoxChart.Orientation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 103
+BoxChart: property Orientation
+
+Whether the boxes stand 'vertical' , the default, or lie
+'horizontal' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+Whether the boxes stand 'vertical', the default, or lie 'horizontal'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+stats.chart.BoxChart.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 88
+BoxChart: property Parent
+
+The axes the chart is drawn into. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+The axes the chart is drawn into.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.BoxChart.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 227
+BoxChart: property SourceTable
+
+The table the data is read from, empty where it came from vectors.
+Assigning it again re-reads the columns XVariable and
+YVariable name, so a table changed after the chart was drawn is
+picked up.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+The table the data is read from, empty where it came from vectors.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.BoxChart.WhiskerLineColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+BoxChart: property WhiskerLineColor
+
+Colour of the whiskers and their caps.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Colour of the whiskers and their caps.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.BoxChart.WhiskerLineStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 113
+BoxChart: property WhiskerLineStyle
+
+Line style of the whiskers: '-' by default, or '--' ,
+':' , '-.' or 'none' .
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+Line style of the whiskers: '-' by default, or '--', ':', '-.' or 'none'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+stats.chart.BoxChart.XData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 340
+BoxChart: property XData
+
+Where each observation&rsquo;s box stands, one value per observation: a
+grouping variable, numeric or categorical. Where no grouping was
+given every observation shares one position and this is a
+categorical of one level. Setting it is refused while
+XVariable names a column, the data coming from the table
+instead.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 108
+Where each observation's box stands, one value per observation: a grouping variable, numeric or categorical.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.BoxChart.XDataMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 261
+BoxChart: property XDataMode
+
+Where XData came from: 'manual' where it was given as a
+grouping vector, and 'auto' where the chart derived it, from a
+table or from there being no grouping at all. This property is
+read-only, where MATLAB allows it to be assigned.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 164
+Where XData came from: 'manual' where it was given as a grouping vector, and 'auto' where the chart derived it, from a table or from there being no grouping at all.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.BoxChart.XVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 165
+BoxChart: property XVariable
+
+The column of SourceTable the boxes are grouped by, empty where
+none was named. Naming one is refused while the data came from
+vectors.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+The column of SourceTable the boxes are grouped by, empty where none was named.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+stats.chart.BoxChart.YData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 135
+BoxChart: property YData
+
+The observations themselves, one value per observation. Setting it is
+refused while YVariable names a column.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+The observations themselves, one value per observation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.BoxChart.YDataMode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+BoxChart: property YDataMode
+
+Where YData came from: 'manual' where it was given as a
+vector and 'auto' where it was read from a table. This
+property is read-only, where MATLAB allows it to be assigned.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 105
+Where YData came from: 'manual' where it was given as a vector and 'auto' where it was read from a table.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.BoxChart.YVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 137
+BoxChart: property YVariable
+
+The column of SourceTable holding the observations. Naming one
+is refused while the data came from vectors.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+The column of SourceTable holding the observations.
 
 
 

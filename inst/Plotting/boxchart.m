@@ -41,18 +41,19 @@
 ## and where asked the grouping, from the named columns of a table.  The
 ## chart keeps the table, so assigning @code{SourceTable} again re-reads it.
 ##
-## @code{@var{b} = boxchart (@dots{})} returns the @code{BoxChart} object
-## drawn, whose properties may be set afterwards to redraw it; see
-## @code{BoxChart}.  Where @qcode{'GroupByColor'} names a grouping, one
-## object is returned per colour group, in the order of its distinct values.
+## @code{@var{b} = boxchart (@dots{})} returns the
+## @code{stats.chart.BoxChart} object drawn, whose properties may be set
+## afterwards to redraw it; see @code{stats.chart.BoxChart}.  Where
+## @qcode{'GroupByColor'} names a grouping, one object is returned per
+## colour group, in the order of its distinct values.
 ##
 ## @qcode{'GroupByColor'} cannot be given with a table, which MATLAB R2026a
 ## refuses as well.
 ##
 ## Every other name-value pair sets the property of that name on the object;
-## see @code{BoxChart} for what each takes.
+## see @code{stats.chart.BoxChart} for what each takes.
 ##
-## @seealso{BoxChart, boxplot, swarmchart}
+## @seealso{stats.chart.BoxChart, boxplot, swarmchart}
 ## @end deftypefn
 
 function b = boxchart (varargin)
@@ -74,19 +75,15 @@ function b = boxchart (varargin)
 
   [spec, cgroup, args] = bcParse (varargin);
 
-  if (isempty (ax))
-    ax = gca ();
-  endif
-
   if (isempty (cgroup))
-    b = BoxChart (ax, spec, args);
+    b = stats.chart.BoxChart (ax, spec, args);
     return;
   endif
 
   ## One chart per colour group, each over its own share of the observations
   [lev, ~, idx] = unique (cgroup(:));
   n = numel (lev);
-  co = get (ax, 'ColorOrder');
+  co = bcColorOrder (ax);
   for k = 1:n
     take = (idx == k);
     sub = spec;
@@ -101,9 +98,11 @@ function b = boxchart (varargin)
     ## Octave's classdef has no 'empty', so the array is grown by assigning
     ## its first element rather than preallocated
     if (k == 1)
-      b = BoxChart (ax, sub, kargs);
+      b = stats.chart.BoxChart (ax, sub, kargs);
+      ## Every group draws into the axes the first of them settled on
+      ax = b.Parent;
     else
-      b(k) = BoxChart (ax, sub, kargs);
+      b(k) = stats.chart.BoxChart (ax, sub, kargs);
     endif
   endfor
 
@@ -207,6 +206,23 @@ function [spec, args] = bcParseVectors (in, spec)
 
 endfunction
 
+## The colour order the chart will draw with, without making an axes for it.
+function co = bcColorOrder (ax)
+
+  if (isempty (ax))
+    hf = get (0, 'currentfigure');
+    if (! isempty (hf))
+      ax = get (hf, 'currentaxes');
+    endif
+  endif
+  if (isempty (ax))
+    co = get (0, 'defaultaxescolororder');
+  else
+    co = get (ax, 'ColorOrder');
+  endif
+
+endfunction
+
 ## Whether an argument is the name of a table variable.
 function tf = bcIsName (x)
 
@@ -251,7 +267,7 @@ endfunction
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   b = boxchart (bcY);
-%!   assert_equal (class (b), 'BoxChart');
+%!   assert_equal (class (b), 'stats.chart.BoxChart');
 %!   assert_equal (quantile (bcY, 0.25), 3);
 %!   assert_equal (quantile (bcY, 0.75), 8);
 %!   assert_equal (median (bcY), 5.5);
@@ -335,7 +351,7 @@ endfunction
 %! unwind_protect
 %!   b = boxchart (bcG, bcY, 'GroupByColor', bcC);
 %!   assert_equal (numel (b), 2);
-%!   assert_equal (class (b), 'BoxChart');
+%!   assert_equal (class (b), 'stats.chart.BoxChart');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -407,11 +423,11 @@ endfunction
 %!error<boxchart: name-value arguments must be in pairs.> ...
 %! boxchart (bcY, 'Notch')
 
-%!error<BoxChart: 'BoxWidth' must be a positive scalar.> ...
+%!error<stats.chart.BoxChart: 'BoxWidth' must be a positive scalar.> ...
 %! boxchart (bcY, 'BoxWidth', -1)
 
-%!error<BoxChart: 'Notch' must be one of 'on', 'off'.> ...
+%!error<stats.chart.BoxChart: 'Notch' must be one of 'on', 'off'.> ...
 %! boxchart (bcY, 'Notch', 'maybe')
 
-%!error<BoxChart: 'BoxFaceAlpha' must be a scalar between 0 and 1.> ...
+%!error<stats.chart.BoxChart: 'BoxFaceAlpha' must be a scalar between 0 and 1.> ...
 %! boxchart (bcY, 'BoxFaceAlpha', 2)
