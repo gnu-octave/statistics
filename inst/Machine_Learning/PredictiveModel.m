@@ -36,9 +36,14 @@ classdef (Abstract) PredictiveModel
   ##
   ## @end deftp
 
-  ## Subclasses in another directory reach this file only because
-  ## post_install.m puts this directory on the path before Octave rebuilds
-  ## the doc-cache at install time; see that file before moving this one.
+  ## This file must live in a directory that sorts before every directory
+  ## holding a subclass of it: Machine_Learning before Regression, today.
+  ## Octave below 11.2.0 rebuilds every doc-cache when the package is
+  ## installed, one directory at a time and with only that directory on the
+  ## path, so a subclass in another directory can resolve this class only
+  ## where the walk has already met it.  genpath sorts, and a class stays
+  ## resolved once it has been, so the earlier directory settles it.  The
+  ## last test in this file fails if that ever stops being true.
   ##
   ## The shared behaviour of the models goes here.  The block stays while it
   ## is empty: a class body holding no block at all gets no help text, help
@@ -88,3 +93,22 @@ endclassdef
 %! X = [1, 2; 2, 3; 3, 4; 1, 5; 2, 6; 3, 7];
 %! y = [2.5; 3.1; 4.8; 2.2; 3.9; 5.1];
 %! assert_equal (isa (fitlm (X, y), 'PredictiveModel'), true);
+
+%!test  # no subclass may sit in a directory sorting before this class's own
+%! base = fileparts (which ('PredictiveModel'));
+%! root = fileparts (base);
+%! here = base(numel (root) + 2:end);
+%! d = dir (root);
+%! subs = {d([d.isdir]).name};
+%! subs = subs(! ismember (subs, {'.', '..', here}));
+%! for k = 1:numel (subs)
+%!   f = dir (fullfile (root, subs{k}, '*.m'));
+%!   for j = 1:numel (f)
+%!     src = fileread (fullfile (root, subs{k}, f(j).name));
+%!     pat = '^classdef[^\n]*<[^\n]*PredictiveModel';
+%!     if (! isempty (regexp (src, pat, 'once', 'lineanchors')))
+%!       order = sort ({here, subs{k}});
+%!       assert_equal (order{1}, here);
+%!     endif
+%!   endfor
+%! endfor

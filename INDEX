@@ -125,7 +125,7 @@ Regression
  stepwisefit
  stepwiseglm
  stepwiselm
-Supervised Learning
+Machine Learning
  ClassificationBaggedEnsemble
  ClassificationDiscriminant
  ClassificationECOC
