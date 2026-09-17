@@ -28,7 +28,7 @@
 ##
 ## @end deftypefn
 
-function [pd, x, y] = pdCompute (fname, Mdl, Vars, varargin)
+function [pd, x, y, opts] = pdCompute (fname, Mdl, Vars, varargin)
 
   if (! (isa (Mdl, 'PredictiveModel') || is_function_handle (Mdl)))
     error (strcat ("%s: MDL must be a fitted model that", ...
@@ -70,9 +70,9 @@ function [pd, x, y] = pdCompute (fname, Mdl, Vars, varargin)
   optNames = {'QueryPoints', 'NumObservationsToSample', ...
               'CategoricalPredictors', 'IncludeInteractions', ...
               'IncludeIntercept', 'OutputColumns', 'UseParallel', ...
-              'PredictionForMissingValue'};
-  dfValues = {[], [], [], [], true, 'all', [], []};
-  [QP, NumObs, CatPred, Inter, Icept, OutCols, Par, Miss, rem] = ...
+              'PredictionForMissingValue', 'Conditional', 'Parent'};
+  dfValues = {[], [], [], [], true, 'all', [], [], [], []};
+  [QP, NumObs, CatPred, Inter, Icept, OutCols, Par, Miss, Cond, Ax, rem] = ...
                               parsePairedArguments (optNames, dfValues, args);
   if (! isempty (rem))
     error (strcat ("%s: unknown optional argument or", ...
@@ -84,6 +84,13 @@ function [pd, x, y] = pdCompute (fname, Mdl, Vars, varargin)
   if (! isempty (Miss))
     error (strcat ("%s: 'PredictionForMissingValue' is not", ...
                    " implemented."), fname);
+  endif
+  ## Both entry points come here, and the method wins the dispatch whenever
+  ## the first argument is a model, so this is the only place that sees them
+  if (! strcmp (fname, 'plotPartialDependence')
+      && (! isempty (Cond) || ! isempty (Ax)))
+    error (strcat ("%s: 'Conditional' and 'Parent' belong to", ...
+                   " plotPartialDependence."), fname);
   endif
 
   [predArgs, subIcept, OutCols, errmsg] = pdOptions (Mdl, Inter, Icept, ...
@@ -105,6 +112,13 @@ function [pd, x, y] = pdCompute (fname, Mdl, Vars, varargin)
   else
     y = [];
   endif
+
+  ## What the drawing needs and the values do not: the frame it averaged over,
+  ## the pairs predict was given, and the two options only the plot takes
+  opts.Conditional = Cond;
+  opts.Parent = Ax;
+  opts.PredArgs = predArgs;
+  opts.Frame = F;
 
 endfunction
 

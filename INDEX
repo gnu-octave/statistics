@@ -187,6 +187,7 @@ Machine Learning
  gampredict
  gamtrain
  partialDependence
+ plotPartialDependence
  PredictiveModel
  RegressionBaggedEnsemble
  RegressionEnsemble

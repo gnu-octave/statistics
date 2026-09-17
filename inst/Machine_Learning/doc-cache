@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1454
+# columns: 1455
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -49231,6 +49231,70 @@ PredictiveModel
 # elements: 1
 # length: 27
 Compute partial dependence.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+plotPartialDependence
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1833
+statistics: plotPartialDependence ( Mdl , Vars )
+statistics: plotPartialDependence ( Mdl , Vars , Labels )
+statistics: plotPartialDependence (&hellip;, Data )
+statistics: plotPartialDependence ( fun , Vars , Data )
+statistics: plotPartialDependence (&hellip;, name , value )
+statistics: ax = plotPartialDependence (&hellip;)
+
+Plot partial dependence and individual conditional expectation.
+
+plotPartialDependence ( Mdl , Vars ) draws the partial
+dependence of the model Mdl on the predictors named by Vars :
+a line where one is named and a surface where two are. The arguments are
+those of partialDependence , which computes what is drawn, and
+Labels is required for a classification model in the same way.
+
+ax is the axes drawn into.
+
+Name Value
+'Conditional' What to draw:
+'none' (default) draws the partial dependence alone;
+'absolute' draws a curve per observation, a marker where each one
+sits on its own curve, and the mean of those curves over them;
+'centered' draws the same with every curve shifted to start at
+zero. Only one predictor may be varied, and a classification model may
+name only one class.
+'Parent' The axes to draw into. The default is
+gca .
+
+Every other name-value pair is passed to partialDependence ; see
+there for 'QueryPoints' , 'NumObservationsToSample' and the
+rest.
+
+The line a conditional plot draws is the mean of the curves drawn with it,
+which is not always what partialDependence returns. A decision
+tree, an ensemble of bagged trees and a generalized additive model are
+answered over the distribution they were fitted on, while a curve belongs
+to one observation and must come from predict , so the two part
+company for those models whenever the observations are not the ones the
+model was fitted on. MATLAB R2024a draws it this way and so does this.
+
+See also:
+partialDependence,
+PredictiveModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+Plot partial dependence and individual conditional expectation.
 
 
 
