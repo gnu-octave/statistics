@@ -285,7 +285,11 @@ endfunction
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   s = swarmchart (scX, scY);
-%!   assert_equal (get (s, 'type'), 'scatter');
+%!   assert_equal (size (get (s, 'cdata')), [1, 3]);
+%!   ## Octave's scatter builds an hggroup under the gnuplot toolkit
+%!   if (! strcmp (graphics_toolkit (), 'gnuplot'))
+%!     assert_equal (get (s, 'type'), 'scatter');
+%!   endif
 %!   assert_equal (get (s, 'XJitter'), 'density');
 %!   assert_equal (get (s, 'YJitter'), 'none');
 %! unwind_protect_cleanup

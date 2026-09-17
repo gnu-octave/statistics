@@ -320,7 +320,11 @@ endfunction
 %!                               'Conditional', 'absolute');
 %!   ch = get (ax, 'children');
 %!   assert_equal (numel (ch), rows (ppX) + 2);
-%!   assert_equal (sum (strcmp (get (ch, 'type'), 'scatter')), 1);
+%!   assert_equal (sum (arrayfun (@(h) isprop (h, 'cdata'), ch)), 1);
+%!   ## Octave's scatter builds an hggroup under the gnuplot toolkit
+%!   if (! strcmp (graphics_toolkit (), 'gnuplot'))
+%!     assert_equal (sum (strcmp (get (ch, 'type'), 'scatter')), 1);
+%!   endif
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
