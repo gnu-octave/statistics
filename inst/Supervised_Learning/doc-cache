@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1452
+# columns: 1454
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -32220,6 +32220,44 @@ A fitted model that answers for new observations.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 33
+PredictiveModel.partialDependence
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 632
+PredictiveModel: pd = partialDependence ( obj , Vars )
+PredictiveModel: pd = partialDependence ( obj , Vars , Labels )
+PredictiveModel: pd = partialDependence (&hellip;, Data )
+PredictiveModel: pd = partialDependence (&hellip;, name , value )
+PredictiveModel: [ pd , x , y ] = partialDependence (&hellip;)
+
+Compute partial dependence.
+
+partialDependence ( obj , Vars ) is the same call as
+partialDependence the function, written on the model instead of
+before it, and takes and returns exactly what it does. See
+partialDependence for the arguments and for what pd ,
+x and y hold.
+
+See also:
+partialDependence ,
+plotPartialDependence
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Compute partial dependence.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 24
 RegressionBaggedEnsemble
 
@@ -49106,6 +49144,93 @@ treepredict
 # elements: 1
 # length: 42
 Fit a binary decision tree for regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+partialDependence
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3026
+statistics: pd = partialDependence ( Mdl , Vars )
+statistics: pd = partialDependence ( Mdl , Vars , Labels )
+statistics: pd = partialDependence (&hellip;, Data )
+statistics: pd = partialDependence ( fun , Vars , Data )
+statistics: pd = partialDependence (&hellip;, name , value )
+statistics: [ pd , x , y ] = partialDependence (&hellip;)
+
+Compute partial dependence.
+
+pd = partialDependence ( Mdl , Vars ) returns the
+partial dependence of the response of the regression model Mdl on the
+predictors named by Vars , averaged over the observations Mdl
+was fitted on. Vars names one predictor or two, by column index or
+by name, and a model that does not keep its observations must be given
+them as Data .
+
+pd = partialDependence ( Mdl , Vars , Labels )
+does the same for a classification model, averaging the score of each class
+named by Labels rather than a response. Labels is required for
+such a model and refused for any other.
+
+pd = partialDependence ( fun , Vars , Data )
+takes a function handle in place of a model. fun is called with a
+matrix of observations and answers with one row for each, and Data is
+then required.
+
+pd is a 1xnumX vector for a regression model varying one
+predictor and a numYxnumX matrix for two, where numX and
+numY count the query points of the first and second. For a
+classification model it gains a leading dimension of one row per class,
+giving numxnumX and numxnumYxnumX .
+
+x and y hold the query points of the first and the second
+predictor, y empty where only one was named. Where a predictor is
+categorical they are its levels.
+
+Name Value
+'QueryPoints' The points to answer at, as a vector
+for one predictor and, for two, either a matrix of one column each or a
+cell holding a vector for each, which is how they may differ in length.
+The default is 100 points evenly spaced between the smallest and the
+largest value the predictor takes among the observations averaged over,
+and the levels themselves where it is categorical.
+'NumObservationsToSample' How many observations to
+draw, without replacement, from those averaged over. The default is all of
+them, and so is a number reaching or exceeding how many there are. The
+default query points span what was drawn.
+'CategoricalPredictors' The predictors whose values
+are levels, taken as by every learner of this package. It applies only to
+a function handle, a model being asked for its own.
+'IncludeInteractions' Whether the interaction terms
+of a generalized additive model are included. It applies only to such a
+model, and the default is the model&rsquo;s own.
+'IncludeIntercept' Whether the intercept of a
+generalized additive model is included, true by default. Excluding
+it takes the intercept off the result.
+'OutputColumns' Which of the columns a function
+handle answers with are wanted, as indices or as 'all' , which is
+the default. It applies only to a function handle.
+
+'UseParallel' and 'PredictionForMissingValue' are not
+implemented and are refused rather than ignored.
+
+See also:
+plotPartialDependence,
+PredictiveModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+Compute partial dependence.
 
 
 

@@ -46,6 +46,30 @@ classdef (Abstract) PredictiveModel
   ## above.
   methods (Access = public)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {PredictiveModel} {@var{pd} =} partialDependence (@var{obj}, @var{Vars})
+    ## @deftypefnx {PredictiveModel} {@var{pd} =} partialDependence (@var{obj}, @var{Vars}, @var{Labels})
+    ## @deftypefnx {PredictiveModel} {@var{pd} =} partialDependence (@dots{}, @var{Data})
+    ## @deftypefnx {PredictiveModel} {@var{pd} =} partialDependence (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {PredictiveModel} {[@var{pd}, @var{x}, @var{y}] =} partialDependence (@dots{})
+    ##
+    ## Compute partial dependence.
+    ##
+    ## @code{partialDependence (@var{obj}, @var{Vars})} is the same call as
+    ## @code{partialDependence} the function, written on the model instead of
+    ## before it, and takes and returns exactly what it does.  See
+    ## @code{partialDependence} for the arguments and for what @var{pd},
+    ## @var{x} and @var{y} hold.
+    ##
+    ## @seealso{partialDependence, plotPartialDependence}
+    ## @end deftypefn
+    function varargout = partialDependence (this, varargin)
+
+      [varargout{1:max(nargout, 1)}] = pdCompute ('partialDependence', ...
+                                                  this, varargin{:});
+
+    endfunction
+
   endmethods
 
 endclassdef
