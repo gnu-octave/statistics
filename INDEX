@@ -455,6 +455,8 @@ Plotting
  bar3
  bar3h
  biplot
+ BoxChart
+ boxchart
  boxplot
  cdfplot
  dendrogram
