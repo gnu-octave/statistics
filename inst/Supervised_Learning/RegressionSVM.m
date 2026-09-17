@@ -60,6 +60,9 @@
 ## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
 ## An observation holding a level the training data did not is predicted as a
 ## row missing a predictor, the lower median of the training response.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## naming the predictors, in the order they appear in @var{X}.

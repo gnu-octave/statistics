@@ -729,6 +729,9 @@ classdef ClassificationTree
     ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
     ## are levels, as indices, as a logical vector with one element per
     ## predictor, or as @qcode{'all'}.
+    ## A predictor may be named rather than indexed, as a character matrix of
+    ## one padded name per row, a string array or a cellstr; a name must match
+    ## an entry of @qcode{'PredictorNames'} exactly, its case included.
     ##
     ## @item @qcode{'ClassNames'} @tab The classes to fit, of the same type
     ## as @var{Y}.  Observations of any other class are dropped.  The model
@@ -3165,6 +3168,41 @@ endfunction
 %! assert_equal (Mdl.CategoricalSplit, {[1, 2], [3, 4]});
 %! assert_equal (isnan (Mdl.CutPoint(1)), true);
 %! assert_equal (predictorImportance (Mdl), [0.28125, 0], 1e-12);
+
+%!test  # a categorical predictor may be named in any of the three containers
+%! pn = {'grp', 'val'};
+%! M1 = ClassificationTree (Xb, yb, 'PredictorNames', pn, ...
+%!                          'CategoricalPredictors', {'grp'});
+%! M2 = ClassificationTree (Xb, yb, 'PredictorNames', pn, ...
+%!                          'CategoricalPredictors', string ({'grp'}));
+%! M3 = ClassificationTree (Xb, yb, 'PredictorNames', pn, ...
+%!                          'CategoricalPredictors', 'grp');
+%! assert_equal (M1.CategoricalPredictors, 1);
+%! assert_equal (M2.CategoricalPredictors, 1);
+%! assert_equal (M3.CategoricalPredictors, 1);
+
+%!test  # a character matrix names one predictor per row, its padding stripped
+%! M = ClassificationTree (Xb, yb, 'PredictorNames', {'g', 'val'}, ...
+%!                         'CategoricalPredictors', ['g  '; 'val']);
+%! assert_equal (M.CategoricalPredictors, [1, 2]);
+
+%!test  # 'all' is every predictor even where a predictor is named 'all'
+%! M = ClassificationTree (Xb, yb, 'PredictorNames', {'all', 'val'}, ...
+%!                         'CategoricalPredictors', 'all');
+%! assert_equal (M.CategoricalPredictors, [1, 2]);
+
+%!test  # a repeated name gives one index, where MATLAB repeats it
+%! M = ClassificationTree (Xb, yb, 'PredictorNames', {'grp', 'val'}, ...
+%!                         'CategoricalPredictors', {'grp', 'grp'});
+%! assert_equal (M.CategoricalPredictors, 1);
+
+%!error<ClassificationTree: 'CategoricalPredictors' does not name a predictor: 'GRP'> ...
+%! ClassificationTree (Xb, yb, 'PredictorNames', {'grp', 'val'}, ...
+%!                     'CategoricalPredictors', {'GRP'})
+
+%!error<ClassificationTree: 'CategoricalPredictors' must be a vector of positive integers, a logical vector, a character matrix, a string array, a cell array of character vectors or 'all'.> ...
+%! ClassificationTree (Xb, yb, 'PredictorNames', {'grp', 'val'}, ...
+%!                     'CategoricalPredictors', {'grp', 2})
 
 %!test  # MATLAB parity: a level a node did not see stops the row there
 %! Mdl = ClassificationTree (Xb, yb, 'CategoricalPredictors', 1);

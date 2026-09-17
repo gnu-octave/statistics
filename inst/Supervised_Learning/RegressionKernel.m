@@ -350,6 +350,9 @@ classdef RegressionKernel
     ## @qcode{'x1 == 2'}, and the coded columns are not standardized.  A row
     ## holding a value the training data did not is predicted as a row
     ## missing a predictor, the weighted lower median of the training response.
+    ## A predictor may be named rather than indexed, as a character matrix of
+    ## one padded name per row, a string array or a cellstr; a name must match
+    ## an entry of @qcode{'PredictorNames'} exactly, its case included.
     ## @end multitable
     ##
     ## The fit is always by limited-memory BFGS, the only solver MATLAB

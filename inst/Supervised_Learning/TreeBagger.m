@@ -627,7 +627,7 @@ classdef TreeBagger
       ClassNames = [];
       Weights = [];
       PredictorNames = {};
-      CatPred = [];
+      CatSpec = [];
       NumPrint = 0;
       TreeArgs = {};
       givenClass = {};
@@ -725,16 +725,7 @@ classdef TreeBagger
             PredictorNames = Value(:)';
 
           case 'categoricalpredictors'
-            pnames = arrayfun (@(k) sprintf ('x%d', k), 1:columns (X), ...
-                               'UniformOutput', false);
-            [Cod, errmsg] = dummyCoding (X, Value, pnames);
-            if (! isempty (errmsg))
-              error ("TreeBagger: %s", errmsg);
-            endif
-            CatPred = Cod.Index;
-            if (! isempty (Cod.Index))
-              TreeArgs(end+1:end+2) = {'CategoricalPredictors', Cod.Index};
-            endif
+            CatSpec = Value;
 
           case 'numprint'
             if (! (isnumeric (Value) && isscalar (Value) && isreal (Value)
@@ -776,6 +767,25 @@ classdef TreeBagger
         error (strcat ("TreeBagger: sampling without replacement at an", ...
                        " 'InBagFraction' of 1 leaves no observation out", ...
                        " of bag for 'OOBPrediction'."));
+      endif
+
+      p = columns (X);
+      if (isempty (PredictorNames))
+        PredictorNames = arrayfun (@(k) sprintf ('x%d', k), 1:p, ...
+                                   'UniformOutput', false);
+      endif
+
+      ## The categorical predictors are resolved once the predictor names are
+      ## known, so that they may be named as well as indexed, and before any
+      ## row is left out, so that a level is not lost with the row carrying it.
+      [Cod, errmsg] = dummyCoding (X, CatSpec, PredictorNames);
+      if (! isempty (errmsg))
+        error ("TreeBagger: %s", errmsg);
+      endif
+      CatPred = [];
+      if (! isempty (Cod.Index))
+        CatPred = Cod.Index;
+        TreeArgs(end+1:end+2) = {'CategoricalPredictors', CatPred};
       endif
 
       ## Observation weights, before any row is left out
@@ -887,11 +897,6 @@ classdef TreeBagger
 
       endif
 
-      p = columns (X);
-      if (isempty (PredictorNames))
-        PredictorNames = arrayfun (@(k) sprintf ('x%d', k), 1:p, ...
-                                   'UniformOutput', false);
-      endif
       if (isempty (NumVarSample))
         if (isclass)
           NumVarSample = ceil (sqrt (p));
@@ -2772,6 +2777,12 @@ endfunction
 %! assert_equal (B.CategoricalPredictors, 1);
 %! B = TreeBagger (3, X, yb, 'CategoricalPredictors', 'all');
 %! assert_equal (B.CategoricalPredictors, [1, 2]);
+
+%!test  # a categorical predictor may be named rather than indexed
+%! B = TreeBagger (3, X, yb, 'PredictorNames', {'grp', 'val'}, ...
+%!                 'CategoricalPredictors', {'grp'});
+%! assert_equal (B.CategoricalPredictors, 1);
+%! assert_equal (B.Trees{1}.CategoricalPredictors, 1);
 
 %!error<TreeBagger: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! TreeBagger (3, X, yb, 'CategoricalPredictors', 3)

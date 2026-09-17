@@ -59,6 +59,9 @@
 ## levels, as indices, as a logical vector with one element per predictor, or
 ## as @qcode{'all'}.  Such a predictor is split into two sets of levels, and an
 ## observation whose level a node did not see stops there.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'ClassNames'} @tab The classes to fit, of the same type as
 ## @var{Y}.  Observations of any other class are dropped.  The model keeps

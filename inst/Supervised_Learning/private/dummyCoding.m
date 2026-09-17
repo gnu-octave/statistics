@@ -23,8 +23,22 @@
 ##
 ## The first form learns the coding from the training predictors @var{X}.
 ## @var{spec} names the categorical predictors as indices, as a logical
-## vector with one element per predictor, or as @qcode{'all'}, and
-## @var{names} holds the predictor names.  @var{C} is a structure with the
+## vector with one element per predictor, as @qcode{'all'}, or by name as a
+## character matrix of one padded name per row, a string array or a cell
+## array of character vectors, and @var{names} holds the predictor names.
+## A name is matched against @var{names} exactly, so its case must agree;
+## the padding blanks of a character matrix are stripped before matching
+## and nothing else is.  @qcode{'all'} is read as every predictor even where
+## a predictor is named @qcode{'all'}.
+##
+## Three readings of a name depart from MATLAB R2024a, each deliberately.
+## Repeated names give one index where MATLAB repeats it; the indices are a
+## row for every form of @var{spec}, where MATLAB returns a column for a
+## character matrix and a row for the rest; and a name is read against the
+## default names as readily as against given ones, where MATLAB requires
+## @qcode{'PredictorNames'} before it will read any name at all.
+##
+## @var{C} is a structure with the
 ## fields @qcode{Index}, the sorted indices of the categorical predictors;
 ## @qcode{Levels}, a cell array with the sorted levels of each predictor,
 ## empty for a numeric one; @qcode{NumPredictors}; @qcode{ExpandedNames},
@@ -67,9 +81,40 @@ function [C, errmsg] = dummyCoding (X, spec, names)
       return;
     endif
     idx = unique (double (spec(:)'));
+  elseif (ischar (spec) || iscellstr (spec) || isa (spec, 'string'))
+    ## A character matrix gives one name per row, its padding blanks stripped;
+    ## a cell array or string array gives one name per element, kept whole.
+    if (ischar (spec))
+      wanted = cellstr (spec)';
+    elseif (iscellstr (spec))
+      wanted = spec(:)';
+    else
+      wanted = cellstr (spec(:)');
+    endif
+    if (isempty (wanted))
+      idx = [];
+    elseif (numel (names) != p)
+      errmsg = strcat ("'CategoricalPredictors' can name a predictor only", ...
+                       " where the predictor names are known.");
+      return;
+    else
+      idx = zeros (1, 0);
+      for k = 1:numel (wanted)
+        j = find (strcmp (names, wanted{k}));
+        if (isempty (j))
+          errmsg = sprintf (strcat ("'CategoricalPredictors' does not name", ...
+                                    " a predictor: '%s'"), wanted{k});
+          return;
+        endif
+        idx(end+1) = j(1);
+      endfor
+      idx = unique (idx);
+    endif
   else
     errmsg = strcat ("'CategoricalPredictors' must be a vector of positive", ...
-                     " integers, a logical vector or 'all'.");
+                     " integers, a logical vector, a character matrix, a", ...
+                     " string array, a cell array of character vectors or", ...
+                     " 'all'.");
     return;
   endif
 

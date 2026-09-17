@@ -58,6 +58,9 @@
 ## ones per level seen in training, named as in @qcode{'x1 == 2'} in
 ## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
 ## An observation holding a level the training data did not has no prediction.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## specifying the predictor variable names, in the order they appear in

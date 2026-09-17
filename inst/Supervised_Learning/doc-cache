@@ -8846,7 +8846,7 @@ ClassificationKernel.ClassificationKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2565
+# length: 2765
 ClassificationKernel: obj = ClassificationKernel ( X , Y )
 ClassificationKernel: obj = ClassificationKernel (&hellip;, name , value )
 
@@ -8905,6 +8905,9 @@ and ones per distinct value it takes in the training data, named as in
 holding a value the training data did not is scored NaN and
 labelled with the class of largest prior, as a row missing a predictor
 is.
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 
 The fit is always by limited-memory BFGS, the only solver MATLAB
 offers a kernel model, and always under a ridge penalty.
@@ -9711,7 +9714,7 @@ ClassificationLinear.ClassificationLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4063
+# length: 4263
 ClassificationLinear: obj = ClassificationLinear ( X , Y )
 ClassificationLinear: obj = ClassificationLinear (&hellip;, name , value )
 
@@ -9798,6 +9801,9 @@ and ones per distinct value it takes in the training data, named as in
 'x1 == 2' . A row holding a value the training data did not
 is scored NaN and labelled with the class of largest prior, as
 a row missing a predictor is.
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 
 The default solver is 'sparsa' under a lasso penalty. Under a
 ridge penalty it is 'bfgs' when there are no more than 100
@@ -11649,7 +11655,7 @@ ClassificationNeuralNetwork.ClassificationNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5145
+# length: 5345
 statistics: obj = ClassificationNeuralNetwork ( X , Y )
 statistics: obj = ClassificationNeuralNetwork (&hellip;, name , value )
 
@@ -11683,6 +11689,9 @@ column of zeros and ones per level seen in training, named as in
 are not standardized. An observation holding a level the training data
 did not has no score and takes the class of largest prior, as a row
 missing a predictor does.
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character
 vectors specifying the names of the predictors. The length of this array
 must match the number of columns in X .
@@ -17000,7 +17009,7 @@ ClassificationSVM.ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4023
+# length: 4223
 statistics: obj = ClassificationSVM ( X , Y )
 statistics: obj = ClassificationSVM (&hellip;, name , value )
 
@@ -17033,6 +17042,9 @@ column of zeros and ones per level seen in training, named as in
 are not standardized. An observation holding a level the training data
 did not has no score and takes the class of largest prior, as a row
 missing a predictor does.
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character
 vectors specifying the names of the predictors. The length of this array
 must match the number of columns in X .
@@ -18604,7 +18616,7 @@ ClassificationTree.ClassificationTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3525
+# length: 3725
 ClassificationTree: obj = ClassificationTree ( X , Y )
 ClassificationTree: obj = ClassificationTree (&hellip;, name , value )
 
@@ -18631,6 +18643,9 @@ the exact search is taken when the node holds at most
 'CategoricalPredictors' The predictors whose values
 are levels, as indices, as a logical vector with one element per
 predictor, or as 'all' .
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 'ClassNames' The classes to fit, of the same type
 as Y . Observations of any other class are dropped. The model
 keeps the classes in this order; by default they are sorted.
@@ -35993,7 +36008,7 @@ RegressionGP
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5586
+# length: 5786
 statistics: obj = RegressionGP ( X , Y )
 statistics: obj = RegressionGP (&hellip;, name , value )
 
@@ -36069,6 +36084,9 @@ ones per distinct value it takes in the training data, named as in
 X keeps the predictors as given. A row holding a value the
 training data did not is predicted as a row missing a predictor, the
 weighted lower median of the training response.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'Weights' An Nx1 numeric vector of non-negative
 observation weights. The default is a vector of ones.
 'PredictorNames' A cell array of character vectors
@@ -37664,7 +37682,7 @@ RegressionKernel.RegressionKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2413
+# length: 2613
 RegressionKernel: obj = RegressionKernel ( X , Y )
 RegressionKernel: obj = RegressionKernel (&hellip;, name , value )
 
@@ -37719,6 +37737,9 @@ and ones per distinct value it takes in the training data, named as in
 'x1 == 2' , and the coded columns are not standardized. A row
 holding a value the training data did not is predicted as a row
 missing a predictor, the weighted lower median of the training response.
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 
 The fit is always by limited-memory BFGS, the only solver MATLAB
 offers a kernel model, and always under a ridge penalty.
@@ -38314,7 +38335,7 @@ RegressionLinear.RegressionLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3598
+# length: 3798
 RegressionLinear: obj = RegressionLinear ( X , Y )
 RegressionLinear: obj = RegressionLinear (&hellip;, name , value )
 
@@ -38393,6 +38414,9 @@ and ones per distinct value it takes in the training data, named as in
 'x1 == 2' . A row holding a value the training data did not
 is predicted as a row missing a predictor, the weighted lower median
 of the training response.
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 
 The default solver is 'sparsa' under a lasso penalty. Under a
 ridge penalty it is 'bfgs' when there are no more than 100
@@ -38621,7 +38645,7 @@ RegressionNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4938
+# length: 5138
 statistics: obj = RegressionNeuralNetwork ( X , Y )
 statistics: obj = RegressionNeuralNetwork (&hellip;, name , value )
 
@@ -38661,6 +38685,9 @@ ones per level seen in training, named as in 'x1 == 2' in
 ExpandedPredictorNames , and the coded columns are not standardized.
 An observation holding a level the training data did not is predicted as a
 row missing a predictor, the lower median of the training response.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 naming the predictors, in the order they appear in X .
 'ResponseName' A character vector naming the response.
@@ -42195,7 +42222,7 @@ RegressionSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3638
+# length: 3838
 statistics: obj = RegressionSVM ( X , Y )
 statistics: obj = RegressionSVM (&hellip;, name , value )
 
@@ -42234,6 +42261,9 @@ ones per level seen in training, named as in 'x1 == 2' in
 ExpandedPredictorNames , and the coded columns are not standardized.
 An observation holding a level the training data did not is predicted as a
 row missing a predictor, the lower median of the training response.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 naming the predictors, in the order they appear in X .
 'ResponseName' A character vector naming the response.
@@ -44088,7 +44118,7 @@ RegressionTree.RegressionTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2468
+# length: 2668
 RegressionTree: obj = RegressionTree ( X , Y )
 RegressionTree: obj = RegressionTree (&hellip;, name , value )
 
@@ -44106,6 +44136,9 @@ Name Value
 'CategoricalPredictors' The predictors whose values
 are levels, as indices, as a logical vector with one element per
 predictor, or as 'all' .
+A predictor may be named rather than indexed, as a character matrix of
+one padded name per row, a string array or a cellstr; a name must match
+an entry of 'PredictorNames' exactly, its case included.
 'MaxNumCategories' A nonnegative integer, recorded
 in ModelParameters . The default is 10. A regression orders
 the levels by their mean response, which finds the best split whatever
@@ -46869,7 +46902,7 @@ fitcecoc
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4425
+# length: 4625
 statistics: Mdl = fitcecoc ( X , Y )
 statistics: Mdl = fitcecoc (&hellip;, name , value )
 
@@ -46918,6 +46951,9 @@ element per observation. The default is uniform.
 are levels, as indices, a logical vector or 'all' , passed as given
 to every binary learner, which codes them its own way; a nearest neighbour
 learner takes only 'all' and a discriminant learner none.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cellstr of predictor names.
 'ResponseName' The name of the response variable.
 'ScoreTransform' A transform applied to the
@@ -46985,7 +47021,7 @@ fitcensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 9924
+# length: 10124
 statistics: Mdl = fitcensemble ( X , Y )
 statistics: Mdl = fitcensemble (&hellip;, name , value )
 
@@ -47138,6 +47174,9 @@ far below the smallest edge TotalBoost holds every edge. The default is
 are levels, as indices, as a logical vector with one element per
 predictor, or as 'all' . Every tree splits them into sets of
 levels, as fitctree does. Not with 'Subspace' .
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'FResample' The share of the observations each
 learner draws, greater than 0 and no greater than 1. The default is 1.
 Given with a boosting method, the ensemble resamples.
@@ -47200,7 +47239,7 @@ fitcgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7247
+# length: 7447
 statistics: Mdl = fitcgam ( X , Y )
 statistics: Mdl = fitcgam (&hellip;, name , value )
 
@@ -47332,6 +47371,9 @@ per predictor, or 'all' . A tree splits a categorical predictor
 into two sets of levels, and a level not seen in training predicts as a
 missing value. Its BinEdges and PairDetectionBinEdges are
 empty. The default is none.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'Weights' A numeric vector of non-negative observation
 weights, one per row of X . Each class carries its 'Prior' ,
 spread over its observations in proportion to their weights.
@@ -47822,7 +47864,7 @@ fitcnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6315
+# length: 6515
 statistics: Mdl = fitcnet ( X , Y )
 statistics: Mdl = fitcnet (&hellip;, name , value )
 
@@ -47854,6 +47896,9 @@ levels, as indices, as a logical vector with one element per predictor, or as
 ones per level seen in training, named as in 'x1 == 2' in
 ExpandedPredictorNames , and the coded columns are not standardized.
 An observation holding a level the training data did not has no score.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 specifying the predictor variable names. The variable names are assumed to
 be in the same order as they appear in the training data X .
@@ -47971,7 +48016,7 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8292
+# length: 8492
 statistics: Mdl = fitcsvm ( X , Y )
 statistics: Mdl = fitcsvm (&hellip;, name , value )
 
@@ -48004,6 +48049,9 @@ levels, as indices, as a logical vector with one element per predictor, or as
 ones per level seen in training, named as in 'x1 == 2' in
 ExpandedPredictorNames , and the coded columns are not standardized.
 An observation holding a level the training data did not has no score.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 specifying the predictor variable names. The variable names are assumed to
 be in the same order as they appear in the training data X .
@@ -48152,7 +48200,7 @@ fitctree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4388
+# length: 4588
 statistics: Mdl = fitctree ( X , Y )
 statistics: Mdl = fitctree (&hellip;, name , value )
 
@@ -48190,6 +48238,9 @@ four classes.
 levels, as indices, as a logical vector with one element per predictor, or
 as 'all' . Such a predictor is split into two sets of levels, and an
 observation whose level a node did not see stops there.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'ClassNames' The classes to fit, of the same type as
 Y . Observations of any other class are dropped. The model keeps
 the classes in this order; by default they are sorted.
@@ -48371,7 +48422,7 @@ fitrgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6916
+# length: 7116
 statistics: obj = fitrgam ( X , Y )
 statistics: obj = fitrgam ( X , Y , name , value )
 
@@ -48497,6 +48548,9 @@ per predictor, or 'all' . A tree splits a categorical predictor
 into two sets of levels, and a level not seen in training predicts as a
 missing value. Its BinEdges and PairDetectionBinEdges are
 empty. The default is none.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'Weights' A numeric vector of non-negative observation
 weights, one per row of X . Only their proportions matter.
 
@@ -48687,7 +48741,7 @@ fitrnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5372
+# length: 5572
 statistics: Mdl = fitrnet ( X , Y )
 statistics: Mdl = fitrnet (&hellip;, name , value )
 
@@ -48724,6 +48778,9 @@ levels, as indices, as a logical vector with one element per predictor, or as
 ones per level seen in training, named as in 'x1 == 2' in
 ExpandedPredictorNames , and the coded columns are not standardized.
 An observation holding a level the training data did not has no prediction.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 specifying the predictor variable names, in the order they appear in
 X .
@@ -48819,7 +48876,7 @@ fitrsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3398
+# length: 3598
 statistics: Mdl = fitrsvm ( X , Y )
 statistics: Mdl = fitrsvm (&hellip;, name , value )
 
@@ -48857,6 +48914,9 @@ levels, as indices, as a logical vector with one element per predictor, or as
 ones per level seen in training, named as in 'x1 == 2' in
 ExpandedPredictorNames , and the coded columns are not standardized.
 An observation holding a level the training data did not has no prediction.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 specifying the predictor variable names, in the order they appear in
 X .
@@ -48920,7 +48980,7 @@ fitrtree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3319
+# length: 3519
 statistics: Mdl = fitrtree ( X , Y )
 statistics: Mdl = fitrtree (&hellip;, name , value )
 
@@ -48951,6 +49011,9 @@ as 'all' . Such a predictor is split into two sets of levels, the
 lower mean response on the left, and an observation whose level a node did
 not see stops there. MATLAB does not always keep that side, and equally
 good splits may be chosen differently.
+A predictor may be named rather than indexed, as a character matrix of one
+padded name per row, a string array or a cellstr; a name must match an entry
+of 'PredictorNames' exactly, its case included.
 'MaxNumCategories' A nonnegative integer, recorded in
 ModelParameters . The default is 10. Ordering the levels by their
 mean response finds the best split whatever the number of levels.

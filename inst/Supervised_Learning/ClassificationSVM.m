@@ -633,6 +633,9 @@ classdef ClassificationSVM
     ## are not standardized.  An observation holding a level the training data
     ## did not has no score and takes the class of largest prior, as a row
     ## missing a predictor does.
+    ## A predictor may be named rather than indexed, as a character matrix of
+    ## one padded name per row, a string array or a cellstr; a name must match
+    ## an entry of @qcode{'PredictorNames'} exactly, its case included.
     ##
     ## @item @qcode{'PredictorNames'} @tab A cell array of character
     ## vectors specifying the names of the predictors. The length of this array

@@ -167,6 +167,9 @@
 ## into two sets of levels, and a level not seen in training predicts as a
 ## missing value.  Its @qcode{BinEdges} and @qcode{PairDetectionBinEdges} are
 ## empty.  The default is none.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'Weights'} @tab A numeric vector of non-negative observation
 ## weights, one per row of @var{X}.  Only their proportions matter.

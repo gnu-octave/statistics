@@ -583,6 +583,9 @@ classdef RegressionTree
     ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
     ## are levels, as indices, as a logical vector with one element per
     ## predictor, or as @qcode{'all'}.
+    ## A predictor may be named rather than indexed, as a character matrix of
+    ## one padded name per row, a string array or a cellstr; a name must match
+    ## an entry of @qcode{'PredictorNames'} exactly, its case included.
     ##
     ## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, recorded
     ## in @code{ModelParameters}.  The default is 10.  A regression orders
@@ -837,9 +840,7 @@ classdef RegressionTree
       if (ischar (CatPreds) && strcmpi (CatPreds, 'none'))
         CatPreds = [];
       endif
-      pnames = arrayfun (@(k) sprintf ('x%d', k), 1:columns (X), ...
-                         'UniformOutput', false);
-      [C, errmsg] = dummyCoding (X, CatPreds, pnames);
+      [C, errmsg] = dummyCoding (X, CatPreds, PredictorNames);
       if (! isempty (errmsg))
         error ("RegressionTree: %s", errmsg);
       endif
@@ -2477,6 +2478,12 @@ endclassdef
 %! [yhat, nd] = predict (Mdl, [1, 0; 3, 0; 6, 0; NaN, 0]);
 %! assert_equal (yhat', [2.9817303, 4.0402625, 2.9003792, 2.9003792], 1e-7);
 %! assert_equal (nd', [12, 24, 1, 1]);
+
+%!test  # a categorical predictor may be named rather than indexed
+%! Mdl = RegressionTree (Xr, yr, 'PredictorNames', {'grp', 'val'}, ...
+%!                       'CategoricalPredictors', {'grp'});
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.CutCategories(1,:), {[2, 4], [1, 3, 5]});
 
 %!test  # MATLAB parity: view and nodeVariableRange of a categorical cut
 %! Mdl = RegressionTree (Xr(:,1), yr, 'CategoricalPredictors', 1, ...

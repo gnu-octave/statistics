@@ -384,6 +384,9 @@ classdef ClassificationLinear
     ## @qcode{'x1 == 2'}.  A row holding a value the training data did not
     ## is scored @code{NaN} and labelled with the class of largest prior, as
     ## a row missing a predictor is.
+    ## A predictor may be named rather than indexed, as a character matrix of
+    ## one padded name per row, a string array or a cellstr; a name must match
+    ## an entry of @qcode{'PredictorNames'} exactly, its case included.
     ## @end multitable
     ##
     ## The default solver is @qcode{'sparsa'} under a lasso penalty.  Under a
@@ -2050,5 +2053,5 @@ endclassdef
 %! ClassificationLinear (Xc, yc, 'CategoricalPredictors', 4)
 %!error<ClassificationLinear: a logical 'CategoricalPredictors' must have one element per predictor.> ...
 %! ClassificationLinear (Xc, yc, 'CategoricalPredictors', logical ([1, 0]))
-%!error<ClassificationLinear: 'CategoricalPredictors' must be a vector of positive integers, a logical vector or 'all'.> ...
+%!error<ClassificationLinear: 'CategoricalPredictors' must be a vector of positive integers, a logical vector, a character matrix, a string array, a cell array of character vectors or 'all'.> ...
 %! ClassificationLinear (Xc, yc, 'CategoricalPredictors', 0)

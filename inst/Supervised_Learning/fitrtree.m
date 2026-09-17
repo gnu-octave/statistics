@@ -51,6 +51,9 @@
 ## lower mean response on the left, and an observation whose level a node did
 ## not see stops there.  MATLAB does not always keep that side, and equally
 ## good splits may be chosen differently.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'MaxNumCategories'} @tab A nonnegative integer, recorded in
 ## @code{ModelParameters}.  The default is 10.  Ordering the levels by their

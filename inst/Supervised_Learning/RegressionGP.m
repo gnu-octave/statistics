@@ -107,6 +107,9 @@
 ## @qcode{X} keeps the predictors as given.  A row holding a value the
 ## training data did not is predicted as a row missing a predictor, the
 ## weighted lower median of the training response.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
 ## observation weights.  The default is a vector of ones.

@@ -171,6 +171,9 @@
 ## are levels, as indices, as a logical vector with one element per
 ## predictor, or as @qcode{'all'}.  Every tree splits them into sets of
 ## levels, as @code{fitctree} does.  Not with @qcode{'Subspace'}.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ## @item @qcode{'FResample'} @tab @tab The share of the observations each
 ## learner draws, greater than 0 and no greater than 1.  The default is 1.
 ## Given with a boosting method, the ensemble resamples.

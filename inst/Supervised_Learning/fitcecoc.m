@@ -76,6 +76,9 @@
 ## are levels, as indices, a logical vector or @qcode{'all'}, passed as given
 ## to every binary learner, which codes them its own way; a nearest neighbour
 ## learner takes only @qcode{'all'} and a discriminant learner none.
+## A predictor may be named rather than indexed, as a character matrix of one
+## padded name per row, a string array or a cellstr; a name must match an entry
+## of @qcode{'PredictorNames'} exactly, its case included.
 ##
 ## @item @qcode{'PredictorNames'} @tab @tab A cellstr of predictor names.
 ##

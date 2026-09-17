@@ -390,6 +390,9 @@ classdef ClassificationKernel
     ## holding a value the training data did not is scored @code{NaN} and
     ## labelled with the class of largest prior, as a row missing a predictor
     ## is.
+    ## A predictor may be named rather than indexed, as a character matrix of
+    ## one padded name per row, a string array or a cellstr; a name must match
+    ## an entry of @qcode{'PredictorNames'} exactly, its case included.
     ## @end multitable
     ##
     ## The fit is always by limited-memory BFGS, the only solver MATLAB
