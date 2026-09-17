@@ -108,6 +108,18 @@ classdef CompactTreeBagger
     PredictorNames = {};
 
     ## -*- texinfo -*-
+    ## @deftp {CompactTreeBagger} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A row vector of column indices into @var{X}, naming the predictors
+    ## treated as categorical, empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
     ## @deftp {CompactTreeBagger} {property} DeltaCriterionDecisionSplit
     ##
     ## Split criterion contributions of the predictors
@@ -198,6 +210,7 @@ classdef CompactTreeBagger
       this.ClassNames = B.ClassNames;
       this.DefaultYfit = B.DefaultYfit;
       this.PredictorNames = B.PredictorNames;
+      this.CategoricalPredictors = B.CategoricalPredictors;
       this.DeltaCriterionDecisionSplit = B.DeltaCriterionDecisionSplit;
       this.NumPredictorSplit = B.NumPredictorSplit;
       this.SurrogateAssociation = B.SurrogateAssociation;
@@ -662,6 +675,14 @@ endfunction
 %! assert_equal (sc, sa);
 %! assert_equal (C.ClassNames, B.ClassNames);
 %! assert_equal (C.DefaultYfit, B.DefaultYfit);
+
+%!test  # a compact ensemble keeps the ensemble's categorical predictors
+%! Xc = [1, 2; 2, 3; 3, 4; 1, 5; 2, 6; 3, 7; 1, 8; 2, 9];
+%! yc = [1; 1; 2; 2; 1; 2; 1; 2];
+%! C = compact (TreeBagger (3, Xc, yc, 'CategoricalPredictors', 1));
+%! assert_equal (C.CategoricalPredictors, 1);
+%! C = compact (TreeBagger (3, Xc, yc));
+%! assert_equal (C.CategoricalPredictors, []);
 
 %!test  # MATLAB parity: combining keeps the first ensemble's default
 %! load fisheriris

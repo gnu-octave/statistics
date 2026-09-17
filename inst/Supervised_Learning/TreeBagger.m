@@ -177,6 +177,18 @@ classdef TreeBagger
     PredictorNames = {};
 
     ## -*- texinfo -*-
+    ## @deftp {TreeBagger} {property} CategoricalPredictors
+    ##
+    ## Indices of the categorical predictors
+    ##
+    ## A row vector of column indices into @var{X}, naming the predictors
+    ## treated as categorical, empty when none is.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    CategoricalPredictors = [];
+
+    ## -*- texinfo -*-
     ## @deftp {TreeBagger} {property} NumPredictorsToSample
     ##
     ## Predictors each split is chosen from
@@ -615,6 +627,7 @@ classdef TreeBagger
       ClassNames = [];
       Weights = [];
       PredictorNames = {};
+      CatPred = [];
       NumPrint = 0;
       TreeArgs = {};
       givenClass = {};
@@ -718,6 +731,7 @@ classdef TreeBagger
             if (! isempty (errmsg))
               error ("TreeBagger: %s", errmsg);
             endif
+            CatPred = Cod.Index;
             if (! isempty (Cod.Index))
               TreeArgs(end+1:end+2) = {'CategoricalPredictors', Cod.Index};
             endif
@@ -907,6 +921,7 @@ classdef TreeBagger
       this.X = X;
       this.Y = Y;
       this.PredictorNames = PredictorNames;
+      this.CategoricalPredictors = CatPred;
       this.NumPredictorsToSample = NumVarSample;
       this.MinLeafSize = MinLeafSize;
       this.InBagFraction = InBagFraction;
@@ -1500,7 +1515,9 @@ classdef TreeBagger
                        " the same type."));
       endif
       if (rows (this.X) != rows (other.X)
-          || ! isequal (this.PredictorNames, other.PredictorNames))
+          || ! isequal (this.PredictorNames, other.PredictorNames)
+          || ! isequal (this.CategoricalPredictors,
+                        other.CategoricalPredictors))
         error (strcat ("TreeBagger.append: the two ensembles must be", ...
                        " fitted on the same observations and predictors."));
       endif
@@ -2744,5 +2761,21 @@ endfunction
 %!                  'CategoricalPredictors', 1);
 %! assert_equal (Br.Trees{1}.CategoricalPredictors, 1);
 
+%!test  # the property records the resolved indices, empty when none is named
+%! B = TreeBagger (3, X, yb);
+%! assert_equal (B.CategoricalPredictors, []);
+%! B = TreeBagger (3, X, yb, 'CategoricalPredictors', 1);
+%! assert_equal (B.CategoricalPredictors, 1);
+
+%!test  # a logical vector and 'all' are resolved to indices
+%! B = TreeBagger (3, X, yb, 'CategoricalPredictors', [true, false]);
+%! assert_equal (B.CategoricalPredictors, 1);
+%! B = TreeBagger (3, X, yb, 'CategoricalPredictors', 'all');
+%! assert_equal (B.CategoricalPredictors, [1, 2]);
+
 %!error<TreeBagger: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! TreeBagger (3, X, yb, 'CategoricalPredictors', 3)
+
+%!error<TreeBagger.append: the two ensembles must be fitted on the same observations and predictors.> ...
+%! append (TreeBagger (3, X, yb, 'CategoricalPredictors', 1), ...
+%!         TreeBagger (3, X, yb))

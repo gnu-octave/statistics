@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1449
+# columns: 1451
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -31461,6 +31461,34 @@ Compact ensemble of bagged decision trees
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 39
+CompactTreeBagger.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 223
+CompactTreeBagger: property CategoricalPredictors
+
+Indices of the categorical predictors
+
+A row vector of column indices into X , naming the predictors
+treated as categorical, empty when none is. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Indices of the categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 28
 CompactTreeBagger.ClassNames
 
@@ -45008,6 +45036,34 @@ fitrtree
 # elements: 1
 # length: 33
 Ensemble of bagged decision trees
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+TreeBagger.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 216
+TreeBagger: property CategoricalPredictors
+
+Indices of the categorical predictors
+
+A row vector of column indices into X , naming the predictors
+treated as categorical, empty when none is. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Indices of the categorical predictors
 
 
 
