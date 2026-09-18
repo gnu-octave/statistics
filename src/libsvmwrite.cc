@@ -57,7 +57,6 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
     SparseMatrix instance_mat_col = instance_mat.transpose();
 
     octave_idx_type *ir, *jc, k, low, high;
-    size_t i, l, label_vector_row_num;
     double *samples, *labels;
     // each column is one instance
     labels = (double*)label_vec.data();

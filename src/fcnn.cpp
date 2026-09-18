@@ -69,7 +69,7 @@ private:
 double accuracy (vector<int> predictions, vector<int> labels)
 {
   double correct = 0.0;
-  for (int i = 0; i < predictions.size (); i++)
+  for (size_t i = 0; i < predictions.size (); i++)
   {
     if (predictions[i] == labels[i] - 1)
     {
@@ -176,7 +176,7 @@ Neuron::~Neuron () {}
 double Neuron::forward (vector<double> inputs)
 {
   double total = this->bias;
-  for (int i = 0; i < inputs.size (); i++)
+  for (size_t i = 0; i < inputs.size (); i++)
   {
     total += inputs[i] * this->weights[i];
   }
@@ -187,7 +187,7 @@ void Neuron::backward (vector<double> last_input, double grad)
 {
   this->delta = grad;
   this->bgrad += grad;
-  for (int i = 0; i < this->wgrad.size (); i++)
+  for (size_t i = 0; i < this->wgrad.size (); i++)
   {
     this->wgrad.at (i) = this->wgrad.at (i) + grad * last_input.at (i);
   }
@@ -196,7 +196,7 @@ void Neuron::backward (vector<double> last_input, double grad)
 void Neuron::descend (double learning_rate)
 {
   this->bias -= this->bgrad * learning_rate;
-  for (int i = 0; i < this->weights.size (); i++)
+  for (size_t i = 0; i < this->weights.size (); i++)
   {
     this->weights.at (i) -= this->wgrad.at (i) * learning_rate;
   }
@@ -315,7 +315,7 @@ vector<double> DenseLayer::forward (vector<double> inputs)
 {
   this->last_input = inputs;
   vector<double> outputs = vector<double> (this->neurons.size());
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (size_t i = 0; i < this->neurons.size (); i++)
   {
     outputs[i] = this->neurons[i].forward (inputs);
   }
@@ -324,7 +324,7 @@ vector<double> DenseLayer::forward (vector<double> inputs)
 
 void DenseLayer::backward (vector<double> grad)
 {
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (size_t i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].backward (last_input, grad[i]);
   }
@@ -332,7 +332,7 @@ void DenseLayer::backward (vector<double> grad)
 
 void DenseLayer::descend (double learning_rate)
 {
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (size_t i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].descend (learning_rate);
   }
@@ -341,7 +341,7 @@ void DenseLayer::descend (double learning_rate)
 vector<vector<double>> DenseLayer::get_layer ()
 {
   vector<vector<double>> Wb_matrix;
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (size_t i = 0; i < this->neurons.size (); i++)
   {
     vector<double> WB_vector = this->neurons[i].get_neuron ();
     Wb_matrix.push_back (WB_vector);
@@ -351,7 +351,7 @@ vector<vector<double>> DenseLayer::get_layer ()
 
 void DenseLayer::set_layer (vector<vector<double>> Wb_matrix)
 {
-  for (int i = 0; i < Wb_matrix.size (); i++)
+  for (size_t i = 0; i < Wb_matrix.size (); i++)
   {
     this->neurons[i].set_neuron (Wb_matrix[i]);
   }
@@ -359,7 +359,7 @@ void DenseLayer::set_layer (vector<vector<double>> Wb_matrix)
 
 void DenseLayer::zero_gradient ()
 {
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (size_t i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].zero_gradient ();
   }
@@ -783,7 +783,7 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   // every activation.
   int layer_size = this->last_input.size ();
   vector<double> chain_grad = vector<double> (layer_size, 0.0);
-  for (int n = 0; n < prev_layer.neurons.size (); n++)
+  for (size_t n = 0; n < prev_layer.neurons.size (); n++)
   {
     double delta = prev_layer.neurons[n].delta;
     for (int i = 0; i < layer_size; i++)
@@ -821,7 +821,7 @@ double MeanSquaredErrorLoss::forward (vector<double> inputs,
 
   double total = 0;
 
-  for (int i = 0; i < inputs.size (); i++)
+  for (size_t i = 0; i < inputs.size (); i++)
   {
     total += pow (inputs[i] - targets[i], 2);
   }
@@ -833,7 +833,7 @@ double MeanSquaredErrorLoss::forward (vector<double> inputs,
 void MeanSquaredErrorLoss::backward (double grad)
 {
   this->grad = vector<double> (this->last_input.size ());
-  for (int i = 0; i < this->last_input.size (); i++)
+  for (size_t i = 0; i < this->last_input.size (); i++)
   {
     // d/dy of sum (y - t)^2 is 2 * (y - t); the bracket matters, since
     // 2 * y - t is a different function wherever the target is not zero.
@@ -875,7 +875,7 @@ double CrossEntropyLoss::forward (vector<double> inputs, vector<double> targets)
 
   double total = 0.0;
 
-  for (int i = 0; i < inputs.size (); i++)
+  for (size_t i = 0; i < inputs.size (); i++)
   {
     if (targets[i] != 0.0)
     {
@@ -888,7 +888,7 @@ double CrossEntropyLoss::forward (vector<double> inputs, vector<double> targets)
 void CrossEntropyLoss::backward (double grad)
 {
   this->grad = vector<double> (this->last_input.size ());
-  for (int i = 0; i < this->last_input.size (); i++)
+  for (size_t i = 0; i < this->last_input.size (); i++)
   {
     double y = this->last_input[i] > CE_FLOOR ? this->last_input[i] : CE_FLOOR;
     this->grad.at (i) = -this->last_target[i] / y;

@@ -167,7 +167,7 @@ package:\n\n\
   vector<ActivationLayer> Activation;
   int numlayers = LayerWeights.numel ();
   int input_size = d;
-  int output_size;
+  int output_size = 0;
   for (int i = 0; i < numlayers; i++)
   {
     Matrix W = LayerWeights.elem(i).matrix_value ();

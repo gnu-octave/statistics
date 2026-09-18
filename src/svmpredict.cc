@@ -35,7 +35,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 #define CMD_LEN 2048
 
-int print_null(const char *s,...) {return 0;}
+int print_null(const char *,...) {return 0;}
 int (*info)(const char *fmt,...) = &printf;
 
 void read_sparse_instance(const SparseMatrix &args, int index, struct svm_node *x)
@@ -294,6 +294,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 		case 3:
 			plhs(2) = tplhs(2);
 			plhs(1) = tplhs(1);
+			[[fallthrough]];
 		case 1:
 		case 0:
 			plhs(0) = tplhs(0);
@@ -401,7 +402,9 @@ probability of the instance being an inlier. \n\
 
 	if(args(2).isstruct())
 	{
-		const char *error_msg;
+		// Set, because the reader below reports it when the model is
+		// rejected and does not itself write one.
+		const char *error_msg = "unrecognized model";
 
 		// parse options
 		if(nrhs==4)
@@ -410,7 +413,8 @@ probability of the instance being an inlier. \n\
 			char cmd[CMD_LEN], *argv[CMD_LEN/2];
 
 			// put options in argv[]
-			strncpy(cmd, args(3).string_value().c_str(), CMD_LEN);
+			strncpy(cmd, args(3).string_value().c_str(), CMD_LEN - 1);
+			cmd[CMD_LEN - 1] = '\0';
 			if((argv[argc] = strtok(cmd, " ")) != NULL)
       {
 				while((argv[++argc] = strtok(NULL, " ")) != NULL);

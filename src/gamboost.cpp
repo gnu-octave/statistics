@@ -17,6 +17,12 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 */
 
 // The boosted-tree engine shared by the GAM learners, beside the spline engine
+//
+// This unit is #included by gamboosttrain.cc, gamboostpredict.cc,
+// gamboostpairs.cc and gamboostinter.cc, each of which
+// calls a different subset of it, so a helper unused in one is used in
+// another.  Hence [[maybe_unused]] on those definitions: they are shared,
+// not dead, and removing one breaks a sibling oct-file.
 // in gam.cpp.  A generalized additive model is additive by construction, so
 // every tree of the predictor phase splits on one predictor only.  That is
 // what makes this small: no multivariate tree is needed, no surrogate splits,
@@ -492,7 +498,7 @@ gamb_bin_of (const RowVector& edges, double v)
 // The additive prediction of a fitted model at one row of X.  A predictor that
 // is missing contributes nothing rather than poisoning the sum, which is what
 // a tree does with a missing value it was never given a surrogate for.
-static double
+[[maybe_unused]] static double
 gamb_predict_row (const GamBoostFit& F, const Matrix& X, octave_idx_type i)
 {
   double f = F.intercept;
@@ -574,7 +580,7 @@ gamb_weights (octave_idx_type n, const ColumnVector *W)
 
 // The categorical mask a wrapper was handed, validated: one flag per column of
 // X, and every value of a flagged column a positive integer code or missing.
-static std::vector<bool>
+[[maybe_unused]] static std::vector<bool>
 gamb_categorical_arg (const octave_value& arg, const Matrix& X, const char *who)
 {
   octave_idx_type d = X.columns ();
@@ -609,7 +615,7 @@ gamb_categorical_arg (const octave_value& arg, const Matrix& X, const char *who)
 // logistic deviance, as a classifier is fitted, and METHOD 2 the squared
 // error, as a regression is fitted; the two differ only in the seed, the
 // gradient and the Hessian, so the loop is shared.
-static GamBoostFit
+[[maybe_unused]] static GamBoostFit
 gamb_boost (const Matrix& X, const ColumnVector& Y, int method,
             octave_idx_type maxtrees, double lrate, octave_idx_type maxsplits,
             int verbose, octave_idx_type numprint,
@@ -1009,7 +1015,7 @@ struct GamPairStat
 // and column sums of squares are not orthogonal, so this is an approximation
 // rather than an identity, and a small negative interaction term is clamped to
 // zero.  That is sound for ranking candidates, which is all it is used for.
-static GamPairStat
+[[maybe_unused]] static GamPairStat
 gamb_pair_stat (const BinnedPredictor& Bj, const BinnedPredictor& Bk,
                 const ColumnVector& r, octave_idx_type j, octave_idx_type k)
 {
@@ -1627,7 +1633,7 @@ struct GamInterFit
 // the two phases share a running fit and differ only in what they are allowed
 // to split.  The pairs are fitted in sequence within a round, for the same
 // reason the predictors are.
-static GamInterFit
+[[maybe_unused]] static GamInterFit
 gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
                   const ColumnVector& F0, int method, const Matrix& pairs,
                   octave_idx_type maxtrees, double lrate,

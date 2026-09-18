@@ -36,9 +36,9 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #define CMD_LEN 2048
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
-void print_null(const char *s) {}
+void print_null(const char *) {}
 //void print_string_octave(const char *s) {&printf;}
-int print_null_(const char *s,...) {return 0;}
+int print_null_(const char *,...) {return 0;}
 int (*info_)(const char *fmt,...) = &printf;
 
 // svm arguments
@@ -97,7 +97,8 @@ double do_cross_validation()
 }
 
 // nrhs should be 3
-int parse_command_line(int nrhs, const octave_value_list args, char *model_file_name)
+int parse_command_line(int nrhs, const octave_value_list args,
+                       [[maybe_unused]] char *model_file_name)
 {
 	int i, argc = 1;
 	char cmd[CMD_LEN];
@@ -128,7 +129,8 @@ int parse_command_line(int nrhs, const octave_value_list args, char *model_file_
 	if(nrhs > 2)
 	{
 		// put options in argv[]
-		strncpy(cmd, args(2).string_value().c_str(), CMD_LEN);
+		strncpy(cmd, args(2).string_value().c_str(), CMD_LEN - 1);
+		cmd[CMD_LEN - 1] = '\0';
 		//mxGetString(args[2], cmd, mxGetN(args[2]) + 1);
 		if((argv[argc] = strtok(cmd, " ")) != NULL)
 			while((argv[++argc] = strtok(NULL, " ")) != NULL)

@@ -27,6 +27,11 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 // Growing a binary decision tree by recursive partitioning.
 //
+// This unit is #included by treetrain.cc and treepredict.cc, each of which
+// calls a different subset of it, so a helper unused in one is used in
+// another.  Hence [[maybe_unused]] on those definitions: they are shared,
+// not dead, and removing one breaks a sibling oct-file.
+//
 // The cost of a tree is the split search, and the search is a sort.  Sorting
 // each node's rows afresh for every predictor is what a direct reading of the
 // algorithm gives, and it repeats the same comparisons at every level: the
@@ -512,7 +517,7 @@ categorical_split (const double *xj, const octave_idx_type *oj,
 // Grow a tree and return it as one node table.  Shared by treetrain, which
 // fits it, and used by treepredict through the descent below, so that the two
 // halves of the same rule cannot drift apart.
-static octave_scalar_map
+[[maybe_unused]] static octave_scalar_map
 tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
             const TreeOpts& o)
 {
@@ -1142,7 +1147,7 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
 // a child; the two are the same rule, which is why they live in one file.  A
 // categorical cut sends a row by the set its level is in, and stops a row
 // whose level is in neither, a level the node never saw, as MATLAB does.
-static void
+[[maybe_unused]] static void
 tree_descend (const Matrix& X, const Matrix& children,
               const ColumnVector& cutvar, const ColumnVector& cutpoint,
               const Matrix& value, Matrix& V, ColumnVector& node,

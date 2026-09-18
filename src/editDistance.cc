@@ -624,7 +624,7 @@ insertions, deletions, and substitutions required to convert document \
         }
       }
       // Preallocate the distance vector and expand as necessary
-      int sz = szA;
+      size_t sz = szA;
       if (szA == 1 && szB != 1)
       {
         sz = szB;

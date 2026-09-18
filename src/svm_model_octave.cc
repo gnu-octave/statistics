@@ -32,7 +32,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
-static const char *field_names[] = {
+[[maybe_unused]] static const char *field_names[] = {
 	"Parameters",
 	"nr_class",
 	"totalSV",
@@ -243,9 +243,10 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 	return NULL;
 }
 
-struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const char **msg)
+struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model,
+                                         [[maybe_unused]] const char **msg)
 {
-	int i, j, n, num_of_fields;
+	int i, j, n;
 	double *ptr;
 	int id = 0;
 	struct svm_node *x_space;
@@ -357,7 +358,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 
 	// SV
 	{
-		int sr, sc, elements;
+		int sr, elements;
 		int num_samples;
 		octave_idx_type *ir, *jc;
 
@@ -366,7 +367,6 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 		sm_sv = sm_sv.transpose();
 
 		sr = (int)sm_sv.cols();
-		sc = (int)sm_sv.rows();
 
 		ptr = (double*)sm_sv.data();
 		ir = sm_sv.ridx();
