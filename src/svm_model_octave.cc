@@ -248,7 +248,6 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model,
 {
 	int i, j, n;
 	double *ptr;
-	int id = 0;
 	struct svm_node *x_space;
 	struct svm_model *model;
 
@@ -393,8 +392,6 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model,
 			}
 			model->SV[i][x_index].index = -1;
 		}
-
-		id++;
 	}
 
 	// changes from libsvm 3.36

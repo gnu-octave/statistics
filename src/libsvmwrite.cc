@@ -70,7 +70,7 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
 
       for(k=low;k<high;k++)
       {
-        fprintf(fp ," %lu:%g", (size_t)ir[k]+1, samples[k]);
+        fprintf(fp ," %lu:%g", (unsigned long)ir[k]+1, samples[k]);
       }
 		  fprintf(fp, "\n");
     }

@@ -1644,13 +1644,13 @@ static void solve_epsilon_svr(
 	Solver s;
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, param->eps, si, param->shrinking);
-	double sum_alpha = 0;
 	for(i=0;i<l;i++)
 	{
 		alpha[i] = alpha2[i] - alpha2[i+l];
-		sum_alpha += fabs(alpha[i]);
 	}
-	//info("nu = %f\n",sum_alpha/(param->C*l));
+	// Upstream reports nu = sum|alpha| / (C * l) here.  With a box constraint
+	// per instance there is no single C to divide by, so the diagnostic is
+	// dropped rather than reported wrongly, and the sum it needed with it.
 	delete[] alpha2;
 	delete[] linear_term;
 	delete[] C;
@@ -1717,7 +1717,12 @@ static decision_function svm_train_one(
 	double Cp, double Cn)
 {
 	double *alpha = Malloc(double,prob->l);
-	Solver::SolutionInfo si;
+	// Every value of the svm_type enum has a case below, but svm_type is an
+	// int, so the compiler cannot rule out a sixth reaching the switch and
+	// leaving si untouched for the info() call after it.  svm_check_parameter
+	// rejects any other value before training, so this is unreachable; the
+	// initializer says so rather than leaving a warning in every build.
+	Solver::SolutionInfo si = {};
 	switch(param->svm_type)
 	{
 		case C_SVC:

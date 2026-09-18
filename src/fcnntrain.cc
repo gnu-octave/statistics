@@ -475,7 +475,7 @@ package:\n\n\
   bool use_lbfgs = false;
   lbfgs::options lbopt;
   lbopt.iteration_limit = max_epochs;
-  lbfgs::result lbres;
+  lbfgs::result lbres = {};
   if (args.length () > 10)
   {
     if (! args(10).isstruct () || args(10).numel () != 1)
