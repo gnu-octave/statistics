@@ -79,6 +79,15 @@
 ##
 ## @item
 ## @var{atab} is a cell array containing the results in a standard ANOVA table.
+## Its first row holds the column headings.  For @qcode{'equal'} it is the
+## classic partition, @qcode{'Source'}, @qcode{'SS'}, @qcode{'df'},
+## @qcode{'MS'}, @qcode{'F'} and @qcode{'Prob>F'}, with a row for the groups,
+## the error and the total.  For @qcode{'unequal'} it is @qcode{'Source'},
+## @qcode{'F'}, @qcode{'df'}, @qcode{'dfe'} and @qcode{'Prob>F'}, with one row
+## for the groups, since Welch's test partitions no sum of squares and pools
+## no error term; @qcode{'df'} and @qcode{'dfe'} are the numerator and the
+## denominator degrees of freedom of its F statistic, the latter fractional.
+## The two tables therefore differ in width and in what their columns mean.
 ##
 ## @item
 ## @var{stats} is a structure containing statistics useful for performing
@@ -293,8 +302,8 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
                     'Error', SSE, dfe, MSE, '', ''; ...
                     'Total', SST, dfm + dfe, '', '', ''};
       case 'unequal'
-        anovatab = {'Source', 'F', 'df', 'dfe', 'F', 'Prob>F'; ...
-                    'Groups', SSM, dfm, dfe, F, p};
+        anovatab = {'Source', 'F', 'df', 'dfe', 'Prob>F'; ...
+                    'Groups', F, dfm, dfe, p};
     endswitch
   endif
   ## Create stats structure (if requested) for MULTCOMPARE
@@ -409,12 +418,15 @@ endfunction
 %! g = [1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ];
 %! [p, tbl] = anova1 (y(:), g(:), 'off', 'equal');
 %! assert_equal (p, 0.00004163, 1e-6);
+%! assert_equal (tbl(1,:), {'Source', 'SS', 'df', 'MS', 'F', 'Prob>F'});
 %! assert_equal (tbl{2,5}, 22.573418, 1e-6);
 %! assert_equal (tbl{2,3}, 2, 0);
 %! assert_equal (tbl{3,3}, 14, 0);
 %! [p, tbl] = anova1 (y(:), g(:), 'off', 'unequal');
 %! assert_equal (p, 0.00208877, 1e-8);
-%! assert_equal (tbl{2,5}, 15.523192, 1e-6);
+%! assert_equal (size (tbl), [2, 5]);
+%! assert_equal (tbl(1,:), {'Source', 'F', 'df', 'dfe', 'Prob>F'});
+%! assert_equal (tbl{2,2}, 15.523192, 1e-6);
 %! assert_equal (tbl{2,3}, 2, 0);
 %! assert_equal (tbl{2,4}, 7.5786897, 1e-6);
 
@@ -426,12 +438,15 @@ endfunction
 %! g = categorical ([1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3]);
 %! [p, tbl] = anova1 (y(:), g(:), 'off', 'equal');
 %! assert_equal (p, 0.00004163, 1e-6);
+%! assert_equal (tbl(1,:), {'Source', 'SS', 'df', 'MS', 'F', 'Prob>F'});
 %! assert_equal (tbl{2,5}, 22.573418, 1e-6);
 %! assert_equal (tbl{2,3}, 2, 0);
 %! assert_equal (tbl{3,3}, 14, 0);
 %! [p, tbl] = anova1 (y(:), g(:), 'off', 'unequal');
 %! assert_equal (p, 0.00208877, 1e-8);
-%! assert_equal (tbl{2,5}, 15.523192, 1e-6);
+%! assert_equal (size (tbl), [2, 5]);
+%! assert_equal (tbl(1,:), {'Source', 'F', 'df', 'dfe', 'Prob>F'});
+%! assert_equal (tbl{2,2}, 15.523192, 1e-6);
 %! assert_equal (tbl{2,3}, 2, 0);
 %! assert_equal (tbl{2,4}, 7.5786897, 1e-6);
 
