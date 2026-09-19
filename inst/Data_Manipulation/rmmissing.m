@@ -88,11 +88,6 @@ function [R, TF] = rmmissing (A, varargin)
   if (ndims (A) > 2)
     error ("rmmissing: A must be a matrix; no more than 2 dimensions allowed.");
   endif
-  if (isempty (A))
-    R = A;
-    TF = false (size (A));
-    return;
-  endif
 
   ## Parse optional Name-Value paired arguments
   optNames = {'MinNumMissing', 'MissingLocations'};
@@ -129,6 +124,12 @@ function [R, TF] = rmmissing (A, varargin)
     endif
   else
     error ("rmmissing: too many input arguments.");
+  endif
+
+  if (isempty (A))
+    R = A;
+    TF = false (size (A));
+    return;
   endif
 
   ## Get missing values
@@ -230,3 +231,9 @@ endfunction
 %!       rmmissing ([1, 2; 3, 4], 'MissingLocations', false ([1, 1, 1]))
 %!error <rmmissing: specified DIM must be either 1 or 2.> rmmissing ([1, 2; 3, 4], 5)
 %!error <rmmissing: too many input arguments.> rmmissing ([1, 2; 3, 4], 'XXX', 1)
+%!error <rmmissing: 'MinNumMissing' must be a positive integer value.>
+%!       rmmissing ([], 'MinNumMissing', -2)
+%!error <rmmissing: specified DIM must be either 1 or 2.>
+%!       rmmissing ([], 5)
+%!error <rmmissing: 'MissingLocations' must be a logical matrix of the same size as input A.>
+%!       rmmissing ([], 'MissingLocations', true)
