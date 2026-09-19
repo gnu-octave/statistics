@@ -119,6 +119,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   if (nargin < 4)
     model = 'interaction';
   endif
+
+  if (isempty (x))
+    p = [NaN, NaN];
+    return;
+  endif
+
   epsilonhat = [];
   plotdata = ! (strcmp (displayopt, 'off'));
 
@@ -426,5 +432,10 @@ endfunction
 %! assert_equal (atab{3,5}, 9.25800729165627, 1e-10);
 %! assert_equal (atab{2,6}, 0.141597630656771, 1e-10);
 %! assert_equal (atab{3,6}, 0.000636643812875719, 1e-10);
+
+%!test
+%! [p] = anova2 ([], 1, 'off');
+%! assert (p, [NaN, NaN]);
+
 
 
