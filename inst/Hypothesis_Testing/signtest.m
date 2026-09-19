@@ -101,8 +101,10 @@
 ## @headitem @var{Field} @tab @var{Value}
 ## @item @qcode{sign} @tab Value of the sign test statistic.
 ##
-## @item @qcode{zval} @tab Value of the @math{z}-statistic (only computed
-## when the @qcode{'method'} is @qcode{'approximate'}).
+## @item @qcode{zval} @tab Value of the @math{z}-statistic, computed only
+## when the @qcode{'method'} is @qcode{'approximate'} and @code{NaN}
+## otherwise, where @code{signrank} and @code{ranksum} leave it empty.  The
+## field is always there.
 ## @end multitable
 ##
 ## @seealso{signrank, tiedrank, runstest}

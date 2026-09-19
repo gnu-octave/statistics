@@ -47,7 +47,8 @@
 ## returns the structure @var{stats} with information about the test statistic.
 ## It contains the field @code{ranksum} with the value of the rank sum test
 ## statistic, and the field @code{zval} with the value of the z-statistic when
-## computed with the "approximate" method, or empty otherwise.
+## computed with the "approximate" method, and empty otherwise.  The field is
+## always there.
 ##
 ## @code{[@dots{}] = ranksum (@var{x}, @var{y}, @var{alpha})} or alternatively
 ## @code{[@dots{}] = ranksum (@var{x}, @var{y}, "alpha", @var{alpha})} returns
@@ -58,7 +59,7 @@
 ## "approximate", or "oldexact". @var{M} must be a single string.  When "method"
 ## is unspecified, the default is: "exact" when
 ## @code{min (length (@var{x}), length (@var{y})) < 10} and
-## @code{length (@var{x}) + length (@var{y}) < 10}, otherwise the "approximate"
+## @code{length (@var{x}) + length (@var{y}) < 20}, otherwise the "approximate"
 ## method is used.
 ##
 ## @itemize

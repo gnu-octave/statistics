@@ -50,7 +50,7 @@
 ## the following fields:
 ##
 ## @multitable @columnfractions 0.2 0.75
-## @item @qcode{chistat} @tab -- the value of the test statistic
+## @item @qcode{chisqstat} @tab -- the value of Bartlett's test statistic
 ## @item @qcode{df} @tab -- the degrees of freedom of the test
 ## @end multitable
 ##
@@ -89,8 +89,8 @@
 ## distribution in each group is normal.  The other test types are more robust
 ## to non-normal distributions, especially ones prone to outliers.  For these
 ## tests, the STATS output structure has a field named @qcode{fstat} containing
-## the test statistic, and @qcode{df1} and @qcode{df2} containing its numerator
-## and denominator degrees of freedom.
+## the test statistic in place of @qcode{chisqstat}, and @qcode{df} holds two
+## elements, the numerator and the denominator degrees of freedom.
 ##
 ## @seealso{vartest, vartest2, anova1, bartlett_test, levene_test}
 ## @end deftypefn

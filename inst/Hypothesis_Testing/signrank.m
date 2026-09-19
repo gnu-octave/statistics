@@ -101,8 +101,9 @@
 ## @headitem @var{Field} @tab @var{Value}
 ## @item @qcode{signedrank} @tab Value of the sign rank test statistic.
 ##
-## @item @qcode{zval} @tab Value of the @math{z}-statistic (only computed
-## when the @qcode{'method'} is @qcode{'approximate'}).
+## @item @qcode{zval} @tab Value of the @math{z}-statistic, computed only
+## when the @qcode{'method'} is @qcode{'approximate'} and empty otherwise.
+## The field is always there.
 ## @end multitable
 ##
 ## @seealso{tiedrank, signtest, runstest}
