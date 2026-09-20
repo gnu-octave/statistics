@@ -100,7 +100,9 @@ function [y, idcs] = datasample (data, k, varargin)
         case 'weights'
           if ((! isnumeric (varargin{pair_index + 1})) ||
               (! isvector (varargin{pair_index + 1})) ||
-              (any (varargin{pair_index + 1} < 0)))
+              (any (varargin{pair_index + 1} < 0))||
+              (any (isnan (varargin{pair_index + 1}))) ||
+              (! any (varargin{pair_index + 1} > 0)))
             error (strcat ("datasample: the sampling weights must be defined as a", " vector of positive values"));
           endif
           weights = varargin{pair_index + 1};
@@ -140,7 +142,11 @@ function [y, idcs] = datasample (data, k, varargin)
       idcs = zeros (k, 1);
       ## easy case:
       ## normalize the weights,
-      weights_n = cumsum (weights ./ sum (weights));
+      if (any (isinf (weights)))
+        weights_n = cumsum (weights == Inf) / sum (weights == Inf);
+      else
+        weights_n = cumsum (weights ./ sum (weights));
+      endif
       weights_n(end) = 1; # just to be sure
       ## then choose k numbers uniformly between 0 and 1
       samples = rand (k, 1);
@@ -166,12 +172,15 @@ function [y, idcs] = datasample (data, k, varargin)
       ## choose k numbers uniformly between 0 and 1
       samples = rand (k, 1);
 
-      for iter = 1 : k
-        ## normalize the weights
-        weights_n = cumsum (weights ./ sum (weights));
-        weights_n(end) = 1; # just to be sure
-
-        idcs(iter) = find (weights_n >= samples(iter), 1);
+    for iter = 1 : k
+        if (any (isinf (weights)))
+          inf_idx = find (isinf (weights));
+          idcs(iter) = inf_idx(randi (length (inf_idx)));
+        else
+          weights_n = cumsum (weights ./ sum (weights));
+          weights_n(end) = 1;
+          idcs(iter) = find (weights_n >= samples(iter), 1);
+        endif
 
         ## remove the element from the set, i. e. set its probability to zero
         weights(idcs(iter)) = 0;
@@ -236,6 +245,10 @@ endfunction
 %!error <datasample: sampling without replacement requires at least K elements with positive weights.> ...
 %! data = 1:5; weights = [1, 0, 1, 0, 0];
 %! sampled = datasample (data, 3, 'Weights', weights, 'Replace', false);
+%!error <weights must be defined>
+%! datasample ([1 2 3 4 5], 2, 'Weights', [NaN 1 1 1 1]);
+%!error <weights must be defined>
+%! datasample ([1 2 3 4 5], 1, 'Weights', [0 0 0 0 0], 'Replace', false);
 
 %!test
 %! dat = randn (10, 4);
@@ -258,4 +271,17 @@ endfunction
 %! ## k = 0 with weights, sampling without replacement
 %! assert_equal (datasample ([1 2 3], 0, 'Replace', false, ...
 %!                          'Weights', [1 1 1]), zeros (1, 0));
+
+%!test
+%! ## Inf weight with replacement always selects the Inf-weighted element
+%! assert_equal (datasample ([1 2 3 4 5], 2, ...
+%!                           'Weights', [Inf 1 1 1 1], ...
+%!                           'Replace', true), [1 1]);
+
+%!test
+%! ## Inf weight without replacement selects the Inf-weighted element first
+%! sampled = datasample ([1 2 3 4 5], 2, ...
+%!                       'Weights', [Inf 1 1 1 1], ...
+%!                       'Replace', false);
+%! assert_equal (sampled(1), 1);
 
