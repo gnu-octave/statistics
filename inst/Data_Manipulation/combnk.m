@@ -99,11 +99,9 @@ endfunction
 %! assert_equal (c, ['lo'; 'lo'; 'll'; 'eo'; 'el'; 'el'; 'ho'; 'hl'; 'hl'; 'he']);
 
 %!test
-%! ## k = 0 returns a 1x0 result
 %! c = combnk (1:3, 0);
-%! assert (size (c), [1, 0]);
+%! assert_equal (c, zeros (1, 0));
 
 %!test
-%! ## negative k returns a 1x0 result, matching MATLAB
 %! c = combnk (1:3, -1);
-%! assert (size (c), [1, 0]);
+%! assert_equal (c, zeros (1, 0));
