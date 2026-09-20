@@ -232,13 +232,13 @@ endfunction
 %! ## empty indicator is accepted
 %! A = [1 2 3];
 %! B = standardizeMissing (A, []);
-%! assert (B, A);
+%! assert_equal (B, A);
 %!test
 %! ## matrix indicator is accepted
 %! A = [1 2 3; 4 5 6];
 %! indicator = [1 9; 8 5];
 %! B = standardizeMissing (A, indicator);
-%! assert (B, [NaN 2 3; 4 NaN 6]);
+%! assert_equal (B, [NaN 2 3; 4 NaN 6]);
 
 %!assert_equal (double (standardizeMissing (categorical (1), categorical (1))), NaN)
 %!assert_equal (double (standardizeMissing (categorical (1), '1')), NaN)
