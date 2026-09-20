@@ -477,9 +477,9 @@ endfunction
 
 %!test
 %! [g, gn, gl] = grp2idx (zeros (0, 1));
-%! assert (size (g), [0, 1]);
-%! assert (size (gn), [0, 1]);
-%! assert (size (gl), [0, 1]);
+%! assert_equal (size (g), [0, 1]);
+%! assert_equal (size (gn), [0, 1]);
+%! assert_equal (size (gl), [0, 1]);
 
 
 ## Test input validation
