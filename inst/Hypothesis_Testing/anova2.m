@@ -435,7 +435,7 @@ endfunction
 
 %!test
 %! [p] = anova2 ([], 1, 'off');
-%! assert (p, [NaN, NaN]);
+%! assert_equal (p, [NaN, NaN]);
 
 
 
