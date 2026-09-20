@@ -85,9 +85,9 @@ function x = burrinv (p, lambda, c, k)
   j = (0 < p) & (p < 1) & (0 < lambda) & (lambda < Inf) & (0 < c) & (c < Inf) ...
       & (0 < k) & (k < Inf);
   if (isscalar (lambda) && isscalar (c) && isscalar (k))
-    x(j) = ((1 - p(j) / lambda).^(-1 / k) - 1).^(1 / c) ;
+    x(j) = lambda * ((1 - p(j)).^(-1 / k) - 1).^(1 / c);
   else
-    x(j) = ((1 - p(j) ./ lambda(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j)) ;
+    x(j) = lambda(j) .* ((1 - p(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j));
   endif
 
 endfunction
@@ -123,6 +123,26 @@ endfunction
 %!assert_equal (burrinv (p, 1, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
 %!assert_equal (burrinv (p, 1, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
 %!assert_equal (burrinv ([p, NaN], 1, 1, 1), [y, NaN], eps)
+
+## Test the scale parameter, which the quantile is multiplied by
+%!assert_equal (burrinv (0.5, 2, 1, 1), 2, eps)
+%!assert_equal (burrinv (0.5, 3, 0.5, 0.5), 27, eps)
+%!assert_equal (burrinv (0.5, 1.5, 2, 0.5), 1.5 * sqrt (3), eps)
+%!assert_equal (burrinv (0.5, 5, 2, 2), 5 * sqrt (sqrt (2) - 1), eps)
+
+## Test that the quantile undoes the CDF, where the scale is not 1
+%!assert_equal (burrcdf (burrinv (0.25, 2, 0.9, 4.2), 2, 0.9, 4.2), 0.25, 1e-12)
+%!assert_equal (burrcdf (burrinv (0.75, 3, 0.5, 0.5), 3, 0.5, 0.5), 0.75, 1e-12)
+%!assert_equal (burrcdf (burrinv (0.5, 0.4, 3, 0.2), 0.4, 3, 0.2), 0.5, 1e-12)
+%!test
+%! q = [0.05, 0.25, 0.5, 0.75, 0.95];
+%! assert_equal (burrcdf (burrinv (q, 1.7, 1.3, 2.6), 1.7, 1.3, 2.6), q, 1e-12);
+
+## Test that a scale below the probability still gives a real quantile
+%!assert_equal (isreal (burrinv (0.9, 0.5, 2, 3)), true)
+
+## Test the scale taken elementwise
+%!assert_equal (burrinv ([0.5, 0.5], [2, 4], 1, 1), [2, 4], eps)
 
 ## Test class of input preserved
 %!assert_equal (burrinv (single ([p, NaN]), 1, 1, 1), single ([y, NaN]), eps ('single'))
