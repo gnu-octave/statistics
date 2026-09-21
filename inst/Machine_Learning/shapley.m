@@ -60,6 +60,12 @@ classdef shapley
   ## values are levels, taken as by every learner of this package.  It applies
   ## only to a function handle, a model being asked for its own.
   ##
+  ## @item @qcode{'MaxNumSubsets'} @tab @tab How many predictor subsets at
+  ## most to compute over, an integer above 1.  The default is the lesser of
+  ## @math{2^M}, which is every subset of the @math{M} predictors, and 1024.
+  ## Every subset gives the values exactly; fewer estimates them, and fewer
+  ## than @math{2M+2} estimates them poorly enough to warn about.
+  ##
   ## @item @qcode{'Method'} @tab @tab The algorithm, @qcode{'interventional'}
   ## by default.
   ## @end multitable
@@ -166,8 +172,9 @@ classdef shapley
     ## The algorithm the values were computed with
     ##
     ## A character vector.  Only @qcode{'interventional-kernel'} is
-    ## implemented, which computes the values exactly by enumerating every
-    ## subset of the predictors.  This property is read-only.
+    ## implemented, which enumerates every subset of the predictors where it
+    ## is allowed to and estimates the values by weighted least squares where
+    ## it is not.  This property is read-only.
     ##
     ## @end deftp
     Method = '';
@@ -177,8 +184,9 @@ classdef shapley
     ##
     ## How many predictor subsets the values were computed over
     ##
-    ## Every subset is used, so this is two raised to the number of
-    ## predictors.  This property is read-only.
+    ## The lesser of what @qcode{'MaxNumSubsets'} allowed and two raised to
+    ## the number of predictors, which is every subset.  This property is
+    ## read-only.
     ##
     ## @end deftp
     NumSubsets = [];
@@ -264,7 +272,8 @@ classdef shapley
       if (nargin < 1)
         error ("shapley: too few input arguments.");
       endif
-      if (! (isa (blackbox, 'PredictiveModel') || is_function_handle (blackbox)))
+      if (! (isa (blackbox, 'PredictiveModel')
+             || is_function_handle (blackbox)))
         error (strcat ("shapley: BLACKBOX must be a fitted model that", ...
                        " predicts, or a function handle."));
       endif
@@ -291,12 +300,12 @@ classdef shapley
         error ("shapley: 'UseParallel' is not implemented.");
       endif
 
-      [method, errmsg] = shapMethod (Method, MaxSub);
+      [method, errmsg] = shapMethod (Method);
       if (! isempty (errmsg))
         error ("shapley: %s", errmsg);
       endif
 
-      [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs);
+      [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub);
       if (! isempty (errmsg))
         error ("shapley: %s", errmsg);
       endif
@@ -306,7 +315,7 @@ classdef shapley
       this.CategoricalPredictors = F.Cat;
       this.SampledObservationIndices = F.Idx;
       this.Method = method;
-      this.NumSubsets = 2 ^ F.NumPredictors;
+      this.NumSubsets = F.NumSubsets;
       this.IsClass = F.IsClass;
       this.ClassNames = F.ClassNames;
       this.PredictorNames = F.PredictorNames;
@@ -352,14 +361,32 @@ classdef shapley
       K = columns (sfcn (Xs(1,:)));
       nq = rows (QueryPoints);
 
-      ## Every subset of the predictors, which is what makes the values exact
+      ## Every subset gives the values exactly; a budget short of that
+      ## estimates them, and one shorter than 2M+2 estimates them poorly
+      exact = (M <= 20 && this.NumSubsets == 2 ^ M);
+      if (exact)
+        Z = shapAllMasks (M);
+      else
+        Z = shapSelectMasks (M, this.NumSubsets);
+        if (this.NumSubsets < 2 * M + 2)
+          warning (strcat ("shapley.fit: the values may be unreliable", ...
+                           " because 'MaxNumSubsets' is too small."));
+        endif
+      endif
+
       phi = zeros (M, K, nq);
       icept = [];
       for ii = 1:nq
-        V = shapSubsetValues (sfcn, Xs, QueryPoints(ii,:), M, K);
-        phi(:,:,ii) = shapFromValues (V, M, K);
+        V = shapSubsetValues (sfcn, Xs, QueryPoints(ii,:), Z, K);
+        if (exact)
+          phi(:,:,ii) = shapFromValues (V, M, K);
+          v0 = V(1,:);
+        else
+          phi(:,:,ii) = shapKernelSolve (Z, V, M, K);
+          v0 = V(1,:);
+        endif
         if (ii == 1)
-          icept = V(1,:);
+          icept = v0;
         endif
       endfor
 
@@ -380,15 +407,10 @@ classdef shapley
 endclassdef
 
 ## The algorithm asked for, of those implemented.
-function [method, errmsg] = shapMethod (Method, MaxSub)
+function [method, errmsg] = shapMethod (Method)
 
   method = 'interventional-kernel';
   errmsg = '';
-  if (! isempty (MaxSub))
-    errmsg = strcat ("'MaxNumSubsets' is not implemented; every subset", ...
-                     " is used.");
-    return;
-  endif
   if (isempty (Method))
     return;
   endif
@@ -409,7 +431,7 @@ function [method, errmsg] = shapMethod (Method, MaxSub)
 endfunction
 
 ## Resolve the observations, the predictors and the classes.
-function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs)
+function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub)
 
   F = [];
   errmsg = '';
@@ -477,12 +499,16 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs)
     cat = C.Index;
   endif
 
-  ## Enumerating every subset is what keeps the values exact, and the cap
-  ## MATLAB puts on the count belongs to the sampling this does not do
-  if (p > 10)
-    errmsg = strcat ("a model of more than 10 predictors needs the", ...
-                     " subset sampling that 'MaxNumSubsets' asks for,", ...
-                     " which is not implemented.");
+  ## How many subsets to compute over.  Every one of them gives the values
+  ## exactly, and MATLAB stops at 1024 of them by default.
+  full = 2 ^ p;
+  if (isempty (MaxSub))
+    nsub = min (full, 1024);
+  elseif (isnumeric (MaxSub) && isscalar (MaxSub) && isreal (MaxSub)
+          && MaxSub > 1 && MaxSub == fix (MaxSub))
+    nsub = min (full, double (MaxSub));
+  else
+    errmsg = "'MaxNumSubsets' must be an integer greater than 1.";
     return;
   endif
 
@@ -517,6 +543,7 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs)
   endif
   F.PredictorNames = pnames;
   F.NumPredictors = p;
+  F.NumSubsets = nsub;
   F.Cat = cat;
   F.X = Data;
   F.Idx = idx;
@@ -561,23 +588,218 @@ function s = shapResponse (Mdl, Z)
 
 endfunction
 
-## The value function over every subset of the predictors.  Bit II of the row
-## index, counted from zero, says whether predictor II is held at the query
-## point; the rest of the columns stay as the observations have them, which is
-## what makes the average an interventional one.
-function V = shapSubsetValues (sfcn, Xs, q, M, K)
+## Every subset of the predictors, as one logical row each.  Bit II of the row
+## index, counted from zero, says whether predictor II is in the subset, which
+## is the order shapFromValues reads them in.
+function Z = shapAllMasks (M)
 
   nS = 2 ^ M;
-  n = rows (Xs);
-  V = zeros (nS, K);
-  for m = 0:(nS - 1)
-    mask = logical (bitget (m, 1:M));
-    Z = Xs;
-    if (any (mask))
-      Z(:,mask) = repmat (q(mask), n, 1);
-    endif
-    V(m + 1,:) = mean (sfcn (Z), 1);
+  Z = false (nS, M);
+  for ii = 1:M
+    Z(:,ii) = logical (bitget ((0:(nS - 1))', ii));
   endfor
+
+endfunction
+
+## The subsets to compute over when there is no room for all of them: the
+## empty set and the full one, which carry the average prediction and the
+## prediction itself, and then as many as the budget allows in decreasing
+## order of their kernel weight.  That weight depends only on how many
+## predictors a subset holds and falls as it moves away from the two
+## extremes, so the cardinalities are taken in the pairs (1, M-1), (2, M-2)
+## and so on, the smaller one lexicographically and the larger one in the
+## order of the complements.
+##
+## The single predictors are taken as far as the budget reaches whatever is
+## left of it.  A later pair is taken entire while it fits, and the first
+## that does not is filled with complementary pairs of subsets instead, so
+## that what is left of the budget still spans both ends rather than sitting
+## at one of them.  Measured against MATLAB R2024a at seven budgets for four
+## predictors and ten for five.
+function Z = shapSelectMasks (M, nSub)
+
+  none = false (1, M);
+  every = true (1, M);
+  Z = [none; every];
+  budget = nSub - 2;
+  if (budget < 1 || M < 2)
+    return;
+  endif
+
+  sel = zeros (budget, M);
+  nr = 0;
+  lo = 1;
+  hi = M - 1;
+  while (lo <= hi && nr < budget)
+    left = budget - nr;
+    nlo = shapLevelCount (M, lo, left);
+    if (lo == hi)
+      ## The middle cardinality is its own complement
+      [sel, nr] = shapFillPairs (sel, nr, budget, M, lo, true);
+    elseif (lo == 1 || 2 * nlo <= left)
+      C = shapCombinations (M, lo, left);
+      for ii = 1:rows (C)
+        if (nr >= budget)
+          break;
+        endif
+        nr++;
+        sel(nr,:) = C(ii,:);
+      endfor
+      for ii = 1:rows (C)
+        if (nr >= budget)
+          break;
+        endif
+        nr++;
+        sel(nr,:) = ! C(ii,:);
+      endfor
+    else
+      [sel, nr] = shapFillPairs (sel, nr, budget, M, lo, false);
+    endif
+    lo++;
+    hi--;
+  endwhile
+  taken = logical (sel(1:nr,:));
+  Z = [Z; taken];
+
+endfunction
+
+## Fill what is left of the budget with complementary pairs of subsets of S
+## predictors, each subset followed by the one holding the rest.  SELF says
+## the complement has S predictors too, so a pair can be reached twice and the
+## second reading of it is passed over.
+function [sel, nr] = shapFillPairs (sel, nr, budget, M, s, self)
+
+  C = shapCombinations (M, s, budget);
+  used = false (rows (C), 1);
+  for ii = 1:rows (C)
+    if (nr >= budget)
+      break;
+    endif
+    if (self && used(ii))
+      continue;
+    endif
+    used(ii) = true;
+    nr++;
+    sel(nr,:) = C(ii,:);
+    comp = ! C(ii,:);
+    if (nr >= budget)
+      break;
+    endif
+    if (self)
+      jj = find (all (C == repmat (comp, rows (C), 1), 2), 1);
+      if (isempty (jj) || used(jj))
+        continue;
+      endif
+      used(jj) = true;
+    endif
+    nr++;
+    sel(nr,:) = comp;
+  endfor
+
+endfunction
+
+## How many subsets of S predictors there are out of M, counted up to CAP so
+## that a wide model does not overflow the binomial coefficient it never
+## needs the whole of.
+function n = shapLevelCount (M, s, cap)
+
+  n = 1;
+  for ii = 1:s
+    n = n * (M - s + ii) / ii;
+    if (n > cap)
+      n = cap + 1;
+      return;
+    endif
+  endfor
+  n = round (n);
+
+endfunction
+
+## The first N combinations of S indices out of M, in lexicographic order, as
+## one logical row each.  They are generated rather than enumerated, so a wide
+## model does not build a list it has no room for.
+function C = shapCombinations (M, s, n)
+
+  C = zeros (n, M);
+  nr = 0;
+  c = 1:s;
+  while (nr < n)
+    nr++;
+    C(nr,c) = 1;
+    jj = s;
+    while (jj >= 1 && c(jj) == M - s + jj)
+      jj--;
+    endwhile
+    if (jj < 1)
+      break;
+    endif
+    c(jj)++;
+    c((jj + 1):s) = c(jj) + (1:(s - jj));
+  endwhile
+  C = C(1:nr,:);
+
+endfunction
+
+## The value function over the given subsets.  A subset's columns are held at
+## the query point and the rest stay as the observations have them, which is
+## what makes the average an interventional one.
+function V = shapSubsetValues (sfcn, Xs, q, Z, K)
+
+  L = rows (Z);
+  n = rows (Xs);
+  V = zeros (L, K);
+  for ii = 1:L
+    mask = Z(ii,:);
+    W = Xs;
+    if (any (mask))
+      W(:,mask) = repmat (q(mask), n, 1);
+    endif
+    V(ii,:) = mean (sfcn (W), 1);
+  endfor
+
+endfunction
+
+## The Shapley values estimated from a budget of subsets, by the weighted
+## least squares kernel SHAP solves.  Row 1 of Z is the empty subset and row 2
+## the full one, so the values are tied to sum to the deviation of the
+## prediction from the average; that is imposed by substitution rather than by
+## a penalty, so it holds exactly however few subsets there are.
+function phi = shapKernelSolve (Z, V, M, K)
+
+  v0 = V(1,:);
+  c = V(2,:) - v0;
+  Zi = Z(3:end,:);
+  L = rows (Zi);
+  if (L == 0)
+    ## Nothing but the two extremes says nothing about any one predictor
+    phi = NaN (M, K);
+    return;
+  endif
+  if (M == 1)
+    phi = c;
+    return;
+  endif
+
+  ## The Shapley kernel, in logs so that a wide model does not overflow the
+  ## binomial coefficient, and only up to a constant since it is a weight
+  s = sum (Zi, 2);
+  lchoose = gammaln (M + 1) - gammaln (s + 1) - gammaln (M - s + 1);
+  lw = log (M - 1) - lchoose - log (s) - log (M - s);
+  w = exp (lw - max (lw));
+
+  ## Substituting the last value out of the sum imposes the constraint
+  last = Zi(:,M);
+  A = Zi(:,1:(M - 1)) - repmat (last, 1, M - 1);
+  b = (V(3:end,:) - repmat (v0, L, 1)) - last * c;
+  sw = sqrt (w);
+
+  ## A budget too small to determine every value leaves the system rank
+  ## deficient, which is the case the caller has already warned about
+  warning ("off", "Octave:singular-matrix", "local");
+  warning ("off", "Octave:rank-deficient-matrix", "local");
+  psi = (repmat (sw, 1, M - 1) .* A) \ (repmat (sw, 1, K) .* b);
+  lastPhi = c - sum (psi, 1);
+  phi = [psi; lastPhi];
 
 endfunction
 
@@ -822,6 +1044,80 @@ endfunction
 %!                   0.00111111111111106, 0.0727777777777778, ...
 %!                   -0.0738888888888889], 1e-12);
 
+## The budget is capped at every subset, and a model wider than ten
+## predictors takes the default of 1024 rather than being refused
+%!test
+%! X = [1, 10; 2, 20; 3, 30; 4, 45];
+%! s = shapley (@(Z) Z(:,1), X, 'MaxNumSubsets', 100);
+%! assert_equal (s.NumSubsets, 4);
+
+%!test  # a wide model takes MATLAB's default budget
+%! X = repmat ((1:20)', 1, 16);
+%! s = shapley (@(Z) Z(:,1), X);
+%! assert_equal (s.NumSubsets, 1024);
+
+%!test  # the weighted least squares reproduces the exact values on a linear
+%!      # function, which it fits with no residual whatever subsets it is given
+%! X = [1, 10, 2; 2, 20, 5; 3, 30, 1; 4, 45, 7];
+%! b = [2, -3, 5];
+%! f = @(Z) Z * b';
+%! q = [3, 20, 4];
+%! s = shapley (f, X, 'QueryPoints', q, 'MaxNumSubsets', 6, ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value, (b .* (q - mean (X)))', 1e-10);
+
+%!test  # and a budget short of every subset still sums to the deviation
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), 'MaxNumSubsets', 10, ...
+%!              'NumObservationsToSample', 'all');
+%! [~, sc] = predict (Mdl, meas(1,:));
+%! v = [s.Shapley.setosa, s.Shapley.versicolor, s.Shapley.virginica];
+%! assert_equal (sum (v, 1), sc - s.Intercept, 1e-10);
+
+%!test  # a budget of every subset agrees with the exact enumeration
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.setosa(3), 0.664444444444445, 1e-12);
+
+## MATLAB parity: a budget short of every subset, where the four predictors
+## are covered but the pairs of them are not and are taken with their
+## complements.  Measured on R2024a
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), 'MaxNumSubsets', 12, ...
+%!              'NumObservationsToSample', 'all');
+%! v = [s.Shapley.setosa, s.Shapley.versicolor, s.Shapley.virginica];
+%! assert_equal (v, [0.000555555555556, -0.007777777777778, ...
+%!                   0.007222222222222; ...
+%!                   0.000555555555556, 0.035555555555556, ...
+%!                   -0.036111111111111; ...
+%!                   0.664444444444444, -0.435555555555555, ...
+%!                   -0.228888888888889; ...
+%!                   0.001111111111111, 0.074444444444445, ...
+%!                   -0.075555555555555], 1e-12);
+
+## MATLAB parity: five predictors, where the budget runs out inside the
+## second pair of cardinalities.  Measured on R2024a
+%!test
+%! load fisheriris
+%! X5 = [meas, meas(:,1) .* meas(:,4)];
+%! Mdl = fitcknn (X5, species);
+%! s = shapley (Mdl, 'QueryPoints', X5(1,:), 'MaxNumSubsets', 24, ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.setosa', ...
+%!               [0.000625, 0.002239583333333, 0.003510416666667, ...
+%!                0.002843750000000, 0.657447916666667], 1e-12);
+
+%!test  # nothing but the two extremes says nothing about any one predictor
+%! X = [1, 10; 2, 20; 3, 30; 4, 45];
+%! s = shapley (@(Z) Z(:,1), X, 'QueryPoints', [3, 20], ...
+%!              'MaxNumSubsets', 2, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value, [NaN; NaN]);
+
 %!test  # a classifier's fitted label keeps the type of the response
 %! load fisheriris
 %! Mdl = fitctree (meas, species);
@@ -834,11 +1130,11 @@ endfunction
 %!error<shapley: X is required when the model is a function handle.> shapley (@(Z) Z(:,1))
 %!error<shapley: X must be a real numeric matrix.> shapley (@(Z) Z(:,1), {1, 2})
 %!error<shapley: 'UseParallel' is not implemented.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'UseParallel', true)
-%!error<shapley: 'MaxNumSubsets' is not implemented; every subset is used.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'MaxNumSubsets', 2)
+%!error<shapley: 'MaxNumSubsets' must be an integer greater than 1.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'MaxNumSubsets', 1)
+%!error<shapley: 'MaxNumSubsets' must be an integer greater than 1.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'MaxNumSubsets', 2.5)
 %!error<shapley: 'Method' value 'conditional' is not implemented.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'Method', 'conditional')
 %!error<shapley: 'Method' must be 'interventional' or 'conditional'.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'Method', 'marginal')
 %!error<shapley: 'NumObservationsToSample' must be a positive integer or 'all'.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'NumObservationsToSample', 0)
-%!error<shapley: a model of more than 10 predictors needs the subset sampling that 'MaxNumSubsets' asks for, which is not implemented.> shapley (@(Z) Z(:,1), ones (3, 11))
 %!error<shapley: unknown optional argument or misplaced value.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'NoSuchThing', 1)
 %!error<shapley.fit: QUERYPOINTS must be a real numeric matrix.> fit (shapley (@(Z) Z(:,1), [1, 2; 3, 4]), 'abc')
 %!error<shapley.fit: QUERYPOINTS must have one column per predictor of the model.> fit (shapley (@(Z) Z(:,1), [1, 2; 3, 4]), [1, 2, 3])
