@@ -6,7 +6,8 @@ OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            gamtrain.oct gampredict.oct gamboosttrain.oct gamboostpredict.oct \
            gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct \
            __knnselect__.oct __knnbrute__.oct \
-           treetrain.oct treepredict.oct __treeprune__.oct
+           treetrain.oct treepredict.oct __treeprune__.oct \
+           __shapleytree__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -94,3 +95,9 @@ treepredict.oct: treepredict.cc tree.cpp
 # has no data left and a model read back from a file never had any.
 __treeprune__.oct: __treeprune__.cc
 	$(MKOCTFILE) __treeprune__.cc
+
+# The Shapley values of a tree, and of an ensemble of them, taken leaf by
+# leaf: an ensemble of any width costs its trees, where the subsets the .m
+# path uses stop at a budget and estimate past it.
+__shapleytree__.oct: __shapleytree__.cc
+	$(MKOCTFILE) __shapleytree__.cc

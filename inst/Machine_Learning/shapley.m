@@ -180,9 +180,9 @@ classdef shapley
     ##
     ## A character vector.  @qcode{'interventional-linear'} where the model
     ## predicts a weighted sum of its predictors, which is answered from the
-    ## weights alone; @qcode{'interventional-tree'} for a decision tree, and
-    ## for an ensemble of them too wide for the subsets to cover, which is
-    ## answered leaf by leaf; @qcode{'interventional-kernel'} for
+    ## weights alone; @qcode{'interventional-tree'} for a decision tree and
+    ## for an ensemble of them, which is answered leaf by leaf;
+    ## @qcode{'interventional-kernel'} for
     ## every other model, which enumerates every subset of the predictors
     ## where the budget allows it and estimates the values by weighted least
     ## squares where it does not; and @qcode{'conditional-kernel'} where
@@ -386,10 +386,14 @@ classdef shapley
       Tree = [];
       leafval = [];
       Z = [];
+      treephi = [];
       if (tree)
+        ## The compiled kernel answers every query point in one call
         [Tree, leafval] = shapTreesOf (this.BlackboxModel);
-        phi1 = shapTreeValues (Tree, leafval, Xs, QueryPoints(1,:), M, K);
-        tree = shapAccounts (sum (phi1, 1), sfcn, Xs, QueryPoints(1,:));
+        treephi = reshape (__shapleytree__ (shapTreeStructs (Tree, leafval), ...
+                                            Xs, QueryPoints), M, K, nq);
+        tree = shapAccounts (sum (treephi(:,:,1), 1), sfcn, Xs, ...
+                             QueryPoints(1,:));
       elseif (linear)
         Z = shapLinearMasks (M);
         V1 = shapSubsetValues (sfcn, Xs, QueryPoints(1,:), Z, K, []);
@@ -420,14 +424,13 @@ classdef shapley
 
       phi = zeros (M, K, nq);
       icept = [];
+      if (tree)
+        phi = treephi;
+        icept = mean (sfcn (Xs), 1);
+      endif
       for ii = 1:nq
         if (tree)
-          phi(:,:,ii) = shapTreeValues (Tree, leafval, Xs, ...
-                                        QueryPoints(ii,:), M, K);
-          if (ii == 1)
-            icept = mean (sfcn (Xs), 1);
-          endif
-          continue;
+          break;
         endif
         if (! isempty (cnd))
           cnd.qz = (QueryPoints(ii,:) - cnd.Mu) ./ cnd.Sigma;
@@ -510,13 +513,7 @@ function method = shapAlgorithm (base, F, MaxSub)
     return;
   endif
 
-  ## One tree costs about what the subsets do, so it is walked for its own
-  ## sake.  A forest costs its trees over again, while the subsets stop at
-  ## the budget however wide the model is, so it is walked only where the
-  ## budget cannot cover every subset and the subsets would estimate.
-  if (F.NumTrees == 1 || 2 ^ F.NumPredictors > F.NumSubsets)
-    method = 'interventional-tree';
-  endif
+  method = 'interventional-tree';
 
 endfunction
 
@@ -770,156 +767,27 @@ function [trees, leafvals] = shapEnsembleTrees (Mdl)
 
 endfunction
 
-## Every leaf of a tree, with the nodes walked to reach it and the child each
-## of them was entered by.  A leaf's answer holds for exactly the rows that
-## satisfy every one of those, which is what lets the tree be taken apart.
-function [lnode, lpath] = shapLeafPaths (T)
+## The trees as the compiled kernel takes them: plain node tables, with the
+## levels of a categorical cut carried beside the thresholds.
+function C = shapTreeStructs (trees, leafvals)
 
-  lnode = [];
-  lpath = {};
-  root = zeros (0, 2);
-  stack = {{1, root}};
-  while (! isempty (stack))
-    cur = stack{end};
-    stack(end) = [];
-    n = cur{1};
-    pth = cur{2};
-    if (T.CutPredictorIndex(n) == 0)
-      lnode(end+1) = n;
-      lpath{end+1} = pth;
-      continue;
-    endif
-    for kid = 1:2
-      stack{end+1} = {T.Children(n,kid), [pth; n, kid]};
-    endfor
-  endwhile
-
-endfunction
-
-## Which child each value of the cut predictor enters at node N, zero where it
-## enters neither, which is how a missing value and an unknown level behave.
-function c = shapChildFor (T, n, vals)
-
-  L = T.Children(n,1);
-  R = T.Children(n,2);
-  c = zeros (numel (vals), 1);
-  vals = vals(:);
-  if (! isempty (T.CutCategories) && ! isempty (T.CutCategories{n,1}))
-    c(ismember (vals, T.CutCategories{n,1})) = L;
-    c(ismember (vals, T.CutCategories{n,2})) = R;
-  else
-    ok = ! isnan (vals);
-    c(ok & vals < T.CutPoint(n)) = L;
-    c(ok & vals >= T.CutPoint(n)) = R;
-  endif
-
-endfunction
-
-## The sum, over every way of adding T of the M-A-B predictors that the leaf
-## does not constrain, of the weight the Shapley definition gives a subset of
-## that size.  Taken in logs, so that neither the binomial coefficient nor the
-## factorials overflow however wide the model is.
-function g = shapKernelSum (k, m, M)
-
-  t = (0:m)';
-  sz = k + t;
-  lt = gammaln (m + 1) - gammaln (t + 1) - gammaln (m - t + 1) ...
-       + gammaln (sz + 1) + gammaln (M - sz) - gammaln (M + 1);
-  g = sum (exp (lt));
-
-endfunction
-
-## The Shapley values of a decision tree, taken leaf by leaf rather than
-## subset by subset.
-##
-## A leaf answers for the rows meeting every condition on the way to it.  Hold
-## the predictors of a subset at the query point and leave the rest as an
-## observation has them, and that row reaches the leaf exactly when every
-## predictor the query fails is outside the subset and every predictor the
-## observation fails is inside it.  So, writing A for the predictors the query
-## passes and the observation fails and B for the other way about, the leaf is
-## reached exactly for the subsets holding all of A and none of B.  Only the
-## predictors in A and B can move that, and by how much depends on nothing but
-## how many there are, which collapses the sum over subsets into one term.
-function phi = shapTreeValues (trees, leafvals, Xs, q, M, K)
-
-  phi = zeros (M, K);
+  C = cell (1, numel (trees));
   for ti = 1:numel (trees)
-    phi += shapOneTreeValues (trees{ti}, leafvals{ti}, Xs, q, M, K);
-  endfor
-
-endfunction
-
-## The Shapley values of one tree, which the ensemble's are the sum of.
-function phi = shapOneTreeValues (T, leafval, Xs, q, M, K)
-
-  n = rows (Xs);
-  phi = zeros (M, K);
-  [lnode, lpath] = shapLeafPaths (T);
-
-  for li = 1:numel (lnode)
-    P = lpath{li};
-    if (isempty (P))
-      continue;
-    endif
-    nodes = P(:,1);
-    kids = P(:,2);
-    feats = T.CutPredictorIndex(nodes);
-    uf = unique (feats(:))';
-    nf = numel (uf);
-
-    ## Which of those predictors the query passes, and which each observation
-    ## passes, taking every condition on the way as one demand
-    passX = true (1, nf);
-    passZ = true (n, nf);
-    for jj = 1:nf
-      cc = find (feats == uf(jj));
-      for c = cc(:)'
-        want = T.Children(nodes(c), kids(c));
-        passX(jj) = passX(jj) ...
-                    && (shapChildFor (T, nodes(c), q(uf(jj))) == want);
-        passZ(:,jj) = passZ(:,jj) ...
-                      & (shapChildFor (T, nodes(c), Xs(:,uf(jj))) == want);
-      endfor
-    endfor
-
-    ## An observation failing a predictor the query fails too puts the leaf
-    ## out of reach whatever the subset is
-    inB = find (! passX);
-    inA = find (passX);
-    if (isempty (inB))
-      keep = true (n, 1);
+    T = trees{ti};
+    st = struct ();
+    st.Children = double (T.Children);
+    st.CutVar = double (T.CutPredictorIndex(:));
+    st.CutPoint = double (T.CutPoint(:));
+    st.Leaf = double (leafvals{ti});
+    if (! isempty (T.CutCategories))
+      st.CatLeft = T.CutCategories(:,1);
+      st.CatRight = T.CutCategories(:,2);
     else
-      keep = all (passZ(:,inB), 2);
+      st.CatLeft = {};
+      st.CatRight = {};
     endif
-    if (! any (keep))
-      continue;
-    endif
-    b = numel (inB);
-    passA = passZ(keep,inA);
-    aCount = numel (inA) - sum (passA, 2);
-    vL = leafval(lnode(li),:);
-    fB = uf(inB);
-    fA = uf(inA);
-
-    ## The weight depends on an observation only through how many predictors
-    ## fall in A, so it is worked out once for each count that occurs
-    for av = unique (aCount)'
-      atRow = (aCount == av);
-      mv = M - av - b;
-      if (b > 0)
-        gB = shapKernelSum (av, mv, M);
-        phi(fB,:) -= sum (atRow) * gB * repmat (vL, b, 1);
-      endif
-      if (av >= 1)
-        gA = shapKernelSum (av - 1, mv, M);
-        cnt = sum (! passA(atRow,:), 1);
-        phi(fA,:) += gA * (cnt(:) * vL);
-      endif
-    endfor
+    C{ti} = st;
   endfor
-
-  phi = phi / n;
 
 endfunction
 
@@ -1760,7 +1628,7 @@ endfunction
 %!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
 %! assert_equal (s.Method, 'interventional-kernel');
 
-%!test  # an ensemble of trees too wide for the subsets is walked instead
+%!test  # an ensemble of trees is walked leaf by leaf, as one tree is
 %! rand ('seed', 11);
 %! randn ('seed', 11);
 %! X = randn (60, 11);
@@ -1787,13 +1655,16 @@ endfunction
 %! assert_equal (s.Method, 'interventional-tree');
 %! assert_equal (s.Shapley.a, k.Shapley.a, 1e-10);
 
-%!test  # an ensemble the subsets can cover exactly is left to them
+%!test  # a narrow ensemble is walked too, and agrees with every subset
 %! load fisheriris
 %! Mdl = fitcensemble (meas, species, 'Method', 'Bag', ...
 %!                     'NumLearningCycles', 10);
 %! s = shapley (Mdl, 'QueryPoints', meas(1,:), ...
 %!              'NumObservationsToSample', 'all');
-%! assert_equal (s.Method, 'interventional-kernel');
+%! k = shapley (Mdl, meas, 'QueryPoints', meas(1,:), 'MaxNumSubsets', 16, ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-tree');
+%! assert_equal (s.Shapley.setosa, k.Shapley.setosa, 1e-10);
 
 %!test  # a boosting method reading a learner's label, not its scores, too
 %! rand ('seed', 3);
