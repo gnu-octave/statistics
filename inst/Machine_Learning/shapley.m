@@ -180,8 +180,9 @@ classdef shapley
     ##
     ## A character vector.  @qcode{'interventional-linear'} where the model
     ## predicts a weighted sum of its predictors, which is answered from the
-    ## weights alone; @qcode{'interventional-tree'} for a decision tree,
-    ## which is answered leaf by leaf; @qcode{'interventional-kernel'} for
+    ## weights alone; @qcode{'interventional-tree'} for a decision tree, and
+    ## for an ensemble of them too wide for the subsets to cover, which is
+    ## answered leaf by leaf; @qcode{'interventional-kernel'} for
     ## every other model, which enumerates every subset of the predictors
     ## where the budget allows it and estimates the values by weighted least
     ## squares where it does not; and @qcode{'conditional-kernel'} where
@@ -386,7 +387,7 @@ classdef shapley
       leafval = [];
       Z = [];
       if (tree)
-        [Tree, leafval] = shapTreeOf (this.BlackboxModel);
+        [Tree, leafval] = shapTreesOf (this.BlackboxModel);
         phi1 = shapTreeValues (Tree, leafval, Xs, QueryPoints(1,:), M, K);
         tree = shapAccounts (sum (phi1, 1), sfcn, Xs, QueryPoints(1,:));
       elseif (linear)
@@ -506,7 +507,14 @@ function method = shapAlgorithm (base, F, MaxSub)
   endif
   if (F.IsLinear)
     method = 'interventional-linear';
-  else
+    return;
+  endif
+
+  ## One tree costs about what the subsets do, so it is walked for its own
+  ## sake.  A forest costs its trees over again, while the subsets stop at
+  ## the budget however wide the model is, so it is walked only where the
+  ## budget cannot cover every subset and the subsets would estimate.
+  if (F.NumTrees == 1 || 2 ^ F.NumPredictors > F.NumSubsets)
     method = 'interventional-tree';
   endif
 
@@ -627,43 +635,138 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub)
   F.NumPredictors = p;
   F.NumSubsets = nsub;
   F.IsLinear = shapIsLinear (blackbox, isfh, has);
-  F.IsTree = ! isempty (shapTreeOf (blackbox));
+  F.NumTrees = numel (shapTreesOf (blackbox));
+  F.IsTree = (F.NumTrees > 0);
   F.Cat = cat;
   F.X = Data;
   F.Idx = idx;
 
 endfunction
 
-## The decision tree a model answers through, and what it answers at each of
-## its leaves, or empty where the model is not one tree.  A tree is answered
-## exactly without enumerating the subsets, so this is worth asking.
-function [T, leafval] = shapTreeOf (blackbox)
+## The decision trees a model answers through, and what each answers at each
+## of its nodes, already carrying whatever weight the model gives it.  Empty
+## where the model does not come apart into trees, which is what sends it to
+## the subsets instead.
+##
+## A single tree answers with its own leaves.  An ensemble answers with the
+## weighted sum of its learners' outputs, so it comes apart too, provided
+## every learner is a tree, the learners are combined by a constant weight
+## each, and nothing is applied to the total afterwards.
+function [trees, leafvals] = shapTreesOf (blackbox)
 
-  T = [];
-  leafval = [];
+  trees = {};
+  leafvals = {};
   if (is_function_handle (blackbox))
     return;
   endif
+
   switch (class (blackbox))
+
     case {'ClassificationTree', 'CompactClassificationTree', ...
           'RegressionTree', 'CompactRegressionTree'}
-      T = blackbox;
-    otherwise
-      return;
+      trees = {blackbox};
+      leafvals = {shapLeafValues(blackbox)};
+
+    case {'ClassificationEnsemble', 'CompactClassificationEnsemble', ...
+          'ClassificationBaggedEnsemble', 'RegressionEnsemble', ...
+          'CompactRegressionEnsemble', 'RegressionBaggedEnsemble'}
+      [trees, leafvals] = shapEnsembleTrees (blackbox);
+
   endswitch
+
+endfunction
+
+## What one tree answers at each of its nodes, transformed as it answers.
+function L = shapLeafValues (T)
 
   props = properties (T);
   if (any (strcmp (props, 'ClassProbability')))
-    leafval = T.ClassProbability;
+    L = T.ClassProbability;
     if (! isempty (T.STfun))
-      leafval = T.STfun (leafval);
+      L = T.STfun (L);
     endif
   else
-    leafval = T.NodeMean(:);
+    L = T.NodeMean(:);
     if (! isempty (T.RTfun))
-      leafval = T.RTfun (leafval);
+      L = T.RTfun (L);
     endif
   endif
+
+endfunction
+
+## The learners of an ensemble and what each contributes to its answer.
+##
+## A regression ensemble adds up what its learners predict, whatever method
+## grew them.  A classification ensemble adds up their class scores only for
+## the methods that read a learner that way; the boosting methods that read a
+## learner's label, or its margin, contribute something that is not the
+## learner's own scores, and those are left to the subsets.  Anything applied
+## to the total, a transform of the score or of the response, would not come
+## apart and is left to the subsets too.
+function [trees, leafvals] = shapEnsembleTrees (Mdl)
+
+  trees = {};
+  leafvals = {};
+  props = properties (Mdl);
+  has = @(n) any (strcmp (props, n));
+  if (! has ('Trained') || isempty (Mdl.Trained))
+    return;
+  endif
+  isclass = has ('ClassNames') && ! isempty (Mdl.ClassNames);
+  if (isclass)
+    trans = Mdl.ScoreTransform;
+    ## The methods whose learner output is the learner's own class scores
+    if (! any (strcmp (Mdl.Method, {'Bag', 'AdaBoostM2', 'RUSBoost'})))
+      return;
+    endif
+  else
+    trans = Mdl.ResponseTransform;
+  endif
+  if (! (ischar (trans) && any (strcmpi (trans, {'none', 'identity'}))))
+    return;
+  endif
+
+  learners = Mdl.Trained(:)';
+  T = numel (learners);
+  istree = cellfun (@(t) any (strcmp (properties (t), 'Children')), learners);
+  if (! all (istree))
+    return;
+  endif
+
+  w = Mdl.TrainedWeights(:)';
+  if (isempty (w))
+    w = ones (1, T);
+  endif
+  if (strcmp (Mdl.CombineWeights, 'WeightedAverage'))
+    tot = sum (w);
+    if (! (tot > 0))
+      return;
+    endif
+    w = w / tot;
+  endif
+
+  if (isclass)
+    K = numel (Mdl.ClassNames);
+  endif
+  leafvals = cell (1, T);
+  for t = 1:T
+    L = shapLeafValues (learners{t});
+    if (isclass)
+      ## A learner need not know every class of the ensemble, so its columns
+      ## are put where the ensemble keeps them
+      col = labelIndices (Mdl.ClassNames, learners{t}.ClassNames);
+      if (any (col == 0))
+        trees = {};
+        leafvals = {};
+        return;
+      endif
+      G = zeros (rows (L), K);
+      G(:,col) = L;
+      L = G;
+    endif
+    leafvals{t} = w(t) * L;
+  endfor
+  trees = learners;
 
 endfunction
 
@@ -738,7 +841,17 @@ endfunction
 ## reached exactly for the subsets holding all of A and none of B.  Only the
 ## predictors in A and B can move that, and by how much depends on nothing but
 ## how many there are, which collapses the sum over subsets into one term.
-function phi = shapTreeValues (T, leafval, Xs, q, M, K)
+function phi = shapTreeValues (trees, leafvals, Xs, q, M, K)
+
+  phi = zeros (M, K);
+  for ti = 1:numel (trees)
+    phi += shapOneTreeValues (trees{ti}, leafvals{ti}, Xs, q, M, K);
+  endfor
+
+endfunction
+
+## The Shapley values of one tree, which the ensemble's are the sum of.
+function phi = shapOneTreeValues (T, leafval, Xs, q, M, K)
 
   n = rows (Xs);
   phi = zeros (M, K);
@@ -1645,6 +1758,52 @@ endfunction
 %! Mdl = fitrtree (meas(:,2:4), meas(:,1));
 %! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
 %!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-kernel');
+
+%!test  # an ensemble of trees too wide for the subsets is walked instead
+%! rand ('seed', 11);
+%! randn ('seed', 11);
+%! X = randn (60, 11);
+%! y = X(:,1) + 2 * X(:,2) - X(:,3);
+%! Mdl = fitrensemble (X, y, 'Method', 'Bag', 'NumLearningCycles', 4);
+%! s = shapley (Mdl, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, X, 'QueryPoints', X(1,:), 'MaxNumSubsets', 2048, ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-tree');
+%! assert_equal (s.Shapley.Value, k.Shapley.Value, 1e-10);
+
+%!test  # and a classifier's, where a learner's classes are put where the
+%!      # ensemble keeps them
+%! rand ('seed', 11);
+%! randn ('seed', 11);
+%! X = randn (60, 11);
+%! g = repmat ({'a'; 'b'}, 30, 1);
+%! Mdl = fitcensemble (X, g, 'Method', 'Bag', 'NumLearningCycles', 4);
+%! s = shapley (Mdl, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, X, 'QueryPoints', X(1,:), 'MaxNumSubsets', 2048, ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-tree');
+%! assert_equal (s.Shapley.a, k.Shapley.a, 1e-10);
+
+%!test  # an ensemble the subsets can cover exactly is left to them
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Bag', ...
+%!                     'NumLearningCycles', 10);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-kernel');
+
+%!test  # a boosting method reading a learner's label, not its scores, too
+%! rand ('seed', 3);
+%! randn ('seed', 3);
+%! X = randn (60, 11);
+%! g = repmat ({'a'; 'b'}, 30, 1);
+%! Mdl = fitcensemble (X, g, 'Method', 'AdaBoostM1', ...
+%!                     'NumLearningCycles', 4);
+%! s = shapley (Mdl, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
 %! assert_equal (s.Method, 'interventional-kernel');
 
 %!test  # a classifier's fitted label keeps the type of the response
