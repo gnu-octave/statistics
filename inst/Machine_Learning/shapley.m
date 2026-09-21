@@ -64,7 +64,9 @@ classdef shapley
   ## most to compute over, an integer above 1.  The default is the lesser of
   ## @math{2^M}, which is every subset of the @math{M} predictors, and 1024.
   ## Every subset gives the values exactly; fewer estimates them, and fewer
-  ## than @math{2M+2} estimates them poorly enough to warn about.
+  ## than @math{2M+2} estimates them poorly enough to warn about.  Giving it
+  ## at all asks for the subsets, so a linear model that would otherwise be
+  ## answered from its weights is answered over them instead.
   ##
   ## @item @qcode{'Method'} @tab @tab The algorithm, @qcode{'interventional'}
   ## by default, which averages over the observations as they stand.
@@ -175,11 +177,13 @@ classdef shapley
     ##
     ## The algorithm the values were computed with
     ##
-    ## A character vector, @qcode{'interventional-kernel'} or
-    ## @qcode{'conditional-kernel'} after the @qcode{'Method'} it was given.
-    ## Either enumerates every subset of the predictors where the budget
+    ## A character vector.  @qcode{'interventional-linear'} where the model
+    ## predicts a weighted sum of its predictors, which is answered from the
+    ## weights alone; @qcode{'interventional-kernel'} for every other model,
+    ## which enumerates every subset of the predictors where the budget
     ## allows it and estimates the values by weighted least squares where it
-    ## does not.  This property is read-only.
+    ## does not; and @qcode{'conditional-kernel'} where @qcode{'Method'} asked
+    ## for conditioning.  This property is read-only.
     ##
     ## @end deftp
     Method = '';
@@ -305,7 +309,7 @@ classdef shapley
         error ("shapley: 'UseParallel' is not implemented.");
       endif
 
-      [method, errmsg] = shapMethod (Method);
+      [base, errmsg] = shapMethod (Method);
       if (! isempty (errmsg))
         error ("shapley: %s", errmsg);
       endif
@@ -314,6 +318,7 @@ classdef shapley
       if (! isempty (errmsg))
         error ("shapley: %s", errmsg);
       endif
+      method = shapAlgorithm (base, F, MaxSub);
 
       this.BlackboxModel = blackbox;
       this.X = F.X;
@@ -366,16 +371,32 @@ classdef shapley
       K = columns (sfcn (Xs(1,:)));
       nq = rows (QueryPoints);
 
-      ## Every subset gives the values exactly; a budget short of that
-      ## estimates them, and one shorter than 2M+2 estimates them poorly
+      ## A weighted sum of the predictors needs no subsets beyond the
+      ## single ones; everything else is answered over every subset where
+      ## the budget allows it and over a selection of them where it does not
+      linear = strcmp (this.Method, 'interventional-linear');
       exact = (M <= 20 && this.NumSubsets == 2 ^ M);
-      if (exact)
+      if (linear)
+        Z = shapLinearMasks (M);
+      elseif (exact)
         Z = shapAllMasks (M);
       else
         Z = shapSelectMasks (M, this.NumSubsets);
         if (this.NumSubsets < 2 * M + 2)
           warning (strcat ("shapley.fit: the values may be unreliable", ...
                            " because 'MaxNumSubsets' is too small."));
+        endif
+      endif
+
+      ## The sum is checked rather than taken on trust: a model wrongly read
+      ## as linear would otherwise answer wrongly and say nothing about it
+      if (linear && ! shapIsAdditive (sfcn, Xs, QueryPoints(1,:), Z, K))
+        linear = false;
+        this.Method = 'interventional-kernel';
+        if (exact)
+          Z = shapAllMasks (M);
+        else
+          Z = shapSelectMasks (M, this.NumSubsets);
         endif
       endif
 
@@ -390,12 +411,13 @@ classdef shapley
           cnd.qz = (QueryPoints(ii,:) - cnd.Mu) ./ cnd.Sigma;
         endif
         V = shapSubsetValues (sfcn, Xs, QueryPoints(ii,:), Z, K, cnd);
-        if (exact)
+        v0 = V(1,:);
+        if (linear)
+          phi(:,:,ii) = V(3:end,:) - repmat (v0, M, 1);
+        elseif (exact)
           phi(:,:,ii) = shapFromValues (V, M, K);
-          v0 = V(1,:);
         else
           phi(:,:,ii) = shapKernelSolve (Z, V, M, K);
-          v0 = V(1,:);
         endif
         if (ii == 1)
           icept = v0;
@@ -419,9 +441,9 @@ classdef shapley
 endclassdef
 
 ## The algorithm asked for, of those implemented.
-function [method, errmsg] = shapMethod (Method)
+function [base, errmsg] = shapMethod (Method)
 
-  method = 'interventional-kernel';
+  base = 'interventional';
   errmsg = '';
   if (isempty (Method))
     return;
@@ -432,13 +454,36 @@ function [method, errmsg] = shapMethod (Method)
   endif
   switch (lower (char (Method)))
     case 'interventional'
-      ## the only one implemented
+      base = 'interventional';
     case 'conditional'
-      method = 'conditional-kernel';
+      base = 'conditional';
     otherwise
       errmsg = strcat ("'Method' must be 'interventional' or", ...
                        " 'conditional'.");
   endswitch
+
+endfunction
+
+## Which algorithm answers for this model.  A model whose prediction is a
+## weighted sum of its predictors is answered outright, and everything else
+## through the subsets.  Asking for a budget of subsets asks for the subsets.
+function method = shapAlgorithm (base, F, MaxSub)
+
+  if (strcmp (base, 'conditional'))
+    method = 'conditional-kernel';
+    return;
+  endif
+  method = 'interventional-kernel';
+  if (! F.IsLinear)
+    return;
+  endif
+  if (! isempty (MaxSub))
+    warning (strcat ("shapley: 'MaxNumSubsets' is given, so the values", ...
+                     " are taken over subsets rather than from the", ...
+                     " weights of a linear model."));
+    return;
+  endif
+  method = 'interventional-linear';
 
 endfunction
 
@@ -556,9 +601,32 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub)
   F.PredictorNames = pnames;
   F.NumPredictors = p;
   F.NumSubsets = nsub;
+  F.IsLinear = shapIsLinear (blackbox, isfh, has);
   F.Cat = cat;
   F.X = Data;
   F.Idx = idx;
+
+endfunction
+
+## Whether the model predicts a weighted sum of its predictors.  Beta holds
+## the weights of the linear learners and of a support vector machine with a
+## linear kernel, and is empty for every other kernel, so its presence is the
+## question.  A transform of the score breaks the sum, and a model carrying
+## one is answered through the subsets instead.
+function tf = shapIsLinear (blackbox, isfh, has)
+
+  tf = false;
+  if (isfh || ! has ('Beta') || isempty (blackbox.Beta))
+    return;
+  endif
+  if (has ('ScoreTransform'))
+    trans = blackbox.ScoreTransform;
+  elseif (has ('ResponseTransform'))
+    trans = blackbox.ResponseTransform;
+  else
+    trans = 'none';
+  endif
+  tf = (ischar (trans) && any (strcmpi (trans, {'none', 'identity'})));
 
 endfunction
 
@@ -610,6 +678,32 @@ function Z = shapAllMasks (M)
   for ii = 1:M
     Z(:,ii) = logical (bitget ((0:(nS - 1))', ii));
   endfor
+
+endfunction
+
+## The subsets a weighted sum of the predictors is answered from: the empty
+## set, the full one, and each predictor on its own.  Holding one predictor
+## at the query point moves such a prediction by that predictor's whole
+## contribution and by nothing else, so the difference from the average is
+## the Shapley value itself and the other subsets say nothing new.
+function Z = shapLinearMasks (M)
+
+  none = false (1, M);
+  every = true (1, M);
+  singles = logical (eye (M));
+  Z = [none; every; singles];
+
+endfunction
+
+## Whether holding the predictors one at a time accounts for the whole
+## deviation of the prediction from the average, which is what makes the
+## short answer the right one.
+function tf = shapIsAdditive (sfcn, Xs, q, Z, K)
+
+  V = shapSubsetValues (sfcn, Xs, q, Z, K, []);
+  dev = V(2,:) - V(1,:);
+  parts = sum (V(3:end,:) - repmat (V(1,:), rows (Z) - 2, 1), 1);
+  tf = all (abs (parts - dev) <= 1e-8 * max (1, max (abs (dev))));
 
 endfunction
 
@@ -1220,6 +1314,59 @@ endfunction
 %! s = shapley (@(Z) Z(:,1), X, 'QueryPoints', [3, 20], ...
 %!              'MaxNumSubsets', 2, 'NumObservationsToSample', 'all');
 %! assert_equal (s.Shapley.Value, [NaN; NaN]);
+
+%!test  # a model predicting a weighted sum is answered from the weights
+%! load fisheriris
+%! Mdl = fitrlinear (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-linear');
+
+%!test  # and gives what the subsets would have given
+%! load fisheriris
+%! Mdl = fitrlinear (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value, k.Shapley.Value, 1e-10);
+
+%!test  # which is each weight times the deviation of its predictor
+%! load fisheriris
+%! Mdl = fitrlinear (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value, ...
+%!               Mdl.Beta(:) .* (meas(1,2:4) - mean (meas(:,2:4)))', 1e-10);
+
+%!test  # a support vector machine on any other kernel keeps no such weights
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,2:4), meas(:,1), 'KernelFunction', 'gaussian');
+%! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-kernel');
+
+## A transform of the score breaks the weighted sum, so the subsets answer
+## and the values still sum to the deviation.  MATLAB keeps the short answer
+## here and reports an intercept on the transformed scale beside values on
+## the untransformed one, which do not sum to it
+%!test
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150,:), species(51:150), ...
+%!                'ScoreTransform', 'logit');
+%! s = shapley (Mdl, meas(51:150,:), 'QueryPoints', meas(51,:), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-kernel');
+%! [~, sc] = predict (Mdl, meas(51,:));
+%! v = [s.Shapley.versicolor, s.Shapley.virginica];
+%! assert_equal (sum (v, 1), sc - s.Intercept, 1e-10);
+
+%!test  # asking for a budget of subsets asks for the subsets
+%! load fisheriris
+%! Mdl = fitrlinear (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-kernel');
 
 %!test  # a classifier's fitted label keeps the type of the response
 %! load fisheriris
