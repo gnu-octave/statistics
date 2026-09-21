@@ -65,8 +65,9 @@ classdef shapley
   ## @math{2^M}, which is every subset of the @math{M} predictors, and 1024.
   ## Every subset gives the values exactly; fewer estimates them, and fewer
   ## than @math{2M+2} estimates them poorly enough to warn about.  Giving it
-  ## at all asks for the subsets, so a linear model that would otherwise be
-  ## answered from its weights is answered over them instead.
+  ## at all asks for the subsets, so a linear model or a decision tree that
+  ## would otherwise be answered from its own structure is answered over
+  ## them instead.
   ##
   ## @item @qcode{'Method'} @tab @tab The algorithm, @qcode{'interventional'}
   ## by default, which averages over the observations as they stand.
@@ -179,11 +180,14 @@ classdef shapley
     ##
     ## A character vector.  @qcode{'interventional-linear'} where the model
     ## predicts a weighted sum of its predictors, which is answered from the
-    ## weights alone; @qcode{'interventional-kernel'} for every other model,
-    ## which enumerates every subset of the predictors where the budget
-    ## allows it and estimates the values by weighted least squares where it
-    ## does not; and @qcode{'conditional-kernel'} where @qcode{'Method'} asked
-    ## for conditioning.  This property is read-only.
+    ## weights alone; @qcode{'interventional-tree'} for a decision tree,
+    ## which is answered leaf by leaf; @qcode{'interventional-kernel'} for
+    ## every other model, which enumerates every subset of the predictors
+    ## where the budget allows it and estimates the values by weighted least
+    ## squares where it does not; and @qcode{'conditional-kernel'} where
+    ## @qcode{'Method'} asked for conditioning.  A tree and a linear model
+    ## are answered exactly however many predictors they have, where the
+    ## budget stops the subsets at 1024.  This property is read-only.
     ##
     ## @end deftp
     Method = '';
@@ -371,32 +375,41 @@ classdef shapley
       K = columns (sfcn (Xs(1,:)));
       nq = rows (QueryPoints);
 
-      ## A weighted sum of the predictors needs no subsets beyond the
-      ## single ones; everything else is answered over every subset where
-      ## the budget allows it and over a selection of them where it does not
+      ## A weighted sum of the predictors, and a decision tree, are each
+      ## answered from what the model is rather than over its subsets.  A
+      ## shortcut is checked against the whole deviation before it is kept,
+      ## so a model read wrongly falls back rather than answering wrongly.
       linear = strcmp (this.Method, 'interventional-linear');
+      tree = strcmp (this.Method, 'interventional-tree');
       exact = (M <= 20 && this.NumSubsets == 2 ^ M);
-      if (linear)
+      Tree = [];
+      leafval = [];
+      Z = [];
+      if (tree)
+        [Tree, leafval] = shapTreeOf (this.BlackboxModel);
+        phi1 = shapTreeValues (Tree, leafval, Xs, QueryPoints(1,:), M, K);
+        tree = shapAccounts (sum (phi1, 1), sfcn, Xs, QueryPoints(1,:));
+      elseif (linear)
         Z = shapLinearMasks (M);
-      elseif (exact)
-        Z = shapAllMasks (M);
-      else
-        Z = shapSelectMasks (M, this.NumSubsets);
-        if (this.NumSubsets < 2 * M + 2)
-          warning (strcat ("shapley.fit: the values may be unreliable", ...
-                           " because 'MaxNumSubsets' is too small."));
-        endif
+        V1 = shapSubsetValues (sfcn, Xs, QueryPoints(1,:), Z, K, []);
+        parts = sum (V1(3:end,:) - repmat (V1(1,:), M, 1), 1);
+        linear = shapAccounts (parts, sfcn, Xs, QueryPoints(1,:));
       endif
 
-      ## The sum is checked rather than taken on trust: a model wrongly read
-      ## as linear would otherwise answer wrongly and say nothing about it
-      if (linear && ! shapIsAdditive (sfcn, Xs, QueryPoints(1,:), Z, K))
-        linear = false;
-        this.Method = 'interventional-kernel';
+      ## Whatever is left over is answered over the subsets
+      if (! (linear || tree))
+        if (strcmp (this.Method, 'interventional-linear')
+            || strcmp (this.Method, 'interventional-tree'))
+          this.Method = 'interventional-kernel';
+        endif
         if (exact)
           Z = shapAllMasks (M);
         else
           Z = shapSelectMasks (M, this.NumSubsets);
+          if (this.NumSubsets < 2 * M + 2)
+            warning (strcat ("shapley.fit: the values may be unreliable", ...
+                             " because 'MaxNumSubsets' is too small."));
+          endif
         endif
       endif
 
@@ -407,6 +420,14 @@ classdef shapley
       phi = zeros (M, K, nq);
       icept = [];
       for ii = 1:nq
+        if (tree)
+          phi(:,:,ii) = shapTreeValues (Tree, leafval, Xs, ...
+                                        QueryPoints(ii,:), M, K);
+          if (ii == 1)
+            icept = mean (sfcn (Xs), 1);
+          endif
+          continue;
+        endif
         if (! isempty (cnd))
           cnd.qz = (QueryPoints(ii,:) - cnd.Mu) ./ cnd.Sigma;
         endif
@@ -474,16 +495,20 @@ function method = shapAlgorithm (base, F, MaxSub)
     return;
   endif
   method = 'interventional-kernel';
-  if (! F.IsLinear)
+  if (! (F.IsLinear || F.IsTree))
     return;
   endif
   if (! isempty (MaxSub))
     warning (strcat ("shapley: 'MaxNumSubsets' is given, so the values", ...
                      " are taken over subsets rather than from the", ...
-                     " weights of a linear model."));
+                     " structure of the model."));
     return;
   endif
-  method = 'interventional-linear';
+  if (F.IsLinear)
+    method = 'interventional-linear';
+  else
+    method = 'interventional-tree';
+  endif
 
 endfunction
 
@@ -602,9 +627,186 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub)
   F.NumPredictors = p;
   F.NumSubsets = nsub;
   F.IsLinear = shapIsLinear (blackbox, isfh, has);
+  F.IsTree = ! isempty (shapTreeOf (blackbox));
   F.Cat = cat;
   F.X = Data;
   F.Idx = idx;
+
+endfunction
+
+## The decision tree a model answers through, and what it answers at each of
+## its leaves, or empty where the model is not one tree.  A tree is answered
+## exactly without enumerating the subsets, so this is worth asking.
+function [T, leafval] = shapTreeOf (blackbox)
+
+  T = [];
+  leafval = [];
+  if (is_function_handle (blackbox))
+    return;
+  endif
+  switch (class (blackbox))
+    case {'ClassificationTree', 'CompactClassificationTree', ...
+          'RegressionTree', 'CompactRegressionTree'}
+      T = blackbox;
+    otherwise
+      return;
+  endswitch
+
+  props = properties (T);
+  if (any (strcmp (props, 'ClassProbability')))
+    leafval = T.ClassProbability;
+    if (! isempty (T.STfun))
+      leafval = T.STfun (leafval);
+    endif
+  else
+    leafval = T.NodeMean(:);
+    if (! isempty (T.RTfun))
+      leafval = T.RTfun (leafval);
+    endif
+  endif
+
+endfunction
+
+## Every leaf of a tree, with the nodes walked to reach it and the child each
+## of them was entered by.  A leaf's answer holds for exactly the rows that
+## satisfy every one of those, which is what lets the tree be taken apart.
+function [lnode, lpath] = shapLeafPaths (T)
+
+  lnode = [];
+  lpath = {};
+  root = zeros (0, 2);
+  stack = {{1, root}};
+  while (! isempty (stack))
+    cur = stack{end};
+    stack(end) = [];
+    n = cur{1};
+    pth = cur{2};
+    if (T.CutPredictorIndex(n) == 0)
+      lnode(end+1) = n;
+      lpath{end+1} = pth;
+      continue;
+    endif
+    for kid = 1:2
+      stack{end+1} = {T.Children(n,kid), [pth; n, kid]};
+    endfor
+  endwhile
+
+endfunction
+
+## Which child each value of the cut predictor enters at node N, zero where it
+## enters neither, which is how a missing value and an unknown level behave.
+function c = shapChildFor (T, n, vals)
+
+  L = T.Children(n,1);
+  R = T.Children(n,2);
+  c = zeros (numel (vals), 1);
+  vals = vals(:);
+  if (! isempty (T.CutCategories) && ! isempty (T.CutCategories{n,1}))
+    c(ismember (vals, T.CutCategories{n,1})) = L;
+    c(ismember (vals, T.CutCategories{n,2})) = R;
+  else
+    ok = ! isnan (vals);
+    c(ok & vals < T.CutPoint(n)) = L;
+    c(ok & vals >= T.CutPoint(n)) = R;
+  endif
+
+endfunction
+
+## The sum, over every way of adding T of the M-A-B predictors that the leaf
+## does not constrain, of the weight the Shapley definition gives a subset of
+## that size.  Taken in logs, so that neither the binomial coefficient nor the
+## factorials overflow however wide the model is.
+function g = shapKernelSum (k, m, M)
+
+  t = (0:m)';
+  sz = k + t;
+  lt = gammaln (m + 1) - gammaln (t + 1) - gammaln (m - t + 1) ...
+       + gammaln (sz + 1) + gammaln (M - sz) - gammaln (M + 1);
+  g = sum (exp (lt));
+
+endfunction
+
+## The Shapley values of a decision tree, taken leaf by leaf rather than
+## subset by subset.
+##
+## A leaf answers for the rows meeting every condition on the way to it.  Hold
+## the predictors of a subset at the query point and leave the rest as an
+## observation has them, and that row reaches the leaf exactly when every
+## predictor the query fails is outside the subset and every predictor the
+## observation fails is inside it.  So, writing A for the predictors the query
+## passes and the observation fails and B for the other way about, the leaf is
+## reached exactly for the subsets holding all of A and none of B.  Only the
+## predictors in A and B can move that, and by how much depends on nothing but
+## how many there are, which collapses the sum over subsets into one term.
+function phi = shapTreeValues (T, leafval, Xs, q, M, K)
+
+  n = rows (Xs);
+  phi = zeros (M, K);
+  [lnode, lpath] = shapLeafPaths (T);
+
+  for li = 1:numel (lnode)
+    P = lpath{li};
+    if (isempty (P))
+      continue;
+    endif
+    nodes = P(:,1);
+    kids = P(:,2);
+    feats = T.CutPredictorIndex(nodes);
+    uf = unique (feats(:))';
+    nf = numel (uf);
+
+    ## Which of those predictors the query passes, and which each observation
+    ## passes, taking every condition on the way as one demand
+    passX = true (1, nf);
+    passZ = true (n, nf);
+    for jj = 1:nf
+      cc = find (feats == uf(jj));
+      for c = cc(:)'
+        want = T.Children(nodes(c), kids(c));
+        passX(jj) = passX(jj) ...
+                    && (shapChildFor (T, nodes(c), q(uf(jj))) == want);
+        passZ(:,jj) = passZ(:,jj) ...
+                      & (shapChildFor (T, nodes(c), Xs(:,uf(jj))) == want);
+      endfor
+    endfor
+
+    ## An observation failing a predictor the query fails too puts the leaf
+    ## out of reach whatever the subset is
+    inB = find (! passX);
+    inA = find (passX);
+    if (isempty (inB))
+      keep = true (n, 1);
+    else
+      keep = all (passZ(:,inB), 2);
+    endif
+    if (! any (keep))
+      continue;
+    endif
+    b = numel (inB);
+    passA = passZ(keep,inA);
+    aCount = numel (inA) - sum (passA, 2);
+    vL = leafval(lnode(li),:);
+    fB = uf(inB);
+    fA = uf(inA);
+
+    ## The weight depends on an observation only through how many predictors
+    ## fall in A, so it is worked out once for each count that occurs
+    for av = unique (aCount)'
+      atRow = (aCount == av);
+      mv = M - av - b;
+      if (b > 0)
+        gB = shapKernelSum (av, mv, M);
+        phi(fB,:) -= sum (atRow) * gB * repmat (vL, b, 1);
+      endif
+      if (av >= 1)
+        gA = shapKernelSum (av - 1, mv, M);
+        cnt = sum (! passA(atRow,:), 1);
+        phi(fA,:) += gA * (cnt(:) * vL);
+      endif
+    endfor
+  endfor
+
+  phi = phi / n;
 
 endfunction
 
@@ -695,14 +897,11 @@ function Z = shapLinearMasks (M)
 
 endfunction
 
-## Whether holding the predictors one at a time accounts for the whole
-## deviation of the prediction from the average, which is what makes the
-## short answer the right one.
-function tf = shapIsAdditive (sfcn, Xs, q, Z, K)
+## Whether a shortcut's values account for the whole deviation of the
+## prediction from the average, which is what says the shortcut applies.
+function tf = shapAccounts (parts, sfcn, Xs, q)
 
-  V = shapSubsetValues (sfcn, Xs, q, Z, K, []);
-  dev = V(2,:) - V(1,:);
-  parts = sum (V(3:end,:) - repmat (V(1,:), rows (Z) - 2, 1), 1);
+  dev = sfcn (q) - mean (sfcn (Xs), 1);
   tf = all (abs (parts - dev) <= 1e-8 * max (1, max (abs (dev))));
 
 endfunction
@@ -1364,6 +1563,86 @@ endfunction
 %!test  # asking for a budget of subsets asks for the subsets
 %! load fisheriris
 %! Mdl = fitrlinear (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-kernel');
+
+%!test  # a decision tree is answered leaf by leaf
+%! load fisheriris
+%! Mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, 'QueryPoints', meas(1,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-tree');
+
+%!test  # and gives what the subsets would have given
+%! load fisheriris
+%! Mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (Mdl, 'QueryPoints', meas(1,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
+%!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value, k.Shapley.Value, 1e-10);
+
+%!test  # for a classifier too, one column of values per class
+%! load fisheriris
+%! Mdl = fitctree (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, meas, 'QueryPoints', meas(1,:), ...
+%!              'MaxNumSubsets', 16, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.versicolor, k.Shapley.versicolor, 1e-10);
+
+%!test  # and for a compact one, which keeps the nodes and not the data
+%! load fisheriris
+%! Mdl = compact (fitctree (meas, species));
+%! s = shapley (Mdl, meas, 'QueryPoints', meas(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, meas, 'QueryPoints', meas(1,:), ...
+%!              'MaxNumSubsets', 16, 'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.setosa, k.Shapley.setosa, 1e-10);
+
+%!test  # a cut on the levels of a categorical predictor is followed too
+%! t = (1:120)';
+%! X = [mod(t, 4), double(t), mod(t * 7, 11)];
+%! y = 3 * (X(:,1) == 1) - 2 * (X(:,1) == 3) + 0.01 * mod (t, 5);
+%! Mdl = fitrtree (X, y, 'CategoricalPredictors', 1);
+%! s = shapley (Mdl, 'QueryPoints', X(3,:), ...
+%!              'NumObservationsToSample', 'all');
+%! k = shapley (Mdl, X, 'QueryPoints', X(3,:), 'MaxNumSubsets', 8, ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value, k.Shapley.Value, 1e-10);
+
+%!test  # a tree is exact however many predictors it has, where the subsets
+%!      # would have stopped at the budget of 1024
+%! rand ('seed', 7);
+%! randn ('seed', 7);
+%! X = randn (200, 14);
+%! y = X(:,1) + 2 * X(:,5) - X(:,9);
+%! Mdl = fitrtree (X, y);
+%! s = shapley (Mdl, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-tree');
+%! assert_equal (sum (s.Shapley.Value), ...
+%!               predict (Mdl, X(1,:)) - s.Intercept, 1e-10);
+
+## A transform of the score is applied to each leaf, and exactly one leaf
+## answers for a row, so the tree still comes apart and the values still sum
+## to the deviation.  MATLAB reports an intercept on the transformed scale
+## beside values on the untransformed one, which do not sum to it
+%!test
+%! load fisheriris
+%! Mdl = fitctree (meas(51:150,:), species(51:150), ...
+%!                 'ScoreTransform', 'logit');
+%! s = shapley (Mdl, 'QueryPoints', meas(51,:), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (s.Method, 'interventional-tree');
+%! [~, sc] = predict (Mdl, meas(51,:));
+%! v = [s.Shapley.versicolor, s.Shapley.virginica];
+%! assert_equal (sum (v, 1), sc - s.Intercept, 1e-10);
+
+%!test  # asking for a budget of subsets asks for the subsets
+%! load fisheriris
+%! Mdl = fitrtree (meas(:,2:4), meas(:,1));
 %! s = shapley (Mdl, meas(:,2:4), 'QueryPoints', meas(1,2:4), ...
 %!              'MaxNumSubsets', 8, 'NumObservationsToSample', 'all');
 %! assert_equal (s.Method, 'interventional-kernel');
