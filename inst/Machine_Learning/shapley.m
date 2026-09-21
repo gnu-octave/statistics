@@ -67,7 +67,11 @@ classdef shapley
   ## than @math{2M+2} estimates them poorly enough to warn about.
   ##
   ## @item @qcode{'Method'} @tab @tab The algorithm, @qcode{'interventional'}
-  ## by default.
+  ## by default, which averages over the observations as they stand.
+  ## @qcode{'conditional'} averages instead over the tenth of them lying
+  ## nearest the query point in the predictors being held, which stands in
+  ## for conditioning on those predictors.  It asks more of the data and is
+  ## the dearer of the two.
   ## @end multitable
   ##
   ## @code{'UseParallel'} is not implemented and is refused rather than
@@ -171,10 +175,11 @@ classdef shapley
     ##
     ## The algorithm the values were computed with
     ##
-    ## A character vector.  Only @qcode{'interventional-kernel'} is
-    ## implemented, which enumerates every subset of the predictors where it
-    ## is allowed to and estimates the values by weighted least squares where
-    ## it is not.  This property is read-only.
+    ## A character vector, @qcode{'interventional-kernel'} or
+    ## @qcode{'conditional-kernel'} after the @qcode{'Method'} it was given.
+    ## Either enumerates every subset of the predictors where the budget
+    ## allows it and estimates the values by weighted least squares where it
+    ## does not.  This property is read-only.
     ##
     ## @end deftp
     Method = '';
@@ -374,10 +379,17 @@ classdef shapley
         endif
       endif
 
+      ## Conditioning stands the nearest observations in for the rest of the
+      ## distribution, so what it needs is measured once over the sample
+      cnd = shapConditioning (Xs, this.Method);
+
       phi = zeros (M, K, nq);
       icept = [];
       for ii = 1:nq
-        V = shapSubsetValues (sfcn, Xs, QueryPoints(ii,:), Z, K);
+        if (! isempty (cnd))
+          cnd.qz = (QueryPoints(ii,:) - cnd.Mu) ./ cnd.Sigma;
+        endif
+        V = shapSubsetValues (sfcn, Xs, QueryPoints(ii,:), Z, K, cnd);
         if (exact)
           phi(:,:,ii) = shapFromValues (V, M, K);
           v0 = V(1,:);
@@ -422,7 +434,7 @@ function [method, errmsg] = shapMethod (Method)
     case 'interventional'
       ## the only one implemented
     case 'conditional'
-      errmsg = "'Method' value 'conditional' is not implemented.";
+      method = 'conditional-kernel';
     otherwise
       errmsg = strcat ("'Method' must be 'interventional' or", ...
                        " 'conditional'.");
@@ -743,19 +755,58 @@ endfunction
 ## The value function over the given subsets.  A subset's columns are held at
 ## the query point and the rest stay as the observations have them, which is
 ## what makes the average an interventional one.
-function V = shapSubsetValues (sfcn, Xs, q, Z, K)
+function V = shapSubsetValues (sfcn, Xs, q, Z, K, cnd)
 
   L = rows (Z);
-  n = rows (Xs);
   V = zeros (L, K);
   for ii = 1:L
     mask = Z(ii,:);
-    W = Xs;
+    if (isempty (cnd) || ! any (mask) || all (mask))
+      ## Conditioning on nothing, or on everything, leaves the whole sample:
+      ## the first averages over it and the second replaces all of it
+      W = Xs;
+    else
+      W = Xs(shapNeighbours (cnd, mask),:);
+    endif
     if (any (mask))
-      W(:,mask) = repmat (q(mask), n, 1);
+      W(:,mask) = repmat (q(mask), rows (W), 1);
     endif
     V(ii,:) = mean (sfcn (W), 1);
   endfor
+
+endfunction
+
+## What conditioning needs, measured once over the observations: the column
+## means and deviations the distances are taken in, so that a predictor does
+## not count for more merely because it is recorded on a wider scale, and how
+## many neighbours stand in for the conditional distribution.
+function cnd = shapConditioning (Xs, method)
+
+  cnd = [];
+  if (! strcmp (method, 'conditional-kernel'))
+    return;
+  endif
+  n = rows (Xs);
+  cnd.Mu = mean (Xs, 1);
+  sd = std (Xs, 0, 1);
+  sd(sd == 0 | ! isfinite (sd)) = 1;
+  cnd.Sigma = sd;
+  cnd.Xz = (Xs - repmat (cnd.Mu, n, 1)) ./ repmat (sd, n, 1);
+  ## A tenth of the observations, rounded up.  Divided rather than multiplied
+  ## by a tenth, which is not exact in binary and would round a whole tenth up
+  cnd.NumNeighbors = max (1, ceil (n / 10));
+  cnd.qz = [];
+
+endfunction
+
+## The observations whose values of the predictors in MASK lie nearest the
+## query point, which are the ones conditioning on those predictors keeps.
+function nb = shapNeighbours (cnd, mask)
+
+  n = rows (cnd.Xz);
+  D = cnd.Xz(:,mask) - repmat (cnd.qz(mask), n, 1);
+  [~, ord] = sort (sum (D .^ 2, 2));
+  nb = ord(1:cnd.NumNeighbors);
 
 endfunction
 
@@ -1112,6 +1163,58 @@ endfunction
 %!               [0.000625, 0.002239583333333, 0.003510416666667, ...
 %!                0.002843750000000, 0.657447916666667], 1e-12);
 
+## MATLAB parity: conditioning on a predictor keeps the tenth of the
+## observations nearest the query point in it.  A hundred and one
+## observations is what fixes that tenth as rounded up rather than to
+## nearest.  Measured on R2024a
+%!test
+%! t = (1:101)';
+%! X = [t, mod(t * 37, 101), mod(t * 53, 101)];
+%! s = shapley (@(Z) Z(:,1), X, 'QueryPoints', [10, 50, 90], ...
+%!              'Method', 'conditional', 'NumObservationsToSample', 'all');
+%! assert_equal (s.Shapley.Value', [-45.560606060606048, ...
+%!               1.621212121212129, 2.939393939393916], 1e-10);
+
+## MATLAB parity: a classifier answered for by conditioning.  Measured on
+## R2024a
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), 'Method', 'conditional', ...
+%!              'NumObservationsToSample', 'all');
+%! v = [s.Shapley.setosa, s.Shapley.versicolor, s.Shapley.virginica];
+%! assert_equal (v, [0.15, -0.0666666666666667, -0.0833333333333334; ...
+%!                   0.172222222222222, -0.0888888888888889, ...
+%!                   -0.0833333333333333; ...
+%!                   0.172222222222222, -0.0888888888888889, ...
+%!                   -0.0833333333333333; ...
+%!                   0.172222222222222, -0.0888888888888889, ...
+%!                   -0.0833333333333334], 1e-12);
+
+%!test  # conditioning is reported as its own algorithm
+%! X = [1, 10; 2, 20; 3, 30; 4, 45];
+%! s = shapley (@(Z) Z(:,1), X, 'Method', 'conditional');
+%! assert_equal (s.Method, 'conditional-kernel');
+
+%!test  # and still sums to the deviation of the prediction from the average
+%! t = (1:100)';
+%! X = [t, mod(t * 37, 101), mod(t * 53, 101)];
+%! f = @(Z) Z(:,1);
+%! s = shapley (f, X, 'QueryPoints', [10, 50, 90], ...
+%!              'Method', 'conditional', 'NumObservationsToSample', 'all');
+%! assert_equal (sum (s.Shapley.Value), f ([10, 50, 90]) - s.Intercept, 1e-10);
+
+%!test  # a predictor recorded on a wider scale does not pull the neighbours
+%! t = (1:100)';
+%! X = [t, mod(t * 37, 101), mod(t * 53, 101)];
+%! W = X;
+%! W(:,2) = W(:,2) * 1000;
+%! s = shapley (@(Z) Z(:,1), X, 'QueryPoints', [10, 50, 90], ...
+%!              'Method', 'conditional', 'NumObservationsToSample', 'all');
+%! r = shapley (@(Z) Z(:,1), W, 'QueryPoints', [10, 50000, 90], ...
+%!              'Method', 'conditional', 'NumObservationsToSample', 'all');
+%! assert_equal (r.Shapley.Value, s.Shapley.Value, 1e-10);
+
 %!test  # nothing but the two extremes says nothing about any one predictor
 %! X = [1, 10; 2, 20; 3, 30; 4, 45];
 %! s = shapley (@(Z) Z(:,1), X, 'QueryPoints', [3, 20], ...
@@ -1132,7 +1235,6 @@ endfunction
 %!error<shapley: 'UseParallel' is not implemented.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'UseParallel', true)
 %!error<shapley: 'MaxNumSubsets' must be an integer greater than 1.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'MaxNumSubsets', 1)
 %!error<shapley: 'MaxNumSubsets' must be an integer greater than 1.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'MaxNumSubsets', 2.5)
-%!error<shapley: 'Method' value 'conditional' is not implemented.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'Method', 'conditional')
 %!error<shapley: 'Method' must be 'interventional' or 'conditional'.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'Method', 'marginal')
 %!error<shapley: 'NumObservationsToSample' must be a positive integer or 'all'.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'NumObservationsToSample', 0)
 %!error<shapley: unknown optional argument or misplaced value.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'NoSuchThing', 1)
