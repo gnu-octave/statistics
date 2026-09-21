@@ -101,9 +101,11 @@ function D = dummyvar (g)
     endif
     gv = g(:);
     gv = gv(! isnan (gv));
-    if (any (gv <= 0) || any (gv != fix (gv)))
-      error (strcat ("dummyvar: numeric grouping variable", ...
-                     " must explicitly contain positive integers."));
+    ## Inf is positive and is its own FIX, so it passes both tests below and
+    ## would reach ZEROS as a column count; it is refused on its own account
+    if (any (gv <= 0) || any (gv != fix (gv)) || any (isinf (gv)))
+      error (strcat ("dummyvar: values of a numeric grouping variable", ...
+                     " must be positive integers or NaN."));
     endif
 
     ## Force vector to column vector
@@ -114,6 +116,12 @@ function D = dummyvar (g)
     endif
 
     K = max (g, [], 1, "omitnan");
+    ## MAX over a grouping variable of no observations answers empty rather
+    ## than with one level count per variable, and SUM of that is a row where
+    ## ZEROS wants a scalar.  No observations means no levels either way.
+    if (isempty (K))
+      K = zeros (1, nc);
+    endif
     ## A grouping variable that is nothing but NaN has no levels, so it earns
     ## no columns and the ones the other variables earn are unaffected.  MAX
     ## returns NaN for such a column, which SUM would carry into ZEROS.
@@ -176,6 +184,9 @@ endfunction
 ## Test output
 %!assert_equal (dummyvar ([]), [])
 %!assert_equal (dummyvar (ones (2, 0)), ones (2, 0))
+%!assert_equal (dummyvar (zeros (0, 3)), zeros (0, 0))
+%!assert_equal (dummyvar ({[], []}), [])
+%!assert_equal (dummyvar ([1; NaN; 2]), [1, 0; NaN, NaN; 0, 1])
 %!test
 %! ## numeric grouping vector
 %! g = [1; 2; 1; 3; 2];
@@ -267,8 +278,14 @@ endfunction
 %! dummyvar (categorical ({'a', 'b'}))
 %!error<dummyvar: numeric grouping variable must be either a vector or a matrix.> ...
 %! dummyvar (ones (3, 3, 3))
-%!error<dummyvar: numeric grouping variable must explicitly contain positive integers.> ...
+%!error<dummyvar: values of a numeric grouping variable must be positive integers or NaN.> ...
 %! dummyvar ([2, 4, 0, 8, 1])
+%!error<dummyvar: values of a numeric grouping variable must be positive integers or NaN.> ...
+%! dummyvar ([1; 1.5; 2])
+%!error<dummyvar: values of a numeric grouping variable must be positive integers or NaN.> ...
+%! dummyvar ([1; Inf; 2])
+%!error<dummyvar: values of a numeric grouping variable must be positive integers or NaN.> ...
+%! dummyvar ([1; -Inf; 2])
 %!error<dummyvar: cellstring grouping variable must be a column vector.> ...
 %! dummyvar ({'a', 'b'})
 %!error<dummyvar: all grouping variables in cell array must have the same number of observations.> ...
