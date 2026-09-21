@@ -4560,6 +4560,14 @@ classdef LinearModel < PredictiveModel
               DF(k) = fit_eff.rank_X - fit_r.rank_X;
             endfor
 
+            ## A term that adds no rank explains nothing, so its sum of
+            ## squares is zero however the arithmetic went.  Taken as the
+            ## difference of two residual sums of squares it is the
+            ## cancellation of two nearly equal numbers, which lands a few
+            ## bits either side of zero on some builds and turns the mean
+            ## square into a signed infinity rather than NaN.
+            SumSq(DF == 0) = 0;
+
             errSumSq  = fit_eff.SSE;
             errDF     = fit_eff.DFE;
             errMeanSq = fit_eff.MSE;
@@ -9169,6 +9177,21 @@ endfunction
 %! assert_equal (t.SumSq(2), 11.6666666666667, -1e-9);
 %! assert_equal (t.DF(2), 7);
 %! assert_equal (t.MeanSq(2), 1.66666666666667, -1e-9);
+
+## A term that adds no rank must show no sum of squares however the two
+## residual sums of squares it is the difference of happened to round.  The
+## fixture below left 1.8e-15 there, so the mean square came back Inf and the
+## F with it, and a neighbouring one left it negative and gave -Inf.
+%!test
+%! G1 = categorical ([1;1;1;2;2;2;3;3;3;3]);
+%! G2 = G1;
+%! y1 = [10; 12; 11; 22; 24; 21; 15; 17; 16; 14];
+%! t = anova (fitlm (table (G1, G2, y1), 'y1 ~ G1 + G2'), 'components', 3);
+%! assert_equal (t.SumSq(1), 0);
+%! assert_equal (t.DF(1), 0);
+%! assert_equal (isnan (t.MeanSq(1)), true);
+%! assert_equal (isnan (t.F(1)), true);
+%! assert_equal (isnan (t.pValue(1)), true);
 
 %!test
 %! ## duplicate group column, so type 3 should show zero DF
