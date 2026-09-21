@@ -5641,8 +5641,22 @@ function X_raw = anova_decode_raw (tbl_sub, pred_names, cat_info)
   endfor
 endfunction
 
+## The upper tail of an F distribution.  BETAINC wants both of its shape
+## parameters strictly positive, and with no degrees of freedom on either
+## side there is no test to report, so those entries answer NaN rather than
+## reaching it.  The shapes are spread over the statistic so that a scalar
+## count against a vector of them answers elementwise.
 function p = f_pvalue (dfe, df, Fstat)
-  p = betainc (dfe ./ (dfe + df .* Fstat), dfe / 2, df / 2);
+
+  x = dfe ./ (dfe + df .* Fstat);
+  a = (dfe / 2) .* ones (size (x));
+  b = (df / 2) .* ones (size (x));
+  p = NaN (size (x));
+  ok = (a > 0) & (b > 0);
+  if (any (ok(:)))
+    p(ok) = betainc (x(ok), a(ok), b(ok));
+  endif
+
 endfunction
 
 %!demo
@@ -9177,6 +9191,24 @@ endfunction
 %! assert_equal (t.SumSq(2), 11.6666666666667, -1e-9);
 %! assert_equal (t.DF(2), 7);
 %! assert_equal (t.MeanSq(2), 1.66666666666667, -1e-9);
+
+## An intercept-only model has no degrees of freedom to test, so the p-value
+## of its model row is NaN.  It used to reach betainc, which wants both its
+## shape parameters strictly positive and refused the zero.
+%!test
+%! y0 = [3; 4; 5; 4; 6; 5; 7; 6];
+%! x0 = (1:8)';
+%! t = anova (fitlm (table (x0, y0), 'y0 ~ 1'), 'summary');
+%! assert_equal (t.DF(2), 0);
+%! assert_equal (isnan (t.F(2)), true);
+%! assert_equal (isnan (t.pValue(2)), true);
+
+%!test  # and the components table answers for it too
+%! y0 = [3; 4; 5; 4; 6; 5; 7; 6];
+%! x0 = (1:8)';
+%! t = anova (fitlm (table (x0, y0), 'y0 ~ 1'), 'components', 3);
+%! assert_equal (t.Properties.RowNames, {'Error'});
+%! assert_equal (isnan (t.pValue(1)), true);
 
 ## A term that adds no rank must show no sum of squares however the two
 ## residual sums of squares it is the difference of happened to round.  The
