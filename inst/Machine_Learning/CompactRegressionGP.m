@@ -340,6 +340,31 @@ classdef CompactRegressionGP < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl})
+    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Compute the regression loss of a compact Gaussian process model.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the mean
+    ## squared error of the model @var{obj} on the data @var{X} and @var{Y},
+    ## and accepts the same @qcode{'LossFun'} and @qcode{'Weights'} pairs the
+    ## full model accepts.
+    ##
+
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
+    ## -*- texinfo -*-
+    ## @deftypefn  {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Compute the regression loss of a compact Gaussian process model.
@@ -352,9 +377,17 @@ classdef CompactRegressionGP < PredictiveModel
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactRegressionGP.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
         error ("CompactRegressionGP.loss: invalid values in X.");
       endif
@@ -767,3 +800,16 @@ endclassdef
 %! CMdl = compact (Mdl);
 %! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
 %! assert_equal (predict (CMdl, T(:, [4, 3, 2, 1])), predict (CMdl, T));
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = compact (fitrgp (T, 'SL'));
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);

@@ -960,6 +960,8 @@ classdef ClassificationEnsemble < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationEnsemble} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {ClassificationEnsemble} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Classification loss of an ensemble.
@@ -967,13 +969,29 @@ classdef ClassificationEnsemble < PredictiveModel
     ## Behaves as @code{CompactClassificationEnsemble.loss} and takes the
     ## same Name-Value arguments.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{ClassificationEnsemble, CompactClassificationEnsemble.loss}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("%s.loss: too few input arguments.", class (this));
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       L = ensembleLoss (compact (this), X, Y, varargin, ...
                         [class(this), '.loss']);
 
@@ -1916,3 +1934,16 @@ endfunction
 
 %!error<ClassificationEnsemble: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! ClassificationEnsemble (X, yb, 'CategoricalPredictors', 3)
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitcensemble (T, 'Species');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'Species'), a);
+%! assert_equal (loss (Mdl, T), a);

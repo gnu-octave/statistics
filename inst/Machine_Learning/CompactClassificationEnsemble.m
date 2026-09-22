@@ -437,6 +437,8 @@ classdef CompactClassificationEnsemble < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationEnsemble} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactClassificationEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {CompactClassificationEnsemble} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Classification loss of a compact ensemble.
@@ -444,6 +446,14 @@ classdef CompactClassificationEnsemble < PredictiveModel
     ## @var{L} is the weighted loss of the scores @code{predict} gives the rows
     ## of @var{X} against the labels @var{Y}.  The weights are normalized so
     ## that each class carries its prior probability.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## Name-Value arguments:
     ##
@@ -474,9 +484,17 @@ classdef CompactClassificationEnsemble < PredictiveModel
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactClassificationEnsemble.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       L = ensembleLoss (this, X, Y, varargin, ...
                         'CompactClassificationEnsemble.loss');
 
@@ -948,3 +966,16 @@ endclassdef
 %! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
 %! a = predict (CMdl, T);
 %! assert_equal (predict (CMdl, T(:, [4, 3, 2, 1])), a);
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (fitcensemble (T, 'Species'));
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'Species'), a);
+%! assert_equal (loss (Mdl, T), a);

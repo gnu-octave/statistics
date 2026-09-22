@@ -361,6 +361,8 @@ classdef CompactRegressionEnsemble < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactRegressionEnsemble} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactRegressionEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactRegressionEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {CompactRegressionEnsemble} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Regression loss of a compact ensemble.
@@ -369,6 +371,14 @@ classdef CompactRegressionEnsemble < PredictiveModel
     ## rows of @var{X} against @var{Y}, the weights normalized to sum to one
     ## over the rows that have a response; a row whose response is missing is
     ## left out.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## Name-Value arguments:
     ##
@@ -394,9 +404,17 @@ classdef CompactRegressionEnsemble < PredictiveModel
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactRegressionEnsemble.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       L = ensembleLoss (this, X, Y, varargin, ...
                         'CompactRegressionEnsemble.loss');
 
@@ -695,3 +713,16 @@ endclassdef
 %! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
 %! a = predict (CMdl, T);
 %! assert_equal (predict (CMdl, T(:, [4, 3, 2, 1])), a);
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = compact (fitrensemble (T, 'SL'));
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);

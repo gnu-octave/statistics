@@ -1476,6 +1476,8 @@ classdef RegressionGAM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionGAM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionGAM} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionGAM} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {RegressionGAM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Regression loss of a generalized additive model.
@@ -1483,6 +1485,14 @@ classdef RegressionGAM < PredictiveModel
     ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the weighted
     ## mean squared error of the model on the rows of @var{X} against the true
     ## response @var{Y}.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
     ## following name-value pairs:
@@ -1503,9 +1513,17 @@ classdef RegressionGAM < PredictiveModel
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("RegressionGAM.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionGAM.loss: Name-Value arguments must", ...
                        " be in pairs."));
@@ -3388,3 +3406,16 @@ endfunction
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = fitrgam (T, 'SL');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);

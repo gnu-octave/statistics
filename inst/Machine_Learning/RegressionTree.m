@@ -1613,6 +1613,8 @@ classdef RegressionTree < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionTree} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionTree} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionTree} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {RegressionTree} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Regression loss on new data.
@@ -1621,6 +1623,14 @@ classdef RegressionTree < PredictiveModel
     ## weighted mean squared error of the response the model predicts for
     ## @var{X} against the observed response @var{Y}.  A row whose response
     ## is missing is dropped, as it is when fitting.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} takes the
     ## following options.
@@ -1642,9 +1652,17 @@ classdef RegressionTree < PredictiveModel
     function L = loss (this, X, Y, varargin)
 
       ## Input validation
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("RegressionTree.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionTree.loss: name-value arguments must be", ...
                        " in pairs."));
@@ -2569,3 +2587,28 @@ endclassdef
 
 %!error<RegressionTree.predict: the table holds no predictor 'PL'.> ...
 %! predict (rtM, rtT(:, [1, 3, 4, 5]))
+
+## A table at loss
+%!shared lrtT, lrtM
+%! load fisheriris
+%! lrtT = table (meas(:,2), meas(:,3), 'VariableNames', {'SW', 'PL'});
+%! lrtT.SL = meas(:,1);
+%! lrtM = fitrtree (lrtT, 'SL');
+
+%!test  # the response is named, left out, or given beside the table
+%! a = loss (lrtM, [lrtT.SW, lrtT.PL], lrtT.SL);
+%! assert_equal (loss (lrtM, lrtT(:,1:2), lrtT.SL), a);
+%! assert_equal (loss (lrtM, lrtT, 'SL'), a);
+%! assert_equal (loss (lrtM, lrtT), a);
+
+%!test  # an even number of arguments after the table is all name-value
+%! a = loss (lrtM, lrtT, 'LossFun', 'mse');
+%! assert_equal (loss (lrtM, lrtT, 'SL', 'LossFun', 'mse'), a);
+
+%!test  # a table is read by name, so the order of its columns does not matter
+%! assert_equal (loss (lrtM, lrtT(:, [3, 2, 1])), loss (lrtM, lrtT));
+
+%!error<RegressionTree.loss: the table holds no variable 'NoSuch'.> ...
+%! loss (lrtM, lrtT, 'NoSuch')
+%!error<RegressionTree.loss: the table holds no variable 'SL'.> ...
+%! loss (lrtM, lrtT(:,1:2))

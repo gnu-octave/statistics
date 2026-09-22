@@ -950,12 +950,22 @@ classdef RegressionLinear < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionLinear} {@var{l} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionLinear} {@var{l} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionLinear} {@var{l} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {RegressionLinear} {@var{l} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Regression loss on new data.
     ##
     ## @code{@var{l} = loss (@var{obj}, @var{X}, @var{Y})} returns the mean
     ## squared error, one value per regularization strength.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{l} = loss (@dots{}, @var{name}, @var{value})} takes
     ## @qcode{'LossFun'}, either @qcode{'mse'} or
@@ -966,9 +976,17 @@ classdef RegressionLinear < PredictiveModel
     ## @end deftypefn
     function l = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("RegressionLinear.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionLinear.loss: optional arguments must", ...
                        " be given in Name-Value pairs."));
@@ -1549,3 +1567,16 @@ endclassdef
 %! RegressionLinear (Xc, yc, 'CategoricalPredictors', logical ([1, 0]))
 %!error<RegressionLinear: 'CategoricalPredictors' must be a vector of positive integers, a logical vector, a character matrix, a string array, a cell array of character vectors or 'all'.> ...
 %! RegressionLinear (Xc, yc, 'CategoricalPredictors', 0)
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = fitrlinear (T, 'SL');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);

@@ -873,6 +873,8 @@ classdef CompactClassificationDiscriminant < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationDiscriminant} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationDiscriminant} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactClassificationDiscriminant} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {CompactClassificationDiscriminant} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Compute loss for a trained CompactClassificationDiscriminant object.
@@ -892,6 +894,14 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of rows as @var{X}.
     ## @end itemize
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
     ## additional options specified by @var{name}-@var{value} pairs:
@@ -935,13 +945,23 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error (strcat ("CompactClassificationDiscriminant.loss:", ...
                        " too few input arguments."));
-      elseif (mod (nargin - 3, 2) != 0)
+      endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
+
+      if (mod (numel (varargin), 2) != 0)
         error (strcat ("CompactClassificationDiscriminant.loss:", ...
                        " name-value arguments must be in pairs."));
-      elseif (nargin > 7)
+      elseif (numel (varargin) > 4)
         error (strcat ("CompactClassificationDiscriminant.loss:", ...
                        " too many input arguments."));
       endif
@@ -2219,3 +2239,16 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (fitcdiscr (T, 'Species'));
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'Species'), a);
+%! assert_equal (loss (Mdl, T), a);

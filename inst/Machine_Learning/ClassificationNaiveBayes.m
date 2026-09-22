@@ -997,12 +997,22 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationNaiveBayes} {@var{l} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNaiveBayes} {@var{l} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationNaiveBayes} {@var{l} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {ClassificationNaiveBayes} {@var{l} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Classification loss on new data.
     ##
     ## @code{@var{l} = loss (@var{obj}, @var{X}, @var{Y})} returns the minimum
     ## expected misclassification cost.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{l} = loss (@dots{}, @var{name}, @var{value})} takes the
     ## following options.
@@ -1023,9 +1033,17 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## @end deftypefn
     function l = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationNaiveBayes.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationNaiveBayes.loss: name-value", ...
                        " arguments must be in pairs."));
@@ -2043,3 +2061,16 @@ endclassdef
 %! Mdl = ClassificationNaiveBayes (T, 'Species');
 %! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
 %! assert_equal (Mdl.ResponseName, 'Species');
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitcnb (T, 'Species');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'Species'), a);
+%! assert_equal (loss (Mdl, T), a);

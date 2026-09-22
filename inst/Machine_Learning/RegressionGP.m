@@ -1026,12 +1026,22 @@ classdef RegressionGP < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionGP} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {RegressionGP} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Compute the regression loss of a Gaussian process model.
     ##
     ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the mean
     ## squared error of the model @var{obj} on the data @var{X} and @var{Y}.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts
     ## @qcode{'LossFun'}, either @qcode{'mse'}, @qcode{'mae'},
@@ -1042,9 +1052,17 @@ classdef RegressionGP < PredictiveModel
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("RegressionGP.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       [X, Y] = this.checkXY_ (X, Y, 'RegressionGP.loss');
 
       LossFun = 'mse';
@@ -2361,3 +2379,16 @@ endfunction
 
 %!error<RegressionGP: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! RegressionGP (Xc, yc, 'CategoricalPredictors', 4)
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = fitrgp (T, 'SL');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);

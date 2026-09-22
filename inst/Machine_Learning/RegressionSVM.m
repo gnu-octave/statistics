@@ -1007,6 +1007,8 @@ classdef RegressionSVM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionSVM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionSVM} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionSVM} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {RegressionSVM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Compute the regression loss of a support vector machine model.
@@ -1024,6 +1026,14 @@ classdef RegressionSVM < PredictiveModel
     ## @item
     ## @var{Y} must be a numeric vector with as many rows as @var{X}.
     ## @end itemize
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
     ## following @qcode{Name-Value} pairs.
@@ -1048,9 +1058,17 @@ classdef RegressionSVM < PredictiveModel
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("RegressionSVM.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionSVM.loss: Name-Value arguments", ...
                        " must be in pairs."));
@@ -2028,3 +2046,16 @@ endclassdef
 %! Mdl = RegressionSVM (T, 'SL');
 %! assert_equal (Mdl.PredictorNames, {'SW', 'PL'});
 %! assert_equal (Mdl.ResponseName, 'SL');
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = fitrsvm (T, 'SL');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);

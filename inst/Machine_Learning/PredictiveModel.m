@@ -87,14 +87,15 @@ classdef (Abstract) PredictiveModel
     endfunction
 
     ## Resolve table input into the predictors and the response that loss,
-    ## margin and edge take.  GIVEN says whether the call gave a third
-    ## argument at all, and ARGS are the ones after it.  A matrix passes
-    ## through untouched.
-    function [X, Y, args] = tableResponse (this, caller, X, Y, args, given)
+    ## margin and edge take.  METH is the method's own name, GIVEN says
+    ## whether the call gave a third argument at all, and ARGS are the ones
+    ## after it.  A matrix passes through untouched.
+    function [X, Y, args] = tableResponse (this, meth, X, Y, args, given)
 
       if (! istable (X))
         return;
       endif
+      caller = sprintf ('%s.%s', class (this), meth);
 
       ## The argument after the table is the response where an odd number
       ## of arguments follows the table, and a name-value name where an

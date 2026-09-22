@@ -1990,12 +1990,22 @@ classdef ClassificationTree < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationTree} {@var{l} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationTree} {@var{l} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationTree} {@var{l} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {ClassificationTree} {@var{l} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Classification loss on new data.
     ##
     ## @code{@var{l} = loss (@var{obj}, @var{X}, @var{Y})} returns the
     ## minimum expected misclassification cost.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{l} = loss (@dots{}, @var{name}, @var{value})} takes the
     ## following options.
@@ -2019,9 +2029,17 @@ classdef ClassificationTree < PredictiveModel
     function l = loss (this, X, Y, varargin)
 
       ## Input validation
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationTree.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationTree.loss: name-value arguments", ...
                        " must be in pairs."));
@@ -3328,3 +3346,28 @@ endfunction
 
 %!error<ClassificationTree.predict: the table variable 'SL' no longer holds what it held when the model was fitted.> ...
 %! predict (ctM, setfield (ctT, 'SL', categorical (ctT.SL > 5.8)))
+
+## A table at loss
+%!shared lctT, lctM
+%! load fisheriris
+%! lctT = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! lctT.Species = categorical (species);
+%! lctM = fitctree (lctT, 'Species');
+
+%!test  # the response is named, left out, or given beside the table
+%! a = loss (lctM, [lctT.SL, lctT.SW], lctT.Species);
+%! assert_equal (loss (lctM, lctT(:,1:2), lctT.Species), a);
+%! assert_equal (loss (lctM, lctT, 'Species'), a);
+%! assert_equal (loss (lctM, lctT), a);
+
+%!test  # an even number of arguments after the table is all name-value
+%! a = loss (lctM, lctT, 'LossFun', 'classiferror');
+%! assert_equal (loss (lctM, lctT, 'Species', 'LossFun', 'classiferror'), a);
+
+%!test  # a table is read by name, so the order of its columns does not matter
+%! assert_equal (loss (lctM, lctT(:, [3, 2, 1])), loss (lctM, lctT));
+
+%!error<ClassificationTree.loss: the table holds no variable 'NoSuch'.> ...
+%! loss (lctM, lctT, 'NoSuch')
+%!error<ClassificationTree.loss: the table holds no variable 'Species'.> ...
+%! loss (lctM, lctT(:,1:2))

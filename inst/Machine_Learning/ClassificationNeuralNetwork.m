@@ -1469,6 +1469,8 @@ classdef ClassificationNeuralNetwork < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationNeuralNetwork} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {ClassificationNeuralNetwork} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Classification loss of a neural network classifier.
@@ -1476,6 +1478,14 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the
     ## proportion of the rows of @var{X} the model misclassifies against the
     ## true labels @var{Y}.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} accepts the
     ## following name-value pairs:
@@ -1505,9 +1515,17 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationNeuralNetwork.loss: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'loss', X, Y, varargin, ...
+                                        nargin > 2);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationNeuralNetwork.loss: Name-Value", ...
                        " arguments must be in pairs."));
@@ -2953,3 +2971,16 @@ endfunction
 %! Mdl = ClassificationNeuralNetwork (T, 'Species');
 %! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
 %! assert_equal (Mdl.ResponseName, 'Species');
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitcnet (T, 'Species');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'Species'), a);
+%! assert_equal (loss (Mdl, T), a);

@@ -209,11 +209,21 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionBaggedEnsemble} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {RegressionBaggedEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionBaggedEnsemble} {@var{L} =} loss (@var{obj}, @var{Tbl})
     ## @deftypefnx {RegressionBaggedEnsemble} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Regression loss of a bagged ensemble.
     ##
     ## Behaves as @code{CompactRegressionEnsemble.loss}.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @seealso{RegressionBaggedEnsemble, CompactRegressionEnsemble.loss}
     ## @end deftypefn
@@ -577,3 +587,16 @@ endfunction
 %!                               'FResample', 0.7, 'LearnRate', 0.5);
 %! CV = crossval (M, 'KFold', 3);
 %! assert_equal (CV.Trainable{1}.LearnRate, 0.5);
+
+## A table at loss
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = fitrensemble (T, 'SL', 'Method', 'Bag');
+%! a = loss (Mdl, X, y);
+%! assert_equal (loss (Mdl, T(:,1:2), y), a);
+%! assert_equal (loss (Mdl, T, 'SL'), a);
+%! assert_equal (loss (Mdl, T), a);
