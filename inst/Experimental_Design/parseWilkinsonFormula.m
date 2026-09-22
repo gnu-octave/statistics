@@ -21,6 +21,7 @@
 ## @deftypefnx {statistics} {@var{result} =} parseWilkinsonFormula (@var{formula}, @var{mode})
 ## @deftypefnx {statistics} {[@var{X}, @var{y}, @var{names}] =} parseWilkinsonFormula (@var{formula}, "model_matrix", @var{data})
 ## @deftypefnx {statistics} {@var{S} =} parseWilkinsonFormula (@var{formula}, "mixed")
+## @deftypefnx {statistics} {@dots{} =} parseWilkinsonFormula (@dots{}, @var{setOrder})
 ##
 ## Parse and expand statistical model formulae using the Wilkinson notation.
 ##
@@ -105,6 +106,16 @@
 ## fixed and random parts.  See @strong{Mixed-Effects Formulae} below.
 ## @end itemize
 ##
+## @strong{Order of the reported variables}
+## @var{setOrder} is @qcode{'sorted'} or @qcode{'stable'} and comes last,
+## after every other argument, so that it may be given whatever else the mode
+## takes.  @qcode{'sorted'} is the default and reports the variables in
+## alphabetical order; @qcode{'stable'} reports them in the order the formula
+## wrote them, as @code{unique} uses the same two words.  It applies wherever
+## a mode reports variable names, which is @qcode{'matrix'} and
+## @qcode{'model_matrix'}, and the order carries into @var{ResponseIdx} and
+## into the columns of @var{Terms} and of @var{X} beside it.
+##
 ## @strong{Data Handling ('model_matrix' mode)}
 ## When using the @code{'model_matrix'} mode, a @var{data} argument must be
 ## provided as an Octave @code{table}.
@@ -148,6 +159,10 @@
 ##
 ## @strong{Outputs}
 ## @table @var
+## @item setOrder
+## Whether the variables are reported alphabetically, @qcode{'sorted'}, or in
+## the order the formula wrote them, @qcode{'stable'}.  The default is
+## @qcode{'sorted'}.
 ## @item terms / result
 ## The processed model structure, string array, or cell array depending on the
 ## selected @var{mode}.
@@ -183,12 +198,25 @@ function varargout = parseWilkinsonFormula (varargin)
 
   if (nargin < 1)
     error ("parseWilkinsonFormula: Input formula string is required.");
-  elseif (nargin > 4)
+  endif
+
+  ## The order the variables are reported in, taken from the last argument
+  ## where it names one.  It goes last so that it composes with every mode,
+  ## 'model_matrix' already carrying data and categorical names of its own.
+  setOrder = 'sorted';
+  if (nargin > 1 && ischar (varargin{end})
+      && any (strcmpi (varargin{end}, {'sorted', 'stable'})))
+    setOrder = lower (varargin{end});
+    varargin(end) = [];
+  endif
+
+  nargs = numel (varargin);
+  if (nargs > 4)
     error ("parseWilkinsonFormula: Too many input arguments.");
   endif
 
   formula_str = varargin{1};
-  if (nargin > 1)
+  if (nargs > 1)
     mode = varargin{2};
   else
     mode = 'expand';
@@ -252,7 +280,7 @@ function varargout = parseWilkinsonFormula (varargin)
       varargout{1} = run_expander (tree, mode);
 
     case 'equation'
-      has_data = nargin > 2 && isa (varargin{3}, 'table');
+      has_data = nargs > 2 && isa (varargin{3}, 'table');
       data_table = [];
       if (has_data), data_table = varargin{3}; endif
 
@@ -264,16 +292,16 @@ function varargout = parseWilkinsonFormula (varargin)
       else
         lhs_vars = resolve_lhs_symbolic (lhs_str);
       endif
-      
+
       ## build the required output.
       varargout{1} = run_equation_builder (lhs_vars, rhs_terms);
 
     case 'matrix'
       expanded = run_expander (tree, mode);
-      varargout{1} = run_schema_builder (expanded);
+      varargout{1} = run_schema_builder (expanded, setOrder);
 
     case 'model_matrix'
-      if (nargin < 3)
+      if (nargs < 3)
         error (strcat ("parseWilkinsonFormula: 'model_matrix'", ...
                        " mode requires a Data Table."));
       endif
@@ -285,7 +313,7 @@ function varargout = parseWilkinsonFormula (varargin)
       [lhs_str, rhs_terms] = split_and_expand_rhs (formula_str, mode);
 
       ## build schema.
-      schema = run_schema_builder (rhs_terms);
+      schema = run_schema_builder (rhs_terms, setOrder);
 
       ## resolve LHS.
       if (! isempty (lhs_str))
@@ -298,7 +326,7 @@ function varargout = parseWilkinsonFormula (varargin)
       ## Variables the caller declares categorical, over and above those whose
       ## own type says so.
       catvars = {};
-      if (nargin > 3)
+      if (nargs > 3)
         catvars = varargin{4};
         if (! iscellstr (catvars))
           error (strcat ("parseWilkinsonFormula: CATVARS must be a cell", ...
@@ -593,14 +621,14 @@ function result = run_expander (node, mode)
       args_str_parts = {};
       for k = 1:length (node.args)
         arg_res = run_expander (node.args{k}, mode);
-        
+
         if (! isempty (arg_res) && ! isempty (arg_res{1}))
-           args_str_parts{end+1} = arg_res{1}{1}; 
+           args_str_parts{end+1} = arg_res{1}{1};
         else
            args_str_parts{end+1} = '';
         endif
       endfor
-      
+
       full_term = sprintf ("%s(%s)", node.name, strjoin (args_str_parts, ','));
       result = {{full_term}};
     else
@@ -818,7 +846,7 @@ function strs = terms_to_strings (term_list)
 endfunction
 
 ## schema builder
-function schema = run_schema_builder (expanded)
+function schema = run_schema_builder (expanded, setOrder)
 
   ## Handle struct vs cell
   if (isstruct (expanded))
@@ -866,7 +894,7 @@ function schema = run_schema_builder (expanded)
     all_vars = [all_vars, final_term_vars];
   endfor
 
-  all_vars = unique (all_vars);
+  all_vars = unique (all_vars, setOrder);
   ## Remove intercept marker from var list
   all_vars(strcmp (all_vars, '1')) = [];
 
@@ -1365,14 +1393,14 @@ function [lhs_str, rhs_terms] = split_and_expand_rhs (formula_str, mode)
   ## process RHS
   rhs_tokens = run_lexer (rhs_str);
   [rhs_tree, ~] = run_parser (rhs_tokens);
-  
+
   wrapper.type = 'OPERATOR';
   wrapper.value = '~';
   wrapper.left = [];
   wrapper.right = rhs_tree;
-  
+
   expanded = run_expander (wrapper, mode);
-  
+
   ## extract the terms.
   if (isstruct (expanded) && isfield (expanded, 'model'))
     rhs_terms = expanded.model;
@@ -1389,22 +1417,22 @@ function vars = resolve_lhs_symbolic (lhs_str)
   for i = 1:length (parts)
     p = strtrim (parts{i});
     if (isempty (p)), continue; endif
-    
+
     range_parts = strsplit (p, '-');
-    
+
     if (length (range_parts) == 2)
       s_str = strtrim (range_parts{1});
       e_str = strtrim (range_parts{2});
-      
+
       [s_tok] = regexp (s_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
       [e_tok] = regexp (e_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
-      
+
       if (! isempty (s_tok) && ! isempty (e_tok))
         prefix = s_tok{1}{1};
         s_num  = str2double (s_tok{1}{2});
         e_prefix = e_tok{1}{1};
         e_num    = str2double (e_tok{1}{2});
-        
+
         if (strcmp (prefix, e_prefix) && s_num <= e_num)
           for n = s_num:e_num
             vars{end+1} = sprintf ("%s%d", prefix, n);
@@ -1428,7 +1456,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
   for i = 1:length (rhs_terms)
     t = rhs_terms{i};
     if (isempty (t))
-      term_strs{end+1} = ''; 
+      term_strs{end+1} = '';
     else
       if (length (t) == 1 && any (strfind (t{1}, '(')))
          term_strs{end+1} = t{1};
@@ -1454,7 +1482,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
         rhs_parts{end+1} = sprintf ("%s*%s", coeff, t_str);
       endif
     endfor
-    
+
     full_rhs = strjoin (rhs_parts, ' + ');
     if (isempty (full_rhs)), full_rhs = '0'; endif
     lines{end+1} = sprintf ("%s = %s", lhs_vars{k}, full_rhs);
@@ -1684,7 +1712,7 @@ endfunction
 
 %!demo
 %!
-%! ## Interaction Effects : 
+%! ## Interaction Effects :
 %! ## We analyze Relief Score based on Drug Type and Dosage Level.
 %! ## The '*' operator expands to the main effects PLUS the interaction term.
 %! ## Categorical variables are automatically created.
@@ -1700,11 +1728,11 @@ endfunction
 
 %!demo
 %!
-%! ## Polynomial Regression : 
+%! ## Polynomial Regression :
 %! ## Uses the power operator (^) to model non-linear relationships.
 %! Distance = [20; 45; 80; 125];
 %! Speed    = [30; 50; 70; 90];
-%! Speed_2  = Speed .^ 2; 
+%! Speed_2  = Speed .^ 2;
 %! t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
 %!
 %! formula = 'Distance ~ Speed^2';
@@ -1729,7 +1757,7 @@ endfunction
 
 %!demo
 %!
-%! ## Explicit Nesting : 
+%! ## Explicit Nesting :
 %! ## The parser also supports the explicit 'B(A)' syntax, which means
 %! ## 'B is nested within A'. This is equivalent to the interaction 'A:B'
 %! ## but often used to denote random effects or specific hierarchy.
@@ -1740,7 +1768,7 @@ endfunction
 
 %!demo
 %!
-%! ## Excluding Terms : 
+%! ## Excluding Terms :
 %! ## Demonstrates building a complex model and then simplifying it.
 %! ## We define a full 3-way interaction (A*B*C) but explicitly remove the
 %! ## three-way term (A:B:C) using the minus operator.
@@ -1751,7 +1779,7 @@ endfunction
 
 %!demo
 %!
-%! ## Repeated Measures : 
+%! ## Repeated Measures :
 %! ## This allows predicting multiple outcomes simultaneously.
 %! ## The range operator '-' selects all variables between 'T1' and 'T3'
 %! ## as the response matrix Y.
@@ -2274,3 +2302,61 @@ endfunction
 %!error <unbalanced parentheses> parseWilkinsonFormula ('y ~ x + (1|g', 'mixed')
 %!error <malformed random-effects term> parseWilkinsonFormula ('y ~ (1|)', 'mixed')
 %!error <malformed random-effects term> parseWilkinsonFormula ('y ~ (|g)', 'mixed')
+
+%!test  # the variables are reported alphabetically unless asked otherwise
+%! r = parseWilkinsonFormula ('y ~ b + a', 'matrix');
+%! assert_equal (r.VariableNames, {'a', 'b', 'y'});
+%! assert_equal (r.ResponseIdx, 3);
+
+%!test  # 'stable' reports them in the order the formula wrote them
+%! r = parseWilkinsonFormula ('y ~ b + a', 'matrix', 'stable');
+%! assert_equal (r.VariableNames, {'y', 'b', 'a'});
+%! assert_equal (r.ResponseIdx, 1);
+
+## The order carries into the terms matrix, whose rows name their variable
+## through the reported names and so follow them
+%!test
+%! a = parseWilkinsonFormula ('y ~ b + a', 'matrix');
+%! b = parseWilkinsonFormula ('y ~ b + a', 'matrix', 'stable');
+%! an = arrayfun (@(r) a.VariableNames{find(a.Terms(r,:), 1)}, ...
+%!                2:rows (a.Terms), 'UniformOutput', false);
+%! bn = arrayfun (@(r) b.VariableNames{find(b.Terms(r,:), 1)}, ...
+%!                2:rows (b.Terms), 'UniformOutput', false);
+%! assert_equal (an, {'a', 'b'});
+%! assert_equal (bn, {'b', 'a'});
+%! assert_equal (sum (a.Terms(:)), sum (b.Terms(:)));
+
+%!test  # 'sorted' may be named, and is what the default does
+%! a = parseWilkinsonFormula ('y ~ b + a', 'matrix');
+%! b = parseWilkinsonFormula ('y ~ b + a', 'matrix', 'sorted');
+%! assert_equal (a.VariableNames, b.VariableNames);
+%! assert_equal (a.Terms, b.Terms);
+
+%!test  # the order is taken whatever the mode, the default one included
+%! r = parseWilkinsonFormula ('y ~ b + a', 'stable');
+%! assert_equal (isfield (r, 'response'), true);
+%! assert_equal (cellstr (r.response), {'y'});
+
+%!test  # it comes last, after the data a mode of its own takes
+%! b = [1; 2; 3; 4];
+%! a = [4; 3; 2; 1];
+%! y = [1; 0; 1; 0];
+%! T = table (b, a, y);
+%! [X1, y1, n1] = parseWilkinsonFormula ('y ~ a + b', 'model_matrix', T);
+%! [X2, y2, n2] = parseWilkinsonFormula ('y ~ a + b', 'model_matrix', T, ...
+%!                                       {}, 'stable');
+%! assert_equal (y1, y2);
+%! assert_equal (size (X1), size (X2));
+%! assert_equal (numel (n1), numel (n2));
+
+%!test  # a formula whose names are already in order reads the same either way
+%! a = parseWilkinsonFormula ('y ~ a + b', 'matrix', 'stable');
+%! assert_equal (a.VariableNames, {'y', 'a', 'b'});
+
+## The order argument is taken off the end before the count is checked, so
+## the longest call a mode takes still fits
+%!error<parseWilkinsonFormula: Too many input arguments.> ...
+%! parseWilkinsonFormula ('y ~ a', 'matrix', 1, 2, 3, 'stable')
+
+%!error<parseWilkinsonFormula: 'model_matrix' mode requires a Data Table.> ...
+%! parseWilkinsonFormula ('y ~ a', 'model_matrix', 'stable')
