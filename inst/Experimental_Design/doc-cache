@@ -81,11 +81,12 @@ parseWilkinsonFormula
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6099
+# length: 6824
 statistics: terms = parseWilkinsonFormula ( formula )
 statistics: result = parseWilkinsonFormula ( formula , mode )
 statistics: [ X , y , names ] = parseWilkinsonFormula ( formula , "model_matrix", data )
 statistics: S = parseWilkinsonFormula ( formula , "mixed")
+statistics: &hellip; = parseWilkinsonFormula (&hellip;, setOrder )
 
 Parse and expand statistical model formulae using the Wilkinson notation.
 
@@ -155,6 +156,16 @@ and Response Matrix ( y ) directly from a provided data table.
 random-effects terms of the form ( expr | group ) into its
 fixed and random parts. See Mixed-Effects Formulae below.
 
+Order of the reported variables
+setOrder is 'sorted' or 'stable' and comes last,
+after every other argument, so that it may be given whatever else the mode
+takes. 'sorted' is the default and reports the variables in
+alphabetical order; 'stable' reports them in the order the formula
+wrote them, as unique uses the same two words. It applies wherever
+a mode reports variable names, which is 'matrix' and
+'model_matrix' , and the order carries into ResponseIdx and
+into the columns of Terms and of X beside it.
+
 Data Handling (&rsquo;model_matrix&rsquo; mode)
 When using the 'model_matrix' mode, a data argument must be
 provided as an Octave table .
@@ -195,6 +206,10 @@ it returns HasRandom false and an empty Random array.
 
 Outputs
 
+setOrder
+Whether the variables are reported alphabetically, 'sorted' , or in
+the order the formula wrote them, 'stable' . The default is
+'sorted' .
 terms / result
 The processed model structure, string array, or cell array depending on the
 selected mode .

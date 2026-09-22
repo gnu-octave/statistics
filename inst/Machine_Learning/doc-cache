@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1455
+# columns: 1491
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -970,13 +970,23 @@ ClassificationBaggedEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 287
+# length: 757
 ClassificationBaggedEnsemble: L = loss ( obj , X , Y )
+ClassificationBaggedEnsemble: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationBaggedEnsemble: L = loss ( obj , Tbl )
 ClassificationBaggedEnsemble: L = loss (&hellip;, name , value )
 
 Classification loss of a bagged ensemble.
 
 Behaves as CompactClassificationEnsemble.loss .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 See also:
 ClassificationBaggedEnsemble,
@@ -1611,8 +1621,11 @@ ClassificationDiscriminant.ClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3447
+# length: 3638
 statistics: obj = ClassificationDiscriminant ( X , Y )
+statistics: obj = ClassificationDiscriminant ( Tbl , ResponseVarName )
+statistics: obj = ClassificationDiscriminant ( Tbl , formula )
+statistics: obj = ClassificationDiscriminant ( Tbl , Y )
 statistics: obj = ClassificationDiscriminant (&hellip;, name , value )
 
 Create a ClassificationDiscriminant class object containing a
@@ -2736,8 +2749,10 @@ ClassificationDiscriminant.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1930
+# length: 2396
 ClassificationDiscriminant: L = loss ( obj , X , Y )
+ClassificationDiscriminant: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationDiscriminant: L = loss ( obj , Tbl )
 ClassificationDiscriminant: L = loss (&hellip;, name , value )
 
 Compute loss for a trained ClassificationDiscriminant object.
@@ -2755,6 +2770,14 @@ variables.
 Y is N&times;1 matrix or cell matrix containing the class labels
 of corresponding predictor data in X . Y must have same
 numbers of Rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) allows
 additional options specified by name - value pairs:
@@ -2948,7 +2971,7 @@ ClassificationDiscriminant.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1430
+# length: 1719
 ClassificationDiscriminant: label = predict ( obj , XC )
 ClassificationDiscriminant: [ label , score , cost ] = predict ( obj , XC )
 
@@ -2980,6 +3003,12 @@ normalized to ensure they sum to 1 for each observation.
 The cost matrix contains the expected classification cost for each
 class, computed based on the posterior probabilities and the specified
 misclassification costs.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 ClassificationDiscriminant,
@@ -3361,8 +3390,11 @@ ClassificationECOC.ClassificationECOC
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 462
+# length: 653
 ClassificationECOC: obj = ClassificationECOC ( X , Y )
+ClassificationECOC: obj = ClassificationECOC ( Tbl , ResponseVarName )
+ClassificationECOC: obj = ClassificationECOC ( Tbl , formula )
+ClassificationECOC: obj = ClassificationECOC ( Tbl , Y )
 ClassificationECOC: obj = ClassificationECOC (&hellip;, name , value )
 
 Fit a multiclass model from binary learners.
@@ -3934,11 +3966,21 @@ ClassificationECOC.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 170
+# length: 620
 ClassificationECOC: L = loss ( obj , X , Y )
+ClassificationECOC: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationECOC: L = loss ( obj , Tbl )
 
 Classification loss of a ClassificationECOC . See
 CompactClassificationECOC.loss .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 See also:
 CompactClassificationECOC.loss
@@ -3990,7 +4032,7 @@ ClassificationECOC.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 432
+# length: 721
 ClassificationECOC: label = predict ( obj , XC )
 ClassificationECOC: [ label , NegLoss , PBScore ] = predict (&hellip;)
 ClassificationECOC: [&hellip;] = predict (&hellip;, name , value )
@@ -4000,6 +4042,12 @@ Classify new data with a trained ClassificationECOC .
 It takes and returns exactly what
 CompactClassificationECOC.predict does, the training data
 playing no part in a prediction.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 ClassificationECOC,
@@ -4286,8 +4334,11 @@ ClassificationEnsemble.ClassificationEnsemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 382
+# length: 597
 ClassificationEnsemble: obj = ClassificationEnsemble ( X , Y )
+ClassificationEnsemble: obj = ClassificationEnsemble ( Tbl , ResponseVarName )
+ClassificationEnsemble: obj = ClassificationEnsemble ( Tbl , formula )
+ClassificationEnsemble: obj = ClassificationEnsemble ( Tbl , Y )
 ClassificationEnsemble: obj = ClassificationEnsemble (&hellip;, name , value )
 
 Fit a boosted ensemble of decision trees.
@@ -5047,14 +5098,24 @@ ClassificationEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 302
+# length: 760
 ClassificationEnsemble: L = loss ( obj , X , Y )
+ClassificationEnsemble: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationEnsemble: L = loss ( obj , Tbl )
 ClassificationEnsemble: L = loss (&hellip;, name , value )
 
 Classification loss of an ensemble.
 
 Behaves as CompactClassificationEnsemble.loss and takes the
 same Name-Value arguments.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 See also:
 ClassificationEnsemble,
@@ -5111,7 +5172,7 @@ ClassificationEnsemble.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 387
+# length: 676
 ClassificationEnsemble: label = predict ( obj , X )
 ClassificationEnsemble: [ label , scores ] = predict (&hellip;)
 ClassificationEnsemble: [&hellip;] = predict (&hellip;, name , value )
@@ -5120,6 +5181,12 @@ Classify new data with an ensemble.
 
 Behaves as CompactClassificationEnsemble.predict and takes the
 same Name-Value arguments.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 ClassificationEnsemble,
@@ -5535,8 +5602,11 @@ ClassificationGAM.ClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3867
+# length: 4031
 statistics: obj = ClassificationGAM ( X , Y )
+statistics: obj = ClassificationGAM ( Tbl , ResponseVarName )
+statistics: obj = ClassificationGAM ( Tbl , formula )
+statistics: obj = ClassificationGAM ( Tbl , Y )
 statistics: obj = ClassificationGAM (&hellip;, name , value )
 
 Create a ClassificationGAM class object containing a generalized
@@ -6718,14 +6788,24 @@ ClassificationGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 952
+# length: 1400
 ClassificationGAM: L = loss ( obj , X , Y )
+ClassificationGAM: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationGAM: L = loss ( obj , Tbl )
 ClassificationGAM: L = loss (&hellip;, name , value )
 
 Classification loss of a generalized additive model.
 
 L = loss ( obj , X , Y ) returns the loss of
 the model on the rows of X against the true labels Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following name-value pairs:
@@ -6803,7 +6883,7 @@ ClassificationGAM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1391
+# length: 1680
 ClassificationGAM: label = predict ( obj , XC )
 ClassificationGAM: [ label , score ] = predict ( obj , XC )
 ClassificationGAM: [ label , score ] = predict (&hellip;, 'IncludeInteractions' , includeInteractions )
@@ -6834,6 +6914,12 @@ observation and each column corresponds to a predictor variable.
 
 includeInteractions is a logical scalar indicating whether to
 include interaction terms in the predictions.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level
+was coded at fitting.
 
 See also:
 ClassificationGAM,
@@ -7313,8 +7399,11 @@ ClassificationKNN.ClassificationKNN
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5502
+# length: 5666
 statistics: obj = ClassificationKNN ( X , Y )
+statistics: obj = ClassificationKNN ( Tbl , ResponseVarName )
+statistics: obj = ClassificationKNN ( Tbl , formula )
+statistics: obj = ClassificationKNN ( Tbl , Y )
 statistics: obj = ClassificationKNN (&hellip;, name , value )
 
 Create a ClassificationKNN class object containing a k-Nearest
@@ -8305,8 +8394,10 @@ ClassificationKNN.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1894
+# length: 2342
 ClassificationKNN: L = loss ( obj , X , Y )
+ClassificationKNN: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationKNN: L = loss ( obj , Tbl )
 ClassificationKNN: L = loss (&hellip;, name , value )
 
 Compute loss for a trained ClassificationKNN object.
@@ -8324,6 +8415,14 @@ variables.
 Y is N&times;1 matrix or cell matrix containing the class labels
 of corresponding predictor data in X . Y must have same
 numbers of Rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) allows
 additional options specified by name - value pairs:
@@ -8495,7 +8594,7 @@ ClassificationKNN.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1290
+# length: 1579
 ClassificationKNN: labels = predict ( obj , XC )
 ClassificationKNN: [ labels , scores , cost ] = predict ( obj , XC )
 
@@ -8524,6 +8623,12 @@ function has been specified. See fitcknn for more info.
 Note! predict is explicitly using 'exhaustive' as the
 nearest search method due to the very slow implementation of
 'kdtree' in the knnsearch function.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 fitcknn,
@@ -8846,8 +8951,11 @@ ClassificationKernel.ClassificationKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2765
+# length: 2968
 ClassificationKernel: obj = ClassificationKernel ( X , Y )
+ClassificationKernel: obj = ClassificationKernel ( Tbl , ResponseVarName )
+ClassificationKernel: obj = ClassificationKernel ( Tbl , formula )
+ClassificationKernel: obj = ClassificationKernel ( Tbl , Y )
 ClassificationKernel: obj = ClassificationKernel (&hellip;, name , value )
 
 Fit a Gaussian kernel binary classifier.
@@ -9389,14 +9497,24 @@ ClassificationKernel.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 390
+# length: 844
 ClassificationKernel: l = loss ( obj , X , Y )
+ClassificationKernel: l = loss ( obj , Tbl , ResponseVarName )
+ClassificationKernel: l = loss ( obj , Tbl )
 ClassificationKernel: l = loss (&hellip;, name , value )
 
 Classification loss on new data.
 
 l = loss ( obj , X , Y ) returns the
 misclassification rate.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes
 'LossFun' , one of 'binodeviance' ,
@@ -9451,7 +9569,7 @@ ClassificationKernel.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 424
+# length: 713
 ClassificationKernel: labels = predict ( obj , XC )
 ClassificationKernel: [ labels , scores ] = predict ( obj , XC )
 
@@ -9464,6 +9582,12 @@ largest score.
 [ labels , scores ] = predict ( obj , XC )
 also returns the Nx2 scores, whose columns follow
 ClassNames , after ScoreTransform has been applied.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -9714,8 +9838,11 @@ ClassificationLinear.ClassificationLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4263
+# length: 4466
 ClassificationLinear: obj = ClassificationLinear ( X , Y )
+ClassificationLinear: obj = ClassificationLinear ( Tbl , ResponseVarName )
+ClassificationLinear: obj = ClassificationLinear ( Tbl , formula )
+ClassificationLinear: obj = ClassificationLinear ( Tbl , Y )
 ClassificationLinear: obj = ClassificationLinear (&hellip;, name , value )
 
 Fit a linear binary classifier.
@@ -10178,14 +10305,24 @@ ClassificationLinear.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 429
+# length: 883
 ClassificationLinear: l = loss ( obj , X , Y )
+ClassificationLinear: l = loss ( obj , Tbl , ResponseVarName )
+ClassificationLinear: l = loss ( obj , Tbl )
 ClassificationLinear: l = loss (&hellip;, name , value )
 
 Classification loss on new data.
 
 l = loss ( obj , X , Y ) returns the
 misclassification rate, one value per regularization strength.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes
 'LossFun' , one of 'binodeviance' ,
@@ -10241,7 +10378,7 @@ ClassificationLinear.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 608
+# length: 897
 ClassificationLinear: labels = predict ( obj , XC )
 ClassificationLinear: [ labels , scores ] = predict ( obj , XC )
 
@@ -10257,6 +10394,12 @@ also returns the scores, an Nx2 matrix whose columns follow
 ClassNames , or an Nx2xL array with more than one
 strength. The scores are -f and +f for the raw model
 value f , after ScoreTransform has been applied.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -10499,8 +10642,11 @@ ClassificationNaiveBayes.ClassificationNaiveBayes
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 441
+# length: 668
 ClassificationNaiveBayes: obj = ClassificationNaiveBayes ( X , Y )
+ClassificationNaiveBayes: obj = ClassificationNaiveBayes ( Tbl , ResponseVarName )
+ClassificationNaiveBayes: obj = ClassificationNaiveBayes ( Tbl , formula )
+ClassificationNaiveBayes: obj = ClassificationNaiveBayes ( Tbl , Y )
 ClassificationNaiveBayes: obj = ClassificationNaiveBayes (&hellip;, name , value )
 
 Create a ClassificationNaiveBayes object.
@@ -11249,14 +11395,24 @@ ClassificationNaiveBayes.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 511
+# length: 973
 ClassificationNaiveBayes: l = loss ( obj , X , Y )
+ClassificationNaiveBayes: l = loss ( obj , Tbl , ResponseVarName )
+ClassificationNaiveBayes: l = loss ( obj , Tbl )
 ClassificationNaiveBayes: l = loss (&hellip;, name , value )
 
 Classification loss on new data.
 
 l = loss ( obj , X , Y ) returns the minimum
 expected misclassification cost.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes the
 following options.
@@ -11318,7 +11474,7 @@ ClassificationNaiveBayes.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 627
+# length: 916
 ClassificationNaiveBayes: label = predict ( obj , XC )
 ClassificationNaiveBayes: [ label , score , cost ] = predict ( obj , XC )
 
@@ -11333,6 +11489,12 @@ XC ) also returns score , the posterior probability of each
 class, and cost , the expected misclassification cost of assigning
 each observation to each class. The label of an observation is the
 class of least expected cost.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -11655,8 +11817,11 @@ ClassificationNeuralNetwork.ClassificationNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5345
+# length: 5539
 statistics: obj = ClassificationNeuralNetwork ( X , Y )
+statistics: obj = ClassificationNeuralNetwork ( Tbl , ResponseVarName )
+statistics: obj = ClassificationNeuralNetwork ( Tbl , formula )
+statistics: obj = ClassificationNeuralNetwork ( Tbl , Y )
 statistics: obj = ClassificationNeuralNetwork (&hellip;, name , value )
 
 Create a ClassificationNeuralNetwork class object containing a
@@ -12740,8 +12905,10 @@ ClassificationNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1208
+# length: 1676
 ClassificationNeuralNetwork: L = loss ( obj , X , Y )
+ClassificationNeuralNetwork: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationNeuralNetwork: L = loss ( obj , Tbl )
 ClassificationNeuralNetwork: L = loss (&hellip;, name , value )
 
 Classification loss of a neural network classifier.
@@ -12749,6 +12916,14 @@ Classification loss of a neural network classifier.
 L = loss ( obj , X , Y ) returns the
 proportion of the rows of X the model misclassifies against the
 true labels Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following name-value pairs:
@@ -12829,7 +13004,7 @@ ClassificationNeuralNetwork.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1233
+# length: 1522
 ClassificationNeuralNetwork: label = predict ( obj , XC )
 ClassificationNeuralNetwork: [ label , score ] = predict ( obj , XC )
 
@@ -12857,6 +13032,12 @@ For each observation in XC , the predicted class label is the one
 with the highest score among all classes. If the ScoreTransform
 property is set to a transformation function, the scores are transformed
 accordingly before being returned.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 ClassificationNeuralNetwork,
@@ -17009,8 +17190,11 @@ ClassificationSVM.ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4223
+# length: 4387
 statistics: obj = ClassificationSVM ( X , Y )
+statistics: obj = ClassificationSVM ( Tbl , ResponseVarName )
+statistics: obj = ClassificationSVM ( Tbl , formula )
+statistics: obj = ClassificationSVM ( Tbl , Y )
 statistics: obj = ClassificationSVM (&hellip;, name , value )
 
 Create a ClassificationSVM class object containing a Support
@@ -17966,8 +18150,10 @@ ClassificationSVM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1890
+# length: 2338
 ClassificationSVM: L = loss ( obj , X , Y )
+ClassificationSVM: L = loss ( obj , Tbl , ResponseVarName )
+ClassificationSVM: L = loss ( obj , Tbl )
 ClassificationSVM: L = loss (&hellip;, name , value )
 
 Compute loss for a trained ClassificationSVM object.
@@ -17985,6 +18171,14 @@ variables.
 Y is N&times;1 matrix or cell matrix containing the class labels
 of corresponding predictor data in X . Y must have same
 numbers of Rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) allows
 additional options specified by name - value pairs:
@@ -18086,7 +18280,7 @@ ClassificationSVM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1698
+# length: 1987
 ClassificationSVM: label = predict ( obj , XC )
 ClassificationSVM: [ label , score ] = predict ( obj , XC )
 ClassificationSVM: [ label , score , cost ] = predict ( obj , XC )
@@ -18112,6 +18306,12 @@ prediction. A ScoreTransform assigned to obj is applied
 to them, so score holds whatever that transform returns. Posterior
 probabilities need a transform fitted to the model, which this package
 does not compute yet.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 Deviation from MATLAB. cost is the expected cost of
 each assignment, sum_j P(j) Cost(j,k) . An SVM score is a
@@ -18616,8 +18816,11 @@ ClassificationTree.ClassificationTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3725
+# length: 3916
 ClassificationTree: obj = ClassificationTree ( X , Y )
+ClassificationTree: obj = ClassificationTree ( Tbl , ResponseVarName )
+ClassificationTree: obj = ClassificationTree ( Tbl , formula )
+ClassificationTree: obj = ClassificationTree ( Tbl , Y )
 ClassificationTree: obj = ClassificationTree (&hellip;, name , value )
 
 Grow a binary decision tree for classification.
@@ -19899,14 +20102,24 @@ ClassificationTree.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 609
+# length: 1059
 ClassificationTree: l = loss ( obj , X , Y )
+ClassificationTree: l = loss ( obj , Tbl , ResponseVarName )
+ClassificationTree: l = loss ( obj , Tbl )
 ClassificationTree: l = loss (&hellip;, name , value )
 
 Classification loss on new data.
 
 l = loss ( obj , X , Y ) returns the
 minimum expected misclassification cost.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes the
 following options.
@@ -20015,7 +20228,7 @@ ClassificationTree.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1214
+# length: 1498
 ClassificationTree: label = predict ( obj , XC )
 ClassificationTree: [ label , score ] = predict (&hellip;)
 ClassificationTree: [ label , score , node ] = predict (&hellip;)
@@ -20027,6 +20240,12 @@ label = predict ( obj , XC ) sends each row of
 XC down the tree and returns the class of the node it comes to
 rest at. XC must have as many columns as the predictor data the
 model was fitted on.
+
+XC may also be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level was
+coded at fitting.
 
 [ label , score ] = predict (&hellip;) also returns
 score , an NxK matrix holding the class probabilities of
@@ -21192,8 +21411,10 @@ CompactClassificationDiscriminant.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1945
+# length: 2425
 CompactClassificationDiscriminant: L = loss ( obj , X , Y )
+CompactClassificationDiscriminant: L = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationDiscriminant: L = loss ( obj , Tbl )
 CompactClassificationDiscriminant: L = loss (&hellip;, name , value )
 
 Compute loss for a trained CompactClassificationDiscriminant object.
@@ -21210,6 +21431,14 @@ variables.
 Y is N&times;1 matrix or cell matrix containing the class labels
 of corresponding predictor data in X . Y must have same
 numbers of rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) allows
 additional options specified by name - value pairs:
@@ -21401,7 +21630,7 @@ CompactClassificationDiscriminant.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1433
+# length: 1722
 CompactClassificationDiscriminant: label = predict ( obj , XC )
 CompactClassificationDiscriminant: [ label , score , cost ] = predict ( obj , XC )
 
@@ -21434,6 +21663,12 @@ normalized to ensure they sum to 1 for each observation.
 The cost matrix contains the expected classification cost for each
 class, computed based on the posterior probabilities and the specified
 misclassification costs.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactClassificationDiscriminant,
@@ -21960,14 +22195,24 @@ CompactClassificationECOC.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 632
+# length: 1096
 CompactClassificationECOC: L = loss ( obj , X , Y )
+CompactClassificationECOC: L = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationECOC: L = loss ( obj , Tbl )
 CompactClassificationECOC: L = loss (&hellip;, name , value )
 
 Classification loss of a CompactClassificationECOC .
 
 L = loss ( obj , X , Y ) returns the
 weighted classification loss of X against the true labels
+Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
 Y .
 
 Name Value
@@ -22042,7 +22287,7 @@ CompactClassificationECOC.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1286
+# length: 1575
 CompactClassificationECOC: label = predict ( obj , XC )
 CompactClassificationECOC: [ label , NegLoss ] = predict (&hellip;)
 CompactClassificationECOC: [ label , NegLoss , PBScore ] = predict (&hellip;)
@@ -22070,6 +22315,12 @@ scores with, overriding the BinaryLoss property for this call.
 'lossbased' . The first averages the loss over the learners a
 class took part in, the second over every learner, a class that sat a
 column out costing the same there as a class at the decision boundary.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactClassificationECOC,
@@ -22585,8 +22836,10 @@ CompactClassificationEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1204
+# length: 1676
 CompactClassificationEnsemble: L = loss ( obj , X , Y )
+CompactClassificationEnsemble: L = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationEnsemble: L = loss ( obj , Tbl )
 CompactClassificationEnsemble: L = loss (&hellip;, name , value )
 
 Classification loss of a compact ensemble.
@@ -22594,6 +22847,14 @@ Classification loss of a compact ensemble.
 L is the weighted loss of the scores predict gives the rows
 of X against the labels Y . The weights are normalized so
 that each class carries its prior probability.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 Name-Value arguments:
 
@@ -22673,7 +22934,7 @@ CompactClassificationEnsemble.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1297
+# length: 1586
 CompactClassificationEnsemble: label = predict ( obj , X )
 CompactClassificationEnsemble: [ label , scores ] = predict (&hellip;)
 CompactClassificationEnsemble: [&hellip;] = predict (&hellip;, name , value )
@@ -22702,6 +22963,12 @@ to use. The default is all of them.
 'UseObsForLearner' An NxNumTrained
 logical matrix saying which learner may score which row. The default
 lets every learner score every row.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactClassificationEnsemble,
@@ -23507,14 +23774,24 @@ CompactClassificationGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 999
+# length: 1461
 CompactClassificationGAM: L = loss ( obj , X , Y )
+CompactClassificationGAM: L = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationGAM: L = loss ( obj , Tbl )
 CompactClassificationGAM: L = loss (&hellip;, name , value )
 
 Classification loss of a compact generalized additive model.
 
 L = loss ( obj , X , Y ) returns the loss of
 the model on the rows of X against the true labels Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following name-value pairs:
@@ -23595,7 +23872,7 @@ CompactClassificationGAM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1459
+# length: 1748
 CompactClassificationGAM: label = predict ( obj , XC )
 CompactClassificationGAM: [ label , score ] = predict ( obj , XC )
 CompactClassificationGAM: [ label , score ] = predict (&hellip;, 'IncludeInteractions' , includeInteractions )
@@ -23626,6 +23903,12 @@ observation and each column corresponds to a predictor variable.
 
 includeInteractions is a logical scalar indicating whether to
 include interaction terms in the predictions.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level
+was coded at fitting.
 
 See also:
 CompactClassificationGAM,
@@ -24239,14 +24522,24 @@ CompactClassificationNaiveBayes.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 244
+# length: 720
 CompactClassificationNaiveBayes: l = loss ( obj , X , Y )
+CompactClassificationNaiveBayes: l = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationNaiveBayes: l = loss ( obj , Tbl )
 CompactClassificationNaiveBayes: l = loss (&hellip;, name , value )
 
 Classification loss on new data.
 
 Takes the 'LossFun' and 'Weights' options that
 ClassificationNaiveBayes.loss takes.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 
 # name: <cell-element>
@@ -24291,7 +24584,7 @@ CompactClassificationNaiveBayes.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 367
+# length: 656
 CompactClassificationNaiveBayes: label = predict ( obj , XC )
 CompactClassificationNaiveBayes: [ label , score , cost ] = predict ( obj , XC )
 
@@ -24300,6 +24593,12 @@ Classify new data with a compact naive Bayes model.
 The same classification the model it came from would give: the label of
 least expected cost, the posterior of each class, and the expected
 misclassification cost of each.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -24962,14 +25261,24 @@ CompactClassificationNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1273
+# length: 1755
 CompactClassificationNeuralNetwork: L = loss ( obj , X , Y )
+CompactClassificationNeuralNetwork: L = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationNeuralNetwork: L = loss ( obj , Tbl )
 CompactClassificationNeuralNetwork: L = loss (&hellip;, name , value )
 
 Classification loss of a compact neural network classifier.
 
 L = loss ( obj , X , Y ) returns the loss of
 the model on the rows of X against the true labels Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following name-value pairs:
@@ -25054,7 +25363,7 @@ CompactClassificationNeuralNetwork.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1267
+# length: 1556
 CompactClassificationNeuralNetwork: label = predict ( obj , XC )
 CompactClassificationNeuralNetwork: [ label , score ] = predict ( obj , XC )
 
@@ -25083,6 +25392,12 @@ For each observation in XC , the predicted class label is the one
 with the highest score among all classes. If the ScoreTransform
 property is set to a transformation function, the scores are transformed
 accordingly before being returned.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactClassificationNeuralNetwork,
@@ -25802,8 +26117,10 @@ CompactClassificationSVM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1905
+# length: 2367
 CompactClassificationSVM: L = loss ( obj , X , Y )
+CompactClassificationSVM: L = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationSVM: L = loss ( obj , Tbl )
 CompactClassificationSVM: L = loss (&hellip;, name , value )
 
 Compute loss for a trained CompactClassificationSVM object.
@@ -25820,6 +26137,14 @@ variables.
 Y is N&times;1 matrix or cell matrix containing the class labels
 of corresponding predictor data in X . Y must have same
 numbers of Rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) allows
 additional options specified by name - value pairs:
@@ -25919,7 +26244,7 @@ CompactClassificationSVM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1707
+# length: 1996
 CompactClassificationSVM: label = predict ( obj , XC )
 CompactClassificationSVM: [ label , score ] = predict ( obj , XC )
 CompactClassificationSVM: [ label , score , cost ] = predict ( obj , XC )
@@ -25944,6 +26269,12 @@ prediction. A ScoreTransform assigned to obj is applied
 to them, so score holds whatever that transform returns. Posterior
 probabilities need a transform fitted to the model, which this package
 does not compute yet.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 Deviation from MATLAB. cost is the expected cost of
 each assignment, sum_j P(j) Cost(j,k) . An SVM score is a
@@ -27072,14 +27403,24 @@ CompactClassificationTree.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 651
+# length: 1115
 CompactClassificationTree: l = loss ( obj , X , Y )
+CompactClassificationTree: l = loss ( obj , Tbl , ResponseVarName )
+CompactClassificationTree: l = loss ( obj , Tbl )
 CompactClassificationTree: l = loss (&hellip;, name , value )
 
 Classification loss on new data.
 
 l = loss ( obj , X , Y ) returns the
 minimum expected misclassification cost.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes the
 following options.
@@ -27188,7 +27529,7 @@ CompactClassificationTree.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1256
+# length: 1540
 CompactClassificationTree: label = predict ( obj , XC )
 CompactClassificationTree: [ label , score ] = predict (&hellip;)
 CompactClassificationTree: [ label , score , node ] = predict (&hellip;)
@@ -27200,6 +27541,12 @@ label = predict ( obj , XC ) sends each row of
 XC down the tree and returns the class of the node it comes to
 rest at. XC must have as many columns as the predictor data the
 model was fitted on.
+
+XC may also be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level was
+coded at fitting.
 
 [ label , score ] = predict (&hellip;) also returns
 score , an NxK matrix holding the class probabilities of
@@ -27681,8 +28028,10 @@ CompactRegressionEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1072
+# length: 1536
 CompactRegressionEnsemble: L = loss ( obj , X , Y )
+CompactRegressionEnsemble: L = loss ( obj , Tbl , ResponseVarName )
+CompactRegressionEnsemble: L = loss ( obj , Tbl )
 CompactRegressionEnsemble: L = loss (&hellip;, name , value )
 
 Regression loss of a compact ensemble.
@@ -27691,6 +28040,14 @@ L is the weighted mean squared error of the predictions for the
 rows of X against Y , the weights normalized to sum to one
 over the rows that have a response; a row whose response is missing is
 left out.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 Name-Value arguments:
 
@@ -27733,7 +28090,7 @@ CompactRegressionEnsemble.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 732
+# length: 1021
 CompactRegressionEnsemble: yfit = predict ( obj , X )
 CompactRegressionEnsemble: yfit = predict (&hellip;, name , value )
 
@@ -27753,6 +28110,12 @@ use. The default is all of them.
 'UseObsForLearner' An NxNumTrained
 logical matrix saying which tree may predict which row. The default
 lets every tree predict every row.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactRegressionEnsemble,
@@ -28400,8 +28763,10 @@ CompactRegressionGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 707
+# length: 1161
 CompactRegressionGAM: L = loss ( obj , X , Y )
+CompactRegressionGAM: L = loss ( obj , Tbl , ResponseVarName )
+CompactRegressionGAM: L = loss ( obj , Tbl )
 CompactRegressionGAM: L = loss (&hellip;, name , value )
 
 Regression loss of a generalized additive model.
@@ -28409,6 +28774,14 @@ Regression loss of a generalized additive model.
 L = loss ( obj , X , Y ) returns the weighted
 mean squared error of the model on the rows of X against the true
 response Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following name-value pairs:
@@ -28445,7 +28818,7 @@ CompactRegressionGAM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2019
+# length: 2308
 CompactRegressionGAM: yFit = predict ( obj , Xfit )
 CompactRegressionGAM: yFit = predict (&hellip;, Name , Value )
 CompactRegressionGAM: [ yFit , ySD , yInt ] = predict (&hellip;)
@@ -28495,6 +28868,12 @@ predictions
 will be made on the basic model without any interaction terms. This way
 you can make predictions from the same GAM model without having to
 retrain it.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level
+was coded at fitting.
 
 See also:
 fitrgam,
@@ -29103,8 +29482,10 @@ CompactRegressionGP.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 338
+# length: 790
 CompactRegressionGP: L = loss ( obj , X , Y )
+CompactRegressionGP: L = loss ( obj , Tbl , ResponseVarName )
+CompactRegressionGP: L = loss ( obj , Tbl )
 CompactRegressionGP: L = loss (&hellip;, name , value )
 
 Compute the regression loss of a compact Gaussian process model.
@@ -29113,6 +29494,14 @@ L = loss ( obj , X , Y ) returns the mean
 squared error of the model obj on the data X and Y ,
 and accepts the same 'LossFun' and 'Weights' pairs the
 full model accepts.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 
 # name: <cell-element>
@@ -29133,7 +29522,7 @@ CompactRegressionGP.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 526
+# length: 815
 CompactRegressionGP: yFit = predict ( obj , XC )
 CompactRegressionGP: [ yFit , ySD , yInt ] = predict ( obj , XC )
 CompactRegressionGP: [&hellip;] = predict (&hellip;, 'Alpha' , alpha )
@@ -29145,6 +29534,12 @@ response of the CompactRegressionGP model obj at the
 points in XC , and the further outputs are the standard deviation
 of each predicted response and the prediction intervals, exactly as the
 full model returns them.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -29618,8 +30013,10 @@ CompactRegressionNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 981
+# length: 1455
 CompactRegressionNeuralNetwork: L = loss ( obj , X , Y )
+CompactRegressionNeuralNetwork: L = loss ( obj , Tbl , ResponseVarName )
+CompactRegressionNeuralNetwork: L = loss ( obj , Tbl )
 CompactRegressionNeuralNetwork: L = loss (&hellip;, name , value )
 
 Compute the regression loss of a compact neural network model.
@@ -29634,6 +30031,14 @@ X must be a numeric matrix with the same number of predictors as
 the data the model was trained on.
 
 Y must be a numeric vector with as many rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following Name-Value pairs.
@@ -29669,7 +30074,7 @@ CompactRegressionNeuralNetwork.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 538
+# length: 827
 CompactRegressionNeuralNetwork: yFit = predict ( obj , XC )
 
 Predict the response for new data with a compact neural network
@@ -29683,6 +30088,12 @@ obj must be a CompactRegressionNeuralNetwork class object.
 
 XC must be a numeric matrix with the same number of predictors as
 the data the model was trained on.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactRegressionNeuralNetwork,
@@ -30237,8 +30648,10 @@ CompactRegressionSVM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 958
+# length: 1412
 CompactRegressionSVM: L = loss ( obj , X , Y )
+CompactRegressionSVM: L = loss ( obj , Tbl , ResponseVarName )
+CompactRegressionSVM: L = loss ( obj , Tbl )
 CompactRegressionSVM: L = loss (&hellip;, name , value )
 
 Compute the regression loss of a compact support vector machine model.
@@ -30253,6 +30666,14 @@ X must be a numeric matrix with the same number of predictors as
 the data the model was trained on.
 
 Y must be a numeric vector with as many rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following Name-Value pairs.
@@ -30288,7 +30709,7 @@ CompactRegressionSVM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 498
+# length: 787
 CompactRegressionSVM: yFit = predict ( obj , XC )
 
 Predict the response for new data with a compact support vector
@@ -30302,6 +30723,12 @@ obj must be a CompactRegressionSVM class object.
 
 XC must be a numeric matrix with the same number of predictors as
 the data the model was trained on.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactRegressionSVM,
@@ -31213,8 +31640,10 @@ CompactRegressionTree.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 761
+# length: 1217
 CompactRegressionTree: L = loss ( obj , X , Y )
+CompactRegressionTree: L = loss ( obj , Tbl , ResponseVarName )
+CompactRegressionTree: L = loss ( obj , Tbl )
 CompactRegressionTree: L = loss (&hellip;, name , value )
 
 Regression loss on new data.
@@ -31223,6 +31652,14 @@ L = loss ( obj , X , Y ) returns the
 weighted mean squared error of the response the model predicts for
 X against the observed response Y . A row whose response
 is missing is dropped, as it is when fitting.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) takes the
 following options.
@@ -31293,7 +31730,7 @@ CompactRegressionTree.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 706
+# length: 990
 CompactRegressionTree: yFit = predict ( obj , XC )
 CompactRegressionTree: [ yFit , node ] = predict (&hellip;)
 
@@ -31303,6 +31740,12 @@ yFit = predict ( obj , XC ) sends each row of
 XC down the tree and returns the mean response of the node it
 comes to rest at, after ResponseTransform . XC must have
 as many columns as the predictor data the model was fitted on.
+
+XC may also be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level was
+coded at fitting.
 
 [ yFit , node ] = predict (&hellip;) also returns the
 number of the node each row landed in.
@@ -32058,7 +32501,7 @@ CompactTreeBagger.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1729
+# length: 2018
 CompactTreeBagger: label = predict ( obj , X )
 CompactTreeBagger: [ label , scores ] = predict (&hellip;)
 CompactTreeBagger: [ label , scores , stdevs ] = predict (&hellip;)
@@ -32096,6 +32539,12 @@ default lets every tree answer for every observation.
 MATLAB returns the labels as a cell array of character vectors whatever
 the type of the response; they are returned here in the type of
 ClassNames , as by every other classifier in this package.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 CompactTreeBagger,
@@ -32190,7 +32639,7 @@ PredictiveModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 720
+# length: 891
 statistics: PredictiveModel
 
 A fitted model that answers for new observations.
@@ -32202,11 +32651,13 @@ relatives derive from it as the learners do. The cross-validated
 classes answer through kfoldPredict over their folds rather than
 through predict , and so do not derive from it.
 
-The class is abstract and cannot be instantiated. It holds no data of
-its own: it is where behaviour shared by all those models is written
-once rather than once per class, and isa ( obj ,
-'PredictiveModel' ) is how to ask whether an object is a model
-that can be told to predict.
+The class is abstract and cannot be instantiated. It is where
+behaviour shared by all those models is written once rather than once
+per class, and isa ( obj , 'PredictiveModel' ) is how
+to ask whether an object is a model that can be told to predict. The
+only data it holds is the levels a predictor read from a table was
+coded through, which every model needs to read a table again at
+prediction and which MATLAB carries by keeping the table itself.
 
 
 # name: <cell-element>
@@ -33155,13 +33606,23 @@ RegressionBaggedEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 263
+# length: 725
 RegressionBaggedEnsemble: L = loss ( obj , X , Y )
+RegressionBaggedEnsemble: L = loss ( obj , Tbl , ResponseVarName )
+RegressionBaggedEnsemble: L = loss ( obj , Tbl )
 RegressionBaggedEnsemble: L = loss (&hellip;, name , value )
 
 Regression loss of a bagged ensemble.
 
 Behaves as CompactRegressionEnsemble.loss .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 See also:
 RegressionBaggedEnsemble,
@@ -33921,8 +34382,11 @@ RegressionEnsemble.RegressionEnsemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 364
+# length: 555
 RegressionEnsemble: obj = RegressionEnsemble ( X , Y )
+RegressionEnsemble: obj = RegressionEnsemble ( Tbl , ResponseVarName )
+RegressionEnsemble: obj = RegressionEnsemble ( Tbl , formula )
+RegressionEnsemble: obj = RegressionEnsemble ( Tbl , Y )
 RegressionEnsemble: obj = RegressionEnsemble (&hellip;, name , value )
 
 Fit an ensemble of regression trees by LSBoost.
@@ -34345,14 +34809,24 @@ RegressionEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 278
+# length: 728
 RegressionEnsemble: L = loss ( obj , X , Y )
+RegressionEnsemble: L = loss ( obj , Tbl , ResponseVarName )
+RegressionEnsemble: L = loss ( obj , Tbl )
 RegressionEnsemble: L = loss (&hellip;, name , value )
 
 Regression loss of an ensemble.
 
 Behaves as CompactRegressionEnsemble.loss and takes the same
 Name-Value arguments.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 See also:
 RegressionEnsemble,
@@ -34377,7 +34851,7 @@ RegressionEnsemble.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 309
+# length: 598
 RegressionEnsemble: yfit = predict ( obj , X )
 RegressionEnsemble: yfit = predict (&hellip;, name , value )
 
@@ -34385,6 +34859,12 @@ Predict the response with a regression ensemble.
 
 Behaves as CompactRegressionEnsemble.predict and takes the same
 Name-Value arguments.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 RegressionEnsemble,
@@ -35423,8 +35903,11 @@ RegressionGAM.RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 542
+# length: 703
 RegressionGAM: obj = RegressionGAM ( X , Y )
+RegressionGAM: obj = RegressionGAM ( Tbl , ResponseVarName )
+RegressionGAM: obj = RegressionGAM ( Tbl , formula )
+RegressionGAM: obj = RegressionGAM ( Tbl , Y )
 RegressionGAM: obj = RegressionGAM (&hellip;, name , value )
 
 Fit a generalized additive model for regression.
@@ -35821,8 +36304,10 @@ RegressionGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 664
+# length: 1104
 RegressionGAM: L = loss ( obj , X , Y )
+RegressionGAM: L = loss ( obj , Tbl , ResponseVarName )
+RegressionGAM: L = loss ( obj , Tbl )
 RegressionGAM: L = loss (&hellip;, name , value )
 
 Regression loss of a generalized additive model.
@@ -35830,6 +36315,14 @@ Regression loss of a generalized additive model.
 L = loss ( obj , X , Y ) returns the weighted
 mean squared error of the model on the rows of X against the true
 response Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following name-value pairs:
@@ -35865,7 +36358,7 @@ RegressionGAM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1991
+# length: 2280
 RegressionGAM: yFit = predict ( obj , Xfit )
 RegressionGAM: yFit = predict (&hellip;, Name , Value )
 RegressionGAM: [ yFit , ySD , yInt ] = predict (&hellip;)
@@ -35915,6 +36408,12 @@ predictions
 will be made on the basic model without any interaction terms. This way
 you can make predictions from the same GAM model without having to
 retrain it.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level
+was coded at fitting.
 
 See also:
 fitrgam,
@@ -36083,8 +36582,11 @@ RegressionGP
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5786
+# length: 5935
 statistics: obj = RegressionGP ( X , Y )
+statistics: obj = RegressionGP ( Tbl , ResponseVarName )
+statistics: obj = RegressionGP ( Tbl , formula )
+statistics: obj = RegressionGP ( Tbl , Y )
 statistics: obj = RegressionGP (&hellip;, name , value )
 
 Create a RegressionGP object containing a Gaussian process
@@ -37173,14 +37675,24 @@ RegressionGP.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 472
+# length: 910
 RegressionGP: L = loss ( obj , X , Y )
+RegressionGP: L = loss ( obj , Tbl , ResponseVarName )
+RegressionGP: L = loss ( obj , Tbl )
 RegressionGP: L = loss (&hellip;, name , value )
 
 Compute the regression loss of a Gaussian process model.
 
 L = loss ( obj , X , Y ) returns the mean
 squared error of the model obj on the data X and Y .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts
 'LossFun' , either 'mse' , 'mae' ,
@@ -37241,7 +37753,7 @@ RegressionGP.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 954
+# length: 1243
 RegressionGP: yFit = predict ( obj , XC )
 RegressionGP: [ yFit , ySD , yInt ] = predict ( obj , XC )
 RegressionGP: [&hellip;] = predict (&hellip;, 'Alpha' , alpha )
@@ -37263,6 +37775,12 @@ level times it.
 the significance level of the intervals, so that they are
 100 &times; (1 - alpha ) per cent intervals. alpha must be
 a scalar in the range [0, 1] and defaults to 0.05 .
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -37757,8 +38275,11 @@ RegressionKernel.RegressionKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2613
+# length: 2792
 RegressionKernel: obj = RegressionKernel ( X , Y )
+RegressionKernel: obj = RegressionKernel ( Tbl , ResponseVarName )
+RegressionKernel: obj = RegressionKernel ( Tbl , formula )
+RegressionKernel: obj = RegressionKernel ( Tbl , Y )
 RegressionKernel: obj = RegressionKernel (&hellip;, name , value )
 
 Fit a Gaussian kernel regression model.
@@ -37951,14 +38472,24 @@ RegressionKernel.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 412
+# length: 858
 RegressionKernel: l = loss ( obj , X , Y )
+RegressionKernel: l = loss ( obj , Tbl , ResponseVarName )
+RegressionKernel: l = loss ( obj , Tbl )
 RegressionKernel: l = loss (&hellip;, name , value )
 
 Regression loss on new data.
 
 l = loss ( obj , X , Y ) returns the mean
 squared error.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes
 'LossFun' , either 'mse' or
@@ -37985,7 +38516,7 @@ RegressionKernel.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 248
+# length: 537
 RegressionKernel: yFit = predict ( obj , XC )
 
 Predict the response of new observations.
@@ -37993,6 +38524,12 @@ Predict the response of new observations.
 yFit = predict ( obj , XC ) maps each row of
 XC through the model&rsquo;s own random basis and returns the
 predicted response, with ResponseTransform applied.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -38410,8 +38947,11 @@ RegressionLinear.RegressionLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3798
+# length: 3977
 RegressionLinear: obj = RegressionLinear ( X , Y )
+RegressionLinear: obj = RegressionLinear ( Tbl , ResponseVarName )
+RegressionLinear: obj = RegressionLinear ( Tbl , formula )
+RegressionLinear: obj = RegressionLinear ( Tbl , Y )
 RegressionLinear: obj = RegressionLinear (&hellip;, name , value )
 
 Fit a linear regression model.
@@ -38602,14 +39142,24 @@ RegressionLinear.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 451
+# length: 897
 RegressionLinear: l = loss ( obj , X , Y )
+RegressionLinear: l = loss ( obj , Tbl , ResponseVarName )
+RegressionLinear: l = loss ( obj , Tbl )
 RegressionLinear: l = loss (&hellip;, name , value )
 
 Regression loss on new data.
 
 l = loss ( obj , X , Y ) returns the mean
 squared error, one value per regularization strength.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 l = loss (&hellip;, name , value ) takes
 'LossFun' , either 'mse' or
@@ -38636,7 +39186,7 @@ RegressionLinear.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 249
+# length: 538
 RegressionLinear: yFit = predict ( obj , XC )
 
 Predict the response of new observations.
@@ -38644,6 +39194,12 @@ Predict the response of new observations.
 yFit = predict ( obj , XC ) returns one
 predicted value per row of XC , and one column per regularization
 strength. ResponseTransform is applied to the result.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 
 # name: <cell-element>
@@ -39380,8 +39936,11 @@ RegressionNeuralNetwork.RegressionNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 340
+# length: 561
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork ( X , Y )
+RegressionNeuralNetwork: obj = RegressionNeuralNetwork ( Tbl , ResponseVarName )
+RegressionNeuralNetwork: obj = RegressionNeuralNetwork ( Tbl , formula )
+RegressionNeuralNetwork: obj = RegressionNeuralNetwork ( Tbl , Y )
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork (&hellip;, name , value )
 
 Create a RegressionNeuralNetwork object containing a neural
@@ -39753,8 +40312,10 @@ RegressionNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 995
+# length: 1455
 RegressionNeuralNetwork: L = loss ( obj , X , Y )
+RegressionNeuralNetwork: L = loss ( obj , Tbl , ResponseVarName )
+RegressionNeuralNetwork: L = loss ( obj , Tbl )
 RegressionNeuralNetwork: L = loss (&hellip;, name , value )
 
 Compute the regression loss of a neural network model.
@@ -39769,6 +40330,14 @@ X must be a numeric matrix with the same number of predictors as
 the data the model was trained on.
 
 Y must be a numeric vector with as many rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following Name-Value pairs.
@@ -39805,7 +40374,7 @@ RegressionNeuralNetwork.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 576
+# length: 865
 RegressionNeuralNetwork: yFit = predict ( obj , XC )
 
 Predict the response for new data with a neural network regression
@@ -39822,6 +40391,12 @@ the data the model was trained on.
 
 The transformation named by ResponseTransform is applied to the
 network&rsquo;s output before it is returned.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 RegressionNeuralNetwork,
@@ -42297,8 +42872,11 @@ RegressionSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3838
+# length: 3990
 statistics: obj = RegressionSVM ( X , Y )
+statistics: obj = RegressionSVM ( Tbl , ResponseVarName )
+statistics: obj = RegressionSVM ( Tbl , formula )
+statistics: obj = RegressionSVM ( Tbl , Y )
 statistics: obj = RegressionSVM (&hellip;, name , value )
 
 Create a RegressionSVM object containing a support vector machine
@@ -43243,8 +43821,10 @@ RegressionSVM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1078
+# length: 1518
 RegressionSVM: L = loss ( obj , X , Y )
+RegressionSVM: L = loss ( obj , Tbl , ResponseVarName )
+RegressionSVM: L = loss ( obj , Tbl )
 RegressionSVM: L = loss (&hellip;, name , value )
 
 Compute the regression loss of a support vector machine model.
@@ -43259,6 +43839,14 @@ X must be a numeric matrix with the same number of predictors as
 the data the model was trained on.
 
 Y must be a numeric vector with as many rows as X .
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) accepts the
 following Name-Value pairs.
@@ -43297,7 +43885,7 @@ RegressionSVM.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 510
+# length: 799
 RegressionSVM: yFit = predict ( obj , XC )
 
 Predict the response for new data with a support vector regression
@@ -43313,6 +43901,12 @@ the data the model was trained on.
 
 The transformation named by ResponseTransform is applied to the
 model&rsquo;s output before it is returned.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 RegressionSVM,
@@ -44193,8 +44787,11 @@ RegressionTree.RegressionTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2668
+# length: 2835
 RegressionTree: obj = RegressionTree ( X , Y )
+RegressionTree: obj = RegressionTree ( Tbl , ResponseVarName )
+RegressionTree: obj = RegressionTree ( Tbl , formula )
+RegressionTree: obj = RegressionTree ( Tbl , Y )
 RegressionTree: obj = RegressionTree (&hellip;, name , value )
 
 Grow a binary decision tree for regression.
@@ -44763,8 +45360,10 @@ RegressionTree.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 733
+# length: 1175
 RegressionTree: L = loss ( obj , X , Y )
+RegressionTree: L = loss ( obj , Tbl , ResponseVarName )
+RegressionTree: L = loss ( obj , Tbl )
 RegressionTree: L = loss (&hellip;, name , value )
 
 Regression loss on new data.
@@ -44773,6 +45372,14 @@ L = loss ( obj , X , Y ) returns the
 weighted mean squared error of the response the model predicts for
 X against the observed response Y . A row whose response
 is missing is dropped, as it is when fitting.
+
+X may also be a table Tbl , whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+loss ( obj , Tbl , ResponseVarName ) takes the
+response from the variable ResponseVarName names, and
+loss ( obj , Tbl ) from the variable the model was
+fitted on. The response may also be given beside the table as
+Y .
 
 L = loss (&hellip;, name , value ) takes the
 following options.
@@ -44843,7 +45450,7 @@ RegressionTree.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 678
+# length: 962
 RegressionTree: yFit = predict ( obj , XC )
 RegressionTree: [ yFit , node ] = predict (&hellip;)
 
@@ -44853,6 +45460,12 @@ yFit = predict ( obj , XC ) sends each row of
 XC down the tree and returns the mean response of the node it
 comes to rest at, after ResponseTransform . XC must have
 as many columns as the predictor data the model was fitted on.
+
+XC may also be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position: one
+the model was not fitted on is passed over, one it needs and cannot
+find is named, and a value holding a level is coded as that level was
+coded at fitting.
 
 [ yFit , node ] = predict (&hellip;) also returns the
 number of the node each row landed in.
@@ -45925,8 +46538,11 @@ TreeBagger.TreeBagger
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3416
+# length: 3586
 TreeBagger: B = TreeBagger ( NumTrees , X , Y )
+TreeBagger: B = TreeBagger ( NumTrees , Tbl , ResponseVarName )
+TreeBagger: B = TreeBagger ( NumTrees , Tbl , formula )
+TreeBagger: B = TreeBagger ( NumTrees , Tbl , Y )
 TreeBagger: B = TreeBagger (&hellip;, name , value )
 
 Grow an ensemble of bagged decision trees.
@@ -46659,7 +47275,7 @@ TreeBagger.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 505
+# length: 794
 TreeBagger: label = predict ( obj , X )
 TreeBagger: [ label , scores ] = predict (&hellip;)
 TreeBagger: [ label , scores , stdevs ] = predict (&hellip;)
@@ -46671,6 +47287,12 @@ Predict responses with a bagged ensemble.
 Behaves as CompactTreeBagger.predict , and takes the same
 'Trees' , 'TreeWeights' and 'UseInstanceForTree'
 Name-Value arguments.
+
+The new data may be a table, whose variables are matched to the
+predictors the model was fitted on by name and not by position:
+one the model was not fitted on is passed over, one it needs and
+cannot find is named, and a value holding a level is coded as that
+level was coded at fitting.
 
 See also:
 TreeBagger,
@@ -46885,8 +47507,11 @@ fitcdiscr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3477
+# length: 3617
 statistics: Mdl = fitcdiscr ( X , Y )
+statistics: Mdl = fitcdiscr ( Tbl , ResponseVarName )
+statistics: Mdl = fitcdiscr ( Tbl , formula )
+statistics: Mdl = fitcdiscr ( Tbl , Y )
 statistics: Mdl = fitcdiscr (&hellip;, name , value )
 
 Fit a Linear Discriminant Analysis classification model.
@@ -46977,8 +47602,11 @@ fitcecoc
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4625
+# length: 4762
 statistics: Mdl = fitcecoc ( X , Y )
+statistics: Mdl = fitcecoc ( Tbl , ResponseVarName )
+statistics: Mdl = fitcecoc ( Tbl , formula )
+statistics: Mdl = fitcecoc ( Tbl , Y )
 statistics: Mdl = fitcecoc (&hellip;, name , value )
 
 Fit a multiclass model from binary learners.
@@ -47096,8 +47724,11 @@ fitcensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10124
+# length: 10273
 statistics: Mdl = fitcensemble ( X , Y )
+statistics: Mdl = fitcensemble ( Tbl , ResponseVarName )
+statistics: Mdl = fitcensemble ( Tbl , formula )
+statistics: Mdl = fitcensemble ( Tbl , Y )
 statistics: Mdl = fitcensemble (&hellip;, name , value )
 
 Fit an ensemble of decision trees for classification.
@@ -47314,8 +47945,11 @@ fitcgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7447
+# length: 7971
 statistics: Mdl = fitcgam ( X , Y )
+statistics: Mdl = fitcgam ( Tbl , ResponseVarName )
+statistics: Mdl = fitcgam ( Tbl , formula )
+statistics: Mdl = fitcgam ( Tbl , Y )
 statistics: Mdl = fitcgam (&hellip;, name , value )
 
 Fit a Generalized Additive Model (GAM) for binary classification.
@@ -47329,6 +47963,14 @@ correspond to observations and columns correspond to features or variables.
 
 Y is N&times;1 numeric vector containing binary class labels,
 typically 0 or 1.
+
+Tbl may stand in place of X , the response named by one of its
+variables, written into a model formula holding main effects,
+'Y ~ x1 + x2' , or given beside it as Y . A variable holding
+levels rather than numbers is a categorical predictor without being named
+one, and 'CategoricalPredictors' adds to that set rather than
+replacing it. PredictorNames and ResponseName come from the
+table.
 
 Mdl = fitcgam (&hellip;, name , value ) returns a
 GAM classification model with additional options specified by
@@ -47481,8 +48123,11 @@ fitckernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1171
+# length: 1314
 statistics: Mdl = fitckernel ( X , Y )
+statistics: Mdl = fitckernel ( Tbl , ResponseVarName )
+statistics: Mdl = fitckernel ( Tbl , formula )
+statistics: Mdl = fitckernel ( Tbl , Y )
 statistics: Mdl = fitckernel (&hellip;, name , value )
 statistics: [ Mdl , FitInfo ] = fitckernel (&hellip;)
 
@@ -47535,8 +48180,11 @@ fitcknn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 11177
+# length: 11311
 statistics: Mdl = fitcknn ( X , Y )
+statistics: Mdl = fitcknn ( Tbl , ResponseVarName )
+statistics: Mdl = fitcknn ( Tbl , formula )
+statistics: Mdl = fitcknn ( Tbl , Y )
 statistics: Mdl = fitcknn (&hellip;, name , value )
 
 Fit a k-Nearest Neighbor classification model.
@@ -47786,8 +48434,11 @@ fitclinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1240
+# length: 1383
 statistics: Mdl = fitclinear ( X , Y )
+statistics: Mdl = fitclinear ( Tbl , ResponseVarName )
+statistics: Mdl = fitclinear ( Tbl , formula )
+statistics: Mdl = fitclinear ( Tbl , Y )
 statistics: Mdl = fitclinear (&hellip;, name , value )
 statistics: [ Mdl , FitInfo ] = fitclinear (&hellip;)
 
@@ -47841,8 +48492,11 @@ fitcnb
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3589
+# length: 3720
 statistics: Mdl = fitcnb ( X , Y )
+statistics: Mdl = fitcnb ( Tbl , ResponseVarName )
+statistics: Mdl = fitcnb ( Tbl , formula )
+statistics: Mdl = fitcnb ( Tbl , Y )
 statistics: Mdl = fitcnb (&hellip;, name , value )
 
 Fit a naive Bayes classification model.
@@ -47939,8 +48593,11 @@ fitcnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6515
+# length: 6649
 statistics: Mdl = fitcnet ( X , Y )
+statistics: Mdl = fitcnet ( Tbl , ResponseVarName )
+statistics: Mdl = fitcnet ( Tbl , formula )
+statistics: Mdl = fitcnet ( Tbl , Y )
 statistics: Mdl = fitcnet (&hellip;, name , value )
 
 Fit a Neural Network classification model.
@@ -48091,8 +48748,11 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8492
+# length: 8626
 statistics: Mdl = fitcsvm ( X , Y )
+statistics: Mdl = fitcsvm ( Tbl , ResponseVarName )
+statistics: Mdl = fitcsvm ( Tbl , formula )
+statistics: Mdl = fitcsvm ( Tbl , Y )
 statistics: Mdl = fitcsvm (&hellip;, name , value )
 
 Fit a Support Vector Machine classification model.
@@ -48275,8 +48935,11 @@ fitctree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4588
+# length: 5605
 statistics: Mdl = fitctree ( X , Y )
+statistics: Mdl = fitctree ( Tbl , ResponseVarName )
+statistics: Mdl = fitctree ( Tbl , formula )
+statistics: Mdl = fitctree ( Tbl , Y )
 statistics: Mdl = fitctree (&hellip;, name , value )
 
 Fit a binary decision tree for classification.
@@ -48292,6 +48955,23 @@ Y must be a Nx1 numeric or logical vector, a character array
 with one class name per row, or a cell array of character vectors, holding
 the class label of each observation in X . The class names come back
 in the type Y was given in.
+
+Mdl = fitctree ( Tbl , ResponseVarName ) takes both
+from the table Tbl : ResponseVarName names the variable holding
+the class labels and every other variable is a predictor.
+Mdl = fitctree ( Tbl , formula ) names them with a
+model formula instead, 'Y ~ x1 + x2' , which holds main effects
+only and so takes no product, power or wildcard.
+Mdl = fitctree ( Tbl , Y ) takes the predictors from
+the table and the class labels from Y .
+
+A table variable holding levels rather than numbers, which is a
+categorical , a logical , a character array or a cell array of
+character vectors, is a categorical predictor without being named one, and
+'CategoricalPredictors' adds to that set rather than replacing it.
+PredictorNames and ResponseName come from the table, and a
+level is coded at prediction as it was coded at fitting, so a table given
+to predict may hold only some of the levels.
 
 An observation whose class label is missing is dropped, and the rows kept
 are reported in RowsUsed . An observation missing some of its
@@ -48396,8 +49076,11 @@ fitrensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3368
+# length: 3517
 statistics: Mdl = fitrensemble ( X , Y )
+statistics: Mdl = fitrensemble ( Tbl , ResponseVarName )
+statistics: Mdl = fitrensemble ( Tbl , formula )
+statistics: Mdl = fitrensemble ( Tbl , Y )
 statistics: Mdl = fitrensemble (&hellip;, name , value )
 
 Fit an ensemble of regression trees.
@@ -48497,8 +49180,11 @@ fitrgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7116
+# length: 7640
 statistics: obj = fitrgam ( X , Y )
+statistics: obj = fitrgam ( Tbl , ResponseVarName )
+statistics: obj = fitrgam ( Tbl , formula )
+statistics: obj = fitrgam ( Tbl , Y )
 statistics: obj = fitrgam ( X , Y , name , value )
 
 Fit a Generalized Additive Model (GAM) for regression.
@@ -48514,6 +49200,14 @@ X will be used to train the GAM model.
 Y must be N&times;1 numeric vector containing the response data
 corresponding to the predictor data in X . Y must have same
 number of rows as X .
+
+Tbl may stand in place of X , the response named by one of its
+variables, written into a model formula holding main effects,
+'Y ~ x1 + x2' , or given beside it as Y . A variable holding
+levels rather than numbers is a categorical predictor without being named
+one, and 'CategoricalPredictors' adds to that set rather than
+replacing it. PredictorNames and ResponseName come from the
+table.
 
 obj = fitrgam (&hellip;, name , value ) returns
 an object of class RegressionGAM with additional properties specified by
@@ -48659,8 +49353,11 @@ fitrgp
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 852
+# length: 983
 statistics: Mdl = fitrgp ( X , Y )
+statistics: Mdl = fitrgp ( Tbl , ResponseVarName )
+statistics: Mdl = fitrgp ( Tbl , formula )
+statistics: Mdl = fitrgp ( Tbl , Y )
 statistics: Mdl = fitrgp (&hellip;, name , value )
 
 Fit a Gaussian process regression model.
@@ -48705,8 +49402,11 @@ fitrkernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1170
+# length: 1313
 statistics: Mdl = fitrkernel ( X , Y )
+statistics: Mdl = fitrkernel ( Tbl , ResponseVarName )
+statistics: Mdl = fitrkernel ( Tbl , formula )
+statistics: Mdl = fitrkernel ( Tbl , Y )
 statistics: Mdl = fitrkernel (&hellip;, name , value )
 statistics: [ Mdl , FitInfo ] = fitrkernel (&hellip;)
 
@@ -48760,8 +49460,11 @@ fitrlinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1236
+# length: 1379
 statistics: Mdl = fitrlinear ( X , Y )
+statistics: Mdl = fitrlinear ( Tbl , ResponseVarName )
+statistics: Mdl = fitrlinear ( Tbl , formula )
+statistics: Mdl = fitrlinear ( Tbl , Y )
 statistics: Mdl = fitrlinear (&hellip;, name , value )
 statistics: [ Mdl , FitInfo ] = fitrlinear (&hellip;)
 
@@ -48816,8 +49519,11 @@ fitrnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5572
+# length: 5706
 statistics: Mdl = fitrnet ( X , Y )
+statistics: Mdl = fitrnet ( Tbl , ResponseVarName )
+statistics: Mdl = fitrnet ( Tbl , formula )
+statistics: Mdl = fitrnet ( Tbl , Y )
 statistics: Mdl = fitrnet (&hellip;, name , value )
 
 Fit a neural network regression model.
@@ -48951,8 +49657,11 @@ fitrsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3598
+# length: 3732
 statistics: Mdl = fitrsvm ( X , Y )
+statistics: Mdl = fitrsvm ( Tbl , ResponseVarName )
+statistics: Mdl = fitrsvm ( Tbl , formula )
+statistics: Mdl = fitrsvm ( Tbl , Y )
 statistics: Mdl = fitrsvm (&hellip;, name , value )
 
 Fit a support vector machine regression model.
@@ -49055,8 +49764,11 @@ fitrtree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3519
+# length: 4528
 statistics: Mdl = fitrtree ( X , Y )
+statistics: Mdl = fitrtree ( Tbl , ResponseVarName )
+statistics: Mdl = fitrtree ( Tbl , formula )
+statistics: Mdl = fitrtree ( Tbl , Y )
 statistics: Mdl = fitrtree (&hellip;, name , value )
 
 Fit a binary decision tree for regression.
@@ -49070,6 +49782,23 @@ correspond to observations and columns to predictors.
 
 Y must be a Nx1 numeric vector holding the response of each
 observation in X .
+
+Mdl = fitrtree ( Tbl , ResponseVarName ) takes both
+from the table Tbl : ResponseVarName names the variable holding
+the response and every other variable is a predictor.
+Mdl = fitrtree ( Tbl , formula ) names them with a
+model formula instead, 'Y ~ x1 + x2' , which holds main effects
+only and so takes no product, power or wildcard.
+Mdl = fitrtree ( Tbl , Y ) takes the predictors from
+the table and the response from Y .
+
+A table variable holding levels rather than numbers, which is a
+categorical , a logical , a character array or a cell array of
+character vectors, is a categorical predictor without being named one, and
+'CategoricalPredictors' adds to that set rather than replacing it.
+PredictorNames and ResponseName come from the table, and a
+level is coded at prediction as it was coded at fitting, so a table given
+to predict may hold only some of the levels.
 
 An observation whose response is missing is dropped, and the rows kept are
 reported in RowsUsed . An observation missing some of its predictors
@@ -49144,6 +49873,607 @@ treepredict
 # elements: 1
 # length: 42
 Fit a binary decision tree for regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+lime
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2912
+statistics: lime
+
+Local interpretable model-agnostic explanations for a fitted model.
+
+A lime object explains one prediction by fitting a simple model,
+a linear one or a shallow decision tree, over observations drawn around
+the query point and weighted by how near they lie to it. The simple
+model is readable where the fitted one is not, and it is accurate near
+the query point rather than everywhere.
+
+explainer = lime ( Mdl ) builds an explainer for the
+fitted model Mdl over the observations it was fitted on. A compact
+model keeps none, so it must be given them as X , and so must a
+function handle. The observations to fit the simple model on are drawn
+at once, and nothing is explained until a query point is given, either to
+the constructor as 'QueryPoint' or afterwards to fit .
+
+explainer = lime ( Mdl , X ) takes the observations
+the draw is fitted to as X , a real numeric matrix of one column per
+predictor.
+
+X may also be a table, and so may 'QueryPoint' ,
+'CustomSyntheticData' and what fit is given. Where the
+model names its predictors the table is read by those names and not by
+the order its columns come in, so a column the model was not fitted on is
+passed over and a value holding a level is coded as that level was coded
+at fitting. A function handle names nothing, so a table given for one
+names the predictors itself and its columns are taken in the order they
+come.
+
+explainer = lime ( fun , X ) takes a function
+handle in place of a model. fun is called with a matrix of
+observations and answers with one column holding one value for each, and
+'Type' must say whether those values are a response or a label.
+
+Name Value
+'Type' Whether the model answers with a response,
+'regression' , or with a label, 'classification' . It is
+taken from a fitted model and is required for a function handle.
+'DataLocality' Where the observations are drawn
+from: 'global' , the default, fits the distribution to the whole
+of X ; 'local' fits it to the 'NumNeighbors'
+observations nearest the query point, which must then be known.
+'NumNeighbors' How many neighbours
+'local' fits to, 1500 by default.
+'NumSyntheticData' How many observations to draw,
+5000 by default.
+'CustomSyntheticData' Observations to use instead
+of drawing any, one row each. Nothing is drawn where it is given.
+'CategoricalPredictors' The predictors whose
+values are levels, taken as by every learner of this package. It applies
+only to a function handle, a model being asked for its own.
+'QueryPoint' The observation to explain. Given
+with 'NumImportantPredictors' it is explained at once, otherwise
+it is left to fit .
+'NumImportantPredictors' How many predictors the
+simple model is fitted on.
+
+Every option fit takes may also be given here, in which case it
+stands as the default for every later fit .
+
+'UseParallel' is not implemented and is refused rather than
+ignored.
+
+See also:
+shapley,
+partialDependence,
+PredictiveModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 67
+Local interpretable model-agnostic explanations for a fitted model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+lime.BlackboxFitted
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 111
+lime: property BlackboxFitted
+
+What the explained model answers at the query point
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+What the explained model answers at the query point
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+lime.BlackboxModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 154
+lime: property BlackboxModel
+
+The model being explained
+
+The fitted model, or the function handle, the explainer was built on.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+The model being explained
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+lime.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 176
+lime: property CategoricalPredictors
+
+The categorical predictors
+
+The indices of the predictors whose values are levels, empty where
+there are none. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+The categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+lime.DataLocality
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 225
+lime: property DataLocality
+
+Where the observations were drawn from
+
+'global' where the distribution was fitted to the whole of
+X , 'local' where it was fitted to the neighbours of
+the query point. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Where the observations were drawn from
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+lime.Fitted
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 246
+lime: property Fitted
+
+What the model answers over the drawn observations
+
+One response per observation for a regression model, or one label for
+a classifier, keeping the type of the response the model was fitted
+with. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+What the model answers over the drawn observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+lime.ImportantPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 182
+lime: property ImportantPredictors
+
+The predictors the simple model was fitted on
+
+Their indices, in increasing order, empty until a query point is
+given. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+The predictors the simple model was fitted on
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+lime.NumImportantPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 205
+lime: property NumImportantPredictors
+
+How many predictors the simple model was asked for
+
+Empty until a query point is given. Fewer may be used, where a
+predictor adds nothing. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+How many predictors the simple model was asked for
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+lime.NumSyntheticData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 94
+lime: property NumSyntheticData
+
+How many observations were drawn
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+How many observations were drawn
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+lime.QueryPoint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 158
+lime: property QueryPoint
+
+The observation explained
+
+One row holding one value per predictor, empty until a query point is
+given. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+The observation explained
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+lime.SimpleModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 480
+lime: property SimpleModel
+
+The simple model fitted around the query point
+
+A RegressionLinear , ClassificationLinear ,
+RegressionTree or ClassificationTree , fitted on the
+important predictors alone and weighted by nearness to the query
+point. For a classifier it answers 1 for the class the
+explained model predicted and -1 for any other, which is what
+makes it a single model however many classes there are. It is empty
+until a query point is given. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+The simple model fitted around the query point
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+lime.SimpleModelFitted
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 206
+lime: property SimpleModelFitted
+
+What the simple model answers at the query point
+
+Where the two agree the simple model is worth reading; where they do
+not, it explains nothing. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+What the simple model answers at the query point
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+lime.SyntheticData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 195
+lime: property SyntheticData
+
+The observations the simple model is fitted over
+
+One row each, drawn around the query point or given outright as
+'CustomSyntheticData' . This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+The observations the simple model is fitted over
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+lime.Type
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 112
+lime: property Type
+
+What the model answers with
+
+'regression' or 'classification' . This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+What the model answers with
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+lime.X
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 165
+lime: property X
+
+The observations the draw was fitted to
+
+A real numeric matrix of one row per observation and one column per
+predictor. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+The observations the draw was fitted to
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+lime.fit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1334
+lime: obj = fit ( obj , queryPoint , numImportantPredictors )
+lime: obj = fit (&hellip;, name , value )
+
+Fit the simple model around one query point.
+
+queryPoint is one row holding one value per predictor, or a
+table read by the names the explainer holds, and
+numImportantPredictors how many predictors the simple model is
+fitted on. Fewer are used where a predictor adds nothing, and
+ImportantPredictors says which were.
+
+Name Value
+'Distance' How nearness to the query point is
+measured. Where the predictors hold numbers it is one of
+'euclidean' , the default, 'squaredeuclidean' ,
+'seuclidean' , 'mahalanobis' , 'cityblock' ,
+'minkowski' , 'chebychev' , 'cosine' ,
+'correlation' and 'spearman' ; where they hold levels
+it is 'goodall3' , the default, or 'ofd' . A function
+handle is also taken, which MATLAB does not; see below.
+'KernelWidth' How sharply the weight falls
+away with distance, from just above 0 to 1. The default is 0.75.
+'SimpleModelType' 'linear' , the
+default, or 'tree' .
+'BetaTolerance' Relative tolerance the linear
+simple model is fitted to, 10^{-4} by default.
+'Cov' , 'P' , 'Scale' Passed to
+the distance that takes them, as pdist2 takes them.
+
+The weight of a drawn observation is
+exp (-0.5 (d / max (d) / w)^2) , with d its distance
+from the query point and w the kernel width.
+
+See also:
+lime,
+lime.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Fit the simple model around one query point.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+lime.lime
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 462
+lime: obj = lime ( Mdl )
+lime: obj = lime ( Mdl , X )
+lime: obj = lime ( fun , X )
+lime: obj = lime (&hellip;, name , value )
+
+Build a local interpretable model-agnostic explainer.
+
+The arguments are those described for the class. The observations
+the simple model is fitted over are drawn here; where
+'QueryPoint' and 'NumImportantPredictors' are both
+given the explanation is computed at once, otherwise it is left to
+fit .
+
+See also:
+lime,
+lime.fit,
+lime.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Build a local interpretable model-agnostic explainer.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+lime.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 334
+lime: plot ( obj )
+lime: f = plot ( obj )
+
+Plot what the simple model says about the query point.
+
+A horizontal bar per important predictor, holding the coefficient of
+a linear simple model or the predictor importance of a tree, in the
+order the predictors come in rather than by size. f is the
+figure drawn.
+
+See also:
+lime,
+lime.fit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Plot what the simple model says about the query point.
 
 
 
@@ -49295,6 +50625,692 @@ PredictiveModel
 # elements: 1
 # length: 63
 Plot partial dependence and individual conditional expectation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+shapley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3066
+statistics: shapley
+
+Shapley values for a fitted model at one or more query points.
+
+A Shapley value says how much one predictor contributed to the deviation
+of a prediction from the average prediction. The values of a query point
+sum to that deviation exactly, which is the property the computation is
+built to keep.
+
+explainer = shapley ( Mdl ) builds an explainer for the
+fitted model Mdl over the observations it was fitted on. A compact
+model keeps none, so it must be given them as X , and so must a
+function handle. Nothing is computed until query points are given, either
+to the constructor as 'QueryPoints' or afterwards to
+fit .
+
+explainer = shapley ( Mdl , X ) takes the
+observations to average over as X , a real numeric matrix of one
+column per predictor.
+
+X may also be a table, and so may 'QueryPoints' and what
+fit is given. Where the model names its predictors the table is
+read by those names and not by the order its columns come in, so a
+column the model was not fitted on is passed over and a value holding a
+level is coded as that level was coded at fitting. A function handle
+names nothing, so a table given for one names the predictors itself and
+its columns are taken in the order they come.
+
+explainer = shapley ( fun , X ) takes a function
+handle in place of a model. fun is called with a matrix of
+observations and answers with one real numeric column holding one value
+for each, so an explainer built on a handle always has a single column of
+values.
+
+Name Value
+'QueryPoints' The observations to explain, one per
+row, with one column per predictor. The default is none, which leaves the
+values unfitted.
+'NumObservationsToSample' How many observations to
+draw, without replacement, from those averaged over, or 'all' for
+every one of them. The default is 100, and so is any number reaching or
+exceeding how many there are. A drawn sample makes the values differ from
+one call to the next; 'all' is what makes them reproducible.
+'CategoricalPredictors' The predictors whose
+values are levels, taken as by every learner of this package. It applies
+only to a function handle, a model being asked for its own.
+'MaxNumSubsets' How many predictor subsets at
+most to compute over, an integer above 1. The default is the lesser of
+2^M , which is every subset of the M predictors, and 1024.
+Every subset gives the values exactly; fewer estimates them, and fewer
+than 2M+2 estimates them poorly enough to warn about. Giving it
+at all asks for the subsets, so a linear model or a decision tree that
+would otherwise be answered from its own structure is answered over
+them instead.
+'Method' The algorithm, 'interventional'
+by default, which averages over the observations as they stand.
+'conditional' averages instead over the tenth of them lying
+nearest the query point in the predictors being held, which stands in
+for conditioning on those predictors. It asks more of the data and is
+the dearer of the two.
+
+'UseParallel' is not implemented and is refused rather than
+ignored.
+
+See also:
+partialDependence,
+plotPartialDependence,
+PredictiveModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Shapley values for a fitted model at one or more query points.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+shapley.BlackboxFitted
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 339
+shapley: property BlackboxFitted
+
+What the model answers at the query points
+
+The response of a regression model or the predicted label of a
+classifier, one for each query point, empty until query points are
+given. A label keeps the type of the response the model was fitted
+with, as everywhere in this package. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+What the model answers at the query points
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+shapley.BlackboxModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 157
+shapley: property BlackboxModel
+
+The model being explained
+
+The fitted model, or the function handle, the explainer was built on.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+The model being explained
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+shapley.CategoricalPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 179
+shapley: property CategoricalPredictors
+
+The categorical predictors
+
+The indices of the predictors whose values are levels, empty where
+there are none. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+The categorical predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+shapley.Intercept
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 325
+shapley: property Intercept
+
+The average prediction
+
+The mean of what the model answers over the observations averaged over,
+a scalar for a regression model or a function handle and one value per
+class for a classifier. The values of a query point sum to the
+deviation of its prediction from this. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+The average prediction
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+shapley.MeanAbsoluteShapley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 259
+shapley: property MeanAbsoluteShapley
+
+The mean absolute Shapley value of each predictor
+
+A table laid out as Shapley , holding the mean over the query
+points of the absolute values. With one query point it is their
+absolute value. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+The mean absolute Shapley value of each predictor
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+shapley.Method
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 728
+shapley: property Method
+
+The algorithm the values were computed with
+
+A character vector. 'interventional-linear' where the model
+predicts a weighted sum of its predictors, which is answered from the
+weights alone; 'interventional-tree' for a decision tree and
+for an ensemble of them, which is answered leaf by leaf;
+'interventional-kernel' for
+every other model, which enumerates every subset of the predictors
+where the budget allows it and estimates the values by weighted least
+squares where it does not; and 'conditional-kernel' where
+'Method' asked for conditioning. A tree and a linear model
+are answered exactly however many predictors they have, where the
+budget stops the subsets at 1024. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The algorithm the values were computed with
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+shapley.NumSubsets
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 225
+shapley: property NumSubsets
+
+How many predictor subsets the values were computed over
+
+The lesser of what 'MaxNumSubsets' allowed and two raised to
+the number of predictors, which is every subset. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+How many predictor subsets the values were computed over
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+shapley.QueryPoints
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 172
+shapley: property QueryPoints
+
+The observations explained
+
+A real numeric matrix of one row per query point, empty until query
+points are given. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+The observations explained
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+shapley.SampledObservationIndices
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 220
+shapley: property SampledObservationIndices
+
+The rows of X that were averaged over
+
+A sorted column of indices into X , holding every row where
+'NumObservationsToSample' did not draw a sample. This property
+is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+The rows of X that were averaged over
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+shapley.Shapley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 378
+shapley: property Shapley
+
+The Shapley values
+
+A table of one row per predictor, holding the predictor names in
+Predictor and the values in Value for a regression
+model or a function handle, and in one variable per class, named after
+it, for a classifier. Each such variable holds one column per query
+point. It is empty until query points are given. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+The Shapley values
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+shapley.X
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 262
+shapley: property X
+
+The observations averaged over
+
+A real numeric matrix of one row per observation and one column per
+predictor, either given outright or taken from the model. It is the
+whole of what was given, before any sampling. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+The observations averaged over
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+shapley.boxchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 953
+shapley: boxchart ( obj )
+shapley: boxchart ( obj , name , value )
+shapley: boxchart ( ax , &hellip;)
+shapley: b = boxchart (&hellip;)
+
+Draw a box chart of the Shapley values over the query points.
+
+One box per predictor, the least important at the bottom, spread over
+the query points the values were fitted at. The chart is titled
+'Shapley Summary Plot' and lies horizontally.
+
+ax is the axes to draw into, the current one where none is
+given. b is the stats.chart.BoxChart drawn.
+
+Name Value
+'NumImportantPredictors' How many predictors
+to draw, the ten most important by default. Whatever is left over is
+left out rather than summed, a box over a sum meaning nothing.
+'ClassName' The one class to draw, for a
+classification model. The default is the first class of the model.
+'JitterOutliers' Whether outlier markers are
+spread across the width of the box, 'off' by default.
+
+See also:
+shapley,
+shapley.plot,
+shapley.swarmchart,
+stats.chart.BoxChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+Draw a box chart of the Shapley values over the query points.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+shapley.fit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 311
+shapley: obj = fit ( obj , QueryPoints )
+
+Compute the Shapley values at the given query points.
+
+QueryPoints is a real numeric matrix of one row per query point
+and one column per predictor, or a table read by the names the
+explainer holds. The values already held are replaced, not added to.
+
+See also:
+shapley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Compute the Shapley values at the given query points.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+shapley.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1062
+shapley: plot ( obj )
+shapley: plot ( obj , name , value )
+shapley: plot ( ax , &hellip;)
+shapley: b = plot (&hellip;)
+
+Plot the Shapley values as a horizontal bar chart.
+
+One bar per predictor, the least important at the bottom. Over one
+query point the bars hold the values themselves and the chart is
+titled 'Shapley Explanation' ; over several they hold the mean
+of the absolute values and it is titled
+'Shapley Importance Plot' .
+
+ax is the axes to draw into, the current one where none is
+given. b holds one bar series per class drawn.
+
+Name Value
+'NumImportantPredictors' How many predictors
+to draw on their own, the ten most important by default. Over
+several query points whatever is left over is drawn as one further
+bar holding its sum; over one query point it is left out.
+'ClassNames' The classes to draw, for a
+classification model. The default is the predicted class over one
+query point and every class over several.
+'QueryPointIndices' Which query points to
+draw, all of them by default.
+
+See also:
+shapley,
+shapley.boxchart,
+shapley.swarmchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Plot the Shapley values as a horizontal bar chart.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+shapley.plotDependence
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1313
+shapley: plotDependence ( obj , predictor )
+shapley: plotDependence ( obj , predictor , name , value )
+shapley: plotDependence ( ax , &hellip;)
+shapley: p = plotDependence (&hellip;)
+
+Draw the Shapley values of one predictor against its own values.
+
+predictor names or indexes the predictor. Where it holds
+numbers the chart is a scatter of its value at each query point
+against the value it was given there; where it holds levels the chart
+is a box of the values at each level.
+
+The chart is titled 'Shapley Dependence Plot' and its
+vertical axis is labelled after the predictor drawn.
+
+ax is the axes to draw into, the current one where none is
+given. p is the scatter object, or the
+stats.chart.BoxChart , drawn.
+
+Name Value
+'ClassName' The one class to draw, for a
+classification model. The default is the first class of the model.
+'ColorPredictor' A second predictor to colour
+the points by, none by default. Its values are read as they stand,
+the range of the axes carrying the scale, and a colour bar is drawn
+beside the chart. It applies only where the predictor drawn holds
+numbers.
+'ColorMap' The colour map the colouring
+predictor is read through, as a name or as a matrix of one RGB
+triplet per row. The default is the one the axes already carries.
+
+See also:
+shapley,
+shapley.plot,
+shapley.swarmchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 64
+Draw the Shapley values of one predictor against its own values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+shapley.shapley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 354
+shapley: obj = shapley ( Mdl )
+shapley: obj = shapley ( Mdl , X )
+shapley: obj = shapley ( fun , X )
+shapley: obj = shapley (&hellip;, name , value )
+
+Build a Shapley explainer.
+
+The arguments are those described for the class. Where
+'QueryPoints' is given the values are computed at once,
+otherwise they are left to fit .
+
+See also:
+shapley,
+shapley.fit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+Build a Shapley explainer.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+shapley.swarmchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1211
+shapley: swarmchart ( obj )
+shapley: swarmchart ( obj , name , value )
+shapley: swarmchart ( ax , &hellip;)
+shapley: s = swarmchart (&hellip;)
+
+Draw a swarm chart of the Shapley values over the query points.
+
+One row of points per predictor, the least important at the bottom,
+one point per query point spread vertically by how crowded its
+neighbourhood is. Each point is coloured by the value the predictor
+takes at that query point, the least of them at one end of the
+colour map and the greatest at the other. The chart is titled
+'Shapley Summary Plot' .
+
+ax is the axes to draw into, the current one where none is
+given. s holds one scatter object per predictor drawn.
+
+Name Value
+'NumImportantPredictors' How many predictors
+to draw, the ten most important by default.
+'ClassName' The one class to draw, for a
+classification model. The default is the first class of the model.
+'YJitter' How the points of a row are spread,
+'density' by default, or 'rand' , 'randn' or
+'none' .
+'ColorMap' The colour map the predictor
+values are read through, as a name or as a matrix of one RGB triplet
+per row. The default is the one the axes already carries.
+
+See also:
+shapley,
+shapley.plot,
+shapley.boxchart,
+swarmchart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+Draw a swarm chart of the Shapley values over the query points.
 
 
 

@@ -747,7 +747,7 @@ anova1
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3814
+# length: 4360
 statistics: p = anova1 ( x )
 statistics: p = anova1 ( x , group )
 statistics: p = anova1 ( x , group , displayopt )
@@ -800,6 +800,15 @@ anova1 can return up to three output arguments:
 p is the p-value of the null hypothesis that all group means are equal.
 
 atab is a cell array containing the results in a standard ANOVA table.
+Its first row holds the column headings. For 'equal' it is the
+classic partition, 'Source' , 'SS' , 'df' ,
+'MS' , 'F' and 'Prob>F' , with a row for the groups,
+the error and the total. For 'unequal' it is 'Source' ,
+'F' , 'df' , 'dfe' and 'Prob>F' , with one row
+for the groups, since Welch&rsquo;s test partitions no sum of squares and pools
+no error term; 'df' and 'dfe' are the numerator and the
+denominator degrees of freedom of its F statistic, the latter fractional.
+The two tables therefore differ in width and in what their columns mean.
 
 stats is a structure containing statistics useful for performing
 a multiple comparison of means with the MULTCOMPARE function.
@@ -2813,7 +2822,7 @@ ranksum
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2821
+# length: 2849
 statistics: p = ranksum ( x , y )
 statistics: p = ranksum ( x , y , alpha )
 statistics: p = ranksum ( x , y , alpha , Name , Value )
@@ -2845,7 +2854,8 @@ same significance level.
 returns the structure stats with information about the test statistic.
 It contains the field ranksum with the value of the rank sum test
 statistic, and the field zval with the value of the z-statistic when
-computed with the "approximate" method, or empty otherwise.
+computed with the "approximate" method, and empty otherwise. The field is
+always there.
 
 [&hellip;] = ranksum ( x , y , alpha ) or alternatively
 [&hellip;] = ranksum ( x , y , "alpha", alpha ) returns
@@ -2856,7 +2866,7 @@ computation method of the p-value specified in M , which can be "exact",
 "approximate", or "oldexact". M must be a single string. When "method"
 is unspecified, the default is: "exact" when
 min (length ( x ), length ( y )) < 10 and
-length ( x ) + length ( y ) < 10 , otherwise the "approximate"
+length ( x ) + length ( y ) < 20 , otherwise the "approximate"
 method is used.
 
 "exact" method uses full enumeration for small total sample size (< 10),
@@ -3101,7 +3111,7 @@ signrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2865
+# length: 2910
 statistics: pval = signrank ( x )
 statistics: pval = signrank ( x , my )
 statistics: pval = signrank ( x , my , Name , Value )
@@ -3169,8 +3179,9 @@ the structure stats containing the following fields:
 
 Field Value
 signedrank Value of the sign rank test statistic.
-zval Value of the z -statistic (only computed
-when the 'method' is 'approximate' ).
+zval Value of the z -statistic, computed only
+when the 'method' is 'approximate' and empty otherwise.
+The field is always there.
 
 See also:
 tiedrank,
@@ -3196,7 +3207,7 @@ signtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2753
+# length: 2839
 statistics: pval = signtest ( x )
 statistics: pval = signtest ( x , my )
 statistics: pval = signtest ( x , my , Name , Value )
@@ -3263,8 +3274,10 @@ the structure stats containing the following fields:
 
 Field Value
 sign Value of the sign test statistic.
-zval Value of the z -statistic (only computed
-when the 'method' is 'approximate' ).
+zval Value of the z -statistic, computed only
+when the 'method' is 'approximate' and NaN
+otherwise, where signrank and ranksum leave it empty. The
+field is always there.
 
 See also:
 signrank,
@@ -3691,7 +3704,7 @@ vartestn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2864
+# length: 2906
 statistics: vartestn ( x )
 statistics: vartestn ( x , group )
 statistics: vartestn (&hellip;, name , value )
@@ -3725,7 +3738,7 @@ validity of the null hypothesis.
 [ p , stats ] = vartestn (&hellip;) returns a structure with
 the following fields:
 
-chistat &ndash; the value of the test statistic
+chisqstat &ndash; the value of Bartlett&rsquo;s test statistic
 df &ndash; the degrees of freedom of the test
 
 [ p , stats ] = vartestn (&hellip;, name , value )
@@ -3753,8 +3766,8 @@ The classical Bartlett&rsquo;s test is sensitive to the assumption that the
 distribution in each group is normal. The other test types are more robust
 to non-normal distributions, especially ones prone to outliers. For these
 tests, the STATS output structure has a field named fstat containing
-the test statistic, and df1 and df2 containing its numerator
-and denominator degrees of freedom.
+the test statistic in place of chisqstat , and df holds two
+elements, the numerator and the denominator degrees of freedom.
 
 See also:
 vartest,
