@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitrgp (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrgp (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrgp (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrgp (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitrgp (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Gaussian process regression model.
@@ -95,6 +98,32 @@ endfunction
 %! xq = linspace (0, 2*pi, 5)';
 %! [yq, ysd] = predict (Mdl, xq)
 
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitrgp (T, 'SL');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%! Mdl.CategoricalPredictors
+%!
+%! ## A model formula names them instead, holding main effects only
+%! Mdl2 = fitrgp (T, 'SL ~ PL + Wide');
+%! Mdl2.PredictorNames
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! yFit = predict (Mdl, T(1:5, [5, 4, 3, 2, 1]));
+%! yFit'
+
 %!test
 %! ## fitrgp returns the model the class constructor returns
 %! x = linspace (0, 1, 15)';
@@ -148,3 +177,47 @@ endfunction
 %! fitrgp (ones (5, 2), ones (5, 1), 'CrossVal', 5)
 %!error<fitrgp: you can use only one of 'KFold', 'Holdout', 'Leaveout', or 'CVPartition' options.> ...
 %! fitrgp (ones (20, 2), ones (20, 1), 'KFold', 3, 'Holdout', 0.2)
+
+## Table input
+%!shared fgpT
+%! load fisheriris
+%! fgpT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! fgpT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrgp (fgpT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+%! assert_equal (Mdl.CategoricalPredictors, 4);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrgp (fgpT, 'SL ~ PL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'Wide'});
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitrgp (fgpT(:,1:3), fgpT.SL);
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrgp (fgpT, 'SL');
+%! a = predict (Mdl, fgpT);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (Mdl, fgpT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitrgp (fgpT, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fgpT), predict (Mdl, fgpT));
+
+%!error<RegressionGP: the table holds no variable 'NoSuch'.> ...
+%! fitrgp (fgpT, 'NoSuch')
+
+%!error<RegressionGP: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitrgp (fgpT, 'SL ~ PL*PW')
+
+%!error<RegressionGP.predict: the table holds no predictor 'PL'.> ...
+%! predict (fitrgp (fgpT, 'SL'), fgpT(:, [1, 3, 4, 5]))

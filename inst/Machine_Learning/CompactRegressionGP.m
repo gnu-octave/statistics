@@ -264,12 +264,21 @@ classdef CompactRegressionGP < PredictiveModel
     ## of each predicted response and the prediction intervals, exactly as the
     ## full model returns them.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function [yFit, ySD, yInt] = predict (this, XC, varargin)
 
       if (nargin < 2)
         error ("CompactRegressionGP.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactRegressionGP.predict', XC);
       if (isempty (XC))
         error ("CompactRegressionGP.predict: XC is empty.");
       endif
@@ -513,6 +522,10 @@ classdef CompactRegressionGP < PredictiveModel
                        " object."));
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       this.PredictorNames = Mdl.PredictorNames;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
       this.ResponseName = Mdl.ResponseName;
@@ -743,3 +756,14 @@ endclassdef
 %! Xq = [1, 0; 3, 0.5; 4, 0];
 %! assert_equal (predict (CMdl, Xq), predict (Mdl, Xq));
 %! assert_equal (CMdl.ExpandedPredictorNames, Mdl.ExpandedPredictorNames);
+
+## A table at prediction
+%!test  # the levels travel with the model, and predict reads a table by name
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! Mdl = fitrgp (T, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, T(:, [4, 3, 2, 1])), predict (CMdl, T));

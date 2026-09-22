@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{obj} =} RegressionGP (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@dots{}, @var{name}, @var{value})
 ##
 ## Create a @qcode{RegressionGP} object containing a Gaussian process
@@ -582,6 +585,10 @@ classdef RegressionGP < PredictiveModel
         error ("RegressionGP: too few input arguments.");
       endif
 
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionGP', ...
+                                             X, Y, varargin);
+
       ## Validate X and Y.  A row whose response is missing is dropped; one
       ## missing a predictor stays in X and counts as an observation, as MATLAB
       ## R2024a keeps it, but takes no part in the fit.
@@ -930,12 +937,21 @@ classdef RegressionGP < PredictiveModel
     ## @math{100 * (1 - @var{alpha})} per cent intervals.  @var{alpha} must be
     ## a scalar in the range @math{[0, 1]} and defaults to @math{0.05}.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function [yFit, ySD, yInt] = predict (this, XC, varargin)
 
       if (nargin < 2)
         error ("RegressionGP.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'RegressionGP.predict', XC);
       if (isempty (XC))
         error ("RegressionGP.predict: XC is empty.");
       endif
