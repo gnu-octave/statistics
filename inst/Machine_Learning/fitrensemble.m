@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitrensemble (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrensemble (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrensemble (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrensemble (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitrensemble (@dots{}, @var{name}, @var{value})
 ##
 ## Fit an ensemble of regression trees.
@@ -174,6 +177,25 @@ endfunction
 %! yfit = predict (Mdl, meas([1, 51, 101], 2:4))
 
 ## Test output
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## A model formula names the response and the predictors together, and
+%! ## holds main effects only
+%! Mdl = fitrensemble (T, 'SL ~ PL + Wide');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%!
+%! ## predict matches the table's variables by name, so a column the model
+%! ## was not fitted on is passed over
+%! yFit = predict (Mdl, T(1:5,:));
+%! yFit'
+
 %!shared X, y, S
 %! load fisheriris
 %! X = meas(:,2:4);
@@ -287,3 +309,35 @@ endfunction
 %! ## gain the same to 5e-15, which rounding decides; the others do not.
 %! yhat = predict (Mdl, Xq);
 %! assert_equal (yhat(3:5)', [3.2692634, 3.2028144, 3.4104563], 1e-6);
+
+## Table input
+%!shared freT
+%! load fisheriris
+%! freT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! freT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrensemble (freT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+%! assert_equal (Mdl.CategoricalPredictors, 4);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrensemble (freT, 'SL ~ PL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'Wide'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrensemble (freT, 'SL');
+%! a = predict (Mdl, freT);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (Mdl, freT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitrensemble (freT, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, freT), predict (Mdl, freT));
+
+%!error<RegressionEnsemble: the table holds no variable 'NoSuch'.> ...
+%! fitrensemble (freT, 'NoSuch')

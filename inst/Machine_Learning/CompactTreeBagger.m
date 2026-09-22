@@ -204,6 +204,10 @@ classdef CompactTreeBagger < PredictiveModel
         error ("CompactTreeBagger: B must be a TreeBagger object.");
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = B.PredictorLevels;
+
       this.Method = B.Method;
       this.NumTrees = B.NumTrees;
       this.Trees = B.Trees;
@@ -265,6 +269,12 @@ classdef CompactTreeBagger < PredictiveModel
     ## the type of the response; they are returned here in the type of
     ## @code{ClassNames}, as by every other classifier in this package.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{CompactTreeBagger, CompactTreeBagger.error, TreeBagger.predict}
     ## @end deftypefn
     function [Yfit, scores, stdevs] = predict (this, X, varargin)
@@ -272,6 +282,9 @@ classdef CompactTreeBagger < PredictiveModel
       if (nargin < 2)
         error ("CompactTreeBagger.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'CompactTreeBagger.predict', X);
       [Yfit, scores, stdevs] = bagPredict (this, X, varargin, ...
                                            'CompactTreeBagger.predict', []);
 
@@ -922,3 +935,14 @@ endfunction
 %! outlierMeasure (R, x(1:2,2:4), 'Labels', [1; 2])
 %!error<CompactTreeBagger.mdsprox: 'Labels' must hold only classes the ensemble was trained on.> ...
 %! mdsprox (C, x(1:2,:), 'Labels', {''; 'setosa'})
+
+## A table at prediction
+%!test  # the levels travel with the model, and predict reads a table by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! T.Species = categorical (species);
+%! B = TreeBagger (20, T, 'Species');
+%! CB = compact (B);
+%! assert_equal (CB.PredictorLevels, B.PredictorLevels);
+%! assert_equal (predict (CB, T(:, [4, 3, 2, 1])), predict (CB, T));

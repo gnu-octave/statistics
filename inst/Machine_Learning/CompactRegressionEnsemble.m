@@ -178,6 +178,10 @@ classdef CompactRegressionEnsemble < PredictiveModel
                        " 'RegressionEnsemble' object."));
       endif
 
+      ## The levels a predictor read from a table was coded through travel
+      ## with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       this.PredictorNames         = Mdl.PredictorNames;
       this.CategoricalPredictors  = Mdl.CategoricalPredictors;
       this.ResponseName           = Mdl.ResponseName;
@@ -334,6 +338,12 @@ classdef CompactRegressionEnsemble < PredictiveModel
     ## lets every tree predict every row.
     ## @end multitable
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{CompactRegressionEnsemble, fitrensemble}
     ## @end deftypefn
     function yfit = predict (this, X, varargin)
@@ -341,6 +351,9 @@ classdef CompactRegressionEnsemble < PredictiveModel
       if (nargin < 2)
         error ("CompactRegressionEnsemble.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'CompactRegressionEnsemble.predict', X);
       yfit = ensemblePredict (this, X, varargin, ...
                               'CompactRegressionEnsemble.predict');
 
@@ -670,3 +683,15 @@ endclassdef
 %! U(1,:) = false;
 %! e = mean ((predict (C, X(2:end,:)) - y(2:end)) .^ 2);
 %! assert_equal (loss (C, X, y, 'UseObsForLearner', U), e, 1e-14);
+
+## A table at prediction
+%!test  # the levels travel with the model, and predict reads a table by name
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! Mdl = fitrensemble (T, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! a = predict (CMdl, T);
+%! assert_equal (predict (CMdl, T(:, [4, 3, 2, 1])), a);

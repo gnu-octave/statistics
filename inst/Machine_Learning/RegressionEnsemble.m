@@ -353,6 +353,9 @@ classdef RegressionEnsemble < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionEnsemble} {@var{obj} =} RegressionEnsemble (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionEnsemble} {@var{obj} =} RegressionEnsemble (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionEnsemble} {@var{obj} =} RegressionEnsemble (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionEnsemble} {@var{obj} =} RegressionEnsemble (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionEnsemble} {@var{obj} =} RegressionEnsemble (@dots{}, @var{name}, @var{value})
     ##
     ## Fit an ensemble of regression trees by LSBoost.
@@ -368,6 +371,10 @@ classdef RegressionEnsemble < PredictiveModel
       if (nargin < 2)
         error ("RegressionEnsemble: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionEnsemble', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error ("RegressionEnsemble: name-value arguments must be in pairs.");
       endif
@@ -698,6 +705,12 @@ classdef RegressionEnsemble < PredictiveModel
     ## Behaves as @code{CompactRegressionEnsemble.predict} and takes the same
     ## Name-Value arguments.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{RegressionEnsemble, CompactRegressionEnsemble.predict}
     ## @end deftypefn
     function yfit = predict (this, X, varargin)
@@ -705,6 +718,9 @@ classdef RegressionEnsemble < PredictiveModel
       if (nargin < 2)
         error ("%s.predict: too few input arguments.", class (this));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'RegressionEnsemble.predict', X);
       yfit = ensemblePredict (compact (this), X, varargin, ...
                               [class(this), '.predict']);
 

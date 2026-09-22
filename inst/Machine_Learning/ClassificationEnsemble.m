@@ -404,6 +404,9 @@ classdef ClassificationEnsemble < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationEnsemble} {@var{obj} =} ClassificationEnsemble (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationEnsemble} {@var{obj} =} ClassificationEnsemble (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationEnsemble} {@var{obj} =} ClassificationEnsemble (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationEnsemble} {@var{obj} =} ClassificationEnsemble (@var{Tbl}, @var{Y})
     ## @deftypefnx {ClassificationEnsemble} {@var{obj} =} ClassificationEnsemble (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a boosted ensemble of decision trees.
@@ -419,6 +422,10 @@ classdef ClassificationEnsemble < PredictiveModel
       if (nargin < 2)
         error ("ClassificationEnsemble: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationEnsemble', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationEnsemble: name-value arguments must", ...
                        " be in pairs."));
@@ -930,6 +937,12 @@ classdef ClassificationEnsemble < PredictiveModel
     ## Behaves as @code{CompactClassificationEnsemble.predict} and takes the
     ## same Name-Value arguments.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{ClassificationEnsemble, CompactClassificationEnsemble.predict}
     ## @end deftypefn
     function [label, scores] = predict (this, X, varargin)
@@ -937,6 +950,9 @@ classdef ClassificationEnsemble < PredictiveModel
       if (nargin < 2)
         error ("%s.predict: too few input arguments.", class (this));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationEnsemble.predict', X);
       [label, scores] = ensemblePredict (compact (this), X, varargin, ...
                                          [class(this), '.predict']);
 

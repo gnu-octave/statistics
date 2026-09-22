@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcensemble (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcensemble (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcensemble (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcensemble (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcensemble (@dots{}, @var{name}, @var{value})
 ##
 ## Fit an ensemble of decision trees for classification.
@@ -302,6 +305,28 @@ endfunction
 %! [label, scores] = predict (Mdl, [5.0, 3.4, 1.5, 0.2; 6.7, 3.0, 5.2, 2.3])
 
 ## Test output
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcensemble (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
 %!shared X2, Y2, S
 %! load fisheriris
 %! X2 = meas(51:150,:);
@@ -935,3 +960,44 @@ endfunction
 
 %!error<ClassificationEnsemble: 'CategoricalPredictors' cannot be used with the 'Subspace' method.> ...
 %! fitcensemble (X, yb, 'Method', 'Subspace', 'CategoricalPredictors', 1)
+
+## Table input
+%!shared fceT
+%! load fisheriris
+%! fceT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fceT.Species = categorical (species);
+%! fceT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcensemble (fceT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 5);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcensemble (fceT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcensemble (fceT, 'Species');
+%! a = predict (Mdl, fceT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fceT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # a bagged ensemble answers through its parent, so it reads a table too
+%! Mdl = fitcensemble (fceT, 'Species', 'Method', 'Bag');
+%! assert_equal (class (Mdl), 'ClassificationBaggedEnsemble');
+%! assert_equal (class (predict (Mdl, fceT)), 'categorical');
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcensemble (fceT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fceT), predict (Mdl, fceT));
+
+%!error<ClassificationEnsemble: the table holds no variable 'NoSuch'.> ...
+%! fitcensemble (fceT, 'NoSuch')
+
+%!error<ClassificationEnsemble: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcensemble (fceT, 'Species ~ SL*PW')

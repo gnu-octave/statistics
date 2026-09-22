@@ -92,6 +92,10 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
       if (nargin < 2)
         error ("RegressionBaggedEnsemble: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionBaggedEnsemble', ...
+                                             X, Y, varargin);
       if (! any (cellfun (@(a) ischar (a) && strcmpi (a, 'Method'), ...
                           varargin(1:2:end))))
         varargin(end+1:end+2) = {'Method', 'Bag'};

@@ -504,6 +504,9 @@ classdef TreeBagger < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {TreeBagger} {@var{B} =} TreeBagger (@var{NumTrees}, @var{X}, @var{Y})
+    ## @deftypefnx {TreeBagger} {@var{B} =} TreeBagger (@var{NumTrees}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {TreeBagger} {@var{B} =} TreeBagger (@var{NumTrees}, @var{Tbl}, @var{formula})
+    ## @deftypefnx {TreeBagger} {@var{B} =} TreeBagger (@var{NumTrees}, @var{Tbl}, @var{Y})
     ## @deftypefnx {TreeBagger} {@var{B} =} TreeBagger (@dots{}, @var{name}, @var{value})
     ##
     ## Grow an ensemble of bagged decision trees.
@@ -595,6 +598,17 @@ classdef TreeBagger < PredictiveModel
              && NumTrees == fix (NumTrees)))
         error ("TreeBagger: NUMTREES must be a positive integer.");
       endif
+
+      ## A table names its own predictors and says which hold levels.  This
+      ## class carries no ResponseName, as MATLAB's does not either, so the
+      ## name the table gave the response is dropped rather than passed on.
+      [this, X, Y, varargin] = resolveTable (this, 'TreeBagger', X, Y, ...
+                                             varargin);
+      for k = numel (varargin) - 1:-1:1
+        if (ischar (varargin{k}) && strcmpi (varargin{k}, 'ResponseName'))
+          varargin(k:k+1) = [];
+        endif
+      endfor
       if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ! isempty (X)))
         error ("TreeBagger: X must be a non-empty real numeric matrix.");
       endif
@@ -959,6 +973,12 @@ classdef TreeBagger < PredictiveModel
     ## @qcode{'Trees'}, @qcode{'TreeWeights'} and @qcode{'UseInstanceForTree'}
     ## Name-Value arguments.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{TreeBagger, TreeBagger.oobPredict, CompactTreeBagger.predict}
     ## @end deftypefn
     function [Yfit, scores, stdevs] = predict (this, X, varargin)
@@ -966,6 +986,9 @@ classdef TreeBagger < PredictiveModel
       if (nargin < 2)
         error ("TreeBagger.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'TreeBagger.predict', X);
       [Yfit, scores, stdevs] = bagPredict (this, X, varargin, ...
                                            'TreeBagger.predict', []);
 
@@ -2790,3 +2813,31 @@ endfunction
 %!error<TreeBagger.append: the two ensembles must be fitted on the same observations and predictors.> ...
 %! append (TreeBagger (3, X, yb, 'CategoricalPredictors', 1), ...
 %!         TreeBagger (3, X, yb))
+
+## Table input
+%!test  # the predictors and the response come from a table
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! T.Species = categorical (species);
+%! B = TreeBagger (20, T, 'Species');
+%! assert_equal (B.PredictorNames, {'SL', 'SW', 'Wide'});
+%! assert_equal (B.CategoricalPredictors, 3);
+
+%!test  # a model formula names the response and the predictors together
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species);
+%! B = TreeBagger (20, T, 'Species ~ SW + SL');
+%! assert_equal (B.PredictorNames, {'SW', 'SL'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species);
+%! B = TreeBagger (20, T, 'Species');
+%! a = predict (B, T);
+%! assert_equal (predict (B, T(:, [3, 2, 1])), a);
+
+%!error<TreeBagger: the table holds no variable 'NoSuch'.> ...
+%! TreeBagger (10, table (rand (6, 1), rand (6, 1)), 'NoSuch')
