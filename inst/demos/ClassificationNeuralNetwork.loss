@@ -39,3 +39,16 @@
 %! xlabel ('Iteration limit');
 %! ylabel ('Misclassification rate');
 %! title ('Training longer buys accuracy, up to a point');
+
+%!demo
+%! ## 4. Scoring a table
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! mdl = fitcnet (T, 'Species');
+%!
+%! ## The response is named by its column, left out, when it is the variable
+%! ## the model was fitted on, or given beside the predictors
+%! [loss(mdl, T, 'Species'), loss(mdl, T), loss(mdl, T(:, 1:4), T.Species)]

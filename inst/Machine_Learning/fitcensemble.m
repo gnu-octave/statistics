@@ -327,6 +327,27 @@ endfunction
 %! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
 %! label'
 
+%!demo
+%! ## Score a table
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcensemble (T, 'Species');
+%!
+%! ## The response is named by its column, or left out, when it is the
+%! ## variable the model was fitted on
+%! [loss(Mdl, T, 'Species'), loss(Mdl, T)]
+%!
+%! ## It may also be given beside a table holding the predictors alone
+%! loss (Mdl, T(:, 1:4), T.Species)
+%!
+%! ## A name-value argument does not stand in for the response: an even
+%! ## number of arguments after the table is all name-value, an odd one
+%! ## names the response first
+%! loss (Mdl, T, 'LossFun', 'classiferror')
+
 %!shared X2, Y2, S
 %! load fisheriris
 %! X2 = meas(51:150,:);

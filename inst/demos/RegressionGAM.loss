@@ -30,3 +30,15 @@
 %! ## Mean absolute error instead of mean squared error
 %! mae = @(y, yfit, w) sum (w .* abs (y - yfit));
 %! [loss(mdl, X, Y), loss(mdl, X, Y, 'LossFun', mae)]
+
+%!demo
+%! ## 4. Scoring a table
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! mdl = fitrgam (T, 'SL');
+%!
+%! ## The response is named by its column, left out, when it is the variable
+%! ## the model was fitted on, or given beside the predictors
+%! [loss(mdl, T, 'SL'), loss(mdl, T), loss(mdl, T(:, 1:3), T.SL)]
