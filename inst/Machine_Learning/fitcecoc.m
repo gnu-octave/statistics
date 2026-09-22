@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcecoc (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcecoc (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcecoc (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcecoc (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcecoc (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a multiclass model from binary learners.
@@ -137,7 +140,7 @@ function Mdl = fitcecoc (X, Y, varargin)
   if (mod (numel (varargin), 2) != 0)
     error ("fitcecoc: name-value arguments must be in pairs.");
   endif
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcecoc: number of rows in X and Y must be equal.");
   endif
 
@@ -175,6 +178,32 @@ function Mdl = fitcecoc (X, Y, varargin)
 endfunction
 
 ## Tests
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcecoc (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## A model formula names them instead, holding main effects only
+%! Mdl2 = fitcecoc (T, 'Species ~ PL + PW');
+%! Mdl2.PredictorNames
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
 %!test  # MATLAB parity: the default fit and what it reports
 %! load fisheriris
 %! Mdl = fitcecoc (meas, species);
@@ -371,3 +400,48 @@ endfunction
 %!error<ClassificationECOC: templates of regression type are not supported.> ...
 %! load fisheriris
 %! fitcecoc (meas, species, 'Learners', templateEnsemble ('LSBoost', 5, 'tree'))
+
+## Table input
+%!shared fecT
+%! load fisheriris
+%! fecT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fecT.Species = categorical (species);
+%! fecT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcecoc (fecT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 5);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcecoc (fecT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+%! assert_equal (isempty (Mdl.CategoricalPredictors), true);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitcecoc (fecT(:,1:4), fecT.Species);
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcecoc (fecT, 'Species');
+%! a = predict (Mdl, fecT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fecT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcecoc (fecT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fecT), predict (Mdl, fecT));
+
+%!error<ClassificationECOC: the table holds no variable 'NoSuch'.> ...
+%! fitcecoc (fecT, 'NoSuch')
+
+%!error<ClassificationECOC: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcecoc (fecT, 'Species ~ SL*PW')
+
+%!error<ClassificationECOC.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcecoc (fecT, 'Species'), fecT(:, [1, 3, 4, 5, 6]))

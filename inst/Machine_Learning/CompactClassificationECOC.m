@@ -239,6 +239,10 @@ classdef CompactClassificationECOC < PredictiveModel
                        " 'ClassificationECOC' object."));
       endif
 
+      ## The levels a predictor read from a table was coded through travel
+      ## with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       this.BinaryLearners         = Mdl.BinaryLearners;
       this.CodingMatrix           = Mdl.CodingMatrix;
       this.LearnerWeights         = Mdl.LearnerWeights;
@@ -315,6 +319,12 @@ classdef CompactClassificationECOC < PredictiveModel
     ## column out costing the same there as a class at the decision boundary.
     ## @end multitable
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{CompactClassificationECOC, ClassificationECOC, fitcecoc}
     ## @end deftypefn
     function [label, NegLoss, PBScore] = predict (this, XC, varargin)
@@ -322,6 +332,9 @@ classdef CompactClassificationECOC < PredictiveModel
       if (nargin < 2)
         error ("CompactClassificationECOC.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactClassificationECOC.predict', XC);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("CompactClassificationECOC.predict: name-value", ...
                        " arguments must be in pairs."));
@@ -778,3 +791,14 @@ endclassdef
 %! margin (CMdl, ones (1, 2))
 %!error<CompactClassificationECOC.loss: too few input arguments.> ...
 %! loss (CMdl, ones (1, 2))
+
+## A table at prediction
+%!test  # the levels travel with the model, and predict reads a table by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! T.Species = categorical (species);
+%! Mdl = fitcecoc (T, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, T(:, [4, 3, 2, 1])), predict (CMdl, T));

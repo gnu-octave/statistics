@@ -299,6 +299,9 @@ classdef ClassificationECOC < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationECOC} {@var{obj} =} ClassificationECOC (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationECOC} {@var{obj} =} ClassificationECOC (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationECOC} {@var{obj} =} ClassificationECOC (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationECOC} {@var{obj} =} ClassificationECOC (@var{Tbl}, @var{Y})
     ## @deftypefnx {ClassificationECOC} {@var{obj} =} ClassificationECOC (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a multiclass model from binary learners.
@@ -315,6 +318,10 @@ classdef ClassificationECOC < PredictiveModel
       if (nargin < 2)
         error ("ClassificationECOC: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationECOC', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error ("ClassificationECOC: name-value arguments must be in pairs.");
       endif
@@ -589,12 +596,21 @@ classdef ClassificationECOC < PredictiveModel
     ## @code{CompactClassificationECOC.predict} does, the training data
     ## playing no part in a prediction.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{ClassificationECOC, CompactClassificationECOC.predict}
     ## @end deftypefn
     function [label, NegLoss, PBScore] = predict (this, XC, varargin)
       if (nargin < 2)
         error ("ClassificationECOC.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationECOC.predict', XC);
       [label, NegLoss, PBScore] = predict (compact (this), XC, varargin{:});
     endfunction
 
