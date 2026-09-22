@@ -1430,6 +1430,80 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 
+%!test  # 'P' reaches the distance that takes it
+%! X = [1, 10; 2, 20; 3, 28; 4, 45; 5, 50; 6, 65; 2.5, 25; 3.5, 35];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.01 * Z(:,2) .^ 2;
+%! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
+%! a = fit (L, [3, 28], 2, 'Distance', 'minkowski', 'P', 3);
+%! same = @(q, Z) sum (abs (Z - q) .^ 3, 2) .^ (1/3);
+%! b = fit (L, [3, 28], 2, 'Distance', same);
+%! assert_equal (a.SimpleModel.Beta, b.SimpleModel.Beta, 1e-8);
+%! c = fit (L, [3, 28], 2, 'Distance', 'minkowski', 'P', 1);
+%! assert_equal (isequal (a.SimpleModel.Beta, c.SimpleModel.Beta), false);
+
+%!test  # 'Scale' reaches the distance that takes it
+%! X = [1, 10; 2, 20; 3, 28; 4, 45; 5, 50; 6, 65; 2.5, 25; 3.5, 35];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.01 * Z(:,2) .^ 2;
+%! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
+%! sc = [2, 20];
+%! a = fit (L, [3, 28], 2, 'Distance', 'seuclidean', 'Scale', sc);
+%! same = @(q, Z) sqrt (sum (((Z - q) ./ sc) .^ 2, 2));
+%! b = fit (L, [3, 28], 2, 'Distance', same);
+%! assert_equal (a.SimpleModel.Beta, b.SimpleModel.Beta, 1e-8);
+%! c = fit (L, [3, 28], 2, 'Distance', 'seuclidean');
+%! assert_equal (isequal (a.SimpleModel.Beta, c.SimpleModel.Beta), false);
+
+%!test  # 'Cov' reaches the distance that takes it
+%! X = [1, 10; 2, 20; 3, 28; 4, 45; 5, 50; 6, 65; 2.5, 25; 3.5, 35];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.01 * Z(:,2) .^ 2;
+%! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
+%! CV = [4, 1; 1, 400];
+%! a = fit (L, [3, 28], 2, 'Distance', 'mahalanobis', 'Cov', CV);
+%! same = @(q, Z) sqrt (sum (((Z - q) / CV) .* (Z - q), 2));
+%! b = fit (L, [3, 28], 2, 'Distance', same);
+%! assert_equal (a.SimpleModel.Beta, b.SimpleModel.Beta, 1e-8);
+%! c = fit (L, [3, 28], 2, 'Distance', 'mahalanobis');
+%! assert_equal (isequal (a.SimpleModel.Beta, c.SimpleModel.Beta), false);
+
+## MATLAB parity: a predictor that adds nothing is left out, so fewer are
+## used than were asked for.  The response is one no weighted sum can fit
+## exactly, so the pursuit stops on the third predictor being worthless
+## rather than on there being nothing left to explain.
+%!test
+%! X = [1, 9, 0; 2, 3, 0; 3, 7, 0; 4, 1, 0; 5, 8, 0; 6, 2, 0; 7, 5, 0; ...
+%!      8, 4, 0];
+%! f = @(Z) Z(:,1) .^ 2 - 0.5 * Z(:,2);
+%! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
+%! a = fit (L, [3, 7, 0], 3);
+%! assert_equal (a.NumImportantPredictors, 3);
+%! assert_equal (a.ImportantPredictors', [1, 2]);
+%! assert_equal (numel (a.SimpleModel.Beta), 2);
+
+%!test  # the pursuit stops where there is nothing left to explain
+%! X = [1, 9, 0; 2, 3, 0; 3, 7, 0; 4, 1, 0; 5, 8, 0; 6, 2, 0];
+%! f = @(Z) 3 * Z(:,1);
+%! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
+%! a = fit (L, [3, 7, 0], 3);
+%! assert_equal (a.ImportantPredictors, 1);
+
+%!test  # a classifier is drawn as its simple model, one bar per column
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! S = [meas(1:8,:); meas(51:58,:); meas(101:108,:)];
+%! a = fit (lime (Mdl, 'CustomSyntheticData', S), meas(1,:), 2);
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plot (a);
+%!   ax = findobj (h, 'type', 'axes');
+%!   assert_equal (get (get (ax, 'title'), 'string'), ...
+%!                 'LIME with Linear Model');
+%!   assert_equal (numel (get (ax, 'yticklabel')), ...
+%!                 numel (a.SimpleModel.Beta));
+%!   close (h);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
 ## Input validation
 %!error<lime: too few input arguments.> lime ()
 
