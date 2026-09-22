@@ -3687,3 +3687,24 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'Species'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## A categorical or string response
+%!test  # loss reads one as it reads a cellstr response
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! y = species(51:150);
+%! a = loss (fitcsvm (X, y), X, y);
+%! yc = categorical (y);
+%! assert_equal (loss (fitcsvm (X, yc), X, yc), a);
+%! ys = string (y);
+%! assert_equal (loss (fitcsvm (X, ys), X, ys), a);
+
+%!test  # margin reads one as it reads a cellstr response
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! y = species(51:150);
+%! a = margin (fitcsvm (X, y), X, y);
+%! yc = categorical (y);
+%! assert_equal (margin (fitcsvm (X, yc), X, yc), a);
+%! ys = string (y);
+%! assert_equal (margin (fitcsvm (X, ys), X, ys), a);

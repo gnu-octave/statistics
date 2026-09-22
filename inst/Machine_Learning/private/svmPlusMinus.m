@@ -48,8 +48,13 @@ function Ypm = svmPlusMinus (Y, ClassNames)
     idx = cellfun (@(v) find (strcmp (v, cellstr (ClassNames)), 1), ...
                    cellstr (Y), 'UniformOutput', false);
   else
-    idx = arrayfun (@(v) find (v == ClassNames(:), 1), Y(:), ...
-                    'UniformOutput', false);
+    ## A loop rather than arrayfun, which calls its function once with the
+    ## whole array where the labels are a classdef object such as a
+    ## categorical, instead of once per element.
+    idx = cell (numel (Y), 1);
+    for k = 1:numel (Y)
+      idx{k} = find (Y(k) == ClassNames(:), 1);
+    endfor
   endif
 
   if (any (cellfun (@isempty, idx)))
