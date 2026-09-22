@@ -523,6 +523,8 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationNeuralNetwork} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactClassificationNeuralNetwork} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margin of a compact neural network classifier.
     ##
@@ -532,6 +534,14 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## A positive margin means the observation is classified correctly, and
     ## the larger it is the more confidently so.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{CompactClassificationNeuralNetwork, ##
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.edge,
     ## CompactClassificationNeuralNetwork.loss,
@@ -540,10 +550,17 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error (strcat ("CompactClassificationNeuralNetwork.margin:", ...
                        " too few input arguments."));
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y] = tableResponse (this, 'margin', X, Y, {}, nargin > 2);
 
       [X, Y] = checkXY_ (this, X, Y, "margin");
 
@@ -1279,3 +1296,16 @@ endclassdef
 %! assert_equal (edge (Mdl, T(:,1:2), y), a);
 %! assert_equal (edge (Mdl, T, 'Species'), a);
 %! assert_equal (edge (Mdl, T), a);
+
+## A table at margin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (fitcnet (T, 'Species'));
+%! a = margin (Mdl, X, y);
+%! assert_equal (margin (Mdl, T(:,1:2), y), a);
+%! assert_equal (margin (Mdl, T, 'Species'), a);
+%! assert_equal (margin (Mdl, T), a);

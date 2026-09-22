@@ -216,10 +216,20 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationBaggedEnsemble} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationBaggedEnsemble} {@var{m} =} margin (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationBaggedEnsemble} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margins of a bagged ensemble.
     ##
     ## Behaves as @code{CompactClassificationEnsemble.margin}.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.margin}
     ## @end deftypefn
@@ -838,3 +848,16 @@ endfunction
 %! assert_equal (edge (Mdl, T(:,1:2), y), a);
 %! assert_equal (edge (Mdl, T, 'Species'), a);
 %! assert_equal (edge (Mdl, T), a);
+
+## A table at margin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitcensemble (T, 'Species', 'Method', 'Bag');
+%! a = margin (Mdl, X, y);
+%! assert_equal (margin (Mdl, T(:,1:2), y), a);
+%! assert_equal (margin (Mdl, T, 'Species'), a);
+%! assert_equal (margin (Mdl, T), a);

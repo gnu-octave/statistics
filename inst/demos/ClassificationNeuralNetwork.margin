@@ -25,3 +25,19 @@
 %! xlabel ('Observation, sorted by margin');
 %! ylabel ('Margin');
 %! title ('Margins below zero are the misclassified rows');
+
+%!demo
+%! ## 3. Scoring a table
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! mdl = fitcnet (T, 'Species');
+%!
+%! ## The response is named by its column, left out, when it is the variable
+%! ## the model was fitted on, or given beside the predictors
+%! a = margin (mdl, T, 'Species');
+%! b = margin (mdl, T);
+%! c = margin (mdl, T(:, 1:4), T.Species);
+%! [mean(a), mean(b), mean(c)]

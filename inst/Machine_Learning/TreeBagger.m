@@ -429,6 +429,9 @@ classdef TreeBagger < PredictiveModel
   endproperties
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ResponseName = 'Y';  # name the table gave the response, which
+                         # margin looks up; hidden because MATLAB's
+                         # TreeBagger carries no ResponseName
     TreeClassIdx = {};   # columns of ClassNames each tree's scores fill
     DefaultIndex = 0;    # index of DefaultYfit into ClassNames
     DefaultScore = [];   # scores of an observation no tree may answer for
@@ -600,12 +603,14 @@ classdef TreeBagger < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels.  This
-      ## class carries no ResponseName, as MATLAB's does not either, so the
-      ## name the table gave the response is dropped rather than passed on.
+      ## class carries no public ResponseName, as MATLAB's does not either,
+      ## so the name the table gave the response is kept in the hidden one
+      ## rather than passed on to the trees.
       [this, X, Y, varargin] = resolveTable (this, 'TreeBagger', X, Y, ...
                                              varargin);
       for k = numel (varargin) - 1:-1:1
         if (ischar (varargin{k}) && strcmpi (varargin{k}, 'ResponseName'))
+          this.ResponseName = varargin{k+1};
           varargin(k:k+1) = [];
         endif
       endfor
@@ -1067,19 +1072,37 @@ classdef TreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {TreeBagger} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {TreeBagger} {@var{m} =} margin (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {TreeBagger} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {TreeBagger} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margin of each observation.
     ##
     ## Behaves as @code{CompactTreeBagger.margin} and takes the same Name-Value
     ## arguments.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{TreeBagger, TreeBagger.oobMargin, CompactTreeBagger.margin}
     ## @end deftypefn
     function m = margin (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("TreeBagger.margin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'margin', X, Y, ...
+                                        varargin, nargin > 2);
       m = bagLoss ('margin', this, X, Y, varargin, 'TreeBagger.margin', ...
                    [], []);
 
@@ -2841,3 +2864,16 @@ endfunction
 
 %!error<TreeBagger: the table holds no variable 'NoSuch'.> ...
 %! TreeBagger (10, table (rand (6, 1), rand (6, 1)), 'NoSuch')
+
+## A table at margin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = TreeBagger (20, T, 'Species');
+%! a = margin (Mdl, X, y);
+%! assert_equal (margin (Mdl, T(:,1:2), y), a);
+%! assert_equal (margin (Mdl, T, 'Species'), a);
+%! assert_equal (margin (Mdl, T), a);

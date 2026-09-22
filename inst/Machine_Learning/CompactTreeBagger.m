@@ -157,6 +157,9 @@ classdef CompactTreeBagger < PredictiveModel
   endproperties
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
+    ResponseName = 'Y';  # name the table gave the response, which
+                         # margin looks up; hidden because MATLAB's
+                         # TreeBagger carries no ResponseName
     TreeClassIdx = {};   # columns of ClassNames each tree's scores fill
     DefaultIndex = 0;    # index of DefaultYfit into ClassNames, 0 if missing
     DefaultScore = [];   # scores of an observation no tree may answer for
@@ -205,8 +208,10 @@ classdef CompactTreeBagger < PredictiveModel
       endif
 
       ## The levels a predictor read from a table was coded through
-      ## travel with the model, so a compact one still reads a table
+      ## travel with the model, so a compact one still reads a table, and
+      ## so does the name the table gave the response
       this.PredictorLevels = B.PredictorLevels;
+      this.ResponseName = B.ResponseName;
 
       this.Method = B.Method;
       this.NumTrees = B.NumTrees;
@@ -339,6 +344,8 @@ classdef CompactTreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {CompactTreeBagger} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactTreeBagger} {@var{m} =} margin (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {CompactTreeBagger} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactTreeBagger} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margin of each observation.
     ##
@@ -352,14 +359,30 @@ classdef CompactTreeBagger < PredictiveModel
     ## @qcode{'UseInstanceForTree'} are taken as by
     ## @code{CompactTreeBagger.error}.  A regression ensemble has no margins.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.meanMargin,
     ## CompactTreeBagger.error}
     ## @end deftypefn
     function m = margin (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactTreeBagger.margin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'margin', X, Y, ...
+                                        varargin, nargin > 2);
       m = bagLoss ('margin', this, X, Y, varargin, ...
                    'CompactTreeBagger.margin', [], []);
 
@@ -946,3 +969,16 @@ endfunction
 %! CB = compact (B);
 %! assert_equal (CB.PredictorLevels, B.PredictorLevels);
 %! assert_equal (predict (CB, T(:, [4, 3, 2, 1])), predict (CB, T));
+
+## A table at margin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (TreeBagger (20, T, 'Species'));
+%! a = margin (Mdl, X, y);
+%! assert_equal (margin (Mdl, T(:,1:2), y), a);
+%! assert_equal (margin (Mdl, T, 'Species'), a);
+%! assert_equal (margin (Mdl, T), a);

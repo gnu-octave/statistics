@@ -1927,6 +1927,8 @@ classdef ClassificationTree < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn {ClassificationTree} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationTree} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationTree} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margin on new data.
     ##
@@ -1936,15 +1938,30 @@ classdef ClassificationTree < PredictiveModel
     ## positive margin means the observation is classified correctly, and a
     ## larger one means it is classified more confidently.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{ClassificationTree, ClassificationTree.edge,
     ## ClassificationTree.loss, ClassificationTree.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
       ## Input validation
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationTree.margin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y] = tableResponse (this, 'margin', X, Y, {}, nargin > 2);
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
         error ("ClassificationTree.margin: %s", errmsg);
@@ -3409,3 +3426,18 @@ endfunction
 %! edge (lctM, lctT, 'NoSuch')
 %!error<ClassificationTree.edge: the table holds no variable 'Species'.> ...
 %! edge (lctM, lctT(:,1:2))
+
+## A table at margin, over the fixture the loss section sets up
+%!test  # the response is named, left out, or given beside the table
+%! a = margin (lctM, [lctT.SL, lctT.SW], lctT.Species);
+%! assert_equal (margin (lctM, lctT(:,1:2), lctT.Species), a);
+%! assert_equal (margin (lctM, lctT, 'Species'), a);
+%! assert_equal (margin (lctM, lctT), a);
+
+%!test  # a table is read by name, so the order of its columns does not matter
+%! assert_equal (margin (lctM, lctT(:, [3, 2, 1])), margin (lctM, lctT));
+
+%!error<ClassificationTree.margin: the table holds no variable 'NoSuch'.> ...
+%! margin (lctM, lctT, 'NoSuch')
+%!error<ClassificationTree.margin: the table holds no variable 'Species'.> ...
+%! margin (lctM, lctT(:,1:2))

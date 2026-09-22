@@ -1050,6 +1050,8 @@ classdef ClassificationLinear < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationLinear} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationLinear} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationLinear} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margin of each observation.
     ##
@@ -1058,12 +1060,27 @@ classdef ClassificationLinear < PredictiveModel
     ## observation and one column per regularization strength.  A positive
     ## margin is a correct classification.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @end deftypefn
     function m = margin (this, X, Y)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationLinear.margin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y] = tableResponse (this, 'margin', X, Y, {}, nargin > 2);
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
         error ("ClassificationLinear.margin: %s", errmsg);
@@ -2165,3 +2182,16 @@ endclassdef
 %! assert_equal (edge (Mdl, T(:,1:2), y), a);
 %! assert_equal (edge (Mdl, T, 'Species'), a);
 %! assert_equal (edge (Mdl, T), a);
+
+## A table at margin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! y = categorical (species(51:150));
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitclinear (T, 'Species');
+%! a = margin (Mdl, X, y);
+%! assert_equal (margin (Mdl, T(:,1:2), y), a);
+%! assert_equal (margin (Mdl, T, 'Species'), a);
+%! assert_equal (margin (Mdl, T), a);

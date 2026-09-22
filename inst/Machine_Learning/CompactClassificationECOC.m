@@ -453,6 +453,8 @@ classdef CompactClassificationECOC < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationECOC} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactClassificationECOC} {@var{m} =} margin (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {CompactClassificationECOC} {@var{m} =} margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactClassificationECOC} {@var{m} =} margin (@var{obj}, @var{Tbl})
     ##
     ## Classification margin of a @code{CompactClassificationECOC}.
     ##
@@ -465,14 +467,30 @@ classdef CompactClassificationECOC < PredictiveModel
     ## It takes the same @qcode{'BinaryLoss'} and @qcode{'Decoding'}
     ## arguments @code{predict} does.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{margin (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{margin (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{CompactClassificationECOC.predict,
     ## CompactClassificationECOC.edge}
     ## @end deftypefn
     function m = margin (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactClassificationECOC.margin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'margin', X, Y, ...
+                                        varargin, nargin > 2);
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
         error ("CompactClassificationECOC.margin: %s", errmsg);
@@ -864,3 +882,16 @@ endclassdef
 %! assert_equal (edge (Mdl, T(:,1:2), y), a);
 %! assert_equal (edge (Mdl, T, 'Species'), a);
 %! assert_equal (edge (Mdl, T), a);
+
+## A table at margin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (fitcecoc (T, 'Species'));
+%! a = margin (Mdl, X, y);
+%! assert_equal (margin (Mdl, T(:,1:2), y), a);
+%! assert_equal (margin (Mdl, T, 'Species'), a);
+%! assert_equal (margin (Mdl, T), a);
