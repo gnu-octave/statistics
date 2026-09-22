@@ -37,6 +37,14 @@ classdef shapley
   ## observations to average over as @var{X}, a real numeric matrix of one
   ## column per predictor.
   ##
+  ## @var{X} may also be a table, and so may @qcode{'QueryPoints'} and what
+  ## @code{fit} is given.  Where the model names its predictors the table is
+  ## read by those names and not by the order its columns come in, so a
+  ## column the model was not fitted on is passed over and a value holding a
+  ## level is coded as that level was coded at fitting.  A function handle
+  ## names nothing, so a table given for one names the predictors itself and
+  ## its columns are taken in the order they come.
+  ##
   ## @code{@var{explainer} = shapley (@var{fun}, @var{X})} takes a function
   ## handle in place of a model.  @var{fun} is called with a matrix of
   ## observations and answers with one real numeric column holding one value
@@ -347,8 +355,8 @@ classdef shapley
     ## Compute the Shapley values at the given query points.
     ##
     ## @var{QueryPoints} is a real numeric matrix of one row per query point
-    ## and one column per predictor.  The values already held are replaced,
-    ## not added to.
+    ## and one column per predictor, or a table read by the names the
+    ## explainer holds.  The values already held are replaced, not added to.
     ##
     ## @seealso{shapley}
     ## @end deftypefn
@@ -360,6 +368,14 @@ classdef shapley
         error ("shapley.fit: invalid number of input arguments.");
       endif
       M = numel (this.PredictorNames);
+
+      ## A table is read by the names the explainer holds, as X was
+      if (istable (QueryPoints))
+        QueryPoints = tableToMatrix (this.PredictorNames, ...
+                                     shapLevels (this.BlackboxModel), ...
+                                     QueryPoints, 'shapley.fit');
+      endif
+
       if (! (isnumeric (QueryPoints) && isreal (QueryPoints)
              && ismatrix (QueryPoints) && ndims (QueryPoints) == 2
              && ! isempty (QueryPoints)))
@@ -867,6 +883,52 @@ classdef shapley
 
 endclassdef
 
+## A table as the numbers the explainer works over.  A fitted model names
+## the predictors and holds the levels they were coded through; a function
+## handle has neither, so the table itself names them.
+function [X, tnames, errmsg] = shapReadTable (blackbox, isfh, T, caller)
+
+  X = [];
+  tnames = {};
+  errmsg = '';
+  if (isfh)
+    [X, ~, args, ~, errmsg] = tableFrame (T, [], {});
+    if (isempty (errmsg))
+      tnames = args{2};
+    endif
+    return;
+  endif
+  props = properties (blackbox);
+  if (! any (strcmp (props, 'PredictorNames')))
+    errmsg = strcat ("X may be a table only for a model that names its", ...
+                     " predictors.");
+    return;
+  endif
+  ## PredictorLevels is hidden, so properties () does not list it; the
+  ## class that defines it is what says whether it is there
+  lev = {};
+  if (isa (blackbox, 'PredictiveModel'))
+    lev = blackbox.PredictorLevels;
+  endif
+  try
+    X = tableToMatrix (blackbox.PredictorNames, lev, T, caller);
+  catch err
+    errmsg = regexprep (err.message, '^shapley: ', '');
+    return;
+  end_try_catch
+
+endfunction
+
+## The levels a model's predictors were coded through, where it kept any.
+function lev = shapLevels (blackbox)
+
+  lev = {};
+  if (isa (blackbox, 'PredictiveModel'))
+    lev = blackbox.PredictorLevels;
+  endif
+
+endfunction
+
 ## The algorithm asked for, of those implemented.
 function [base, errmsg] = shapMethod (Method)
 
@@ -945,6 +1007,19 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub)
     endif
     Data = blackbox.X;
   endif
+
+  ## A table is read by the names the model was fitted on, so a column it
+  ## was not fitted on is passed over and a level carries the code it
+  ## carried then.  A handle has no model behind it, so its table names its
+  ## own predictors and every column is one.
+  tnames = {};
+  if (istable (Data))
+    [Data, tnames, errmsg] = shapReadTable (blackbox, isfh, Data, 'shapley');
+    if (! isempty (errmsg))
+      return;
+    endif
+  endif
+
   if (! (isnumeric (Data) && isreal (Data) && ismatrix (Data)
          && ndims (Data) == 2 && ! isempty (Data)))
     errmsg = "X must be a real numeric matrix.";
@@ -959,6 +1034,8 @@ function [F, errmsg] = shapFrame (blackbox, Data, CatPred, NumObs, MaxSub)
       errmsg = "X must have one column per predictor of the model.";
       return;
     endif
+  elseif (! isempty (tnames))
+    pnames = tnames;
   else
     pnames = arrayfun (@(k) sprintf ('x%d', k), 1:p, 'UniformOutput', false);
   endif
@@ -1837,6 +1914,27 @@ function j = shapPredictorIndex (names, pred, caller, argname)
          caller, argname);
 
 endfunction
+
+%!demo
+%! ## Explain a model fitted from a table
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! Mdl = fitrtree (T, 'SL');
+%!
+%! ## The observations and the query points may be tables too, read by the
+%! ## names the model was fitted on rather than by the order of the columns
+%! s = shapley (Mdl, T(:, [1, 2, 3, 5]), 'QueryPoints', T(1, [5, 3, 2, 1]), ...
+%!              'NumObservationsToSample', 'all');
+%! s.Shapley
+%!
+%! ## A column the model was not fitted on is passed over, so the whole
+%! ## table, response and all, gives the same explanation
+%! t = shapley (Mdl, T, 'QueryPoints', T(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! isequal (t.Shapley.Value, s.Shapley.Value)
 
 ## A linear function's exact Shapley value is the coefficient times the
 ## deviation of the predictor from its mean, which is an expectation the
@@ -2774,3 +2872,68 @@ endfunction
 %!error<shapley.plot: unknown optional argument or misplaced value.>
 %! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
 %!       'NoSuchThing', 1)
+
+## Table input
+%!shared stT, stM
+%! load fisheriris
+%! stT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!              'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! stT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! stM = fitrtree (stT, 'SL');
+
+%!test  # the observations to average over may be given as a table
+%! s = shapley (stM, stT(:,[1, 2, 3, 5]), 'QueryPoints', ...
+%!              stT(1,[1, 2, 3, 5]), 'NumObservationsToSample', 'all');
+%! assert_equal (size (s.X), [150, 4]);
+%! assert_equal (cellstr (s.Shapley.Predictor)', ...
+%!               {'SW', 'PL', 'PW', 'Wide'});
+
+## MATLAB parity: a table is read by the names the model was fitted on, so
+## the order of its columns does not matter
+%!test
+%! a = shapley (stM, stT(:,[1, 2, 3, 5]), 'QueryPoints', ...
+%!              stT(1,[1, 2, 3, 5]), 'NumObservationsToSample', 'all');
+%! b = shapley (stM, stT(:,[5, 3, 2, 1]), 'QueryPoints', ...
+%!              stT(1,[5, 3, 2, 1]), 'NumObservationsToSample', 'all');
+%! assert_equal (b.Shapley.Value, a.Shapley.Value);
+
+## MATLAB parity: a column the model was not fitted on is passed over
+%!test
+%! a = shapley (stM, stT(:,[1, 2, 3, 5]), 'QueryPoints', ...
+%!              stT(1,[1, 2, 3, 5]), 'NumObservationsToSample', 'all');
+%! b = shapley (stM, stT, 'QueryPoints', stT(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (b.Shapley.Value, a.Shapley.Value);
+
+%!test  # fit takes a table too, read the same way
+%! a = shapley (stM, stT(:,[1, 2, 3, 5]), 'QueryPoints', ...
+%!              stT(1,[1, 2, 3, 5]), 'NumObservationsToSample', 'all');
+%! b = shapley (stM, stT(:,[1, 2, 3, 5]), ...
+%!              'NumObservationsToSample', 'all');
+%! b = fit (b, stT(1,[5, 3, 2, 1]));
+%! assert_equal (b.Shapley.Value, a.Shapley.Value);
+
+%!test  # a level carries the code it carried at fitting
+%! T = stT(1:60,:);
+%! T.Wide = categorical (repmat ({'wide'}, 60, 1), {'narrow', 'wide'});
+%! s = shapley (stM, T(:,[1, 2, 3, 5]), 'QueryPoints', ...
+%!              T(1,[1, 2, 3, 5]), 'NumObservationsToSample', 'all');
+%! assert_equal (rows (s.Shapley), 4);
+
+## A function handle names no predictors, so a table given for one names
+## them itself and its columns are taken in the order they come
+%!test
+%! f = @(Z) Z(:,1);
+%! s = shapley (f, stT(:,1:3), 'QueryPoints', stT(1,1:3), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (cellstr (s.Shapley.Predictor)', {'SW', 'PL', 'PW'});
+%! r = shapley (f, stT(:,[3, 2, 1]), 'QueryPoints', stT(1,[3, 2, 1]), ...
+%!              'NumObservationsToSample', 'all');
+%! assert_equal (cellstr (r.Shapley.Predictor)', {'PW', 'PL', 'SW'});
+
+%!error<shapley: the table holds no predictor 'PL'.> ...
+%! shapley (stM, stT(:,[1, 3, 5]), 'QueryPoints', stT(1,[1, 3, 5]))
+
+%!error<shapley.fit: the table holds no predictor 'PL'.> ...
+%! fit (shapley (stM, stT(:,[1, 2, 3, 5]), ...
+%!               'NumObservationsToSample', 'all'), stT(1,[1, 3, 5]))
