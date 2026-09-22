@@ -1,0 +1,54 @@
+%!demo
+%! ## 1. Explaining one prediction with a simple model
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! ex = lime (mdl, 'NumSyntheticData', 2000);
+%!
+%! ## The explainer draws its observations when it is built, and explains
+%! ## nothing until a query point is given
+%! ex = fit (ex, meas(1,2:4), 2);
+%!
+%! ## The two predictors the simple model was fitted on, and its weights
+%! ex.ImportantPredictors'
+%! ex.SimpleModel.Beta'
+
+%!demo
+%! ## 2. Reading whether the explanation is worth trusting
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! ex = fit (lime (mdl, 'NumSyntheticData', 2000), meas(1,2:4), 3);
+%!
+%! ## A simple model that answers near what the explained model answered is
+%! ## worth reading; one that does not explains nothing
+%! [ex.BlackboxFitted, ex.SimpleModelFitted]
+
+%!demo
+%! ## 3. Drawing near the query point rather than over everything
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%!
+%! ## `'local'` fits the draw to the neighbours of the query point, so the
+%! ## simple model sees the shape of the model there rather than everywhere
+%! ex = lime (mdl, 'DataLocality', 'local', 'NumNeighbors', 30, ...
+%!            'NumSyntheticData', 2000, 'QueryPoint', meas(1,2:4), ...
+%!            'NumImportantPredictors', 2);
+%! ex.ImportantPredictors'
+%! ex.SimpleModel.Beta'
+
+%!demo
+%! ## 4. A tree in place of the weighted sum
+%!
+%! load fisheriris
+%! mdl = fitcknn (meas, species);
+%! ex = lime (mdl, 'NumSyntheticData', 2000);
+%!
+%! ## A classifier is explained one class at a time: the simple model
+%! ## separates the class the explained model predicted from every other,
+%! ## answering 1 for it and -1 for the rest
+%! ex = fit (ex, meas(1,:), 2, 'SimpleModelType', 'tree');
+%! class (ex.SimpleModel)
+%! ex.BlackboxFitted
+%! ex.SimpleModelFitted
