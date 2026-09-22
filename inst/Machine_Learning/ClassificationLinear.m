@@ -668,11 +668,14 @@ classdef ClassificationLinear < PredictiveModel
           case 'classnames'
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)))
-              error (strcat ("ClassificationLinear: 'ClassNames' must", ...
-                             " be a cell array of character vectors, a", ...
-                             " logical vector, a numeric vector, or a", ...
-                             " character array."));
+                   || islogical (ClassNames) || ischar (ClassNames)
+                   || isa (ClassNames, 'categorical')
+                   || isa (ClassNames, 'string')))
+              error (strcat ("ClassificationLinear: 'ClassNames' must be", ...
+                             " a categorical array, a character array, a", ...
+                             " string array, a logical vector, a numeric", ...
+                             " vector, or a cell array of character", ...
+                             " vectors."));
             endif
 
           case 'cost'
@@ -2071,3 +2074,33 @@ endclassdef
 %! ClassificationLinear (Xc, yc, 'CategoricalPredictors', logical ([1, 0]))
 %!error<ClassificationLinear: 'CategoricalPredictors' must be a vector of positive integers, a logical vector, a character matrix, a string array, a cell array of character vectors or 'all'.> ...
 %! ClassificationLinear (Xc, yc, 'CategoricalPredictors', 0)
+
+## A categorical or string ClassNames
+%!test  # the classes may be named as a categorical, as the other learners take
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! Mdl = ClassificationLinear (meas(inds,:), categorical (species(inds)), ...
+%!                             'ClassNames', ...
+%!                             categorical ({'versicolor', 'virginica'}));
+%! assert_equal (class (Mdl.ClassNames), 'categorical');
+
+%!test  # or as a string array
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! Mdl = ClassificationLinear (meas(inds,:), string (species(inds)), ...
+%!                             'ClassNames', ...
+%!                             string ({'versicolor', 'virginica'}));
+%! assert_equal (numel (Mdl.ClassNames), 2);
+
+## A response of levels survives cross-validation, which passes the classes
+## it read down to the model of each fold
+%!test
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! CVMdl = fitclinear (meas(inds,:), categorical (species(inds)), ...
+%!                     'KFold', 3);
+%! assert_equal (class (CVMdl), 'ClassificationPartitionedLinear');
+%! assert_equal (CVMdl.KFold, 3);
+
+%!error<ClassificationLinear: 'ClassNames' must be a categorical array, a character array, a string array, a logical vector, a numeric vector, or a cell array of character vectors.> ...
+%! ClassificationLinear ([1, 2; 3, 4], [1; 2], 'ClassNames', {1, 2})
