@@ -683,6 +683,9 @@ classdef ClassificationGAM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{Y})
     ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationGAM} class object containing a generalized
@@ -795,6 +798,10 @@ classdef ClassificationGAM < PredictiveModel
       if (nargin < 2)
         error ("ClassificationGAM: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationGAM', ...
+                                             X, Y, varargin);
 
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
@@ -1502,6 +1509,12 @@ classdef ClassificationGAM < PredictiveModel
     ## include interaction terms in the predictions.
     ## @end itemize
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level
+    ## was coded at fitting.
     ## @seealso{ClassificationGAM, fitcgam}
     ## @end deftypefn
 
@@ -1511,6 +1524,9 @@ classdef ClassificationGAM < PredictiveModel
       if (nargin < 2)
         error ("ClassificationGAM.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationGAM.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))

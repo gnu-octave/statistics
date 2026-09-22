@@ -302,6 +302,10 @@ classdef CompactRegressionGAM < PredictiveModel
         error ("CompactRegressionGAM: invalid regression object.");
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       ## Save properties to compact model
       this.NumPredictors          = Mdl.NumPredictors;
       this.PredictorNames         = Mdl.PredictorNames;
@@ -405,6 +409,12 @@ classdef CompactRegressionGAM < PredictiveModel
     ## retrain it.
     ## @end multitable
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level
+    ## was coded at fitting.
     ## @seealso{fitrgam, RegressionGAM}
     ## @end deftypefn
     function yFit = predict (this, Xfit, varargin)
@@ -413,6 +423,9 @@ classdef CompactRegressionGAM < PredictiveModel
       if (nargin < 2)
         error ("CompactRegressionGAM.predict: too few arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      Xfit = tableColumns (this, 'CompactRegressionGAM.predict', Xfit);
 
       ## Check for valid XC
       if (isempty (Xfit))
@@ -920,3 +933,22 @@ endfunction
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+## A table at prediction
+%!test  # the levels a predictor was coded through travel with the model
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), 'VariableNames', {'SW', 'PL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! T.SL = meas(:,1);
+%! CMdl = compact (fitrgam (T, 'SL'));
+%! assert_equal (numel (CMdl.PredictorLevels), 3);
+%! assert_equal (CMdl.PredictorLevels{3}, {'narrow', 'wide'});
+
+%!test  # predict takes a table, read by name and not by position
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! CMdl = compact (fitrgam (T, 'SL'));
+%! a = predict (CMdl, T);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (CMdl, T(:, [3, 2, 1])), a);

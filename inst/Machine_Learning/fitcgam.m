@@ -18,6 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcgam (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcgam (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcgam (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcgam (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcgam (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Generalized Additive Model (GAM) for binary classification.
@@ -34,6 +37,14 @@
 ## @code{Y} is @math{N*1} numeric vector containing binary class labels,
 ## typically 0 or 1.
 ## @end itemize
+##
+## @var{Tbl} may stand in place of @var{X}, the response named by one of its
+## variables, written into a model formula holding main effects,
+## @qcode{'Y ~ x1 + x2'}, or given beside it as @var{Y}.  A variable holding
+## levels rather than numbers is a categorical predictor without being named
+## one, and @qcode{'CategoricalPredictors'} adds to that set rather than
+## replacing it.  @code{PredictorNames} and @code{ResponseName} come from the
+## table.
 ##
 ## @code{@var{Mdl} = fitcgam (@dots{}, @var{name}, @var{value})} returns a
 ## GAM classification model with additional options specified by
@@ -204,7 +215,7 @@ function obj = fitcgam (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcgam: number of rows in X and Y must be equal.");
   endif
 
@@ -253,6 +264,30 @@ endfunction
 %! hold off
 
 ## Tests
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds,:);
+%! T = table (X(:,1), X(:,2), X(:,3), X(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species(inds));
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (X(:,2) > 2.9, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcgam (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
@@ -316,3 +351,54 @@ endfunction
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcgam (meas(51:150,:), species(51:150), 'ClassNames', [3, 2])
+
+## Table input
+%!shared fcgT
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! fcgX = meas(inds,:);
+%! fcgT = table (fcgX(:,1), fcgX(:,2), fcgX(:,3), fcgX(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fcgT.Species = categorical (species(inds));
+%! fcgT.Wide = categorical (fcgX(:,2) > 2.9, [false true], ...
+%!                          {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcgam (fcgT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+
+%!test  # a column holding levels is a categorical predictor of its own accord
+%! Mdl = fitcgam (fcgT, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 5);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcgam (fcgT, 'Species ~ SL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'Wide'});
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitcgam (fcgT(:,1:4), fcgT.Species);
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcgam (fcgT, 'Species');
+%! a = predict (Mdl, fcgT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fcgT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcgam (fcgT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fcgT), predict (Mdl, fcgT));
+
+%!error<ClassificationGAM: the table holds no variable 'NoSuch'.> ...
+%! fitcgam (fcgT, 'NoSuch')
+
+%!error<ClassificationGAM: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcgam (fcgT, 'Species ~ SL*PW')
+
+%!error<ClassificationGAM.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcgam (fcgT, 'Species'), fcgT(:, [1, 3, 4, 5, 6]))

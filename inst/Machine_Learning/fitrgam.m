@@ -18,6 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{obj} =} fitrgam (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{obj} =} fitrgam (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{obj} =} fitrgam (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{obj} =} fitrgam (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} fitrgam (@var{X}, @var{Y}, @var{name}, @var{value})
 ##
 ## Fit a Generalized Additive Model (GAM) for regression.
@@ -36,6 +39,14 @@
 ## corresponding to the predictor data in @var{X}. @var{Y} must have same
 ## number of rows as @var{X}.
 ## @end itemize
+##
+## @var{Tbl} may stand in place of @var{X}, the response named by one of its
+## variables, written into a model formula holding main effects,
+## @qcode{'Y ~ x1 + x2'}, or given beside it as @var{Y}.  A variable holding
+## levels rather than numbers is a categorical predictor without being named
+## one, and @qcode{'CategoricalPredictors'} adds to that set rather than
+## replacing it.  @code{PredictorNames} and @code{ResponseName} come from the
+## table.
 ##
 ## @code{@var{obj} = fitrgam (@dots{}, @var{name}, @var{value})} returns
 ## an object of class RegressionGAM with additional properties specified by
@@ -196,7 +207,7 @@ function obj = fitrgam (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitrgam: number of rows in X and Y must be equal.");
   endif
   ## Parse arguments to class def function
@@ -227,6 +238,28 @@ endfunction
 
 
 ## Test constructor
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## A model formula names the response and the predictors together, and
+%! ## holds main effects only
+%! Mdl = fitrgam (T, 'SL ~ PL + Wide');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%!
+%! ## predict matches the table's variables by name, so a column the model
+%! ## was not fitted on is passed over
+%! yFit = predict (Mdl, T(1:5,:));
+%! yFit'
+
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [1; 2; 3; 4];
@@ -258,3 +291,47 @@ endfunction
 %! fitrgam (ones (4,2), ones (3, 1))
 %!error<fitrgam: number of rows in X and Y must be equal.>
 %! fitrgam (ones (4,2), ones (3, 1), 'K', 2)
+
+## Table input
+%!shared frgT
+%! load fisheriris
+%! frgT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! frgT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrgam (frgT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+%! assert_equal (Mdl.CategoricalPredictors, 4);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrgam (frgT, 'SL ~ PL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'Wide'});
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitrgam (frgT(:,1:3), frgT.SL);
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrgam (frgT, 'SL');
+%! a = predict (Mdl, frgT);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (Mdl, frgT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitrgam (frgT, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, frgT), predict (Mdl, frgT));
+
+%!error<RegressionGAM: the table holds no variable 'NoSuch'.> ...
+%! fitrgam (frgT, 'NoSuch')
+
+%!error<RegressionGAM: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitrgam (frgT, 'SL ~ PL*PW')
+
+%!error<RegressionGAM.predict: the table holds no predictor 'PL'.> ...
+%! predict (fitrgam (frgT, 'SL'), frgT(:, [1, 3, 4, 5]))

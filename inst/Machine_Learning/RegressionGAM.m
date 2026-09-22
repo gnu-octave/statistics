@@ -606,6 +606,9 @@ classdef RegressionGAM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionGAM} {@var{obj} =} RegressionGAM (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionGAM} {@var{obj} =} RegressionGAM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionGAM} {@var{obj} =} RegressionGAM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionGAM} {@var{obj} =} RegressionGAM (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionGAM} {@var{obj} =} RegressionGAM (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a generalized additive model for regression.
@@ -626,6 +629,10 @@ classdef RegressionGAM < PredictiveModel
       if (nargin < 2)
         error ("RegressionGAM: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionGAM', ...
+                                             X, Y, varargin);
 
       ## Get training sample size and number of variables in training data
       nsample = rows (X);
@@ -1300,6 +1307,12 @@ classdef RegressionGAM < PredictiveModel
     ## retrain it.
     ## @end multitable
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level
+    ## was coded at fitting.
     ## @seealso{fitrgam, RegressionGAM}
     ## @end deftypefn
     function [yFit, ySD, yInt] = predict (this, Xfit, varargin)
@@ -1308,6 +1321,9 @@ classdef RegressionGAM < PredictiveModel
       if (nargin < 2)
         error ("RegressionGAM.predict: too few arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      Xfit = tableColumns (this, 'RegressionGAM.predict', Xfit);
 
       ## Check for valid XC
       if (isempty (Xfit))
