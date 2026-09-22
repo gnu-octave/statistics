@@ -635,6 +635,10 @@ classdef CompactClassificationDiscriminant < PredictiveModel
                        " classification object."));
       endif
 
+      ## The levels a predictor read from a table was coded through travel
+      ## with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       ## Save properties to compact model
       this.NumPredictors   = Mdl.NumPredictors;
       this.PredictorNames  = Mdl.PredictorNames;
@@ -780,6 +784,12 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     ## class, computed based on the posterior probabilities and the specified
     ## misclassification costs.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{CompactClassificationDiscriminant, fitcdiscr}
     ## @end deftypefn
     function [label, score, cost] = predict (this, XC)
@@ -789,6 +799,9 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         error (strcat ("CompactClassificationDiscriminant.predict:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactClassificationDiscriminant.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))

@@ -18,6 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcknn (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcknn (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcknn (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcknn (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcknn (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a k-Nearest Neighbor classification model.
@@ -305,7 +308,7 @@ function Mdl = fitcknn (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcknn: number of rows in X and Y must be equal.");
   endif
 
@@ -408,6 +411,34 @@ endfunction
 %! hold off
 
 ## Test Output
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcknn (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [5, 4, 3, 2, 1]));
+%! label'
+%!
+%! ## This learner takes every predictor as holding levels or none of them,
+%! ## so a table whose columns all hold levels is measured by the Hamming
+%! ## distance instead
+%! C = table (categorical (meas(:,1) > 5.8, [false true], {'short', 'long'}), ...
+%!            categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'}), ...
+%!            'VariableNames', {'Long', 'Wide'});
+%! C.Species = categorical (species);
+%! CMdl = fitcknn (C, 'Species');
+%! CMdl.Distance
+
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
@@ -623,3 +654,57 @@ endfunction
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcknn (meas, species, 'ClassNames', [3, 1, 2])
+
+## Table input
+%!shared fknT
+%! load fisheriris
+%! fknT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fknT.Species = categorical (species);
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcknn (fknT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcknn (fknT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcknn (fknT, 'Species');
+%! a = predict (Mdl, fknT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fknT(:, [5, 4, 3, 2, 1])), a);
+
+## This learner takes every predictor as holding levels or none of them, so
+## a table whose columns all hold levels names them all and is taken
+%!test
+%! load fisheriris
+%! C = table (categorical (meas(:,1) > 5.8, [false true], ...
+%!                         {'short', 'long'}), ...
+%!            categorical (meas(:,2) > 3, [false true], ...
+%!                         {'narrow', 'wide'}), ...
+%!            'VariableNames', {'Long', 'Wide'});
+%! C.Species = categorical (species);
+%! Mdl = fitcknn (C, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, [1, 2]);
+%! assert_equal (Mdl.Distance, 'hamming');
+
+## A table mixing levels with numbers is refused, as it always was: this
+## learner takes every predictor as holding levels or none of them
+%!error<ClassificationKNN: 'CategoricalPredictors' must be empty or 'all'.>
+%! load fisheriris
+%! M = table (meas(:,1), 'VariableNames', {'SL'});
+%! M.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! M.Species = categorical (species);
+%! fitcknn (M, 'Species');
+
+%!error<ClassificationKNN: the table holds no variable 'NoSuch'.> ...
+%! fitcknn (fknT, 'NoSuch')
+
+%!error<ClassificationKNN: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcknn (fknT, 'Species ~ SL*PW')
+
+%!error<ClassificationKNN.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcknn (fknT, 'Species'), fknT(:, [1, 3, 4, 5]))

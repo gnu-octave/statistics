@@ -18,6 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcdiscr (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcdiscr (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcdiscr (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcdiscr (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcdiscr (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Linear Discriminant Analysis classification model.
@@ -115,7 +118,7 @@ function obj = fitcdiscr (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcdiscr: number of rows in X and Y must be equal.");
   endif
 
@@ -155,6 +158,25 @@ endfunction
 %! hold off
 
 ## Tests
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%!
+%! ## A model formula names the response and the predictors together, and
+%! ## holds main effects only
+%! Mdl = fitcdiscr (T, 'Species ~ PL + PW');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%!
+%! ## predict matches the table's variables by name, so a column the model
+%! ## was not fitted on is passed over
+%! label = predict (Mdl, T(1:5,:));
+%! label'
+
 %!test
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
@@ -207,3 +229,46 @@ endfunction
 %!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcdiscr (meas, species, 'ClassNames', [3, 1, 2])
+
+## Table input
+%!shared fdiT
+%! load fisheriris
+%! fdiT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fdiT.Species = categorical (species);
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcdiscr (fdiT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcdiscr (fdiT, 'Species ~ PL + PW');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'PW'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcdiscr (fdiT, 'Species');
+%! a = predict (Mdl, fdiT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fdiT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcdiscr (fdiT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fdiT), predict (Mdl, fdiT));
+
+## This learner takes no predictor holding levels, so a table carrying one
+## is refused by its own rule rather than coded
+%!error<ClassificationDiscriminant: categorical predictors cannot be used for discriminant analysis.>
+%! load fisheriris
+%! M = table (meas(:,1), 'VariableNames', {'SL'});
+%! M.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! M.Species = categorical (species);
+%! fitcdiscr (M, 'Species');
+
+%!error<ClassificationDiscriminant: the table holds no variable 'NoSuch'.> ...
+%! fitcdiscr (fdiT, 'NoSuch')
+
+%!error<ClassificationDiscriminant.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcdiscr (fdiT, 'Species'), fdiT(:, [1, 3, 4, 5]))

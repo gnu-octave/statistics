@@ -824,6 +824,9 @@ classdef ClassificationDiscriminant < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{formula})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{Y})
     ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationDiscriminant} class object containing a
@@ -918,6 +921,10 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (nargin < 2)
         error ("ClassificationDiscriminant: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationDiscriminant', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationDiscriminant: Name-Value", ...
                        " arguments must be in pairs."));
@@ -1404,6 +1411,12 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## class, computed based on the posterior probabilities and the specified
     ## misclassification costs.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{ClassificationDiscriminant, fitcdiscr}
     ## @end deftypefn
     function [label, score, cost] = predict (this, XC)
@@ -1411,6 +1424,9 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (nargin < 2)
         error ("ClassificationDiscriminant.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationDiscriminant.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))
