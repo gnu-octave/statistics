@@ -348,6 +348,10 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
                        " classification object."));
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       ## Save properties to compact model
       this.NumPredictors          = Mdl.NumPredictors;
       this.PredictorNames         = Mdl.PredictorNames;
@@ -457,6 +461,12 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## property is set to a transformation function, the scores are transformed
     ## accordingly before being returned.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
@@ -468,6 +478,9 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
         error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactClassificationNeuralNetwork.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))
@@ -1185,3 +1198,22 @@ endclassdef
 %! delete (fname);
 %! [~, s2] = predict (M2, Xq);
 %! assert_equal (s2, s(1:2,:));
+
+## A table at prediction
+%!test  # the levels a predictor was coded through travel with the model
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! T.Species = categorical (species);
+%! CMdl = compact (fitcnet (T, 'Species'));
+%! assert_equal (numel (CMdl.PredictorLevels), 3);
+%! assert_equal (CMdl.PredictorLevels{3}, {'narrow', 'wide'});
+
+%!test  # predict takes a table, read by name and not by position
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species);
+%! CMdl = compact (fitcnet (T, 'Species'));
+%! a = predict (CMdl, T);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (CMdl, T(:, [3, 2, 1])), a);

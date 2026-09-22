@@ -18,6 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcnet (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnet (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnet (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnet (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcnet (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Neural Network classification model.
@@ -185,7 +188,7 @@ function obj = fitcnet (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcnet: number of rows in X and Y must be equal.");
   endif
 
@@ -257,6 +260,28 @@ endfunction
 %! title ('Decision regions of a two-layer network');
 
 ## Test constructor
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcnet (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
 %!test
 %! load fisheriris
 %! x = meas;
@@ -294,3 +319,48 @@ endfunction
 %!error<ClassificationNeuralNetwork: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcnet (meas, species, 'ClassNames', [3, 1, 2])
+
+## Table input
+%!shared fcnT
+%! load fisheriris
+%! fcnT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fcnT.Species = categorical (species);
+%! fcnT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcnet (fcnT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 5);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcnet (fcnT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+%! assert_equal (isempty (Mdl.CategoricalPredictors), true);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitcnet (fcnT(:,1:4), fcnT.Species);
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcnet (fcnT, 'Species');
+%! a = predict (Mdl, fcnT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fcnT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcnet (fcnT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fcnT), predict (Mdl, fcnT));
+
+%!error<ClassificationNeuralNetwork: the table holds no variable 'NoSuch'.> ...
+%! fitcnet (fcnT, 'NoSuch')
+
+%!error<ClassificationNeuralNetwork: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcnet (fcnT, 'Species ~ SL*PW')
+
+%!error<ClassificationNeuralNetwork.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcnet (fcnT, 'Species'), fcnT(:, [1, 3, 4, 5, 6]))

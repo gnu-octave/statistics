@@ -619,6 +619,9 @@ classdef ClassificationNeuralNetwork < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{formula})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{Y})
     ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationNeuralNetwork} class object containing a
@@ -752,6 +755,10 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       if (nargin < 2)
         error ("ClassificationNeuralNetwork: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationNeuralNetwork', ...
+                                             X, Y, varargin);
 
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
@@ -1260,6 +1267,12 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     ## property is set to a transformation function, the scores are transformed
     ## accordingly before being returned.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
     function [labels, scores] = predict (this, XC)
@@ -1268,6 +1281,9 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       if (nargin < 2)
         error ("ClassificationNeuralNetwork.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationNeuralNetwork.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))
@@ -2928,3 +2944,12 @@ endfunction
 
 %!error<ClassificationNeuralNetwork: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! ClassificationNeuralNetwork (Xc, yc, 'CategoricalPredictors', 4)
+
+## A table at prediction
+%!test  # the class may be built from a table as the fitter builds it
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species);
+%! Mdl = ClassificationNeuralNetwork (T, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
+%! assert_equal (Mdl.ResponseName, 'Species');

@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitrnet (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrnet (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrnet (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrnet (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitrnet (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a neural network regression model.
@@ -160,7 +163,7 @@ function obj = fitrnet (X, Y, varargin)
   endif
 
   ## Check predictor data and response have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitrnet: number of rows in X and Y must be equal.");
   endif
 
@@ -227,6 +230,26 @@ endfunction
 %! title ('Two hidden layers of sixteen units');
 
 ## Test constructor
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## A model formula names the response and the predictors together, and
+%! ## holds main effects only
+%! Mdl = fitrnet (T, 'SL ~ PL + Wide');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%! Mdl.CategoricalPredictors
+%!
+%! ## predict matches the table's variables by name, so a column the model
+%! ## was not fitted on is passed over
+%! yFit = predict (Mdl, T(1:5,:));
+%! yFit'
+
 %!test
 %! rand ('seed', 42);
 %! X = linspace (-1, 1, 40)';
@@ -271,3 +294,47 @@ endfunction
 %! fitrnet (ones (4, 2), ones (3, 1))
 %!error<fitrnet: number of rows in X and Y must be equal.> ...
 %! fitrnet (ones (4, 2), ones (3, 1), 'LayerSizes', 2)
+
+## Table input
+%!shared frnT
+%! load fisheriris
+%! frnT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! frnT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrnet (frnT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+%! assert_equal (Mdl.CategoricalPredictors, 4);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrnet (frnT, 'SL ~ PL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'Wide'});
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitrnet (frnT(:,1:3), frnT.SL);
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrnet (frnT, 'SL');
+%! a = predict (Mdl, frnT);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (Mdl, frnT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitrnet (frnT, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, frnT), predict (Mdl, frnT));
+
+%!error<RegressionNeuralNetwork: the table holds no variable 'NoSuch'.> ...
+%! fitrnet (frnT, 'NoSuch')
+
+%!error<RegressionNeuralNetwork: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitrnet (frnT, 'SL ~ PL*PW')
+
+%!error<RegressionNeuralNetwork.predict: the table holds no predictor 'PL'.> ...
+%! predict (fitrnet (frnT, 'SL'), frnT(:, [1, 3, 4, 5]))
