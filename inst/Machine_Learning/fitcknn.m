@@ -439,27 +439,6 @@ endfunction
 %! CMdl = fitcknn (C, 'Species');
 %! CMdl.Distance
 
-%!demo
-%! ## Score a table
-%!
-%! load fisheriris
-%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
-%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
-%! T.Species = categorical (species);
-%! Mdl = fitcknn (T, 'Species');
-%!
-%! ## The response is named by its column, or left out, when it is the
-%! ## variable the model was fitted on
-%! [loss(Mdl, T, 'Species'), loss(Mdl, T)]
-%!
-%! ## It may also be given beside a table holding the predictors alone
-%! loss (Mdl, T(:, 1:4), T.Species)
-%!
-%! ## A name-value argument does not stand in for the response: an even
-%! ## number of arguments after the table is all name-value, an odd one
-%! ## names the response first
-%! loss (Mdl, T, 'LossFun', 'classiferror')
-
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];

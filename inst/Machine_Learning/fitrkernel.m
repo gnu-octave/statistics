@@ -137,26 +137,6 @@ endfunction
 %! yFit = predict (Mdl, T(1:5,:));
 %! yFit'
 
-%!demo
-%! ## Score a table
-%!
-%! load fisheriris
-%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
-%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
-%! Mdl = fitrkernel (T, 'SL');
-%!
-%! ## The response is named by its column, or left out, when it is the
-%! ## variable the model was fitted on
-%! [loss(Mdl, T, 'SL'), loss(Mdl, T)]
-%!
-%! ## It may also be given beside a table holding the predictors alone
-%! loss (Mdl, T(:, 1:3), T.SL)
-%!
-%! ## A name-value argument does not stand in for the response: an even
-%! ## number of arguments after the table is all name-value, an odd one
-%! ## names the response first
-%! loss (Mdl, T, 'LossFun', 'mse')
-
 %!test
 %! ## The driver returns a kernel regression model
 %! load carsmall
