@@ -573,6 +573,10 @@ classdef CompactClassificationTree < PredictiveModel
                        " ClassificationTree object."));
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       ## The node table and everything derived from it, then the three
       ## properties whose set methods re-derive the rest.  The criterion the
       ## risk is measured by travels with the tree, there being no
@@ -620,6 +624,12 @@ classdef CompactClassificationTree < PredictiveModel
     ## rest at.  @var{XC} must have as many columns as the predictor data the
     ## model was fitted on.
     ##
+    ## @var{XC} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns
     ## @var{score}, an @math{NxK} matrix holding the class probabilities of
     ## the node each row landed in, after @code{ScoreTransform}.
@@ -644,6 +654,9 @@ classdef CompactClassificationTree < PredictiveModel
       if (nargin < 2)
         error ("CompactClassificationTree.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactClassificationTree.predict', XC);
       if (isempty (XC))
         error ("CompactClassificationTree.predict: XC is empty.");
       endif
@@ -1300,3 +1313,29 @@ endclassdef
 %! M2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (M2.CutCategories, Mdl.CutCategories);
+
+## A table at prediction
+%!shared cctT, cctM
+%! load fisheriris
+%! cctT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! cctT.Species = categorical (species);
+%! cctT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! cctM = compact (fitctree (cctT, 'Species'));
+
+%!test  # the levels a predictor was coded through travel with the model
+%! assert_equal (numel (cctM.PredictorLevels), 5);
+%! assert_equal (cctM.PredictorLevels{5}, {'narrow', 'wide'});
+
+%!test  # predict takes a table, read by name and not by position
+%! a = predict (cctM, cctT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (cctM, cctT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # a matrix is still taken
+%! load fisheriris
+%! CMdl = compact (fitctree (meas, species));
+%! assert_equal (numel (predict (CMdl, meas)), 150);
+
+%!error<CompactClassificationTree.predict: the table holds no predictor 'SW'.> ...
+%! predict (cctM, cctT(:, [1, 3, 4, 5, 6]))

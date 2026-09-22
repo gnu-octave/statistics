@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitctree (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitctree (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitctree (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitctree (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitctree (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a binary decision tree for classification.
@@ -35,6 +38,23 @@
 ## the class label of each observation in @var{X}.  The class names come back
 ## in the type @var{Y} was given in.
 ## @end itemize
+##
+## @code{@var{Mdl} = fitctree (@var{Tbl}, @var{ResponseVarName})} takes both
+## from the table @var{Tbl}: @var{ResponseVarName} names the variable holding
+## the class labels and every other variable is a predictor.
+## @code{@var{Mdl} = fitctree (@var{Tbl}, @var{formula})} names them with a
+## model formula instead, @qcode{'Y ~ x1 + x2'}, which holds main effects
+## only and so takes no product, power or wildcard.
+## @code{@var{Mdl} = fitctree (@var{Tbl}, @var{Y})} takes the predictors from
+## the table and the class labels from @var{Y}.
+##
+## A table variable holding levels rather than numbers, which is a
+## @code{categorical}, a @code{logical}, a character array or a cell array of
+## character vectors, is a categorical predictor without being named one, and
+## @qcode{'CategoricalPredictors'} adds to that set rather than replacing it.
+## @code{PredictorNames} and @code{ResponseName} come from the table, and a
+## level is coded at prediction as it was coded at fitting, so a table given
+## to @code{predict} may hold only some of the levels.
 ##
 ## An observation whose class label is missing is dropped, and the rows kept
 ## are reported in @code{RowsUsed}.  An observation missing some of its
@@ -148,7 +168,7 @@ function Mdl = fitctree (X, Y, varargin)
   if (mod (nargin, 2) != 0)
     error ("fitctree: name-value arguments must be in pairs.");
   endif
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitctree: number of rows in X and Y must be equal.");
   endif
 
@@ -190,6 +210,33 @@ endfunction
 %! [leaves(:), err(:)]
 
 ## Tests
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            categorical (species), 'VariableNames', ...
+%!            {'SL', 'SW', 'PL', 'PW', 'Species'});
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one, so the width of the sepal is split into two and comes back as the
+%! ## fifth predictor rather than as a number
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitctree (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## A model formula names them instead, holding main effects only
+%! Mdl2 = fitctree (T, 'Species ~ PL + Wide');
+%! Mdl2.PredictorNames
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order and may carry more than the model needs
+%! label = predict (Mdl, T(1:5, [6, 4, 3, 2, 1, 5]));
+%! label'
+
 %!test  # MATLAB parity: the tree a default fit grows on fisheriris
 %! load fisheriris
 %! Mdl = fitctree (meas, species);
@@ -474,3 +521,87 @@ endfunction
 %! y = (c == 1) | (c == 2 & mod (j, 4) != 0) | (c == 3 & mod (j, 4) == 0);
 %! Mdl = fitctree ([c + 0.5, mod(k * 7, 10)], y, 'CategoricalPredictors', 1);
 %! assert_equal (Mdl.CutCategories(1,:), {[1.5, 2.5], [3.5, 4.5]});
+
+## Table input
+%!shared ftT
+%! load fisheriris
+%! ftT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!              'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! ftT.Species = categorical (species);
+%! ftT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! ftT.Flag = meas(:,1) > 5.8;
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitctree (ftT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide', 'Flag'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (class (Mdl), 'ClassificationTree');
+
+## MATLAB parity: a column holding levels is a categorical predictor without
+## being named one, and a logical column is one too
+%!test
+%! Mdl = fitctree (ftT, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, [5, 6]);
+
+%!test  # 'CategoricalPredictors' adds to what the table says, not replaces it
+%! Mdl = fitctree (ftT, 'Species', 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CategoricalPredictors, [1, 5, 6]);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitctree (ftT, 'Species ~ SL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # the predictors keep the order the formula wrote them in
+%! Mdl = fitctree (ftT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitctree (ftT(:,1:4), categorical (ftT.Species));
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+%! assert_equal (isempty (Mdl.CategoricalPredictors), true);
+
+%!test  # 'PredictorNames' takes a subset of the table's variables
+%! Mdl = fitctree (ftT, 'Species', 'PredictorNames', {'SL', 'PW'});
+%! assert_equal (Mdl.PredictorNames, {'SL', 'PW'});
+
+%!test  # a column of text is a categorical predictor as a categorical is
+%! T = table (ftT.SL, 'VariableNames', {'SL'});
+%! T.g = repmat ({'x'; 'y'; 'z'}, 50, 1);
+%! T.y = ftT.Species;
+%! Mdl = fitctree (T, 'y');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'g'});
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # a matrix is taken as it always was
+%! load fisheriris
+%! Mdl = fitctree (meas, species);
+%! assert_equal (columns (Mdl.X), 4);
+%! assert_equal (isempty (Mdl.PredictorLevels), true);
+
+## Table input validation
+%!error<ClassificationTree: the table holds no variable 'NoSuch'.> ...
+%! fitctree (ftT, 'NoSuch')
+
+%!error<ClassificationTree: the table holds no predictors.> ...
+%! fitctree (ftT(:,5), 'Species')
+
+%!error<ClassificationTree: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitctree (ftT, 'Species ~ SL*PW')
+
+%!error<ClassificationTree: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitctree (ftT, 'Species ~ SL + SL^2')
+
+%!error<ClassificationTree: the model formula names 'nope', which the table does not hold.> ...
+%! fitctree (ftT, 'Species ~ nope')
+
+%!error<ClassificationTree: 'SL \+ PW' is not a model formula: a formula names its response before a '~'.> ...
+%! fitctree (ftT, 'SL + PW')
+
+%!error<ClassificationTree: 'PredictorNames' names no variable 'nope' of the table.> ...
+%! fitctree (ftT, 'Species', 'PredictorNames', {'nope'})
+
+%!error<ClassificationTree: 'PredictorNames' cannot be given beside a model formula, which names the predictors itself.> ...
+%! fitctree (ftT, 'Species ~ SL', 'PredictorNames', {'SL'})

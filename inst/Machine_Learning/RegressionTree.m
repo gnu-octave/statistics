@@ -565,6 +565,9 @@ classdef RegressionTree < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionTree} {@var{obj} =} RegressionTree (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionTree} {@var{obj} =} RegressionTree (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionTree} {@var{obj} =} RegressionTree (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionTree} {@var{obj} =} RegressionTree (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionTree} {@var{obj} =} RegressionTree (@dots{}, @var{name}, @var{value})
     ##
     ## Grow a binary decision tree for regression.
@@ -648,6 +651,10 @@ classdef RegressionTree < PredictiveModel
       if (nargin < 2)
         error ("RegressionTree: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionTree', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionTree: name-value arguments must be in", ...
                        " pairs."));
@@ -977,6 +984,12 @@ classdef RegressionTree < PredictiveModel
     ## comes to rest at, after @code{ResponseTransform}.  @var{XC} must have
     ## as many columns as the predictor data the model was fitted on.
     ##
+    ## @var{XC} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @code{[@var{yFit}, @var{node}] = predict (@dots{})} also returns the
     ## number of the node each row landed in.
     ##
@@ -992,6 +1005,9 @@ classdef RegressionTree < PredictiveModel
       if (nargin < 2)
         error ("RegressionTree.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'RegressionTree.predict', XC);
       if (isempty (XC))
         error ("RegressionTree.predict: XC is empty.");
       endif
@@ -2512,3 +2528,44 @@ endclassdef
 %! RegressionTree (Xr, yr, 'MaxNumCategories', 1.5)
 %!error<RegressionTree: invalid parameter name in optional pair arguments.> ...
 %! RegressionTree (Xr, yr, 'AlgorithmForCategorical', 'pca')
+
+## A table at prediction
+%!shared rtT, rtM
+%! load fisheriris
+%! rtT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!              'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! rtT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! rtM = fitrtree (rtT, 'SL');
+
+%!test  # the class may be built from a table as the fitter builds it
+%! Mdl = RegressionTree (rtT, 'SL');
+%! assert_equal (Mdl.PredictorNames, rtM.PredictorNames);
+%! assert_equal (Mdl.CategoricalPredictors, rtM.CategoricalPredictors);
+
+%!test  # predict takes a table
+%! yFit = predict (rtM, rtT);
+%! assert_equal (numel (yFit), 150);
+%! assert_equal (isnumeric (yFit), true);
+
+## MATLAB parity: a table is read by name, so the order of its columns does
+## not matter and a column the model was not fitted on is passed over
+%!test
+%! a = predict (rtM, rtT);
+%! b = predict (rtM, rtT(:, [5, 4, 3, 2, 1]));
+%! assert_equal (a, b);
+%! T = rtT;
+%! T.Extra = (1:150)';
+%! assert_equal (predict (rtM, T), a);
+
+%!test  # a matrix is still taken, as the model was fitted from one before
+%! load fisheriris
+%! Mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! assert_equal (numel (predict (Mdl, meas(:,2:4))), 150);
+
+%!test  # the levels travel with the model when it is made compact
+%! CMdl = compact (rtM);
+%! assert_equal (CMdl.PredictorLevels, rtM.PredictorLevels);
+%! assert_equal (predict (CMdl, rtT), predict (rtM, rtT));
+
+%!error<RegressionTree.predict: the table holds no predictor 'PL'.> ...
+%! predict (rtM, rtT(:, [1, 3, 4, 5]))

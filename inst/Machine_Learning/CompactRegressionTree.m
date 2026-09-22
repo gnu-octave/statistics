@@ -439,6 +439,10 @@ classdef CompactRegressionTree < PredictiveModel
                        " RegressionTree object."));
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       ## The node table and everything derived from it, then the transform.
       this.NumNodes = Mdl.NumNodes;
       this.Children = Mdl.Children;
@@ -480,6 +484,12 @@ classdef CompactRegressionTree < PredictiveModel
     ## comes to rest at, after @code{ResponseTransform}.  @var{XC} must have
     ## as many columns as the predictor data the model was fitted on.
     ##
+    ## @var{XC} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @code{[@var{yFit}, @var{node}] = predict (@dots{})} also returns the
     ## number of the node each row landed in.
     ##
@@ -495,6 +505,9 @@ classdef CompactRegressionTree < PredictiveModel
       if (nargin < 2)
         error ("CompactRegressionTree.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactRegressionTree.predict', XC);
       if (isempty (XC))
         error ("CompactRegressionTree.predict: XC is empty.");
       endif
@@ -1062,3 +1075,28 @@ endclassdef
 %! M2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (predict (M2, [1; 2; 6]), predict (Mdl, [1; 2; 6]));
+
+## A table at prediction
+%!shared crtT, crtM
+%! load fisheriris
+%! crtT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! crtT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! crtM = compact (fitrtree (crtT, 'SL'));
+
+%!test  # the levels a predictor was coded through travel with the model
+%! assert_equal (numel (crtM.PredictorLevels), 4);
+%! assert_equal (crtM.PredictorLevels{4}, {'narrow', 'wide'});
+
+%!test  # predict takes a table, read by name and not by position
+%! a = predict (crtM, crtT);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (crtM, crtT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # a matrix is still taken
+%! load fisheriris
+%! CMdl = compact (fitrtree (meas(:,2:4), meas(:,1)));
+%! assert_equal (numel (predict (CMdl, meas(:,2:4))), 150);
+
+%!error<CompactRegressionTree.predict: the table holds no predictor 'PL'.> ...
+%! predict (crtM, crtT(:, [1, 3, 4, 5]))

@@ -701,6 +701,9 @@ classdef ClassificationTree < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationTree} {@var{obj} =} ClassificationTree (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationTree} {@var{obj} =} ClassificationTree (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationTree} {@var{obj} =} ClassificationTree (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationTree} {@var{obj} =} ClassificationTree (@var{Tbl}, @var{Y})
     ## @deftypefnx {ClassificationTree} {@var{obj} =} ClassificationTree (@dots{}, @var{name}, @var{value})
     ##
     ## Grow a binary decision tree for classification.
@@ -813,6 +816,11 @@ classdef ClassificationTree < PredictiveModel
         error (strcat ("ClassificationTree: name-value arguments must be", ...
                        " in pairs."));
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationTree', ...
+                                             X, Y, varargin);
+
       if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ! isempty (X)))
         error (strcat ("ClassificationTree: X must be a non-empty real", ...
                        " numeric matrix."));
@@ -1269,6 +1277,12 @@ classdef ClassificationTree < PredictiveModel
     ## rest at.  @var{XC} must have as many columns as the predictor data the
     ## model was fitted on.
     ##
+    ## @var{XC} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns
     ## @var{score}, an @math{NxK} matrix holding the class probabilities of
     ## the node each row landed in, after @code{ScoreTransform}.
@@ -1296,6 +1310,11 @@ classdef ClassificationTree < PredictiveModel
       if (isempty (XC))
         error ("ClassificationTree.predict: XC is empty.");
       endif
+
+      ## A table is read by the names the model was fitted on, not by the
+      ## order its own columns happen to come in
+      XC = tableColumns (this, 'ClassificationTree.predict', XC);
+
       if (! (isnumeric (XC) && isreal (XC) && ismatrix (XC)))
         error (strcat ("ClassificationTree.predict: XC must be a real", ...
                        " numeric matrix."));
@@ -3259,3 +3278,53 @@ endfunction
 %! ClassificationTree (Xb, yb, 'MaxNumCategories', -1)
 %!error<ClassificationTree: 'AlgorithmForCategorical' must be 'exact', 'pullleft', 'pca', or 'ovabyclass'.> ...
 %! ClassificationTree (Xb, yb, 'AlgorithmForCategorical', 'bogus')
+
+## A table at prediction
+%!shared ctT, ctM
+%! load fisheriris
+%! ctT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!              'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! ctT.Species = categorical (species);
+%! ctT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! ctM = fitctree (ctT, 'Species');
+
+%!test  # the class may be built from a table as the fitter builds it
+%! Mdl = ClassificationTree (ctT, 'Species');
+%! assert_equal (Mdl.PredictorNames, ctM.PredictorNames);
+%! assert_equal (Mdl.CategoricalPredictors, ctM.CategoricalPredictors);
+
+%!test  # predict takes a table and answers in the type the labels came in
+%! label = predict (ctM, ctT);
+%! assert_equal (class (label), 'categorical');
+%! assert_equal (numel (label), 150);
+
+## MATLAB parity: a table is read by name, so the order of its columns does
+## not matter and a column the model was not fitted on is passed over
+%!test
+%! a = predict (ctM, ctT);
+%! b = predict (ctM, ctT(:, [6, 5, 4, 3, 2, 1]));
+%! assert_equal (a, b);
+%! T = ctT;
+%! T.Extra = (1:150)';
+%! assert_equal (predict (ctM, T), a);
+
+%!test  # a level carries at prediction the code it carried at fitting
+%! T = ctT(1:60,:);
+%! T.Wide = categorical (repmat ({'wide'}, 60, 1), {'narrow', 'wide'});
+%! assert_equal (numel (predict (ctM, T)), 60);
+
+%!test  # a matrix is still taken, as the model was fitted from one before
+%! load fisheriris
+%! Mdl = fitctree (meas, species);
+%! assert_equal (numel (predict (Mdl, meas)), 150);
+
+%!test  # the levels travel with the model when it is made compact
+%! CMdl = compact (ctM);
+%! assert_equal (CMdl.PredictorLevels, ctM.PredictorLevels);
+%! assert_equal (predict (CMdl, ctT), predict (ctM, ctT));
+
+%!error<ClassificationTree.predict: the table holds no predictor 'SW'.> ...
+%! predict (ctM, ctT(:, [1, 3, 4, 5, 6]))
+
+%!error<ClassificationTree.predict: the table variable 'SL' no longer holds what it held when the model was fitted.> ...
+%! predict (ctM, setfield (ctT, 'SL', categorical (ctT.SL > 5.8)))
