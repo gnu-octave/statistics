@@ -182,6 +182,11 @@ classdef RegressionGP < PredictiveModel
     ## Predictor data
     ##
     ## An @math{NxP} numeric matrix, as it was supplied to the constructor.
+    ##
+    ## Where the model was fitted from a table, the predictors are the coded
+    ## matrix and not the table: a variable holding levels is stored as its
+    ## level codes, and the coding is kept with the model.
+    ##
     ## This property is read-only.
     ##
     ## @end deftp

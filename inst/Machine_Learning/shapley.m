@@ -114,6 +114,10 @@ classdef shapley
     ## whole of what was given, before any sampling.  This property is
     ## read-only.
     ##
+    ## Where the observations were given as a table, they are the coded
+    ## matrix and not the table: a variable holding levels is stored as its
+    ## level codes, and the coding is kept with the object.
+    ##
     ## @end deftp
     X = [];
 

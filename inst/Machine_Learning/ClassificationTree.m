@@ -66,6 +66,10 @@ classdef ClassificationTree < PredictiveModel
     ## Each column is one predictor and each row one observation.  This
     ## property is read-only.
     ##
+    ## Where the model was fitted from a table, the predictors are the coded
+    ## matrix and not the table: a variable holding levels is stored as its
+    ## level codes, and the coding is kept with the model.
+    ##
     ## @end deftp
     X = [];
 
