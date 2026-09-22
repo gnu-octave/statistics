@@ -18,22 +18,11 @@
 %! classes = unique (species);
 %! e = zeros (1, 3);
 %! for k = 1:3
-%!   e(k) = edge (mdl, meas, species, 'Weights', strcmp (species, classes{k}));
+%!   w = double (strcmp (species, classes{k}));
+%!   e(k) = edge (mdl, meas, species, 'Weights', w);
 %! endfor
 %! bar ([edge(mdl, meas, species), e]);
 %! set (gca, 'xticklabel', {'all', classes{:}});
 %! ylabel ('Edge');
 %! title ('Edge overall and within each species');
 
-%!demo
-%! ## 3. Scoring a table
-%!
-%! load fisheriris
-%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
-%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
-%! T.Species = categorical (species);
-%! mdl = fitcnet (T, 'Species');
-%!
-%! ## The response is named by its column, left out, when it is the variable
-%! ## the model was fitted on, or given beside the predictors
-%! [edge(mdl, T, 'Species'), edge(mdl, T), edge(mdl, T(:, 1:4), T.Species)]
