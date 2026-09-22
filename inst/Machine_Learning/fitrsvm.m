@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitrsvm (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrsvm (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrsvm (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrsvm (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitrsvm (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a support vector machine regression model.
@@ -128,7 +131,7 @@ function obj = fitrsvm (X, Y, varargin)
   endif
 
   ## Check predictor data and response have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitrsvm: number of rows in X and Y must be equal.");
   endif
 
@@ -199,6 +202,26 @@ endfunction
 %!         max (abs (Xs * Mdl.Beta + Mdl.Bias - resubPredict (Mdl))));
 
 ## Test constructor
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## A model formula names the response and the predictors together, and
+%! ## holds main effects only
+%! Mdl = fitrsvm (T, 'SL ~ PL + Wide');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%! Mdl.CategoricalPredictors
+%!
+%! ## predict matches the table's variables by name, so a column the model
+%! ## was not fitted on is passed over
+%! yFit = predict (Mdl, T(1:5,:));
+%! yFit'
+
 %!test
 %! load carsmall
 %! X = [Horsepower, Weight];
@@ -230,3 +253,47 @@ endfunction
 %! fitrsvm (ones (4, 2), ones (3, 1))
 %!error<fitrsvm: number of rows in X and Y must be equal.> ...
 %! fitrsvm (ones (4, 2), ones (3, 1), 'Epsilon', 1)
+
+## Table input
+%!shared frsT
+%! load fisheriris
+%! frsT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! frsT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrsvm (frsT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+%! assert_equal (Mdl.CategoricalPredictors, 4);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrsvm (frsT, 'SL ~ PL + Wide');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'Wide'});
+%! assert_equal (Mdl.CategoricalPredictors, 2);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitrsvm (frsT(:,1:3), frsT.SL);
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrsvm (frsT, 'SL');
+%! a = predict (Mdl, frsT);
+%! assert_equal (numel (a), 150);
+%! assert_equal (predict (Mdl, frsT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitrsvm (frsT, 'SL');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, frsT), predict (Mdl, frsT));
+
+%!error<RegressionSVM: the table holds no variable 'NoSuch'.> ...
+%! fitrsvm (frsT, 'NoSuch')
+
+%!error<RegressionSVM: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitrsvm (frsT, 'SL ~ PL*PW')
+
+%!error<RegressionSVM.predict: the table holds no predictor 'PL'.> ...
+%! predict (fitrsvm (frsT, 'SL'), frsT(:, [1, 3, 4, 5]))

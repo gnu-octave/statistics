@@ -18,6 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcsvm (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcsvm (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcsvm (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcsvm (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcsvm (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Support Vector Machine classification model.
@@ -223,7 +226,7 @@ function Mdl = fitcsvm (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcsvm: number of rows in X and Y must be equal.");
   endif
 
@@ -316,6 +319,30 @@ endfunction
 %! hold off
 
 ## Test constructor
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds,:);
+%! T = table (X(:,1), X(:,2), X(:,3), X(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species(inds));
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (X(:,2) > 2.9, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcsvm (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {'a'; 'a'; 'b'; 'b'};
@@ -420,3 +447,51 @@ endfunction
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
 %! load fisheriris
 %! fitcsvm (meas(51:150,:), species(51:150), 'ClassNames', [3, 2])
+
+## Table input
+%!shared fcsT
+%! load fisheriris
+%! fcsI = ! strcmp (species, 'setosa');
+%! fcsX = meas(fcsI,:);
+%! fcsT = table (fcsX(:,1), fcsX(:,2), fcsX(:,3), fcsX(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fcsT.Species = categorical (species(fcsI));
+%! fcsT.Wide = categorical (fcsX(:,2) > 2.9, [false true], ...
+%!                          {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcsvm (fcsT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 5);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcsvm (fcsT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+%! assert_equal (isempty (Mdl.CategoricalPredictors), true);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitcsvm (fcsT(:,1:4), fcsT.Species);
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcsvm (fcsT, 'Species');
+%! a = predict (Mdl, fcsT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fcsT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcsvm (fcsT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fcsT), predict (Mdl, fcsT));
+
+%!error<ClassificationSVM: the table holds no variable 'NoSuch'.> ...
+%! fitcsvm (fcsT, 'NoSuch')
+
+%!error<ClassificationSVM: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcsvm (fcsT, 'Species ~ SL*PW')
+
+%!error<ClassificationSVM.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcsvm (fcsT, 'Species'), fcsT(:, [1, 3, 4, 5, 6]))

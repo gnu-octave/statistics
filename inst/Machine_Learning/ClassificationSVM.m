@@ -597,6 +597,9 @@ classdef ClassificationSVM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{Y})
     ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationSVM} class object containing a Support
@@ -713,6 +716,10 @@ classdef ClassificationSVM < PredictiveModel
       if (nargin < 2)
         error ("ClassificationSVM: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationSVM', ...
+                                             X, Y, varargin);
 
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
@@ -1364,6 +1371,12 @@ classdef ClassificationSVM < PredictiveModel
     ## probabilities need a transform fitted to the model, which this package
     ## does not compute yet.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{ClassificationSVM, fitcsvm}
         ##
     ## @strong{Deviation from MATLAB.}  @var{cost} is the expected cost of
@@ -1384,6 +1397,9 @@ classdef ClassificationSVM < PredictiveModel
       if (nargin < 2)
         error ("ClassificationSVM.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationSVM.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))
@@ -3630,3 +3646,13 @@ endclassdef
 
 %!error<ClassificationSVM: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! ClassificationSVM (Xc, yc, 'CategoricalPredictors', 4)
+
+## A table at prediction
+%!test  # the class may be built from a table as the fitter builds it
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! T = table (meas(inds,1), meas(inds,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species(inds));
+%! Mdl = ClassificationSVM (T, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
+%! assert_equal (Mdl.ResponseName, 'Species');

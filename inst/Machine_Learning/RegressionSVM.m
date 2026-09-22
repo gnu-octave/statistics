@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{obj} =} RegressionSVM (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@dots{}, @var{name}, @var{value})
 ##
 ## Create a @qcode{RegressionSVM} object containing a support vector machine
@@ -523,6 +526,10 @@ classdef RegressionSVM < PredictiveModel
         error ("RegressionSVM: too few input arguments.");
       endif
 
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionSVM', ...
+                                             X, Y, varargin);
+
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
         error ("RegressionSVM: number of rows in X and Y must be equal.");
@@ -932,6 +939,12 @@ classdef RegressionSVM < PredictiveModel
     ## The transformation named by @code{ResponseTransform} is applied to the
     ## model's output before it is returned.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{RegressionSVM, fitrsvm}
     ## @end deftypefn
     function yFit = predict (this, XC)
@@ -940,6 +953,9 @@ classdef RegressionSVM < PredictiveModel
       if (nargin < 2)
         error ("RegressionSVM.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'RegressionSVM.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))
@@ -2003,3 +2019,12 @@ endclassdef
 
 %!error<RegressionSVM: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! RegressionSVM (Xc, yr, 'CategoricalPredictors', 4)
+
+## A table at prediction
+%!test  # the class may be built from a table as the fitter builds it
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! Mdl = RegressionSVM (T, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL'});
+%! assert_equal (Mdl.ResponseName, 'SL');

@@ -360,6 +360,10 @@ classdef CompactClassificationSVM < PredictiveModel
                        " classification object."));
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       ## Save properties to compact model
       this.NumPredictors         = Mdl.NumPredictors;
       this.PredictorNames        = Mdl.PredictorNames;
@@ -502,6 +506,12 @@ classdef CompactClassificationSVM < PredictiveModel
     ## probabilities need a transform fitted to the model, which this package
     ## does not compute yet.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @seealso{CompactClassificationSVM, ClassificationSVM}
         ##
     ## @strong{Deviation from MATLAB.}  @var{cost} is the expected cost of
@@ -523,6 +533,9 @@ classdef CompactClassificationSVM < PredictiveModel
       if (nargin < 2)
         error ("CompactClassificationSVM.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactClassificationSVM.predict', XC);
 
       ## Check for valid XC
       if (isempty (XC))
@@ -1415,3 +1428,25 @@ endclassdef
 %! M2 = loadmodel (fname);
 %! delete (fname);
 %! assert_equal (predict (M2, Xq), predict (Mdl, Xq));
+
+## A table at prediction
+%!test  # the levels a predictor was coded through travel with the model
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! T = table (meas(inds,1), meas(inds,2), 'VariableNames', {'SL', 'SW'});
+%! T.Wide = categorical (meas(inds,2) > 2.9, [false true], ...
+%!                       {'narrow', 'wide'});
+%! T.Species = categorical (species(inds));
+%! CMdl = compact (fitcsvm (T, 'Species'));
+%! assert_equal (numel (CMdl.PredictorLevels), 3);
+%! assert_equal (CMdl.PredictorLevels{3}, {'narrow', 'wide'});
+
+%!test  # predict takes a table, read by name and not by position
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! T = table (meas(inds,1), meas(inds,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species(inds));
+%! CMdl = compact (fitcsvm (T, 'Species'));
+%! a = predict (CMdl, T);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (CMdl, T(:, [3, 2, 1])), a);
