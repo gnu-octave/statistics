@@ -86,6 +86,41 @@ classdef (Abstract) PredictiveModel
 
     endfunction
 
+    ## Resolve table input into the predictors and the response that loss,
+    ## margin and edge take.  GIVEN says whether the call gave a third
+    ## argument at all, and ARGS are the ones after it.  A matrix passes
+    ## through untouched.
+    function [X, Y, args] = tableResponse (this, caller, X, Y, args, given)
+
+      if (! istable (X))
+        return;
+      endif
+
+      ## The argument after the table is the response where an odd number
+      ## of arguments follows the table, and a name-value name where an
+      ## even number does, pairs being even.  Then the response is the
+      ## variable the model was fitted on.
+      if (mod (given + numel (args), 2) == 0)
+        if (given)
+          args = [{Y}, args];
+        endif
+        Y = this.ResponseName;
+      endif
+
+      ## A name is looked up among the table's variables; anything else is
+      ## the response itself, given beside the table
+      if ((ischar (Y) && isrow (Y)) || (isa (Y, 'string') && isscalar (Y)))
+        name = char (Y);
+        if (! any (strcmp (X.Properties.VariableNames, name)))
+          error ("%s: the table holds no variable '%s'.", caller, name);
+        endif
+        Y = X.(name);
+      endif
+
+      X = tableColumns (this, caller, X);
+
+    endfunction
+
   endmethods
 
   methods (Access = public)
