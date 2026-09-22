@@ -472,8 +472,6 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
     ## Takes the @qcode{'LossFun'} and @qcode{'Weights'} options that
     ## @code{ClassificationNaiveBayes.loss} takes.
     ##
-
-    ##
     ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
     ## the predictors the model was fitted on by name and not by position.
     ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
@@ -481,17 +479,6 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
     ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
-    ##
-    ## -*- texinfo -*-
-    ## @deftypefn  {CompactClassificationNaiveBayes} {@var{l} =} loss (@var{obj}, @var{X}, @var{Y})
-    ## @deftypefnx {CompactClassificationNaiveBayes} {@var{l} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {CompactClassificationNaiveBayes} {@var{l} =} loss (@var{obj}, @var{Tbl})
-    ## @deftypefnx {CompactClassificationNaiveBayes} {@var{l} =} loss (@dots{}, @var{name}, @var{value})
-    ##
-    ## Classification loss on new data.
-    ##
-    ## Takes the @qcode{'LossFun'} and @qcode{'Weights'} options that
-    ## @code{ClassificationNaiveBayes.loss} takes.
     ##
     ## @end deftypefn
     function l = loss (this, X, Y, varargin)

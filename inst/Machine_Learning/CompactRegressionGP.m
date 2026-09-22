@@ -351,8 +351,6 @@ classdef CompactRegressionGP < PredictiveModel
     ## and accepts the same @qcode{'LossFun'} and @qcode{'Weights'} pairs the
     ## full model accepts.
     ##
-
-    ##
     ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
     ## the predictors the model was fitted on by name and not by position.
     ## @code{loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
@@ -360,19 +358,6 @@ classdef CompactRegressionGP < PredictiveModel
     ## @code{loss (@var{obj}, @var{Tbl})} from the variable the model was
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
-    ##
-    ## -*- texinfo -*-
-    ## @deftypefn  {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
-    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@var{obj}, @var{Tbl})
-    ## @deftypefnx {CompactRegressionGP} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
-    ##
-    ## Compute the regression loss of a compact Gaussian process model.
-    ##
-    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the mean
-    ## squared error of the model @var{obj} on the data @var{X} and @var{Y},
-    ## and accepts the same @qcode{'LossFun'} and @qcode{'Weights'} pairs the
-    ## full model accepts.
     ##
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
