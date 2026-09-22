@@ -869,3 +869,400 @@ function [ox, oy] = bcOrient (this, bx, by)
   endif
 
 endfunction
+
+%!shared bxY, bxG, bxS, bxR
+%! bxY = [1; 2; 3; 4; 5; 6; 7; 8; 9; 100];
+%! bxG = [2; 2; 2; 2; 2; 5; 5; 5; 5; 5];
+%! bxS = struct ('XData', [], 'YData', bxY, 'SourceTable', [], ...
+%!               'XVariable', [], 'YVariable', [], ...
+%!               'XDataMode', 'auto', 'YDataMode', 'manual');
+%! bxR = struct ('XData', [], 'YData', [], ...
+%!               'SourceTable', table (bxG, bxY, ...
+%!                                     'VariableNames', {'grp', 'val'}), ...
+%!               'XVariable', 'grp', 'YVariable', 'val', ...
+%!               'XDataMode', 'auto', 'YDataMode', 'auto');
+
+%!test  # the class is built from an axes and a data specification
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   assert_equal (class (b), 'stats.chart.BoxChart');
+%!   assert_equal (b.Parent, gca ());
+%!   assert_equal (b.YData, bxY);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # an empty axes is the current one, and the pairs are set before drawing
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart ([], bxS, {'Notch', 'on', 'BoxWidth', 0.8});
+%!   assert_equal (b.Parent, gca ());
+%!   assert_equal (b.Notch, 'on');
+%!   assert_equal (b.BoxWidth, 0.8);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a rejected value leaves no figure, the axes being resolved last
+%! n = numel (findall (0, 'type', 'figure'));
+%! msg = '';
+%! try
+%!   stats.chart.BoxChart ([], bxS, {'BoxWidth', -1});
+%! catch err
+%!   msg = err.message;
+%! end_try_catch
+%! assert_equal (isempty (msg), false);
+%! assert_equal (numel (findall (0, 'type', 'figure')), n);
+
+%!test  # the colours every part is drawn in default to the same triplet
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   assert_equal (b.BoxFaceColor, [0, 0.447, 0.741]);
+%!   assert_equal (b.BoxEdgeColor, [0, 0.447, 0.741]);
+%!   assert_equal (b.BoxMedianLineColor, [0, 0.447, 0.741]);
+%!   assert_equal (b.WhiskerLineColor, [0, 0.447, 0.741]);
+%!   assert_equal (b.MarkerColor, [0, 0.447, 0.741]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # nothing was chosen, so every mode reads 'auto'
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   assert_equal (b.BoxFaceColorMode, 'auto');
+%!   assert_equal (b.BoxEdgeColorMode, 'auto');
+%!   assert_equal (b.BoxMedianLineColorMode, 'auto');
+%!   assert_equal (b.MarkerColorMode, 'auto');
+%!   assert_equal (b.CapWidthMode, 'auto');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # setting one of them records that it was chosen
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   b.BoxEdgeColor = [1, 0, 0];
+%!   assert_equal (b.BoxEdgeColorMode, 'manual');
+%!   b.BoxMedianLineColor = [1, 0, 0];
+%!   assert_equal (b.BoxMedianLineColorMode, 'manual');
+%!   b.MarkerColor = [1, 0, 0];
+%!   assert_equal (b.MarkerColorMode, 'manual');
+%!   b.CapWidth = 0.4;
+%!   assert_equal (b.CapWidthMode, 'manual');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a colour name is kept as the triplet it stands for
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   b.BoxFaceColor = 'r';
+%!   assert_equal (b.BoxFaceColor, [1, 0, 0]);
+%!   b.WhiskerLineColor = 'black';
+%!   assert_equal (b.WhiskerLineColor, [0, 0, 0]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a word is taken whatever its case and kept in the documented spelling
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   b.Notch = 'ON';
+%!   assert_equal (b.Notch, 'on');
+%!   b.Orientation = 'HORIZONTAL';
+%!   assert_equal (b.Orientation, 'horizontal');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## The modes and the parent are read-only here, where MATLAB assigns them
+%!test
+%! m = meta.class.fromName ('stats.chart.BoxChart');
+%! nm = cellfun (@(p) p.Name, m.PropertyList, 'UniformOutput', false);
+%! i = find (strcmp (nm, 'XDataMode'), 1);
+%! assert_equal (m.PropertyList{i}.SetAccess, 'private');
+%! assert_equal (m.PropertyList{i}.GetAccess, 'public');
+%! i = find (strcmp (nm, 'Parent'), 1);
+%! assert_equal (m.PropertyList{i}.SetAccess, 'private');
+
+%!test  # the box spans the quartiles and the median lies across it
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   stats.chart.BoxChart (gca (), bxS);
+%!   k = flipud (get (gca (), 'children'));
+%!   assert_equal (get (k(1), 'xdata'), [0.75; 1.25; 1.25; 0.75]);
+%!   assert_equal (get (k(1), 'ydata'), [3; 3; 8; 8]);
+%!   assert_equal (get (k(2), 'ydata'), [5.5, 5.5]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## The whiskers reach the furthest values within one and a half IQR of the box
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   stats.chart.BoxChart (gca (), bxS);
+%!   k = flipud (get (gca (), 'children'));
+%!   assert_equal (get (k(3), 'ydata'), [8, 9]);
+%!   assert_equal (get (k(4), 'ydata'), [3, 1]);
+%!   assert_equal (get (k(5), 'xdata'), [0.875, 1.125]);
+%!   assert_equal (get (k(6), 'xdata'), [0.875, 1.125]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # whatever the whiskers do not reach is drawn as a marker
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   k = flipud (get (gca (), 'children'));
+%!   assert_equal (numel (k), 7);
+%!   assert_equal (get (k(7), 'ydata'), 100);
+%!   assert_equal (get (k(7), 'marker'), 'o');
+%!   b.MarkerStyle = 'none';
+%!   assert_equal (numel (get (gca (), 'children')), 6);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a jittered marker is spread across the width of the box
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   k = flipud (get (gca (), 'children'));
+%!   assert_equal (get (k(7), 'xdata'), 1);
+%!   b.JitterOutliers = 'on';
+%!   k = flipud (get (gca (), 'children'));
+%!   assert_equal (abs (get (k(7), 'xdata') - 1) <= 0.25, true);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a horizontal chart is the same drawing with the axes exchanged
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS, {'Orientation', 'horizontal'});
+%!   k = flipud (get (gca (), 'children'));
+%!   assert_equal (get (k(1), 'xdata'), [3; 3; 8; 8]);
+%!   assert_equal (get (k(1), 'ydata'), [0.75; 1.25; 1.25; 0.75]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## A notch spans the median plus and minus 1.57 IQR / sqrt (n)
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   stats.chart.BoxChart (gca (), bxS, {'Notch', 'on'});
+%!   k = flipud (get (gca (), 'children'));
+%!   by = get (k(1), 'ydata');
+%!   d = 1.57 * (8 - 3) / sqrt (10);
+%!   assert_equal (numel (by), 10);
+%!   assert_equal (by(3), 5.5 - d, eps);
+%!   assert_equal (by(5), 5.5 + d, eps);
+%!   assert_equal (by(4), 5.5);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a numeric grouping puts each box at the value it was given
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = bxS;
+%!   s.XData = bxG;
+%!   s.XDataMode = 'manual';
+%!   stats.chart.BoxChart (gca (), s);
+%!   p = findobj (gca (), 'type', 'patch');
+%!   x1 = get (p(1), 'xdata');
+%!   x2 = get (p(2), 'xdata');
+%!   assert_equal (sort ([x1(1), x2(1)]), [1.75, 4.75]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a categorical grouping draws one box per level
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = bxS;
+%!   s.XData = categorical ({'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'c'; 'c'; 'c'; 'c'});
+%!   s.XDataMode = 'manual';
+%!   stats.chart.BoxChart (gca (), s);
+%!   assert_equal (numel (findobj (gca (), 'type', 'patch')), 3);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # no observations, nothing drawn, and the data may be given afterwards
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = bxS;
+%!   s.YData = [];
+%!   b = stats.chart.BoxChart (gca (), s);
+%!   assert_equal (isempty (get (gca (), 'children')), true);
+%!   b.YData = bxY;
+%!   assert_equal (numel (get (gca (), 'children')), 7);
+%!   assert_equal (b.YDataMode, 'manual');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a row of observations is kept as a column
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = bxS;
+%!   s.YData = bxY';
+%!   b = stats.chart.BoxChart (gca (), s);
+%!   assert_equal (b.YData, bxY);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # the chart is a handle, so two names are one chart
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   c = b;
+%!   c.BoxWidth = 0.9;
+%!   assert_equal (b.BoxWidth, 0.9);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a table fills both sides and puts both modes at 'auto'
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxR);
+%!   assert_equal (b.YData, bxY);
+%!   assert_equal (b.XDataMode, 'auto');
+%!   assert_equal (b.YDataMode, 'auto');
+%!   assert_equal (numel (findobj (gca (), 'type', 'patch')), 2);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # clearing a variable name is allowed where naming one would not be
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxR);
+%!   b.XVariable = [];
+%!   assert_equal (isempty (b.XVariable), true);
+%!   assert_equal (b.YData, bxY);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # disp heads with the short name and says what was drawn
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxS);
+%!   s = evalc ('disp (b)');
+%!   assert_equal (isempty (strfind (s, 'BoxChart with properties:')), false);
+%!   assert_equal (isempty (strfind (s, 'observations: 10')), false);
+%!   assert_equal (isempty (strfind (s, 'boxes: 1')), false);
+%!   assert_equal (isempty (strfind (s, 'Orientation: vertical')), false);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a chart drawn from a table also names the column it was drawn from
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = stats.chart.BoxChart (gca (), bxR);
+%!   s = evalc ('disp (b)');
+%!   assert_equal (isempty (strfind (s, 'boxes: 2')), false);
+%!   assert_equal (isempty (strfind (s, 'YVariable: val')), false);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Input validation
+%!error<stats.chart.BoxChart: too few input arguments.> ...
+%! stats.chart.BoxChart ()
+
+%!error<stats.chart.BoxChart: 'YData' must be a real numeric vector.> ...
+%! stats.chart.BoxChart ([], setfield (bxS, 'YData', {1, 2}))
+
+%!error<stats.chart.BoxChart: 'SourceTable' must be a table.> ...
+%! stats.chart.BoxChart ([], setfield (bxS, 'SourceTable', 5))
+
+%!error<stats.chart.BoxChart: 'XVariable' must name one table variable.> ...
+%! stats.chart.BoxChart ([], setfield (bxR, 'XVariable', 5))
+
+%!error<stats.chart.BoxChart: the table holds no variable 'nope'.> ...
+%! stats.chart.BoxChart ([], setfield (bxR, 'YVariable', 'nope'))
+
+%!error<stats.chart.BoxChart: the table holds no variable 'nope'.> ...
+%! stats.chart.BoxChart ([], setfield (bxR, 'XVariable', 'nope'))
+
+%!error<stats.chart.BoxChart: 'BoxWidth' must be a positive scalar.> ...
+%! stats.chart.BoxChart ([], bxS, {'BoxWidth', 0})
+
+%!error<stats.chart.BoxChart: 'CapWidth' must be a positive scalar.> ...
+%! stats.chart.BoxChart ([], bxS, {'CapWidth', [1, 2]})
+
+%!error<stats.chart.BoxChart: 'LineWidth' must be a positive scalar.> ...
+%! stats.chart.BoxChart ([], bxS, {'LineWidth', -1})
+
+%!error<stats.chart.BoxChart: 'MarkerSize' must be a positive scalar.> ...
+%! stats.chart.BoxChart ([], bxS, {'MarkerSize', 'big'})
+
+%!error<stats.chart.BoxChart: 'BoxFaceAlpha' must be a scalar between 0 and 1.> ...
+%! stats.chart.BoxChart ([], bxS, {'BoxFaceAlpha', 1.5})
+
+%!error<stats.chart.BoxChart: 'BoxFaceColor' must be an RGB triplet or a colour name.> ...
+%! stats.chart.BoxChart ([], bxS, {'BoxFaceColor', [2, 0, 0]})
+
+%!error<stats.chart.BoxChart: 'WhiskerLineColor' must be an RGB triplet or a colour name.> ...
+%! stats.chart.BoxChart ([], bxS, {'WhiskerLineColor', 'puce'})
+
+%!error<stats.chart.BoxChart: 'WhiskerLineStyle' must be one of '-', '--', ':', '-.', 'none'.> ...
+%! stats.chart.BoxChart ([], bxS, {'WhiskerLineStyle', 'wavy'})
+
+## The pattern of the next block stops at 'v': 'test.m' ends it at the first
+## '>' of the line, with 'index (str, ">")', so the '>' among the markers this
+## message lists cannot be matched.  Measured on Octave 11.3.0.
+%!error<stats.chart.BoxChart: 'MarkerStyle' must be one of 'o', '\+', '\*', '.', 'x', 's', 'd', '\^', 'v'> ...
+%! stats.chart.BoxChart ([], bxS, {'MarkerStyle', 'q'})
+
+%!error<stats.chart.BoxChart: 'Notch' must be one of 'on', 'off'.> ...
+%! stats.chart.BoxChart ([], bxS, {'Notch', 'maybe'})
+
+%!error<stats.chart.BoxChart: 'JitterOutliers' must be one of 'on', 'off'.> ...
+%! stats.chart.BoxChart ([], bxS, {'JitterOutliers', 'yes'})
+
+%!error<stats.chart.BoxChart: 'Orientation' must be one of 'vertical', 'horizontal'.> ...
+%! stats.chart.BoxChart ([], bxS, {'Orientation', 'sideways'})
+
+## The data comes from vectors or from a table, never from both
+%!error<stats.chart.BoxChart: setting 'YData' while 'YVariable' names a column is not supported.>
+%! hf = figure ('visible', 'off');
+%! b = stats.chart.BoxChart (gca (), bxR);
+%! close (hf);
+%! b.YData = bxY;
+
+%!error<stats.chart.BoxChart: setting 'XData' while 'XVariable' names a column is not supported.>
+%! hf = figure ('visible', 'off');
+%! b = stats.chart.BoxChart (gca (), bxR);
+%! close (hf);
+%! b.XData = bxG;
+
+%!error<stats.chart.BoxChart: setting 'YVariable' while 'YDataMode' is 'manual' is not supported.>
+%! hf = figure ('visible', 'off');
+%! b = stats.chart.BoxChart (gca (), bxS);
+%! close (hf);
+%! b.YVariable = 'val';
+
+%!error<stats.chart.BoxChart: setting 'XVariable' while 'XDataMode' is 'manual' is not supported.>
+%! hf = figure ('visible', 'off');
+%! s = bxS;
+%! s.XData = bxG;
+%! s.XDataMode = 'manual';
+%! b = stats.chart.BoxChart (gca (), s);
+%! close (hf);
+%! b.XVariable = 'grp';
