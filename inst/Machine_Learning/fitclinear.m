@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitclinear (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitclinear (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitclinear (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitclinear (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitclinear (@dots{}, @var{name}, @var{value})
 ## @deftypefnx {statistics} {[@var{Mdl}, @var{FitInfo}] =} fitclinear (@dots{})
 ##
@@ -115,6 +118,26 @@ endfunction
 %! X = meas(51:end,:);
 %! Y = species(51:end);
 %! [Mdl, FitInfo] = fitclinear (X, Y, 'Learner', 'logistic')
+
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds,:);
+%! T = table (X(:,1), X(:,2), X(:,3), X(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = species(inds);
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitclinear (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [5, 4, 3, 2, 1]));
+%! label'
 
 %!test
 %! ## The driver returns what the class constructor returns
@@ -218,3 +241,37 @@ endfunction
 %! load fisheriris
 %! fitclinear (meas(51:150,:), species(51:150), ...
 %!             'ClassNames', {'virginica'; 'rose'})
+
+## Table input
+%!shared fclT
+%! load fisheriris
+%! fclI = ! strcmp (species, 'setosa');
+%! fclX = meas(fclI,:);
+%! fclT = table (fclX(:,1), fclX(:,2), fclX(:,3), fclX(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fclT.Species = species(fclI);
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitclinear (fclT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitclinear (fclT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitclinear (fclT, 'Species');
+%! a = predict (Mdl, fclT);
+%! assert_equal (predict (Mdl, fclT(:, [5, 4, 3, 2, 1])), a);
+
+%!test  # a cross-validated fit takes a table too
+%! Mdl = fitclinear (fclT, 'Species', 'KFold', 3);
+%! assert_equal (class (Mdl), 'ClassificationPartitionedLinear');
+%! assert_equal (Mdl.KFold, 3);
+
+%!error<ClassificationLinear: the table holds no variable 'NoSuch'.> ...
+%! fitclinear (fclT, 'NoSuch')
+
+%!error<ClassificationLinear: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitclinear (fclT, 'Species ~ SL*PW')

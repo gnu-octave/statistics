@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitrkernel (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrkernel (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrkernel (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrkernel (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitrkernel (@dots{}, @var{name}, @var{value})
 ## @deftypefnx {statistics} {[@var{Mdl}, @var{FitInfo}] =} fitrkernel (@dots{})
 ##
@@ -116,6 +119,24 @@ endfunction
 %! ok = ! any (isnan ([X, MPG]), 2);
 %! [Mdl, FitInfo] = fitrkernel (X(ok,:), MPG(ok))
 
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%!
+%! ## A model formula names the response and the predictors together, and
+%! ## holds main effects only
+%! Mdl = fitrkernel (T, 'SL ~ PL + PW');
+%! Mdl.PredictorNames
+%! Mdl.ResponseName
+%!
+%! ## predict matches the table's variables by name, so a column the model
+%! ## was not fitted on is passed over
+%! yFit = predict (Mdl, T(1:5,:));
+%! yFit'
+
 %!test
 %! ## The driver returns a kernel regression model
 %! load carsmall
@@ -179,3 +200,30 @@ endfunction
 %! fitrkernel (ones (10, 2), ones (10, 1), 'Learner')
 %!error<RegressionKernel: 'Learner' must be either 'svm' or 'leastsquares'.> ...
 %! fitrkernel (ones (10, 2), ones (10, 1), 'Learner', 'logistic')
+
+## Table input
+%!shared frkT
+%! load fisheriris
+%! frkT = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'SL'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrkernel (frkT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrkernel (frkT, 'SL ~ PL');
+%! assert_equal (Mdl.PredictorNames, {'PL'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrkernel (frkT, 'SL');
+%! a = predict (Mdl, frkT);
+%! assert_equal (predict (Mdl, frkT(:, [3, 2, 1])), a);
+
+%!test  # a cross-validated fit takes a table too
+%! Mdl = fitrkernel (frkT, 'SL', 'KFold', 3);
+%! assert_equal (class (Mdl), 'RegressionPartitionedKernel');
+
+%!error<RegressionKernel: the table holds no variable 'NoSuch'.> ...
+%! fitrkernel (frkT, 'NoSuch')

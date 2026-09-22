@@ -313,6 +313,9 @@ classdef ClassificationKernel < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationKernel} {@var{obj} =} ClassificationKernel (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationKernel} {@var{obj} =} ClassificationKernel (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationKernel} {@var{obj} =} ClassificationKernel (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationKernel} {@var{obj} =} ClassificationKernel (@var{Tbl}, @var{Y})
     ## @deftypefnx {ClassificationKernel} {@var{obj} =} ClassificationKernel (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a Gaussian kernel binary classifier.
@@ -405,6 +408,10 @@ classdef ClassificationKernel < PredictiveModel
       if (nargin < 2)
         error ("ClassificationKernel: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationKernel', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationKernel: optional arguments must", ...
                        " be given in Name-Value pairs."));
@@ -801,12 +808,21 @@ classdef ClassificationKernel < PredictiveModel
     ## also returns the @math{Nx2} scores, whose columns follow
     ## @qcode{ClassNames}, after @qcode{ScoreTransform} has been applied.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function [labels, scores] = predict (this, XC)
 
       if (nargin < 2)
         error ("ClassificationKernel.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationKernel.predict', XC);
       if (isempty (XC))
         error ("ClassificationKernel.predict: XC is empty.");
       endif

@@ -301,6 +301,16 @@ classdef ClassificationPartitionedLinear
                        " arguments must be given in Name-Value pairs."));
       endif
 
+      ## A table names its own predictors and says which hold levels.  This
+      ## class answers over its folds rather than over new data, so the
+      ## levels are not kept: there is no later prediction to code.
+      if (istable (X))
+        [X, Y, varargin, ~, errmsg] = tableFrame (X, Y, varargin);
+        if (! isempty (errmsg))
+          error ("ClassificationPartitionedLinear: %s", errmsg);
+        endif
+      endif
+
       ## Split the argument list three ways: what says how to partition,
       ## what the parent owns, and what each fold is fitted with.
       [P, args] = partitionedArgs (varargin, ...
@@ -965,3 +975,13 @@ endclassdef
 %! [l, s] = kfoldPredict (Mdl);
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+## Table input
+%!test  # the predictors and the response may come from a table
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! T = table (meas(inds,1), meas(inds,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = species(inds);
+%! CVMdl = ClassificationPartitionedLinear (T, 'Species', 'KFold', 3);
+%! assert_equal (class (CVMdl), 'ClassificationPartitionedLinear');
+%! assert_equal (CVMdl.KFold, 3);

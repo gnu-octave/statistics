@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitckernel (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitckernel (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitckernel (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitckernel (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitckernel (@dots{}, @var{name}, @var{value})
 ## @deftypefnx {statistics} {[@var{Mdl}, @var{FitInfo}] =} fitckernel (@dots{})
 ##
@@ -192,3 +195,28 @@ endfunction
 %! load fisheriris
 %! fitckernel (meas(51:150,:), species(51:150), ...
 %!             'ClassNames', {'virginica'; 'rose'})
+
+## Table input
+%!shared fckT
+%! load fisheriris
+%! fckI = ! strcmp (species, 'setosa');
+%! fckX = meas(fckI,:);
+%! fckT = table (fckX(:,1), fckX(:,2), 'VariableNames', {'SL', 'SW'});
+%! fckT.Species = categorical (species(fckI));
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitckernel (fckT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitckernel (fckT, 'Species');
+%! a = predict (Mdl, fckT);
+%! assert_equal (predict (Mdl, fckT(:, [3, 2, 1])), a);
+
+%!test  # a cross-validated fit takes a table too
+%! Mdl = fitckernel (fckT, 'Species', 'KFold', 3);
+%! assert_equal (class (Mdl), 'ClassificationPartitionedKernel');
+
+%!error<ClassificationKernel: the table holds no variable 'NoSuch'.> ...
+%! fitckernel (fckT, 'NoSuch')

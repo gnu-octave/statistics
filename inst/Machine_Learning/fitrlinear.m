@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitrlinear (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrlinear (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrlinear (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitrlinear (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitrlinear (@dots{}, @var{name}, @var{value})
 ## @deftypefnx {statistics} {[@var{Mdl}, @var{FitInfo}] =} fitrlinear (@dots{})
 ##
@@ -183,3 +186,30 @@ endfunction
 %! fitrlinear (ones (10, 2), ones (10, 1), 'Learner')
 %!error<RegressionLinear: 'Learner' must be either 'svm' or 'leastsquares'.> ...
 %! fitrlinear (ones (10, 2), ones (10, 1), 'Learner', 'logistic')
+
+## Table input
+%!shared frlT
+%! load fisheriris
+%! frlT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!               'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitrlinear (frlT, 'SL');
+%! assert_equal (Mdl.PredictorNames, {'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'SL');
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitrlinear (frlT, 'SL ~ PL + PW');
+%! assert_equal (Mdl.PredictorNames, {'PL', 'PW'});
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitrlinear (frlT, 'SL');
+%! a = predict (Mdl, frlT);
+%! assert_equal (predict (Mdl, frlT(:, [4, 3, 2, 1])), a);
+
+%!test  # a cross-validated fit takes a table too
+%! Mdl = fitrlinear (frlT, 'SL', 'KFold', 3);
+%! assert_equal (class (Mdl), 'RegressionPartitionedLinear');
+
+%!error<RegressionLinear: the table holds no variable 'NoSuch'.> ...
+%! fitrlinear (frlT, 'NoSuch')

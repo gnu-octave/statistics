@@ -262,6 +262,16 @@ classdef RegressionPartitionedKernel
                        " must be given in Name-Value pairs."));
       endif
 
+      ## A table names its own predictors and says which hold levels.  This
+      ## class answers over its folds rather than over new data, so the
+      ## levels are not kept: there is no later prediction to code.
+      if (istable (X))
+        [X, Y, varargin, ~, errmsg] = tableFrame (X, Y, varargin);
+        if (! isempty (errmsg))
+          error ("RegressionPartitionedKernel: %s", errmsg);
+        endif
+      endif
+
       [P, args] = partitionedArgs (varargin, 'RegressionPartitionedKernel');
       F = regFrame (X, Y, P.Weights, 'RegressionPartitionedKernel');
       [part, args] = cvPartitionOf (args, [], F.n, ...
@@ -593,3 +603,12 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = kfoldPredict (Mdl);
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+## Table input
+%!test  # the predictors and the response may come from a table
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! CVMdl = RegressionPartitionedKernel (T, 'SL', 'KFold', 3);
+%! assert_equal (class (CVMdl), 'RegressionPartitionedKernel');
+%! assert_equal (CVMdl.KFold, 3);

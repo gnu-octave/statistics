@@ -235,6 +235,9 @@ classdef RegressionLinear < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionLinear} {@var{obj} =} RegressionLinear (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionLinear} {@var{obj} =} RegressionLinear (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionLinear} {@var{obj} =} RegressionLinear (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionLinear} {@var{obj} =} RegressionLinear (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionLinear} {@var{obj} =} RegressionLinear (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a linear regression model.
@@ -358,6 +361,10 @@ classdef RegressionLinear < PredictiveModel
       if (nargin < 2)
         error ("RegressionLinear: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'RegressionLinear', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionLinear: optional arguments must be", ...
                        " given in Name-Value pairs."));
@@ -906,12 +913,21 @@ classdef RegressionLinear < PredictiveModel
     ## predicted value per row of @var{XC}, and one column per regularization
     ## strength.  @qcode{ResponseTransform} is applied to the result.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function yFit = predict (this, XC)
 
       if (nargin < 2)
         error ("RegressionLinear.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'RegressionLinear.predict', XC);
       if (isempty (XC))
         error ("RegressionLinear.predict: XC is empty.");
       endif

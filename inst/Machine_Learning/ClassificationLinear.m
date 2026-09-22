@@ -269,6 +269,9 @@ classdef ClassificationLinear < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationLinear} {@var{obj} =} ClassificationLinear (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationLinear} {@var{obj} =} ClassificationLinear (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationLinear} {@var{obj} =} ClassificationLinear (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationLinear} {@var{obj} =} ClassificationLinear (@var{Tbl}, @var{Y})
     ## @deftypefnx {ClassificationLinear} {@var{obj} =} ClassificationLinear (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a linear binary classifier.
@@ -402,6 +405,10 @@ classdef ClassificationLinear < PredictiveModel
       if (nargin < 2)
         error ("ClassificationLinear: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationLinear', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationLinear: optional arguments must", ...
                        " be given in Name-Value pairs."));
@@ -978,12 +985,21 @@ classdef ClassificationLinear < PredictiveModel
     ## strength.  The scores are @math{-f} and @math{+f} for the raw model
     ## value @math{f}, after @qcode{ScoreTransform} has been applied.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function [labels, scores] = predict (this, XC)
 
       if (nargin < 2)
         error ("ClassificationLinear.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationLinear.predict', XC);
       if (isempty (XC))
         error ("ClassificationLinear.predict: XC is empty.");
       endif
