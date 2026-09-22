@@ -1,0 +1,38 @@
+%!demo
+%! ## 1. A predictor's contribution against its own value
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## One point per query point: the predictor's value across, its Shapley
+%! ## value up.  A rising cloud says the predictor pushes the prediction up
+%! ## the larger it gets
+%! plotDependence (s, 'x2');
+
+%!demo
+%! ## 2. A second predictor brought in as colour
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## `ColorPredictor` colours each point by another predictor's value and
+%! ## draws a colour bar for the scale, which is how an interaction between
+%! ## the two shows itself
+%! plotDependence (s, 'x2', 'ColorPredictor', 'x3');
+
+%!demo
+%! ## 3. A predictor holding levels
+%!
+%! load fisheriris
+%! X = [meas(:,2:3), double(strcmp (species, 'setosa'))];
+%! mdl = fitrtree (X, meas(:,1), 'CategoricalPredictors', 3);
+%! s = shapley (mdl, 'QueryPoints', X(1:5:150,:), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## Where the predictor holds levels rather than numbers the chart is a
+%! ## box over each level instead of a scatter
+%! plotDependence (s, 'x3');

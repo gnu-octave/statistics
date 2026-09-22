@@ -66,7 +66,7 @@
 ## @seealso{scatter, boxchart, gscatter}
 ## @end deftypefn
 
-function s = swarmchart (varargin)
+function varargout = swarmchart (varargin)
 
   if (nargin < 2)
     print_usage ();
@@ -114,6 +114,12 @@ function s = swarmchart (varargin)
   for name = {'XJitter', 'YJitter', 'XJitterWidth', 'YJitterWidth'}
     addlistener (s, name{1}, @(h, ~) scRespread (h, x, y));
   endfor
+
+  ## The handle is handed back only where it was asked for, so a call made
+  ## for the drawing alone prints nothing
+  if (nargout > 0)
+    varargout{1} = s;
+  endif
 
 endfunction
 

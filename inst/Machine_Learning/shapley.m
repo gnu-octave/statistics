@@ -277,7 +277,7 @@ classdef shapley
     ## @qcode{'QueryPoints'} is given the values are computed at once,
     ## otherwise they are left to @code{fit}.
     ##
-    ## @seealso{shapley, fit}
+    ## @seealso{shapley, shapley.fit}
     ## @end deftypefn
 
     function this = shapley (blackbox, varargin)
@@ -458,6 +458,408 @@ classdef shapley
       this.MeanAbsoluteShapley = shapTable (phi, this.PredictorNames, ...
                                             this.ClassNames, this.IsClass, ...
                                             true);
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {shapley} {} plot (@var{obj})
+    ## @deftypefnx {shapley} {} plot (@var{obj}, @var{name}, @var{value})
+    ## @deftypefnx {shapley} {} plot (@var{ax}, @dots{})
+    ## @deftypefnx {shapley} {@var{b} =} plot (@dots{})
+    ##
+    ## Plot the Shapley values as a horizontal bar chart.
+    ##
+    ## One bar per predictor, the least important at the bottom.  Over one
+    ## query point the bars hold the values themselves and the chart is
+    ## titled @qcode{'Shapley Explanation'}; over several they hold the mean
+    ## of the absolute values and it is titled
+    ## @qcode{'Shapley Importance Plot'}.
+    ##
+    ## @var{ax} is the axes to draw into, the current one where none is
+    ## given.  @var{b} holds one bar series per class drawn.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'NumImportantPredictors'} @tab @tab How many predictors
+    ## to draw on their own, the ten most important by default.  Over
+    ## several query points whatever is left over is drawn as one further
+    ## bar holding its sum; over one query point it is left out.
+    ##
+    ## @item @qcode{'ClassNames'} @tab @tab The classes to draw, for a
+    ## classification model.  The default is the predicted class over one
+    ## query point and every class over several.
+    ##
+    ## @item @qcode{'QueryPointIndices'} @tab @tab Which query points to
+    ## draw, all of them by default.
+    ## @end multitable
+    ##
+    ## @seealso{shapley, shapley.boxchart, shapley.swarmchart}
+    ## @end deftypefn
+
+    function varargout = plot (varargin)
+
+      [ax, this, args] = shapDrawArgs (varargin, 'plot');
+      optNames = {'NumImportantPredictors', 'ClassNames', ...
+                  'QueryPointIndices'};
+      [nip, cn, qpi, rem] = parsePairedArguments (optNames, {[], [], []}, ...
+                                                  args);
+      if (! isempty (rem))
+        error (strcat ("shapley.plot: unknown optional argument or", ...
+                       " misplaced value."));
+      endif
+
+      cnames = shapClassVars (this);
+      qpi = shapCheckPoints (qpi, rows (this.QueryPoints), 'plot');
+      idx = shapCheckClasses (cnames, cn, 'plot', 'ClassNames', ...
+                    shapDefaultClasses (cnames, this.BlackboxFitted, qpi));
+      V = shapDrawValues (this.Shapley, cnames, idx, qpi);
+      M = rows (V);
+      nip = shapCheckCount (nip, M, 'plot');
+
+      ## Over one query point the values stand as they are; over several it
+      ## is the mean of their absolute values that MATLAB draws
+      one = (numel (qpi) == 1);
+      if (one)
+        vals = reshape (V(:,1,:), M, []);
+      else
+        vals = reshape (mean (abs (V), 2), M, []);
+      endif
+
+      ## The least important at the bottom, and over several query points
+      ## whatever is left over is summed into one bar of its own
+      [~, ord] = sort (sum (abs (vals), 2), 'ascend');
+      names = cellstr (this.Shapley.Predictor);
+      names = names(ord);
+      vals = vals(ord,:);
+      if (nip < M)
+        kept = (M - nip + 1):M;
+        if (one)
+          vals = vals(kept,:);
+          names = names(kept);
+        else
+          lump = sum (vals(1:(M - nip),:), 1);
+          vals = [lump; vals(kept,:)];
+          label = sprintf ('Sum of other %d predictor(s)', M - nip);
+          names = [{label}; names(kept)];
+        endif
+      endif
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+      n = rows (vals);
+      h = barh (ax, 1:n, vals);
+      set (ax, 'ytick', 1:n, 'yticklabel', names);
+      if (one)
+        title (ax, 'Shapley Explanation');
+        xlabel (ax, 'Shapley Value');
+      else
+        title (ax, 'Shapley Importance Plot');
+        xlabel (ax, 'Mean of Absolute Shapley Values');
+      endif
+      ylabel (ax, 'Predictor');
+      if (numel (idx) > 1)
+        legend (ax, cnames{idx});
+      endif
+
+      if (nargout > 0)
+        varargout{1} = h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {shapley} {} boxchart (@var{obj})
+    ## @deftypefnx {shapley} {} boxchart (@var{obj}, @var{name}, @var{value})
+    ## @deftypefnx {shapley} {} boxchart (@var{ax}, @dots{})
+    ## @deftypefnx {shapley} {@var{b} =} boxchart (@dots{})
+    ##
+    ## Draw a box chart of the Shapley values over the query points.
+    ##
+    ## One box per predictor, the least important at the bottom, spread over
+    ## the query points the values were fitted at.  The chart is titled
+    ## @qcode{'Shapley Summary Plot'} and lies horizontally.
+    ##
+    ## @var{ax} is the axes to draw into, the current one where none is
+    ## given.  @var{b} is the @code{stats.chart.BoxChart} drawn.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'NumImportantPredictors'} @tab @tab How many predictors
+    ## to draw, the ten most important by default.  Whatever is left over is
+    ## left out rather than summed, a box over a sum meaning nothing.
+    ##
+    ## @item @qcode{'ClassName'} @tab @tab The one class to draw, for a
+    ## classification model.  The default is the first class of the model.
+    ##
+    ## @item @qcode{'JitterOutliers'} @tab @tab Whether outlier markers are
+    ## spread across the width of the box, @qcode{'off'} by default.
+    ## @end multitable
+    ##
+    ## @seealso{shapley, shapley.plot, shapley.swarmchart, stats.chart.BoxChart}
+    ## @end deftypefn
+
+    function varargout = boxchart (varargin)
+
+      [ax, this, args] = shapDrawArgs (varargin, 'boxchart');
+      optNames = {'NumImportantPredictors', 'ClassName', 'JitterOutliers'};
+      [nip, cn, jit, rem] = parsePairedArguments (optNames, {[], [], []}, ...
+                                                  args);
+      if (! isempty (rem))
+        error (strcat ("shapley.boxchart: unknown optional argument or", ...
+                       " misplaced value."));
+      endif
+
+      if (! isempty (jit))
+        jit = shapCheckWord (jit, {'on', 'off'}, 'boxchart', ...
+                             'JitterOutliers');
+      endif
+      [vals, names] = shapOneClass (this.Shapley, shapClassVars (this), ...
+                                    cn, nip, 'boxchart');
+      n = rows (vals);
+      nq = columns (vals);
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+      grp = categorical (repmat (names, 1, nq)(:), names);
+      args = {'Orientation', 'horizontal', 'BoxWidth', 0.8};
+      if (! isempty (jit))
+        args = [args, {'JitterOutliers', jit}];
+      endif
+      b = boxchart (ax, grp, vals(:), args{:});
+      set (ax, 'ytick', 1:n, 'yticklabel', names);
+      title (ax, 'Shapley Summary Plot');
+      xlabel (ax, 'Shapley Value');
+      ylabel (ax, 'Predictor');
+
+      if (nargout > 0)
+        varargout{1} = b;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {shapley} {} swarmchart (@var{obj})
+    ## @deftypefnx {shapley} {} swarmchart (@var{obj}, @var{name}, @var{value})
+    ## @deftypefnx {shapley} {} swarmchart (@var{ax}, @dots{})
+    ## @deftypefnx {shapley} {@var{s} =} swarmchart (@dots{})
+    ##
+    ## Draw a swarm chart of the Shapley values over the query points.
+    ##
+    ## One row of points per predictor, the least important at the bottom,
+    ## one point per query point spread vertically by how crowded its
+    ## neighbourhood is.  Each point is coloured by the value the predictor
+    ## takes at that query point, the least of them at one end of the
+    ## colour map and the greatest at the other.  The chart is titled
+    ## @qcode{'Shapley Summary Plot'}.
+    ##
+    ## @var{ax} is the axes to draw into, the current one where none is
+    ## given.  @var{s} holds one scatter object per predictor drawn.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'NumImportantPredictors'} @tab @tab How many predictors
+    ## to draw, the ten most important by default.
+    ##
+    ## @item @qcode{'ClassName'} @tab @tab The one class to draw, for a
+    ## classification model.  The default is the first class of the model.
+    ##
+    ## @item @qcode{'YJitter'} @tab @tab How the points of a row are spread,
+    ## @qcode{'density'} by default, or @qcode{'rand'}, @qcode{'randn'} or
+    ## @qcode{'none'}.
+    ##
+    ## @item @qcode{'ColorMap'} @tab @tab The colour map the predictor
+    ## values are read through, as a name or as a matrix of one RGB triplet
+    ## per row.  The default is the one the axes already carries.
+    ## @end multitable
+    ##
+    ## @seealso{shapley, shapley.plot, shapley.boxchart, swarmchart}
+    ## @end deftypefn
+
+    function varargout = swarmchart (varargin)
+
+      [ax, this, args] = shapDrawArgs (varargin, 'swarmchart');
+      optNames = {'NumImportantPredictors', 'ClassName', 'YJitter', ...
+                  'ColorMap'};
+      [nip, cn, yj, cmap, rem] = parsePairedArguments (optNames, ...
+                                                  {[], [], [], []}, args);
+      if (! isempty (rem))
+        error (strcat ("shapley.swarmchart: unknown optional argument or", ...
+                       " misplaced value."));
+      endif
+      if (isempty (yj))
+        yj = 'density';
+      else
+        yj = shapCheckWord (yj, {'none', 'density', 'rand', 'randn'}, ...
+                            'swarmchart', 'YJitter');
+      endif
+      if (! isempty (cmap))
+        cmap = shapCheckMap (cmap, 'swarmchart');
+      endif
+
+      [vals, names, ord] = shapOneClass (this.Shapley, ...
+                              shapClassVars (this), cn, nip, 'swarmchart');
+      n = rows (vals);
+      nq = columns (vals);
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+      held = ishold (ax);
+      hold (ax, 'on');
+      h = zeros (n, 1);
+      unwind_protect
+        for k = 1:n
+          col = shapColorValues (this.QueryPoints(:,ord(k)));
+          at = k * ones (nq, 1);
+          h(k) = swarmchart (ax, vals(k,:)', at, 36, col, ...
+                             'XJitter', 'none', 'YJitter', yj);
+        endfor
+      unwind_protect_cleanup
+        if (! held)
+          hold (ax, 'off');
+        endif
+      end_unwind_protect
+      set (ax, 'ytick', 1:n, 'yticklabel', names, 'clim', [0, 1]);
+      if (! isempty (cmap))
+        colormap (ax, cmap);
+      endif
+      title (ax, 'Shapley Summary Plot');
+      xlabel (ax, 'Shapley Value');
+      ylabel (ax, 'Predictor');
+
+      if (nargout > 0)
+        varargout{1} = h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {shapley} {} plotDependence (@var{obj}, @var{predictor})
+    ## @deftypefnx {shapley} {} plotDependence (@var{obj}, @var{predictor}, @var{name}, @var{value})
+    ## @deftypefnx {shapley} {} plotDependence (@var{ax}, @dots{})
+    ## @deftypefnx {shapley} {@var{p} =} plotDependence (@dots{})
+    ##
+    ## Draw the Shapley values of one predictor against its own values.
+    ##
+    ## @var{predictor} names or indexes the predictor.  Where it holds
+    ## numbers the chart is a scatter of its value at each query point
+    ## against the value it was given there; where it holds levels the chart
+    ## is a box of the values at each level.
+    ##
+    ## The chart is titled @qcode{'Shapley Dependence Plot'} and its
+    ## vertical axis is labelled after the predictor drawn.
+    ##
+    ## @var{ax} is the axes to draw into, the current one where none is
+    ## given.  @var{p} is the scatter object, or the
+    ## @code{stats.chart.BoxChart}, drawn.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'ClassName'} @tab @tab The one class to draw, for a
+    ## classification model.  The default is the first class of the model.
+    ##
+    ## @item @qcode{'ColorPredictor'} @tab @tab A second predictor to colour
+    ## the points by, none by default.  Its values are read as they stand,
+    ## the range of the axes carrying the scale, and a colour bar is drawn
+    ## beside the chart.  It applies only where the predictor drawn holds
+    ## numbers.
+    ##
+    ## @item @qcode{'ColorMap'} @tab @tab The colour map the colouring
+    ## predictor is read through, as a name or as a matrix of one RGB
+    ## triplet per row.  The default is the one the axes already carries.
+    ## @end multitable
+    ##
+    ## @seealso{shapley, shapley.plot, shapley.swarmchart}
+    ## @end deftypefn
+
+    function varargout = plotDependence (varargin)
+
+      [ax, this, args] = shapDrawArgs (varargin, 'plotDependence');
+      if (isempty (args))
+        error ("shapley.plotDependence: too few input arguments.");
+      endif
+      pred = args{1};
+      optNames = {'ClassName', 'ColorPredictor', 'ColorMap'};
+      [cn, cp, cmap, rem] = parsePairedArguments (optNames, {[], [], []}, ...
+                                                  args(2:end));
+      if (! isempty (rem))
+        error (strcat ("shapley.plotDependence: unknown optional argument", ...
+                       " or misplaced value."));
+      endif
+
+      if (! isempty (cmap))
+        cmap = shapCheckMap (cmap, 'plotDependence');
+      endif
+      names = cellstr (this.Shapley.Predictor);
+      j = shapPredictorIndex (names, pred, 'plotDependence', 'PREDICTOR');
+      cnames = shapClassVars (this);
+      idx = shapCheckClasses (cnames, cn, 'plotDependence', 'ClassName', ...
+                              shapFirstClass (cnames));
+      if (numel (idx) > 1)
+        error ("shapley.plotDependence: 'ClassName' must name one class.");
+      endif
+      V = shapDrawValues (this.Shapley, cnames, idx, ...
+                          1:rows (this.QueryPoints));
+      y = V(j,:)';
+      x = this.QueryPoints(:,j);
+      lvl = any (this.CategoricalPredictors == j);
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+      if (lvl)
+        if (! isempty (cp))
+          error (strcat ("shapley.plotDependence: 'ColorPredictor' does", ...
+                         " not apply to a predictor holding levels."));
+        endif
+        p = boxchart (ax, x, y);
+      elseif (isempty (cp))
+        p = scatter (ax, x, y, 36);
+      else
+        k = shapPredictorIndex (names, cp, 'plotDependence', ...
+                                'ColorPredictor');
+        ## The colouring predictor is read as it stands here, the range of
+        ## the axes carrying the scale, where a swarm normalizes instead
+        col = this.QueryPoints(:,k);
+        p = scatter (ax, x, y, 36, col);
+        lo = min (col);
+        hi = max (col);
+        if (hi > lo)
+          set (ax, 'clim', [lo, hi]);
+        endif
+        if (! isempty (cmap))
+          colormap (ax, cmap);
+        endif
+        colorbar (ax);
+      endif
+      title (ax, 'Shapley Dependence Plot');
+      xlabel (ax, names{j});
+      ylabel (ax, sprintf ('Shapley Values for %s', names{j}));
+
+      if (nargout > 0)
+        varargout{1} = p;
+      endif
+
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    ## The variables the Shapley table holds one per class, empty for a
+    ## regression model or a function handle, which hold one value only.
+    function cnames = shapClassVars (this)
+
+      cnames = {};
+      if (this.IsClass)
+        cnames = shapClassText (this.ClassNames);
+      endif
 
     endfunction
 
@@ -1210,6 +1612,232 @@ function names = shapClassText (cn)
 
 endfunction
 
+## The axes and the explainer, in whichever order the call put them.  A
+## method reached with an axes first has the explainer second, dispatch
+## having found it wherever it sits.
+function [ax, this, args] = shapDrawArgs (in, caller)
+
+  ax = [];
+  if (numel (in) > 1 && isscalar (in{1}) && ishghandle (in{1})
+      && isaxes (in{1}))
+    ax = in{1};
+    in(1) = [];
+  endif
+  this = in{1};
+  args = in(2:end);
+  if (isempty (this.Shapley))
+    error (strcat ("shapley.%s: the Shapley values are not fitted; use", ...
+                   " fit to compute them."), caller);
+  endif
+
+endfunction
+
+## The values of the classes asked for at the query points asked for, as one
+## page per class.  A regression model and a function handle hold one value
+## per predictor and give one page.
+function V = shapDrawValues (T, cnames, idx, qpi)
+
+  if (isempty (cnames))
+    V = T.Value(:,qpi);
+    return;
+  endif
+  M = size (T, 1);
+  V = zeros (M, numel (qpi), numel (idx));
+  for k = 1:numel (idx)
+    A = T.(cnames{idx(k)});
+    V(:,:,k) = A(:,qpi);
+  endfor
+
+endfunction
+
+## The classes drawn where none was named: the predicted class over one
+## query point and every one of them over several, as MATLAB chooses them.
+function idx = shapDefaultClasses (cnames, fitted, qpi)
+
+  idx = [];
+  if (isempty (cnames))
+    return;
+  endif
+  if (numel (qpi) != 1)
+    idx = 1:numel (cnames);
+    return;
+  endif
+  at = shapClassText (fitted(qpi));
+  idx = find (strcmp (cnames, at{1}), 1);
+  if (isempty (idx))
+    idx = 1;
+  endif
+
+endfunction
+
+## The class a chart of one class draws where none was named.
+function idx = shapFirstClass (cnames)
+
+  idx = [];
+  if (! isempty (cnames))
+    idx = 1;
+  endif
+
+endfunction
+
+## The classes named, as indices into the model's own order.
+function idx = shapCheckClasses (cnames, want, caller, optname, dflt)
+
+  if (isempty (want))
+    idx = dflt;
+    return;
+  endif
+  if (isempty (cnames))
+    error (strcat ("shapley.%s: '%s' is valid only for a classification", ...
+                   " model."), caller, optname);
+  endif
+  want = shapClassText (want);
+  idx = zeros (1, numel (want));
+  for k = 1:numel (want)
+    j = find (strcmp (cnames, want{k}), 1);
+    if (isempty (j))
+      error ("shapley.%s: '%s' does not name a class of the model.", ...
+             caller, want{k});
+    endif
+    idx(k) = j;
+  endfor
+
+endfunction
+
+## The query points to draw, all of them where none were named.
+function qpi = shapCheckPoints (qpi, nq, caller)
+
+  if (isempty (qpi))
+    qpi = 1:nq;
+    return;
+  endif
+  if (! (isnumeric (qpi) && isreal (qpi) && isvector (qpi)
+         && all (isfinite (qpi)) && all (qpi == fix (qpi)) && all (qpi >= 1)))
+    error (strcat ("shapley.%s: 'QueryPointIndices' must be positive", ...
+                   " integers."), caller);
+  endif
+  if (any (qpi > nq))
+    error (strcat ("shapley.%s: 'QueryPointIndices' must not exceed the", ...
+                   " %d query points fitted."), caller, nq);
+  endif
+  qpi = double (qpi(:)');
+
+endfunction
+
+## How many predictors to draw on their own, ten of them by default, and
+## never more than the model has.
+function nip = shapCheckCount (nip, M, caller)
+
+  if (isempty (nip))
+    nip = min (M, 10);
+    return;
+  endif
+  if (! (isnumeric (nip) && isscalar (nip) && isreal (nip)
+         && isfinite (nip) && nip == fix (nip) && nip > 0))
+    error (strcat ("shapley.%s: 'NumImportantPredictors' must be a", ...
+                   " positive integer."), caller);
+  endif
+  nip = min (double (nip), M);
+
+endfunction
+
+## The values of one class at every query point, the predictors ordered as
+## the charts of one class order them and cut to the ones drawn.
+function [vals, names, ord] = shapOneClass (T, cnames, cn, nip, caller)
+
+  idx = shapCheckClasses (cnames, cn, caller, 'ClassName', ...
+                          shapFirstClass (cnames));
+  if (numel (idx) > 1)
+    error ("shapley.%s: 'ClassName' must name one class.", caller);
+  endif
+  if (isempty (cnames))
+    nq = columns (T.Value);
+  else
+    nq = columns (T.(cnames{1}));
+  endif
+  V = shapDrawValues (T, cnames, idx, 1:nq);
+  M = size (T, 1);
+  nip = shapCheckCount (nip, M, caller);
+  [~, ord] = sort (mean (abs (V), 2), 'ascend');
+  ord = ord((M - nip + 1):M);
+  names = cellstr (T.Predictor);
+  names = names(ord);
+  vals = V(ord,:);
+
+endfunction
+
+## A predictor's values as the share of its range each one stands at, which
+## is what a colour map is read with.  A predictor that never changes sits
+## in the middle of the map, having no range to spread over.
+function c = shapColorValues (v)
+
+  v = double (v(:));
+  lo = min (v);
+  hi = max (v);
+  if (hi > lo)
+    c = (v - lo) / (hi - lo);
+  else
+    c = 0.5 * ones (size (v));
+  endif
+
+endfunction
+
+## One of a short list of words, named by the method that took it rather
+## than by whatever the drawing is handed on to.
+function v = shapCheckWord (val, allowed, caller, optname)
+
+  if (! (ischar (val) && isrow (val) && any (strcmpi (allowed, val))))
+    error ("shapley.%s: '%s' must be one of %s.", caller, optname, ...
+           strjoin (strcat ("'", allowed, "'"), ', '));
+  endif
+  j = find (strcmpi (allowed, val), 1);
+  v = allowed{j};
+
+endfunction
+
+## A colour map, as a name or as one RGB triplet per row.
+function v = shapCheckMap (val, caller)
+
+  if (ischar (val) && isrow (val))
+    v = val;
+    return;
+  endif
+  if (isnumeric (val) && isreal (val) && ismatrix (val)
+      && columns (val) == 3 && rows (val) > 0
+      && all (val(:) >= 0) && all (val(:) <= 1))
+    v = double (val);
+    return;
+  endif
+  error (strcat ("shapley.%s: 'ColorMap' must be a colour map name or a", ...
+                 " matrix of RGB triplets."), caller);
+
+endfunction
+
+## The one predictor named or indexed.
+function j = shapPredictorIndex (names, pred, caller, argname)
+
+  if (isnumeric (pred) && isscalar (pred) && isreal (pred)
+      && isfinite (pred) && pred == fix (pred) && pred >= 1
+      && pred <= numel (names))
+    j = double (pred);
+    return;
+  endif
+  if (ischar (pred) && isrow (pred))
+    pred = {pred};
+  elseif (isa (pred, 'string') && isscalar (pred))
+    pred = cellstr (pred);
+  endif
+  if (iscellstr (pred) && isscalar (pred))
+    j = find (strcmp (names, pred{1}), 1);
+    if (! isempty (j))
+      return;
+    endif
+  endif
+  error ("shapley.%s: %s must name or index one predictor of the model.", ...
+         caller, argname);
+
+endfunction
+
 ## A linear function's exact Shapley value is the coefficient times the
 ## deviation of the predictor from its mean, which is an expectation the
 ## engine cannot influence.
@@ -1696,3 +2324,453 @@ endfunction
 %!error<shapley: unknown optional argument or misplaced value.> shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'NoSuchThing', 1)
 %!error<shapley.fit: QUERYPOINTS must be a real numeric matrix.> fit (shapley (@(Z) Z(:,1), [1, 2; 3, 4]), 'abc')
 %!error<shapley.fit: QUERYPOINTS must have one column per predictor of the model.> fit (shapley (@(Z) Z(:,1), [1, 2; 3, 4]), [1, 2, 3])
+
+## The four drawing methods, measured on R2024a 2026-09-22
+%!test  # one query point: one bar per predictor, the least important first
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s);
+%!   assert_equal (numel (b), 1);
+%!   assert_equal (get (b, 'horizontal'), 'on');
+%!   assert_equal (get (b, 'ydata')', [-2.8333333333333333, -5, 80], 1e-12);
+%!   assert_equal (get (gca (), 'yticklabel')', {'x3', 'x1', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # one query point is titled as an explanation of that point
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   plot (s);
+%!   ax = gca ();
+%!   assert_equal (get (get (ax, 'title'), 'string'), 'Shapley Explanation');
+%!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'Shapley Value');
+%!   assert_equal (get (get (ax, 'ylabel'), 'string'), 'Predictor');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Several query points are summarised by the mean of the absolute values
+%!test
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s);
+%!   ax = gca ();
+%!   assert_equal (get (get (ax, 'title'), 'string'), ...
+%!                 'Shapley Importance Plot');
+%!   assert_equal (get (get (ax, 'xlabel'), 'string'), ...
+%!                 'Mean of Absolute Shapley Values');
+%!   assert_equal (get (b, 'ydata')', [2.5, 2.75, 43.75], 1e-12);
+%!   assert_equal (get (ax, 'yticklabel')', {'x1', 'x3', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Over several query points whatever is left over is summed into one bar
+%!test
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s, 'NumImportantPredictors', 2);
+%!   assert_equal (get (b, 'ydata')', [2.5, 2.75, 43.75], 1e-12);
+%!   assert_equal (get (gca (), 'yticklabel')', ...
+%!                 {'Sum of other 1 predictor(s)', 'x3', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # over one query point it is left out rather than summed
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s, 'NumImportantPredictors', 2);
+%!   assert_equal (get (b, 'ydata')', [-5, 80], 1e-12);
+%!   assert_equal (get (gca (), 'yticklabel')', {'x1', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # naming one query point explains that point rather than summarising
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s, 'QueryPointIndices', 2);
+%!   ax = gca ();
+%!   assert_equal (get (get (ax, 'title'), 'string'), 'Shapley Explanation');
+%!   assert_equal (get (b, 'ydata')', [2.1666666666666667, -3, 50], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # the axes to draw into may be given first, as for any plot
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   a1 = subplot (1, 2, 1);
+%!   a2 = subplot (1, 2, 2);
+%!   b = plot (a2, s);
+%!   assert_equal (get (b, 'parent'), a2);
+%!   assert_equal (isempty (get (a1, 'children')), true);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## MATLAB parity: one query point of a classifier explains the class predicted
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas(1,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s);
+%!   assert_equal (numel (b), 1);
+%!   assert_equal (s.BlackboxFitted, {'setosa'});
+%!   assert_equal (sort (get (b, 'ydata')'), sort (s.Shapley.setosa'), 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## MATLAB parity: several query points of a classifier draw every class
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas([1, 60, 120],:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s);
+%!   assert_equal (numel (b), 3);
+%!   assert_equal (get (b(1), 'displayname'), 'setosa');
+%!   assert_equal (get (b(3), 'displayname'), 'virginica');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # the classes to draw may be named
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas([1, 60, 120],:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = plot (s, 'ClassNames', {'setosa', 'virginica'});
+%!   assert_equal (numel (b), 2);
+%!   assert_equal (get (b(2), 'displayname'), 'virginica');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # boxchart draws one box per predictor, lying horizontally
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = boxchart (s);
+%!   assert_equal (class (b), 'stats.chart.BoxChart');
+%!   assert_equal (b.Orientation, 'horizontal');
+%!   assert_equal (class (b.XData), 'categorical');
+%!   assert_equal (numel (findobj (gca (), 'type', 'patch')), 3);
+%!   assert_equal (get (gca (), 'yticklabel')', {'x1', 'x3', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # boxchart is titled as a summary over the query points
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   boxchart (s);
+%!   ax = gca ();
+%!   assert_equal (get (get (ax, 'title'), 'string'), 'Shapley Summary Plot');
+%!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'Shapley Value');
+%!   assert_equal (get (get (ax, 'ylabel'), 'string'), 'Predictor');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## MATLAB parity: boxchart leaves the rest out rather than summing them
+%!test
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   boxchart (s, 'NumImportantPredictors', 2);
+%!   assert_equal (get (gca (), 'yticklabel')', {'x3', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## MATLAB parity: a chart of one class orders the predictors by that class
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species);
+%! s = shapley (Mdl, 'QueryPoints', meas([1, 60, 120],:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   boxchart (s, 'ClassName', 'virginica');
+%!   [~, ord] = sort (s.MeanAbsoluteShapley.virginica, 'ascend');
+%!   assert_equal (get (gca (), 'yticklabel')', ...
+%!                 cellstr (s.Shapley.Predictor(ord))');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # the outlier markers may be spread across the width of the box
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   b = boxchart (s, 'JitterOutliers', 'on');
+%!   assert_equal (b.JitterOutliers, 'on');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # swarmchart draws one row of points per predictor
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = swarmchart (s);
+%!   assert_equal (numel (h), 3);
+%!   assert_equal (get (h(1), 'xdata')', [-5, -3, -1, 1], 1e-12);
+%!   assert_equal (get (gca (), 'yticklabel')', {'x1', 'x3', 'x2'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## MATLAB parity: a point is coloured by where the predictor's value
+## stands in its own range over the query points
+%!test
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = swarmchart (s);
+%!   assert_equal (get (h(1), 'cdata')', [0, 1/3, 2/3, 1], 1e-12);
+%!   assert_equal (get (gca (), 'clim'), [0, 1]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # the colour map the values are read through may be given
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   swarmchart (s, 'ColorMap', [1, 0, 0; 0, 1, 0]);
+%!   assert_equal (get (gca (), 'colormap'), [1, 0, 0; 0, 1, 0]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # how the points of a row are spread may be chosen
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = swarmchart (s, 'YJitter', 'none');
+%!   assert_equal (get (h(1), 'ydata')', [1, 1, 1, 1]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # plotDependence draws one predictor against its own values
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   p = plotDependence (s, 'x1');
+%!   assert_equal (get (p, 'xdata')', [1, 2, 3, 4]);
+%!   assert_equal (get (p, 'ydata')', [-5, -3, -1, 1], 1e-12);
+%!   ax = gca ();
+%!   assert_equal (get (get (ax, 'title'), 'string'), ...
+%!                 'Shapley Dependence Plot');
+%!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'x1');
+%!   assert_equal (get (get (ax, 'ylabel'), 'string'), ...
+%!                 'Shapley Values for x1');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a predictor may be indexed rather than named
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   p = plotDependence (s, 2);
+%!   assert_equal (get (p, 'xdata')', [10, 20, 30, 45]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## MATLAB parity: the colouring predictor is read as it stands, the range
+## of the axes carrying the scale, where a swarm normalizes instead
+%!test
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   p = plotDependence (s, 1, 'ColorPredictor', 'x2');
+%!   assert_equal (get (p, 'cdata')', [10, 20, 30, 45]);
+%!   assert_equal (get (gca (), 'clim'), [10, 45]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a colour bar is drawn beside a chart whose points are coloured
+%! X = [1, 10, 100; 2, 20, 150; 3, 30, 120; 4, 45, 180; 5, 50, 90; ...
+%!      6, 65, 130];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2) + 0.1 * Z(:,3);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   plotDependence (s, 1);
+%!   none = numel (findobj (hf, 'tag', 'colorbar'));
+%!   plotDependence (s, 1, 'ColorPredictor', 'x2');
+%!   assert_equal (none, 0);
+%!   assert_equal (numel (findobj (hf, 'tag', 'colorbar')), 1);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # a predictor holding levels is drawn as a box over each level
+%! X = [1, 0; 2, 0; 3, 1; 4, 1; 5, 0; 6, 1];
+%! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2);
+%! s = shapley (f, X, 'QueryPoints', X(1:4,:), ...
+%!              'CategoricalPredictors', 2, ...
+%!              'NumObservationsToSample', 'all');
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   p = plotDependence (s, 2);
+%!   assert_equal (class (p), 'stats.chart.BoxChart');
+%!   assert_equal (numel (findobj (gca (), 'type', 'patch')), 2);
+%!   assert_equal (get (get (gca (), 'title'), 'string'), ...
+%!                 'Shapley Dependence Plot');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Input validation
+%!error<shapley.plot: the Shapley values are not fitted; use fit to compute them.>
+%! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4]))
+
+%!error<shapley.boxchart: the Shapley values are not fitted; use fit to compute them.>
+%! boxchart (shapley (@(Z) Z(:,1), [1, 2; 3, 4]))
+
+%!error<shapley.swarmchart: the Shapley values are not fitted; use fit to compute them.>
+%! swarmchart (shapley (@(Z) Z(:,1), [1, 2; 3, 4]))
+
+%!error<shapley.plotDependence: the Shapley values are not fitted; use fit to compute them.>
+%! plotDependence (shapley (@(Z) Z(:,1), [1, 2; 3, 4]), 1)
+
+%!error<shapley.plot: 'NumImportantPredictors' must be a positive integer.>
+%! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!       'NumImportantPredictors', 0)
+
+%!error<shapley.plot: 'QueryPointIndices' must be positive integers.>
+%! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!       'QueryPointIndices', 1.5)
+
+%!error<shapley.plot: 'QueryPointIndices' must not exceed the 1 query points fitted.>
+%! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!       'QueryPointIndices', 2)
+
+%!error<shapley.plot: 'ClassNames' is valid only for a classification model.>
+%! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!       'ClassNames', 'setosa')
+
+%!error<shapley.boxchart: 'ClassName' is valid only for a classification model.>
+%! boxchart (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!           'ClassName', 'setosa')
+
+%!error<shapley.boxchart: 'JitterOutliers' must be one of 'on', 'off'.>
+%! boxchart (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!           'JitterOutliers', 'maybe')
+
+%!error<shapley.swarmchart: 'YJitter' must be one of 'none', 'density', 'rand', 'randn'.>
+%! swarmchart (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!             'YJitter', 'sideways')
+
+%!error<shapley.swarmchart: 'ColorMap' must be a colour map name or a matrix of RGB triplets.>
+%! swarmchart (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!             'ColorMap', 5)
+
+%!error<shapley.plotDependence: too few input arguments.>
+%! plotDependence (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]))
+
+%!error<shapley.plotDependence: PREDICTOR must name or index one predictor of the model.>
+%! plotDependence (shapley (@(Z) Z(:,1), [1, 2; 3, 4], ...
+%!                          'QueryPoints', [1, 2]), 'nope')
+
+%!error<shapley.plot: unknown optional argument or misplaced value.>
+%! plot (shapley (@(Z) Z(:,1), [1, 2; 3, 4], 'QueryPoints', [1, 2]), ...
+%!       'NoSuchThing', 1)

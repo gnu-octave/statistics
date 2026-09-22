@@ -1,0 +1,37 @@
+%!demo
+%! ## 1. How widely a predictor's contribution varies
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## One box per predictor over the query points: the box spans the
+%! ## quartiles, and a predictor whose box is wide contributes differently
+%! ## from one point to the next
+%! boxchart (s);
+
+%!demo
+%! ## 2. The values that lie beyond the whiskers
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## `JitterOutliers` spreads the outlier markers across the width of the
+%! ## box rather than drawing them in a line, so points at the same value
+%! ## stop hiding one another
+%! boxchart (s, 'JitterOutliers', 'on');
+
+%!demo
+%! ## 3. One class of a classifier
+%!
+%! load fisheriris
+%! mdl = fitctree (meas, species);
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,:), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## A box chart draws one class at a time, the first of them where none
+%! ## is named, and orders the predictors by that class
+%! boxchart (s, 'ClassName', 'virginica');

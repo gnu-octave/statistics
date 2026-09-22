@@ -56,7 +56,7 @@
 ## @seealso{stats.chart.BoxChart, boxplot, swarmchart}
 ## @end deftypefn
 
-function b = boxchart (varargin)
+function varargout = boxchart (varargin)
 
   if (nargin < 1)
     print_usage ();
@@ -77,34 +77,39 @@ function b = boxchart (varargin)
 
   if (isempty (cgroup))
     b = stats.chart.BoxChart (ax, spec, args);
-    return;
+  else
+    ## One chart per colour group, over its own share of the observations
+    [lev, ~, idx] = unique (cgroup(:));
+    n = numel (lev);
+    co = bcColorOrder (ax);
+    for k = 1:n
+      take = (idx == k);
+      sub = spec;
+      sub.YData = spec.YData(take);
+      if (! isempty (spec.XData))
+        sub.XData = spec.XData(take);
+      endif
+      col = co(mod (k - 1, rows (co)) + 1, :);
+      kargs = [{'BoxFaceColor', col, 'BoxEdgeColor', col, ...
+                'BoxMedianLineColor', col, 'WhiskerLineColor', col, ...
+                'MarkerColor', col}, args];
+      ## Octave's classdef has no 'empty', so the array is grown by assigning
+      ## its first element rather than preallocated
+      if (k == 1)
+        b = stats.chart.BoxChart (ax, sub, kargs);
+        ## Every group draws into the axes the first of them settled on
+        ax = b.Parent;
+      else
+        b(k) = stats.chart.BoxChart (ax, sub, kargs);
+      endif
+    endfor
   endif
 
-  ## One chart per colour group, each over its own share of the observations
-  [lev, ~, idx] = unique (cgroup(:));
-  n = numel (lev);
-  co = bcColorOrder (ax);
-  for k = 1:n
-    take = (idx == k);
-    sub = spec;
-    sub.YData = spec.YData(take);
-    if (! isempty (spec.XData))
-      sub.XData = spec.XData(take);
-    endif
-    col = co(mod (k - 1, rows (co)) + 1, :);
-    kargs = [{'BoxFaceColor', col, 'BoxEdgeColor', col, ...
-              'BoxMedianLineColor', col, 'WhiskerLineColor', col, ...
-              'MarkerColor', col}, args];
-    ## Octave's classdef has no 'empty', so the array is grown by assigning
-    ## its first element rather than preallocated
-    if (k == 1)
-      b = stats.chart.BoxChart (ax, sub, kargs);
-      ## Every group draws into the axes the first of them settled on
-      ax = b.Parent;
-    else
-      b(k) = stats.chart.BoxChart (ax, sub, kargs);
-    endif
-  endfor
+  ## The chart is handed back only where it was asked for, so a call made
+  ## for the drawing alone prints nothing
+  if (nargout > 0)
+    varargout{1} = b;
+  endif
 
 endfunction
 

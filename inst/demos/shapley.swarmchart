@@ -1,0 +1,36 @@
+%!demo
+%! ## 1. Every query point, coloured by the predictor's own value
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## One point per query point per predictor, spread by how crowded its
+%! ## neighbourhood is.  Colour says where the predictor's value stands in
+%! ## its own range, so a row whose colours run from one end to the other
+%! ## shows the contribution following the predictor
+%! swarmchart (s);
+
+%!demo
+%! ## 2. Choosing the colours and the spreading
+%!
+%! load fisheriris
+%! mdl = fitrtree (meas(:,2:4), meas(:,1));
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,2:4), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## `ColorMap` takes a name or a matrix of RGB triplets, and `YJitter`
+%! ## takes `'rand'` where an even spread reads better than a dense one
+%! swarmchart (s, 'ColorMap', 'cool', 'YJitter', 'rand');
+
+%!demo
+%! ## 3. One class of a classifier
+%!
+%! load fisheriris
+%! mdl = fitctree (meas, species);
+%! s = shapley (mdl, 'QueryPoints', meas(1:5:150,:), ...
+%!              'NumObservationsToSample', 'all');
+%!
+%! ## As for a box chart, one class is drawn at a time
+%! swarmchart (s, 'ClassName', 'setosa');
