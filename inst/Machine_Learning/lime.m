@@ -37,6 +37,15 @@
 ## the draw is fitted to as @var{X}, a real numeric matrix of one column per
 ## predictor.
 ##
+## @var{X} may also be a table, and so may @qcode{'QueryPoint'},
+## @qcode{'CustomSyntheticData'} and what @code{fit} is given.  Where the
+## model names its predictors the table is read by those names and not by
+## the order its columns come in, so a column the model was not fitted on is
+## passed over and a value holding a level is coded as that level was coded
+## at fitting.  A function handle names nothing, so a table given for one
+## names the predictors itself and its columns are taken in the order they
+## come.
+##
 ## @code{@var{explainer} = lime (@var{fun}, @var{X})} takes a function
 ## handle in place of a model.  @var{fun} is called with a matrix of
 ## observations and answers with one column holding one value for each, and
@@ -365,12 +374,19 @@ classdef lime
                                 'lime', F);
 
       if (! isempty (QP))
-        this.QueryPoint = limeCheckPoint (QP, M, 'lime');
+        this.QueryPoint = limeCheckPoint (QP, M, 'lime', ...
+                                          this.PredictorNames_, ...
+                                          limeLevels (blackbox));
       endif
 
       ## The observations are drawn here, not at the explanation, so that
       ## an explainer carries them before any query point is given
       if (! isempty (Custom))
+        ## Given outright, and read by the same names as everything else
+        if (istable (Custom))
+          Custom = tableToMatrix (this.PredictorNames_, ...
+                                  limeLevels (blackbox), Custom, 'lime');
+        endif
         if (! (isnumeric (Custom) && isreal (Custom) && ismatrix (Custom)
                && ndims (Custom) == 2 && ! isempty (Custom)))
           error (strcat ("lime: 'CustomSyntheticData' must be a real", ...
@@ -403,7 +419,8 @@ classdef lime
     ##
     ## Fit the simple model around one query point.
     ##
-    ## @var{queryPoint} is one row holding one value per predictor and
+    ## @var{queryPoint} is one row holding one value per predictor, or a
+    ## table read by the names the explainer holds, and
     ## @var{numImportantPredictors} how many predictors the simple model is
     ## fitted on.  Fewer are used where a predictor adds nothing, and
     ## @code{ImportantPredictors} says which were.
@@ -447,7 +464,9 @@ classdef lime
         error ("lime.fit: too few input arguments.");
       endif
       M = numel (this.PredictorNames_);
-      QueryPoint = limeCheckPoint (QueryPoint, M, 'lime.fit');
+      QueryPoint = limeCheckPoint (QueryPoint, M, 'lime.fit', ...
+                                   this.PredictorNames_, ...
+                                   limeLevels (this.BlackboxModel));
       if (! (isnumeric (NumImportant) && isscalar (NumImportant)
              && isreal (NumImportant) && isfinite (NumImportant)
              && NumImportant == fix (NumImportant) && NumImportant > 0))
@@ -666,6 +685,48 @@ classdef lime
 
 endclassdef
 
+## A table as the numbers the explainer works over.  A fitted model names
+## the predictors and holds the levels they were coded through; a function
+## handle has neither, so the table itself names them.
+function [X, tnames, errmsg] = limeReadTable (blackbox, isfh, T, caller)
+
+  X = [];
+  tnames = {};
+  errmsg = '';
+  if (isfh)
+    [X, ~, args, ~, errmsg] = tableFrame (T, [], {});
+    if (isempty (errmsg))
+      tnames = args{2};
+    endif
+    return;
+  endif
+  if (! any (strcmp (properties (blackbox), 'PredictorNames')))
+    errmsg = strcat ("X may be a table only for a model that names its", ...
+                     " predictors.");
+    return;
+  endif
+  try
+    X = tableToMatrix (blackbox.PredictorNames, limeLevels (blackbox), ...
+                       T, caller);
+  catch err
+    errmsg = regexprep (err.message, '^lime: ', '');
+    return;
+  end_try_catch
+
+endfunction
+
+## The levels a model's predictors were coded through, where it kept any.
+## PredictorLevels is hidden, so properties () does not list it; the class
+## that defines it is what says whether it is there.
+function lev = limeLevels (blackbox)
+
+  lev = {};
+  if (isa (blackbox, 'PredictiveModel'))
+    lev = blackbox.PredictorLevels;
+  endif
+
+endfunction
+
 ## The model, the observations and what the model answers with.
 function [F, errmsg] = limeFrame (blackbox, Data, CatPred, Type)
 
@@ -692,6 +753,19 @@ function [F, errmsg] = limeFrame (blackbox, Data, CatPred, Type)
     endif
     Data = blackbox.X;
   endif
+
+  ## A table is read by the names the model was fitted on, so a column it
+  ## was not fitted on is passed over and a level carries the code it
+  ## carried then.  A handle has no model behind it, so its table names its
+  ## own predictors and every column is one.
+  tnames = {};
+  if (istable (Data))
+    [Data, tnames, errmsg] = limeReadTable (blackbox, isfh, Data, 'lime');
+    if (! isempty (errmsg))
+      return;
+    endif
+  endif
+
   if (! (isnumeric (Data) && isreal (Data) && ismatrix (Data)
          && ndims (Data) == 2 && ! isempty (Data)))
     errmsg = "X must be a real numeric matrix.";
@@ -729,6 +803,8 @@ function [F, errmsg] = limeFrame (blackbox, Data, CatPred, Type)
       errmsg = "X must have one column per predictor of the model.";
       return;
     endif
+  elseif (! isempty (tnames))
+    pnames = tnames;
   else
     pnames = arrayfun (@(k) sprintf ('x%d', k), 1:p, 'UniformOutput', false);
   endif
@@ -1228,8 +1304,12 @@ function v = limeCheckCount (val, caller, name, dflt)
 endfunction
 
 ## One observation to explain.
-function q = limeCheckPoint (val, M, caller)
+function q = limeCheckPoint (val, M, caller, pnames, lev)
 
+  ## A table is read by the names the explainer holds, as X was
+  if (istable (val))
+    val = tableToMatrix (pnames, lev, val, caller);
+  endif
   if (! (isnumeric (val) && isreal (val) && isvector (val)
          && numel (val) == M))
     error (strcat ("%s: the query point must be a real numeric vector", ...
@@ -1238,6 +1318,27 @@ function q = limeCheckPoint (val, M, caller)
   q = double (val(:)');
 
 endfunction
+
+%!demo
+%! ## Explain a model fitted from a table
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! Mdl = fitrtree (T, 'SL');
+%!
+%! ## The observations and the query point may be tables too, read by the
+%! ## names the model was fitted on rather than by the order of the columns
+%! ex = lime (Mdl, T(:, [1, 2, 3, 5]), 'NumSyntheticData', 2000, ...
+%!            'QueryPoint', T(1, [5, 3, 2, 1]), 'NumImportantPredictors', 2);
+%! ex.ImportantPredictors'
+%! ex.SimpleModel.Beta'
+%!
+%! ## A column the model was not fitted on is passed over, so the whole
+%! ## table, response and all, may be handed over as it stands
+%! ex2 = fit (ex, T(1,:), 2);
+%! ex2.ImportantPredictors'
 
 ## The explanation, measured on R2024a 2026-09-22.  Every fixture takes a
 ## function handle as the model: a fitted model would make the comparison
@@ -1572,3 +1673,63 @@ endfunction
 
 %!error<lime.plot: the simple model is not fitted; use fit to compute it.> ...
 %! plot (lime (@(Z) Z(:,1), [1, 2; 3, 4], 'Type', 'regression'))
+
+## Table input
+%!shared ltT, ltM
+%! load fisheriris
+%! ltT = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!              'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! ltT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! ltM = fitrtree (ltT, 'SL');
+
+%!test  # the observations the draw is fitted to may be a table
+%! L = lime (ltM, ltT(:,[1, 2, 3, 5]), 'NumSyntheticData', 200);
+%! assert_equal (size (L.X), [150, 4]);
+%! assert_equal (size (L.SyntheticData), [200, 4]);
+
+%!test  # the drawn observations may be given outright as a table
+%! L = lime (ltM, ltT(:,[1, 2, 3, 5]), ...
+%!           'CustomSyntheticData', ltT(1:30,[1, 2, 3, 5]));
+%! assert_equal (size (L.SyntheticData), [30, 4]);
+
+## MATLAB parity: a table is read by the names the model was fitted on, so
+## the order of its columns does not matter
+%!test
+%! L = lime (ltM, ltT(:,[1, 2, 3, 5]), ...
+%!           'CustomSyntheticData', ltT(1:30,[1, 2, 3, 5]));
+%! a = fit (L, ltT(1,[1, 2, 3, 5]), 2);
+%! b = fit (L, ltT(1,[5, 3, 2, 1]), 2);
+%! assert_equal (b.ImportantPredictors, a.ImportantPredictors);
+%! assert_equal (b.SimpleModel.Beta, a.SimpleModel.Beta, 1e-12);
+
+## MATLAB parity: a column the model was not fitted on is passed over
+%!test
+%! L = lime (ltM, ltT(:,[1, 2, 3, 5]), ...
+%!           'CustomSyntheticData', ltT(1:30,[1, 2, 3, 5]));
+%! a = fit (L, ltT(1,[1, 2, 3, 5]), 2);
+%! b = fit (L, ltT(1,:), 2);
+%! assert_equal (b.SimpleModel.Beta, a.SimpleModel.Beta, 1e-12);
+
+%!test  # a query point given at building is read the same way
+%! L = lime (ltM, ltT(:,[1, 2, 3, 5]), ...
+%!           'CustomSyntheticData', ltT(1:30,[1, 2, 3, 5]), ...
+%!           'QueryPoint', ltT(1,[5, 3, 2, 1]), ...
+%!           'NumImportantPredictors', 2);
+%! assert_equal (numel (L.ImportantPredictors), 2);
+%! assert_equal (size (L.QueryPoint), [1, 4]);
+
+## A function handle names no predictors, so a table given for one names
+## them itself and its columns are taken in the order they come
+%!test
+%! f = @(Z) Z(:,1);
+%! L = lime (f, ltT(:,1:3), 'Type', 'regression', ...
+%!           'CustomSyntheticData', ltT(1:30,1:3), ...
+%!           'QueryPoint', ltT(1,1:3), 'NumImportantPredictors', 1);
+%! assert_equal (L.SimpleModel.PredictorNames, {'SW'});
+
+%!error<lime: the table holds no predictor 'PL'.> ...
+%! lime (ltM, ltT(:,[1, 3, 5]))
+
+%!error<lime.fit: the table holds no predictor 'PL'.> ...
+%! fit (lime (ltM, ltT(:,[1, 2, 3, 5]), 'NumSyntheticData', 50), ...
+%!      ltT(1,[1, 3, 5]), 2)
