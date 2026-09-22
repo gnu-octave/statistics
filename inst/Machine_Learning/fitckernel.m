@@ -119,6 +119,34 @@ endfunction
 %! [Mdl, FitInfo] = fitckernel (X, Y)
 
 %!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds,:);
+%! T = table (X(:,1), X(:,2), X(:,3), X(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species(inds));
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (X(:,2) > 2.9, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitckernel (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## A model formula names them instead, holding main effects only
+%! Mdl2 = fitckernel (T, 'Species ~ PL + Wide');
+%! Mdl2.PredictorNames
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order and may carry more than the model needs
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
+%!demo
 %! ## Score a table
 %!
 %! load fisheriris

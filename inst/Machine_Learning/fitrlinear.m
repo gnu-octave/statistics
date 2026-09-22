@@ -121,6 +121,31 @@ endfunction
 %! [Mdl, FitInfo] = fitrlinear (X(ok,:), MPG(ok), 'Learner', 'leastsquares')
 
 %!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitrlinear (T, 'SL');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## A model formula names them instead, holding main effects only
+%! Mdl2 = fitrlinear (T, 'SL ~ PL + Wide');
+%! Mdl2.PredictorNames
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order and may carry more than the model needs
+%! yFit = predict (Mdl, T(1:5, [5, 4, 3, 2, 1]));
+%! yFit'
+
+%!demo
 %! ## Score a table
 %!
 %! load fisheriris
