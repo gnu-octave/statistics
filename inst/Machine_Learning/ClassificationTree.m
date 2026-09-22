@@ -1962,6 +1962,8 @@ classdef ClassificationTree < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationTree} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationTree} {@var{e} =} edge (@dots{}, @qcode{'Weights'}, @var{w})
+    ## @deftypefnx {ClassificationTree} {@var{e} =} edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationTree} {@var{e} =} edge (@var{obj}, @var{Tbl})
     ##
     ## Classification edge on new data.
     ##
@@ -1972,15 +1974,31 @@ classdef ClassificationTree < PredictiveModel
     ## The weights are normalized within each class to that class's prior
     ## before they are applied.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{edge (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{ClassificationTree, ClassificationTree.margin,
     ## ClassificationTree.loss, ClassificationTree.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
       ## Input validation
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationTree.edge: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
+                                        nargin > 2);
 
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationTree', 'edge');
@@ -3371,3 +3389,23 @@ endfunction
 %! loss (lctM, lctT, 'NoSuch')
 %!error<ClassificationTree.loss: the table holds no variable 'Species'.> ...
 %! loss (lctM, lctT(:,1:2))
+
+## A table at edge, over the fixture the loss section sets up
+%!test  # the response is named, left out, or given beside the table
+%! a = edge (lctM, [lctT.SL, lctT.SW], lctT.Species);
+%! assert_equal (edge (lctM, lctT(:,1:2), lctT.Species), a);
+%! assert_equal (edge (lctM, lctT, 'Species'), a);
+%! assert_equal (edge (lctM, lctT), a);
+
+%!test  # an even number of arguments after the table is all name-value
+%! w = ones (150, 1);
+%! a = edge (lctM, lctT, 'Weights', w);
+%! assert_equal (edge (lctM, lctT, 'Species', 'Weights', w), a);
+
+%!test  # a table is read by name, so the order of its columns does not matter
+%! assert_equal (edge (lctM, lctT(:, [3, 2, 1])), edge (lctM, lctT));
+
+%!error<ClassificationTree.edge: the table holds no variable 'NoSuch'.> ...
+%! edge (lctM, lctT, 'NoSuch')
+%!error<ClassificationTree.edge: the table holds no variable 'Species'.> ...
+%! edge (lctM, lctT(:,1:2))

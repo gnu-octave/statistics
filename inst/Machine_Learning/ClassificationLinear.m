@@ -1088,19 +1088,36 @@ classdef ClassificationLinear < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationLinear} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationLinear} {@var{e} =} edge (@dots{}, @qcode{'Weights'}, @var{W})
+    ## @deftypefnx {ClassificationLinear} {@var{e} =} edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationLinear} {@var{e} =} edge (@var{obj}, @var{Tbl})
     ##
     ## Weighted mean of the classification margins.
     ##
     ## @code{@var{e} = edge (@var{obj}, @var{X}, @var{Y})} returns one value
     ## per regularization strength.  The weights are normalized within each
     ## class to that class's prior before they are applied.
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{edge (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
     ##
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("ClassificationLinear.edge: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
+                                        nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationLinear', 'edge');
       m = margin (this, X, Y);
@@ -2135,3 +2152,16 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'Species'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## A table at edge
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! y = categorical (species(51:150));
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitclinear (T, 'Species');
+%! a = edge (Mdl, X, y);
+%! assert_equal (edge (Mdl, T(:,1:2), y), a);
+%! assert_equal (edge (Mdl, T, 'Species'), a);
+%! assert_equal (edge (Mdl, T), a);

@@ -503,6 +503,8 @@ classdef CompactClassificationEnsemble < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationEnsemble} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactClassificationEnsemble} {@var{e} =} edge (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {CompactClassificationEnsemble} {@var{e} =} edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactClassificationEnsemble} {@var{e} =} edge (@var{obj}, @var{Tbl})
     ##
     ## Classification edge of a compact ensemble.
     ##
@@ -511,14 +513,30 @@ classdef CompactClassificationEnsemble < PredictiveModel
     ## @qcode{'Mode'} and @qcode{'Weights'} are taken as by @code{loss}, and
     ## @qcode{'Learners'} and @qcode{'UseObsForLearner'} as by @code{predict}.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{edge (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{CompactClassificationEnsemble,
     ## CompactClassificationEnsemble.margin}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactClassificationEnsemble.edge: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
+                                        nargin > 2);
       e = ensembleEdge (this, X, Y, varargin, ...
                         'CompactClassificationEnsemble.edge');
 
@@ -979,3 +997,16 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'Species'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## A table at edge
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (fitcensemble (T, 'Species'));
+%! a = edge (Mdl, X, y);
+%! assert_equal (edge (Mdl, T(:,1:2), y), a);
+%! assert_equal (edge (Mdl, T, 'Species'), a);
+%! assert_equal (edge (Mdl, T), a);
