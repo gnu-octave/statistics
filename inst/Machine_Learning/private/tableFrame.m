@@ -21,8 +21,9 @@
 ## Resolve table input into the predictors and the response a learner takes.
 ##
 ## @var{X} is the predictor data, a table or a numeric matrix, and @var{Y}
-## either the response, the name of the variable holding it, or a model
-## formula naming the response and the predictors together,
+## either the response, the name of the variable holding it, a model
+## formula naming the response and the predictors together, or empty where
+## there is no response and every variable is a predictor,
 ## @qcode{'Y ~ x1 + x2'}.  A formula holds main effects only: no wildcard,
 ## no products and no powers, as R2024a takes none of them.  @var{args} are
 ## the name-value arguments the call carried.
@@ -82,6 +83,10 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
     endif
     Y = X.(respname);
     keep(strcmp (names, respname)) = false;
+  elseif (isempty (Y))
+    ## No response at all: every variable is a predictor.  An explainer
+    ## works over predictor data alone, there being nothing to predict.
+    Y = [];
   elseif (rows (Y) != height (X))
     errmsg = "the table must have one row per response.";
     return;

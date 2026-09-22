@@ -77,40 +77,13 @@ classdef (Abstract) PredictiveModel
 
     endfunction
 
-    ## Map a table onto the predictors this model was fitted on, by name and
-    ## not by position, coding each level as it was coded at fitting.  A
-    ## matrix passes through, its columns taken in the order they come.
+    ## Map a table onto the predictors this model was fitted on.  The work
+    ## is a private function rather than this method alone, because an
+    ## explainer holds a model without being one and needs the same mapping.
     function Z = tableColumns (this, caller, T)
 
-      if (! istable (T))
-        Z = T;
-        return;
-      endif
-      pnames = this.PredictorNames;
-      if (ischar (pnames))
-        pnames = cellstr (pnames);
-      endif
-      have = T.Properties.VariableNames;
-      lev = this.PredictorLevels;
-      Z = zeros (height (T), numel (pnames));
-      for k = 1:numel (pnames)
-        j = find (strcmp (have, pnames{k}), 1);
-        if (isempty (j))
-          error ("%s: the table holds no predictor '%s'.", caller, ...
-                 pnames{k});
-        endif
-        col = T.(pnames{k});
-        if (numel (lev) >= k && ! isempty (lev{k}))
-          Z(:,k) = pmLevelCodes (col, lev{k}, caller, pnames{k});
-        else
-          if (! (isnumeric (col) && isreal (col)) && ! islogical (col))
-            error (strcat ("%s: the table variable '%s' no longer holds", ...
-                           " what it held when the model was fitted."), ...
-                   caller, pnames{k});
-          endif
-          Z(:,k) = double (col);
-        endif
-      endfor
+      Z = tableToMatrix (this.PredictorNames, this.PredictorLevels, T, ...
+                         caller);
 
     endfunction
 
@@ -146,29 +119,6 @@ classdef (Abstract) PredictiveModel
 
 endclassdef
 
-## The codes a column of levels carried when the model was fitted, so that a
-## table holding only some of them still codes them the same way.
-function v = pmLevelCodes (col, lev, caller, name)
-
-  if (isa (col, 'categorical'))
-    col = cellstr (col);
-  elseif (ischar (col) || isa (col, 'string'))
-    col = cellstr (col);
-  endif
-  if (! iscellstr (col))
-    error (strcat ("%s: the table variable '%s' no longer holds what it", ...
-                   " held when the model was fitted."), caller, name);
-  endif
-  v = zeros (numel (col), 1);
-  for k = 1:numel (lev)
-    v(strcmp (col(:), lev{k})) = k;
-  endfor
-  if (any (v == 0))
-    error (strcat ("%s: the table variable '%s' holds a level the model", ...
-                   " was not fitted on."), caller, name);
-  endif
-
-endfunction
 
 %!test  # the class is abstract and cannot be instantiated
 %! fail ('PredictiveModel ()', 'abstract');
