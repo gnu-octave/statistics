@@ -322,6 +322,10 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
                        " ClassificationNaiveBayes object."));
       endif
 
+      ## The levels a predictor read from a table was coded through
+      ## travel with the model, so a compact one still reads a table
+      this.PredictorLevels = Mdl.PredictorLevels;
+
       this.DistributionNames      = Mdl.DistributionNames;
       this.Mu                     = Mdl.Mu;
       this.Sigma                  = Mdl.Sigma;
@@ -355,6 +359,12 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
     ## least expected cost, the posterior of each class, and the expected
     ## misclassification cost of each.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function [label, score, cost] = predict (this, XC)
 
@@ -365,6 +375,9 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
       if (isempty (XC))
         error ("CompactClassificationNaiveBayes.predict: XC is empty.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'CompactClassificationNaiveBayes.predict', XC);
       if (! (isnumeric (XC) && isreal (XC) && ismatrix (XC)))
         error (strcat ("CompactClassificationNaiveBayes.predict: XC must", ...
                        " be a real numeric matrix."));
@@ -868,3 +881,22 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+## A table at prediction
+%!test  # the levels a predictor was coded through travel with the model
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%! T.Species = categorical (species);
+%! CMdl = compact (fitcnb (T, 'Species'));
+%! assert_equal (numel (CMdl.PredictorLevels), 3);
+%! assert_equal (CMdl.PredictorLevels{3}, {'narrow', 'wide'});
+
+%!test  # predict takes a table, read by name and not by position
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species);
+%! CMdl = compact (fitcnb (T, 'Species'));
+%! a = predict (CMdl, T);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (CMdl, T(:, [3, 2, 1])), a);

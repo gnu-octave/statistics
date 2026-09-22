@@ -17,6 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Mdl} =} fitcnb (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnb (@var{Tbl}, @var{ResponseVarName})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnb (@var{Tbl}, @var{formula})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnb (@var{Tbl}, @var{Y})
 ## @deftypefnx {statistics} {@var{Mdl} =} fitcnb (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a naive Bayes classification model.
@@ -122,7 +125,7 @@ function Mdl = fitcnb (X, Y, varargin)
   endif
 
   ## Check predictor data and labels have equal rows
-  if (rows (X) != rows (Y))
+  if (! istable (X) && rows (X) != rows (Y))
     error ("fitcnb: number of rows in X and Y must be equal.");
   endif
 
@@ -151,6 +154,32 @@ endfunction
 %! printf ("kernel  : %g\n", resubLoss (kernelMdl));
 
 ## Tests
+%!demo
+%! ## Fit from a table, and predict on one
+%!
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%!
+%! ## A column holding levels is a categorical predictor without being named
+%! ## one
+%! T.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+%!
+%! ## The response is named by its column, and everything else is a predictor
+%! Mdl = fitcnb (T, 'Species');
+%! Mdl.PredictorNames
+%! Mdl.CategoricalPredictors
+%!
+%! ## A model formula names them instead, holding main effects only
+%! Mdl2 = fitcnb (T, 'Species ~ PL + PW');
+%! Mdl2.PredictorNames
+%!
+%! ## predict reads a table by the names the model was fitted on, so the
+%! ## columns may come in any order
+%! label = predict (Mdl, T(1:5, [6, 5, 4, 3, 2, 1]));
+%! label'
+
 %!test  # the driver returns what the constructor returns
 %! load fisheriris
 %! Mdl = fitcnb (meas, species);
@@ -192,3 +221,48 @@ endfunction
 %! Y = [ones(50, 1); 2 * ones(50, 1); 3 * ones(50, 1)];
 %! Mdl = fitcnb (meas, Y, 'ClassNames', {'3', '1', '2'});
 %! assert_equal (Mdl.ClassNames, [3; 1; 2]);
+
+## Table input
+%!shared fnbT
+%! load fisheriris
+%! fnbT = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!               'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! fnbT.Species = categorical (species);
+%! fnbT.Wide = categorical (meas(:,2) > 3, [false true], {'narrow', 'wide'});
+
+%!test  # the response is named by a column and the rest are predictors
+%! Mdl = fitcnb (fnbT, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW', 'Wide'});
+%! assert_equal (Mdl.ResponseName, 'Species');
+%! assert_equal (Mdl.CategoricalPredictors, 5);
+
+%!test  # a model formula names the response and the predictors together
+%! Mdl = fitcnb (fnbT, 'Species ~ PW + SL');
+%! assert_equal (Mdl.PredictorNames, {'PW', 'SL'});
+%! assert_equal (isempty (Mdl.CategoricalPredictors), true);
+
+%!test  # the response may be given beside a table of predictors
+%! Mdl = fitcnb (fnbT(:,1:4), fnbT.Species);
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW', 'PL', 'PW'});
+%! assert_equal (Mdl.ResponseName, 'Y');
+
+%!test  # predict takes a table, matched by name and not by position
+%! Mdl = fitcnb (fnbT, 'Species');
+%! a = predict (Mdl, fnbT);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (predict (Mdl, fnbT(:, [6, 5, 4, 3, 2, 1])), a);
+
+%!test  # the levels travel with the model when it is made compact
+%! Mdl = fitcnb (fnbT, 'Species');
+%! CMdl = compact (Mdl);
+%! assert_equal (CMdl.PredictorLevels, Mdl.PredictorLevels);
+%! assert_equal (predict (CMdl, fnbT), predict (Mdl, fnbT));
+
+%!error<ClassificationNaiveBayes: the table holds no variable 'NoSuch'.> ...
+%! fitcnb (fnbT, 'NoSuch')
+
+%!error<ClassificationNaiveBayes: a model formula holds main effects only, so no products, powers or wildcards.> ...
+%! fitcnb (fnbT, 'Species ~ SL*PW')
+
+%!error<ClassificationNaiveBayes.predict: the table holds no predictor 'SW'.> ...
+%! predict (fitcnb (fnbT, 'Species'), fnbT(:, [1, 3, 4, 5, 6]))

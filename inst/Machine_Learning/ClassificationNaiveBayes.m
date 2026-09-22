@@ -470,6 +470,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationNaiveBayes} {@var{obj} =} ClassificationNaiveBayes (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNaiveBayes} {@var{obj} =} ClassificationNaiveBayes (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationNaiveBayes} {@var{obj} =} ClassificationNaiveBayes (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationNaiveBayes} {@var{obj} =} ClassificationNaiveBayes (@var{Tbl}, @var{Y})
     ## @deftypefnx {ClassificationNaiveBayes} {@var{obj} =} ClassificationNaiveBayes (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @code{ClassificationNaiveBayes} object.
@@ -488,6 +491,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
       if (nargin < 2)
         error ("ClassificationNaiveBayes: too few input arguments.");
       endif
+
+      ## A table names its own predictors and says which hold levels
+      [this, X, Y, varargin] = resolveTable (this, 'ClassificationNaiveBayes', ...
+                                             X, Y, varargin);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationNaiveBayes: Name-Value", ...
                        " arguments must be in pairs."));
@@ -747,12 +754,21 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## each observation to each class.  The label of an observation is the
     ## class of least expected cost.
     ##
+    ##
+    ## The new data may be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position:
+    ## one the model was not fitted on is passed over, one it needs and
+    ## cannot find is named, and a value holding a level is coded as that
+    ## level was coded at fitting.
     ## @end deftypefn
     function [label, score, cost] = predict (this, XC)
 
       if (nargin < 2)
         error ("ClassificationNaiveBayes.predict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      XC = tableColumns (this, 'ClassificationNaiveBayes.predict', XC);
       if (isempty (XC))
         error ("ClassificationNaiveBayes.predict: XC is empty.");
       endif
@@ -2018,3 +2034,12 @@ endclassdef
 %! [l, s] = predict (Mdl, meas([1, 60, 120],:));
 %! assert_equal (s, raw .^ 2, 1e-12);
 %! assert_equal (l, label);
+
+## A table at prediction
+%!test  # the class may be built from a table as the fitter builds it
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species);
+%! Mdl = ClassificationNaiveBayes (T, 'Species');
+%! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
+%! assert_equal (Mdl.ResponseName, 'Species');
