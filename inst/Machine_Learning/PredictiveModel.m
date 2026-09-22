@@ -82,8 +82,7 @@ classdef (Abstract) PredictiveModel
     ## explainer holds a model without being one and needs the same mapping.
     function Z = tableColumns (this, caller, T)
 
-      Z = tableToMatrix (this.PredictorNames, this.PredictorLevels, T, ...
-                         caller);
+      Z = tableToMatrix (this.PredictorNames, this.PredictorLevels, T, caller);
 
     endfunction
 
