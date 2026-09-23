@@ -413,328 +413,246 @@ classdef ClassificationLinear < PredictiveModel
                        " be given in Name-Value pairs."));
       endif
 
-      ## Defaults, before the optional arguments are parsed.  Anything left
-      ## empty here is resolved once the data is known.
-      Learner                = 'svm';
-      Regularization         = [];
-      Lambda                 = 'auto';
-      Solver                 = [];
-      BetaIn                 = [];
-      BiasIn                 = [];
-      FitBias                = true;
-      PostFitBias            = false;
-      ObservationsIn         = 'rows';
-      BetaTolerance          = 1e-4;
-      GradientTolerance      = 1e-6;
-      DeltaGradientTolerance = 1;
-      IterationLimit         = 1000;
-      PassLimit              = [];
-      BatchSize              = 10;
-      BatchLimit             = [];
-      LearnRate              = [];
-      OptimizeLearnRate      = true;
-      TruncationPeriod       = 10;
-      NumCheckConvergence    = 2;
-      HessianHistorySize     = 15;
-      Verbose                = 0;
-      ClassNames             = [];
-      CostIn                 = [];
-      Prior                  = [];
-      ScoreTransform         = [];
-      Weights                = [];
-      PredictorNames         = {};
-      ResponseName           = 'Y';
-      CategoricalPredictors  = [];
+      ## Parse optional paired arguments
+      optNames = {'Learner', 'Regularization', 'Lambda', 'Solver', 'Beta', ...
+                  'Bias', 'FitBias', 'PostFitBias', 'ObservationsIn', ...
+                  'BetaTolerance', 'GradientTolerance', ...
+                  'DeltaGradientTolerance', 'IterationLimit', 'PassLimit', ...
+                  'BatchSize', 'BatchLimit', 'LearnRate', ...
+                  'OptimizeLearnRate', 'TruncationPeriod', ...
+                  'NumCheckConvergence', 'HessianHistorySize', 'Verbose', ...
+                  'ClassNames', 'Cost', 'Prior', 'ScoreTransform', ...
+                  'Weights', 'PredictorNames', 'ResponseName', ...
+                  'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'Regularization' is 'lasso' for the 'sparsa' solver and 'ridge'
+      ## otherwise; 'Solver' is 'sparsa' for a lasso penalty, 'bfgs' up to
+      ## 100 predictors, then 'dual' for an SVM and 'sgd' for a logistic
+      ## learner; 'Beta' is zero and 'Bias' zero, or the weighted mean
+      ## response for a logistic learner; 'PassLimit' is 10 with the 'dual'
+      ## solver and 1 otherwise; 'BatchLimit' sets no limit; 'LearnRate' is
+      ## one over the root of one plus the largest squared row length;
+      ## 'ClassNames', 'Cost', 'Prior' and 'Weights' come from the response
+      ## as every class, a zero-one cost, the empirical prior and uniform
+      ## weights; 'ScoreTransform' is 'logit' for a logistic learner and
+      ## 'none' otherwise; 'PredictorNames' are x1, x2, ...
+      dfValues = {'svm', [], 'auto', [], [], [], true, false, 'rows', 1e-4, ...
+                  1e-6, 1, 1000, [], 10, [], [], true, 10, 2, 15, 0, [], [], ...
+                  [], [], [], {}, 'Y', []};
+      [Learner, Regularization, Lambda, Solver, BetaIn, BiasIn, FitBias, ...
+       PostFitBias, ObservationsIn, BetaTolerance, GradientTolerance, ...
+       DeltaGradientTolerance, IterationLimit, PassLimit, BatchSize, ...
+       BatchLimit, LearnRate, OptimizeLearnRate, TruncationPeriod, ...
+       NumCheckConvergence, HessianHistorySize, Verbose, ClassNames, CostIn, ...
+       Prior, ScoreTransform, Weights, PredictorNames, ResponseName, ...
+       CategoricalPredictors, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! (ischar (Learner)
+             && any (strcmpi (Learner, {'svm', 'logistic'}))))
+        error (strcat ("ClassificationLinear: 'Learner' must be", ...
+                       " either 'svm' or 'logistic'."));
+      endif
+      Learner = lower (Learner);
+      if (! isempty (Regularization) &&
+          ! (ischar (Regularization)
+             && any (strcmpi (Regularization, {'ridge', 'lasso'}))))
+        error (strcat ("ClassificationLinear: 'Regularization'", ...
+                       " must be either 'ridge' or 'lasso'."));
+      endif
+      Regularization = lower (Regularization);
+      if (! ((ischar (Lambda) && strcmpi (Lambda, 'auto'))
+             || (isnumeric (Lambda) && isreal (Lambda)
+                 && isvector (Lambda) && ! isempty (Lambda)
+                 && all (Lambda >= 0) && all (isfinite (Lambda)))))
+        error (strcat ("ClassificationLinear: 'Lambda' must be", ...
+                       " 'auto' or a vector of nonnegative", ...
+                       " finite values."));
+      endif
+      if (ischar (Solver))
+        Solver = {Solver};
+      endif
+      valid = {'sgd', 'asgd', 'dual', 'bfgs', 'lbfgs', 'sparsa'};
+      if (! isempty (Solver) &&
+          ! (iscellstr (Solver) && ! isempty (Solver)
+             && all (cellfun (@(s) any (strcmpi (s, valid)), Solver))))
+        error (strcat ("ClassificationLinear: 'Solver' must be one", ...
+                       " of 'sgd', 'asgd', 'dual', 'bfgs',", ...
+                       " 'lbfgs' and 'sparsa', or a cell array of", ...
+                       " them."));
+      endif
+      Solver = lower (Solver);
+      if (! isempty (BetaIn) &&
+          ! (isnumeric (BetaIn) && isreal (BetaIn)
+             && ismatrix (BetaIn) && ! isempty (BetaIn)))
+        error (strcat ("ClassificationLinear: 'Beta' must be a", ...
+                       " real numeric matrix."));
+      endif
+      if (! isempty (BiasIn) &&
+          ! (isnumeric (BiasIn) && isreal (BiasIn)
+             && isvector (BiasIn) && ! isempty (BiasIn)))
+        error (strcat ("ClassificationLinear: 'Bias' must be a", ...
+                       " real numeric vector."));
+      endif
+      if (! (islogical (FitBias) || (isnumeric (FitBias)
+             && isscalar (FitBias) && any (FitBias == [0, 1]))))
+        error (strcat ("ClassificationLinear: 'FitBias' must be", ...
+                       " either true or false."));
+      endif
+      FitBias = logical (FitBias);
+      if (! (islogical (PostFitBias) || (isnumeric (PostFitBias)
+             && isscalar (PostFitBias) && any (PostFitBias == [0, 1]))))
+        error (strcat ("ClassificationLinear: 'PostFitBias' must", ...
+                       " be either true or false."));
+      endif
+      PostFitBias = logical (PostFitBias);
+      if (! (ischar (ObservationsIn)
+             && any (strcmpi (ObservationsIn, {'rows', 'columns'}))))
+        error (strcat ("ClassificationLinear: 'ObservationsIn'", ...
+                       " must be either 'rows' or 'columns'."));
+      endif
+      ObservationsIn = lower (ObservationsIn);
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("ClassificationLinear: 'BetaTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("ClassificationLinear:", ...
+                       " 'GradientTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (isnumeric (DeltaGradientTolerance)
+             && isscalar (DeltaGradientTolerance)
+             && isreal (DeltaGradientTolerance)
+             && DeltaGradientTolerance >= 0))
+        error (strcat ("ClassificationLinear:", ...
+                       " 'DeltaGradientTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("ClassificationLinear: 'IterationLimit'", ...
+                       " must be a positive integer scalar."));
+      endif
+      if (! isempty (PassLimit) &&
+          ! (isnumeric (PassLimit) && isscalar (PassLimit)
+             && isreal (PassLimit) && PassLimit > 0
+             && fix (PassLimit) == PassLimit))
+        error (strcat ("ClassificationLinear: 'PassLimit' must be", ...
+                       " a positive integer scalar."));
+      endif
+      if (! (isnumeric (BatchSize) && isscalar (BatchSize)
+             && isreal (BatchSize) && BatchSize > 0
+             && fix (BatchSize) == BatchSize))
+        error (strcat ("ClassificationLinear: 'BatchSize' must be", ...
+                       " a positive integer scalar."));
+      endif
+      if (! isempty (BatchLimit) &&
+          ! (isnumeric (BatchLimit) && isscalar (BatchLimit)
+             && isreal (BatchLimit) && BatchLimit > 0
+             && fix (BatchLimit) == BatchLimit))
+        error (strcat ("ClassificationLinear: 'BatchLimit' must", ...
+                       " be a positive integer scalar."));
+      endif
+      if (! isempty (LearnRate) &&
+          ! (isnumeric (LearnRate) && isscalar (LearnRate)
+             && isreal (LearnRate) && LearnRate > 0))
+        error (strcat ("ClassificationLinear: 'LearnRate' must be", ...
+                       " a positive scalar."));
+      endif
+      if (! (islogical (OptimizeLearnRate)
+             || (isnumeric (OptimizeLearnRate)
+                 && isscalar (OptimizeLearnRate)
+                 && any (OptimizeLearnRate == [0, 1]))))
+        error (strcat ("ClassificationLinear:", ...
+                       " 'OptimizeLearnRate' must be either true", ...
+                       " or false."));
+      endif
+      OptimizeLearnRate = logical (OptimizeLearnRate);
+      if (! (isnumeric (TruncationPeriod)
+             && isscalar (TruncationPeriod)
+             && isreal (TruncationPeriod) && TruncationPeriod > 0
+             && fix (TruncationPeriod) == TruncationPeriod))
+        error (strcat ("ClassificationLinear:", ...
+                       " 'TruncationPeriod' must be a positive", ...
+                       " integer scalar."));
+      endif
+      if (! (isnumeric (NumCheckConvergence)
+             && isscalar (NumCheckConvergence)
+             && isreal (NumCheckConvergence)
+             && NumCheckConvergence > 0
+             && fix (NumCheckConvergence) == NumCheckConvergence))
+        error (strcat ("ClassificationLinear:", ...
+                       " 'NumCheckConvergence' must be a positive", ...
+                       " integer scalar."));
+      endif
+      if (! (isnumeric (HessianHistorySize)
+             && isscalar (HessianHistorySize)
+             && isreal (HessianHistorySize) && HessianHistorySize > 0
+             && fix (HessianHistorySize) == HessianHistorySize))
+        error (strcat ("ClassificationLinear:", ...
+                       " 'HessianHistorySize' must be a positive", ...
+                       " integer scalar."));
+      endif
+      if (! (isnumeric (Verbose) && isscalar (Verbose)
+             && isreal (Verbose) && any (Verbose == [0, 1, 2])))
+        error (strcat ("ClassificationLinear: 'Verbose' must be", ...
+                       " 0, 1, or 2."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationLinear: 'ClassNames' must be", ...
+                       " a categorical array, a character array, a", ...
+                       " string array, a logical vector, a numeric", ...
+                       " vector, or a cell array of character", ...
+                       " vectors."));
+      endif
+      if (! isempty (CostIn) &&
+          ! (isnumeric (CostIn) && isreal (CostIn)
+             && ismatrix (CostIn) && ndims (CostIn) == 2
+             && rows (CostIn) == columns (CostIn)))
+        error (strcat ("ClassificationLinear: 'Cost' must be a", ...
+                       " square numeric matrix."));
+      endif
+      if (! isempty (Prior) &&
+          ! ((ischar (Prior) && any (strcmpi (Prior, {'empirical', ...
+                                                      'uniform'})))
+             || (isnumeric (Prior) && isreal (Prior)
+                 && isvector (Prior) && all (Prior >= 0))
+             || (isstruct (Prior) && isscalar (Prior))))
+        error (strcat ("ClassificationLinear: 'Prior' must be", ...
+                       " 'empirical', 'uniform', a vector of", ...
+                       " nonnegative values, or a structure."));
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationLinear: 'Weights' must be a", ...
+                       " vector of nonnegative values."));
+      endif
+      if (! isempty (PredictorNames) &&
+          ! (iscellstr (PredictorNames)
+             && isvector (PredictorNames)))
+        error (strcat ("ClassificationLinear: 'PredictorNames'", ...
+                       " must be a cell array of character", ...
+                       " vectors."));
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error (strcat ("ClassificationLinear: 'ResponseName' must", ...
+                       " be a character vector."));
+      endif
 
-          case 'learner'
-            Learner = varargin{2};
-            if (! (ischar (Learner)
-                   && any (strcmpi (Learner, {'svm', 'logistic'}))))
-              error (strcat ("ClassificationLinear: 'Learner' must be", ...
-                             " either 'svm' or 'logistic'."));
-            endif
-            Learner = lower (Learner);
-
-          case 'regularization'
-            Regularization = varargin{2};
-            if (! (ischar (Regularization)
-                   && any (strcmpi (Regularization, {'ridge', 'lasso'}))))
-              error (strcat ("ClassificationLinear: 'Regularization'", ...
-                             " must be either 'ridge' or 'lasso'."));
-            endif
-            Regularization = lower (Regularization);
-
-          case 'lambda'
-            Lambda = varargin{2};
-            if (! ((ischar (Lambda) && strcmpi (Lambda, 'auto'))
-                   || (isnumeric (Lambda) && isreal (Lambda)
-                       && isvector (Lambda) && ! isempty (Lambda)
-                       && all (Lambda >= 0) && all (isfinite (Lambda)))))
-              error (strcat ("ClassificationLinear: 'Lambda' must be", ...
-                             " 'auto' or a vector of nonnegative", ...
-                             " finite values."));
-            endif
-
-          case 'solver'
-            Solver = varargin{2};
-            if (ischar (Solver))
-              Solver = {Solver};
-            endif
-            valid = {'sgd', 'asgd', 'dual', 'bfgs', 'lbfgs', 'sparsa'};
-            if (! (iscellstr (Solver) && ! isempty (Solver)
-                   && all (cellfun (@(s) any (strcmpi (s, valid)), Solver))))
-              error (strcat ("ClassificationLinear: 'Solver' must be one", ...
-                             " of 'sgd', 'asgd', 'dual', 'bfgs',", ...
-                             " 'lbfgs' and 'sparsa', or a cell array of", ...
-                             " them."));
-            endif
-            Solver = lower (Solver);
-
-          case 'beta'
-            BetaIn = varargin{2};
-            if (! (isnumeric (BetaIn) && isreal (BetaIn)
-                   && ismatrix (BetaIn) && ! isempty (BetaIn)))
-              error (strcat ("ClassificationLinear: 'Beta' must be a", ...
-                             " real numeric matrix."));
-            endif
-
-          case 'bias'
-            BiasIn = varargin{2};
-            if (! (isnumeric (BiasIn) && isreal (BiasIn)
-                   && isvector (BiasIn) && ! isempty (BiasIn)))
-              error (strcat ("ClassificationLinear: 'Bias' must be a", ...
-                             " real numeric vector."));
-            endif
-
-          case 'fitbias'
-            FitBias = varargin{2};
-            if (! (islogical (FitBias) || (isnumeric (FitBias)
-                   && isscalar (FitBias) && any (FitBias == [0, 1]))))
-              error (strcat ("ClassificationLinear: 'FitBias' must be", ...
-                             " either true or false."));
-            endif
-            FitBias = logical (FitBias);
-
-          case 'postfitbias'
-            PostFitBias = varargin{2};
-            if (! (islogical (PostFitBias) || (isnumeric (PostFitBias)
-                   && isscalar (PostFitBias) && any (PostFitBias == [0, 1]))))
-              error (strcat ("ClassificationLinear: 'PostFitBias' must", ...
-                             " be either true or false."));
-            endif
-            PostFitBias = logical (PostFitBias);
-
-          case 'observationsin'
-            ObservationsIn = varargin{2};
-            if (! (ischar (ObservationsIn)
-                   && any (strcmpi (ObservationsIn, {'rows', 'columns'}))))
-              error (strcat ("ClassificationLinear: 'ObservationsIn'", ...
-                             " must be either 'rows' or 'columns'."));
-            endif
-            ObservationsIn = lower (ObservationsIn);
-
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("ClassificationLinear: 'BetaTolerance'", ...
-                             " must be a nonnegative scalar."));
-            endif
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'GradientTolerance' must be a", ...
-                             " nonnegative scalar."));
-            endif
-
-          case 'deltagradienttolerance'
-            DeltaGradientTolerance = varargin{2};
-            if (! (isnumeric (DeltaGradientTolerance)
-                   && isscalar (DeltaGradientTolerance)
-                   && isreal (DeltaGradientTolerance)
-                   && DeltaGradientTolerance >= 0))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'DeltaGradientTolerance' must be a", ...
-                             " nonnegative scalar."));
-            endif
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("ClassificationLinear: 'IterationLimit'", ...
-                             " must be a positive integer scalar."));
-            endif
-
-          case 'passlimit'
-            PassLimit = varargin{2};
-            if (! (isnumeric (PassLimit) && isscalar (PassLimit)
-                   && isreal (PassLimit) && PassLimit > 0
-                   && fix (PassLimit) == PassLimit))
-              error (strcat ("ClassificationLinear: 'PassLimit' must be", ...
-                             " a positive integer scalar."));
-            endif
-
-          case 'batchsize'
-            BatchSize = varargin{2};
-            if (! (isnumeric (BatchSize) && isscalar (BatchSize)
-                   && isreal (BatchSize) && BatchSize > 0
-                   && fix (BatchSize) == BatchSize))
-              error (strcat ("ClassificationLinear: 'BatchSize' must be", ...
-                             " a positive integer scalar."));
-            endif
-
-          case 'batchlimit'
-            BatchLimit = varargin{2};
-            if (! (isnumeric (BatchLimit) && isscalar (BatchLimit)
-                   && isreal (BatchLimit) && BatchLimit > 0
-                   && fix (BatchLimit) == BatchLimit))
-              error (strcat ("ClassificationLinear: 'BatchLimit' must", ...
-                             " be a positive integer scalar."));
-            endif
-
-          case 'learnrate'
-            LearnRate = varargin{2};
-            if (! (isnumeric (LearnRate) && isscalar (LearnRate)
-                   && isreal (LearnRate) && LearnRate > 0))
-              error (strcat ("ClassificationLinear: 'LearnRate' must be", ...
-                             " a positive scalar."));
-            endif
-
-          case 'optimizelearnrate'
-            OptimizeLearnRate = varargin{2};
-            if (! (islogical (OptimizeLearnRate)
-                   || (isnumeric (OptimizeLearnRate)
-                       && isscalar (OptimizeLearnRate)
-                       && any (OptimizeLearnRate == [0, 1]))))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'OptimizeLearnRate' must be either true", ...
-                             " or false."));
-            endif
-            OptimizeLearnRate = logical (OptimizeLearnRate);
-
-          case 'truncationperiod'
-            TruncationPeriod = varargin{2};
-            if (! (isnumeric (TruncationPeriod)
-                   && isscalar (TruncationPeriod)
-                   && isreal (TruncationPeriod) && TruncationPeriod > 0
-                   && fix (TruncationPeriod) == TruncationPeriod))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'TruncationPeriod' must be a positive", ...
-                             " integer scalar."));
-            endif
-
-          case 'numcheckconvergence'
-            NumCheckConvergence = varargin{2};
-            if (! (isnumeric (NumCheckConvergence)
-                   && isscalar (NumCheckConvergence)
-                   && isreal (NumCheckConvergence)
-                   && NumCheckConvergence > 0
-                   && fix (NumCheckConvergence) == NumCheckConvergence))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'NumCheckConvergence' must be a positive", ...
-                             " integer scalar."));
-            endif
-
-          case 'hessianhistorysize'
-            HessianHistorySize = varargin{2};
-            if (! (isnumeric (HessianHistorySize)
-                   && isscalar (HessianHistorySize)
-                   && isreal (HessianHistorySize) && HessianHistorySize > 0
-                   && fix (HessianHistorySize) == HessianHistorySize))
-              error (strcat ("ClassificationLinear:", ...
-                             " 'HessianHistorySize' must be a positive", ...
-                             " integer scalar."));
-            endif
-
-          case 'verbose'
-            Verbose = varargin{2};
-            if (! (isnumeric (Verbose) && isscalar (Verbose)
-                   && isreal (Verbose) && any (Verbose == [0, 1, 2])))
-              error (strcat ("ClassificationLinear: 'Verbose' must be", ...
-                             " 0, 1, or 2."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationLinear: 'ClassNames' must be", ...
-                             " a categorical array, a character array, a", ...
-                             " string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-
-          case 'cost'
-            CostIn = varargin{2};
-            if (! (isnumeric (CostIn) && isreal (CostIn)
-                   && ismatrix (CostIn) && ndims (CostIn) == 2
-                   && rows (CostIn) == columns (CostIn)))
-              error (strcat ("ClassificationLinear: 'Cost' must be a", ...
-                             " square numeric matrix."));
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-            if (! ((ischar (Prior) && any (strcmpi (Prior, {'empirical', ...
-                                                            'uniform'})))
-                   || (isnumeric (Prior) && isreal (Prior)
-                       && isvector (Prior) && all (Prior >= 0))
-                   || (isstruct (Prior) && isscalar (Prior))))
-              error (strcat ("ClassificationLinear: 'Prior' must be", ...
-                             " 'empirical', 'uniform', a vector of", ...
-                             " nonnegative values, or a structure."));
-            endif
-
-          case 'scoretransform'
-            ScoreTransform = varargin{2};
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationLinear: 'Weights' must be a", ...
-                             " vector of nonnegative values."));
-            endif
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! (iscellstr (PredictorNames)
-                   && isvector (PredictorNames)))
-              error (strcat ("ClassificationLinear: 'PredictorNames'", ...
-                             " must be a cell array of character", ...
-                             " vectors."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("ClassificationLinear: 'ResponseName' must", ...
-                             " be a character vector."));
-            endif
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          otherwise
-            error (strcat ("ClassificationLinear: invalid parameter", ...
-                           " name in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationLinear: invalid optional paired argument.");
+      endif
 
       ## Observations may be given down the columns, which only means the
       ## predictor matrix arrives transposed.
@@ -1185,35 +1103,34 @@ classdef ClassificationLinear < PredictiveModel
                        " must be given in Name-Value pairs."));
       endif
 
-      LossFun = 'classiferror';
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            valid = {'binodeviance', 'classifcost', 'classiferror', ...
-                     'exponential', 'hinge', 'logit', 'mincost', ...
-                     'quadratic'};
-            if (! (ischar (LossFun) && any (strcmpi (LossFun, valid))))
-              error (strcat ("ClassificationLinear.loss: 'LossFun' must", ...
-                             " be 'binodeviance', 'classifcost',", ...
-                             " 'classiferror', 'exponential', 'hinge',", ...
-                             " 'logit', 'mincost', or 'quadratic'."));
-            endif
-            LossFun = lower (LossFun);
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationLinear.loss: 'Weights' must", ...
-                             " be a vector of nonnegative values."));
-            endif
-          otherwise
-            error (strcat ("ClassificationLinear.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Weights'};
+      ## An empty 'Weights' stands for uniform weights
+      dfValues = {'classiferror', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      valid = {'binodeviance', 'classifcost', 'classiferror', ...
+               'exponential', 'hinge', 'logit', 'mincost', ...
+               'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, valid))))
+        error (strcat ("ClassificationLinear.loss: 'LossFun' must", ...
+                       " be 'binodeviance', 'classifcost',", ...
+                       " 'classiferror', 'exponential', 'hinge',", ...
+                       " 'logit', 'mincost', or 'quadratic'."));
+      endif
+      LossFun = lower (LossFun);
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationLinear.loss: 'Weights' must", ...
+                       " be a vector of nonnegative values."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationLinear.loss: invalid optional paired argument.");
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -1985,7 +1902,7 @@ endclassdef
 %!                     'IterationLimit', 2.5)
 %!error<ClassificationLinear: 'Verbose' must be 0, 1, or 2.> ...
 %! ClassificationLinear (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Verbose', 3)
-%!error<ClassificationLinear: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationLinear: invalid optional paired argument.> ...
 %! ClassificationLinear (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Nonsense', 1)
 %!error<ClassificationLinear: invalid values in X.> ...
 %! ClassificationLinear ({1, 2; 3, 4}, [1; 2])
@@ -2030,7 +1947,7 @@ endclassdef
 %!error<ClassificationLinear.loss: 'LossFun' must be 'binodeviance', 'classifcost', 'classiferror', 'exponential', 'hinge', 'logit', 'mincost', or 'quadratic'.> ...
 %! loss (ClassificationLinear (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'LossFun', 'mse')
-%!error<ClassificationLinear.loss: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationLinear.loss: invalid optional paired argument.> ...
 %! loss (ClassificationLinear (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Nonsense', 1)
 %!error<ClassificationLinear.loss: Y must hold only classes the model was trained on.> ...

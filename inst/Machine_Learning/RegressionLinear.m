@@ -370,293 +370,214 @@ classdef RegressionLinear < PredictiveModel
                        " given in Name-Value pairs."));
       endif
 
-      ## Defaults, before the optional arguments are parsed
-      Learner                = 'svm';
-      EpsilonIn              = 'auto';
-      Regularization         = [];
-      Lambda                 = 'auto';
-      Solver                 = [];
-      BetaIn                 = [];
-      BiasIn                 = [];
-      FitBias                = true;
-      PostFitBias            = false;
-      ObservationsIn         = 'rows';
-      BetaTolerance          = 1e-4;
-      GradientTolerance      = 1e-6;
-      DeltaGradientTolerance = 0.1;
-      IterationLimit         = 1000;
-      PassLimit              = [];
-      BatchSize              = 10;
-      BatchLimit             = [];
-      LearnRate              = [];
-      OptimizeLearnRate      = true;
-      TruncationPeriod       = 10;
-      NumCheckConvergence    = 2;
-      HessianHistorySize     = 15;
-      Verbose                = 0;
-      ResponseTransform      = 'none';
-      Weights                = [];
-      PredictorNames         = {};
-      ResponseName           = 'Y';
-      CategoricalPredictors  = [];
-      EpsilonGiven           = false;
+      ## Parse optional paired arguments
+      optNames = {'Learner', 'Epsilon', 'Regularization', 'Lambda', ...
+                  'Solver', 'Beta', 'Bias', 'FitBias', 'PostFitBias', ...
+                  'ObservationsIn', 'BetaTolerance', 'GradientTolerance', ...
+                  'DeltaGradientTolerance', 'IterationLimit', 'PassLimit', ...
+                  'BatchSize', 'BatchLimit', 'LearnRate', ...
+                  'OptimizeLearnRate', 'TruncationPeriod', ...
+                  'NumCheckConvergence', 'HessianHistorySize', 'Verbose', ...
+                  'ResponseTransform', 'Weights', 'PredictorNames', ...
+                  'ResponseName', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'Epsilon' is the interquartile range of the response over 13.49,
+      ## empty so that giving it is told apart from leaving it out;
+      ## 'Regularization' is 'lasso' for the 'sparsa' solver and 'ridge'
+      ## otherwise; 'Solver' is 'sparsa' for a lasso penalty, 'bfgs' up to
+      ## 100 predictors, then 'dual' for an SVM and 'sgd' for least
+      ## squares; 'Beta' is zero and 'Bias' the weighted median response,
+      ## or the weighted mean for least squares; 'PassLimit' is 10 with the
+      ## 'dual' solver and 1 otherwise; 'BatchLimit' sets no limit;
+      ## 'LearnRate' is one over the root of one plus the largest squared
+      ## row length; 'Weights' are uniform; 'PredictorNames' are x1, x2, ...
+      dfValues = {'svm', [], [], 'auto', [], [], [], true, false, 'rows', ...
+                  1e-4, 1e-6, 0.1, 1000, [], 10, [], [], true, 10, 2, 15, 0, ...
+                  'none', [], {}, 'Y', []};
+      [Learner, EpsilonIn, Regularization, Lambda, Solver, BetaIn, BiasIn, ...
+       FitBias, PostFitBias, ObservationsIn, BetaTolerance, ...
+       GradientTolerance, DeltaGradientTolerance, IterationLimit, PassLimit, ...
+       BatchSize, BatchLimit, LearnRate, OptimizeLearnRate, ...
+       TruncationPeriod, NumCheckConvergence, HessianHistorySize, Verbose, ...
+       ResponseTransform, Weights, PredictorNames, ResponseName, ...
+       CategoricalPredictors, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! (ischar (Learner)
+             && any (strcmpi (Learner, {'svm', 'leastsquares'}))))
+        error (strcat ("RegressionLinear: 'Learner' must be either", ...
+                       " 'svm' or 'leastsquares'."));
+      endif
+      Learner = lower (Learner);
+      if (! isempty (EpsilonIn) &&
+          ! ((ischar (EpsilonIn) && strcmpi (EpsilonIn, 'auto'))
+             || (isnumeric (EpsilonIn) && isscalar (EpsilonIn)
+                 && isreal (EpsilonIn) && EpsilonIn >= 0)))
+        error (strcat ("RegressionLinear: 'Epsilon' must be 'auto'", ...
+                       " or a nonnegative scalar."));
+      endif
+      if (! isempty (Regularization) &&
+          ! (ischar (Regularization)
+             && any (strcmpi (Regularization, {'ridge', 'lasso'}))))
+        error (strcat ("RegressionLinear: 'Regularization' must be", ...
+                       " either 'ridge' or 'lasso'."));
+      endif
+      Regularization = lower (Regularization);
+      if (! ((ischar (Lambda) && strcmpi (Lambda, 'auto'))
+             || (isnumeric (Lambda) && isreal (Lambda)
+                 && isvector (Lambda) && ! isempty (Lambda)
+                 && all (Lambda >= 0) && all (isfinite (Lambda)))))
+        error (strcat ("RegressionLinear: 'Lambda' must be 'auto'", ...
+                       " or a vector of nonnegative finite values."));
+      endif
+      if (ischar (Solver))
+        Solver = {Solver};
+      endif
+      valid = {'sgd', 'asgd', 'dual', 'bfgs', 'lbfgs', 'sparsa'};
+      if (! isempty (Solver) &&
+          ! (iscellstr (Solver) && ! isempty (Solver)
+             && all (cellfun (@(s) any (strcmpi (s, valid)), Solver))))
+        error (strcat ("RegressionLinear: 'Solver' must be one of", ...
+                       " 'sgd', 'asgd', 'dual', 'bfgs', 'lbfgs'", ...
+                       " and 'sparsa', or a cell array of them."));
+      endif
+      Solver = lower (Solver);
+      if (! isempty (BetaIn) &&
+          ! (isnumeric (BetaIn) && isreal (BetaIn)
+             && ismatrix (BetaIn) && ! isempty (BetaIn)))
+        error (strcat ("RegressionLinear: 'Beta' must be a real", ...
+                       " numeric matrix."));
+      endif
+      if (! isempty (BiasIn) &&
+          ! (isnumeric (BiasIn) && isreal (BiasIn)
+             && isvector (BiasIn) && ! isempty (BiasIn)))
+        error (strcat ("RegressionLinear: 'Bias' must be a real", ...
+                       " numeric vector."));
+      endif
+      if (! (islogical (FitBias) || (isnumeric (FitBias)
+             && isscalar (FitBias) && any (FitBias == [0, 1]))))
+        error (strcat ("RegressionLinear: 'FitBias' must be either", ...
+                       " true or false."));
+      endif
+      FitBias = logical (FitBias);
+      if (! (islogical (PostFitBias) || (isnumeric (PostFitBias)
+             && isscalar (PostFitBias) && any (PostFitBias == [0, 1]))))
+        error (strcat ("RegressionLinear: 'PostFitBias' must be", ...
+                       " either true or false."));
+      endif
+      PostFitBias = logical (PostFitBias);
+      if (! (ischar (ObservationsIn)
+             && any (strcmpi (ObservationsIn, {'rows', 'columns'}))))
+        error (strcat ("RegressionLinear: 'ObservationsIn' must be", ...
+                       " either 'rows' or 'columns'."));
+      endif
+      ObservationsIn = lower (ObservationsIn);
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("RegressionLinear: 'BetaTolerance' must be", ...
+                       " a nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("RegressionLinear: 'GradientTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (DeltaGradientTolerance)
+             && isscalar (DeltaGradientTolerance)
+             && isreal (DeltaGradientTolerance)
+             && DeltaGradientTolerance >= 0))
+        error (strcat ("RegressionLinear:", ...
+                       " 'DeltaGradientTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("RegressionLinear: 'IterationLimit' must", ...
+                       " be a positive integer scalar."));
+      endif
+      if (! isempty (PassLimit) &&
+          ! (isnumeric (PassLimit) && isscalar (PassLimit)
+             && isreal (PassLimit) && PassLimit > 0
+             && fix (PassLimit) == PassLimit))
+        error (strcat ("RegressionLinear: 'PassLimit' must be a", ...
+                       " positive integer scalar."));
+      endif
+      if (! (isnumeric (BatchSize) && isscalar (BatchSize)
+             && isreal (BatchSize) && BatchSize > 0
+             && fix (BatchSize) == BatchSize))
+        error (strcat ("RegressionLinear: 'BatchSize' must be a", ...
+                       " positive integer scalar."));
+      endif
+      if (! isempty (BatchLimit) &&
+          ! (isnumeric (BatchLimit) && isscalar (BatchLimit)
+             && isreal (BatchLimit) && BatchLimit > 0
+             && fix (BatchLimit) == BatchLimit))
+        error (strcat ("RegressionLinear: 'BatchLimit' must be a", ...
+                       " positive integer scalar."));
+      endif
+      if (! isempty (LearnRate) &&
+          ! (isnumeric (LearnRate) && isscalar (LearnRate)
+             && isreal (LearnRate) && LearnRate > 0))
+        error (strcat ("RegressionLinear: 'LearnRate' must be a", ...
+                       " positive scalar."));
+      endif
+      if (! (islogical (OptimizeLearnRate)
+             || (isnumeric (OptimizeLearnRate)
+                 && isscalar (OptimizeLearnRate)
+                 && any (OptimizeLearnRate == [0, 1]))))
+        error (strcat ("RegressionLinear: 'OptimizeLearnRate'", ...
+                       " must be either true or false."));
+      endif
+      OptimizeLearnRate = logical (OptimizeLearnRate);
+      if (! (isnumeric (TruncationPeriod)
+             && isscalar (TruncationPeriod)
+             && isreal (TruncationPeriod) && TruncationPeriod > 0
+             && fix (TruncationPeriod) == TruncationPeriod))
+        error (strcat ("RegressionLinear: 'TruncationPeriod' must", ...
+                       " be a positive integer scalar."));
+      endif
+      if (! (isnumeric (NumCheckConvergence)
+             && isscalar (NumCheckConvergence)
+             && isreal (NumCheckConvergence)
+             && NumCheckConvergence > 0
+             && fix (NumCheckConvergence) == NumCheckConvergence))
+        error (strcat ("RegressionLinear: 'NumCheckConvergence'", ...
+                       " must be a positive integer scalar."));
+      endif
+      if (! (isnumeric (HessianHistorySize)
+             && isscalar (HessianHistorySize)
+             && isreal (HessianHistorySize) && HessianHistorySize > 0
+             && fix (HessianHistorySize) == HessianHistorySize))
+        error (strcat ("RegressionLinear: 'HessianHistorySize'", ...
+                       " must be a positive integer scalar."));
+      endif
+      if (! (isnumeric (Verbose) && isscalar (Verbose)
+             && isreal (Verbose) && any (Verbose == [0, 1, 2])))
+        error (strcat ("RegressionLinear: 'Verbose' must be 0, 1,", ...
+                       " or 2."));
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("RegressionLinear: 'Weights' must be a", ...
+                       " vector of nonnegative values."));
+      endif
+      if (! isempty (PredictorNames) &&
+          ! (iscellstr (PredictorNames) && isvector (PredictorNames)))
+        error (strcat ("RegressionLinear: 'PredictorNames' must", ...
+                       " be a cell array of character vectors."));
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error (strcat ("RegressionLinear: 'ResponseName' must be a", ...
+                       " character vector."));
+      endif
 
-          case 'learner'
-            Learner = varargin{2};
-            if (! (ischar (Learner)
-                   && any (strcmpi (Learner, {'svm', 'leastsquares'}))))
-              error (strcat ("RegressionLinear: 'Learner' must be either", ...
-                             " 'svm' or 'leastsquares'."));
-            endif
-            Learner = lower (Learner);
-
-          case 'epsilon'
-            EpsilonIn = varargin{2};
-            EpsilonGiven = true;
-            if (! ((ischar (EpsilonIn) && strcmpi (EpsilonIn, 'auto'))
-                   || (isnumeric (EpsilonIn) && isscalar (EpsilonIn)
-                       && isreal (EpsilonIn) && EpsilonIn >= 0)))
-              error (strcat ("RegressionLinear: 'Epsilon' must be 'auto'", ...
-                             " or a nonnegative scalar."));
-            endif
-
-          case 'regularization'
-            Regularization = varargin{2};
-            if (! (ischar (Regularization)
-                   && any (strcmpi (Regularization, {'ridge', 'lasso'}))))
-              error (strcat ("RegressionLinear: 'Regularization' must be", ...
-                             " either 'ridge' or 'lasso'."));
-            endif
-            Regularization = lower (Regularization);
-
-          case 'lambda'
-            Lambda = varargin{2};
-            if (! ((ischar (Lambda) && strcmpi (Lambda, 'auto'))
-                   || (isnumeric (Lambda) && isreal (Lambda)
-                       && isvector (Lambda) && ! isempty (Lambda)
-                       && all (Lambda >= 0) && all (isfinite (Lambda)))))
-              error (strcat ("RegressionLinear: 'Lambda' must be 'auto'", ...
-                             " or a vector of nonnegative finite values."));
-            endif
-
-          case 'solver'
-            Solver = varargin{2};
-            if (ischar (Solver))
-              Solver = {Solver};
-            endif
-            valid = {'sgd', 'asgd', 'dual', 'bfgs', 'lbfgs', 'sparsa'};
-            if (! (iscellstr (Solver) && ! isempty (Solver)
-                   && all (cellfun (@(s) any (strcmpi (s, valid)), Solver))))
-              error (strcat ("RegressionLinear: 'Solver' must be one of", ...
-                             " 'sgd', 'asgd', 'dual', 'bfgs', 'lbfgs'", ...
-                             " and 'sparsa', or a cell array of them."));
-            endif
-            Solver = lower (Solver);
-
-          case 'beta'
-            BetaIn = varargin{2};
-            if (! (isnumeric (BetaIn) && isreal (BetaIn)
-                   && ismatrix (BetaIn) && ! isempty (BetaIn)))
-              error (strcat ("RegressionLinear: 'Beta' must be a real", ...
-                             " numeric matrix."));
-            endif
-
-          case 'bias'
-            BiasIn = varargin{2};
-            if (! (isnumeric (BiasIn) && isreal (BiasIn)
-                   && isvector (BiasIn) && ! isempty (BiasIn)))
-              error (strcat ("RegressionLinear: 'Bias' must be a real", ...
-                             " numeric vector."));
-            endif
-
-          case 'fitbias'
-            FitBias = varargin{2};
-            if (! (islogical (FitBias) || (isnumeric (FitBias)
-                   && isscalar (FitBias) && any (FitBias == [0, 1]))))
-              error (strcat ("RegressionLinear: 'FitBias' must be either", ...
-                             " true or false."));
-            endif
-            FitBias = logical (FitBias);
-
-          case 'postfitbias'
-            PostFitBias = varargin{2};
-            if (! (islogical (PostFitBias) || (isnumeric (PostFitBias)
-                   && isscalar (PostFitBias) && any (PostFitBias == [0, 1]))))
-              error (strcat ("RegressionLinear: 'PostFitBias' must be", ...
-                             " either true or false."));
-            endif
-            PostFitBias = logical (PostFitBias);
-
-          case 'observationsin'
-            ObservationsIn = varargin{2};
-            if (! (ischar (ObservationsIn)
-                   && any (strcmpi (ObservationsIn, {'rows', 'columns'}))))
-              error (strcat ("RegressionLinear: 'ObservationsIn' must be", ...
-                             " either 'rows' or 'columns'."));
-            endif
-            ObservationsIn = lower (ObservationsIn);
-
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("RegressionLinear: 'BetaTolerance' must be", ...
-                             " a nonnegative scalar."));
-            endif
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("RegressionLinear: 'GradientTolerance'", ...
-                             " must be a nonnegative scalar."));
-            endif
-
-          case 'deltagradienttolerance'
-            DeltaGradientTolerance = varargin{2};
-            if (! (isnumeric (DeltaGradientTolerance)
-                   && isscalar (DeltaGradientTolerance)
-                   && isreal (DeltaGradientTolerance)
-                   && DeltaGradientTolerance >= 0))
-              error (strcat ("RegressionLinear:", ...
-                             " 'DeltaGradientTolerance' must be a", ...
-                             " nonnegative scalar."));
-            endif
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("RegressionLinear: 'IterationLimit' must", ...
-                             " be a positive integer scalar."));
-            endif
-
-          case 'passlimit'
-            PassLimit = varargin{2};
-            if (! (isnumeric (PassLimit) && isscalar (PassLimit)
-                   && isreal (PassLimit) && PassLimit > 0
-                   && fix (PassLimit) == PassLimit))
-              error (strcat ("RegressionLinear: 'PassLimit' must be a", ...
-                             " positive integer scalar."));
-            endif
-
-          case 'batchsize'
-            BatchSize = varargin{2};
-            if (! (isnumeric (BatchSize) && isscalar (BatchSize)
-                   && isreal (BatchSize) && BatchSize > 0
-                   && fix (BatchSize) == BatchSize))
-              error (strcat ("RegressionLinear: 'BatchSize' must be a", ...
-                             " positive integer scalar."));
-            endif
-
-          case 'batchlimit'
-            BatchLimit = varargin{2};
-            if (! (isnumeric (BatchLimit) && isscalar (BatchLimit)
-                   && isreal (BatchLimit) && BatchLimit > 0
-                   && fix (BatchLimit) == BatchLimit))
-              error (strcat ("RegressionLinear: 'BatchLimit' must be a", ...
-                             " positive integer scalar."));
-            endif
-
-          case 'learnrate'
-            LearnRate = varargin{2};
-            if (! (isnumeric (LearnRate) && isscalar (LearnRate)
-                   && isreal (LearnRate) && LearnRate > 0))
-              error (strcat ("RegressionLinear: 'LearnRate' must be a", ...
-                             " positive scalar."));
-            endif
-
-          case 'optimizelearnrate'
-            OptimizeLearnRate = varargin{2};
-            if (! (islogical (OptimizeLearnRate)
-                   || (isnumeric (OptimizeLearnRate)
-                       && isscalar (OptimizeLearnRate)
-                       && any (OptimizeLearnRate == [0, 1]))))
-              error (strcat ("RegressionLinear: 'OptimizeLearnRate'", ...
-                             " must be either true or false."));
-            endif
-            OptimizeLearnRate = logical (OptimizeLearnRate);
-
-          case 'truncationperiod'
-            TruncationPeriod = varargin{2};
-            if (! (isnumeric (TruncationPeriod)
-                   && isscalar (TruncationPeriod)
-                   && isreal (TruncationPeriod) && TruncationPeriod > 0
-                   && fix (TruncationPeriod) == TruncationPeriod))
-              error (strcat ("RegressionLinear: 'TruncationPeriod' must", ...
-                             " be a positive integer scalar."));
-            endif
-
-          case 'numcheckconvergence'
-            NumCheckConvergence = varargin{2};
-            if (! (isnumeric (NumCheckConvergence)
-                   && isscalar (NumCheckConvergence)
-                   && isreal (NumCheckConvergence)
-                   && NumCheckConvergence > 0
-                   && fix (NumCheckConvergence) == NumCheckConvergence))
-              error (strcat ("RegressionLinear: 'NumCheckConvergence'", ...
-                             " must be a positive integer scalar."));
-            endif
-
-          case 'hessianhistorysize'
-            HessianHistorySize = varargin{2};
-            if (! (isnumeric (HessianHistorySize)
-                   && isscalar (HessianHistorySize)
-                   && isreal (HessianHistorySize) && HessianHistorySize > 0
-                   && fix (HessianHistorySize) == HessianHistorySize))
-              error (strcat ("RegressionLinear: 'HessianHistorySize'", ...
-                             " must be a positive integer scalar."));
-            endif
-
-          case 'verbose'
-            Verbose = varargin{2};
-            if (! (isnumeric (Verbose) && isscalar (Verbose)
-                   && isreal (Verbose) && any (Verbose == [0, 1, 2])))
-              error (strcat ("RegressionLinear: 'Verbose' must be 0, 1,", ...
-                             " or 2."));
-            endif
-
-          case 'responsetransform'
-            ResponseTransform = varargin{2};
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("RegressionLinear: 'Weights' must be a", ...
-                             " vector of nonnegative values."));
-            endif
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! (iscellstr (PredictorNames) && isvector (PredictorNames)))
-              error (strcat ("RegressionLinear: 'PredictorNames' must", ...
-                             " be a cell array of character vectors."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("RegressionLinear: 'ResponseName' must be a", ...
-                             " character vector."));
-            endif
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionLinear: invalid parameter name in", ...
-                           " optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionLinear: invalid optional paired argument.");
+      endif
 
       ## Observations may be given down the columns, which only means the
       ## predictor matrix arrives transposed.
@@ -698,12 +619,12 @@ classdef RegressionLinear < PredictiveModel
       ## least squares fit and MATLAB refuses it there rather than ignoring
       ## it.
       if (strcmp (Learner, 'leastsquares'))
-        if (EpsilonGiven)
+        if (! isempty (EpsilonIn))
           error (strcat ("RegressionLinear: 'Epsilon' applies to a", ...
                          " support vector machine only."));
         endif
         Epsilon = [];
-      elseif (ischar (EpsilonIn))
+      elseif (isempty (EpsilonIn) || ischar (EpsilonIn))
         r = iqr (Y);
         if (r == 0)
           Epsilon = 0.1;
@@ -712,6 +633,9 @@ classdef RegressionLinear < PredictiveModel
         endif
       else
         Epsilon = EpsilonIn;
+      endif
+      if (isempty (EpsilonIn))
+        EpsilonIn = 'auto';
       endif
 
       ## Resolve the penalty and the solver against one another, since each
@@ -992,31 +916,30 @@ classdef RegressionLinear < PredictiveModel
                        " be given in Name-Value pairs."));
       endif
 
-      LossFun = 'mse';
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) && any (strcmpi (LossFun, ...
-                                     {'mse', 'epsiloninsensitive'}))))
-              error (strcat ("RegressionLinear.loss: 'LossFun' must be", ...
-                             " either 'mse' or 'epsiloninsensitive'."));
-            endif
-            LossFun = lower (LossFun);
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("RegressionLinear.loss: 'Weights' must be", ...
-                             " a vector of nonnegative values."));
-            endif
-          otherwise
-            error (strcat ("RegressionLinear.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Weights'};
+      ## An empty 'Weights' stands for uniform weights
+      dfValues = {'mse', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, ...
+                               {'mse', 'epsiloninsensitive'}))))
+        error (strcat ("RegressionLinear.loss: 'LossFun' must be", ...
+                       " either 'mse' or 'epsiloninsensitive'."));
+      endif
+      LossFun = lower (LossFun);
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("RegressionLinear.loss: 'Weights' must be", ...
+                       " a vector of nonnegative values."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionLinear.loss: invalid optional paired argument.");
+      endif
 
       if (strcmp (LossFun, 'epsiloninsensitive') && isempty (this.Epsilon))
         error (strcat ("RegressionLinear.loss: the", ...
@@ -1444,7 +1367,7 @@ endclassdef
 %! RegressionLinear (ones (10, 2), ones (10, 1), 'Solver', 'newton')
 %!error<RegressionLinear: 'IterationLimit' must be a positive integer scalar.> ...
 %! RegressionLinear (ones (10, 2), ones (10, 1), 'IterationLimit', 0)
-%!error<RegressionLinear: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionLinear: invalid optional paired argument.> ...
 %! RegressionLinear (ones (10, 2), ones (10, 1), 'Nonsense', 1)
 %!error<RegressionLinear: invalid values in X.> RegressionLinear ({1, 2; 3, 4}, [1; 2])
 %!error<RegressionLinear: X is empty.> RegressionLinear ([], [])
@@ -1476,6 +1399,9 @@ endclassdef
 %!error<RegressionLinear.loss: 'LossFun' must be either 'mse' or 'epsiloninsensitive'.> ...
 %! loss (RegressionLinear (ones (10, 2), ones (10, 1)), ones (10, 2), ...
 %!                     ones (10, 1), 'LossFun', 'hinge')
+%!error<RegressionLinear.loss: invalid optional paired argument.> ...
+%! loss (RegressionLinear (ones (10, 2), ones (10, 1)), ones (10, 2), ...
+%!                     ones (10, 1), 'Bogus', 1)
 %!error<RegressionLinear.loss: the 'epsiloninsensitive' loss applies to a support vector machine only.> ...
 %! loss (RegressionLinear (ones (10, 2), ones (10, 1), 'Learner', ...
 %!                     'leastsquares'), ones (10, 2), ones (10, 1), ...
