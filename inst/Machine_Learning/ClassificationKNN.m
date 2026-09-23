@@ -2165,289 +2165,6 @@ classdef ClassificationKNN < PredictiveModel
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@var{obj}, @var{Vars}, @var{Labels})
-    ## @deftypefnx {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@dots{}, @var{Data})
-    ## @deftypefnx {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@dots{}, @var{name}, @var{value})
-    ##
-    ## Compute partial dependence for a trained ClassificationKNN object.
-    ##
-    ## @code{@var{[pd, x, y]} = partialDependence (@var{obj}, @var{Vars},
-    ## @var{Labels})}
-    ## computes the partial dependence of the classification scores on the
-    ## variables @var{Vars} for the specified class @var{Labels}.
-    ##
-    ## @itemize
-    ## @item
-    ## @code{obj} is a trained @var{ClassificationKNN} object.
-    ## @item
-    ## @code{Vars} is a vector of positive integers, character vector,
-    ## string array, or cell array of character
-    ## vectors representing predictor variables (it can be indices of
-    ## predictor variables in @var{obj.X}).
-    ## @item
-    ## @code{Labels} is a character vector, logical vector, numeric vector,
-    ## or cell array of character vectors representing class
-    ## labels. (column vector)
-    ## @end itemize
-    ##
-    ## @code{@var{[pd, x, y]} = partialDependence (@dots{}, @var{Data})}
-    ## specifies new predictor data to use for computing the partial dependence.
-    ##
-    ## @code{@var{[pd, x, y]} = partialDependence (@dots{}, @var{name},
-    ## @var{value})} allows additional options specified by name-value pairs:
-    ##
-    ## @multitable @columnfractions 0.32 0.7
-    ## @headitem @var{Name} @tab @var{Value}
-    ##
-    ## @item @qcode{'NumObservationsToSample'} @tab Number of
-    ## observations to sample. Must be a positive integer. Defaults to the
-    ## number of observations in the training data.
-    ## @item @qcode{'QueryPoints'} @tab Points at which to evaluate
-    ## the partial dependence.
-    ## Must be a numeric column vector, numeric two-column matrix, or
-    ## cell array of character column vectors.
-    ## @item @qcode{'UseParallel'} @tab Logical value indicating
-    ## whether to perform computations in parallel.
-    ## Defaults to @code{false}.
-    ## @end multitable
-    ##
-    ## @subheading Return Values
-    ## @itemize
-    ## @item @code{pd}: Partial dependence values.
-    ## @item @code{x}: Query points for the first predictor variable in Vars.
-    ## @item @code{y}: Query points for the second predictor variable in
-    ## Vars (if applicable).
-    ## @end itemize
-    ##
-    ## @seealso{fitcknn, ClassificationKNN}
-    ## @end deftypefn
-
-    function [pd, x, y] = partialDependence (this, Vars, Labels, varargin)
-      if (nargin < 3)
-        error ("ClassificationKNN.partialDependence: too few input arguments.");
-      endif
-
-      ## Validate Vars
-      if (isnumeric (Vars))
-        if (! all (Vars > 0) || ! (numel (Vars) == 1 || numel (Vars) == 2))
-          error ("ClassificationKNN.partialDependence: VARS must be a", ...
-                 ' positive integer or vector of two positive integers.');
-        endif
-      elseif (iscellstr (Vars))
-        if (! (numel (Vars) == 1 || numel (Vars) == 2))
-          error (strcat ("ClassificationKNN.partialDependence: VARS must", ...
-                         " be a string array or cell array of one or two", ...
-                         " character vectors."));
-        endif
-        Vars = cellfun (@(v) find (strcmp (this.PredictorNames, v)), Vars);
-      elseif (ischar (Vars))
-        Vars = find (strcmp (this.PredictorNames, Vars));
-        if (isempty (Vars))
-          error (strcat ("ClassificationKNN.partialDependence: VARS", ...
-                         " must match one of the predictor names."));
-        endif
-      else
-        error (strcat ("ClassificationKNN.partialDependence: VARS", ...
-                       " must be a string, or cell array."));
-      endif
-
-      ## Validate Labels
-      if (! (ischar (Labels) || islogical (Labels) || ...
-          isnumeric (Labels) || iscellstr (Labels) || islogical (Labels)))
-        error ("ClassificationKNN.partialDependence: invalid type for LABELS.");
-      endif
-
-      ## If Labels is a char array convert it to a cell array of character vectors
-      classes = this.ClassNames;
-      if (ischar (Labels) && ischar (classes))
-        Labels = cellstr (Labels);
-        classes = cellstr (classes);
-      endif
-
-
-      ## Additional validation to match ClassNames
-      if (! labelsKnown (Labels, classes))
-        error (strcat ("ClassificationKNN.partialDependence: LABELS must", ...
-                       " match the class names in the model's ClassNames."));
-      endif
-
-      ## Default values
-      Data = this.X;
-      UseParallel = false;
-      NumObservationsToSample = size (Data, 1);
-      QueryPoints = [];
-
-      ## Check for Data and other optional arguments
-      if (nargin > 3)
-        if (size (varargin{1}) == size (this.X))
-          Data = varargin{1};
-          ## Ensure Data consistency
-          if (! all (size (Data, 2) == numel (this.PredictorNames)))
-            error (strcat ("ClassificationKNN.partialDependence: DATA must", ...
-                           " have the same number and order of columns as", ...
-                           " the predictor variables."));
-          endif
-
-          ## Ensure Name-Value pairs are even length
-          if (mod (nargin - 4, 2) != 0)
-            error (strcat ("ClassificationKNN.partialDependence:", ...
-                           " name-value arguments must be in pairs."));
-          endif
-
-          ## Set the number of observations to sample
-          NumObservationsToSample = size (Data, 1);
-          idx = 2;
-        else
-          ## Ensure Name-Value pairs are even length
-          if (mod (nargin - 3, 2) != 0)
-            error (strcat ("ClassificationKNN.partialDependence:", ...
-                           " name-value arguments must be in pairs."));
-          endif
-          idx = 1;
-        endif
-
-        ## Handle name-value pair arguments
-        for i = idx:2:length (varargin)
-          if (! ischar (varargin{i}))
-            error (strcat ("ClassificationKNN.partialDependence: name", ...
-                           " arguments must be strings."));
-          endif
-          Value = varargin{i+1};
-          ## Parse name-value pairs
-          switch (lower (varargin{i}))
-            case 'numobservationstosample'
-              if (! isnumeric (Value) || Value <= 0 || Value != round (Value))
-                error (strcat ("ClassificationKNN.partialDependence:", ...
-                               " NumObservationsToSample must be a", ...
-                               " positive integer."));
-              endif
-              NumObservationsToSample = Value;
-              if (Value > size (Data, 1))
-                NumObservationsToSample = size (Data, 1);
-              endif
-            case 'querypoints'
-              if (! isnumeric (Value) && ! iscell (Value))
-                error (strcat ("ClassificationKNN.partialDependence:", ...
-                               " QueryPoints must be a numeric column", ...
-                               " vector, numeric two-column matrix, or", ...
-                               " cell array of character column vectors."));
-              endif
-              QueryPoints = Value;
-            case 'useparallel'
-              if (! islogical (Value))
-                error (strcat ("ClassificationKNN.partialDependence:", ...
-                               " UseParallel must be a logical value."));
-              endif
-              UseParallel = Value;
-            otherwise
-              error (strcat ("ClassificationKNN.partialDependence:", ...
-                             " name-value pair argument not recognized."));
-          endswitch
-        endfor
-      endif
-
-      ## Sample observations if needed
-      if (NumObservationsToSample < size (Data, 1))
-        Data = datasample (Data, NumObservationsToSample, 'Replace', false);
-      endif
-
-      ## Generate QueryPoints if not specified
-      if (isempty (QueryPoints))
-        if (numel (Vars) == 1)
-          if (isnumeric (Data(:, Vars)))
-            QueryPoints = linspace (min (Data(:, Vars)), ...
-                                max (Data(:, Vars)), 100)';
-          else
-            QueryPoints = unique (Data(:, Vars));
-          endif
-        else
-          QueryPoints = cell (1, numel (Vars));
-          for j = 1:numel (Vars)
-            if (isnumeric (Data(:, Vars(j))))
-              QueryPoints{j} = linspace (min (Data(:, Vars(j))), ...
-                                max (Data(:, Vars(j))), 100)';
-            else
-              QueryPoints{j} = unique (Data(:, Vars(j)));
-            endif
-          endfor
-        endif
-      endif
-
-      ## Prepare grid points for predictions
-      if (numel (Vars) == 1)
-        gridPoints = QueryPoints;
-      else
-        if (ischar (QueryPoints))
-          [X1, X2] = meshgrid (QueryPoints(1), QueryPoints(2));
-        else
-          [X1, X2] = meshgrid (QueryPoints{1}, QueryPoints{2});
-        endif
-        gridPoints = [X1(:), X2(:)];
-      endif
-
-      ## Predict responses for the grid points
-      numClasses = classCount (classes);
-      numQueryPoints = size (gridPoints, 1);
-      predictions = zeros (numQueryPoints, numClasses);
-
-      if (UseParallel)
-        parfor i = 1:numQueryPoints
-          tempData = Data;
-          for j = 1:numel (Vars)
-            tempData(:, Vars(j)) = repmat (gridPoints(i, j), ...
-                                    NumObservationsToSample, 1);
-          endfor
-          [~, scores] = predict (this, tempData);
-          predictions(i, :) = mean (scores, 1);
-        endparfor
-      else
-        for i = 1:numQueryPoints
-          tempData = Data;
-          for j = 1:numel (Vars)
-            tempData(:, Vars(j)) = repmat (gridPoints(i, j), ...
-                                    NumObservationsToSample, 1);
-          endfor
-          [~, scores] = predict (this, tempData);
-          predictions(i, :) = mean (scores, 1);
-        endfor
-      endif
-
-      ## Compute partial dependence
-      if (numel (Vars) == 1)
-        if (numel (Labels) == 1)
-          classIndex = labelIndices (classes, Labels);
-          pd = predictions(:, classIndex)';
-        else
-          pd = zeros (numel (Labels), numel (QueryPoints));
-          for j = 1:numel (Labels)
-            classIndex = labelIndices (classes, Labels(j));
-            pd(j, :) = predictions(:, classIndex)';
-          endfor
-        endif
-        x = QueryPoints;
-        y = [];
-      else
-        if (numel (Labels) == 1)
-          classIndex = labelIndices (classes, Labels);
-          pd = reshape (predictions(:, classIndex), numel (QueryPoints{1}), ...
-                        numel (QueryPoints{2}));
-        else
-          pd = zeros (numel (Labels), numel (QueryPoints{1}), ...
-                      numel (QueryPoints{2}));
-          for j = 1:numel (Labels)
-            classIndex = labelIndices (classes, Labels(j));
-            pd(j, :, :) = reshape (predictions(:, classIndex), ...
-                                   numel (QueryPoints{1}), ...
-                                   numel (QueryPoints{2}));
-          endfor
-        endif
-        x = QueryPoints{1};
-        y = QueryPoints{2};
-      endif
-
-    endfunction
-
-    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationKNN} {@var{CVMdl} =} crossval (@var{obj})
     ## @deftypefnx {ClassificationKNN} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
     ##
@@ -2921,7 +2638,7 @@ endfunction
 %! ## Specify Vars and Labels
 %! Vars = 1;
 %! Labels = 1;
-%! queryPoints = [linspace(0, 1, 3)', linspace(0, 1, 3)'];
+%! queryPoints = linspace (0, 1, 3)';
 %! ## Calculate partialDependence using queryPoints
 %! [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
 %! queryPoints)
@@ -3944,28 +3661,11 @@ endfunction
 %! 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 %! assert_equal (all ((abs (pdm - pd) < 1)(:)), true)
 %!test
-%! Vars = 1;
-%! Labels = 2;
-%! [pd, x, y] = partialDependence (mdl, Vars, Labels, 'UseParallel', true);
-%! pdm = [0.7500, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
-%! 0.5000, 0.5000];
-%! assert_equal (pd, pdm)
-%!test
 %! Vars = [1, 2];
 %! Labels = 1;
 %! queryPoints = {linspace(0, 1, 3)', linspace(0, 1, 3)'};
 %! [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
-%!                            queryPoints, 'UseParallel', true);
+%!                            queryPoints);
 %! pdm = [0, 0, 0; 0, 0, 0; 0, 0, 0];
 %! assert_equal (pd, pdm)
 %!test
@@ -4063,20 +3763,27 @@ endfunction
 %! 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 %! assert_equal (pd, pdm)
 
-## Test input validation for partialDependence method
-%!error<ClassificationKNN.partialDependence: too few input arguments.> ...
-%! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)))
-%!error<ClassificationKNN.partialDependence: too few input arguments.> ...
-%! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1)
-%!error<ClassificationKNN.partialDependence: name-value arguments must be in pairs.> ...
-%! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
-%! ones (4,1), 'NumObservationsToSample')
-%!error<ClassificationKNN.partialDependence: name-value arguments must be in pairs.> ...
-%! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
-%! ones (4,1), 2)
-%!error<ClassificationKNN.partialDependence: UseParallel must be a logical value.> ...
-%! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
-%! ones (4,1), 'UseParallel', 1)
+## partialDependence, as measured on R2024a
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [pd, x] = partialDependence (Mdl, 4, 'versicolor', ...
+%!                              'QueryPoints', [0.5; 1; 1.5; 2]);
+%! assert_equal (pd, [0.5013333333, 0.452, 0.384, 0.236], 1e-10);
+%! [pd, x] = partialDependence (Mdl, 3, {'setosa'; 'virginica'});
+%! assert_equal (size (pd), [2, 100]);
+%! assert_equal (pd(:,[1, 100]), [1, 0; 0, 0.9466666667], 1e-10);
+%! [pd, x] = partialDependence (Mdl, 2, 'virginica', meas(1:60,:));
+%! assert_equal (pd([1, 50, 100]), [0.01666666667, 0, 0.003333333333], 1e-10);
+%! assert_equal (x([1, 100]), [2.3; 4.4], 1e-12);
+%!test
+%! load fisheriris
+%! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! [pd, x, y] = partialDependence (Mdl, [1, 3], 'versicolor');
+%! assert_equal (size (pd), [100, 100]);
+%! assert_equal ([pd(2,1), pd(100,1), pd(1,100), pd(50,60)], ...
+%!               [0, 0.09733333333, 0, 0.9933333333], 1e-10);
+%! assert_equal (y([1, 2, 100]), [1; 1.05959596; 6.9], 1e-8);
 
 ## Test output for crossval method
 %!shared x, y, obj
