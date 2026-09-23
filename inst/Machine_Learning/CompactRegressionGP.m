@@ -290,26 +290,23 @@ classdef CompactRegressionGP < PredictiveModel
                        " number of predictors as the trained model."));
       endif
 
-      CIAlpha = 0.05;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("CompactRegressionGP.predict: optional arguments", ...
-                         " must be given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'alpha'
-            CIAlpha = varargin{2};
-            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
-                   CIAlpha >= 0 && CIAlpha <= 1))
-              error (strcat ("CompactRegressionGP.predict: 'Alpha' must", ...
-                             " be a scalar between 0 and 1."));
-            endif
-          otherwise
-            error (strcat ("CompactRegressionGP.predict: invalid NAME in", ...
-                           " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Alpha'};
+      dfValues = {0.05};
+      [CIAlpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+             CIAlpha >= 0 && CIAlpha <= 1))
+        error (strcat ("CompactRegressionGP.predict: 'Alpha' must be a", ...
+                       " scalar between 0 and 1."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("CompactRegressionGP.predict: invalid optional", ...
+                       " paired argument."));
+      endif
 
       if (! isempty (this.Coding_))
         XC = dummyCoding (XC, this.Coding_);
@@ -384,44 +381,38 @@ classdef CompactRegressionGP < PredictiveModel
                        " Y must be equal."));
       endif
 
-      LossFun = 'mse';
-      Weights = ones (rows (X), 1);
-      Epsilon = 0;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("CompactRegressionGP.loss: optional arguments", ...
-                         " must be given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) || is_function_handle (LossFun)))
-              error (strcat ("CompactRegressionGP.loss: 'LossFun' must be", ...
-                             " a character vector or a function handle."));
-            endif
-            if (ischar (LossFun) && ...
-                ! any (strcmpi (LossFun, {'mse', 'mae', ...
-                                          'epsiloninsensitive'})))
-              error (strcat ("CompactRegressionGP.loss: unsupported", ...
-                             " 'LossFun' value."));
-            endif
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights) && ...
-                   numel (Weights) == rows (X) && all (Weights >= 0)))
-              error (strcat ("CompactRegressionGP.loss: 'Weights' must be", ...
-                             " a vector of non-negative values with one", ...
-                             " element per observation."));
-            endif
-            Weights = Weights(:);
-          case 'epsilon'
-            Epsilon = varargin{2};
-          otherwise
-            error (strcat ("CompactRegressionGP.loss: invalid NAME in", ...
-                           " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights', 'Epsilon'};
+      dfValues = {'mse', [], 0};
+      [LossFun, Weights, Epsilon, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) || is_function_handle (LossFun)))
+        error (strcat ("CompactRegressionGP.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ...
+          ! any (strcmpi (LossFun, {'mse', 'mae', ...
+                                    'epsiloninsensitive'})))
+        error ("CompactRegressionGP.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights) && ...
+             numel (Weights) == rows (X) && all (Weights >= 0)))
+        error (strcat ("CompactRegressionGP.loss: 'Weights' must be a", ...
+                       " vector of non-negative values with one element", ...
+                       " per observation."));
+      endif
+      Weights = Weights(:);
+
+      if (! isempty (args))
+        error ("CompactRegressionGP.loss: invalid optional paired argument.");
+      endif
+      if (isempty (Weights))
+        Weights = ones (rows (X), 1);
+      endif
 
       yFit = this.predict (X);
       if (is_function_handle (LossFun))
@@ -724,7 +715,7 @@ endclassdef
 %!error<CompactRegressionGP.predict: 'Alpha' must be a scalar between 0 and 1.> ...
 %! predict (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
 %!          ones (3, 2), 'Alpha', 2)
-%!error<CompactRegressionGP.predict: invalid NAME in optional pairs of arguments.> ...
+%!error<CompactRegressionGP.predict: invalid optional paired argument.> ...
 %! predict (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
 %!          ones (3, 2), 'bogus', 1)
 
@@ -736,6 +727,9 @@ endclassdef
 %!error<CompactRegressionGP.loss: number of rows in X and Y must be equal.> ...
 %! loss (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
 %!       ones (3, 2), ones (2, 1))
+%!error<CompactRegressionGP.loss: invalid optional paired argument.> ...
+%! loss (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
+%!       ones (3, 2), ones (3, 1), 'Bogus', 1)
 %!error<CompactRegressionGP.loss: unsupported 'LossFun' value.> ...
 %! loss (compact (RegressionGP (ones (5, 2), ones (5, 1))), ones (3, 2), ...
 %!       ones (3, 1), 'LossFun', 'bogus')

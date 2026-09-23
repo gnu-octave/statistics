@@ -601,181 +601,127 @@ classdef RegressionGP < PredictiveModel
       [n, p] = size (X);
       fitRows = ! any (isnan (X), 2);
 
-      ## Defaults
-      KernelFunction   = 'squaredexponential';
-      KernelParameters = [];
-      BasisFunction    = 'constant';
-      BetaIn           = [];
-      SigmaIn          = [];
-      ConstantSigma    = false;
-      SigmaLowerBound  = [];
-      FitMethod        = 'exact';
-      PredictMethod    = 'exact';
-      Optimizer        = 'quasinewton';
-      Standardize      = false;
-      Weights          = [];
-      PredictorNames   = {};
-      ResponseName     = 'Y';
-      ResponseTransform = 'none';
-      CategoricalPredictors = [];
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionGP: optional arguments must be given", ...
+                       " in Name-Value pairs."));
+      endif
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionGP: optional arguments must be given", ...
-                         " in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
+      ## Parse optional paired arguments
+      optNames = {'KernelFunction', 'KernelParameters', 'BasisFunction', ...
+                  'Beta', 'Sigma', 'ConstantSigma', 'SigmaLowerBound', ...
+                  'FitMethod', 'PredictMethod', 'Optimizer', 'Standardize', ...
+                  'Weights', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'KernelParameters' take the documented defaults for the kernel,
+      ## 'Beta' starts at zero, 'Sigma' at the standard deviation of the
+      ## response over the root of two and 'SigmaLowerBound' at a hundredth
+      ## of it; 'Weights' are uniform and 'PredictorNames' are x1, x2, ...
+      dfValues = {'squaredexponential', [], 'constant', [], [], false, [], ...
+                  'exact', 'exact', 'quasinewton', false, [], {}, 'Y', ...
+                  'none', []};
+      [KernelFunction, KernelParameters, BasisFunction, BetaIn, SigmaIn, ...
+       ConstantSigma, SigmaLowerBound, FitMethod, PredictMethod, Optimizer, ...
+       Standardize, Weights, PredictorNames, ResponseName, ...
+       ResponseTransform, CategoricalPredictors, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'kernelfunction'
-            KernelFunction = varargin{2};
-            if (! (ischar (KernelFunction) || ...
-                   is_function_handle (KernelFunction)))
-              error (strcat ("RegressionGP: 'KernelFunction' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (KernelFunction) && ...
-                ! any (strcmpi (KernelFunction, kernelNames ())))
-              error ("RegressionGP: unsupported 'KernelFunction' value.");
-            endif
+      ## Validate optional paired arguments
+      if (! (ischar (KernelFunction) || ...
+             is_function_handle (KernelFunction)))
+        error (strcat ("RegressionGP: 'KernelFunction' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (KernelFunction) && ...
+          ! any (strcmpi (KernelFunction, kernelNames ())))
+        error ("RegressionGP: unsupported 'KernelFunction' value.");
+      endif
+      if (! isempty (KernelParameters) &&
+          ! (isnumeric (KernelParameters) && ...
+             isvector (KernelParameters) && ...
+             all (KernelParameters > 0)))
+        error (strcat ("RegressionGP: 'KernelParameters' must be a vector", ...
+                       " of positive values."));
+      endif
+      KernelParameters = KernelParameters(:);
+      if (! (ischar (BasisFunction) || ...
+             is_function_handle (BasisFunction)))
+        error (strcat ("RegressionGP: 'BasisFunction' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (BasisFunction) && ...
+          ! any (strcmpi (BasisFunction, ...
+                          {'none', 'constant', 'linear', ...
+                           'purequadratic'})))
+        error ("RegressionGP: unsupported 'BasisFunction' value.");
+      endif
+      if (! isempty (BetaIn) &&
+          ! (isnumeric (BetaIn) && isvector (BetaIn)))
+        error ("RegressionGP: 'Beta' must be a numeric vector.");
+      endif
+      BetaIn = BetaIn(:);
+      if (! isempty (SigmaIn) &&
+          ! (isnumeric (SigmaIn) && isscalar (SigmaIn) && SigmaIn > 0))
+        error ("RegressionGP: 'Sigma' must be a positive scalar.");
+      endif
+      if (! (islogical (ConstantSigma) && isscalar (ConstantSigma)))
+        error ("RegressionGP: 'ConstantSigma' must be a logical scalar.");
+      endif
+      if (! isempty (SigmaLowerBound) &&
+          ! (isnumeric (SigmaLowerBound) && ...
+             isscalar (SigmaLowerBound) && SigmaLowerBound > 0))
+        error ("RegressionGP: 'SigmaLowerBound' must be a positive scalar.");
+      endif
+      if (! ischar (FitMethod))
+        error ("RegressionGP: 'FitMethod' must be a character vector.");
+      endif
+      if (any (strcmpi (FitMethod, {'sd', 'sr', 'fic'})))
+        error (strcat ("RegressionGP: the approximate fitting methods are", ...
+                       " not implemented; 'FitMethod' must be either", ...
+                       " 'exact' or 'none'."));
+      endif
+      if (! any (strcmpi (FitMethod, {'exact', 'none'})))
+        error ("RegressionGP: unsupported 'FitMethod' value.");
+      endif
+      if (! ischar (PredictMethod))
+        error ("RegressionGP: 'PredictMethod' must be a character vector.");
+      endif
+      if (any (strcmpi (PredictMethod, {'bcd', 'sd', 'sr', 'fic'})))
+        error (strcat ("RegressionGP: the approximate prediction methods", ...
+                       " are not implemented; 'PredictMethod' must be", ...
+                       " 'exact'."));
+      endif
+      if (! strcmpi (PredictMethod, 'exact'))
+        error ("RegressionGP: unsupported 'PredictMethod' value.");
+      endif
+      if (! ischar (Optimizer))
+        error ("RegressionGP: 'Optimizer' must be a character vector.");
+      endif
+      if (strcmpi (Optimizer, 'fmincon'))
+        error (strcat ("RegressionGP: 'fmincon' is not available in core", ...
+                       " Octave; use 'quasinewton' or 'fminsearch'."));
+      endif
+      if (! any (strcmpi (Optimizer, {'quasinewton', 'fminunc', ...
+                                      'lbfgs', 'fminsearch'})))
+        error ("RegressionGP: unsupported 'Optimizer' value.");
+      endif
+      if (! (islogical (Standardize) && isscalar (Standardize)))
+        error ("RegressionGP: 'Standardize' must be a logical scalar.");
+      endif
+      if (! isempty (PredictorNames) &&
+          ! (iscellstr (PredictorNames) && ...
+             numel (PredictorNames) == p))
+        error (strcat ("RegressionGP: 'PredictorNames' must be a cell", ...
+                       " array of character vectors with one name per", ...
+                       " column of X."));
+      endif
+      if (! ischar (ResponseName))
+        error ("RegressionGP: 'ResponseName' must be a character vector.");
+      endif
 
-          case 'kernelparameters'
-            KernelParameters = varargin{2};
-            if (! (isnumeric (KernelParameters) && ...
-                   isvector (KernelParameters) && ...
-                   all (KernelParameters > 0)))
-              error (strcat ("RegressionGP: 'KernelParameters' must be a", ...
-                             " vector of positive values."));
-            endif
-            KernelParameters = KernelParameters(:);
-
-          case 'basisfunction'
-            BasisFunction = varargin{2};
-            if (! (ischar (BasisFunction) || ...
-                   is_function_handle (BasisFunction)))
-              error (strcat ("RegressionGP: 'BasisFunction' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (BasisFunction) && ...
-                ! any (strcmpi (BasisFunction, ...
-                                {'none', 'constant', 'linear', ...
-                                 'purequadratic'})))
-              error ("RegressionGP: unsupported 'BasisFunction' value.");
-            endif
-
-          case 'beta'
-            BetaIn = varargin{2};
-            if (! (isnumeric (BetaIn) && isvector (BetaIn)))
-              error ("RegressionGP: 'Beta' must be a numeric vector.");
-            endif
-            BetaIn = BetaIn(:);
-
-          case 'sigma'
-            SigmaIn = varargin{2};
-            if (! (isnumeric (SigmaIn) && isscalar (SigmaIn) && SigmaIn > 0))
-              error ("RegressionGP: 'Sigma' must be a positive scalar.");
-            endif
-
-          case 'constantsigma'
-            ConstantSigma = varargin{2};
-            if (! (islogical (ConstantSigma) && isscalar (ConstantSigma)))
-              error (strcat ("RegressionGP: 'ConstantSigma' must be a", ...
-                             " logical scalar."));
-            endif
-
-          case 'sigmalowerbound'
-            SigmaLowerBound = varargin{2};
-            if (! (isnumeric (SigmaLowerBound) && ...
-                   isscalar (SigmaLowerBound) && SigmaLowerBound > 0))
-              error (strcat ("RegressionGP: 'SigmaLowerBound' must be a", ...
-                             " positive scalar."));
-            endif
-
-          case 'fitmethod'
-            FitMethod = varargin{2};
-            if (! ischar (FitMethod))
-              error (strcat ("RegressionGP: 'FitMethod' must be a", ...
-                             " character vector."));
-            endif
-            if (any (strcmpi (FitMethod, {'sd', 'sr', 'fic'})))
-              error (strcat ("RegressionGP: the approximate fitting", ...
-                             " methods are not implemented; 'FitMethod'", ...
-                             " must be either 'exact' or 'none'."));
-            endif
-            if (! any (strcmpi (FitMethod, {'exact', 'none'})))
-              error ("RegressionGP: unsupported 'FitMethod' value.");
-            endif
-
-          case 'predictmethod'
-            PredictMethod = varargin{2};
-            if (! ischar (PredictMethod))
-              error (strcat ("RegressionGP: 'PredictMethod' must be a", ...
-                             " character vector."));
-            endif
-            if (any (strcmpi (PredictMethod, {'bcd', 'sd', 'sr', 'fic'})))
-              error (strcat ("RegressionGP: the approximate prediction", ...
-                             " methods are not implemented;", ...
-                             " 'PredictMethod' must be 'exact'."));
-            endif
-            if (! strcmpi (PredictMethod, 'exact'))
-              error ("RegressionGP: unsupported 'PredictMethod' value.");
-            endif
-
-          case 'optimizer'
-            Optimizer = varargin{2};
-            if (! ischar (Optimizer))
-              error (strcat ("RegressionGP: 'Optimizer' must be a", ...
-                             " character vector."));
-            endif
-            if (strcmpi (Optimizer, 'fmincon'))
-              error (strcat ("RegressionGP: 'fmincon' is not available in", ...
-                             " core Octave; use 'quasinewton' or", ...
-                             " 'fminsearch'."));
-            endif
-            if (! any (strcmpi (Optimizer, {'quasinewton', 'fminunc', ...
-                                            'lbfgs', 'fminsearch'})))
-              error ("RegressionGP: unsupported 'Optimizer' value.");
-            endif
-
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (islogical (Standardize) && isscalar (Standardize)))
-              error (strcat ("RegressionGP: 'Standardize' must be a", ...
-                             " logical scalar."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! (iscellstr (PredictorNames) && ...
-                   numel (PredictorNames) == p))
-              error (strcat ("RegressionGP: 'PredictorNames' must be a", ...
-                             " cell array of character vectors with one", ...
-                             " name per column of X."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("RegressionGP: 'ResponseName' must be a", ...
-                             " character vector."));
-            endif
-
-          case 'responsetransform'
-            ResponseTransform = varargin{2};
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionGP: invalid parameter name in", ...
-                           " optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionGP: invalid optional paired argument.");
+      endif
 
       ## Store the data and its description
       this.X = X;
@@ -965,26 +911,22 @@ classdef RegressionGP < PredictiveModel
                        " number of predictors as the trained model."));
       endif
 
-      CIAlpha = 0.05;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionGP.predict: optional arguments must", ...
-                         " be given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'alpha'
-            CIAlpha = varargin{2};
-            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
-                   CIAlpha >= 0 && CIAlpha <= 1))
-              error (strcat ("RegressionGP.predict: 'Alpha' must be a", ...
-                             " scalar between 0 and 1."));
-            endif
-          otherwise
-            error (strcat ("RegressionGP.predict: invalid NAME in optional", ...
-                           " pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Alpha'};
+      dfValues = {0.05};
+      [CIAlpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+             CIAlpha >= 0 && CIAlpha <= 1))
+        error (strcat ("RegressionGP.predict: 'Alpha' must be a scalar", ...
+                       " between 0 and 1."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionGP.predict: invalid optional paired argument.");
+      endif
 
       if (! isempty (this.Coding_))
         XC = dummyCoding (XC, this.Coding_);
@@ -1070,43 +1012,38 @@ classdef RegressionGP < PredictiveModel
                                         nargin > 2);
       [X, Y] = this.checkXY_ (X, Y, 'RegressionGP.loss');
 
-      LossFun = 'mse';
-      Weights = ones (rows (X), 1);
-      Epsilon = 0;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionGP.loss: optional arguments must be", ...
-                         " given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) || is_function_handle (LossFun)))
-              error (strcat ("RegressionGP.loss: 'LossFun' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (LossFun) && ...
-                ! any (strcmpi (LossFun, {'mse', 'mae', ...
-                                          'epsiloninsensitive'})))
-              error ("RegressionGP.loss: unsupported 'LossFun' value.");
-            endif
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights) && ...
-                   numel (Weights) == rows (X) && all (Weights >= 0)))
-              error (strcat ("RegressionGP.loss: 'Weights' must be a", ...
-                             " vector of non-negative values with one", ...
-                             " element per observation."));
-            endif
-            Weights = Weights(:);
-          case 'epsilon'
-            Epsilon = varargin{2};
-          otherwise
-            error (strcat ("RegressionGP.loss: invalid NAME in optional", ...
-                           " pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights', 'Epsilon'};
+      dfValues = {'mse', [], 0};
+      [LossFun, Weights, Epsilon, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) || is_function_handle (LossFun)))
+        error (strcat ("RegressionGP.loss: 'LossFun' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ...
+          ! any (strcmpi (LossFun, {'mse', 'mae', ...
+                                    'epsiloninsensitive'})))
+        error ("RegressionGP.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights) && ...
+             numel (Weights) == rows (X) && all (Weights >= 0)))
+        error (strcat ("RegressionGP.loss: 'Weights' must be a vector of", ...
+                       " non-negative values with one element per", ...
+                       " observation."));
+      endif
+      Weights = Weights(:);
+
+      if (! isempty (args))
+        error ("RegressionGP.loss: invalid optional paired argument.");
+      endif
+      if (isempty (Weights))
+        Weights = ones (rows (X), 1);
+      endif
 
       yFit = this.predict (X);
       if (is_function_handle (LossFun))
@@ -2174,7 +2111,7 @@ endfunction
 %! RegressionGP (ones (5, 2), 'a')
 %!error<RegressionGP: optional arguments must be given in Name-Value pairs.> ...
 %! RegressionGP (ones (5, 2), ones (5, 1), 'Standardize')
-%!error<RegressionGP: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionGP: invalid optional paired argument.> ...
 %! RegressionGP (ones (5, 2), ones (5, 1), 'bogus', 1)
 %!error<RegressionGP: 'KernelFunction' must be a character vector or a function handle.> ...
 %! RegressionGP (ones (5, 2), ones (5, 1), 'KernelFunction', 5)
@@ -2218,7 +2155,7 @@ endfunction
 %! predict (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 3))
 %!error<RegressionGP.predict: 'Alpha' must be a scalar between 0 and 1.> ...
 %! predict (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), 'Alpha', 2)
-%!error<RegressionGP.predict: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionGP.predict: invalid optional paired argument.> ...
 %! predict (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), 'bogus', 1)
 
 ## Test input validation for the loss method
@@ -2227,7 +2164,7 @@ endfunction
 %!error<RegressionGP.loss: unsupported 'LossFun' value.> ...
 %! loss (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), ...
 %!       ones (3, 1), 'LossFun', 'bogus')
-%!error<RegressionGP.loss: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionGP.loss: invalid optional paired argument.> ...
 %! loss (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), ...
 %!       ones (3, 1), 'bogus', 1)
 
