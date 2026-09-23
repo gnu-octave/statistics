@@ -1824,8 +1824,6 @@ classdef ClassificationKNN < PredictiveModel
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationKNN.loss: name-value", ...
                        " arguments must be in pairs."));
-      elseif (numel (varargin) > 4)
-        error ("ClassificationKNN.loss: too many input arguments.");
       endif
 
       ## Check for valid X
@@ -1835,10 +1833,6 @@ classdef ClassificationKNN < PredictiveModel
         error (strcat ("ClassificationKNN.loss: X must have the same", ...
                        " number of predictors as the trained model."));
       endif
-
-      ## Default values
-      LossFun = 'mincost';
-      Weights = [];
 
       ## Validate Y
       valid_types = {'char', 'string', 'logical', 'single', 'double', ...
@@ -1853,58 +1847,54 @@ classdef ClassificationKNN < PredictiveModel
                        " the same number of rows as X."));
       endif
 
-      ## Parse name-value arguments
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (isa (Value, 'function_handle'))
-              ## Check if the loss function is valid
-              if (nargin (Value) != 4)
-                error (strcat ("ClassificationKNN.loss: custom loss function", ...
-                               " must accept exactly four input arguments."));
-              endif
-              try
-                n = 1;
-                K = 2;
-                C_test = false (n, K);
-                S_test = zeros (n, K);
-                W_test = ones (n, 1);
-                Cost_test = ones (K) - eye (K);
-                test_output = Value(C_test, S_test, W_test, Cost_test);
-                if (! isscalar (test_output))
-                  error (strcat ("ClassificationKNN.loss: custom loss", ...
-                                 " function must return a scalar value."));
-                endif
-              catch
-                error (strcat ("ClassificationKNN.loss: custom loss", ...
-                               " function is not valid or does not", ...
-                               " produce correct output."));
-              end_try_catch
-              LossFun = Value;
-            elseif (ischar (Value) && any (strcmpi (Value, {'binodeviance', ...
-                'classifcost', 'classiferror', 'exponential', 'hinge', ...
-                'logit', 'mincost', 'quadratic'})))
-              LossFun = Value;
-            else
-              error ("ClassificationKNN.loss: invalid loss function.");
-            endif
-          case 'weights'
-            if (isnumeric (Value) && isvector (Value))
-              if (numel (Value) != size (X ,1))
-                error (strcat ("ClassificationKNN.loss: size of Weights", ...
-                               " must be equal to the number of rows in X."));
-              elseif (numel (Value) == size (X, 1))
-                Weights = Value;
-              endif
-            else
-              error ("ClassificationKNN.loss: invalid Weights.");
-            endif
-          otherwise
-            error ("ClassificationKNN.loss: invalid name-value arguments.");
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (isa (LossFun, 'function_handle'))
+        ## Check if the loss function is valid
+        if (nargin (LossFun) != 4)
+          error (strcat ("ClassificationKNN.loss: custom loss function", ...
+                         " must accept exactly four input arguments."));
+        endif
+        try
+          n = 1;
+          K = 2;
+          C_test = false (n, K);
+          S_test = zeros (n, K);
+          W_test = ones (n, 1);
+          Cost_test = ones (K) - eye (K);
+          test_output = LossFun(C_test, S_test, W_test, Cost_test);
+          if (! isscalar (test_output))
+            error (strcat ("ClassificationKNN.loss: custom loss function", ...
+                           " must return a scalar value."));
+          endif
+        catch
+          error (strcat ("ClassificationKNN.loss: custom loss function is", ...
+                         " not valid or does not produce correct output."));
+        end_try_catch
+      elseif (! (ischar (LossFun)
+                 && any (strcmpi (LossFun, {'binodeviance', 'classifcost', ...
+                                            'classiferror', 'exponential', ...
+                                            'hinge', 'logit', 'mincost', ...
+                                            'quadratic'}))))
+        error ("ClassificationKNN.loss: invalid loss function.");
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationKNN.loss: invalid Weights.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationKNN.loss: size of Weights must be", ...
+                       " equal to the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationKNN.loss: invalid optional paired argument.");
+      endif
 
       ## Check for missing values in X
       if (! isa (LossFun, 'function_handle'))
@@ -3573,6 +3563,9 @@ endfunction
 %!error<ClassificationKNN.loss: invalid loss function.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'LossFun', 'a')
+%!error<ClassificationKNN.loss: invalid optional paired argument.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
+%!        ones (4,1), 'Bogus', 1)
 %!error<ClassificationKNN.loss: invalid Weights.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'Weights', 'w')
@@ -4588,3 +4581,13 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## resubLoss takes a loss function and weights together, the weights given
+## replacing the ones the model was fitted with
+%!test
+%! load fisheriris
+%! w = (1:150)';
+%! Mdl = fitcknn (meas, species);
+%! assert_equal (resubLoss (Mdl, 'LossFun', 'classiferror', 'Weights', w), ...
+%!               loss (Mdl, meas, species, 'LossFun', 'classiferror', ...
+%!                     'Weights', w));

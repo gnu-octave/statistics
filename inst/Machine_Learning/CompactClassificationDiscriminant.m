@@ -961,14 +961,7 @@ classdef CompactClassificationDiscriminant < PredictiveModel
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("CompactClassificationDiscriminant.loss:", ...
                        " name-value arguments must be in pairs."));
-      elseif (numel (varargin) > 4)
-        error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                       " too many input arguments."));
       endif
-
-      ## Default values
-      LossFun = 'mincost';
-      Weights = [];
 
       ## Validate Y
       valid_types = {'char', 'string', 'logical', 'single', 'double', ...
@@ -984,67 +977,57 @@ classdef CompactClassificationDiscriminant < PredictiveModel
                        " have the same number of rows as X."));
       endif
 
-      ## Parse name-value arguments
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
-                      'exponential', 'hinge','logit', 'mincost', 'quadratic'};
-            if (isa (Value, 'function_handle'))
-              ## Check if the loss function is valid
-              if (nargin (Value) != 4)
-                error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                               " custom loss function must accept", ...
-                               " exactly four input arguments."));
-              endif
-              try
-                n = 1;
-                K = 2;
-                C_test = false (n, K);
-                S_test = zeros (n, K);
-                W_test = ones (n, 1);
-                Cost_test = ones (K) - eye (K);
-                test_output = Value(C_test, S_test, W_test, Cost_test);
-                if (! isscalar (test_output))
-                  error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                                 " custom loss function must return", ...
-                                 " a scalar value."));
-                endif
-              catch
-                error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                               " custom loss function is not valid or", ...
-                               " does not produce correct output."));
-              end_try_catch
-              LossFun = Value;
-            elseif (ischar (Value) && any (strcmpi (Value, lf_opt)))
-              LossFun = Value;
-            else
-              error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                             " invalid loss function."));
-            endif
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'weights'
-            if (isnumeric (Value) && isvector (Value))
-              if (numel (Value) != size (X ,1))
-                error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                               " number of 'Weights' must be equal to", ...
-                               " the number of rows in X."));
-              elseif (numel (Value) == size (X, 1))
-                Weights = Value;
-              endif
-            else
-              error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                             " invalid 'Weights'."));
-            endif
+      ## Validate optional paired arguments
+      lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
+                'exponential', 'hinge','logit', 'mincost', 'quadratic'};
+      if (isa (LossFun, 'function_handle'))
+        ## Check if the loss function is valid
+        if (nargin (LossFun) != 4)
+          error (strcat ("CompactClassificationDiscriminant.loss: custom", ...
+                         " loss function must accept exactly four input", ...
+                         " arguments."));
+        endif
+        try
+          n = 1;
+          K = 2;
+          C_test = false (n, K);
+          S_test = zeros (n, K);
+          W_test = ones (n, 1);
+          Cost_test = ones (K) - eye (K);
+          test_output = LossFun(C_test, S_test, W_test, Cost_test);
+          if (! isscalar (test_output))
+            error (strcat ("CompactClassificationDiscriminant.loss: custom", ...
+                           " loss function must return a scalar value."));
+          endif
+        catch
+          error (strcat ("CompactClassificationDiscriminant.loss: custom", ...
+                         " loss function is not valid or does not produce", ...
+                         " correct output."));
+        end_try_catch
+      elseif (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error (strcat ("CompactClassificationDiscriminant.loss: invalid", ...
+                       " loss function."));
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("CompactClassificationDiscriminant.loss: invalid 'Weights'.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("CompactClassificationDiscriminant.loss: number of", ...
+                       " 'Weights' must be equal to the number of rows in", ...
+                       " X."));
+      endif
 
-          otherwise
-            error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                           " invalid parameter name in optional pair", ...
-                           " arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationDiscriminant.loss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       ## Check for missing values in X
       if (! isa (LossFun, 'function_handle'))
@@ -1910,6 +1893,8 @@ endclassdef
 %! loss (MODEL, ones (4,2))
 %!error<CompactClassificationDiscriminant.loss: name-value arguments must be in pairs.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun')
+%!error<CompactClassificationDiscriminant.loss: invalid optional paired argument.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Bogus', 1)
 %!error<CompactClassificationDiscriminant.loss: Y must have the same number of rows as X.> ...
 %! loss (MODEL, ones (4,2), ones (3,1))
 %!error<CompactClassificationDiscriminant.loss: invalid loss function.> ...
