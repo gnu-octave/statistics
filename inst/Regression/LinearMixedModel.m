@@ -261,14 +261,6 @@ classdef LinearMixedModel < PredictiveModel
 
   methods (Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  Linear mixed-effects model fit by %s\n", this.FitMethod);
       if (! isempty (this.Formula))

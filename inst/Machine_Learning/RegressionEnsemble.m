@@ -321,14 +321,6 @@ classdef RegressionEnsemble < PredictiveModel
         parseResponseTransform (val, 'RegressionEnsemble');
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  %s\n\n", class (this));
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);

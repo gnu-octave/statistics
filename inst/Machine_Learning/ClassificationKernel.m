@@ -1112,14 +1112,6 @@ classdef ClassificationKernel < PredictiveModel
 
   methods (Access = public, Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        printf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       printf ("\n  ClassificationKernel\n\n");
       printf ("%+26s: '%s'\n", 'ResponseName', this.ResponseName);

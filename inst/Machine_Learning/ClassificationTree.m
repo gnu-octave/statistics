@@ -679,14 +679,6 @@ classdef ClassificationTree < PredictiveModel
       this.STfun = f;
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  ClassificationTree\n\n');
       fprintf ('%22s: %s\n', 'ResponseName', this.ResponseName);

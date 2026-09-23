@@ -476,14 +476,6 @@ classdef TreeBagger < PredictiveModel
 
   methods (Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  TreeBagger\n\n');
       fprintf ('%30s: %s\n', 'Method', this.Method);

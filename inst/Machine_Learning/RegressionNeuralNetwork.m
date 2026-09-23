@@ -535,15 +535,6 @@ classdef RegressionNeuralNetwork < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  RegressionNeuralNetwork\n\n");
       ## Print selected properties

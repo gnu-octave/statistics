@@ -368,15 +368,6 @@ classdef NonLinearModel < PredictiveModel
 
   methods (Hidden)
 
-    ## Custom display of the object with its variable name.
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
-      endif
-      disp (this);
-    endfunction
-
     ## Custom display of the model summary.
     function disp (this)
       fprintf ("\n  Nonlinear regression model:\n");

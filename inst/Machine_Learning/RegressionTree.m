@@ -544,14 +544,6 @@ classdef RegressionTree < PredictiveModel
                             parseResponseTransform (val, 'RegressionTree');
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  RegressionTree\n\n');
       fprintf ('%22s: %s\n', 'ResponseName', this.ResponseName);

@@ -167,14 +167,6 @@ classdef CompactTreeBagger < PredictiveModel
 
   methods (Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  CompactTreeBagger\n\n');
       fprintf ('%16s: %s\n', 'Method', this.Method);

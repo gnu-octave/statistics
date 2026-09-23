@@ -1292,14 +1292,6 @@ classdef RegressionGP < PredictiveModel
 
   methods (Access = public, Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        printf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       printf ("\n  RegressionGP\n\n");
       printf ("%25s: '%s'\n", 'ResponseName', this.ResponseName);

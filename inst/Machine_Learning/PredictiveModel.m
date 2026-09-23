@@ -152,6 +152,19 @@ classdef (Abstract) PredictiveModel
 
   endmethods
 
+  methods (Hidden)
+
+    ## Print the variable name, then the subclass's own disp
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+  endmethods
+
 endclassdef
 
 

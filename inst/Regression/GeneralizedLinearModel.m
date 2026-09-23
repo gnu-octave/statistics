@@ -652,15 +652,6 @@ classdef GeneralizedLinearModel < PredictiveModel
 
   methods (Hidden)
 
-    ## Custom display of the object name.
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
-      endif
-      disp (this);
-    endfunction
-
     ## Custom display of the model summary.
     function disp (this)
       fprintf ("\n  Generalized linear regression model:\n");

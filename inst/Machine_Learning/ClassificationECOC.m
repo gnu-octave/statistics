@@ -277,14 +277,6 @@ classdef ClassificationECOC < PredictiveModel
       this.BinaryLoss = tolower (val);
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  ClassificationECOC\n\n");
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
