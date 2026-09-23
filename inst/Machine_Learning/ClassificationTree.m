@@ -838,226 +838,181 @@ classdef ClassificationTree < PredictiveModel
       ## leaves one NaN, whatever type the response is given in.
       [gY, gnY, glY] = grp2idx (Y);
 
-      ## Defaults.  MaxNumSplits is left empty until the retained rows are
-      ## known, its default being one less than their number.
-      PredictorNames = {};
-      ResponseName   = [];
-      ClassNames     = [];
-      Prior          = 'empirical';
-      Cost           = [];
-      Weights        = [];
-      MaxNumSplits   = [];
-      MergeLeaves    = 'on';
-      MinLeafSize    = 1;
-      MinParentSize  = 10;
-      NumVarSample   = 'all';
-      Prune          = 'on';
-      PruneCriterion = 'error';
-      SplitCriterion = 'gdi';
-      CatPreds       = [];
-      MaxNumCat      = 10;
-      AlgCat         = 'auto';
-      this.ScoreTransform = 'none';
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+                  'Cost', 'Weights', 'ScoreTransform', 'MaxNumSplits', ...
+                  'MinLeafSize', 'MinParentSize', 'NumVariablesToSample', ...
+                  'MergeLeaves', 'Prune', 'PruneCriterion', ...
+                  'SplitCriterion', 'CategoricalPredictors', ...
+                  'MaxNumCategories', 'AlgorithmForCategorical'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y';
+      ## 'ClassNames' are every class in the response, 'Cost' is zero-one
+      ## and 'Weights' are uniform; 'MaxNumSplits' is one less than the
+      ## number of rows kept; no predictor is categorical; and
+      ## 'AlgorithmForCategorical' is 'auto', which MATLAB reports but does
+      ## not accept as a value.
+      dfValues = {{}, [], [], 'empirical', [], [], 'none', [], 1, 10, 'all', ...
+                  'on', 'on', 'error', 'gdi', [], 10, []};
+      [PredictorNames, ResponseName, ClassNames, Prior, Cost, Weights, ...
+       ScoreTransform, MaxNumSplits, MinLeafSize, MinParentSize, ...
+       NumVarSample, MergeLeaves, Prune, PruneCriterion, SplitCriterion, ...
+       CatPreds, MaxNumCat, AlgCat, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationTree: 'PredictorNames' must", ...
+                       " be supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && numel (PredictorNames) != columns (X))
+        error (strcat ("ClassificationTree: 'PredictorNames' must", ...
+                       " equal the number of columns in X."));
+      endif
+      if (! isempty (ResponseName) &&
+          ! (ischar (ResponseName) && isrow (ResponseName)))
+        error (strcat ("ClassificationTree: 'ResponseName' must be", ...
+                       " a character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationTree: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a", ...
+                       " string array, a logical vector, a numeric", ...
+                       " vector, or a cell array of character", ...
+                       " vectors."));
+      endif
+      if (! isempty (ClassNames))
+        [~, errmsg] = namedClasses (glY, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationTree: %s", errmsg);
+        endif
+      endif
+      if (! (isstruct (Prior) || isnumeric (Prior) || ischar (Prior)))
+        error (strcat ("ClassificationTree: 'Prior' must be a", ...
+                       " numeric vector, a structure, or a", ...
+                       " character vector."));
+      endif
+      if (ischar (Prior)
+          && ! any (strcmpi (Prior, {'empirical', 'uniform'})))
+        error (strcat ("ClassificationTree: 'Prior' must be", ...
+                       " 'empirical', 'uniform', a numeric vector,", ...
+                       " or a structure."));
+      endif
+      if (! isempty (Cost) &&
+          ! (isstruct (Cost)
+             || (isnumeric (Cost) && issquare (Cost))))
+        error (strcat ("ClassificationTree: 'Cost' must be a", ...
+                       " numeric square matrix or a structure."));
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights)
+             && isreal (Weights)))
+        error (strcat ("ClassificationTree: 'Weights' must be a", ...
+                       " real numeric vector."));
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationTree: 'Weights' must have one", ...
+                       " element per row in X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0) || ! (sum (Weights) > 0)))
+        error (strcat ("ClassificationTree: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
+      this.ScoreTransform = ScoreTransform;
+      if (! isempty (MaxNumSplits) &&
+          ! (isnumeric (MaxNumSplits) && isscalar (MaxNumSplits)
+             && isreal (MaxNumSplits) && MaxNumSplits >= 0
+             && MaxNumSplits == fix (MaxNumSplits)))
+        error (strcat ("ClassificationTree: 'MaxNumSplits' must be", ...
+                       " a nonnegative integer."));
+      endif
+      if (! (isnumeric (MinLeafSize) && isscalar (MinLeafSize)
+             && isreal (MinLeafSize) && MinLeafSize >= 1
+             && MinLeafSize == fix (MinLeafSize)))
+        error (strcat ("ClassificationTree: 'MinLeafSize' must be a", ...
+                       " positive integer."));
+      endif
+      if (! (isnumeric (MinParentSize) && isscalar (MinParentSize)
+             && isreal (MinParentSize) && MinParentSize >= 1
+             && MinParentSize == fix (MinParentSize)))
+        error (strcat ("ClassificationTree: 'MinParentSize' must be", ...
+                       " a positive integer."));
+      endif
+      if (! ((ischar (NumVarSample) && strcmpi (NumVarSample, 'all'))
+             || (isnumeric (NumVarSample) && isscalar (NumVarSample)
+                 && isreal (NumVarSample) && NumVarSample >= 1
+                 && NumVarSample == fix (NumVarSample))))
+        error (strcat ("ClassificationTree: 'NumVariablesToSample'", ...
+                       " must be a positive integer or 'all'."));
+      endif
+      if (! (ischar (MergeLeaves)
+             && any (strcmpi (MergeLeaves, {'on', 'off'}))))
+        error (strcat ("ClassificationTree: 'MergeLeaves' must be", ...
+                       " either 'on' or 'off'."));
+      endif
+      if (! (ischar (Prune) && any (strcmpi (Prune, {'on', 'off'}))))
+        error (strcat ("ClassificationTree: 'Prune' must be either", ...
+                       " 'on' or 'off'."));
+      endif
+      if (! (ischar (PruneCriterion)
+             && any (strcmpi (PruneCriterion, {'error', 'impurity'}))))
+        error (strcat ("ClassificationTree: 'PruneCriterion' must", ...
+                       " be either 'error' or 'impurity'."));
+      endif
+      if (strcmpi (PruneCriterion, 'impurity'))
+        error (strcat ("ClassificationTree: 'PruneCriterion'", ...
+                       " 'impurity' is not implemented."));
+      endif
+      if (! (ischar (SplitCriterion)
+             && any (strcmpi (SplitCriterion, {'gdi', 'deviance', ...
+                                               'twoing'}))))
+        error (strcat ("ClassificationTree: 'SplitCriterion' must", ...
+                       " be 'gdi', 'deviance', or 'twoing'."));
+      endif
+      if (strcmpi (SplitCriterion, 'twoing'))
+        error (strcat ("ClassificationTree: 'SplitCriterion'", ...
+                       " 'twoing' is not implemented."));
+      endif
+      if (! (isnumeric (MaxNumCat) && isscalar (MaxNumCat)
+             && isreal (MaxNumCat) && MaxNumCat >= 0
+             && (MaxNumCat == fix (MaxNumCat) || isinf (MaxNumCat))))
+        error (strcat ("ClassificationTree: 'MaxNumCategories' must", ...
+                       " be a nonnegative integer."));
+      endif
+      if (! isempty (AlgCat) &&
+          ! (ischar (AlgCat) && any (strcmpi (AlgCat, {'exact', ...
+                             'pullleft', 'pca', 'ovabyclass'}))))
+        error (strcat ("ClassificationTree:", ...
+                       " 'AlgorithmForCategorical' must be 'exact',", ...
+                       " 'pullleft', 'pca', or 'ovabyclass'."));
+      endif
+      if (isempty (AlgCat))
+        AlgCat = 'auto';
+      endif
 
-          case 'predictornames'
-            PredictorNames = Value;
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationTree: 'PredictorNames' must", ...
-                             " be supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != columns (X))
-              error (strcat ("ClassificationTree: 'PredictorNames' must", ...
-                             " equal the number of columns in X."));
-            endif
-
-          case 'responsename'
-            ResponseName = Value;
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("ClassificationTree: 'ResponseName' must be", ...
-                             " a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = Value;
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationTree: 'ClassNames' must be a", ...
-                             " categorical array, a character array, a", ...
-                             " string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationTree: %s", errmsg);
-            endif
-
-          case 'prior'
-            Prior = Value;
-            if (! (isstruct (Prior) || isnumeric (Prior) || ischar (Prior)))
-              error (strcat ("ClassificationTree: 'Prior' must be a", ...
-                             " numeric vector, a structure, or a", ...
-                             " character vector."));
-            endif
-            if (ischar (Prior)
-                && ! any (strcmpi (Prior, {'empirical', 'uniform'})))
-              error (strcat ("ClassificationTree: 'Prior' must be", ...
-                             " 'empirical', 'uniform', a numeric vector,", ...
-                             " or a structure."));
-            endif
-
-          case 'cost'
-            Cost = Value;
-            if (! (isstruct (Cost)
-                   || (isnumeric (Cost) && issquare (Cost))))
-              error (strcat ("ClassificationTree: 'Cost' must be a", ...
-                             " numeric square matrix or a structure."));
-            endif
-
-          case 'weights'
-            Weights = Value;
-            if (! (isnumeric (Weights) && isvector (Weights)
-                   && isreal (Weights)))
-              error (strcat ("ClassificationTree: 'Weights' must be a", ...
-                             " real numeric vector."));
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("ClassificationTree: 'Weights' must have one", ...
-                             " element per row in X."));
-            endif
-            if (any (Weights < 0) || ! (sum (Weights) > 0))
-              error (strcat ("ClassificationTree: 'Weights' must be", ...
-                             " nonnegative and must not be all zero."));
-            endif
-
-          case 'scoretransform'
-            this.ScoreTransform = Value;
-
-          case 'maxnumsplits'
-            MaxNumSplits = Value;
-            if (! (isnumeric (MaxNumSplits) && isscalar (MaxNumSplits)
-                   && isreal (MaxNumSplits) && MaxNumSplits >= 0
-                   && MaxNumSplits == fix (MaxNumSplits)))
-              error (strcat ("ClassificationTree: 'MaxNumSplits' must be", ...
-                             " a nonnegative integer."));
-            endif
-
-          case 'minleafsize'
-            MinLeafSize = Value;
-            if (! (isnumeric (MinLeafSize) && isscalar (MinLeafSize)
-                   && isreal (MinLeafSize) && MinLeafSize >= 1
-                   && MinLeafSize == fix (MinLeafSize)))
-              error (strcat ("ClassificationTree: 'MinLeafSize' must be a", ...
-                             " positive integer."));
-            endif
-
-          case 'minparentsize'
-            MinParentSize = Value;
-            if (! (isnumeric (MinParentSize) && isscalar (MinParentSize)
-                   && isreal (MinParentSize) && MinParentSize >= 1
-                   && MinParentSize == fix (MinParentSize)))
-              error (strcat ("ClassificationTree: 'MinParentSize' must be", ...
-                             " a positive integer."));
-            endif
-
-          case 'numvariablestosample'
-            NumVarSample = Value;
-            if (! ((ischar (NumVarSample) && strcmpi (NumVarSample, 'all'))
-                   || (isnumeric (NumVarSample) && isscalar (NumVarSample)
-                       && isreal (NumVarSample) && NumVarSample >= 1
-                       && NumVarSample == fix (NumVarSample))))
-              error (strcat ("ClassificationTree: 'NumVariablesToSample'", ...
-                             " must be a positive integer or 'all'."));
-            endif
-
-          case 'mergeleaves'
-            MergeLeaves = Value;
-            if (! (ischar (MergeLeaves)
-                   && any (strcmpi (MergeLeaves, {'on', 'off'}))))
-              error (strcat ("ClassificationTree: 'MergeLeaves' must be", ...
-                             " either 'on' or 'off'."));
-            endif
-
-          case 'prune'
-            Prune = Value;
-            if (! (ischar (Prune) && any (strcmpi (Prune, {'on', 'off'}))))
-              error (strcat ("ClassificationTree: 'Prune' must be either", ...
-                             " 'on' or 'off'."));
-            endif
-
-          case 'prunecriterion'
-            PruneCriterion = Value;
-            if (! (ischar (PruneCriterion)
-                   && any (strcmpi (PruneCriterion, {'error', 'impurity'}))))
-              error (strcat ("ClassificationTree: 'PruneCriterion' must", ...
-                             " be either 'error' or 'impurity'."));
-            endif
-            if (strcmpi (PruneCriterion, 'impurity'))
-              error (strcat ("ClassificationTree: 'PruneCriterion'", ...
-                             " 'impurity' is not implemented."));
-            endif
-
-          case 'splitcriterion'
-            SplitCriterion = Value;
-            if (! (ischar (SplitCriterion)
-                   && any (strcmpi (SplitCriterion, {'gdi', 'deviance', ...
-                                                     'twoing'}))))
-              error (strcat ("ClassificationTree: 'SplitCriterion' must", ...
-                             " be 'gdi', 'deviance', or 'twoing'."));
-            endif
-            if (strcmpi (SplitCriterion, 'twoing'))
-              error (strcat ("ClassificationTree: 'SplitCriterion'", ...
-                             " 'twoing' is not implemented."));
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = Value;
-
-          case 'maxnumcategories'
-            MaxNumCat = Value;
-            if (! (isnumeric (MaxNumCat) && isscalar (MaxNumCat)
-                   && isreal (MaxNumCat) && MaxNumCat >= 0
-                   && (MaxNumCat == fix (MaxNumCat) || isinf (MaxNumCat))))
-              error (strcat ("ClassificationTree: 'MaxNumCategories' must", ...
-                             " be a nonnegative integer."));
-            endif
-
-          case 'algorithmforcategorical'
-            AlgCat = Value;
-            if (! (ischar (AlgCat) && any (strcmpi (AlgCat, {'exact', ...
-                                   'pullleft', 'pca', 'ovabyclass'}))))
-              error (strcat ("ClassificationTree:", ...
-                             " 'AlgorithmForCategorical' must be 'exact',", ...
-                             " 'pullleft', 'pca', or 'ovabyclass'."));
-            endif
-
-          ## Options MATLAB takes that this class does not implement.  They
-          ## are named one by one so that asking for one is refused rather
-          ## than quietly doing nothing.
-          case {'surrogate', 'predictorselection', 'numbins', ...
-                'optimizehyperparameters', ...
-                'hyperparameteroptimizationoptions'}
-            error ("ClassificationTree: '%s' is not implemented.", ...
-                   varargin{1});
-
-          case {'crossval', 'cvpartition', 'holdout', 'kfold', 'leaveout'}
-            error (strcat ("ClassificationTree: '%s' is not implemented;", ...
-                           " fit the model and cross-validate it", ...
-                           " afterwards."), varargin{1});
-
-          otherwise
-            error (strcat ("ClassificationTree: invalid parameter name in", ...
-                           " optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Options MATLAB takes that this class does not implement are named
+      ## one by one, so that asking for one is refused rather than quietly
+      ## doing nothing; anything else left over is unknown.
+      notImpl = {'Surrogate', 'PredictorSelection', 'NumBins', ...
+                 'OptimizeHyperparameters', ...
+                 'HyperparameterOptimizationOptions'};
+      cvNames = {'CrossVal', 'CVPartition', 'Holdout', 'KFold', 'Leaveout'};
+      for i = 1:2:numel (args)
+        if (ischar (args{i}) && any (strcmpi (args{i}, notImpl)))
+          error ("ClassificationTree: '%s' is not implemented.", args{i});
+        elseif (ischar (args{i}) && any (strcmpi (args{i}, cvNames)))
+          error (strcat ("ClassificationTree: '%s' is not implemented;", ...
+                         " fit the model and cross-validate it", ...
+                         " afterwards."), args{i});
+        endif
+      endfor
+      if (! isempty (args))
+        error ("ClassificationTree: invalid optional paired argument.");
+      endif
 
       ## Default predictor and response names
       if (isempty (PredictorNames))
@@ -1510,50 +1465,40 @@ classdef ClassificationTree < PredictiveModel
       endif
 
       maxLevel = numel (this.PruneAlpha) - 1;
-      SubTrees = 0;
-      TreeSize = 'se';
-      KFold = 10;
+      ## Parse optional paired arguments; 'SubTrees' defaults to the tree
+      ## as fitted, level 0
+      optNames = {'SubTrees', 'TreeSize', 'KFold'};
+      dfValues = {0, 'se', 10};
+      [SubTrees, TreeSize, KFold, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
+      ## Validate optional paired arguments
+      if (ischar (SubTrees) && strcmpi (SubTrees, 'all'))
+        SubTrees = 0:maxLevel;
+      elseif (isnumeric (SubTrees) && isreal (SubTrees) && isvector (SubTrees)
+              && ! isempty (SubTrees) && all (SubTrees >= 0)
+              && all (SubTrees == fix (SubTrees))
+              && all (diff (SubTrees(:)') > 0))
+        SubTrees = SubTrees(:)';
+      else
+        error (strcat ("ClassificationTree.cvloss: 'SubTrees' must be", ...
+                       " 'all' or a vector of nonnegative integers in", ...
+                       " ascending order."));
+      endif
+      if (! (ischar (TreeSize) && any (strcmpi (TreeSize, {'se', 'min'}))))
+        error (strcat ("ClassificationTree.cvloss: 'TreeSize' must be", ...
+                       " either 'se' or 'min'."));
+      endif
+      TreeSize = tolower (TreeSize);
+      if (! (isnumeric (KFold) && isscalar (KFold) && isreal (KFold)
+             && KFold == fix (KFold) && KFold > 1))
+        error (strcat ("ClassificationTree.cvloss: 'KFold' must be an", ...
+                       " integer value greater than 1."));
+      endif
 
-          case 'subtrees'
-            if (ischar (Value) && strcmpi (Value, 'all'))
-              SubTrees = 0:maxLevel;
-            elseif (isnumeric (Value) && isreal (Value) && isvector (Value)
-                    && ! isempty (Value) && all (Value >= 0)
-                    && all (Value == fix (Value))
-                    && all (diff (Value(:)') > 0))
-              SubTrees = Value(:)';
-            else
-              error (strcat ("ClassificationTree.cvloss: 'SubTrees' must", ...
-                             " be 'all' or a vector of nonnegative", ...
-                             " integers in ascending order."));
-            endif
-
-          case 'treesize'
-            if (! (ischar (Value) && any (strcmpi (Value, {'se', 'min'}))))
-              error (strcat ("ClassificationTree.cvloss: 'TreeSize' must", ...
-                             " be either 'se' or 'min'."));
-            endif
-            TreeSize = tolower (Value);
-
-          case 'kfold'
-            KFold = Value;
-            if (! (isnumeric (KFold) && isscalar (KFold) && isreal (KFold)
-                   && KFold == fix (KFold) && KFold > 1))
-              error (strcat ("ClassificationTree.cvloss: 'KFold' must be", ...
-                             " an integer value greater than 1."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationTree.cvloss: invalid parameter", ...
-                           " name in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationTree.cvloss: invalid optional paired argument.");
+      endif
 
       if (any (SubTrees > maxLevel))
         error (strcat ("ClassificationTree.cvloss: 'SubTrees' must not", ...
@@ -2084,30 +2029,27 @@ classdef ClassificationTree < PredictiveModel
                        " must be in pairs."));
       endif
 
-      LossFun = 'mincost';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
                 'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("ClassificationTree.loss: invalid loss function.");
+      endif
+      LossFun = tolower (LossFun);
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationTree.loss: invalid 'Weights'.");
+      endif
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (ischar (Value) && any (strcmpi (Value, lf_opt))))
-              error ("ClassificationTree.loss: invalid loss function.");
-            endif
-            LossFun = tolower (Value);
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value)))
-              error ("ClassificationTree.loss: invalid 'Weights'.");
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("ClassificationTree.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationTree.loss: invalid optional paired argument.");
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -3106,7 +3048,7 @@ endfunction
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Surrogate', 'on')
 %!error<ClassificationTree: 'KFold' is not implemented; fit the model and cross-validate it afterwards.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'KFold', 5)
-%!error<ClassificationTree: invalid parameter name in optional pair arguments.>
+%!error<ClassificationTree: invalid optional paired argument.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Bogus', 1)
 %!error<ClassificationTree.predict: too few input arguments.>
 %! predict (ClassificationTree (ones (4, 2), [1; 1; 2; 2]))
@@ -3143,7 +3085,7 @@ endfunction
 %!error<ClassificationTree.loss: invalid 'Weights'.>
 %! loss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), ones (4, 2), ...
 %!       [1; 1; 2; 2], 'Weights', 'a')
-%!error<ClassificationTree.loss: invalid parameter name in optional pair arguments.>
+%!error<ClassificationTree.loss: invalid optional paired argument.>
 %! loss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), ones (4, 2), ...
 %!       [1; 1; 2; 2], 'Bogus', 1)
 %!error<ClassificationTree.prune: name-value arguments must be in pairs.>
@@ -3187,7 +3129,7 @@ endfunction
 %!error<ClassificationTree.cvloss: 'KFold' must be an integer value greater than 1.>
 %! load fisheriris
 %! cvloss (ClassificationTree (meas, species), 'KFold', 1)
-%!error<ClassificationTree.cvloss: invalid parameter name in optional pair arguments.>
+%!error<ClassificationTree.cvloss: invalid optional paired argument.>
 %! load fisheriris
 %! cvloss (ClassificationTree (meas, species), 'Bogus', 1)
 %!error<ClassificationTree.cvloss: the tree carries no pruning sequence; fit it with 'Prune' or 'MergeLeaves' on.>

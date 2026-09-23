@@ -747,41 +747,35 @@ classdef CompactRegressionTree < PredictiveModel
                        " and Y must be equal."));
       endif
 
-      LossFun = 'mse';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (is_function_handle (Value)
-                   || (ischar (Value) && isrow (Value))))
-              error (strcat ("CompactRegressionTree.loss:", ...
-                             " 'LossFun' must be a character vector or a", ...
-                             " function handle."));
-            endif
-            if (ischar (Value) && ! strcmpi (Value, 'mse'))
-              error (strcat ("CompactRegressionTree.loss:", ...
-                             " unsupported 'LossFun' value."));
-            endif
-            LossFun = Value;
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value) && isreal (Value)))
-              error (strcat ("CompactRegressionTree.loss:", ...
-                             " 'Weights' must be a real numeric vector."));
-            endif
-            if (numel (Value) != rows (X))
-              error (strcat ("CompactRegressionTree.loss:", ...
-                             " 'Weights' must have one element per", ...
-                             " observation."));
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("CompactRegressionTree.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun)
+             || (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("CompactRegressionTree.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error ("CompactRegressionTree.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights) && isreal (Weights)))
+        error (strcat ("CompactRegressionTree.loss: 'Weights' must be a", ...
+                       " real numeric vector."));
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("CompactRegressionTree.loss: 'Weights' must have", ...
+                       " one element per observation."));
+      endif
+
+      if (! isempty (args))
+        error ("CompactRegressionTree.loss: invalid optional paired argument.");
+      endif
 
       if (isempty (Weights))
         W = ones (rows (X), 1);
@@ -1068,6 +1062,9 @@ endclassdef
 %!error<CompactRegressionTree.loss: 'Weights' must have one element per observation.>
 %! loss (compact (RegressionTree (ones (4, 2), (1:4)')), ones (4, 2), ...
 %!       (1:4)', 'Weights', [1, 2])
+%!error<CompactRegressionTree.loss: invalid optional paired argument.> ...
+%! loss (compact (RegressionTree (ones (4, 2), (1:4)')), ones (4, 2), ...
+%!       (1:4)', 'Bogus', 1)
 %!error<CompactRegressionTree.nodeVariableRange: NODE must be a positive integer no greater than the number of nodes in the tree.>
 %! nodeVariableRange (compact (RegressionTree (ones (4, 2), (1:4)')), 999)
 %!error<CompactRegressionTree.savemodel: too few input arguments.>
