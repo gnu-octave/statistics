@@ -13,10 +13,9 @@ IsolationForest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 626
-statistics: Mdl = IsolationForest ( X )
-statistics: Mdl = IsolationForest ( X , name , value )
-
+# length: 619
+statistics: Mdl = IsolationForest (X)
+statistics: Mdl = IsolationForest (X, name, value)
 Isolation Forest model for anomaly detection.
 
 An IsolationForest object stores an ensemble of isolation trees fitted
@@ -51,10 +50,9 @@ IsolationForest.ContaminationFraction
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 116
+# length: 114
 IsolationForest: property ContaminationFraction
-
-The assumed fraction of anomalies in the training data, in [0, 1] .
+The assumed fraction of anomalies in the training data, in [0, 1].
 
 
 # name: <cell-element>
@@ -75,11 +73,10 @@ IsolationForest.IsolationForest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 205
-IsolationForest: Mdl = IsolationForest ( X )
-IsolationForest: Mdl = IsolationForest ( X , name , value )
-
-Fit an isolation forest to the N -by- P matrix X .
+# length: 195
+IsolationForest: Mdl = IsolationForest (X)
+IsolationForest: Mdl = IsolationForest (X, name, value)
+Fit an isolation forest to the N-by-P matrix X.
 Prefer the iforest function to this constructor.
 
 
@@ -101,9 +98,8 @@ IsolationForest.NumLearners
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 85
+# length: 84
 IsolationForest: property NumLearners
-
 The number of isolation trees in the ensemble.
 
 
@@ -125,9 +121,8 @@ IsolationForest.NumObservationsPerLearner
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 119
+# length: 118
 IsolationForest: property NumObservationsPerLearner
-
 The number of observations subsampled to grow each isolation tree.
 
 
@@ -149,9 +144,8 @@ IsolationForest.ScoreThreshold
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 104
+# length: 103
 IsolationForest: property ScoreThreshold
-
 The score above which an observation is flagged as an anomaly.
 
 
@@ -173,16 +167,15 @@ IsolationForest.isanomaly
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 505
-IsolationForest: tf = isanomaly ( Mdl , Xnew )
-IsolationForest: [ tf , scores ] = isanomaly ( Mdl , Xnew )
-IsolationForest: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold' , t )
-
+# length: 490
+IsolationForest: tf = isanomaly (Mdl, Xnew)
+IsolationForest: [tf, scores] = isanomaly (Mdl, Xnew)
+IsolationForest: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold', t)
 Detect anomalies in the new observations Xnew using the fitted
-model Mdl . Returns the logical vector tf flagging anomalies
-and the anomaly scores , each obtained by dropping Xnew
+model Mdl. Returns the logical vector tf flagging anomalies
+and the anomaly scores, each obtained by dropping Xnew
 through the isolation trees. The threshold defaults to
-Mdl .ScoreThreshold and may be overridden with the
+Mdl.ScoreThreshold and may be overridden with the
 'ScoreThreshold' name-value argument.
 
 
@@ -204,10 +197,9 @@ LocalOutlierFactor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 702
-statistics: Mdl = LocalOutlierFactor ( X )
-statistics: Mdl = LocalOutlierFactor ( X , name , value )
-
+# length: 695
+statistics: Mdl = LocalOutlierFactor (X)
+statistics: Mdl = LocalOutlierFactor (X, name, value)
 Local Outlier Factor model for anomaly detection.
 
 A LocalOutlierFactor object stores a Local Outlier Factor (LOF) model
@@ -243,10 +235,9 @@ LocalOutlierFactor.ContaminationFraction
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 119
+# length: 117
 LocalOutlierFactor: property ContaminationFraction
-
-The assumed fraction of anomalies in the training data, in [0, 1] .
+The assumed fraction of anomalies in the training data, in [0, 1].
 
 
 # name: <cell-element>
@@ -267,9 +258,8 @@ LocalOutlierFactor.Distance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 105
+# length: 104
 LocalOutlierFactor: property Distance
-
 The distance metric used to find neighbors, as a character vector.
 
 
@@ -291,12 +281,11 @@ LocalOutlierFactor.LocalOutlierFactor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 222
-LocalOutlierFactor: Mdl = LocalOutlierFactor ( X )
-LocalOutlierFactor: Mdl = LocalOutlierFactor ( X , name , value )
-
-Fit a Local Outlier Factor model to the N -by- P matrix
-X . Prefer the lof function to this constructor.
+# length: 212
+LocalOutlierFactor: Mdl = LocalOutlierFactor (X)
+LocalOutlierFactor: Mdl = LocalOutlierFactor (X, name, value)
+Fit a Local Outlier Factor model to the N-by-P matrix
+X. Prefer the lof function to this constructor.
 
 
 # name: <cell-element>
@@ -317,9 +306,8 @@ LocalOutlierFactor.NumNeighbors
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 116
+# length: 115
 LocalOutlierFactor: property NumNeighbors
-
 The number of nearest neighbors used to compute the Local Outlier Factor.
 
 
@@ -341,9 +329,8 @@ LocalOutlierFactor.ScoreThreshold
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 107
+# length: 106
 LocalOutlierFactor: property ScoreThreshold
-
 The score above which an observation is flagged as an anomaly.
 
 
@@ -365,16 +352,15 @@ LocalOutlierFactor.isanomaly
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 538
-LocalOutlierFactor: tf = isanomaly ( Mdl , Xnew )
-LocalOutlierFactor: [ tf , scores ] = isanomaly ( Mdl , Xnew )
-LocalOutlierFactor: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold' , t )
-
+# length: 523
+LocalOutlierFactor: tf = isanomaly (Mdl, Xnew)
+LocalOutlierFactor: [tf, scores] = isanomaly (Mdl, Xnew)
+LocalOutlierFactor: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold', t)
 Detect anomalies in the new observations Xnew using the fitted
-model Mdl . Returns the logical vector tf flagging anomalies
-and the Local Outlier Factor scores , each computed from the nearest
+model Mdl. Returns the logical vector tf flagging anomalies
+and the Local Outlier Factor scores, each computed from the nearest
 neighbors of Xnew in the training data. The threshold defaults to
-Mdl .ScoreThreshold and may be overridden with the
+Mdl.ScoreThreshold and may be overridden with the
 'ScoreThreshold' name-value argument.
 
 
@@ -396,10 +382,9 @@ OneClassSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 677
-statistics: Mdl = OneClassSVM ( X )
-statistics: Mdl = OneClassSVM ( X , name , value )
-
+# length: 670
+statistics: Mdl = OneClassSVM (X)
+statistics: Mdl = OneClassSVM (X, name, value)
 One-class support vector machine model for anomaly detection.
 
 A OneClassSVM object stores a one-class support vector machine fitted
@@ -434,10 +419,9 @@ OneClassSVM.ContaminationFraction
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 112
+# length: 110
 OneClassSVM: property ContaminationFraction
-
-The assumed fraction of anomalies in the training data, in [0, 1] .
+The assumed fraction of anomalies in the training data, in [0, 1].
 
 
 # name: <cell-element>
@@ -458,9 +442,8 @@ OneClassSVM.KernelScale
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 106
+# length: 105
 OneClassSVM: property KernelScale
-
 The scale of the Gaussian kernel approximated by the feature expansion.
 
 
@@ -482,9 +465,8 @@ OneClassSVM.Lambda
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 81
+# length: 80
 OneClassSVM: property Lambda
-
 The strength of the ridge (L2) regularization term.
 
 
@@ -506,9 +488,8 @@ OneClassSVM.Mu
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 81
+# length: 80
 OneClassSVM: property Mu
-
 The predictor means used for standardization, or empty.
 
 
@@ -530,9 +511,8 @@ OneClassSVM.NumExpansionDimensions
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 101
+# length: 100
 OneClassSVM: property NumExpansionDimensions
-
 The number of dimensions of the expanded feature space.
 
 
@@ -554,12 +534,11 @@ OneClassSVM.OneClassSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 202
-OneClassSVM: Mdl = OneClassSVM ( X )
-OneClassSVM: Mdl = OneClassSVM ( X , name , value )
-
-Fit a one-class support vector machine to the N -by- P matrix
-X . Prefer the ocsvm function to this constructor.
+# length: 192
+OneClassSVM: Mdl = OneClassSVM (X)
+OneClassSVM: Mdl = OneClassSVM (X, name, value)
+Fit a one-class support vector machine to the N-by-P matrix
+X. Prefer the ocsvm function to this constructor.
 
 
 # name: <cell-element>
@@ -580,9 +559,8 @@ OneClassSVM.ScoreThreshold
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 100
+# length: 99
 OneClassSVM: property ScoreThreshold
-
 The score above which an observation is flagged as an anomaly.
 
 
@@ -604,9 +582,8 @@ OneClassSVM.Sigma
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 98
+# length: 97
 OneClassSVM: property Sigma
-
 The predictor standard deviations used for standardization, or empty.
 
 
@@ -628,15 +605,14 @@ OneClassSVM.isanomaly
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 433
-OneClassSVM: tf = isanomaly ( Mdl , Xnew )
-OneClassSVM: [ tf , scores ] = isanomaly ( Mdl , Xnew )
-OneClassSVM: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold' , t )
-
+# length: 418
+OneClassSVM: tf = isanomaly (Mdl, Xnew)
+OneClassSVM: [tf, scores] = isanomaly (Mdl, Xnew)
+OneClassSVM: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold', t)
 Detect anomalies in the new observations Xnew using the fitted
-model Mdl . Returns the logical vector tf flagging anomalies
-and the anomaly scores . The threshold defaults to
-Mdl .ScoreThreshold and may be overridden with the
+model Mdl. Returns the logical vector tf flagging anomalies
+and the anomaly scores. The threshold defaults to
+Mdl.ScoreThreshold and may be overridden with the
 'ScoreThreshold' name-value argument.
 
 
@@ -658,25 +634,24 @@ iforest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1988
-statistics: Mdl = iforest ( X )
-statistics: [ Mdl , tf ] = iforest ( X )
-statistics: [ Mdl , tf , scores ] = iforest ( X )
-statistics: [&hellip;] = iforest (&hellip;, name , value )
-
+# length: 1947
+statistics: Mdl = iforest (X)
+statistics: [Mdl, tf] = iforest (X)
+statistics: [Mdl, tf, scores] = iforest (X)
+statistics: [&hellip;] = iforest (&hellip;, name, value)
 Detect anomalies with an isolation forest.
 
-Mdl = iforest ( X ) fits an isolation forest to the
-N -by- P matrix X , whose rows are observations and columns
-are variables, and returns an IsolationForest object Mdl .
+Mdl = iforest (X) fits an isolation forest to the
+N-by-P matrix X, whose rows are observations and columns
+are variables, and returns an IsolationForest object Mdl.
 
-[ Mdl , tf , scores ] = iforest ( X ) also returns
-the N -by-1 logical vector tf flagging the anomalous observations
-and the N -by-1 vector scores of anomaly scores in the range
-[0, 1] . A higher score indicates an observation that is more easily
+[Mdl, tf, scores] = iforest (X) also returns
+the N-by-1 logical vector tf flagging the anomalous observations
+and the N-by-1 vector scores of anomaly scores in the range
+[0, 1]. A higher score indicates an observation that is more easily
 isolated, and therefore more likely to be an anomaly.
 
-The score of an observation is 2^(-E[h] / c) , where E[h] is its
+The score of an observation is 2^(-E[h] / c), where E[h] is its
 average path length over the isolation trees and c is the expected
 path length of an unsuccessful search in a binary tree of
 NumObservationsPerLearner nodes. Each tree is grown from a random
@@ -689,12 +664,12 @@ Name Value
 'NumLearners' the number of isolation trees, a positive
 integer (default 100).
 'NumObservationsPerLearner' the subsample size used to
-grow each tree, an integer in [3, N] (default min ( N ,
-256) ).
+grow each tree, an integer in [3, N] (default min (N,
+256)).
 'ContaminationFraction' the assumed fraction of anomalies
-in X , a scalar in [0, 1] (default 0). It sets
-Mdl .ScoreThreshold to quantile ( scores , 1 -
-ContaminationFraction ) ; when it is 0 the threshold is the maximum
+in X, a scalar in [0, 1] (default 0). It sets
+Mdl.ScoreThreshold to quantile (scores, 1 -
+ContaminationFraction); when it is 0 the threshold is the maximum
 score and no training observation is flagged.
 
 Because the trees are grown from random subsamples and random splits, the
@@ -728,21 +703,20 @@ lof
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1990
-statistics: Mdl = lof ( X )
-statistics: [ Mdl , tf ] = lof ( X )
-statistics: [ Mdl , tf , scores ] = lof ( X )
-statistics: [&hellip;] = lof (&hellip;, name , value )
-
+# length: 1950
+statistics: Mdl = lof (X)
+statistics: [Mdl, tf] = lof (X)
+statistics: [Mdl, tf, scores] = lof (X)
+statistics: [&hellip;] = lof (&hellip;, name, value)
 Detect anomalies with the Local Outlier Factor (LOF) method.
 
-Mdl = lof ( X ) fits a Local Outlier Factor model to the
-N -by- P matrix X , whose rows are observations and columns
-are variables, and returns a LocalOutlierFactor object Mdl .
+Mdl = lof (X) fits a Local Outlier Factor model to the
+N-by-P matrix X, whose rows are observations and columns
+are variables, and returns a LocalOutlierFactor object Mdl.
 
-[ Mdl , tf , scores ] = lof ( X ) also returns the
-N -by-1 logical vector tf flagging the anomalous observations and
-the N -by-1 vector scores of LOF values. A score near 1
+[Mdl, tf, scores] = lof (X) also returns the
+N-by-1 logical vector tf flagging the anomalous observations and
+the N-by-1 vector scores of LOF values. A score near 1
 indicates an inlier, whereas a score well above 1 indicates an outlier lying
 in a region sparser than its neighbors.
 
@@ -750,20 +724,20 @@ The Local Outlier Factor of an observation is the average ratio of the local
 reachability density of its NumNeighbors nearest neighbors to its own
 local reachability density, where the local reachability density is the
 inverse mean reachability distance to those neighbors and the reachability
-distance from p to o is max (k-distance (o), d (p, o)) .
+distance from p to o is max (k-distance (o), d (p, o)).
 
 Additional parameters can be specified by Name-Value pair arguments.
 
 Name Value
 'NumNeighbors' the number of nearest neighbors, a positive
-integer less than N . The default is min (20, u - 1) ,
+integer less than N. The default is min (20, u - 1),
 where u is the number of unique observations.
 'Distance' the distance metric used to find neighbors, one
-of the metrics accepted by pdist2 ( 'euclidean' by default).
+of the metrics accepted by pdist2 ('euclidean' by default).
 'ContaminationFraction' the assumed fraction of anomalies
-in X , a scalar in [0, 1] (default 0). It sets
-Mdl .ScoreThreshold to quantile ( scores , 1 -
-ContaminationFraction ) ; when it is 0 the threshold is the maximum
+in X, a scalar in [0, 1] (default 0). It sets
+Mdl.ScoreThreshold to quantile (scores, 1 -
+ContaminationFraction); when it is 0 the threshold is the maximum
 score and no training observation is flagged.
 'Exponent' the Minkowski distance exponent (default 2),
 used only with the 'minkowski' distance.
@@ -797,28 +771,27 @@ ocsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2601
-statistics: Mdl = ocsvm ( X )
-statistics: [ Mdl , tf ] = ocsvm ( X )
-statistics: [ Mdl , tf , scores ] = ocsvm ( X )
-statistics: [&hellip;] = ocsvm (&hellip;, name , value )
-
+# length: 2559
+statistics: Mdl = ocsvm (X)
+statistics: [Mdl, tf] = ocsvm (X)
+statistics: [Mdl, tf, scores] = ocsvm (X)
+statistics: [&hellip;] = ocsvm (&hellip;, name, value)
 Detect anomalies with a one-class support vector machine.
 
-Mdl = ocsvm ( X ) fits a one-class support vector machine to
-the N -by- P matrix X , whose rows are observations and
-columns are variables, and returns a OneClassSVM object Mdl .
+Mdl = ocsvm (X) fits a one-class support vector machine to
+the N-by-P matrix X, whose rows are observations and
+columns are variables, and returns a OneClassSVM object Mdl.
 
-[ Mdl , tf , scores ] = ocsvm ( X ) also returns the
-N -by-1 logical vector tf flagging the anomalous observations and
-the N -by-1 vector scores of anomaly scores. A higher score
+[Mdl, tf, scores] = ocsvm (X) also returns the
+N-by-1 logical vector tf flagging the anomalous observations and
+the N-by-1 vector scores of anomaly scores. A higher score
 indicates an observation that lies further outside the boundary enclosing the
 data, and is therefore more likely to be an anomaly.
 
 The observations are mapped to a randomized feature space that approximates a
 Gaussian kernel of scale KernelScale using NumExpansionDimensions
 features, and a linear one-class boundary is fitted there with ridge
-regularization of strength Lambda .
+regularization of strength Lambda.
 
 Additional parameters can be specified by Name-Value pair arguments.
 
@@ -830,13 +803,13 @@ scalar or 'auto' (default).
 'NumExpansionDimensions' the number of expanded feature
 dimensions, a positive integer or 'auto' (default).
 'StandardizeData' a logical scalar (default
-false ); when true each predictor is centered and scaled and the
-means and standard deviations are stored in Mdl .Mu and
-Mdl .Sigma .
+false); when true each predictor is centered and scaled and the
+means and standard deviations are stored in Mdl.Mu and
+Mdl.Sigma.
 'ContaminationFraction' the assumed fraction of anomalies
-in X , a scalar in [0, 1] (default 0). It sets
-Mdl .ScoreThreshold to quantile ( scores , 1 -
-ContaminationFraction ) ; when it is 0 the threshold is the maximum
+in X, a scalar in [0, 1] (default 0). It sets
+Mdl.ScoreThreshold to quantile (scores, 1 -
+ContaminationFraction); when it is 0 the threshold is the maximum
 score and no training observation is flagged.
 
 The feature expansion uses random projections, so the scores depend on the
@@ -846,7 +819,7 @@ model differ from MATLAB&rsquo;s implementation, which uses a different feature
 expansion and solver.
 
 For a deterministic, classic one-class support vector machine (a
-nu-SVM with an exact kernel, computed through libsvm ), use
+nu-SVM with an exact kernel, computed through libsvm), use
 fitcsvm with a single class in the response or with the 'Nu'
 name-value argument; that path returns a ClassificationSVM object
 whose predict method labels observations, rather than the
@@ -880,27 +853,26 @@ robustcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2411
-statistics: sig = robustcov ( X )
-statistics: [ sig , mu ] = robustcov ( X )
-statistics: [ sig , mu , mah ] = robustcov ( X )
-statistics: [ sig , mu , mah , outliers ] = robustcov ( X )
-statistics: [ sig , mu , mah , outliers , s ] = robustcov ( X )
-statistics: [&hellip;] = robustcov (&hellip;, name , value )
-
+# length: 2357
+statistics: sig = robustcov (X)
+statistics: [sig, mu] = robustcov (X)
+statistics: [sig, mu, mah] = robustcov (X)
+statistics: [sig, mu, mah, outliers] = robustcov (X)
+statistics: [sig, mu, mah, outliers, s] = robustcov (X)
+statistics: [&hellip;] = robustcov (&hellip;, name, value)
 Robust multivariate covariance and mean estimate.
 
-sig = robustcov ( X ) returns a robust estimate sig of
-the covariance matrix of the N&times;P data matrix X , computed so that
+sig = robustcov (X) returns a robust estimate sig of
+the covariance matrix of the N&times;P data matrix X, computed so that
 it is not distorted by outlying observations. Rows of X are
 observations and columns are variables. Rows containing NaN values
 are removed.
 
-[ sig , mu , mah , outliers , s ] = robustcov
-(&hellip;) also returns the robust mean mu ( 1&times;P ), the robust
-Mahalanobis distances mah ( N&times;1 ) of each observation from the
-estimated distribution, a logical vector outliers ( N&times;1 ) flagging
-observations whose distance exceeds sqrt (chi2inv (0.975, P )) ,
+[sig, mu, mah, outliers, s] = robustcov
+(&hellip;) also returns the robust mean mu (1&times;P), the robust
+Mahalanobis distances mah (N&times;1) of each observation from the
+estimated distribution, a logical vector outliers (N&times;1) flagging
+observations whose distance exceeds sqrt (chi2inv (0.975, P)),
 and a structure s holding the estimate metadata.
 
 Additional parameters can be specified by Name-Value pair arguments.
@@ -912,16 +884,16 @@ Orthogonalized Gnanadesikan-Kettenring estimator). 'olivehawkins' is
 not implemented.
 'OutlierFraction' the maximum fraction of outliers, a
 scalar in [0, 0.5] (default 0.5), used to set the size of the
-elemental subsets in 'fmcd' .
+elemental subsets in 'fmcd'.
 'NumTrials' the number of random elemental subsets drawn
-by 'fmcd' , a positive integer (default 500).
-'BiasCorrection' a logical scalar (default true )
+by 'fmcd', a positive integer (default 500).
+'BiasCorrection' a logical scalar (default true)
 that applies the small-sample bias correction to the 'fmcd' estimate.
 'NumOGKIterations' the number of orthogonalization
-iterations for 'ogk' , a positive integer (default 2).
+iterations for 'ogk', a positive integer (default 2).
 'UnivariateEstimator' the robust univariate
-location/scale estimator used by 'ogk' , either 'tauscale'
-(default) or 'qn' .
+location/scale estimator used by 'ogk', either 'tauscale'
+(default) or 'qn'.
 
 Note on reproducibility. 'fmcd' draws random subsets, so its
 exact estimate depends on the random number generator and is not identical to

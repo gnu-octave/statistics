@@ -13,22 +13,21 @@ adtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3812
-statistics: h = adtest ( x )
-statistics: h = adtest ( x , Name , Value )
-statistics: [ h , pval ] = adtest (&hellip;)
-statistics: [ h , pval , adstat , cv ] = adtest (&hellip;)
-
+# length: 3777
+statistics: h = adtest (x)
+statistics: h = adtest (x, Name, Value)
+statistics: [h, pval] = adtest (&hellip;)
+statistics: [h, pval, adstat, cv] = adtest (&hellip;)
 Anderson-Darling goodness-of-fit hypothesis test.
 
-h = adtest ( x ) returns a test decision for the null
+h = adtest (x) returns a test decision for the null
 hypothesis that the data in vector x is from a population with a normal
 distribution, using the Anderson-Darling test. The alternative hypothesis is
 that x is not from a population with a normal distribution. The result
 h is 1 if the test rejects the null hypothesis at the 5% significance
 level, or 0 otherwise.
 
-h = adtest ( x , Name , Value ) returns a test
+h = adtest (x, Name, Value) returns a test
 decision for the Anderson-Darling test with additional options specified by
 one or more Name-Value pair arguments. For example, you can specify a null
 distribution other than normal, or select an alternative method for
@@ -46,7 +45,7 @@ for defining either the &rsquo;normal&rsquo;, &rsquo;exponential&rsquo;, &rsquo;
 or &rsquo;Weibull&rsquo; distribution family, respectively. In this case, x is
 tested against a composite hypothesis for the specified distribution family
 and the required distribution parameters are estimated from the data in
-x . The default is "norm".
+x. The default is "norm".
 
 A cell array defining a distribution in which the first cell contains a char
 string with the distribution name, as mentioned above, and the consecutive
@@ -58,7 +57,7 @@ Name Value
 numeric value between 0 and 1. The default is 0.05 corresponding to the 5%
 significance level.
 "MCTol" Monte-Carlo standard error for the p-value,
-pval , value. which must be a positive scalar value. In this case, an
+pval, value. which must be a positive scalar value. In this case, an
 approximation for the p-value is computed directly, using Monte-Carlo
 simulations.
 "Asymptotic" Method for calculating the p-value of the
@@ -76,18 +75,18 @@ the "Asymptotic" option must be false.
 If you use MCTol to calculate the p-value using a Monte Carlo simulation,
 the "Asymptotic" option must be false.
 
-[ h , pval ] = adtest (&hellip;) also returns the p-value,
-pval , of the Anderson-Darling test, using any of the input arguments
+[h, pval] = adtest (&hellip;) also returns the p-value,
+pval, of the Anderson-Darling test, using any of the input arguments
 from the previous syntaxes.
 
-[ h , pval , adstat , cv ] = adtest (&hellip;) also
-returns the test statistic, adstat , and the critical value, cv ,
+[h, pval, adstat, cv] = adtest (&hellip;) also
+returns the test statistic, adstat, and the critical value, cv,
 for the Anderson-Darling test.
 
 The Anderson-Darling test statistic belongs to the family of Quadratic
 Empirical Distribution Function statistics, which are based on the weighted
 sum of the difference [Fn(x)-F(x)]^2 over the ordered sample values
-X1 < X2 < ... < Xn , where F is the hypothesized continuous
+X1 < X2 < ... < Xn, where F is the hypothesized continuous
 distribution and Fn is the empirical CDF based on the data sample with
 n sample points.
 
@@ -116,9 +115,8 @@ anova
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 732
+# length: 725
 statistics: anova
-
 Object-oriented interface for analysis of variance.
 
 The anova class provides a MATLAB-compatible object interface for
@@ -126,9 +124,9 @@ analysis of variance. It stores factors, response data, model
 specification, and fitted results in one object. The class chooses the
 narrowest compatible backend, delegates the numeric computation to the
 existing ANOVA functions, and exposes common follow-up operations such as
-stats , groupmeans , boxchart ,
-plotComparisons , varianceComponent , and
-multcompare .
+stats, groupmeans, boxchart,
+plotComparisons, varianceComponent, and
+multcompare.
 
 Models are fitted lazily. Methods that need fitted results call
 fit internally when necessary, so users may construct an object and
@@ -159,9 +157,8 @@ anova.CategoricalFactors
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 144
+# length: 143
 anova: property CategoricalFactors
-
 Categorical factors
 
 Positive integer indices of factors treated as categorical. This
@@ -186,9 +183,8 @@ anova.Coefficients
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 134
+# length: 133
 anova: property Coefficients
-
 Model coefficient estimates
 
 Numeric vector of fitted coefficient estimates. This property is
@@ -213,9 +209,8 @@ anova.ExpandedFactorNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 216
+# length: 215
 anova: property ExpandedFactorNames
-
 Coefficient names
 
 Cell array of character vectors naming the model coefficients when the
@@ -241,9 +236,8 @@ anova.FactorNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 148
+# length: 147
 anova: property FactorNames
-
 Factor names
 
 String row vector containing the factor names used by the fitted ANOVA
@@ -268,9 +262,8 @@ anova.Factors
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 140
+# length: 139
 anova: property Factors
-
 Factor data
 
 Table containing one variable for each factor used to fit the ANOVA
@@ -295,9 +288,8 @@ anova.Formula
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 183
+# length: 182
 anova: property Formula
-
 Model formula
 
 Read-only structural formula value with response, predictor, term,
@@ -322,13 +314,12 @@ anova.Metrics
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 185
+# length: 178
 anova: property Metrics
-
 Model fit metrics
 
-Table with variables MSE , RMSE , SSE , SSR ,
-SST , RSquared , and AdjustedRSquared summarising the
+Table with variables MSE, RMSE, SSE, SSR,
+SST, RSquared, and AdjustedRSquared summarising the
 fitted model. This property is read-only.
 
 
@@ -350,9 +341,8 @@ anova.NumObservations
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 142
+# length: 141
 anova: property NumObservations
-
 Number of observations
 
 Scalar number of response observations used by the model. This
@@ -377,9 +367,8 @@ anova.RandomFactors
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 118
+# length: 117
 anova: property RandomFactors
-
 Random factors
 
 Positive integer indices of random factors. This property is
@@ -404,9 +393,8 @@ anova.Residuals
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 255
+# length: 254
 anova: property Residuals
-
 Model residuals
 
 Table with variables Raw (observed minus fitted values) and
@@ -433,9 +421,8 @@ anova.ResponseName
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 144
+# length: 143
 anova: property ResponseName
-
 Response variable name
 
 Character vector used as the response name in formula display.
@@ -460,13 +447,12 @@ anova.SumOfSquaresType
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 167
+# length: 163
 anova: property SumOfSquaresType
-
 Sum-of-squares type
 
-String scalar selecting "one" , "two" ,
-'three' , or 'hierarchical' sums of squares. This
+String scalar selecting "one", "two",
+'three', or 'hierarchical' sums of squares. This
 property is read-only.
 
 
@@ -488,9 +474,8 @@ anova.Y
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 155
+# length: 154
 anova: property Y
-
 Response data
 
 Numeric response vector (or matrix, for the one-way column form) used to
@@ -515,14 +500,13 @@ anova.anova
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1104
-anova: obj = anova ( Y )
-anova: obj = anova ( factors , Y )
-anova: obj = anova ( tbl , Y )
-anova: obj = anova ( tbl , responseVarName )
-anova: obj = anova ( tbl , formula )
-anova: obj = anova (&hellip;, name , value )
-
+# length: 1079
+anova: obj = anova (Y)
+anova: obj = anova (factors, Y)
+anova: obj = anova (tbl, Y)
+anova: obj = anova (tbl, responseVarName)
+anova: obj = anova (tbl, formula)
+anova: obj = anova (&hellip;, name, value)
 Create an object-oriented analysis of variance model.
 
 Y is a non-empty numeric response vector or matrix.
@@ -537,10 +521,10 @@ be supplied separately, selected by variable name, or specified with a
 Wilkinson formula. 'FactorNames' can select a subset of table
 variables when a formula is not supplied.
 
-Supported name-value arguments include 'ModelSpecification' ,
-'SumOfSquaresType' , 'FactorNames' ,
-'CategoricalFactors' , 'RandomFactors' ,
-'ResponseName' , 'Alpha' , and 'Display' .
+Supported name-value arguments include 'ModelSpecification',
+'SumOfSquaresType', 'FactorNames',
+'CategoricalFactors', 'RandomFactors',
+'ResponseName', 'Alpha', and 'Display'.
 Passing 'Reps' selects the balanced two-way anova2
 backend when Y is a non-vector matrix.
 
@@ -563,10 +547,9 @@ anova.boxchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 292
-anova: boxchart ( obj )
-anova: h = boxchart ( obj , &hellip;)
-
+# length: 287
+anova: boxchart (obj)
+anova: h = boxchart (obj, &hellip;)
 Plot response values grouped by up to two categorical factors.
 
 This method uses boxplot as the graphics backend in Octave and
@@ -592,10 +575,9 @@ anova.groupmeans
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 271
-anova: means = groupmeans ( obj )
-anova: means = groupmeans ( obj , factors )
-
+# length: 265
+anova: means = groupmeans (obj)
+anova: means = groupmeans (obj, factors)
 Return mean response estimates by factor level.
 
 The returned value is a table with one row per factor-level
@@ -621,16 +603,15 @@ anova.multcompare
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 347
-anova: m = multcompare ( obj )
-anova: m = multcompare ( obj , factors )
-anova: m = multcompare (&hellip;, name , value )
-
+# length: 338
+anova: m = multcompare (obj)
+anova: m = multcompare (obj, factors)
+anova: m = multcompare (&hellip;, name, value)
 Perform post-hoc multiple comparisons for a fitted ANOVA object.
 
 The returned table contains the compared groups, estimated mean
 difference, confidence limits, and p-value. The default critical value
-type is "tukey-kramer" .
+type is "tukey-kramer".
 
 
 # name: <cell-element>
@@ -651,10 +632,9 @@ anova.plotComparisons
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 333
-anova: plotComparisons ( obj )
-anova: h = plotComparisons ( obj , &hellip;)
-
+# length: 328
+anova: plotComparisons (obj)
+anova: h = plotComparisons (obj, &hellip;)
 Plot multiple-comparison intervals for model-adjusted group means.
 
 Clicking a group highlights it and distinguishes groups whose adjusted
@@ -680,28 +660,27 @@ anova.stats
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 872
-anova: s = stats ( obj )
-anova: s = stats ( obj , type )
-anova: s = stats ( obj , "Component" , sstype )
-anova: [ s , ems ] = stats (&hellip;)
-
+# length: 846
+anova: s = stats (obj)
+anova: s = stats (obj, type)
+anova: s = stats (obj, "Component", sstype)
+anova: [s, ems] = stats (&hellip;)
 Return component or summary ANOVA statistics as a table.
 
-With no type , or with "component" , return statistics for
-each model term, error, and total. With "summary" , group terms
+With no type, or with "component", return statistics for
+each model term, error, and total. With "summary", group terms
 into linear, nonlinear, and regression rows. Replicated continuous
 designs also report lack-of-fit and pure-error statistics.
 
 The "Component" form computes the component table using
-sstype , which must be "one" , "two" ,
-"three" , or "hierarchical" . This request does not
+sstype, which must be "one", "two",
+"three", or "hierarchical". This request does not
 change the object&rsquo;s read-only SumOfSquaresType property.
 The second output ems contains expected mean-square information
 for each model term and the error term. Its variables are
-Type , ExpectedMeanSquares ,
-MeanSquaresDenominator , DFDenominator , and
-FDenominator .
+Type, ExpectedMeanSquares,
+MeanSquaresDenominator, DFDenominator, and
+FDenominator.
 
 
 # name: <cell-element>
@@ -722,10 +701,9 @@ anova.varianceComponent
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 154
-anova: v = varianceComponent ( obj )
-anova: v = varianceComponent ( obj , &hellip;)
-
+# length: 149
+anova: v = varianceComponent (obj)
+anova: v = varianceComponent (obj, &hellip;)
 Return variance component estimates for random model terms and error.
 
 
@@ -747,14 +725,13 @@ anova1
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4360
-statistics: p = anova1 ( x )
-statistics: p = anova1 ( x , group )
-statistics: p = anova1 ( x , group , displayopt )
-statistics: p = anova1 ( x , group , displayopt , vartype )
-statistics: [ p , atab ] = anova1 ( x , &hellip;)
-statistics: [ p , atab , stats ] = anova1 ( x , &hellip;)
-
+# length: 4314
+statistics: p = anova1 (x)
+statistics: p = anova1 (x, group)
+statistics: p = anova1 (x, group, displayopt)
+statistics: p = anova1 (x, group, displayopt, vartype)
+statistics: [p, atab] = anova1 (x, &hellip;)
+statistics: [p, atab, stats] = anova1 (x, &hellip;)
 Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 or more groups of data under the null hypothesis that the groups are drawn
 from distributions with the same mean. For planned contrasts and/or
@@ -766,19 +743,19 @@ x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
 If x is a vector, it is a single group whichever way it lies, unless
 group is given; with one group there is nothing to compare, so
-p is NaN .
+p is NaN.
 
 group contains the names for each group. If x is a matrix, then
 group can either be a cell array of strings of a character array, with
-one row per column of x . If you want to omit this argument, enter an
+one row per column of x. If you want to omit this argument, enter an
 empty array ([]). If x is a vector, then group must be a vector
 of the same length, or a string array or cell array of strings with one row
-for each element of x . x values corresponding to the same value
+for each element of x. x values corresponding to the same value
 of group are placed in the same group.
 
 displayopt is an optional parameter for displaying the groups contained
 in the data in a boxplot. If omitted, it is &rsquo;on&rsquo; by default. If group names
-are defined in group , these are used to identify the groups in the
+are defined in group, these are used to identify the groups in the
 boxplot. Use &rsquo;off&rsquo; to omit displaying this figure.
 
 vartype is an optional parameter to used to indicate whether the
@@ -790,10 +767,10 @@ used instead.
 vartype is an Octave extension: MATLAB&rsquo;s anova1 takes no
 fourth argument. It does not error on one either, it accepts it and
 ignores it, returning the same p and F for 'unequal'
-as for 'equal' . Code written against this function and then run
+as for 'equal'. Code written against this function and then run
 in MATLAB therefore gets the classic ANOVA silently, with no diagnostic
-of any kind. Note that anova2 &rsquo;s analogous fourth argument does
-make MATLAB error, so the silence here is particular to anova1 .
+of any kind. Note that anova2&rsquo;s analogous fourth argument does
+make MATLAB error, so the silence here is particular to anova1.
 
 anova1 can return up to three output arguments:
 
@@ -801,10 +778,10 @@ p is the p-value of the null hypothesis that all group means are equal.
 
 atab is a cell array containing the results in a standard ANOVA table.
 Its first row holds the column headings. For 'equal' it is the
-classic partition, 'Source' , 'SS' , 'df' ,
-'MS' , 'F' and 'Prob>F' , with a row for the groups,
-the error and the total. For 'unequal' it is 'Source' ,
-'F' , 'df' , 'dfe' and 'Prob>F' , with one row
+classic partition, 'Source', 'SS', 'df',
+'MS', 'F' and 'Prob>F', with a row for the groups,
+the error and the total. For 'unequal' it is 'Source',
+'F', 'df', 'dfe' and 'Prob>F', with one row
 for the groups, since Welch&rsquo;s test partitions no sum of squares and pools
 no error term; 'df' and 'dfe' are the numerator and the
 denominator degrees of freedom of its F statistic, the latter fractional.
@@ -815,13 +792,13 @@ a multiple comparison of means with the MULTCOMPARE function.
 
 A categorical group may declare levels that no observation uses.
 Such a level takes no part in the analysis and is dropped from every field
-of stats , so n , means and gnames always describe
+of stats, so n, means and gnames always describe
 the same groups, in the same order, and can be indexed together.
 
 This is a deliberate deviation from MATLAB, which drops an unused level
 from gnames but keeps it in n and means as a count of
-zero and a mean of NaN . Those fields then disagree in length and
-the group indices run past gnames , so MATLAB&rsquo;s own multcompare
+zero and a mean of NaN. Those fields then disagree in length and
+the group indices run past gnames, so MATLAB&rsquo;s own multcompare
 reports comparisons against a group holding no observations and labels them
 with indices that its gnames cannot resolve.
 
@@ -865,13 +842,12 @@ anova2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2217
-statistics: p = anova2 ( x , reps )
-statistics: p = anova2 ( x , reps , displayopt )
-statistics: p = anova2 ( x , reps , displayopt , model )
-statistics: [ p , atab ] = anova2 (&hellip;)
-statistics: [ p , atab , stats ] = anova2 (&hellip;)
-
+# length: 2197
+statistics: p = anova2 (x, reps)
+statistics: p = anova2 (x, reps, displayopt)
+statistics: p = anova2 (x, reps, displayopt, model)
+statistics: [p, atab] = anova2 (&hellip;)
+statistics: [p, atab, stats] = anova2 (&hellip;)
 Performs two-way factorial (crossed) or a nested analysis of variance
 (ANOVA) for balanced designs. For unbalanced factorial designs, diagnostic
 plots and/or planned contrasts, use anovan instead.
@@ -947,26 +923,25 @@ anovan
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10515
-statistics: p = anovan ( Y , GROUP )
-statistics: p = anovan ( Y , GROUP , name , value )
-statistics: [ p , atab ] = anovan (&hellip;)
-statistics: [ p , atab , stats ] = anovan (&hellip;)
-statistics: [ p , atab , stats , terms ] = anovan (&hellip;)
-
+# length: 10423
+statistics: p = anovan (Y, GROUP)
+statistics: p = anovan (Y, GROUP, name, value)
+statistics: [p, atab] = anovan (&hellip;)
+statistics: [p, atab, stats] = anovan (&hellip;)
+statistics: [p, atab, stats, terms] = anovan (&hellip;)
 Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 evaluate the effect of one or more categorical or continuous predictors (i.e.
 independent variables) on a continuous outcome (i.e. dependent variable). The
 algorithms used make anovan suitable for balanced or unbalanced
 factorial (crossed) designs. By default, anovan treats all factors
 as fixed. Examples of function usage can be found by entering the command
-demo anovan . A bootstrap resampling variant of this function,
-bootlm , is available in the statistics-resampling package and has
+demo anovan. A bootstrap resampling variant of this function,
+bootlm, is available in the statistics-resampling package and has
 similar usage.
 
 Data is a single vector Y with groups specified by a corresponding
-matrix or cell array of group labels GROUP , where each column of
-GROUP has the same number of rows as Y . For example, if
+matrix or cell array of group labels GROUP, where each column of
+GROUP has the same number of rows as Y. For example, if
 Y = [23; 27; 31; 29; 30; 32]; GROUP = [1, 2; 1, 3; 1, 2; 2,
 3; 2, 3; 3,
 2];
@@ -976,23 +951,23 @@ empty, then the linear model is fit with just the intercept (no predictors).
 
 anovan can take a number of optional parameters as name-value pairs.
 
-[&hellip;] = anovan ( Y , GROUP , "continuous",
-continuous )
+[&hellip;] = anovan (Y, GROUP, "continuous",
+continuous)
 
 continuous is a vector of indices indicating which of the columns (i.e.
 factors) in GROUP should be treated as continuous predictors rather
 than as categorical predictors. The relationship between continuous
 predictors and the outcome should be linear.
 
-[&hellip;] = anovan ( Y , GROUP , "random", random )
+[&hellip;] = anovan (Y, GROUP, "random", random)
 
 random is a vector of indices indicating which of the columns (i.e.
 factors) in GROUP should be treated as random effects rather than
 fixed effects.
 In the table anovan prints, the name of a random factor is followed
 by a ' so that it can be told apart at a glance. That mark is a
-convention of the printed output only: the names returned in atab ,
-in stats .varnames, and inside the expected-mean-square and
+convention of the printed output only: the names returned in atab,
+in stats.varnames, and inside the expected-mean-square and
 denominator expressions carry no mark, so that they read as MATLAB&rsquo;s do.
 Which terms are random is reported in the "Type" column of
 atab instead.
@@ -1013,7 +988,7 @@ The variance component of every random term is estimated from the same
 system, and reported with confidence bounds. A component estimated as
 negative has no interval, as it lies outside the parameter space.
 
-[&hellip;] = anovan ( Y , GROUP , "model", modeltype )
+[&hellip;] = anovan (Y, GROUP, "model", modeltype)
 
 modeltype can specified as one of the following:
 
@@ -1028,19 +1003,19 @@ a scalar integer : representing the maximum interaction order
 
 a matrix of term definitions : each row is a term and each column is a
 factor. Entries are nonnegative integer exponents. Exponents greater than
-one are valid only for factors selected by "continuous" .
+one are valid only for factors selected by "continuous".
 
 -- Example:
 A two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
 
-[&hellip;] = anovan ( Y , GROUP , "nested", nested )
+[&hellip;] = anovan (Y, GROUP, "nested", nested)
 
 nested is an N-by-N logical matrix, where N is the number of factors.
-A true entry nested (i,j) specifies that factor i is nested in
+A true entry nested(i,j) specifies that factor i is nested in
 factor j. A factor may be nested in more than one parent. Nested factors
 must be categorical and use the default contrasts.
 
-[&hellip;] = anovan ( Y , GROUP , "sstype", sstype )
+[&hellip;] = anovan (Y, GROUP, "sstype", sstype)
 
 sstype can specified as one of the following:
 
@@ -1056,19 +1031,19 @@ for its lower powers but not for its higher ones.
 
 3 (default) : Type III partial, constrained or marginal sums-of-squares
 
-[&hellip;] = anovan ( Y , GROUP , "varnames", varnames )
+[&hellip;] = anovan (Y, GROUP, "varnames", varnames)
 
 varnames must be a cell array of strings with each element containing a
-factor name for each column of GROUP . By default (if not parsed as
+factor name for each column of GROUP. By default (if not parsed as
 optional argument), varnames are "X1","X2","X3", etc.
 
-[&hellip;] = anovan ( Y , GROUP , "alpha", alpha )
+[&hellip;] = anovan (Y, GROUP, "alpha", alpha)
 
 alpha must be a scalar value between 0 and 1 requesting
-100&times;(1- alpha )% confidence bounds for the regression coefficients
-returned in stats .coeffs (default 0.05 for 95% confidence).
+100&times;(1-alpha)% confidence bounds for the regression coefficients
+returned in stats.coeffs (default 0.05 for 95% confidence).
 
-[&hellip;] = anovan ( Y , GROUP , "display", dispopt )
+[&hellip;] = anovan (Y, GROUP, "display", dispopt)
 
 dispopt can be either "on" (default) or "off" and controls the display
 of the model formula, table of model parameters, the ANOVA table and the
@@ -1076,8 +1051,8 @@ diagnostic plots. The F-statistic and p-values are formatted in APA-style.
 To avoid p-hacking, the table of model parameters is only displayed if we set
 planned contrasts (see below).
 
-[&hellip;] = anovan ( Y , GROUP , "contrasts",
-contrasts )
+[&hellip;] = anovan (Y, GROUP, "contrasts",
+contrasts)
 
 contrasts can be specified as one of the following:
 
@@ -1111,16 +1086,16 @@ If the anovan model contains more than one factor and a built-in contrast
 coding scheme was specified, then those contrasts are applied to all factors.
 To specify different contrasts for different factors in the model,
 contrasts should be a cell array with the same number of cells as there
-are columns in GROUP . Each cell should define contrasts for the
+are columns in GROUP. Each cell should define contrasts for the
 respective column in GROUP by one of the methods described above. If
 cells are left empty, then the default contrasts are applied. Contrasts for
 cells corresponding to continuous factors are ignored.
 
-[&hellip;] = anovan ( Y , GROUP , "weights", weights )
+[&hellip;] = anovan (Y, GROUP, "weights", weights)
 
 weights is an optional vector of weights to be used when fitting the
 linear model. Weighted least squares (WLS) is used with weights (that is,
-minimizing sum ( weights * residuals .^ 2)) ; otherwise
+minimizing sum (weights * residuals .^ 2)); otherwise
 ordinary least squares (OLS) is used (default is empty for OLS).
 
 anovan can return up to four output arguments:
@@ -1128,7 +1103,7 @@ anovan can return up to four output arguments:
 p = anovan (&hellip;) returns a vector of p-values, one for each
 term.
 
-[ p , atab ] = anovan (&hellip;) returns a cell array
+[p, atab] = anovan (&hellip;) returns a cell array
 containing the ANOVA table. Its first row holds the column names, and the
 columns are, in order, the term name, its sum-of-squares, its degrees of
 freedom, a singularity flag, its mean square, the F statistic, the
@@ -1152,24 +1127,24 @@ because a combination of factor levels holds no observations. The degrees
 of freedom reported for such a term are the ones that can be estimated,
 which may be fewer than the term&rsquo;s design block has columns and may be
 zero. Whether a term is aliased depends on the model it is adjusted for,
-and therefore on "sstype" : a term that is estimable in a sequential
+and therefore on "sstype": a term that is estimable in a sequential
 fit may not be estimable in a marginal one. A flagged term&rsquo;s
 sum-of-squares is not uniquely attributable to it, so the corresponding
 F and p-value should not be read as a test of that term.
 
-[ p , atab , stats ] = anovan (&hellip;) returns a
+[p, atab, stats] = anovan (&hellip;) returns a
 structure containing additional statistics, including degrees of freedom and
 effect sizes for each term in the linear model, the design matrix, the
 variance-covariance matrix, (weighted) model residuals, and the mean squared
-error. The columns of stats .coeffs (from left-to-right) report the
+error. The columns of stats.coeffs (from left-to-right) report the
 model coefficients, standard errors, lower and upper 100&times;(1-alpha)%
 confidence interval bounds, t-statistics, and p-values relating to the
-contrasts. The number appended to each term name in stats .coeffnames
+contrasts. The number appended to each term name in stats.coeffnames
 corresponds to the column number in the relevant contrast matrix for that
 factor. The stats structure can be used as input for
-multcompare .
+multcompare.
 
-[ p , atab , stats , terms ] = anovan (&hellip;)
+[p, atab, stats, terms] = anovan (&hellip;)
 returns the model term definitions.
 
 See also:
@@ -1197,15 +1172,14 @@ ansaribradley
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2416
-statistics: h = ansaribradley ( x , y )
-statistics: h = ansaribradley ( x , y , name , value )
-statistics: [ h , p ] = ansaribradley (&hellip;)
-statistics: [ h , p , stats ] = ansaribradley (&hellip;)
-
+# length: 2386
+statistics: h = ansaribradley (x, y)
+statistics: h = ansaribradley (x, y, name, value)
+statistics: [h, p] = ansaribradley (&hellip;)
+statistics: [h, p, stats] = ansaribradley (&hellip;)
 Ansari-Bradley two-sample test for equal dispersions.
 
-h = ansaribradley ( x , y ) performs an Ansari-Bradley
+h = ansaribradley (x, y) performs an Ansari-Bradley
 test of the hypothesis that the two independent samples in the vectors
 x and y come from distributions with the same dispersion
 parameter, against the alternative that they come from distributions with
@@ -1214,7 +1188,7 @@ equal dispersions cannot be rejected at the 5% significance level, or
 h = 1 if it can.
 
 The Ansari-Bradley test is a nonparametric alternative to the two-sample
-F test ( vartest2 ) that does not assume normality. It assumes
+F test (vartest2) that does not assume normality. It assumes
 that the two samples are independent and that they come from distributions
 with the same median and shape, differing (under the alternative) only in
 dispersion. If the medians differ, the data should be recentred (e.g. by
@@ -1223,18 +1197,18 @@ subtracting the sample medians) before applying the test.
 ansaribradley treats NaNs in x or y as missing values and
 ignores them.
 
-[ h , p ] = ansaribradley (&hellip;) returns the p-value of
+[h, p] = ansaribradley (&hellip;) returns the p-value of
 the test, that is the probability, under the null hypothesis, of observing a
 value of the test statistic as or more extreme than the one observed.
 
-[ h , p , stats ] = ansaribradley (&hellip;) returns a
+[h, p, stats] = ansaribradley (&hellip;) returns a
 structure with the following fields:
 
 W the value of the Ansari-Bradley test statistic, the sum
 of the Ansari-Bradley scores of the sample x
 Wstar the value of the approximate normal (z) statistic
 
-[&hellip;] = ansaribradley (&hellip;, name , value ) specifies
+[&hellip;] = ansaribradley (&hellip;, name, value) specifies
 one or more of the following name/value pairs:
 
 Name Value
@@ -1279,24 +1253,23 @@ bartlett_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1913
-statistics: h = bartlett_test ( x )
-statistics: h = bartlett_test ( x , group )
-statistics: h = bartlett_test ( x , alpha )
-statistics: h = bartlett_test ( x , group , alpha )
-statistics: [ h , pval ] = bartlett_test (&hellip;)
-statistics: [ h , pval , chisq ] = bartlett_test (&hellip;)
-statistics: [ h , pval , chisq , df ] = bartlett_test (&hellip;)
-
+# length: 1883
+statistics: h = bartlett_test (x)
+statistics: h = bartlett_test (x, group)
+statistics: h = bartlett_test (x, alpha)
+statistics: h = bartlett_test (x, group, alpha)
+statistics: [h, pval] = bartlett_test (&hellip;)
+statistics: [h, pval, chisq] = bartlett_test (&hellip;)
+statistics: [h, pval, chisq, df] = bartlett_test (&hellip;)
 Perform a Bartlett test for the homogeneity of variances.
 
 Under the null hypothesis of equal variances, the test statistic chisq
 approximately follows a chi-square distribution with df degrees of
 freedom.
 
-The p-value (1 minus the CDF of this distribution at chisq ) is
-returned in pval . h = 1 if the null hypothesis is rejected at
-the significance level of alpha . Otherwise h = 0.
+The p-value (1 minus the CDF of this distribution at chisq) is
+returned in pval. h = 1 if the null hypothesis is rejected at
+the significance level of alpha. Otherwise h = 0.
 
 Input Arguments:
 
@@ -1304,12 +1277,12 @@ x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
 If x is a vector, it is a single group whichever way it lies, unless
 group is given; with one group there is nothing to compare, so
-pval is NaN .
+pval is NaN.
 NaN values are omitted.
 
 group contains the names for each group. If x is a vector, then
 group must be a vector of the same length, or a string array or cell
-array of strings with one row for each element of x . x values
+array of strings with one row for each element of x. x values
 corresponding to the same value of group are placed in the same group.
 If x is a matrix, then group can either be a cell array of
 strings of a character array, with one row per column of x in the same
@@ -1347,26 +1320,25 @@ barttest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1030
-statistics: ndim = barttest ( x )
-statistics: ndim = barttest ( x , alpha )
-statistics: [ ndim , pval ] = barttest ( x , alpha )
-statistics: [ ndim , pval , chisq ] = barttest ( x , alpha )
-
+# length: 1003
+statistics: ndim = barttest (x)
+statistics: ndim = barttest (x, alpha)
+statistics: [ndim, pval] = barttest (x, alpha)
+statistics: [ndim, pval, chisq] = barttest (x, alpha)
 Bartlett&rsquo;s test of sphericity for correlation.
 
 It compares an observed correlation matrix to the identity matrix in order to
 check if there is a certain redundancy between the variables that we can
 summarize with a few number of factors. A statistically significant test
 shows that the variables (columns) in x are correlated, thus it makes
-sense to perform some dimensionality reduction of the data in x .
+sense to perform some dimensionality reduction of the data in x.
 
-ndim = barttest ( x , alpha ) returns the number of
+ndim = barttest (x, alpha) returns the number of
 dimensions necessary to explain the nonrandom variation in the data matrix
 x at the alpha significance level. alpha is an optional
 input argument and, when not provided, it is 0.05 by default.
 
-[ ndim , pval , chisq ] = barttest (&hellip;) also
+[ndim, pval, chisq] = barttest (&hellip;) also
 returns the significance values pval for the hypothesis test for each
 dimension as well as the associated chi^2 values in chisq
 
@@ -1389,10 +1361,9 @@ binotest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1092
-statistics: [ h , pval , ci ] = binotest ( pos , N , p0 )
-statistics: [ h , pval , ci ] = binotest ( pos , N , p0 , Name , Value )
-
+# length: 1068
+statistics: [h, pval, ci] = binotest (pos, N, p0)
+statistics: [h, pval, ci] = binotest (pos, N, p0, Name, Value)
 Test for probability p of a binomial sample
 
 Perform a test of the null hypothesis p == p0 for a sample
@@ -1400,20 +1371,20 @@ of size N with pos positive results.
 
 Name-Value pair arguments can be used to set various options.
 'alpha' can be used to specify the significance level
-of the test (the default value is 0.05). The option 'tail' ,
+of the test (the default value is 0.05). The option 'tail',
 can be used to select the desired alternative hypotheses. If the
 value is 'both' (default) the null is tested against the two-sided
-alternative p != p0 . The value of pval is
+alternative p != p0. The value of pval is
 determined by adding the probabilities of all event less or equally
 likely than the observed number pos of positive events.
 If the value of 'tail' is 'right'
 the one-sided alternative p > p0 is considered.
-Similarly for 'left' , the one-sided alternative
+Similarly for 'left', the one-sided alternative
 p < p0 is considered.
 
 If h is 0 the null hypothesis is accepted, if it is 1 the null
-hypothesis is rejected. The p-value of the test is returned in pval .
-A 100(1-alpha)% confidence interval is returned in ci .
+hypothesis is rejected. The p-value of the test is returned in pval.
+A 100(1-alpha)% confidence interval is returned in ci.
 
 
 # name: <cell-element>
@@ -1434,12 +1405,11 @@ chi2gof
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3703
-statistics: h = chi2gof ( x )
-statistics: [ h , p ] = chi2gof ( x )
-statistics: [ p , h , stats ] = chi2gof ( x )
-statistics: [&hellip;] = chi2gof ( x , Name , Value , &hellip;)
-
+# length: 3660
+statistics: h = chi2gof (x)
+statistics: [h, p] = chi2gof (x)
+statistics: [p, h, stats] = chi2gof (x)
+statistics: [&hellip;] = chi2gof (x, Name, Value, &hellip;)
 Chi-square goodness-of-fit test.
 
 chi2gof performs a chi-square goodness-of-fit test for discrete or
@@ -1457,23 +1427,23 @@ bins remain in the interior with counts less than 5, chi2gof displays
 a warning. In that case, you should use fewer bins, or provide bin centers
 or binedges, to increase the expected counts in all bins.
 
-h = chi2gof ( x ) performs a chi-square goodness-of-fit test
+h = chi2gof (x) performs a chi-square goodness-of-fit test
 that the data in the vector X are a random sample from a normal distribution
-with mean and variance estimated from x . The result is h = 0 if
+with mean and variance estimated from x. The result is h = 0 if
 the null hypothesis (that x is a random sample from a normal
 distribution) cannot be rejected at the 5% significance level, or h = 1
 if the null hypothesis can be rejected at the 5% level. chi2gof uses
-by default 10 bins ( 'nbins' ), and compares the test statistic to a
+by default 10 bins ('nbins'), and compares the test statistic to a
 chi-square distribution with nbins - 3 degrees of freedom, to
 take into account that two parameters were estimated.
 
-[ h , p ] = chi2gof ( x ) also returns the p-value
-p ,
+[h, p] = chi2gof (x) also returns the p-value
+p,
 which is the probability of observing the given result, or one more extreme,
 by chance if the null hypothesis is true. If there are not enough degrees of
 freedom to carry out the test, p is NaN.
 
-[ h , p , stats ] = chi2gof ( x ) also returns a
+[h, p, stats] = chi2gof (x) also returns a
 stats structure with the following fields:
 
 "chi2stat" Chi-square statistic
@@ -1482,7 +1452,7 @@ stats structure with the following fields:
 "O" Observed count in each bin
 "E" Expected count in each bin
 
-[&hellip;] = chi2gof ( x , Name , Value , &hellip;)
+[&hellip;] = chi2gof (x, Name, Value, &hellip;)
 specifies optional Name/Value pair arguments chosen from the following list.
 
 Name Value
@@ -1497,7 +1467,7 @@ as later arguments.
 'expected' A vector with one element per bin
 specifying the expected counts for each bin.
 'nparams' The number of estimated parameters; used to
-adjust the degrees of freedom to be nbins - 1 - nparams ,
+adjust the degrees of freedom to be nbins - 1 - nparams,
 where nbins is the number of bins.
 'emin' The minimum allowed expected value for a bin;
 any bin in either tail having an expected value less than this amount is
@@ -1506,13 +1476,13 @@ is 5.
 'frequency' A vector of the same length as x
 containing the frequency of the corresponding x values.
 'alpha' An alpha value such that the hypothesis
-is rejected if p < alpha . Default is
-alpha = 0.05 .
+is rejected if p < alpha. Default is
+alpha = 0.05.
 
 You should specify either 'cdf' or 'expected' parameters, but
 not both. If your 'cdf' input contains extra parameters, these are
 accounted for automatically and there is no need to specify
-'nparams' . If your 'expected' input depends on estimated
+'nparams'. If your 'expected' input depends on estimated
 parameters, you should use the 'nparams' parameter to ensure that the
 degrees of freedom for the test is correct.
 
@@ -1535,13 +1505,12 @@ chi2test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3610
-statistics: pval = chi2test ( x )
-statistics: [ pval , chisq ] = chi2test ( x )
-statistics: [ pval , chisq , dF ] = chi2test ( x )
-statistics: [ pval , chisq , dF , E ] = chi2test ( x )
-statistics: [&hellip;] = chi2test ( x , name , value )
-
+# length: 3576
+statistics: pval = chi2test (x)
+statistics: [pval, chisq] = chi2test (x)
+statistics: [pval, chisq, dF] = chi2test (x)
+statistics: [pval, chisq, dF, E] = chi2test (x)
+statistics: [&hellip;] = chi2test (x, name, value)
 Perform a chi-squared test (for independence or homogeneity).
 
 For 2-way contingency tables, chi2test performs and a chi-squared test
@@ -1572,10 +1541,10 @@ table.
 
 Unlike MATLAB, in GNU Octave chi2test also supports 3-way tables,
 which involve three categorical variables (each in a different dimension of
-x . In its simplest form, [&hellip;] = chi2test ( x ) will
+x. In its simplest form, [&hellip;] = chi2test (x) will
 will test for mutual independence among the three variables. Alternatively,
-when called in the form [&hellip;] = chi2test ( x , name ,
-value ) , it can perform the following tests:
+when called in the form [&hellip;] = chi2test (x, name,
+value), it can perform the following tests:
 
 name value Description
 "mutual" [] Mutual independence. All variables are
@@ -1603,7 +1572,7 @@ parameters are required for k > 3 multi-way tables.
 chi2test produces a warning if any cell of a 2x2 table has an expected
 frequency less than 5 or if more than 20% of the cells in larger 2-way tables
 have expected frequencies less than 5 or any cell with expected frequency
-less than 1. In such cases, use fishertest .
+less than 1. In such cases, use fishertest.
 
 See also:
 crosstab,
@@ -1629,23 +1598,22 @@ correlation_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1715
-statistics: h = correlation_test ( x , y )
-statistics: [ h , pval ] = correlation_test ( y , x )
-statistics: [ h , pval , stats ] = correlation_test ( y , x )
-statistics: [&hellip;] = correlation_test ( y , x , Name , Value )
-
+# length: 1687
+statistics: h = correlation_test (x, y)
+statistics: [h, pval] = correlation_test (y, x)
+statistics: [h, pval, stats] = correlation_test (y, x)
+statistics: [&hellip;] = correlation_test (y, x, Name, Value)
 Perform a correlation coefficient test to determine whether two samples
 x and y come from uncorrelated populations.
 
-h = correlation_test ( y , x ) tests the null
+h = correlation_test (y, x) tests the null
 hypothesis that the two samples x and y come from uncorrelated
 populations. The result is h = 0 if the null hypothesis cannot be
 rejected at the 5% significance level, or h = 1 if the null hypothesis
 can be rejected at the 5% level. y and x must be vectors of
 equal length with finite real numbers.
 
-The p-value of the test is returned in pval . stats is a
+The p-value of the test is returned in pval. stats is a
 structure with the following fields:
 
 Field Value
@@ -1657,7 +1625,7 @@ stat the test&rsquo;s statistic
 dist the respective distribution for the test
 alt the alternative hypothesis for the test
 
-[&hellip;] = correlation_test (&hellip;, name , value )
+[&hellip;] = correlation_test (&hellip;, name, value)
 specifies one or more of the following name/value pairs:
 
 Name Value
@@ -1700,14 +1668,13 @@ dwtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2175
-statistics: p = dwtest ( r , x )
-statistics: p = dwtest ( r , x , name , value )
-statistics: [ p , d ] = dwtest (&hellip;)
-
+# length: 2149
+statistics: p = dwtest (r, x)
+statistics: p = dwtest (r, x, name, value)
+statistics: [p, d] = dwtest (&hellip;)
 Durbin-Watson test for autocorrelation in linear regression residuals.
 
-p = dwtest ( r , x ) performs the Durbin-Watson test on
+p = dwtest (r, x) performs the Durbin-Watson test on
 the residuals r of a linear regression with design matrix x
 (which should include a column of ones if the model has a constant term).
 The null hypothesis is that the residuals are uncorrelated, against the
@@ -1719,7 +1686,7 @@ $$ d = \sum_{i=1}^{n-1} (r_{i+1} - r_i)^2 / \sum_{i=1}^{n} r_i^2. $$
 Values near 2 indicate no autocorrelation, values towards 0 positive
 autocorrelation, and values towards 4 negative autocorrelation.
 
-p = dwtest ( r , x , name , value ) specifies
+p = dwtest (r, x, name, value) specifies
 additional options using Name-Value pair arguments:
 
 Name Value
@@ -1732,8 +1699,8 @@ approximation based on the mean and variance of the statistic. The default is
 (default) for a nonzero autocorrelation, 'right' for a positive
 autocorrelation, or 'left' for a negative autocorrelation.
 
-[ p , d ] = dwtest (&hellip;) also returns the Durbin-Watson
-statistic d .
+[p, d] = dwtest (&hellip;) also returns the Durbin-Watson
+statistic d.
 
 If x has rank equal to the number of observations, no residual degrees
 of freedom remain and d has no null distribution. In that case
@@ -1742,10 +1709,10 @@ p is 0 for 'right' and 'both' and 1 for
 method. A p of exactly 0 or 1 signals this rather than strong
 evidence.
 
-If r is empty, p is 0 and d is NaN . MATLAB
+If r is empty, p is 0 and d is NaN. MATLAB
 returns d = 0 for some empty inputs, a 0&times;3 array among them,
 and NaN for [] and for zero-length vectors; d is
-NaN here for every empty r , the statistic being undefined in
+NaN here for every empty r, the statistic being undefined in
 all of them alike. MATLAB also accepts a character array as r and
 returns the empty result for it; r must be numeric here.
 
@@ -1773,19 +1740,18 @@ fishertest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2096
-statistics: h = fishertest ( x )
-statistics: h = fishertest ( x , param1 , value1 , &hellip;)
-statistics: [ h , pval ] = fishertest (&hellip;)
-statistics: [ h , pval , stats ] = fishertest (&hellip;)
-
+# length: 2065
+statistics: h = fishertest (x)
+statistics: h = fishertest (x, param1, value1, &hellip;)
+statistics: [h, pval] = fishertest (&hellip;)
+statistics: [h, pval, stats] = fishertest (&hellip;)
 Fisher&rsquo;s exact test.
 
-h = fishertest ( x ) performs Fisher&rsquo;s exact test on a
-2&times;2 contingency table given in matrix x . This is a test of the
+h = fishertest (x) performs Fisher&rsquo;s exact test on a
+2&times;2 contingency table given in matrix x. This is a test of the
 hypothesis that there are no non-random associations between the two 2-level
-categorical variables in x . fishertest returns the result of
-the tested hypothesis in h . h = 0 indicates that the null
+categorical variables in x. fishertest returns the result of
+the tested hypothesis in h. h = 0 indicates that the null
 hypothesis (of no association) cannot be rejected at the 5% significance
 level. h = 1 indicates that the null hypothesis can be rejected at the
 5% level. x must contain only non-negative integers. Use the
@@ -1794,12 +1760,12 @@ two
 categorical variables. Fisher&rsquo;s exact test is not suitable when all integers
 in x are very large. User can use the Chi-square test in this case.
 
-[ h , pval ] = fishertest ( x ) returns the p-value in
-pval . That is the probability of observing the given result, or one
+[h, pval] = fishertest (x) returns the p-value in
+pval. That is the probability of observing the given result, or one
 more extreme, by chance if the null hypothesis is true. Small values of
 pval cast doubt on the validity of the null hypothesis.
 
-[ p , pval , stats ] = fishertest (&hellip;) returns the
+[p, pval, stats] = fishertest (&hellip;) returns the
 structure stats with the following fields:
 
 OddsRatio &ndash; the odds ratio
@@ -1808,7 +1774,7 @@ interval for the odds ratio. If any of the four entries in the contingency
 table x is zero, the confidence interval will not be computed, and
 [-Inf Inf] will be displayed.
 
-[&hellip;] = fishertest (&hellip;, name , value , &hellip;)
+[&hellip;] = fishertest (&hellip;, name, value, &hellip;)
 specifies one or more of the following name/value pairs:
 
 Name Value
@@ -1845,13 +1811,12 @@ friedman
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1880
-statistics: p = friedman ( x )
-statistics: p = friedman ( x , reps )
-statistics: p = friedman ( x , reps , displayopt )
-statistics: [ p , tbl ] = friedman (&hellip;)
-statistics: [ p , tbl , stats ] = friedman (&hellip;)
-
+# length: 1863
+statistics: p = friedman (x)
+statistics: p = friedman (x, reps)
+statistics: p = friedman (x, reps, displayopt)
+statistics: [p, tbl] = friedman (&hellip;)
+statistics: [p, tbl, stats] = friedman (&hellip;)
 Performs the nonparametric Friedman&rsquo;s test to compare column effects in a
 two-way layout. friedman tests the null hypothesis that the column
 effects are all the same against the alternative that they are not all the
@@ -1918,23 +1883,22 @@ hotelling_t2test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1747
-statistics: [ h , pval , stats ] = hotelling_t2test ( x )
-statistics: [&hellip;] = hotelling_t2test ( x , m )
-statistics: [&hellip;] = hotelling_t2test ( x , y )
-statistics: [&hellip;] = hotelling_t2test ( x , m , Name , Value )
-statistics: [&hellip;] = hotelling_t2test ( x , y , Name , Value )
-
+# length: 1716
+statistics: [h, pval, stats] = hotelling_t2test (x)
+statistics: [&hellip;] = hotelling_t2test (x, m)
+statistics: [&hellip;] = hotelling_t2test (x, y)
+statistics: [&hellip;] = hotelling_t2test (x, m, Name, Value)
+statistics: [&hellip;] = hotelling_t2test (x, y, Name, Value)
 Compute Hotelling&rsquo;s T^2 ("T-squared") test for a single sample or two
 dependent samples (paired-samples).
 
 For a sample x from a multivariate normal distribution with unknown
 mean and covariance matrix, test the null hypothesis that
-mean ( x ) == m .
+mean (x) == m.
 
 For two dependent samples x and y from a multivariate normal
 distributions with unknown means and covariance matrices, test the null
-hypothesis that mean ( x - y ) == 0 .
+hypothesis that mean (x - y) == 0.
 
 hotelling_t2test treats NaNs as missing values, and ignores the
 corresponding rows.
@@ -1944,12 +1908,12 @@ Name-Value pair arguments can be used to set statistical significance.
 (the default value is 0.05).
 
 If h is 1 the null hypothesis is rejected, meaning that the tested
-sample does not come from a multivariate distribution with mean m , or
+sample does not come from a multivariate distribution with mean m, or
 in case of two dependent samples that they do not come from the same
 multivariate distribution. If h is 0, then the null hypothesis cannot
 be rejected and it can be assumed that it holds true.
 
-The p-value of the test is returned in pval .
+The p-value of the test is returned in pval.
 
 stats is a structure containing the value of the Hotelling&rsquo;s T^2
 test statistic in the field "Tsq", and the degrees of freedom of the F
@@ -1980,16 +1944,15 @@ hotelling_t2test2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1442
-statistics: [ h , pval , stats ] = hotelling_t2test2 ( x , y )
-statistics: [&hellip;] = hotelling_t2test2 ( x , y , Name , Value )
-
+# length: 1423
+statistics: [h, pval, stats] = hotelling_t2test2 (x, y)
+statistics: [&hellip;] = hotelling_t2test2 (x, y, Name, Value)
 Compute Hotelling&rsquo;s T^2 ("T-squared") test for two independent samples.
 
 For two samples x from multivariate normal distributions with
 the same number of variables (columns), unknown means and unknown
 equal covariance matrices, test the null hypothesis
-mean ( x ) == mean ( y ) .
+mean (x) == mean (y).
 
 hotelling_t2test2 treats NaNs as missing values, and ignores the
 corresponding rows for each sample independently.
@@ -2003,7 +1966,7 @@ samples do not come from the same multivariate distribution. If h is
 0, then the null hypothesis cannot be rejected and it can be assumed that
 both samples come from the same multivariate distribution.
 
-The p-value of the test is returned in pval .
+The p-value of the test is returned in pval.
 
 stats is a structure containing the value of the Hotelling&rsquo;s T^2
 test statistic in the field "Tsq", and the degrees of freedom of the F
@@ -2037,16 +2000,15 @@ jbtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3156
-statistics: h = jbtest ( x )
-statistics: h = jbtest ( x , alpha )
-statistics: h = jbtest ( x , alpha , mctol )
-statistics: [ h , p ] = jbtest (&hellip;)
-statistics: [ h , p , jbstat , critval ] = jbtest (&hellip;)
-
+# length: 3111
+statistics: h = jbtest (x)
+statistics: h = jbtest (x, alpha)
+statistics: h = jbtest (x, alpha, mctol)
+statistics: [h, p] = jbtest (&hellip;)
+statistics: [h, p, jbstat, critval] = jbtest (&hellip;)
 Jarque-Bera hypothesis test of composite normality.
 
-h = jbtest ( x ) performs the Jarque-Bera test of the null
+h = jbtest (x) performs the Jarque-Bera test of the null
 hypothesis that the sample in the vector x comes from a normal
 distribution with unknown mean and variance, against the alternative that it
 does not come from a normal distribution. The result h is 1 if the
@@ -2060,28 +2022,28 @@ where n is the sample size, s is the sample skewness, and
 k is the sample kurtosis. Under the null hypothesis it is
 asymptotically chi-square distributed with two degrees of freedom.
 
-h = jbtest ( x , alpha ) performs the test at the
-significance level alpha , a scalar in the range (0,1) . The
-default is 0.05 .
+h = jbtest (x, alpha) performs the test at the
+significance level alpha, a scalar in the range (0,1). The
+default is 0.05.
 
-h = jbtest ( x , alpha , mctol ) computes a
+h = jbtest (x, alpha, mctol) computes a
 Monte-Carlo approximation of the p-value instead of interpolating the
 embedded table. mctol is the maximum Monte-Carlo standard
 error allowed for the p-value; the number of simulated samples is chosen
 accordingly. Use this for small samples, where the chi-square approximation
-is inaccurate, or for significance levels outside [0.001, 0.5] .
+is inaccurate, or for significance levels outside [0.001, 0.5].
 
-[ h , p ] = jbtest (&hellip;) also returns the p-value
+[h, p] = jbtest (&hellip;) also returns the p-value
 p of the test. p is clamped to the tabulated range
-[0.001, 0.5] , as MATLAB clamps it, and a warning is issued when the
+[0.001, 0.5], as MATLAB clamps it, and a warning is issued when the
 value lies outside that range. The warning is an addition here: MATLAB
 clamps silently, so a p-value reported as 0.001 or 0.5 there
 may be a bound rather than an estimate, with nothing to say so.
 
-[ h , p , jbstat , critval ] = jbtest (&hellip;) also
+[h, p, jbstat, critval] = jbtest (&hellip;) also
 returns the test statistic jbstat and the critical value critval
-at significance level alpha . The null hypothesis is rejected when
-jbstat > critval .
+at significance level alpha. The null hypothesis is rejected when
+jbstat > critval.
 
 Note: for n \le 2000 the p-value and critical value are obtained by
 interpolating an embedded critical-value table (the same approach MATLAB
@@ -2092,13 +2054,13 @@ quantiles. MATLAB&rsquo;s table is likewise a Monte-Carlo estimate but from a
 different simulation, so the two tables agree only to about two decimal
 places. As a result the reported p-value and critical value, and (in a
 narrow band of statistic values around the critical value) the test decision
-h , can differ slightly from MATLAB in edge cases. These differences are
+h, can differ slightly from MATLAB in edge cases. These differences are
 an unavoidable consequence of the Monte-Carlo origin of both tables, not a
 difference in method. Supply mctol for a direct Monte-Carlo p-value.
 
 If x has zero variance (or is otherwise degenerate so that skewness
-and kurtosis are undefined), jbstat is NaN ; in this case
-p is reported as 0 and h as 1 .
+and kurtosis are undefined), jbstat is NaN; in this case
+p is reported as 0 and h as 1.
 
 See also:
 adtest,
@@ -2125,13 +2087,12 @@ kruskalwallis
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2326
-statistics: p = kruskalwallis ( x )
-statistics: p = kruskalwallis ( x , group )
-statistics: p = kruskalwallis ( x , group , displayopt )
-statistics: [ p , tbl ] = kruskalwallis ( x , &hellip;)
-statistics: [ p , tbl , stats ] = kruskalwallis ( x , &hellip;)
-
+# length: 2301
+statistics: p = kruskalwallis (x)
+statistics: p = kruskalwallis (x, group)
+statistics: p = kruskalwallis (x, group, displayopt)
+statistics: [p, tbl] = kruskalwallis (x, &hellip;)
+statistics: [p, tbl, stats] = kruskalwallis (x, &hellip;)
 Perform a Kruskal-Wallis test, the non-parametric alternative of a one-way
 analysis of variance (ANOVA), for comparing the means of two or more groups
 of data under the null hypothesis that the groups are drawn from the same
@@ -2143,19 +2104,19 @@ x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
 If x is a vector, it is a single group whichever way it lies, unless
 group is given; with one group there is nothing to compare, so
-p is NaN .
+p is NaN.
 
 group contains the names for each group. If x is a matrix, then
 group can either be a cell array of strings of a character array, with
-one row per column of x . If you want to omit this argument, enter an
+one row per column of x. If you want to omit this argument, enter an
 empty array ([]). If x is a vector, then group must be a vector
 of the same length, or a string array or cell array of strings with one row
-for each element of x . x values corresponding to the same value
+for each element of x. x values corresponding to the same value
 of group are placed in the same group.
 
 displayopt is an optional parameter for displaying the groups contained
 in the data in a boxplot. If omitted, it is &rsquo;on&rsquo; by default. If group names
-are defined in group , these are used to identify the groups in the
+are defined in group, these are used to identify the groups in the
 boxplot. Use &rsquo;off&rsquo; to omit displaying this figure.
 
 kruskalwallis can return up to three output arguments:
@@ -2201,15 +2162,14 @@ kstest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3554
-statistics: h = kstest ( x )
-statistics: h = kstest ( x , name , value )
-statistics: [ h , p ] = kstest (&hellip;)
-statistics: [ h , p , ksstat , cv ] = kstest (&hellip;)
-
+# length: 3516
+statistics: h = kstest (x)
+statistics: h = kstest (x, name, value)
+statistics: [h, p] = kstest (&hellip;)
+statistics: [h, p, ksstat, cv] = kstest (&hellip;)
 Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.
 
-h = kstest ( x ) performs a Kolmogorov-Smirnov (K-S) test to
+h = kstest (x) performs a Kolmogorov-Smirnov (K-S) test to
 determine if a random sample x could have come from a standard normal
 distribution. h indicates the results of the null hypothesis test.
 
@@ -2220,9 +2180,9 @@ x is a vector representing a random sample from some unknown
 distribution with a cumulative distribution function F(X). Missing values
 declared as NaNs in x are ignored.
 
-h = kstest ( x , name , value ) returns
+h = kstest (x, name, value) returns
 a test decision for a single-sample K-S test with additional options
-specified by one or more Name - Value pair arguments as shown
+specified by one or more Name-Value pair arguments as shown
 below.
 
 Name Value
@@ -2233,7 +2193,7 @@ the significance level. Default is 0.05 for 5% significance.
 It can be specified as a function handle of an existing cdf function, a
 character vector defining a probability distribution with default parameters,
 a probability distribution object, or a two-column matrix. If not provided,
-the default is the standard normal, N(0,1) . The one-sample
+the default is the standard normal, N(0,1). The one-sample
 Kolmogorov-Smirnov test is only valid for continuous cumulative distribution
 functions, and requires the CDF to be predetermined. The result is not
 accurate if CDF is estimated from the data.
@@ -2244,31 +2204,31 @@ accurate if CDF is estimated from the data.
 'larger' "F(X) > CDF(X)" (one-sided)
 'smaller' "F(X) < CDF(X)" (one-sided)
 
-Let S(X) be the empirical c.d.f. estimated from the sample vector x ,
+Let S(X) be the empirical c.d.f. estimated from the sample vector x,
 F(X) be the corresponding true (but unknown) population c.d.f., and CDF be
 the known input c.d.f. specified under the null hypothesis.
 For tail = "unequal", "larger", and "smaller", the test statistics are
 max|S(X) - CDF(X)|, max[S(X) - CDF(X)], and max[CDF(X) - S(X)], respectively.
 
-[ h , p ] = kstest (&hellip;) also returns the asymptotic
-p-value p .
+[h, p] = kstest (&hellip;) also returns the asymptotic
+p-value p.
 
-[ h , p , ksstat ] = kstest (&hellip;) returns the K-S
+[h, p, ksstat] = kstest (&hellip;) returns the K-S
 test statistic ksstat defined above for the test type indicated by the
 "tail" option
 
 In the matrix version of CDF, column 1 contains the x-axis data and column 2
 the corresponding y-axis c.d.f data. Since the K-S test statistic will
-occur at one of the observations in x , the calculation is most
-efficient when CDF is only specified at the observations in x . When
-column 1 of CDF represents x-axis points independent of x , CDF is
-linearly interpolated at the observations found in the vector x . In
+occur at one of the observations in x, the calculation is most
+efficient when CDF is only specified at the observations in x. When
+column 1 of CDF represents x-axis points independent of x, CDF is
+linearly interpolated at the observations found in the vector x. In
 this case, the interval along the x-axis (the column 1 spread of CDF) must
 span the observations in x for successful interpolation.
 
 The decision to reject the null hypothesis is based on comparing the p-value
 p with the "alpha" value, not by comparing the statistic ksstat
-with the critical value cv . cv is computed separately using an
+with the critical value cv. cv is computed separately using an
 approximate formula or by interpolation using Miller&rsquo;s approximation table.
 The formula and table cover the range 0.01 <= "alpha" <= 0.2 for two-sided
 tests and 0.005 <= "alpha" <= 0.1 for one-sided tests. CV is returned as NaN
@@ -2303,22 +2263,21 @@ kstest2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1960
-statistics: h = kstest2 ( x1 , x2 )
-statistics: h = kstest2 ( x1 , x2 , name , value )
-statistics: [ h , p ] = kstest2 (&hellip;)
-statistics: [ h , p , ks2stat ] = kstest2 (&hellip;)
-
+# length: 1926
+statistics: h = kstest2 (x1, x2)
+statistics: h = kstest2 (x1, x2, name, value)
+statistics: [h, p] = kstest2 (&hellip;)
+statistics: [h, p, ks2stat] = kstest2 (&hellip;)
 Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.
 
-h = kstest2 ( x1 , x2 ) returns a test decision for the
+h = kstest2 (x1, x2) returns a test decision for the
 null hypothesis that the data in vectors x1 and x2 are from the
 same continuous distribution, using the two-sample Kolmogorov-Smirnov test.
 The alternative hypothesis is that x1 and x2 are from different
 continuous distributions. The result h is 1 if the test rejects the
 null hypothesis at the 5% significance level, and 0 otherwise.
 
-h = kstest2 ( x1 , x2 , name , value )
+h = kstest2 (x1, x2, name, value)
 returns a test decision for a two-sample Kolmogorov-Smirnov test with
 additional options specified by one or more name-value pair arguments as
 shown below.
@@ -2334,7 +2293,7 @@ significance level. Default is 0.05 for 5% significance.
 
 The two-sided test uses the maximum absolute difference between the cdfs of
 the distributions of the two data vectors. The test statistic is
-D* = max(|F1(x) - F2(x)|) , where F1(x) is the proportion of x1
+D* = max(|F1(x) - F2(x)|), where F1(x) is the proportion of x1
 values less or equal to x and F2(x) is the proportion of x2 values less
 than or equal to x. The one-sided test uses the actual value of the
 difference between the cdfs of the distributions of the two data vectors
@@ -2342,12 +2301,12 @@ rather than the absolute value. The test statistic is
 D* = max(F1(x) - F2(x)) or D* = max(F2(x) - F1(x)) for
 tail = "larger" or "smaller", respectively.
 
-[ h , p ] = kstest2 (&hellip;) also returns the
-asymptotic p-value p .
+[h, p] = kstest2 (&hellip;) also returns the
+asymptotic p-value p.
 
-[ h , p , ks2stat ] = kstest2 (&hellip;) also returns
+[h, p, ks2stat] = kstest2 (&hellip;) also returns
 the Kolmogorov-Smirnov test statistic ks2stat defined above for the
-test type indicated by tail .
+test type indicated by tail.
 
 See also:
 kstest,
@@ -2372,27 +2331,26 @@ levene_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2505
-statistics: h = levene_test ( x )
-statistics: h = levene_test ( x , group )
-statistics: h = levene_test ( x , alpha )
-statistics: h = levene_test ( x , testtype )
-statistics: h = levene_test ( x , group , alpha )
-statistics: h = levene_test ( x , group , testtype )
-statistics: h = levene_test ( x , group , alpha , testtype )
-statistics: [ h , pval ] = levene_test (&hellip;)
-statistics: [ h , pval , W ] = levene_test (&hellip;)
-statistics: [ h , pval , W , df ] = levene_test (&hellip;)
-
+# length: 2462
+statistics: h = levene_test (x)
+statistics: h = levene_test (x, group)
+statistics: h = levene_test (x, alpha)
+statistics: h = levene_test (x, testtype)
+statistics: h = levene_test (x, group, alpha)
+statistics: h = levene_test (x, group, testtype)
+statistics: h = levene_test (x, group, alpha, testtype)
+statistics: [h, pval] = levene_test (&hellip;)
+statistics: [h, pval, W] = levene_test (&hellip;)
+statistics: [h, pval, W, df] = levene_test (&hellip;)
 Perform a Levene&rsquo;s test for the homogeneity of variances.
 
 Under the null hypothesis of equal variances, the test statistic W
 approximately follows an F distribution with df degrees of
 freedom being a vector ([k-1, N-k]).
 
-The p-value (1 minus the CDF of this distribution at W ) is returned in
-pval . h = 1 if the null hypothesis is rejected at the
-significance level of alpha . Otherwise h = 0.
+The p-value (1 minus the CDF of this distribution at W) is returned in
+pval. h = 1 if the null hypothesis is rejected at the
+significance level of alpha. Otherwise h = 0.
 
 Input Arguments:
 
@@ -2400,12 +2358,12 @@ x contains the data and it can either be a vector or matrix.
 If x is a matrix, then each column is treated as a separate group.
 If x is a vector, it is a single group whichever way it lies, unless
 group is given; with one group there is nothing to compare, so
-pval is NaN .
+pval is NaN.
 NaN values are omitted.
 
 group contains the names for each group. If x is a vector, then
 group must be a vector of the same length, or a string array or cell
-array of strings with one row for each element of x . x values
+array of strings with one row for each element of x. x values
 corresponding to the same value of group are placed in the same group.
 If x is a matrix, then group can either be a cell array of
 strings of a character array, with one row per column of x in the same
@@ -2423,7 +2381,7 @@ testtype is a string determining the type of Levene&rsquo;s test. By default
 it is set to "absolute", but the user can also parse "quadratic" in order to
 perform Levene&rsquo;s Quadratic test for equal variances or "median" in order to
 to perform the Brown-Forsythe&rsquo;s test. These options determine how the Z_ij
-values are computed. If an invalid name is parsed for testtype , then
+values are computed. If an invalid name is parsed for testtype, then
 the Levene&rsquo;s Absolute test is performed.
 
 See also:
@@ -2450,15 +2408,14 @@ lillietest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2094
-statistics: h = lillietest ( x )
-statistics: h = lillietest ( x , name , value )
-statistics: [ h , p ] = lillietest (&hellip;)
-statistics: [ h , p , kstat , critval ] = lillietest (&hellip;)
-
+# length: 2063
+statistics: h = lillietest (x)
+statistics: h = lillietest (x, name, value)
+statistics: [h, p] = lillietest (&hellip;)
+statistics: [h, p, kstat, critval] = lillietest (&hellip;)
 Lilliefors goodness-of-fit hypothesis test.
 
-h = lillietest ( x ) tests the null hypothesis that the
+h = lillietest (x) tests the null hypothesis that the
 sample in the vector x comes from a normal distribution with unknown
 mean and variance, against the alternative that it does not, using the
 Lilliefors test. h is 1 if the test rejects the null at the 5%
@@ -2467,7 +2424,7 @@ significance level and 0 otherwise.
 The Lilliefors statistic is the Kolmogorov-Smirnov statistic &mdash; the maximum
 absolute difference between the empirical cumulative distribution function of
 x and the cumulative distribution function of the hypothesized family
-with parameters estimated from x . Because the parameters are estimated,
+with parameters estimated from x. Because the parameters are estimated,
 the null distribution of the statistic differs from that of the ordinary
 Kolmogorov-Smirnov test.
 
@@ -2475,21 +2432,21 @@ The following Name-Value pairs are supported:
 
 Name Value
 'Distribution' The hypothesized family:
-'normal' (default), 'exponential' , or
-'extreme value' . The parameters are estimated from x : mean and
+'normal' (default), 'exponential', or
+'extreme value'. The parameters are estimated from x: mean and
 standard deviation for the normal, mean for the exponential, and location and
 scale for the extreme value distribution.
 'Alpha' The significance level, a scalar. Without
 'MCTol' it must lie in [0.001, 0.5] (the tabulated range); with
-'MCTol' it may be any value in (0, 1) . The default is
-0.05 .
+'MCTol' it may be any value in (0, 1). The default is
+0.05.
 'MCTol' Maximum Monte-Carlo standard error for the
 p-value. When supplied, the p-value and critical value are computed by
 Monte-Carlo simulation instead of by interpolating the embedded table.
 
-[ h , p , kstat , critval ] = lillietest (&hellip;)
-also returns the p-value p , the test statistic kstat , and the
-critical value critval . Without 'MCTol' the p-value is clamped
+[h, p, kstat, critval] = lillietest (&hellip;)
+also returns the p-value p, the test statistic kstat, and the
+critical value critval. Without 'MCTol' the p-value is clamped
 to the tabulated range [0.001, 0.5] and a warning is issued when it
 lies outside. The warning is an addition here: MATLAB clamps silently, so a
 p-value reported as 0.001 or 0.5 there may be a bound rather
@@ -2520,15 +2477,14 @@ manova1
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2569
-statistics: d = manova1 ( x , group )
-statistics: d = manova1 ( x , group , alpha )
-statistics: [ d , p ] = manova1 (&hellip;)
-statistics: [ d , p , stats ] = manova1 (&hellip;)
-
+# length: 2542
+statistics: d = manova1 (x, group)
+statistics: d = manova1 (x, group, alpha)
+statistics: [d, p] = manova1 (&hellip;)
+statistics: [d, p, stats] = manova1 (&hellip;)
 One-way multivariate analysis of variance (MANOVA).
 
-d = manova1 ( x , group , alpha ) performs a
+d = manova1 (x, group, alpha) performs a
 one-way MANOVA for comparing the mean vectors of two or more groups of
 multivariate data.
 
@@ -2536,7 +2492,7 @@ x is a matrix with each row representing a multivariate observation,
 and each column representing a variable.
 
 group is a numeric vector, string array, or cell array of strings with
-the same number of rows as x . x values are in the same group if
+the same number of rows as x. x values are in the same group if
 they correspond to the same value of GROUP.
 
 alpha is the scalar significance level and is 0.05 by default.
@@ -2548,12 +2504,12 @@ cannot reject the hypothesis that the means are the same. If d = 1, we
 reject the hypothesis that the means are the same but we cannot reject the
 hypothesis that they lie on a line.
 
-[ d , p ] = manova1 (&hellip;) returns P, a vector of p-values
+[d, p] = manova1 (&hellip;) returns P, a vector of p-values
 for testing the null hypothesis that the mean vectors of the groups lie on
 various dimensions. P(1) is the p-value for a test of dimension 0, P(2) for
 dimension 1, etc.
 
-[ d , p , stats ] = manova1 (&hellip;) returns a STATS
+[d, p, stats] = manova1 (&hellip;) returns a STATS
 structure with the following fields:
 
 "W" within-group sum of squares and products matrix
@@ -2601,12 +2557,11 @@ mcnemar_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1690
-statistics: [ h , pval , chisq ] = mcnemar_test ( x )
-statistics: [ h , pval , chisq ] = mcnemar_test ( x , alpha )
-statistics: [ h , pval , chisq ] = mcnemar_test ( x , testtype )
-statistics: [ h , pval , chisq ] = mcnemar_test ( x , alpha , testtype )
-
+# length: 1652
+statistics: [h, pval, chisq] = mcnemar_test (x)
+statistics: [h, pval, chisq] = mcnemar_test (x, alpha)
+statistics: [h, pval, chisq] = mcnemar_test (x, testtype)
+statistics: [h, pval, chisq] = mcnemar_test (x, alpha, testtype)
 Perform a McNemar&rsquo;s test on paired nominal data.
 
 McNemar&rsquo;s test is applied to a 2&times;2 contingency table x
@@ -2617,21 +2572,21 @@ the null hypothesis of marginal homogeneity states that the two marginal
 probabilities for each outcome are the same.
 
 Under the null, with a sufficiently large number of discordants
-( x (1,2) + x (2,1) >= 25 ), the test statistic, chisq ,
+(x(1,2) + x(2,1) >= 25), the test statistic, chisq,
 follows a chi-squared distribution with 1 degree of freedom. When the number
 of discordants is less than 25, then the mid-P exact McNemar test is used.
 
 testtype will force mcnemar_test to apply a particular method
 for testing the null hypothesis independently of the number of discordants.
-Valid options for testtype :
+Valid options for testtype:
 
 'asymptotic' Original McNemar test statistic
 'corrected' Edwards&rsquo; version with continuity correction
 'exact' An exact binomial test
 'mid-p' The mid-P McNemar test (mid-p binomial test)
 
-The test decision is returned in h , which is 1 when the null hypothesis
-is rejected ( pval < alpha ) or 0 otherwise. alpha
+The test decision is returned in h, which is 1 when the null hypothesis
+is rejected (pval < alpha) or 0 otherwise. alpha
 defines the critical value of statistical significance for the test.
 
 Further information about the McNemar&rsquo;s test can be found at
@@ -2661,19 +2616,18 @@ multcompare
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7056
-statistics: C = multcompare ( STATS )
-statistics: C = multcompare ( STATS , "name", value )
-statistics: [ C , M ] = multcompare (...)
-statistics: [ C , M , H ] = multcompare (...)
-statistics: [ C , M , H , GNAMES ] = multcompare (...)
-statistics: padj = multcompare ( p )
-statistics: padj = multcompare ( p , "ctype", CTYPE )
-
+# length: 6984
+statistics: C = multcompare (STATS)
+statistics: C = multcompare (STATS, "name", value)
+statistics: [C, M] = multcompare (...)
+statistics: [C, M, H] = multcompare (...)
+statistics: [C, M, H, GNAMES] = multcompare (...)
+statistics: padj = multcompare (p)
+statistics: padj = multcompare (p, "ctype", CTYPE)
 Perform posthoc multiple comparison tests or p-value adjustments to control
 the family-wise error rate (FWER) or false discovery rate (FDR).
 
-C = multcompare ( STATS ) performs a multiple comparison
+C = multcompare (STATS) performs a multiple comparison
 using a STATS structure that is obtained as output from any of
 the following functions: anova1, anova2, anovan, kruskalwallis, and friedman.
 The return value C is a matrix with one row per comparison and six
@@ -2683,28 +2637,28 @@ difference, where the bounds are for 95% confidence intervals. Column 6-8 are
 the multiplicity adjusted p-values for each individual comparison, the test
 statistic and the degrees of freedom. For STATS from kruskalwallis or
 friedman, the comparisons use a z statistic, and the degrees of freedom are
-reported as Inf , which is how the normal reference distribution is
+reported as Inf, which is how the normal reference distribution is
 signalled; tcdf and tinv at Inf agree with
-normcdf and norminv .
+normcdf and norminv.
 All tests by multcompare are two-tailed.
 
 multcompare can take a number of optional parameters as name-value
 pairs.
 
-[&hellip;] = multcompare ( STATS , "alpha", ALPHA )
+[&hellip;] = multcompare (STATS, "alpha", ALPHA)
 
 ALPHA sets the significance level of null hypothesis significance
 tests to ALPHA, and the central coverage of two-sided confidence intervals to
-100*(1- ALPHA )%. (Default ALPHA is 0.05).
+100*(1-ALPHA)%. (Default ALPHA is 0.05).
 
-[&hellip;] = multcompare ( STATS , "ControlGroup", REF )
+[&hellip;] = multcompare (STATS, "ControlGroup", REF)
 
 REF is the index of the control group to limit comparisons to. The
 index must be a positive integer scalar value. For each dimension (d) listed
-in DIM , multcompare uses STATS.grpnames{d}(idx) as the control group.
+in DIM, multcompare uses STATS.grpnames{d}(idx) as the control group.
 (Default is empty, i.e. [], for full pairwise comparisons)
 
-[&hellip;] = multcompare ( STATS , "ctype", CTYPE )
+[&hellip;] = multcompare (STATS, "ctype", CTYPE)
 
 CTYPE is the type of comparison test to use. In order of increasing
 power, the choices are: "bonferroni", "scheffe", "mvt", "holm" (default),
@@ -2732,7 +2686,7 @@ is installed and loaded, multcompare will automatically accelerate
 computations by parallel processing. Note that p-values calculated by the
 "mvt" are truncated at 1e-06.
 
-[&hellip;] = multcompare ( STATS , "df", DF )
+[&hellip;] = multcompare (STATS, "df", DF)
 
 DF is an optional scalar value to set the number of degrees of freedom
 in the calculation of p-values for the multiple comparison tests. By default,
@@ -2740,7 +2694,7 @@ this value is extracted from the STATS structure of the ANOVA test, but
 setting DF maybe necessary to approximate Satterthwaite correction if
 anovan was performed using weights.
 
-[&hellip;] = multcompare ( STATS , "dim", DIM )
+[&hellip;] = multcompare (STATS, "dim", DIM)
 
 DIM is a vector specifying the dimension or dimensions over which the
 estimated marginal means are to be calculated. Used only if STATS comes from
@@ -2750,7 +2704,7 @@ to compute over the first dimension (i.e. 1). If the specified dimension is,
 or includes, a continuous factor then multcompare will return an
 error.
 
-[&hellip;] = multcompare ( STATS , "estimate", ESTIMATE )
+[&hellip;] = multcompare (STATS, "estimate", ESTIMATE)
 
 ESTIMATE is a string specifying the estimates to be compared when
 computing multiple comparisons after anova2; this argument is ignored by
@@ -2759,39 +2713,39 @@ anovan and anova1. Accepted values for ESTIMATE are either "column"
 model type in anova2 was "linear" or "nested" then only "column" is accepted
 for ESTIMATE since the row factor is assumed to be a random effect.
 
-[&hellip;] = multcompare ( STATS , "display", DISPLAY )
+[&hellip;] = multcompare (STATS, "display", DISPLAY)
 
 DISPLAY is either "on" (the default): to display a table and graph of
-the comparisons (e.g. difference between means), their 100*(1- ALPHA )%
+the comparisons (e.g. difference between means), their 100*(1-ALPHA)%
 intervals and multiplicity adjusted p-values in APA style; or "off": to omit
 the table and graph. On the graph, markers and error bars colored red have
 multiplicity adjusted p-values < ALPHA, otherwise the markers and error bars
 are blue.
 
-[&hellip;] = multcompare ( STATS , "seed", SEED )
+[&hellip;] = multcompare (STATS, "seed", SEED)
 
 SEED is a scalar value used to initialize the random number generator
 so that CTYPE "mvt" produces reproducible results.
 
-[ C , M , H , GNAMES ] = multcompare (&hellip;)
+[C, M, H, GNAMES] = multcompare (&hellip;)
 returns additional outputs. M is a matrix where columns 1-2 are the
 estimated marginal means and their standard errors, and columns 3-4 are lower
 and upper bounds of the confidence intervals for the means; the critical
 value of the test statistic is scaled by a factor of 2^(-0.5) before
 multiplying by the standard errors of the group means so that the intervals
 overlap when the difference in means becomes significant at approximately
-the level ALPHA . When ALPHA is 0.05, this corresponds to
+the level ALPHA. When ALPHA is 0.05, this corresponds to
 confidence intervals with 83.4% central coverage. H is a handle to the
 figure containing the graph. GNAMES is a cell array with one row for
 each group, containing the names of the groups.
 
-padj = multcompare ( p ) calculates and returns adjusted
-p-values ( padj ) using the Holm-step down Bonferroni procedure to
+padj = multcompare (p) calculates and returns adjusted
+p-values (padj) using the Holm-step down Bonferroni procedure to
 control the family-wise error rate.
 
-padj = multcompare ( p , "ctype", CTYPE ) calculates
-and returns adjusted p-values ( padj ) computed using the method
-CTYPE . In order of increasing power, CTYPE for p-value adjustment
+padj = multcompare (p, "ctype", CTYPE) calculates
+and returns adjusted p-values (padj) computed using the method
+CTYPE. In order of increasing power, CTYPE for p-value adjustment
 can be either "bonferroni", "holm" (default), "hochberg", or "fdr". See
 above for further information about the CTYPE methods.
 
@@ -2822,51 +2776,50 @@ ranksum
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2849
-statistics: p = ranksum ( x , y )
-statistics: p = ranksum ( x , y , alpha )
-statistics: p = ranksum ( x , y , alpha , Name , Value )
-statistics: p = ranksum ( x , y , Name , Value )
-statistics: [ p , h ] = ranksum ( x , y , &hellip;)
-statistics: [ p , h , stats ] = ranksum ( x , y , &hellip;)
-
+# length: 2773
+statistics: p = ranksum (x, y)
+statistics: p = ranksum (x, y, alpha)
+statistics: p = ranksum (x, y, alpha, Name, Value)
+statistics: p = ranksum (x, y, Name, Value)
+statistics: [p, h] = ranksum (x, y, &hellip;)
+statistics: [p, h, stats] = ranksum (x, y, &hellip;)
 Wilcoxon rank sum test for equal medians. This test is equivalent to a
 Mann-Whitney U-test.
 
-p = ranksum ( x , y ) returns the p-value of a
+p = ranksum (x, y) returns the p-value of a
 two-sided Wilcoxon rank sum test. It tests the null hypothesis that two
 independent samples, in the vectors X and Y, come from continuous
 distributions with equal medians, against the alternative hypothesis that
 they are not. x and y can have different lengths and the test
 assumes that they are independent.
 
-ranksum treats NaN in x , y as missing values.
+ranksum treats NaN in x, y as missing values.
 The two-sided p-value is computed by doubling the most significant one-sided
 value.
 
-[ p , h ] = ranksum ( x , y ) also returns the
+[p, h] = ranksum (x, y) also returns the
 result of the hypothesis test with h = 1 indicating a rejection
 of the null hypothesis at the default alpha = 0.05 significance level, and
 h = 0 indicating a failure to reject the null hypothesis at the
 same significance level.
 
-[ p , h , stats ] = ranksum ( x , y ) also
+[p, h, stats] = ranksum (x, y) also
 returns the structure stats with information about the test statistic.
 It contains the field ranksum with the value of the rank sum test
 statistic, and the field zval with the value of the z-statistic when
 computed with the "approximate" method, and empty otherwise. The field is
 always there.
 
-[&hellip;] = ranksum ( x , y , alpha ) or alternatively
-[&hellip;] = ranksum ( x , y , "alpha", alpha ) returns
+[&hellip;] = ranksum (x, y, alpha) or alternatively
+[&hellip;] = ranksum (x, y, "alpha", alpha) returns
 the result of the hypothesis test performed at the significance level ALPHA.
 
-[&hellip;] = ranksum ( x , y , "method", M ) defines the
-computation method of the p-value specified in M , which can be "exact",
+[&hellip;] = ranksum (x, y, "method", M) defines the
+computation method of the p-value specified in M, which can be "exact",
 "approximate", or "oldexact". M must be a single string. When "method"
 is unspecified, the default is: "exact" when
-min (length ( x ), length ( y )) < 10 and
-length ( x ) + length ( y ) < 20 , otherwise the "approximate"
+min (length (x), length (y)) < 10 and
+length (x) + length (y) < 20, otherwise the "approximate"
 method is used.
 
 "exact" method uses full enumeration for small total sample size (< 10),
@@ -2877,7 +2830,7 @@ otherwise the network algorithm is used for larger samples.
 "oldexact" uses full enumeration for any sample size. Note, that this option
 can lead to out of memory error for large samples. Use with caution!
 
-[&hellip;] = ranksum ( x , y , "tail", tail ) defines the
+[&hellip;] = ranksum (x, y, "tail", tail) defines the
 type of test, which can be "both", "right", or "left". tail must be a
 single string.
 
@@ -2888,7 +2841,7 @@ single string.
 "left" &ndash; "median of X is less than median of Y" (left-tailed test)
 
 Note: the rank sum statistic is based on the smaller sample of vectors
-x and y .
+x and y.
 
 
 # name: <cell-element>
@@ -2909,32 +2862,31 @@ regression_ftest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2324
-statistics: [ h , pval , stats ] = regression_ftest ( y , x , fm )
-statistics: [&hellip;] = regression_ftest ( y , x , fm , rm )
-statistics: [&hellip;] = regression_ftest ( y , x , fm , rm , Name , Value )
-statistics: [&hellip;] = regression_ftest ( y , x , fm , [], Name , Value )
-
+# length: 2286
+statistics: [h, pval, stats] = regression_ftest (y, x, fm)
+statistics: [&hellip;] = regression_ftest (y, x, fm, rm)
+statistics: [&hellip;] = regression_ftest (y, x, fm, rm, Name, Value)
+statistics: [&hellip;] = regression_ftest (y, x, fm, [], Name, Value)
 F-test for General Linear Regression Analysis
 
 Perform a general linear regression F test for the null hypothesis that the
 full model of the form y = b_0 + b_1 * x_1 + b_2 * x_2 + &hellip; +
-b_n * x_n + e , where n is the number of variables in x , does not
+b_n * x_n + e, where n is the number of variables in x, does not
 perform better than a reduced model, such as y = b'_0 + b'_1 * x_1 +
-b'_2 * x_2 + &hellip; + b'_k * x_k + e , where k < n and it corresponds to the
-first k variables in x . Explanatory (dependent) variable y and
+b'_2 * x_2 + &hellip; + b'_k * x_k + e, where k < n and it corresponds to the
+first k variables in x. Explanatory (dependent) variable y and
 response (independent) variables x must not contain any missing values
 (NaNs).
 
-The full model, fm , must be a vector of length equal to the columns of
-x , in which case the constant term b_0 is assumed 0, or equal to
+The full model, fm, must be a vector of length equal to the columns of
+x, in which case the constant term b_0 is assumed 0, or equal to
 the columns of x plus one, in which case the first element is the
 constant b_0.
 
-The reduced model, rm , must include the constant term and a subset of
-the variables (columns) in x . If rm is not given, then a constant
+The reduced model, rm, must include the constant term and a subset of
+the variables (columns) in x. If rm is not given, then a constant
 term b&rsquo;_0 is assumed equal to the constant term, b_0, of the full model or 0,
-if the full model, fm , does not have a constant term. rm must be
+if the full model, fm, does not have a constant term. rm must be
 a vector or a scalar if only a constant term is passed into the function.
 
 Name-Value pair arguments can be used to set statistical significance.
@@ -2948,8 +2900,8 @@ explains the variance better than the restricted model. If h is 0, it
 can be assumed that the full model does NOT explain the variance any better
 than the restricted model.
 
-The p-value (1 minus the CDF of this distribution at f ) is returned
-in pval .
+The p-value (1 minus the CDF of this distribution at f) is returned
+in pval.
 
 Under the null, the test statistic f follows an F distribution with
 &rsquo;df1&rsquo; and &rsquo;df2&rsquo; degrees of freedom, which are returned as fields in the
@@ -2979,31 +2931,30 @@ regression_ttest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1472
-statistics: h = regression_ttest ( y , x )
-statistics: [ h , pval ] = regression_ttest ( y , x )
-statistics: [ h , pval , ci ] = regression_ttest ( y , x )
-statistics: [ h , pval , ci , stats ] = regression_ttest ( y , x )
-statistics: [&hellip;] = regression_ttest ( y , x , Name , Value )
-
+# length: 1422
+statistics: h = regression_ttest (y, x)
+statistics: [h, pval] = regression_ttest (y, x)
+statistics: [h, pval, ci] = regression_ttest (y, x)
+statistics: [h, pval, ci, stats] = regression_ttest (y, x)
+statistics: [&hellip;] = regression_ttest (y, x, Name, Value)
 Perform a linear regression t-test.
 
-h = regression_ttest ( y , x ) tests the null
+h = regression_ttest (y, x) tests the null
 hypothesis that the slope beta1 of a simple linear regression equals
 0. The result is h = 0 if the null hypothesis cannot be rejected at
 the 5% significance level, or h = 1 if the null hypothesis can be
 rejected at the 5% level. y and x must be vectors of equal
 length with finite real numbers.
 
-The p-value of the test is returned in pval . A 100(1-alpha)%
-confidence interval for beta1 is returned in ci . stats is
-a structure containing the value of the test statistic ( tstat ),
-the degrees of freedom ( df ), the slope coefficient ( beta1 ),
-and the intercept ( beta0 ). Under the null, the test statistic
-stats . tstat follows a T -distribution with
-stats . df degrees of freedom.
+The p-value of the test is returned in pval. A 100(1-alpha)%
+confidence interval for beta1 is returned in ci. stats is
+a structure containing the value of the test statistic (tstat),
+the degrees of freedom (df), the slope coefficient (beta1),
+and the intercept (beta0). Under the null, the test statistic
+stats.tstat follows a T-distribution with
+stats.df degrees of freedom.
 
-[&hellip;] = regression_ttest (&hellip;, name , value )
+[&hellip;] = regression_ttest (&hellip;, name, value)
 specifies one or more of the following name/value pairs:
 
 Name Value
@@ -3038,33 +2989,32 @@ runstest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2076
-statistics: h = runstest ( x )
-statistics: h = runstest ( x , v )
-statistics: h = runstest ( x , 'ud' )
-statistics: h = runstest (&hellip;, Name , Value )
-statistics: [ h , pval , stats ] = runstest (&hellip;)
+# length: 2046
+statistics: h = runstest (x)
+statistics: h = runstest (x, v)
+statistics: h = runstest (x, 'ud')
+statistics: h = runstest (&hellip;, Name, Value)
+statistics: [h, pval, stats] = runstest (&hellip;)
+Run test for randomness in the vector x.
 
-Run test for randomness in the vector x .
-
-h = runstest ( x ) calculates the number of runs of
+h = runstest (x) calculates the number of runs of
 consecutive values above or below the mean of x and tests the null
 hypothesis that the values in the data vector x come in random order.
 h is 1 if the test rejects the null hypothesis at the 5% significance
 level, or 0 otherwise.
 
-h = runstest ( x , v ) tests the null hypothesis based
+h = runstest (x, v) tests the null hypothesis based
 on the number of runs of consecutive values above or below the specified
-reference value v . Values exactly equal to v are omitted.
+reference value v. Values exactly equal to v are omitted.
 
-h = runstest ( x , 'ud' ) calculates the number of
+h = runstest (x, 'ud') calculates the number of
 runs up or down and tests the null hypothesis that the values in the data
 vector x follow a trend. Too few runs indicate a trend, while too
 many runs indicate an oscillation. Values exactly equal to the preceding
 value are omitted.
 
-h = runstest (&hellip;, Name , Value ) specifies
-additional options to the above tests by one or more Name - Value
+h = runstest (&hellip;, Name, Value) specifies
+additional options to the above tests by one or more Name-Value
 pair arguments.
 
 Name Value
@@ -3075,7 +3025,7 @@ exact algorithm, or 'approximate' to use a normal approximation. The
 default is 'exact' for runs above/below, and for runs up/down when
 the length of x is less than or equal to 50. When testing for runs up/down
 and the length of x is greater than 50, then the default is
-'approximate' , and the 'exact' method is not available.
+'approximate', and the 'exact' method is not available.
 'tail' a string specifying the alternative hypothesis
 
 'both' two-tailed (default)
@@ -3111,29 +3061,28 @@ signrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2910
-statistics: pval = signrank ( x )
-statistics: pval = signrank ( x , my )
-statistics: pval = signrank ( x , my , Name , Value )
-statistics: [ pval , h ] = signrank (&hellip;)
-statistics: [ pval , h , stats ] = signrank (&hellip;)
-
+# length: 2865
+statistics: pval = signrank (x)
+statistics: pval = signrank (x, my)
+statistics: pval = signrank (x, my, Name, Value)
+statistics: [pval, h] = signrank (&hellip;)
+statistics: [pval, h, stats] = signrank (&hellip;)
 Wilcoxon signed rank test for median.
 
-pval = signrank ( x ) returns the p -value of a
+pval = signrank (x) returns the p-value of a
 two-sided Wilcoxon signed rank test. It tests the null hypothesis that data
 in x come from a distribution with zero median at the 5% significance
 level under the assumption that the distribution is symmetric about its
 median. x must be a vector.
 
 If the second argument my is a scalar, the null hypothesis is that
-x has median my , whereas if my is a vector, the null
+x has median my, whereas if my is a vector, the null
 hypothesis is that the distribution of x - my has zero
 median.
 
-pval = signrank (&hellip;, Name , Value ) performs the
+pval = signrank (&hellip;, Name, Value) performs the
 Wilcoxon signed rank test with additional options specified by one or more of
-the following Name , Value pair arguments:
+the following Name, Value pair arguments:
 
 Name Value
 'alpha' A scalar value for the significance level of
@@ -3142,44 +3091,44 @@ the test. Default is 0.05.
 hypothesis. It can take one of the following values:
 
 Value Description
-'both' For one-sample test ( my is empty or a
+'both' For one-sample test (my is empty or a
 scalar), the data in x come from a continuous distribution with median
-different than zero or my . For two-sample test ( my is a vector),
+different than zero or my. For two-sample test (my is a vector),
 the data in x - my come from a continuous distribution
 with median different than zero.
-'left' For one-sample test ( my is empty or a
+'left' For one-sample test (my is empty or a
 scalar), the data in x come from a continuous distribution with median
-less than zero or my . For two-sample test ( my is a vector), the
+less than zero or my. For two-sample test (my is a vector), the
 data in x - my come from a continuous distribution with
 median less than zero.
-'right' For one-sample test ( my is empty or a
+'right' For one-sample test (my is empty or a
 scalar), the data in x come from a continuous distribution with median
-greater than zero or my . For two-sample test ( my is a vector),
+greater than zero or my. For two-sample test (my is a vector),
 the data in x - my come from a continuous distribution
 with median greater than zero.
 
 Name Value
 'method' A character vector specifying the method for
-computing the p -value. It can take one of the following values:
+computing the p-value. It can take one of the following values:
 
 Value Description
-'exact' Exact computation of the p -value. It
+'exact' Exact computation of the p-value. It
 is the default value for 15 of fewer observations when 'method' is
 not specified.
 'approximate' Using normal approximation for
-computing the p -value. It is the default value for more than 15
+computing the p-value. It is the default value for more than 15
 observations when 'method' is not specified.
 
-[ pval , h ] = signrank (&hellip;) also returns a logical
+[pval, h] = signrank (&hellip;) also returns a logical
 value indicating the test decision. If h is 0, the null hypothesis is
 accepted, whereas if h is 1, the null hypothesis is rejected.
 
-[ pval , h , stats ] = signrank (&hellip;) also returns
+[pval, h, stats] = signrank (&hellip;) also returns
 the structure stats containing the following fields:
 
 Field Value
 signedrank Value of the sign rank test statistic.
-zval Value of the z -statistic, computed only
+zval Value of the z-statistic, computed only
 when the 'method' is 'approximate' and empty otherwise.
 The field is always there.
 
@@ -3207,28 +3156,27 @@ signtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2839
-statistics: pval = signtest ( x )
-statistics: pval = signtest ( x , my )
-statistics: pval = signtest ( x , my , Name , Value )
-statistics: [ pval , h ] = signtest (&hellip;)
-statistics: [ pval , h , stats ] = signtest (&hellip;)
-
+# length: 2794
+statistics: pval = signtest (x)
+statistics: pval = signtest (x, my)
+statistics: pval = signtest (x, my, Name, Value)
+statistics: [pval, h] = signtest (&hellip;)
+statistics: [pval, h, stats] = signtest (&hellip;)
 Signed test for median.
 
-pval = signtest ( x ) returns the p -value of a
+pval = signtest (x) returns the p-value of a
 two-sided sign test. It tests the null hypothesis that data in x come
 from a distribution with zero median at the 5% significance level. x
 must be a vector.
 
 If the second argument my is a scalar, the null hypothesis is that
-x has median my , whereas if my is a vector, the null
+x has median my, whereas if my is a vector, the null
 hypothesis is that the distribution of x - my has zero
 median.
 
-pval = signtest (&hellip;, Name , Value ) performs the
+pval = signtest (&hellip;, Name, Value) performs the
 Wilcoxon signed rank test with additional options specified by one or more of
-the following Name , Value pair arguments:
+the following Name, Value pair arguments:
 
 Name Value
 'alpha' A scalar value for the significance level of
@@ -3237,44 +3185,44 @@ the test. Default is 0.05.
 hypothesis. It can take one of the following values:
 
 Value Description
-'both' For one-sample test ( my is empty or a
+'both' For one-sample test (my is empty or a
 scalar), the data in x come from a continuous distribution with median
-different than zero or my . For two-sample test ( my is a vector),
+different than zero or my. For two-sample test (my is a vector),
 the data in x - my come from a continuous distribution
 with median different than zero.
-'left' For one-sample test ( my is empty or a
+'left' For one-sample test (my is empty or a
 scalar), the data in x come from a continuous distribution with median
-less than zero or my . For two-sample test ( my is a vector), the
+less than zero or my. For two-sample test (my is a vector), the
 data in x - my come from a continuous distribution with
 median less than zero.
-'right' For one-sample test ( my is empty or a
+'right' For one-sample test (my is empty or a
 scalar), the data in x come from a continuous distribution with median
-greater than zero or my . For two-sample test ( my is a vector),
+greater than zero or my. For two-sample test (my is a vector),
 the data in x - my come from a continuous distribution
 with median greater than zero.
 
 Name Value
 'method' A character vector specifying the method for
-computing the p -value. It can take one of the following values:
+computing the p-value. It can take one of the following values:
 
 Value Description
-'exact' Exact computation of the p -value. It
+'exact' Exact computation of the p-value. It
 is the default value for fewer than 100 observations when 'method' is
 not specified.
 'approximate' Using normal approximation for
-computing the p -value. It is the default value for 100 or more
+computing the p-value. It is the default value for 100 or more
 observations when 'method' is not specified.
 
-[ pval , h ] = signtest (&hellip;) also returns a logical
+[pval, h] = signtest (&hellip;) also returns a logical
 value indicating the test decision. If h is 0, the null hypothesis is
 accepted, whereas if h is 1, the null hypothesis is rejected.
 
-[ pval , h , stats ] = signtest (&hellip;) also returns
+[pval, h, stats] = signtest (&hellip;) also returns
 the structure stats containing the following fields:
 
 Field Value
 sign Value of the sign test statistic.
-zval Value of the z -statistic, computed only
+zval Value of the z-statistic, computed only
 when the 'method' is 'approximate' and NaN
 otherwise, where signrank and ranksum leave it empty. The
 field is always there.
@@ -3303,15 +3251,14 @@ swtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3565
-statistics: h = swtest ( x )
-statistics: h = swtest ( x , name , value )
-statistics: [ h , p ] = swtest (&hellip;)
-statistics: [ h , p , swstat , critval ] = swtest (&hellip;)
-
+# length: 3522
+statistics: h = swtest (x)
+statistics: h = swtest (x, name, value)
+statistics: [h, p] = swtest (&hellip;)
+statistics: [h, p, swstat, critval] = swtest (&hellip;)
 Shapiro-Wilk hypothesis test of composite normality.
 
-h = swtest ( x ) performs the Shapiro-Wilk test of the null
+h = swtest (x) performs the Shapiro-Wilk test of the null
 hypothesis that the sample in the vector x comes from a normal
 distribution with unknown mean and variance, against the alternative that it
 does not come from a normal distribution. The result h is 1 if the
@@ -3322,45 +3269,45 @@ treated as missing and removed.
 The test statistic is
 $$ W = \frac{\left( \sum_{i=1}^n a_i x_{(i)} \right)^2}
 {\sum_{i=1}^n (x_i - \bar{x})^2}, $$
-where the weights a , applied to the sorted sample, are derived from
+where the weights a, applied to the sorted sample, are derived from
 the expected values of the order statistics of a standard normal sample of
-size n . W lies in
-(0,1] , and small values of W are evidence against normality.
+size n. W lies in
+(0,1], and small values of W are evidence against normality.
 
 The following Name-Value pairs are supported:
 
 Name Value
 'Alpha' The significance level, a scalar in the range
-(0,1) . The default is 0.05 .
+(0,1). The default is 0.05.
 'Method' The test to perform:
-'shapiro-wilk' (default) or 'shapiro-francia' .
+'shapiro-wilk' (default) or 'shapiro-francia'.
 
 'shapiro-wilk' computes the weights and the p-value with Royston&rsquo;s
 algorithm AS R94, which approximates the weights of Shapiro and Wilk and
 transforms W to a normal deviate. It is the algorithm used by R&rsquo;s
-shapiro.test , and it accepts samples of 3 to 5000 values. For
+shapiro.test, and it accepts samples of 3 to 5000 values. For
 n = 3 the p-value is exact.
 
 'shapiro-francia' performs the Shapiro-Francia test instead, whose
 statistic W' is the squared correlation between the sorted sample and
 the approximate expected normal order statistics
-norminv (((1:n) - 3/8) / (n + 1/4)) . Its p-value is Royston&rsquo;s
-normal approximation for W' , as in sf.test of R&rsquo;s
+norminv (((1:n) - 3/8) / (n + 1/4)). Its p-value is Royston&rsquo;s
+normal approximation for W', as in sf.test of R&rsquo;s
 nortest package, and it accepts samples of 5 to 5000 values. The
 Shapiro-Francia test is known to be more powerful than the Shapiro-Wilk test
 against leptokurtic alternatives. The test is never selected automatically;
 the method used is the one requested.
 
-[ h , p ] = swtest (&hellip;) also returns the p-value
+[h, p] = swtest (&hellip;) also returns the p-value
 p of the test, the probability of observing a statistic as small as
 swstat under the null hypothesis.
 
-[ h , p , swstat , critval ] = swtest (&hellip;)
-also returns the test statistic swstat , W or W' , and the
-critical value critval at significance level alpha , obtained by
+[h, p, swstat, critval] = swtest (&hellip;)
+also returns the test statistic swstat, W or W', and the
+critical value critval at significance level alpha, obtained by
 inverting the same approximation. The null hypothesis is rejected when
-swstat < critval , which is the same as
-p < alpha .
+swstat < critval, which is the same as
+p < alpha.
 
 A sample whose values are all equal has no defined statistic and is refused,
 as is a sample holding an infinite value. Samples of more than 5000 values
@@ -3372,18 +3319,18 @@ MATLAB has no Shapiro-Wilk test, so swtest is specific to Octave.
 References:
 
 S. S. Shapiro and M. B. Wilk. An analysis of variance test for normality
-(complete samples). Biometrika , 52(3-4):591&ndash;611, 1965.
+(complete samples). Biometrika, 52(3-4):591&ndash;611, 1965.
 
 S. S. Shapiro and R. S. Francia. An approximate analysis of variance test
-for normality. Journal of the American Statistical Association ,
+for normality. Journal of the American Statistical Association,
 67(337):215&ndash;216, 1972.
 
 P. Royston. A pocket-calculator algorithm for the Shapiro-Francia test for
-non-normality: an application to medicine. Statistics in Medicine ,
+non-normality: an application to medicine. Statistics in Medicine,
 12(2):181&ndash;184, 1993.
 
 P. Royston. Remark AS R94: a remark on algorithm AS 181: the W-test for
-normality. Applied Statistics , 44(4):547&ndash;551, 1995.
+normality. Applied Statistics, 44(4):547&ndash;551, 1995.
 
 See also:
 adtest,
@@ -3410,42 +3357,41 @@ ttest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2360
-statistics: [ h , pval , ci , stats ] = ttest ( x )
-statistics: [ h , pval , ci , stats ] = ttest ( x , m )
-statistics: [ h , pval , ci , stats ] = ttest ( x , y )
-statistics: [ h , pval , ci , stats ] = ttest ( x , m , Name , Value )
-statistics: [ h , pval , ci , stats ] = ttest ( x , y , Name , Value )
-
+# length: 2291
+statistics: [h, pval, ci, stats] = ttest (x)
+statistics: [h, pval, ci, stats] = ttest (x, m)
+statistics: [h, pval, ci, stats] = ttest (x, y)
+statistics: [h, pval, ci, stats] = ttest (x, m, Name, Value)
+statistics: [h, pval, ci, stats] = ttest (x, y, Name, Value)
 Test for mean of a normal sample with unknown variance.
 
-Perform a t-test of the null hypothesis mean ( x ) ==
+Perform a t-test of the null hypothesis mean (x) ==
 m for a sample x from a normal distribution with unknown
 mean and unknown standard deviation. Under the null, the test statistic
 t has a Student&rsquo;s t distribution. The default value of
 m is 0.
 
 If the second argument y is a vector, a paired-t test of the
-hypothesis mean ( x ) = mean ( y ) is performed. If x
+hypothesis mean (x) = mean (y) is performed. If x
 and y are vectors, they must have the same size and dimensions.
 
-x (and y ) can also be matrices. For matrices, ttest
+x (and y) can also be matrices. For matrices, ttest
 performs separate t-tests along each column, and returns a vector of results.
 x and y must have the same number of columns. The Type I error
 rate of the resulting vector of pval can be controlled by entering
-pval as input to the function multcompare .
+pval as input to the function multcompare.
 
 ttest treats NaNs as missing values, and ignores them.
 
 Name-Value pair arguments can be used to set various options.
 'alpha' can be used to specify the significance level
-of the test (the default value is 0.05). 'tail' , can be used
+of the test (the default value is 0.05). 'tail', can be used
 to select the desired alternative hypotheses. If the value is
 'both' (default) the null is tested against the two-sided
-alternative mean ( x ) != m .
-If it is 'right' the one-sided alternative mean ( x )
-> m is considered. Similarly for 'left' , the one-sided
-alternative mean ( x ) < m is considered.
+alternative mean (x) != m.
+If it is 'right' the one-sided alternative mean (x)
+> m is considered. Similarly for 'left', the one-sided
+alternative mean (x) < m is considered.
 When argument x is a matrix, 'dim' can be used to select
 the dimension over which to perform the test. (The default is the
 first non-singleton dimension).
@@ -3454,11 +3400,11 @@ If h is 1 the null hypothesis is rejected, meaning that the tested
 sample does not come from a Student&rsquo;s t distribution. If h is 0, then
 the null hypothesis cannot be rejected and it can be assumed that x
 follows a Student&rsquo;s t distribution. The p-value of the test is returned in
-pval . A 100(1-alpha)% confidence interval is returned in ci .
+pval. A 100(1-alpha)% confidence interval is returned in ci.
 
 stats is a structure containing the value of the test statistic
-( tstat ), the degrees of freedom ( df ) and the sample&rsquo;s standard
-deviation ( sd ).
+(tstat), the degrees of freedom (df) and the sample&rsquo;s standard
+deviation (sd).
 
 See also:
 hotelling_t2test,
@@ -3484,10 +3430,9 @@ ttest2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1862
-statistics: [ h , pval , ci , stats ] = ttest2 ( x , y )
-statistics: [ h , pval , ci , stats ] = ttest2 ( x , y , Name , Value )
-
+# length: 1824
+statistics: [h, pval, ci, stats] = ttest2 (x, y)
+statistics: [h, pval, ci, stats] = ttest2 (x, y, Name, Value)
 Perform a t-test to compare the means of two groups of data under the null
 hypothesis that the groups are drawn from distributions with the same mean.
 
@@ -3495,20 +3440,20 @@ x and y can be vectors or matrices. For matrices, ttest2
 performs separate t-tests along each column, and returns a vector of results.
 x and y must have the same number of columns. The Type I error
 rate of the resulting vector of pval can be controlled by entering
-pval as input to the function multcompare .
+pval as input to the function multcompare.
 
 ttest2 treats NaNs as missing values, and ignores them.
 
-For a nested t-test, use anova2 .
+For a nested t-test, use anova2.
 
 The argument 'alpha' can be used to specify the significance level
-of the test (the default value is 0.05). The string argument 'tail' ,
+of the test (the default value is 0.05). The string argument 'tail',
 can be used to select the desired alternative hypotheses. If 'tail'
 is 'both' (default) the null is tested against the two-sided
-alternative mean ( x ) != m . If 'tail' is
-'right' the one-sided alternative mean ( x ) > m is
-considered. Similarly for 'left' , the one-sided alternative
-mean ( x ) < m is considered.
+alternative mean (x) != m. If 'tail' is
+'right' the one-sided alternative mean (x) > m is
+considered. Similarly for 'left', the one-sided alternative
+mean (x) < m is considered.
 
 When 'vartype' is 'equal' the variances are assumed to be
 equal (this is the default). When 'vartype' is 'unequal' the
@@ -3519,11 +3464,11 @@ be used to select the dimension over which to perform the test.
 (The default is the first non-singleton dimension.)
 
 If h is 0 the null hypothesis is accepted, if it is 1 the null
-hypothesis is rejected. The p-value of the test is returned in pval .
-A 100(1-alpha)% confidence interval is returned in ci . stats
-is a structure containing the value of the test statistic ( tstat ),
-the degrees of freedom ( df ) and the sample standard deviation
-( sd ).
+hypothesis is rejected. The p-value of the test is returned in pval.
+A 100(1-alpha)% confidence interval is returned in ci. stats
+is a structure containing the value of the test statistic (tstat),
+the degrees of freedom (df) and the sample standard deviation
+(sd).
 
 See also:
 hotelling_t2test,
@@ -3550,44 +3495,43 @@ vartest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1903
-statistics: h = vartest ( x , v )
-statistics: h = vartest ( x , v , name , value )
-statistics: [ h , pval ] = vartest (&hellip;)
-statistics: [ h , pval , ci ] = vartest (&hellip;)
-statistics: [ h , pval , ci , stats ] = vartest (&hellip;)
-
+# length: 1861
+statistics: h = vartest (x, v)
+statistics: h = vartest (x, v, name, value)
+statistics: [h, pval] = vartest (&hellip;)
+statistics: [h, pval, ci] = vartest (&hellip;)
+statistics: [h, pval, ci, stats] = vartest (&hellip;)
 One-sample test of variance.
 
-h = vartest ( x , v ) performs a chi-square test of the
+h = vartest (x, v) performs a chi-square test of the
 hypothesis that the data in the vector x come from a normal
-distribution with variance v , against the alternative that x
+distribution with variance v, against the alternative that x
 comes from a normal distribution with a different variance. The result is
 h = 0 if the null hypothesis ("variance is V") cannot be rejected at
 the 5% significance level, or h = 1 if the null hypothesis can be
 rejected at the 5% level.
 
 x may also be a matrix or an N-D array. For matrices, vartest
-performs separate tests along each column of x , and returns a vector of
+performs separate tests along each column of x, and returns a vector of
 results. For N-D arrays, vartest works along the first non-singleton
-dimension of x . v must be a scalar.
+dimension of x. v must be a scalar.
 
 vartest treats NaNs as missing values, and ignores them.
 
-[ h , pval ] = vartest (&hellip;) returns the p-value. That
+[h, pval] = vartest (&hellip;) returns the p-value. That
 is the probability of observing the given result, or one more extreme, by
 chance if the null hypothesis true.
 
-[ h , pval , ci ] = vartest (&hellip;) returns a
-100 * (1 - alpha )% confidence interval for the true variance.
+[h, pval, ci] = vartest (&hellip;) returns a
+100 * (1 - alpha)% confidence interval for the true variance.
 
-[ h , pval , ci , stats ] = vartest (&hellip;)
+[h, pval, ci, stats] = vartest (&hellip;)
 returns a structure with the following fields:
 
 chisqstat the value of the test statistic
 df the degrees of freedom of the test
 
-[&hellip;] = vartest (&hellip;, name , value ), &hellip;
+[&hellip;] = vartest (&hellip;, name, value), &hellip;
 specifies one or more of the following name/value pairs:
 
 Name Value
@@ -3625,16 +3569,15 @@ vartest2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2080
-statistics: h = vartest2 ( x , y )
-statistics: h = vartest2 ( x , y , name , value )
-statistics: [ h , pval ] = vartest2 (&hellip;)
-statistics: [ h , pval , ci ] = vartest2 (&hellip;)
-statistics: [ h , pval , ci , stats ] = vartest2 (&hellip;)
-
+# length: 2041
+statistics: h = vartest2 (x, y)
+statistics: h = vartest2 (x, y, name, value)
+statistics: [h, pval] = vartest2 (&hellip;)
+statistics: [h, pval, ci] = vartest2 (&hellip;)
+statistics: [h, pval, ci, stats] = vartest2 (&hellip;)
 Two-sample F test for equal variances.
 
-h = vartest2 ( x , y ) performs an F test of the
+h = vartest2 (x, y) performs an F test of the
 hypothesis that the independent data in vectors x and y come from
 normal distributions with equal variance, against the alternative that they
 come from normal distributions with different variances. The result is
@@ -3650,22 +3593,22 @@ all the remaining dimensions.
 
 vartest2 treats NaNs as missing values, and ignores them.
 
-[ h , pval ] = vartest2 (&hellip;) returns the p-value. That
+[h, pval] = vartest2 (&hellip;) returns the p-value. That
 is the probability of observing the given result, or one more extreme, by
 chance if the null hypothesis true.
 
-[ h , pval , ci ] = vartest2 (&hellip;) returns a
-100 &times; (1 - alpha )% confidence interval for the true ratio
+[h, pval, ci] = vartest2 (&hellip;) returns a
+100 &times; (1 - alpha)% confidence interval for the true ratio
 var(X)/var(Y).
 
-[ h , pval , ci , stats ] = vartest2 (&hellip;)
+[h, pval, ci, stats] = vartest2 (&hellip;)
 returns a structure with the following fields:
 
 fstat the value of the test statistic
 df1 the numerator degrees of freedom of the test
 df2 the denominator degrees of freedom of the test
 
-[&hellip;] = vartest2 (&hellip;, name , value ), &hellip;
+[&hellip;] = vartest2 (&hellip;, name, value), &hellip;
 specifies one or more of the following name/value pairs:
 
 Name Value
@@ -3704,29 +3647,28 @@ vartestn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2906
-statistics: vartestn ( x )
-statistics: vartestn ( x , group )
-statistics: vartestn (&hellip;, name , value )
+# length: 2867
+statistics: vartestn (x)
+statistics: vartestn (x, group)
+statistics: vartestn (&hellip;, name, value)
 statistics: p = vartestn (&hellip;)
-statistics: [ p , stats ] = vartestn (&hellip;)
-statistics: [ p , stats ] = vartestn (&hellip;, name , value )
-
+statistics: [p, stats] = vartestn (&hellip;)
+statistics: [p, stats] = vartestn (&hellip;, name, value)
 Test for equal variances across multiple groups.
 
-h = vartestn ( x ) performs Bartlett&rsquo;s test for equal
-variances for the columns of the matrix x . This is a test of the null
+h = vartestn (x) performs Bartlett&rsquo;s test for equal
+variances for the columns of the matrix x. This is a test of the null
 hypothesis that the columns of x come from normal distributions with
 the same variance, against the alternative that they come from normal
 distributions with different variances. The result is displayed in a summary
 table of statistics as well as a box plot of the groups.
 
-vartestn ( x , group ) requires a vector x , and a
+vartestn (x, group) requires a vector x, and a
 group argument that is a categorical variable, vector, string array, or
-cell array of strings with one row for each element of x . Values of
+cell array of strings with one row for each element of x. Values of
 x corresponding to the same value of group are placed in the same
-group. Without group , a vector x is a single group, whichever
-way it lies, and the test has nothing to compare, so p is NaN .
+group. Without group, a vector x is a single group, whichever
+way it lies, and the test has nothing to compare, so p is NaN.
 
 vartestn treats NaNs as missing values, and ignores them.
 
@@ -3735,18 +3677,18 @@ given result, or one more extreme, by chance under the null hypothesis that
 all groups have equal variances. Small values of p cast doubt on the
 validity of the null hypothesis.
 
-[ p , stats ] = vartestn (&hellip;) returns a structure with
+[p, stats] = vartestn (&hellip;) returns a structure with
 the following fields:
 
 chisqstat &ndash; the value of Bartlett&rsquo;s test statistic
 df &ndash; the degrees of freedom of the test
 
-[ p , stats ] = vartestn (&hellip;, name , value )
-specifies one or more of the following name / value pairs:
+[p, stats] = vartestn (&hellip;, name, value)
+specifies one or more of the following name/value pairs:
 
 Name Value
 'display' 'on' to display a boxplot and table, or
-'off' to omit these displays. Default 'on' .
+'off' to omit these displays. Default 'on'.
 'testtype' One of the following strings to control the
 type of test to perform
 
@@ -3760,13 +3702,13 @@ anova on the absolute deviations of the data values from their group means.
 performing anova on the absolute deviations of the data values from the group
 medians.
 'OBrien' O&rsquo;Brien&rsquo;s modification of Levene&rsquo;s test with
-W=0.5 .
+W=0.5.
 
 The classical Bartlett&rsquo;s test is sensitive to the assumption that the
 distribution in each group is normal. The other test types are more robust
 to non-normal distributions, especially ones prone to outliers. For these
 tests, the STATS output structure has a field named fstat containing
-the test statistic in place of chisqstat , and df holds two
+the test statistic in place of chisqstat, and df holds two
 elements, the numerator and the denominator degrees of freedom.
 
 See also:
@@ -3795,50 +3737,49 @@ ztest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1797
-statistics: h = ztest ( x , m , sigma )
-statistics: h = ztest ( x , m , sigma , Name , Value )
-statistics: [ h , pval ] = ztest (&hellip;)
-statistics: [ h , pval , ci ] = ztest (&hellip;)
-statistics: [ h , pval , ci , zvalue ] = ztest (&hellip;)
-
+# length: 1747
+statistics: h = ztest (x, m, sigma)
+statistics: h = ztest (x, m, sigma, Name, Value)
+statistics: [h, pval] = ztest (&hellip;)
+statistics: [h, pval, ci] = ztest (&hellip;)
+statistics: [h, pval, ci, zvalue] = ztest (&hellip;)
 One-sample Z-test.
 
-h = ztest ( x , v ) performs a Z-test of the hypothesis
+h = ztest (x, v) performs a Z-test of the hypothesis
 that the data in the vector x come from a normal distribution with mean
-m , against the alternative that x comes from a normal
-distribution with a different mean m . The result is h = 0 if the
+m, against the alternative that x comes from a normal
+distribution with a different mean m. The result is h = 0 if the
 null hypothesis ("mean is M") cannot be rejected at the 5% significance
 level, or h = 1 if the null hypothesis can be rejected at the 5% level.
 
 x may also be a matrix or an N-D array. For matrices, ztest
-performs separate tests along each column of x , and returns a vector of
+performs separate tests along each column of x, and returns a vector of
 results. For N-D arrays, ztest works along the first non-singleton
-dimension of x . m and sigma must be scalars.
+dimension of x. m and sigma must be scalars.
 
 ztest treats NaNs as missing values, and ignores them.
 
-[ h , pval ] = ztest (&hellip;) returns the p-value. That
+[h, pval] = ztest (&hellip;) returns the p-value. That
 is the probability of observing the given result, or one more extreme, by
 chance if the null hypothesis true.
 
-[ h , pval , ci ] = ztest (&hellip;) returns a
-100 * (1 - alpha )% confidence interval for the true mean.
+[h, pval, ci] = ztest (&hellip;) returns a
+100 * (1 - alpha)% confidence interval for the true mean.
 
-[ h , pval , ci , zvalue ] = ztest (&hellip;)
+[h, pval, ci, zvalue] = ztest (&hellip;)
 returns the value of the test statistic.
 
-[&hellip;] = ztest (&hellip;, Name , Value , &hellip;)
-specifies one or more of the following Name / Value pairs:
+[&hellip;] = ztest (&hellip;, Name, Value, &hellip;)
+specifies one or more of the following Name/Value pairs:
 
 Name Value
 "alpha" the significance level. Default is 0.05.
 "dim" dimension to work along a matrix or an N-D array.
 "tail" a string specifying the alternative hypothesis:
 
-"both" "mean is not m " (two-tailed, default)
-"left" "mean is less than m " (left-tailed)
-"right" "mean is greater than m " (right-tailed)
+"both" "mean is not m" (two-tailed, default)
+"left" "mean is less than m" (left-tailed)
+"right" "mean is greater than m" (right-tailed)
 
 See also:
 ttest,
@@ -3865,12 +3806,11 @@ ztest2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1518
-statistics: h = ztest2 ( x1 , n1 , x2 , n2 )
-statistics: h = ztest2 ( x1 , n1 , x2 , n2 , Name , Value )
-statistics: [ h , pval ] = ztest2 (&hellip;)
-statistics: [ h , pval , zvalue ] = ztest2 (&hellip;)
-
+# length: 1481
+statistics: h = ztest2 (x1, n1, x2, n2)
+statistics: h = ztest2 (x1, n1, x2, n2, Name, Value)
+statistics: [h, pval] = ztest2 (&hellip;)
+statistics: [h, pval, zvalue] = ztest2 (&hellip;)
 Two proportions Z-test.
 
 If x1 and n1 are the counts of successes and trials in one
@@ -3883,21 +3823,21 @@ rejected at the 5% level.
 Under the null, the test statistic zvalue approximately follows a
 standard normal distribution.
 
-The size of h , pval , and zvalue is the common size of
-x1 , n1 , x2 , and n2 , which must be scalars or of
+The size of h, pval, and zvalue is the common size of
+x1, n1, x2, and n2, which must be scalars or of
 common
 size. A scalar input functions as a constant matrix of the same size as the
 other inputs.
 
-[ h , pval ] = ztest2 (&hellip;) returns the p-value. That
+[h, pval] = ztest2 (&hellip;) returns the p-value. That
 is the probability of observing the given result, or one more extreme, by
 chance if the null hypothesis true.
 
-[ h , pval , zvalue ] = ztest2 (&hellip;) returns the
+[h, pval, zvalue] = ztest2 (&hellip;) returns the
 value of the test statistic.
 
-[&hellip;] = ztest2 (&hellip;, Name , Value , &hellip;)
-specifies one or more of the following Name / Value pairs:
+[&hellip;] = ztest2 (&hellip;, Name, Value, &hellip;)
+specifies one or more of the following Name/Value pairs:
 
 Name Value
 'alpha' the significance level. Default is 0.05.

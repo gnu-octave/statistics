@@ -13,30 +13,29 @@ editDistance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4464
-statistics: d = editDistance ( str )
-statistics: d = editDistance ( doc )
-statistics: C = editDistance (&hellip;, minDist )
-statistics: [ C , IA , IC ] = editDistance (&hellip;, minDist )
-statistics: [ C , IA , IC ] = editDistance (&hellip;, minDist , "OutputAllIndices" , value )
-statistics: d = editDistance ( str1 , str2 )
-statistics: d = editDistance ( doc1 , doc2 )
-
+# length: 4387
+statistics: d = editDistance (str)
+statistics: d = editDistance (doc)
+statistics: C = editDistance (&hellip;, minDist)
+statistics: [C, IA, IC] = editDistance (&hellip;, minDist)
+statistics: [C, IA, IC] = editDistance (&hellip;, minDist, "OutputAllIndices", value)
+statistics: d = editDistance (str1, str2)
+statistics: d = editDistance (doc1, doc2)
 Compute the edit (Levenshtein) distance between strings or documents.
 
-d = editDistance ( str ) takes a cell array of character vectors and computes the Levenshtein distance between each pair of strings in str as the lowest number of grapheme insertions, deletions, and substitutions required to convert string str {1} to string str {2} . If str is a cellstr vector with N elements, the returned distance d is an (N &times; (N-1)) / 2) column vector of doubles. If str is an array (that is all (size (str) > 1) = true ), then it is transformed to a column vector as in str = str(:) . editDistance expects str to be a column vector, if it is row vector, it is transformed to a column vector.
+d = editDistance (str) takes a cell array of character vectors and computes the Levenshtein distance between each pair of strings in str as the lowest number of grapheme insertions, deletions, and substitutions required to convert string str{1} to string str{2}. If str is a cellstr vector with N elements, the returned distance d is an (N &times; (N-1)) / 2) column vector of doubles. If str is an array (that is all (size (str) > 1) = true), then it is transformed to a column vector as in str = str(:). editDistance expects str to be a column vector, if it is row vector, it is transformed to a column vector.
 
-d = editDistance ( doc ) can also take a cell array containing cell arrays of character vectors, in which case each element of doc is regarded as a document, and the character vector in each element of the cell string array is regarded a token. editDistance computes the Levenshtein distance between each pair of cell elements in doc as the lowest number of token insertions, deletions, and substitutions required to convert document doc {1} to document doc {2} . If doc is a cell vector with N elements, the distance d is an (N &times; (N-1)) / 2) column vector of doubles. If doc is an array (that is all (size (doc) > 1) = true ), then it is converted to a column vector as in doc = doc(:) .
+d = editDistance (doc) can also take a cell array containing cell arrays of character vectors, in which case each element of doc is regarded as a document, and the character vector in each element of the cell string array is regarded a token. editDistance computes the Levenshtein distance between each pair of cell elements in doc as the lowest number of token insertions, deletions, and substitutions required to convert document doc{1} to document doc{2}. If doc is a cell vector with N elements, the distance d is an (N &times; (N-1)) / 2) column vector of doubles. If doc is an array (that is all (size (doc) > 1) = true), then it is converted to a column vector as in doc = doc(:).
 
-C = editDistance (&hellip;, minDist ) specifies a minimum distance, minDist , which is regarded as a similarity threshold between each pair of strings or documents, defined in the previous syntaxes. In this case, editDistance resembles the functionality of the uniquetol function and returns the unique strings or documents that are similar up to minDist distance. C is either a cellstring array or a cell array of cellstrings, depending on the first input argument.
+C = editDistance (&hellip;, minDist) specifies a minimum distance, minDist, which is regarded as a similarity threshold between each pair of strings or documents, defined in the previous syntaxes. In this case, editDistance resembles the functionality of the uniquetol function and returns the unique strings or documents that are similar up to minDist distance. C is either a cellstring array or a cell array of cellstrings, depending on the first input argument.
 
-[ C , IA , IC ] = editDistance (&hellip;, minDist ) also returns index vectors IA and IC . Assuming A contains either strings str or documents doc as defined above, IA is a column vector of indices to the first occurrence of similar elements such that C = A ( IA ) , and IC is a column vector of indices such that A ~ C ( IC ) where ~ means that the strings or documents are within the specified distance minDist of each other.
+[C, IA, IC] = editDistance (&hellip;, minDist) also returns index vectors IA and IC. Assuming A contains either strings str or documents doc as defined above, IA is a column vector of indices to the first occurrence of similar elements such that C = A(IA), and IC is a column vector of indices such that A ~ C(IC) where ~ means that the strings or documents are within the specified distance minDist of each other.
 
-[ C , IA , IC ] = editDistance (&hellip;, minDist , "OutputAllIndices" , value ) specifies the type of the second output index IA . value must be a logical scalar. When set to true , IA is a cell array containing the vectors of indices for ALL elements in A that are within the specified distance minDist of each other. Each cell in IA corresponds to a value in C and the values in each cell correspond to locations in A . If value is set to false , then IA is returned as an index vector described in the previous syntax.
+[C, IA, IC] = editDistance (&hellip;, minDist, "OutputAllIndices", value) specifies the type of the second output index IA. value must be a logical scalar. When set to true, IA is a cell array containing the vectors of indices for ALL elements in A that are within the specified distance minDist of each other. Each cell in IA corresponds to a value in C and the values in each cell correspond to locations in A. If value is set to false, then IA is returned as an index vector described in the previous syntax.
 
-d = editDistance ( str1 , str2 ) can also take two character vectors, str1 and str2 and compute the Levenshtein distance d as the lowest number of grapheme insertions, deletions, and substitutions required to convert str1 to str2 . str1 and str2 may also be cellstring arrays, in which case the pairwise distance is computed between str1 {n} and str1 {n} . The cellstring arrays must be of the same size or scalars, in which case the scalar is expanded to the size of the other cellstring input. The returned distance d is a column vector with the same number of elements as the cellstring arrays. If str1 or str2 is an array, then it is transformed to a column vector. editDistance expects both str1 and str2 to be a column vectors, if not, they are transformed into column vectors.
+d = editDistance (str1, str2) can also take two character vectors, str1 and str2 and compute the Levenshtein distance d as the lowest number of grapheme insertions, deletions, and substitutions required to convert str1 to str2. str1 and str2 may also be cellstring arrays, in which case the pairwise distance is computed between str1{n} and str1{n}. The cellstring arrays must be of the same size or scalars, in which case the scalar is expanded to the size of the other cellstring input. The returned distance d is a column vector with the same number of elements as the cellstring arrays. If str1 or str2 is an array, then it is transformed to a column vector. editDistance expects both str1 and str2 to be a column vectors, if not, they are transformed into column vectors.
 
-d = editDistance ( doc1 , doc2 ) can also take two cell array containing cell arrays of character vectors, in which case each element of doc1 and doc2 is regarded as a document, and the character vector in each element of the cell string array is regarded a token. editDistance computes the pairwise Levenshtein distance between the of cell elements in doc1 and doc2 as the lowest number of token insertions, deletions, and substitutions required to convert document doc1 {n} to document doc1 {n} .
+d = editDistance (doc1, doc2) can also take two cell array containing cell arrays of character vectors, in which case each element of doc1 and doc2 is regarded as a document, and the character vector in each element of the cell string array is regarded a token. editDistance computes the pairwise Levenshtein distance between the of cell elements in doc1 and doc2 as the lowest number of token insertions, deletions, and substitutions required to convert document doc1{n} to document doc1{n}.
 
 
 # name: <cell-element>
@@ -57,23 +56,22 @@ fcnnpredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2034
-statistics: pred_Y = fcnnpredict ( LayerWeights , LayerBiases , Activations , OutputLayerActivation , XC )
-statistics: pred_Y = fcnnpredict (&hellip;, NumThreads )
-statistics: [ pred_Y , scores ] = fcnnpredict (&hellip;)
-
+# length: 2013
+statistics: pred_Y = fcnnpredict (LayerWeights, LayerBiases, Activations, OutputLayerActivation, XC)
+statistics: pred_Y = fcnnpredict (&hellip;, NumThreads)
+statistics: [pred_Y, scores] = fcnnpredict (&hellip;)
 Make predictions from a fully connected Neural Network.
 
-pred_Y = fcnnpredict ( LayerWeights , LayerBiases , Activations , OutputLayerActivation , XC ) requires the following input arguments.
+pred_Y = fcnnpredict (LayerWeights, LayerBiases, Activations, OutputLayerActivation, XC) requires the following input arguments.
 
 LayerWeights : A cell row vector holding one matrix per layer, each with one row per neuron of that layer and one column per input to it.
 LayerBiases : A cell row vector holding one bias column per layer, matching LayerWeights layer for layer and row for row.
-Activations : The activation function of the hidden layers, named as a character vector applying to all of them or as a cellstring naming them one by one. The supported names are listed under fcnntrain .
+Activations : The activation function of the hidden layers, named as a character vector applying to all of them or as a cellstring naming them one by one. The supported names are listed under fcnntrain.
 OutputLayerActivation : The activation function of the output layer, named as a character vector.
 XC : An NxM matrix containing the data set to be predicted upon. Rows N correspond to individual samples and columns M correspond to features (dimensions). Type of XC must be double and the number of features must correspond to those of the trained model.
 
-fcnnpredict can also be called with a sixth input argument, in which case, NumThreads , a positive scalar integer value, defines the number of threads to be used when computing the activation layers. For layers with less than 1000 neurons, NumThreads always defaults to 1.
-fcnnpredict returns the predicted labels, pred_Y , and if a second output argument is requested, it also returns the corresponding values of the neural networks output in scores .
+fcnnpredict can also be called with a sixth input argument, in which case, NumThreads, a positive scalar integer value, defines the number of threads to be used when computing the activation layers. For layers with less than 1000 neurons, NumThreads always defaults to 1.
+fcnnpredict returns the predicted labels, pred_Y, and if a second output argument is requested, it also returns the corresponding values of the neural networks output in scores.
 
 Installation Note: in order to support parallel processing on MacOS, users have to manually add support for OpenMP by adding the following flags to CFLAGS and CXXFLAGS prior to installing the statistics package:
 
@@ -103,10 +101,9 @@ fcnntrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4021
-statistics: Mdl = fcnntrain ( X , Y , LayerSizes , Activations , OutputLayerActivation , NumThreads , LearningRate , Epochs , DisplayInfo )
-statistics: Mdl = fcnntrain (&hellip;, LossFunction )
-
+# length: 4006
+statistics: Mdl = fcnntrain (X, Y, LayerSizes, Activations, OutputLayerActivation, NumThreads, LearningRate, Epochs, DisplayInfo)
+statistics: Mdl = fcnntrain (&hellip;, LossFunction)
 Train a fully connected Neural Network.
 
 Mdl = fcnntrain (&hellip;) requires the following input arguments.
@@ -131,9 +128,9 @@ LearningRate : A positive scalar value defining the learning rate used by the gr
 Epochs : A positive scalar value defining the number of epochs for training the model.
 DisplayInfo : A boolean scalar indicating whether to print information during training.
 
-Mdl = fcnntrain (&hellip;, LossFunction ) also selects the loss the network is trained against. LossFunction is a scalar: 0 for mean squared error over a one-hot target, which is the default, 1 for cross entropy, and 2 for mean squared error over a continuous response. Cross entropy expects the output layer to report a probability over the classes, so it belongs with a softmax output; paired that way the two gradients compose to y - t . Its loss is undefined where the predicted probability of the true class is zero, so both the logarithm and its derivative are floored. Code 2 is regression: Y holds response values rather than labels, the output layer belongs with the identity activation, and the returned model carries no Accuracy field, there being no labels to count.
+Mdl = fcnntrain (&hellip;, LossFunction) also selects the loss the network is trained against. LossFunction is a scalar: 0 for mean squared error over a one-hot target, which is the default, 1 for cross entropy, and 2 for mean squared error over a continuous response. Cross entropy expects the output layer to report a probability over the classes, so it belongs with a softmax output; paired that way the two gradients compose to y - t. Its loss is undefined where the predicted probability of the true class is zero, so both the logarithm and its derivative are floored. Code 2 is regression: Y holds response values rather than labels, the output layer belongs with the identity activation, and the returned model carries no Accuracy field, there being no labels to count.
 
-fcnntrain returns the trained model, Mdl , as a structure containing the following fields:
+fcnntrain returns the trained model, Mdl, as a structure containing the following fields:
 
 LayerWeights : A cell array with each element containing a matrix with the Weights and Biases of each layer including the output layer.
 Activations : A numeric row vector of integer values defining the activation functions to be used at each layer including the output layer.
@@ -168,17 +165,16 @@ gamboostinter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2893
-statistics: Mdl = gamboostinter ( X , Y , F0 , Method , Pairs , NumTrees , LearnRate , MaxNumSplits )
-statistics: Mdl = gamboostinter (&hellip;, W )
-statistics: Mdl = gamboostinter (&hellip;, W , Categorical )
-
+# length: 2866
+statistics: Mdl = gamboostinter (X, Y, F0, Method, Pairs, NumTrees, LearnRate, MaxNumSplits)
+statistics: Mdl = gamboostinter (&hellip;, W)
+statistics: Mdl = gamboostinter (&hellip;, W, Categorical)
 Boost trees over selected pairs of predictors.
 
 Mdl = gamboostinter (&hellip;) fits the interaction phase of a
 generalized additive model, continuing from the additive prediction the
 predictor phase left rather than refitting it. It is used by
-ClassificationGAM and RegressionGAM , and it is not meant to be
+ClassificationGAM and RegressionGAM, and it is not meant to be
 called directly.
 
 X is an NxP numeric matrix of predictors and Y the
@@ -190,40 +186,40 @@ Method selects what is boosted, 1 the logistic deviance
 and 2 the squared error.
 Pairs is an Mx2 matrix of predictor index pairs, one-based
 and within range. Choosing them is the caller&rsquo;s business; see
-gamboostpairs .
-NumTrees , LearnRate and MaxNumSplits are the
+gamboostpairs.
+NumTrees, LearnRate and MaxNumSplits are the
 interaction phase&rsquo;s own budget, initial step and split limit.
-W , if given, is an Nx1 vector of non-negative observation
+W, if given, is an Nx1 vector of non-negative observation
 weights, as gamboosttrain takes them, and may be empty.
-Categorical , if given, flags the columns holding level codes, as
+Categorical, if given, flags the columns holding level codes, as
 gamboosttrain takes it. A pair tree splits such a predictor into two
 sets of levels, and its grid holds every level.
 
 Mdl is a structure with the following fields.
 
-PairBinEdges , a 1xP cell of the detection grid, eight
+PairBinEdges, a 1xP cell of the detection grid, eight
 equal-frequency bins per predictor, as MATLAB reports it.
-PairEdges , a 1xM cell with one element per pair, a
+PairEdges, a 1xM cell with one element per pair, a
 1x2 cell of the cut points its trees used on its two predictors. A
 tree is fitted to the rows, cutting halfway between two values a node holds,
 keeping at least five rows in a leaf and growing a layer at a time within
-MaxNumSplits . A categorical predictor is cut into two sets of levels
+MaxNumSplits. A categorical predictor is cut into two sets of levels
 after sorting them by the step each would take alone; of cuts with equal
 gain the first in that order is kept, and a level none of a node&rsquo;s rows
 holds stops at that node. A tree that splits on only one of the pair&rsquo;s
 predictors is a main effect and adds nothing, so a round may leave a pair
 untouched.
-PairValues , a 1xM cell of matrices, one value per
+PairValues, a 1xM cell of matrices, one value per
 cell of the pair&rsquo;s own grid.
-PairMissing , a 1xM cell, one element per pair: a
+PairMissing, a 1xM cell, one element per pair: a
 1x3 cell of what a row missing the first predictor takes, one value
 per cell of the second; what a row missing the second takes, one value per
 cell of the first; and what a row missing both takes. A row missing the
 predictor a node splits on stops there, in training as in prediction.
-Intercept , the constant the recentred surfaces gave up. Add it
+Intercept, the constant the recentred surfaces gave up. Add it
 to the intercept of the predictor phase.
-NumTrees , ReasonForTermination , Deviance and
-Residuals , as gamboosttrain reports them.
+NumTrees, ReasonForTermination, Deviance and
+Residuals, as gamboosttrain reports them.
 
 See also:
 gamboosttrain,
@@ -249,21 +245,20 @@ gamboostpairs
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1707
-statistics: S = gamboostpairs ( X , R )
-statistics: S = gamboostpairs ( X , R , Categorical )
-
+# length: 1687
+statistics: S = gamboostpairs (X, R)
+statistics: S = gamboostpairs (X, R, Categorical)
 Score every pair of predictors for an interaction.
 
-S = gamboostpairs ( X , R ) lays the residuals R
+S = gamboostpairs (X, R) lays the residuals R
 of a fitted additive model on the coarse grid of each pair of columns of
 X and returns the two-way analysis of variance F ratio testing
 what only the cells explain. It is used to rank candidate interactions for
-ClassificationGAM and RegressionGAM , and it is not meant to be
+ClassificationGAM and RegressionGAM, and it is not meant to be
 called directly.
 
-The p -values are deliberately not computed here. Turning F
-into a probability needs fcdf , which the package already ships and
+The p-values are deliberately not computed here. Turning F
+into a probability needs fcdf, which the package already ships and
 which is verified against MATLAB, so the caller applies it rather than a
 second implementation being carried in the compiled engine. Which pairs to
 keep is policy and belongs beside that.
@@ -271,20 +266,20 @@ keep is policy and belongs beside that.
 X is an NxP numeric matrix of predictors, and P must
 be at least 2 for any pair to exist.
 R is the Nx1 residual vector of the additive fit.
-Categorical , if given, flags the columns holding level codes, as
+Categorical, if given, flags the columns holding level codes, as
 gamboosttrain takes it. Such a predictor is laid on its levels
 rather than on eight bins.
 
 S is a structure with the following fields, one row per pair, ordered
 as nchoosek orders them.
 
-Pairs , the Mx2 matrix of predictor index pairs.
-F , the Mx1 vector of F ratios. A pair with too
+Pairs, the Mx2 matrix of predictor index pairs.
+F, the Mx1 vector of F ratios. A pair with too
 few observations, no spare degrees of freedom or no within-cell scatter
-scores 0 .
-DF1 and DF2 , the Mx1 numerator and denominator
+scores 0.
+DF1 and DF2, the Mx1 numerator and denominator
 degrees of freedom.
-BinEdges , a 1xP cell of the coarse cut points each
+BinEdges, a 1xP cell of the coarse cut points each
 predictor was laid on. The grid is fixed at eight equal-frequency bins,
 which is what MATLAB reports for pair detection at every sample size.
 
@@ -313,12 +308,11 @@ gamboostpredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1810
-statistics: Y = gamboostpredict ( BinEdges , ShapeValues , X , Intercept )
-statistics: Y = gamboostpredict (&hellip;, Link )
-statistics: Y = gamboostpredict (&hellip;, Link , PairEdges , PairValues , Pairs )
-statistics: Y = gamboostpredict (&hellip;, Pairs , PairMissing )
-
+# length: 1792
+statistics: Y = gamboostpredict (BinEdges, ShapeValues, X, Intercept)
+statistics: Y = gamboostpredict (&hellip;, Link)
+statistics: Y = gamboostpredict (&hellip;, Link, PairEdges, PairValues, Pairs)
+statistics: Y = gamboostpredict (&hellip;, Pairs, PairMissing)
 Predict from a generalized additive model of boosted trees.
 
 BinEdges is a 1xP cell of row vectors and
@@ -329,20 +323,20 @@ evaluated by a lookup.
 X is an NxP numeric matrix with one column per additive
 term, and a count that does not match is an error. A missing value
 contributes nothing from that term rather than making the whole prediction
-NaN , which is what a tree does with a value it cannot place. A
+NaN, which is what a tree does with a value it cannot place. A
 value outside the range the term was fitted over falls in the nearest bin,
 so a shape function is constant beyond its data rather than extrapolated.
 Intercept is the model&rsquo;s constant term.
-Link , if given, selects what the additive prediction is mapped
+Link, if given, selects what the additive prediction is mapped
 through: 0 returns it as it stands and 1 takes it as a
 log-odds, returning the Nx2 matrix of class probabilities whose
-second column is the logistic function of it. The default is 0 .
-PairEdges , PairValues and Pairs carry the
+second column is the logistic function of it. The default is 0.
+PairEdges, PairValues and Pairs carry the
 interaction terms, as gamboostinter returns the first two and as it
 was given the third. Each pair contributes the value of the cell its two
 predictors fall in on the pair&rsquo;s own cut points. All three must be given
 together or none of them.
-PairMissing , as gamboostinter returns it, gives what a row
+PairMissing, as gamboostinter returns it, gives what a row
 missing either predictor of a pair, or both, takes. Without it such a pair
 contributes nothing.
 
@@ -371,20 +365,19 @@ gamboosttrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3485
-statistics: Mdl = gamboosttrain ( X , Y , Method , NumTrees , LearnRate , MaxNumSplits )
-statistics: Mdl = gamboosttrain ( X , Y , Method , NumTrees , LearnRate , MaxNumSplits , Verbose , NumPrint , F0 )
-statistics: Mdl = gamboosttrain (&hellip;, F0 , W )
-statistics: Mdl = gamboosttrain (&hellip;, F0 , W , Categorical )
-statistics: Mdl = gamboosttrain (&hellip;, Verbose , NumPrint )
-
+# length: 3439
+statistics: Mdl = gamboosttrain (X, Y, Method, NumTrees, LearnRate, MaxNumSplits)
+statistics: Mdl = gamboosttrain (X, Y, Method, NumTrees, LearnRate, MaxNumSplits, Verbose, NumPrint, F0)
+statistics: Mdl = gamboosttrain (&hellip;, F0, W)
+statistics: Mdl = gamboosttrain (&hellip;, F0, W, Categorical)
+statistics: Mdl = gamboosttrain (&hellip;, Verbose, NumPrint)
 Fit a generalized additive model of boosted trees.
 
-Mdl = gamboosttrain ( X , Y , Method ,
-NumTrees , LearnRate , MaxNumSplits ) boosts one tree per
+Mdl = gamboosttrain (X, Y, Method,
+NumTrees, LearnRate, MaxNumSplits) boosts one tree per
 column of X in each round and returns the additive model as a
 structure. It is the fitting engine shared by ClassificationGAM and
-RegressionGAM , and it is not meant to be called directly.
+RegressionGAM, and it is not meant to be called directly.
 
 X is an NxP numeric matrix of predictors. A missing
 value is not an error: the observation takes no part in the affected
@@ -402,40 +395,40 @@ earn its place is retried at half the step, so this is an initial value and
 not a fixed one.
 MaxNumSplits is the largest number of splits any one tree may
 make. 1 is a stump.
-Verbose , if greater than zero, prints a trace of the fit, and
+Verbose, if greater than zero, prints a trace of the fit, and
 NumPrint how often: the first round and then every NumPrint
 rounds. The RelTol column is the relative improvement the round
 bought, which is what the stopping rule reads. MATLAB prints a column under
 the same heading holding a quantity of its own that cannot be derived from
 anything else it reports, so the two are not comparable.
-F0 , if given and not empty, continues a fit: it is the prediction
+F0, if given and not empty, continues a fit: it is the prediction
 the fit reached over these rows, and what comes back is the increment.
-W , if given, is an Nx1 vector of non-negative observation
+W, if given, is an Nx1 vector of non-negative observation
 weights. Only their proportions matter. Every sum the fit takes over the
 observations is weighted; the fewest observations a leaf may hold still
 counts rows. F0 and W may each be empty.
-Categorical , if given, is a logical vector with one element per
-column of X . A flagged column holds level codes, positive integers,
-with a missing or unseen level NaN . Each level is a bin of its own,
+Categorical, if given, is a logical vector with one element per
+column of X. A flagged column holds level codes, positive integers,
+with a missing or unseen level NaN. Each level is a bin of its own,
 and a tree sorts the levels by the step each would take alone before it
 chooses its cut, as R2024a does.
 
 Mdl is a structure with the following fields.
 
-Intercept , the constant term the additive terms are added to.
+Intercept, the constant term the additive terms are added to.
 For a classifier it is fitted rather than fixed: it is seeded with the
 log-odds of the response mean and then collects the constant each shape
 function gives up when it is recentred. For a regression it is the response
 mean and stays there.
-BinEdges , a 1xP cell of row vectors, the cut points each
+BinEdges, a 1xP cell of row vectors, the cut points each
 predictor was binned at.
-ShapeValues , a 1xP cell of column vectors, one value per
+ShapeValues, a 1xP cell of column vectors, one value per
 bin. A shape function is a step function, so this is the whole of it however
 many trees produced it.
-NumTrees , the number of rounds actually performed.
-ReasonForTermination , why fitting stopped.
-Deviance , the deviance at the last round.
-Residuals , the Nx1 residual vector at the last round.
+NumTrees, the number of rounds actually performed.
+ReasonForTermination, why fitting stopped.
+Deviance, the deviance at the last round.
+Residuals, the Nx1 residual vector at the last round.
 
 See also:
 gamboostpredict,
@@ -462,16 +455,15 @@ gampredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1345
-statistics: yFit = gampredict ( Parameters , X , Intercept )
-statistics: score = gampredict ( Parameters , X , Intercept , Link )
-
+# length: 1327
+statistics: yFit = gampredict (Parameters, X, Intercept)
+statistics: score = gampredict (Parameters, X, Intercept, Link)
 Evaluate a generalized additive model on new data.
 
-yFit = gampredict ( Parameters , X , Intercept )
+yFit = gampredict (Parameters, X, Intercept)
 adds the intercept to the sum of the additive terms evaluated at each row of
 X and returns the Nx1 result. It is the prediction engine
-shared by ClassificationGAM and RegressionGAM , and it is not
+shared by ClassificationGAM and RegressionGAM, and it is not
 meant to be called directly.
 
 Parameters is a 1xP structure array of piecewise
@@ -480,14 +472,14 @@ X is an NxP numeric matrix with one column per additive
 term, and a count that does not match is an error. A model carrying
 interaction terms must therefore be given the augmented matrix, not the
 predictors alone.
-A missing value predicts NaN , since no term of the model is defined
+A missing value predicts NaN, since no term of the model is defined
 at it. A value outside the range the term was fitted over is extrapolated
 from the nearest piece, as ppval extrapolates.
 Intercept is the model&rsquo;s constant term.
-Link , if given, selects what the additive prediction is mapped
+Link, if given, selects what the additive prediction is mapped
 through: 0 returns it as it stands and 1 takes it as a
 log-odds, returning the Nx2 matrix of class probabilities whose
-second column is the logistic function of it. The default is 0 .
+second column is the logistic function of it. The default is 0.
 
 See also:
 gamtrain,
@@ -515,20 +507,19 @@ gamtrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2136
-statistics: Mdl = gamtrain ( X , Y , Knots , Order , Method , Inter , P1 , P2 )
-
+# length: 2110
+statistics: Mdl = gamtrain (X, Y, Knots, Order, Method, Inter, P1, P2)
 Fit a generalized additive model of smoothing splines.
 
-Mdl = gamtrain ( X , Y , Knots , Order ,
-Method , Inter , P1 , P2 ) fits one univariate spline
+Mdl = gamtrain (X, Y, Knots, Order,
+Method, Inter, P1, P2) fits one univariate spline
 per column of X and returns the additive model as a structure. It is
 the fitting engine shared by ClassificationGAM and
-RegressionGAM , and it is not meant to be called directly.
+RegressionGAM, and it is not meant to be called directly.
 
 X is an NxP numeric matrix of predictors. A missing
 value is not an error: the observation is left out of the affected
-predictor&rsquo;s spline and its prediction from that term is NaN .
+predictor&rsquo;s spline and its prediction from that term is NaN.
 Y is an Nx1 numeric vector of responses. For
 Method 1 it must hold zeros and ones.
 Knots is a 1xP vector giving the number of spline pieces
@@ -550,13 +541,13 @@ number of backfitting cycles.
 
 Mdl is a structure with the following fields.
 
-Intercept , the constant term the additive terms are added to.
-Parameters , a 1xP structure array of piecewise
+Intercept, the constant term the additive terms are added to.
+Parameters, a 1xP structure array of piecewise
 polynomials in the form ppval consumes, one per predictor.
-Iterations , the number of iterations performed.
-Residuals , the Nx1 residual vector at the last
+Iterations, the number of iterations performed.
+Residuals, the Nx1 residual vector at the last
 iteration.
-RSS , the scalar residual sum of squares for Method 1 and
+RSS, the scalar residual sum of squares for Method 1 and
 the 1xP per-term criterion the backfitting stops on for Method
 2.
 
@@ -586,9 +577,8 @@ libsvmread
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 267
-statistics: [ labels , data ] = libsvmread ( filename )
-
+# length: 261
+statistics: [labels, data] = libsvmread (filename)
 This function reads the labels and the corresponding instance_matrix from a LIBSVM data file and stores them in labels and data respectively. These can then be used as inputs to svmtrain or svmpredict function.
 
 
@@ -610,10 +600,9 @@ libsvmwrite
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 229
-statistics: libsvmwrite ( filename , labels , data )
-
-This function saves the labels and the corresponding instance_matrix in a file specified by filename . data must be a sparse matrix. Both labels , data must be of double type.
+# length: 222
+statistics: libsvmwrite (filename, labels, data)
+This function saves the labels and the corresponding instance_matrix in a file specified by filename. data must be a sparse matrix. Both labels, data must be of double type.
 
 
 # name: <cell-element>
@@ -634,13 +623,12 @@ svmpredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2233
-statistics: predicted_label = svmpredict ( labels , data , model )
-statistics: predicted_label = svmpredict ( labels , data , model , "libsvm_options")
-statistics: [ predicted_label , accuracy , decision_values ] = svmpredict ( labels , data , model , "libsvm_options")
-statistics: [ predicted_label , accuracy , prob_estimates ] = svmpredict ( labels , data , model , "libsvm_options")
-
-This function predicts new labels from a testing instance matrix based on an SVM model created with svmtrain .
+# length: 2199
+statistics: predicted_label = svmpredict (labels, data, model)
+statistics: predicted_label = svmpredict (labels, data, model, "libsvm_options")
+statistics: [predicted_label, accuracy, decision_values] = svmpredict (labels, data, model, "libsvm_options")
+statistics: [predicted_label, accuracy, prob_estimates] = svmpredict (labels, data, model, "libsvm_options")
+This function predicts new labels from a testing instance matrix based on an SVM model created with svmtrain.
 
 labels : An m by 1 vector of prediction labels. If labels of test data are unknown, simply use any random values. (type must be double)
 data : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double)
@@ -656,9 +644,9 @@ libsvm_options :
 
 -q : quiet mode. (no outputs)
 
-The svmpredict function has three outputs. The first one, predicted_label , is a vector of predicted labels. The second output, accuracy , is a vector including accuracy (for classification), mean squared error, and squared correlation coefficient (for regression). The third is a matrix containing decision values or probability estimates (if -b 1 &rsquo; is specified). If k is the number of classes in training data, for decision values, each row includes results of predicting k(k-1)/2 binary-class SVMs. For classification, k = 1 is a special case. Decision value +1 is returned for each testing instance, instead of an empty vector. For probabilities, each row contains k values indicating the probability that the testing instance is in each class. Note that the order of classes here is the same as Label field in the model structure.
+The svmpredict function has three outputs. The first one, predicted_label, is a vector of predicted labels. The second output, accuracy, is a vector including accuracy (for classification), mean squared error, and squared correlation coefficient (for regression). The third is a matrix containing decision values or probability estimates (if -b 1&rsquo; is specified). If k is the number of classes in training data, for decision values, each row includes results of predicting k(k-1)/2 binary-class SVMs. For classification, k = 1 is a special case. Decision value +1 is returned for each testing instance, instead of an empty vector. For probabilities, each row contains k values indicating the probability that the testing instance is in each class. Note that the order of classes here is the same as Label field in the model structure.
 
-Note on LIBSVM 3.36 Update : This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM ( -s 2 ) when combined with the probability flag ( -b 1 ). For One-Class SVM, the prob_estimates output is a single column vector containing the probability of the instance being an inlier.
+Note on LIBSVM 3.36 Update: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (-s 2) when combined with the probability flag (-b 1). For One-Class SVM, the prob_estimates output is a single column vector containing the probability of the instance being an inlier.
 
 
 # name: <cell-element>
@@ -679,10 +667,9 @@ svmtrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3564
-statistics: model = svmtrain ( labels , data , "libsvm_options")
-statistics: model = svmtrain ( labels , data , "libsvm_options", weights )
-
+# length: 3550
+statistics: model = svmtrain (labels, data, "libsvm_options")
+statistics: model = svmtrain (labels, data, "libsvm_options", weights)
 This function trains an SVM model based on known labels and their corresponding data which comprise an instance matrix.
 
 labels : An m by 1 vector of prediction labels. (type must be double)
@@ -737,9 +724,9 @@ nSV : number of SVs for each class; empty for regression/one-class SVM
 sv_coef : coefficients for SVs in decision functions
 SVs : support vectors
 
-If you do not use the option -b 1 , ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression.
+If you do not use the option -b 1, ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression.
 
-Note on LIBSVM 3.36 Update : This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM ( -s 2 ) when combined with the probability flag ( -b 1 ). For One-Class SVM, the prob_estimates output is a single column vector containing the probability of the instance being an inlier.
+Note on LIBSVM 3.36 Update: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (-s 2) when combined with the probability flag (-b 1). For One-Class SVM, the prob_estimates output is a single column vector containing the probability of the instance being an inlier.
 
 
 # name: <cell-element>
@@ -760,34 +747,33 @@ treepredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1381
-statistics: V = treepredict ( X , Children , CutPredictorIndex , CutPoint , Value )
-statistics: V = treepredict (&hellip;, CutCategories )
-statistics: [ V , node ] = treepredict (&hellip;)
-
+# length: 1355
+statistics: V = treepredict (X, Children, CutPredictorIndex, CutPoint, Value)
+statistics: V = treepredict (&hellip;, CutCategories)
+statistics: [V, node] = treepredict (&hellip;)
 Evaluate a binary decision tree on new data.
 
-V = treepredict ( X , Children ,
-CutPredictorIndex , CutPoint , Value ) sends each row of the
+V = treepredict (X, Children,
+CutPredictorIndex, CutPoint, Value) sends each row of the
 NxP matrix X down the tree and returns the value of the node it
 comes to rest at. It is the prediction engine shared by
-ClassificationTree and RegressionTree , and is not meant to be
+ClassificationTree and RegressionTree, and is not meant to be
 called directly.
 
-Children , CutPredictorIndex and CutPoint are the node table
-returned by treetrain , a zero in Children marking a leaf.
+Children, CutPredictorIndex and CutPoint are the node table
+returned by treetrain, a zero in Children marking a leaf.
 Value carries one row per node: the class probabilities of a
-classifier, in which case V is NxK , or the mean of a
-regression, in which case it is Nx1 .
+classifier, in which case V is NxK, or the mean of a
+regression, in which case it is Nx1.
 
-[ V , node ] = treepredict (&hellip;) also returns the index
+[V, node] = treepredict (&hellip;) also returns the index
 of the node each row came to rest at.
 
 A row is stopped by the first node whose split predictor it is missing, and
 takes that node&rsquo;s value, which is how such a row was held back rather than
 sent to a child while the tree was grown.
 
-CutCategories , the Mx2 cell array treetrain returns,
+CutCategories, the Mx2 cell array treetrain returns,
 gives the levels a categorical cut sends left and right. A row goes the way
 its level is listed, and a row whose level is in neither list, one the node
 never saw, is stopped there like a missing value.
@@ -814,56 +800,55 @@ treetrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2215
-statistics: Mdl = treetrain ( X , Y , W , opts )
-
+# length: 2181
+statistics: Mdl = treetrain (X, Y, W, opts)
 Grow a binary decision tree by recursive partitioning.
 
-Mdl = treetrain ( X , Y , W , opts ) grows a
+Mdl = treetrain (X, Y, W, opts) grows a
 tree on the NxP predictor matrix X and returns it as a structure
 with one row per node. It is the fitting engine shared by
-ClassificationTree and RegressionTree , and is not meant to be
+ClassificationTree and RegressionTree, and is not meant to be
 called directly.
 
 Y is an Nx1 vector of class indices in 1:K when fitting a
 classifier and the response itself when fitting a regression. W is an
 Nx1 vector of observation weights, already adjusted for any prior.
 
-opts is a structure carrying NumClasses , MinParent ,
-MinLeaf , MaxSplits , SplitCriterion ,
-MergeLeaves and, for a regression, QEToler .
+opts is a structure carrying NumClasses, MinParent,
+MinLeaf, MaxSplits, SplitCriterion,
+MergeLeaves and, for a regression, QEToler.
 SplitCriterion is "gdi" or "deviance" for a
 classifier and "mse" for a regression, and it is what selects
 between the two.
 
-NumVariablesToSample , when present, is the number of predictors
+NumVariablesToSample, when present, is the number of predictors
 each node chooses its split from, drawn afresh at every node, and
-Seed , an integer from 0 to 2^32-1 , seeds that draw, so the
+Seed, an integer from 0 to 2^32-1, seeds that draw, so the
 same seed grows the same tree. A node whose predictors hold no valid split
 is a leaf. Without NumVariablesToSample every predictor is tried and
 nothing is drawn.
 
-CategoricalPredictors , when present, lists the columns of X
+CategoricalPredictors, when present, lists the columns of X
 that hold levels rather than numbers, and such a column is split into two
 sets of levels. A regression orders the levels by mean response and two
 classes by the probability of the first class. More classes search every
 partition when the node holds at most MaxNumCategories levels, 10
 by default, and otherwise take MATLAB&rsquo;s heuristics, as
 AlgorithmForCategorical selects: "auto" (default),
-"exact" , "pullleft" , "pca" or
-"ovabyclass" .
+"exact", "pullleft", "pca" or
+"ovabyclass".
 
-The returned structure holds Children , Parent ,
-CutPredictorIndex , CutPoint , CutCategories ,
-IsBranchNode , NodeSize , NodeWeight and
-NumNodes , plus
+The returned structure holds Children, Parent,
+CutPredictorIndex, CutPoint, CutCategories,
+IsBranchNode, NodeSize, NodeWeight and
+NumNodes, plus
 ClassWeight and ClassCount for a classifier or
 NodeMean and NodeError for a regression.
 Nodes are numbered as they are created, so a parent always precedes its
 children.
 
 The cost complexity pruning sequence is not built here. A tree outlives
-the data it was grown on, so the sequence is __treeprune__ , which
+the data it was grown on, so the sequence is __treeprune__, which
 takes a node table and the risk the caller measures by.
 
 See also:
