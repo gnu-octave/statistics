@@ -16,28 +16,28 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactRegressionSVM < PredictiveModel
-## -*- texinfo -*-
-## @deftp {statistics} CompactRegressionSVM
-##
-## Compact Support Vector Machine regression
-##
-## A @code{CompactRegressionSVM} object holds a support vector regression
-## model that has dropped its training data.
-##
-## Create a @code{CompactRegressionSVM} object by using the @code{compact}
-## method of a @code{RegressionSVM} object.
-##
-## The compact model keeps what is needed to answer about new data, the
-## support vectors and their coefficients, the intercept, the kernel, the
-## standardization and the response transform, and drops what only describes
-## the fit: the predictor and response data, the observation weights, the rows
-## used, the observation count, and which training rows became support
-## vectors.  @code{predict} and @code{loss} therefore agree with the full
-## model to the last digit, while @code{resubPredict} and @code{resubLoss} do
-## not exist here, there being no training data left to resubstitute.
-##
-## @seealso{RegressionSVM, fitrsvm}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactRegressionSVM
+  ##
+  ## Compact Support Vector Machine regression
+  ##
+  ## A @code{CompactRegressionSVM} object holds a support vector regression
+  ## model that has dropped its training data.
+  ##
+  ## Create a @code{CompactRegressionSVM} object by using the @code{compact}
+  ## method of a @code{RegressionSVM} object.
+  ##
+  ## The compact model keeps what is needed to answer about new data, the
+  ## support vectors and their coefficients, the intercept, the kernel, the
+  ## standardization and the response transform, and drops what only describes
+  ## the fit: the predictor and response data, the observation weights, the
+  ## rows used, the observation count, and which training rows became support
+  ## vectors.  @code{predict} and @code{loss} therefore agree with the full
+  ## model to the last digit, while @code{resubPredict} and @code{resubLoss}
+  ## do not exist here, there being no training data left to resubstitute.
+  ##
+  ## @seealso{RegressionSVM, fitrsvm}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-

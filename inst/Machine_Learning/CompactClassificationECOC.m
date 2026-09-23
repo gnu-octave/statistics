@@ -16,23 +16,23 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactClassificationECOC < PredictiveModel
-## -*- texinfo -*-
-## @deftypefn {statistics} CompactClassificationECOC
-##
-## A multiclass model built from binary learners, without its training data.
-##
-## A @code{CompactClassificationECOC} carries the binary learners of an error
-## correcting output codes model and the coding matrix that says what each of
-## them was trained to tell apart, and nothing else: the predictor data, the
-## labels and the weights are gone, so it predicts and scores new data but
-## cannot be refitted or cross validated.
-##
-## It comes from @code{compact} on a @code{ClassificationECOC}, and from
-## @code{fitcecoc} itself when the binary learners are linear or kernel
-## classifiers, which carry no training data of their own.
-##
-## @seealso{fitcecoc, ClassificationECOC, designecoc}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftypefn {statistics} CompactClassificationECOC
+  ##
+  ## A multiclass model built from binary learners, without its training data.
+  ##
+  ## A @code{CompactClassificationECOC} carries the binary learners of an error
+  ## correcting output codes model and the coding matrix that says what each of
+  ## them was trained to tell apart, and nothing else: the predictor data, the
+  ## labels and the weights are gone, so it predicts and scores new data but
+  ## cannot be refitted or cross validated.
+  ##
+  ## It comes from @code{compact} on a @code{ClassificationECOC}, and from
+  ## @code{fitcecoc} itself when the binary learners are linear or kernel
+  ## classifiers, which carry no training data of their own.
+  ##
+  ## @seealso{fitcecoc, ClassificationECOC, designecoc}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = protected)
 

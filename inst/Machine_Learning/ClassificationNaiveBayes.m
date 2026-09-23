@@ -16,7 +16,6 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationNaiveBayes < PredictiveModel
-
   ## -*- texinfo -*-
   ## @deftp {statistics} ClassificationNaiveBayes
   ##

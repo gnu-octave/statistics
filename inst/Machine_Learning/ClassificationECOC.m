@@ -16,24 +16,24 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationECOC < PredictiveModel
-## -*- texinfo -*-
-## @deftypefn {statistics} ClassificationECOC
-##
-## A multiclass model built from binary learners.
-##
-## An error correcting output codes model turns a problem of @math{K} classes
-## into a set of two class problems.  A coding matrix gives one column per
-## binary learner saying which classes that learner calls +1, which it calls
-## -1, and which sit it out; a new observation is sent to every learner and
-## given the class whose column of the matrix its scores match most closely.
-##
-## The fit is carried out by the learners themselves, whichever
-## @code{fitcecoc} was asked for, and the decoding by
-## @code{CompactClassificationECOC}, which this class holds the data of a fit
-## on top of.
-##
-## @seealso{fitcecoc, CompactClassificationECOC, designecoc}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftypefn {statistics} ClassificationECOC
+  ##
+  ## A multiclass model built from binary learners.
+  ##
+  ## An error correcting output codes model turns a problem of @math{K} classes
+  ## into a set of two class problems.  A coding matrix gives one column per
+  ## binary learner saying which classes that learner calls +1, which it calls
+  ## -1, and which sit it out; a new observation is sent to every learner and
+  ## given the class whose column of the matrix its scores match most closely.
+  ##
+  ## The fit is carried out by the learners themselves, whichever
+  ## @code{fitcecoc} was asked for, and the decoding by
+  ## @code{CompactClassificationECOC}, which this class holds the data of a fit
+  ## on top of.
+  ##
+  ## @seealso{fitcecoc, CompactClassificationECOC, designecoc}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = protected)
 

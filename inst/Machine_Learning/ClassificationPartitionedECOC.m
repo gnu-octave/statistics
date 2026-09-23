@@ -16,27 +16,27 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationPartitionedECOC
-## -*- texinfo -*-
-## @deftypefn {statistics} ClassificationPartitionedECOC
-##
-## A cross-validated multiclass model built from binary learners.
-##
-## Each fold holds out part of the data, fits an error correcting output codes
-## model on the rest, and answers the part it held out, so every observation
-## is classified by a model that never saw it.
-##
-## It comes from @code{crossval} on a @code{ClassificationECOC}, and from
-## @code{fitcecoc} given any of @qcode{'KFold'}, @qcode{'Holdout'},
-## @qcode{'Leaveout'} or @qcode{'CVPartition'}.
-##
-## This is the one cross-validated class in the package that is not the
-## general @code{ClassificationPartitionedModel}.  It carries
-## @code{CodingMatrix}, @code{BinaryLoss} and @code{BinaryY}, three things
-## the general class has nowhere to put and without which a fold's scores
-## cannot be decoded at all.
-##
-## @seealso{fitcecoc, ClassificationECOC, CompactClassificationECOC}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftypefn {statistics} ClassificationPartitionedECOC
+  ##
+  ## A cross-validated multiclass model built from binary learners.
+  ##
+  ## Each fold holds out part of the data, fits an error correcting output codes
+  ## model on the rest, and answers the part it held out, so every observation
+  ## is classified by a model that never saw it.
+  ##
+  ## It comes from @code{crossval} on a @code{ClassificationECOC}, and from
+  ## @code{fitcecoc} given any of @qcode{'KFold'}, @qcode{'Holdout'},
+  ## @qcode{'Leaveout'} or @qcode{'CVPartition'}.
+  ##
+  ## This is the one cross-validated class in the package that is not the
+  ## general @code{ClassificationPartitionedModel}.  It carries
+  ## @code{CodingMatrix}, @code{BinaryLoss} and @code{BinaryY}, three things
+  ## the general class has nowhere to put and without which a fold's scores
+  ## cannot be decoded at all.
+  ##
+  ## @seealso{fitcecoc, ClassificationECOC, CompactClassificationECOC}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = protected)
 

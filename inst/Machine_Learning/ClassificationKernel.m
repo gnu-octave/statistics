@@ -15,38 +15,37 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} ClassificationKernel
-##
-## Gaussian kernel binary classifier for large data.
-##
-## A @qcode{ClassificationKernel} object maps the predictors into a
-## randomized feature space whose inner product approximates a Gaussian
-## kernel, and then fits a linear model there.  A kernel classifier is
-## therefore as nonlinear as a support vector machine with a Gaussian kernel,
-## while costing what a linear fit costs: nothing of size @math{NxN} is ever
-## formed.
-##
-## The expansion is the random Fourier basis of Rahimi and Recht, drawn once
-## when the model is fitted and kept with it, so @code{predict} maps new data
-## through the same basis.  MATLAB approximates the same kernel by the
-## Fastfood construction, which reaches the same distribution more cheaply;
-## the two are interchangeable in distribution but not draw by draw, and the
-## draws come from different generators in any case, so the scores of a model
-## fitted here and one fitted in MATLAB differ even from the same seed.
-## What does not differ is what they estimate.
-##
-## Like @qcode{ClassificationLinear} the object holds no copy of the training
-## data.  It does hold the basis and the coefficients, so it is bounded by
-## the number of expansion dimensions rather than by the number of
-## observations.
-##
-## Create a @qcode{ClassificationKernel} object with @code{fitckernel}.
-##
-## @seealso{fitckernel, ClassificationLinear, ClassificationSVM}
-## @end deftp
-
 classdef ClassificationKernel < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationKernel
+  ##
+  ## Gaussian kernel binary classifier for large data.
+  ##
+  ## A @qcode{ClassificationKernel} object maps the predictors into a
+  ## randomized feature space whose inner product approximates a Gaussian
+  ## kernel, and then fits a linear model there.  A kernel classifier is
+  ## therefore as nonlinear as a support vector machine with a Gaussian kernel,
+  ## while costing what a linear fit costs: nothing of size @math{NxN} is ever
+  ## formed.
+  ##
+  ## The expansion is the random Fourier basis of Rahimi and Recht, drawn once
+  ## when the model is fitted and kept with it, so @code{predict} maps new data
+  ## through the same basis.  MATLAB approximates the same kernel by the
+  ## Fastfood construction, which reaches the same distribution more cheaply;
+  ## the two are interchangeable in distribution but not draw by draw, and the
+  ## draws come from different generators in any case, so the scores of a model
+  ## fitted here and one fitted in MATLAB differ even from the same seed.
+  ## What does not differ is what they estimate.
+  ##
+  ## Like @qcode{ClassificationLinear} the object holds no copy of the training
+  ## data.  It does hold the basis and the coefficients, so it is bounded by
+  ## the number of expansion dimensions rather than by the number of
+  ## observations.
+  ##
+  ## Create a @qcode{ClassificationKernel} object with @code{fitckernel}.
+  ##
+  ## @seealso{fitckernel, ClassificationLinear, ClassificationSVM}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 

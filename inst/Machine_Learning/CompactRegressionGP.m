@@ -15,34 +15,33 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} CompactRegressionGP
-##
-## Compact Gaussian process regression
-##
-## A @code{CompactRegressionGP} object holds a Gaussian process regression
-## model without its training data, keeping what is needed to predict and
-## dropping the rest.
-##
-## Create a @code{CompactRegressionGP} object by using the @code{compact}
-## method of a @code{RegressionGP} object.
-##
-## A compact model keeps the active set it predicts from, the prediction
-## weights, the covariance function and its parameters, the explicit basis and
-## its coefficients, the noise standard deviation and the standardizing
-## location and scale.  It drops the response, the observation weights, the
-## rows used, the count of observations and the maximized log likelihood, so
-## it can predict but cannot be cross validated, refitted, or asked for its
-## resubstitution loss or its post-fit statistics.
-##
-## The standard deviation and the prediction intervals remain available,
-## because the active set of an exactly fitted model is the whole of the
-## training predictors and the factorization can be rebuilt from it.
-##
-## @seealso{RegressionGP, fitrgp}
-## @end deftp
-
 classdef CompactRegressionGP < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactRegressionGP
+  ##
+  ## Compact Gaussian process regression
+  ##
+  ## A @code{CompactRegressionGP} object holds a Gaussian process regression
+  ## model without its training data, keeping what is needed to predict and
+  ## dropping the rest.
+  ##
+  ## Create a @code{CompactRegressionGP} object by using the @code{compact}
+  ## method of a @code{RegressionGP} object.
+  ##
+  ## A compact model keeps the active set it predicts from, the prediction
+  ## weights, the covariance function and its parameters, the explicit basis
+  ## and its coefficients, the noise standard deviation and the standardizing
+  ## location and scale.  It drops the response, the observation weights, the
+  ## rows used, the count of observations and the maximized log likelihood, so
+  ## it can predict but cannot be cross validated, refitted, or asked for its
+  ## resubstitution loss or its post-fit statistics.
+  ##
+  ## The standard deviation and the prediction intervals remain available,
+  ## because the active set of an exactly fitted model is the whole of the
+  ## training predictors and the factorization can be rebuilt from it.
+  ##
+  ## @seealso{RegressionGP, fitrgp}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 

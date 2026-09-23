@@ -15,35 +15,34 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} ClassificationLinear
-##
-## Linear binary classifier for high dimensional data.
-##
-## A @qcode{ClassificationLinear} object fits a linear model,
-## @code{@var{X} * Beta + Bias}, to a two class problem by minimizing a
-## regularized average loss.  The loss is the hinge loss for a support vector
-## machine and the deviance for a logistic regression, and the penalty is
-## either a ridge or a lasso one.
-##
-## Unlike the other classifiers of this package the object holds no copy of
-## the training data: the coefficients, the intercept and the fitting options
-## are the whole model.  That is what makes it suited to data with more
-## predictors than an in memory kernel matrix could carry, and it is why the
-## class has no @code{compact} method and no resubstitution methods.
-##
-## A vector of regularization strengths fits one model per value in a single
-## object.  @qcode{Beta} is then a @math{PxL} matrix and @qcode{Bias} a
-## @math{1xL} row, every method returns one column per strength, and
-## @code{selectModels} narrows the object down to the strengths worth
-## keeping.
-##
-## Create a @qcode{ClassificationLinear} object with @code{fitclinear}.
-##
-## @seealso{fitclinear, ClassificationKernel, ClassificationSVM}
-## @end deftp
-
 classdef ClassificationLinear < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationLinear
+  ##
+  ## Linear binary classifier for high dimensional data.
+  ##
+  ## A @qcode{ClassificationLinear} object fits a linear model,
+  ## @code{@var{X} * Beta + Bias}, to a two class problem by minimizing a
+  ## regularized average loss.  The loss is the hinge loss for a support vector
+  ## machine and the deviance for a logistic regression, and the penalty is
+  ## either a ridge or a lasso one.
+  ##
+  ## Unlike the other classifiers of this package the object holds no copy of
+  ## the training data: the coefficients, the intercept and the fitting options
+  ## are the whole model.  That is what makes it suited to data with more
+  ## predictors than an in memory kernel matrix could carry, and it is why the
+  ## class has no @code{compact} method and no resubstitution methods.
+  ##
+  ## A vector of regularization strengths fits one model per value in a single
+  ## object.  @qcode{Beta} is then a @math{PxL} matrix and @qcode{Bias} a
+  ## @math{1xL} row, every method returns one column per strength, and
+  ## @code{selectModels} narrows the object down to the strengths worth
+  ## keeping.
+  ##
+  ## Create a @qcode{ClassificationLinear} object with @code{fitclinear}.
+  ##
+  ## @seealso{fitclinear, ClassificationKernel, ClassificationSVM}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 

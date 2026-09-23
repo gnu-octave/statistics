@@ -15,30 +15,29 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} CompactRegressionNeuralNetwork
-##
-## Compact neural network regression
-##
-## A @code{CompactRegressionNeuralNetwork} object holds a neural network
-## regression model that has dropped its training data.
-##
-## Create a @code{CompactRegressionNeuralNetwork} object by using the
-## @code{compact} method of a @code{RegressionNeuralNetwork} object.
-##
-## The compact model keeps what is needed to answer about new data, the layer
-## weights and biases, the activations, the standardization and the response
-## transform, and drops what only describes the fit: the predictor and response
-## data, the observation weights, the rows used, the number of observations and
-## the iteration by iteration training history.  @code{predict} and
-## @code{loss} therefore agree with the full model to the last digit, while
-## @code{resubPredict} and @code{resubLoss} do not exist here, there being no
-## training data left to resubstitute.
-##
-## @seealso{RegressionNeuralNetwork, fitrnet}
-## @end deftp
-
 classdef CompactRegressionNeuralNetwork < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactRegressionNeuralNetwork
+  ##
+  ## Compact neural network regression
+  ##
+  ## A @code{CompactRegressionNeuralNetwork} object holds a neural network
+  ## regression model that has dropped its training data.
+  ##
+  ## Create a @code{CompactRegressionNeuralNetwork} object by using the
+  ## @code{compact} method of a @code{RegressionNeuralNetwork} object.
+  ##
+  ## The compact model keeps what is needed to answer about new data, the layer
+  ## weights and biases, the activations, the standardization and the response
+  ## transform, and drops what only describes the fit: the predictor and
+  ## response data, the observation weights, the rows used, the number of
+  ## observations and the iteration by iteration training history.
+  ## @code{predict} and @code{loss} therefore agree with the full model to the
+  ## last digit, while @code{resubPredict} and @code{resubLoss} do not exist
+  ## here, there being no training data left to resubstitute.
+  ##
+  ## @seealso{RegressionNeuralNetwork, fitrnet}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
