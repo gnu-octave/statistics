@@ -552,150 +552,93 @@ classdef RegressionSVM < PredictiveModel
       this.X = X;
       this.Y = Y;
 
-      ## Set default values before parsing optional parameters
-      SVMtype                 = 'eps_svr';
-      KernelFunction          = 'linear';
-      KernelScale             = 1;
-      KernelOffset            = 0;
-      PolynomialOrder         = 3;
-      BoxConstraint           = 1;
-      Epsilon                 = [];
-      Nu                      = 0.5;
-      CacheSize               = 1000;
-      Tolerance               = 1e-6;
-      Shrinking               = 1;
-      Standardize             = false;
-      ResponseName            = [];
-      PredictorNames          = [];
+      ## Parse optional paired arguments
+      optNames = {'Standardize', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'SVMtype', 'Epsilon', ...
+                  'KernelFunction', 'PolynomialOrder', 'KernelScale', ...
+                  'KernelOffset', 'BoxConstraint', 'Nu', 'CacheSize', ...
+                  'Tolerance', 'Shrinking', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'Epsilon' is the interquartile range of the response over 13.49,
+      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y', and no
+      ## 'ResponseTransform' leaves the response as it is.
+      dfValues = {false, [], [], [], 'eps_svr', [], 'linear', 3, 1, 0, 1, ...
+                  0.5, 1000, 1e-6, 1, []};
+      [Standardize, PredictorNames, ResponseName, RTin, SVMtype, Epsilon, ...
+       KernelFunction, PolynomialOrder, KernelScale, KernelOffset, ...
+       BoxConstraint, Nu, CacheSize, Tolerance, Shrinking, CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      CatPreds = [];
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      if (! (Standardize == true || Standardize == false))
+        error ("RegressionSVM: 'Standardize' must be either true or false.");
+      endif
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("RegressionSVM: 'PredictorNames' must be supplied", ...
+                       " as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && columns (PredictorNames) != columns (X))
+        error (strcat ("RegressionSVM: 'PredictorNames' must have the same", ...
+                       " number of columns as X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error ("RegressionSVM: 'ResponseName' must be a character vector.");
+      endif
+      if (! (ischar (SVMtype) && isrow (SVMtype)))
+        error ("RegressionSVM: 'SVMtype' must be a character vector.");
+      endif
+      SVMtype = tolower (SVMtype);
+      if (! any (strcmp (SVMtype, {'eps_svr', 'nu_svr'})))
+        error ("RegressionSVM: unsupported 'SVMtype'.");
+      endif
+      if (! isempty (Epsilon) &&
+          ! (isnumeric (Epsilon) && isscalar (Epsilon) && Epsilon >= 0))
+        error ("RegressionSVM: 'Epsilon' must be a non-negative scalar.");
+      endif
+      if (! ischar (KernelFunction))
+        error ("RegressionSVM: 'KernelFunction' must be a character vector.");
+      endif
+      KernelFunction = tolower (KernelFunction);
+      if (! any (strcmpi (KernelFunction, ...
+                 {'linear', 'rbf', 'gaussian', 'polynomial', 'sigmoid'})))
+        error ("RegressionSVM: unsupported Kernel function.");
+      endif
+      if (! (isnumeric (PolynomialOrder) && isscalar (PolynomialOrder)
+             && PolynomialOrder > 0 && mod (PolynomialOrder, 1) == 0))
+        error ("RegressionSVM: 'PolynomialOrder' must be a positive integer.");
+      endif
+      if (! (isscalar (KernelScale) && KernelScale > 0))
+        error ("RegressionSVM: 'KernelScale' must be a positive scalar.");
+      endif
+      if (! (isnumeric (KernelOffset) && isscalar (KernelOffset)
+                                      && KernelOffset >= 0))
+        error ("RegressionSVM: 'KernelOffset' must be a non-negative scalar.");
+      endif
+      if (! (isscalar (BoxConstraint) && BoxConstraint > 0))
+        error ("RegressionSVM: 'BoxConstraint' must be a positive scalar.");
+      endif
+      if (! (isscalar (Nu) && Nu > 0 && Nu <= 1))
+        error (strcat ("RegressionSVM: 'Nu' must be a positive scalar in", ...
+                       " the range 0 < Nu <= 1."));
+      endif
+      if (! (isscalar (CacheSize) && CacheSize > 0))
+        error ("RegressionSVM: 'CacheSize' must be a positive scalar.");
+      endif
+      if (! (isscalar (Tolerance) && Tolerance >= 0))
+        error ("RegressionSVM: 'Tolerance' must be a positive scalar.");
+      endif
+      if (! (ismember (Shrinking, [0, 1]) && isscalar (Shrinking)))
+        error ("RegressionSVM: 'Shrinking' must be either 0 or 1.");
+      endif
 
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (Standardize == true || Standardize == false))
-              error (strcat ("RegressionSVM: 'Standardize' must", ...
-                             " be either true or false."));
-            endif
+      if (! isempty (RTin))
+        [this.RTfun, this.ResponseTransform] = ...
+              parseResponseTransform (RTin, 'RegressionSVM');
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("RegressionSVM: 'PredictorNames' must", ...
-                             " be supplied as a cellstring array."));
-            elseif (columns (PredictorNames) != columns (X))
-              error (strcat ("RegressionSVM: 'PredictorNames' must", ...
-                             " have the same number of columns as X."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("RegressionSVM: 'ResponseName' must", ...
-                             " be a character vector."));
-            endif
-
-          case 'responsetransform'
-            name = 'RegressionSVM';
-            [this.RTfun, this.ResponseTransform] = ...
-                  parseResponseTransform (varargin{2}, name);
-
-          case 'svmtype'
-            SVMtype = varargin{2};
-            if (! (ischar (SVMtype) && isrow (SVMtype)))
-              error ("RegressionSVM: 'SVMtype' must be a character vector.");
-            endif
-            SVMtype = tolower (SVMtype);
-            if (! any (strcmp (SVMtype, {'eps_svr', 'nu_svr'})))
-              error ("RegressionSVM: unsupported 'SVMtype'.");
-            endif
-
-          case 'epsilon'
-            Epsilon = varargin{2};
-            if (! (isnumeric (Epsilon) && isscalar (Epsilon) && Epsilon >= 0))
-              error (strcat ("RegressionSVM: 'Epsilon' must be a", ...
-                             " non-negative scalar."));
-            endif
-
-          case 'kernelfunction'
-            KernelFunction = varargin{2};
-            if (! ischar (KernelFunction))
-              error (strcat ("RegressionSVM: 'KernelFunction' must", ...
-                             " be a character vector."));
-            endif
-            KernelFunction = tolower (KernelFunction);
-            if (! any (strcmpi (KernelFunction, ...
-                       {'linear', 'rbf', 'gaussian', 'polynomial', 'sigmoid'})))
-              error ("RegressionSVM: unsupported Kernel function.");
-            endif
-
-          case 'polynomialorder'
-            PolynomialOrder = varargin{2};
-            if (! (isnumeric (PolynomialOrder) && isscalar (PolynomialOrder)
-                   && PolynomialOrder > 0 && mod (PolynomialOrder, 1) == 0))
-              error (strcat ("RegressionSVM: 'PolynomialOrder' must", ...
-                             " be a positive integer."));
-            endif
-
-          case 'kernelscale'
-            KernelScale = varargin{2};
-            if (! (isscalar (KernelScale) && KernelScale > 0))
-              error (strcat ("RegressionSVM: 'KernelScale' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'kerneloffset'
-            KernelOffset = varargin{2};
-            if (! (isnumeric (KernelOffset) && isscalar (KernelOffset)
-                                            && KernelOffset >= 0))
-              error (strcat ("RegressionSVM: 'KernelOffset' must", ...
-                             " be a non-negative scalar."));
-            endif
-
-          case 'boxconstraint'
-            BoxConstraint = varargin{2};
-            if (! (isscalar (BoxConstraint) && BoxConstraint > 0))
-              error (strcat ("RegressionSVM: 'BoxConstraint' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'nu'
-            Nu = varargin{2};
-            if (! (isscalar (Nu) && Nu > 0 && Nu <= 1))
-              error (strcat ("RegressionSVM: 'Nu' must be a positive", ...
-                             " scalar in the range 0 < Nu <= 1."));
-            endif
-
-          case 'cachesize'
-            CacheSize = varargin{2};
-            if (! (isscalar (CacheSize) && CacheSize > 0))
-              error ("RegressionSVM: 'CacheSize' must be a positive scalar.");
-            endif
-
-          case 'tolerance'
-            Tolerance = varargin{2};
-            if (! (isscalar (Tolerance) && Tolerance >= 0))
-              error ("RegressionSVM: 'Tolerance' must be a positive scalar.");
-            endif
-
-          case 'shrinking'
-            Shrinking = varargin{2};
-            if (! (ismember (Shrinking, [0, 1]) && isscalar (Shrinking)))
-              error ("RegressionSVM: 'Shrinking' must be either 0 or 1.");
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionSVM: invalid parameter name", ...
-                           " in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionSVM: invalid optional paired argument.");
+      endif
 
       ## Get number of variables in training data
       ndims_X = columns (X);
@@ -1081,30 +1024,37 @@ classdef RegressionSVM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionSVM.loss: parameter name must be", ...
-                         " a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("RegressionSVM.loss: 'LossFun' must be a", ...
-                           " character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
-                                         {'mse', 'epsiloninsensitive'})))
-            error ("RegressionSVM.loss: unsupported 'LossFun' value.");
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionSVM.loss: 'LossFun' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
+                                     {'mse', 'epsiloninsensitive'})))
+        error ("RegressionSVM.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error ("RegressionSVM.loss: 'Weights' must be a numeric vector.");
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("RegressionSVM.loss: size of 'Weights' must equal", ...
+                       " the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionSVM.loss: invalid optional paired argument.");
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
@@ -1369,32 +1319,6 @@ classdef RegressionSVM < PredictiveModel
         error (strcat ("RegressionSVM.%s: Y must have the same number", ...
                        " of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionSVM.%s: parameter name must be", ...
-                         " a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("RegressionSVM.%s: 'Weights' must be a", ...
-                           " numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("RegressionSVM.%s: size of 'Weights' must", ...
-                           " equal the number of rows in X."), caller);
-          endif
-        else
-          error (strcat ("RegressionSVM.%s: invalid parameter name in", ...
-                         " optional paired arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -1792,7 +1716,7 @@ endclassdef
 %! RegressionSVM (ones (5, 2), ones (5, 1), 'Tolerance', -1)
 %!error<RegressionSVM: 'Shrinking' must be either 0 or 1.> ...
 %! RegressionSVM (ones (5, 2), ones (5, 1), 'Shrinking', 2)
-%!error<RegressionSVM: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionSVM: invalid optional paired argument.> ...
 %! RegressionSVM (ones (5, 2), ones (5, 1), 'Prior', 1)
 
 ## Test input validation for predict and loss
@@ -1828,7 +1752,7 @@ endclassdef
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', {'a'})
 %!error<RegressionSVM.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', [1; 2; 3])
-%!error<RegressionSVM.loss: invalid parameter name in optional paired arguments.> ...
+%!error<RegressionSVM.loss: invalid optional paired argument.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Nope', 1)
 
 ## Test input validation for savemodel

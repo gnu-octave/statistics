@@ -801,50 +801,38 @@ classdef CompactClassificationSVM < PredictiveModel
                        " the same number of rows as X."));
       endif
 
-      ## Set default values before parsing optional parameters
-      LossFun = 'classiferror';
-      Weights = ones (size (X, 1), 1);
+      ## Parse optional paired arguments; 'Weights' are uniform unless given
+      W0 = ones (rows (X), 1);
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'classiferror', W0};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun)))
+        error (strcat ("CompactClassificationSVM.loss: 'LossFun' must be a", ...
+                       " character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                    'classifcost', 'exponential', ...
+                                    'hinge', 'logit', 'mincost', ...
+                                    'quadratic'})))
+        error ("CompactClassificationSVM.loss: unsupported Loss function.");
+      endif
+      if (! (isnumeric (Weights) && isvector (Weights)))
+        error (strcat ("CompactClassificationSVM.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (numel (Weights) != size (X, 1))
+        error (strcat ("CompactClassificationSVM.loss: size of 'Weights'", ...
+                       " must be equal to the number of rows in X."));
+      endif
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun)))
-              error (strcat ("CompactClassificationSVM.loss: 'LossFun'", ...
-                             " must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'classifcost', 'exponential', ...
-                                          'hinge', 'logit', 'mincost', ...
-                                          'quadratic'})))
-              error (strcat ("CompactClassificationSVM.loss:", ...
-                             " unsupported Loss function."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            ## Validate if weights is a numeric vector
-            if (! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat ("CompactClassificationSVM.loss: 'Weights'", ...
-                             " must be a numeric vector."));
-            endif
-
-            ## Check if the size of weights matches the number of rows in X
-            if (numel (Weights) != size (X, 1))
-              error (strcat ("CompactClassificationSVM.loss: size of", ...
-                             " 'Weights' must be equal to the number", ...
-                             " of rows in X."));
-            endif
-
-          otherwise
-            error (strcat ("CompactClassificationSVM.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-          endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationSVM.loss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## Compute the classification score
       ## Y may be the class labels, as this documents and MATLAB
@@ -1334,7 +1322,7 @@ endclassdef
 %! loss (CMdl, [1, 2], 1, 'Weights', 'a')
 %!error<CompactClassificationSVM.loss: size of 'Weights' must be equal to the number of rows in X.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', [1, 2])
-%!error<CompactClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
+%!error<CompactClassificationSVM.loss: invalid optional paired argument.> ...
 %! loss (CMdl, [1, 2], 1, 'some', 'some')
 %!error <CompactClassificationSVM.savemodel: too few input arguments.> ...
 %! savemodel (CompactClassificationSVM ())

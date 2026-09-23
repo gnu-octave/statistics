@@ -1748,48 +1748,35 @@ classdef ClassificationSVM < PredictiveModel
                        " number of rows as X."));
       endif
 
-      ## Set default values before parsing optional parameters
-      LossFun = 'classiferror';
-      Weights = ones (size (X, 1), 1);
+      ## Parse optional paired arguments; 'Weights' are uniform unless given
+      W0 = ones (rows (X), 1);
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'classiferror', W0};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun)))
+        error ("ClassificationSVM.loss: 'LossFun' must be a character vector.");
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                    'classifcost', 'exponential', ...
+                                    'hinge', 'logit', 'mincost', ...
+                                    'quadratic'})))
+        error ("ClassificationSVM.loss: unsupported Loss function.");
+      endif
+      if (! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationSVM.loss: 'Weights' must be a numeric vector.");
+      endif
+      if (numel (Weights) != size (X, 1))
+        error (strcat ("ClassificationSVM.loss: size of 'Weights' must be", ...
+                       " equal to the number of rows in X."));
+      endif
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun)))
-              error (strcat ("ClassificationSVM.loss: 'LossFun'", ...
-                             " must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'classifcost', 'exponential', ...
-                                          'hinge', 'logit', 'mincost', ...
-                                          'quadratic'})))
-              error ("ClassificationSVM.loss: unsupported Loss function.");
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            ## Validate if weights is a numeric vector
-            if (! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat ("ClassificationSVM.loss: 'Weights'", ...
-                             " must be a numeric vector."));
-            endif
-
-            ## Check if the size of weights matches the number of rows in X
-            if (numel (Weights) != size (X, 1))
-              error (strcat ("ClassificationSVM.loss: size of 'Weights'", ...
-                             " must be equal to the number of rows in X."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationSVM.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-          endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationSVM.loss: invalid optional paired argument.");
+      endif
 
       ## Y may be the class labels, which is what this method documents and
       ## what MATLAB accepts, or already the +1/-1 coding the solver works in.
@@ -1939,54 +1926,42 @@ classdef ClassificationSVM < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      ## Set default values before parsing optional parameters
-      LossFun = 'classiferror';
-      ## The training rows keep their weights unless others are given.
-      Weights = this.RawWeights;
-      if (isempty (Weights))
-        Weights = ones (size (this.X, 1), 1);
+      ## Parse optional paired arguments; the training rows keep the weights
+      ## they were fitted with unless others are given
+      W0 = this.RawWeights;
+      if (isempty (W0))
+        W0 = ones (rows (this.X), 1);
+      endif
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'classiferror', W0};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun)))
+        error (strcat ("ClassificationSVM.resubLoss: 'LossFun' must be a", ...
+                       " character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                    'classifcost', 'exponential', ...
+                                    'hinge', 'logit', 'mincost', ...
+                                    'quadratic'})))
+        error ("ClassificationSVM.resubLoss: unsupported Loss function.");
+      endif
+      if (! (isnumeric (Weights) && isvector (Weights)))
+        error (strcat ("ClassificationSVM.resubLoss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (numel (Weights) != size (this.X, 1))
+        error (strcat ("ClassificationSVM.resubLoss: size of 'Weights'", ...
+                       " must be equal to the number of rows in X."));
       endif
 
-      ## Parse extra parameters
-      while (numel (varargin) > 0)
-        switch (tolower (varargin{1}))
-
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! ischar (LossFun))
-              error (strcat ("ClassificationSVM.resubLoss: 'LossFun'", ...
-                             " must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'classifcost', 'exponential', ...
-                                          'hinge', 'logit', 'mincost', ...
-                                          'quadratic'})))
-              error (strcat ("ClassificationSVM.resubLoss: unsupported", ...
-                             " Loss function."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            ## Validate if weights is a numeric vector
-            if (! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat ("ClassificationSVM.resubLoss: 'Weights'", ...
-                             " must be a numeric vector."));
-            endif
-
-            ## Check if the size of weights matches the number of rows in X
-            if (numel (Weights) != size (this.X, 1))
-              error (strcat ("ClassificationSVM.resubLoss: size", ...
-                             " of 'Weights' must be equal to the", ...
-                             " number of rows in X."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationSVM.resubLoss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationSVM.resubLoss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## The loss of the model on its own training data.  This used to
       ## recompute every loss here from this.Y, which holds the labels as
@@ -3223,7 +3198,7 @@ endclassdef
 %!error<ClassificationSVM.loss: size of 'Weights' must be equal to the number> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'Weights', 3)
-%!error<ClassificationSVM.loss: invalid parameter name in optional pair arg> ...
+%!error<ClassificationSVM.loss: invalid optional paired argument.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'some', 'some')
 
@@ -3242,7 +3217,7 @@ endclassdef
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', [1,2,3])
 %!error<ClassificationSVM.resubLoss: size of 'Weights' must be equal to the n> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', 3)
-%!error<ClassificationSVM.resubLoss: invalid parameter name in optional pai> ...
+%!error<ClassificationSVM.resubLoss: invalid optional paired argument.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'some', 'some')
 
 ## Test output for crossval method
