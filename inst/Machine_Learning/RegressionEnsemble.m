@@ -1158,54 +1158,61 @@ function [o, errmsg] = shrinkOptions (args, allowed)
     errmsg = "name-value arguments must be in pairs.";
     return;
   endif
-  for i = 1:2:numel (args)
-    k = [];
-    if (ischar (args{i}))
-      k = find (strcmpi (args{i}, allowed));
-    endif
-    if (isempty (k))
-      errmsg = "invalid parameter name in optional pair arguments.";
+
+  ## Parse optional paired arguments.  Each caller accepts the subset of
+  ## them ALLOWED lists; an option left empty keeps the default above.
+  optNames = {'Lambda', 'MaxIter', 'RelTol', 'WeightColumn', 'Threshold'};
+  [Lambda, MaxIter, RelTol, WeightColumn, Threshold, args] = ...
+         parsePairedArguments (optNames, {[], [], [], [], []}, args(:));
+  given = optNames(! cellfun (@isempty, {Lambda, MaxIter, RelTol, ...
+                                          WeightColumn, Threshold}));
+  if (! isempty (args) || ! all (ismember (lower (given), lower (allowed))))
+    errmsg = "invalid optional paired argument.";
+    return;
+  endif
+
+  ## Validate optional paired arguments
+  if (! isempty (Lambda))
+    if (! (isnumeric (Lambda) && isreal (Lambda) && isvector (Lambda)
+           && all (isfinite (Lambda)) && all (Lambda >= 0)))
+      errmsg = "'Lambda' must be a vector of non-negative numbers.";
       return;
     endif
-    val = args{i+1};
-    switch (allowed{k})
-      case 'Lambda'
-        if (! (isnumeric (val) && isreal (val) && isvector (val)
-               && all (isfinite (val)) && all (val >= 0)))
-          errmsg = "'Lambda' must be a vector of non-negative numbers.";
-          return;
-        endif
-        o.Lambda = double (val(:)');
-      case 'MaxIter'
-        if (! (isnumeric (val) && isscalar (val) && isreal (val)
-               && val >= 1 && val == fix (val)))
-          errmsg = "'MaxIter' must be a positive integer.";
-          return;
-        endif
-        o.MaxIter = double (val);
-      case 'RelTol'
-        if (! (isnumeric (val) && isscalar (val) && isreal (val)
-               && isfinite (val) && val > 0))
-          errmsg = "'RelTol' must be a positive number.";
-          return;
-        endif
-        o.RelTol = double (val);
-      case 'WeightColumn'
-        if (! (isnumeric (val) && isscalar (val) && isreal (val)
-               && val >= 1 && val == fix (val)))
-          errmsg = "'WeightColumn' must be a positive integer.";
-          return;
-        endif
-        o.WeightColumn = double (val);
-      case 'Threshold'
-        if (! (isnumeric (val) && isreal (val) && isvector (val)
-               && all (isfinite (val)) && all (val >= 0)))
-          errmsg = "'Threshold' must hold non-negative numbers.";
-          return;
-        endif
-        o.Threshold = double (val(:)');
-    endswitch
-  endfor
+    o.Lambda = double (Lambda(:)');
+  endif
+  if (! isempty (MaxIter))
+    if (! (isnumeric (MaxIter) && isscalar (MaxIter) && isreal (MaxIter)
+           && MaxIter >= 1 && MaxIter == fix (MaxIter)))
+      errmsg = "'MaxIter' must be a positive integer.";
+      return;
+    endif
+    o.MaxIter = double (MaxIter);
+  endif
+  if (! isempty (RelTol))
+    if (! (isnumeric (RelTol) && isscalar (RelTol) && isreal (RelTol)
+           && isfinite (RelTol) && RelTol > 0))
+      errmsg = "'RelTol' must be a positive number.";
+      return;
+    endif
+    o.RelTol = double (RelTol);
+  endif
+  if (! isempty (WeightColumn))
+    if (! (isnumeric (WeightColumn) && isscalar (WeightColumn)
+           && isreal (WeightColumn) && WeightColumn >= 1
+           && WeightColumn == fix (WeightColumn)))
+      errmsg = "'WeightColumn' must be a positive integer.";
+      return;
+    endif
+    o.WeightColumn = double (WeightColumn);
+  endif
+  if (! isempty (Threshold))
+    if (! (isnumeric (Threshold) && isreal (Threshold) && isvector (Threshold)
+           && all (isfinite (Threshold)) && all (Threshold >= 0)))
+      errmsg = "'Threshold' must hold non-negative numbers.";
+      return;
+    endif
+    o.Threshold = double (Threshold(:)');
+  endif
 
 endfunction
 
@@ -1375,7 +1382,7 @@ endfunction
 %! predict (RegressionEnsemble (X, y, 'NumLearningCycles', 1))
 %!error<RegressionEnsemble.loss: too few input arguments.> ...
 %! loss (RegressionEnsemble (X, y, 'NumLearningCycles', 1), X)
-%!error<RegressionEnsemble.resubLoss: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.resubLoss: invalid optional paired argument.> ...
 %! resubLoss (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 'Foo', 1)
 
 %!test  # MATLAB parity: crossval equals cross-validating at fit time
@@ -1512,8 +1519,10 @@ endfunction
 %! regularize (E, 'MaxIter', 0)
 %!error<RegressionEnsemble.regularize: 'RelTol' must be a positive number.> ...
 %! regularize (E, 'RelTol', 0)
-%!error<RegressionEnsemble.regularize: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.regularize: invalid optional paired argument.> ...
 %! regularize (E, 'Npass', 3)
+%!error<RegressionEnsemble.regularize: invalid optional paired argument.> ...
+%! regularize (E, 'Threshold', 0.1)
 %!error<RegressionEnsemble.regularize: name-value arguments must be in pairs.> ...
 %! regularize (E, 'Lambda')
 %!error<RegressionEnsemble.shrink: 'WeightColumn' must be a positive integer.> ...
@@ -1526,7 +1535,7 @@ endfunction
 %! shrink (E, 'Threshold', [0, 1])
 %!error<RegressionEnsemble.cvshrink: 'Lambda' must be given for an ensemble that has not been regularized.> ...
 %! cvshrink (E)
-%!error<RegressionEnsemble.cvshrink: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.cvshrink: invalid optional paired argument.> ...
 %! cvshrink (E, 'Lambda', 0.1, 'Foo', 1)
 
 %!shared X, yr

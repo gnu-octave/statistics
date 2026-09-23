@@ -487,59 +487,72 @@ classdef CompactRegressionEnsemble < PredictiveModel
       if (mod (numel (args), 2) != 0)
         error ("%s: name-value arguments must be in pairs.", caller);
       endif
+
+      ## Parse optional paired arguments.  Each caller accepts the subset of
+      ## them ALLOWED lists; an option left empty takes its default below:
+      ## every trained learner, every observation for every learner, the
+      ## whole ensemble, uniform weights and the mse loss.
+      optNames = {'Learners', 'UseObsForLearner', 'Mode', 'Weights', ...
+                  'LossFun'};
+      [Learners, U, Mode, Weights, LossFun, args] = ...
+             parsePairedArguments (optNames, {[], [], [], [], []}, args(:));
+      given = optNames(! cellfun (@isempty, {Learners, U, Mode, Weights, ...
+                                              LossFun}));
+      if (! isempty (args) || ! all (ismember (lower (given), lower (allowed))))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
+
+      ## Validate optional paired arguments
       T = this.NumTrained;
       o = struct ('Learners', 1:T, 'U', true (rows (X), T), ...
                   'Mode', 'ensemble', 'Weights', [], 'LossFun', 'mse');
-      for i = 1:2:numel (args)
-        name = args{i};
-        val = args{i+1};
-        if (! (ischar (name) && any (strcmpi (name, allowed))))
-          error ("%s: invalid parameter name in optional pair arguments.", ...
+      if (! isempty (Learners))
+        if (! (isnumeric (Learners) && isvector (Learners)
+               && isreal (Learners) && all (Learners >= 1)
+               && all (Learners <= T)
+               && all (Learners == fix (Learners))))
+          error (strcat ("%s: 'Learners' must be a vector of indices", ...
+                         " of trained learners."), caller);
+        endif
+        o.Learners = double (Learners(:)');
+      endif
+      if (! isempty (U))
+        if (! (islogical (U) && isequal (size (U), [rows(X), T])))
+          error (strcat ("%s: 'UseObsForLearner' must be a logical", ...
+                         " matrix with one row per observation and", ...
+                         " one column per trained learner."), caller);
+        endif
+        o.U = U;
+      endif
+      if (! isempty (Mode))
+        if (! (ischar (Mode) && any (strcmpi (Mode, {'ensemble', ...
+                                                   'cumulative', ...
+                                                   'individual'}))))
+          error (strcat ("%s: 'Mode' must be 'ensemble', 'cumulative'", ...
+                         " or 'individual'."), caller);
+        endif
+        o.Mode = tolower (Mode);
+      endif
+      if (! isempty (Weights))
+        if (! (isnumeric (Weights) && isvector (Weights)
+               && isreal (Weights) && numel (Weights) == rows (X)
+               && all (Weights >= 0)))
+          error (strcat ("%s: 'Weights' must be a nonnegative numeric", ...
+                         " vector with one element per observation."), ...
                  caller);
         endif
-        switch (tolower (name))
-          case 'learners'
-            if (! (isnumeric (val) && isvector (val) && isreal (val)
-                   && all (val >= 1) && all (val <= T)
-                   && all (val == fix (val))))
-              error (strcat ("%s: 'Learners' must be a vector of indices", ...
-                             " of trained learners."), caller);
-            endif
-            o.Learners = double (val(:)');
-          case 'useobsforlearner'
-            if (! (islogical (val) && isequal (size (val), [rows(X), T])))
-              error (strcat ("%s: 'UseObsForLearner' must be a logical", ...
-                             " matrix with one row per observation and", ...
-                             " one column per trained learner."), caller);
-            endif
-            o.U = val;
-          case 'mode'
-            if (! (ischar (val) && any (strcmpi (val, {'ensemble', ...
-                                                     'cumulative', ...
-                                                     'individual'}))))
-              error (strcat ("%s: 'Mode' must be 'ensemble', 'cumulative'", ...
-                             " or 'individual'."), caller);
-            endif
-            o.Mode = tolower (val);
-          case 'weights'
-            if (! (isnumeric (val) && isvector (val) && isreal (val)
-                   && numel (val) == rows (X) && all (val >= 0)))
-              error (strcat ("%s: 'Weights' must be a nonnegative numeric", ...
-                             " vector with one element per observation."), ...
-                     caller);
-            endif
-            o.Weights = double (val(:));
-          case 'lossfun'
-            if (ischar (val) && strcmpi (val, 'mse'))
-              o.LossFun = 'mse';
-            elseif (is_function_handle (val))
-              o.LossFun = val;
-            else
-              error ("%s: 'LossFun' must be 'mse' or a function handle.", ...
-                     caller);
-            endif
-        endswitch
-      endfor
+        o.Weights = double (Weights(:));
+      endif
+      if (! isempty (LossFun))
+        if (ischar (LossFun) && strcmpi (LossFun, 'mse'))
+          o.LossFun = 'mse';
+        elseif (is_function_handle (LossFun))
+          o.LossFun = LossFun;
+        else
+          error ("%s: 'LossFun' must be 'mse' or a function handle.", ...
+                 caller);
+        endif
+      endif
 
     endfunction
 
@@ -661,7 +674,7 @@ endclassdef
 %! predict (C, ones (2, 4))
 %!error<CompactRegressionEnsemble.predict: name-value arguments must be in pairs.> ...
 %! predict (C, X, 'Learners')
-%!error<CompactRegressionEnsemble.predict: invalid parameter name in optional pair arguments.> ...
+%!error<CompactRegressionEnsemble.predict: invalid optional paired argument.> ...
 %! predict (C, X, 'Mode', 'ensemble')
 %!error<CompactRegressionEnsemble.predict: 'Learners' must be a vector of indices of trained learners.> ...
 %! predict (C, X, 'Learners', 5)
