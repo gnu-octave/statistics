@@ -3769,14 +3769,17 @@ endfunction
 %! [pd, x] = partialDependence (Mdl, 2, 'virginica', meas(1:60,:));
 %! assert_equal (pd([1, 50, 100]), [0.01666666667, 0, 0.003333333333], 1e-10);
 %! assert_equal (x([1, 100]), [2.3; 4.4], 1e-12);
-%!test
+%!test  # points of the default grid, rows following y and columns x
 %! load fisheriris
 %! Mdl = fitcknn (meas, species, 'NumNeighbors', 5);
-%! [pd, x, y] = partialDependence (Mdl, [1, 3], 'versicolor');
-%! assert_equal (size (pd), [100, 100]);
-%! assert_equal ([pd(2,1), pd(100,1), pd(1,100), pd(50,60)], ...
-%!               [0, 0.09733333333, 0, 0.9933333333], 1e-10);
-%! assert_equal (y([1, 2, 100]), [1; 1.05959596; 6.9], 1e-8);
+%! gx = linspace (min (meas(:,1)), max (meas(:,1)), 100)';
+%! gy = linspace (min (meas(:,3)), max (meas(:,3)), 100)';
+%! pd = partialDependence (Mdl, [1, 3], 'versicolor', ...
+%!                         'QueryPoints', {gx([1, 2, 60, 100]), ...
+%!                                         gy([1, 2, 50, 100])});
+%! assert_equal (size (pd), [4, 4]);
+%! assert_equal ([pd(1,1), pd(1,2), pd(2,1), pd(4,1), pd(1,4), pd(3,3)], ...
+%!               [0, 0, 0, 0.09733333333, 0, 0.9933333333], 1e-10);
 
 ## Test output for crossval method
 %!shared x, y, obj
