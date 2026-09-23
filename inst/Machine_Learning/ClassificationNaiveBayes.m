@@ -1182,10 +1182,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
       ## Sum the classes in logs: the largest term is factored out so that a
       ## density small enough to underflow still contributes its logarithm.
-      ## Factoring out the largest term keeps a density small enough to
-      ## underflow contributing its logarithm.  Where every class is
-      ## impossible the largest term is -Inf and the factoring is 0/0, so the
-      ## answer is written directly: the density really is zero there.
+      ## Where every class is impossible the largest term is -Inf and the
+      ## factoring is 0/0, so the answer is written directly: the density
+      ## really is zero there.
       Lmax = max (L, [], 2);
       lp = Lmax + log (sum (exp (L - Lmax), 2));
       lp(Lmax == -Inf) = -Inf;

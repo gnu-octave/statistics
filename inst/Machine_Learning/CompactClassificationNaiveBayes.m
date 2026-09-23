@@ -589,6 +589,12 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
     ##
     ## Log unconditional probability density of new data.
     ##
+    ## @code{@var{lp} = logp (@var{obj}, @var{X})} returns one value per
+    ## observation, the logarithm of its density under the fitted model taken
+    ## over all the classes, each weighted by its prior.  A markedly low value
+    ## marks an observation the model finds unlike anything it was trained on,
+    ## whatever class it would be assigned to.
+    ##
     ## @var{X} may also be a table, whose variables are matched to the
     ## predictors the model was fitted on by name and not by position: one
     ## the model was not fitted on is passed over, one it needs and cannot
