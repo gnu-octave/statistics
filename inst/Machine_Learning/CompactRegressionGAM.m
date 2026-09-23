@@ -447,37 +447,35 @@ classdef CompactRegressionGAM < PredictiveModel
         incInt = true;
       endif
 
-      ## Parse optional arguments
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Parse optional paired arguments; interactions are included when the
+      ## model has them
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactRegressionGAM.predict: optional arguments", ...
+                       " must be given in Name-Value pairs."));
+      endif
+      optNames = {'IncludeInteractions', 'Alpha'};
+      dfValues = {incInt, alpha};
+      [incInt, alpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'includeinteractions'
-            tmpInt = varargin{2};
-            if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat ("CompactRegressionGAM.predict:", ...
-                             " includeinteractions must be a logical value."));
-            endif
-            ## Check model for interactions
-            if (tmpInt && ! hasInt)
-              error (strcat ("CompactRegressionGAM.predict: trained model", ...
-                             " does not include any interactions."));
-            endif
-            incInt = tmpInt;
+      ## Validate optional paired arguments
+      if (! islogical (incInt) || (incInt != 0 && incInt != 1))
+        error (strcat ("CompactRegressionGAM.predict: includeinteractions", ...
+                       " must be a logical value."));
+      endif
+      if (incInt && ! hasInt)
+        error (strcat ("CompactRegressionGAM.predict: trained model does", ...
+                       " not include any interactions."));
+      endif
+      if (! (isnumeric (alpha) && isscalar (alpha) && alpha > 0 && alpha < 1))
+        error (strcat ("CompactRegressionGAM.predict: alpha must be a", ...
+                       " scalar value between 0 and 1."));
+      endif
 
-          case 'alpha'
-            alpha = varargin{2};
-            if (! (isnumeric (alpha) && isscalar (alpha)
-                                      && alpha > 0 && alpha < 1))
-              error (strcat ("CompactRegressionGAM.predict: alpha must be", ...
-                             " a scalar value between 0 and 1."));
-            endif
-
-          otherwise
-            error (strcat ("CompactRegressionGAM.predict: invalid NAME in", ...
-                          " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactRegressionGAM.predict: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## Choose whether interactions must be included
       ## The boosted-tree engine keeps its fit as step functions over bins, so
@@ -610,29 +608,37 @@ classdef CompactRegressionGAM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactRegressionGAM.loss: parameter name must", ...
-                         " be a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("CompactRegressionGAM.loss: 'LossFun' must be a", ...
-                           " character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
-            error ("CompactRegressionGAM.loss: unsupported 'LossFun' value.");
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("CompactRegressionGAM.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error ("CompactRegressionGAM.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("CompactRegressionGAM.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("CompactRegressionGAM.loss: size of 'Weights' must", ...
+                       " equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("CompactRegressionGAM.loss: invalid optional paired argument.");
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
@@ -724,32 +730,6 @@ classdef CompactRegressionGAM < PredictiveModel
         error (strcat ("CompactRegressionGAM.%s: Y must have the same", ...
                        " number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactRegressionGAM.%s: parameter name must be", ...
-                         " a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("CompactRegressionGAM.%s: 'Weights' must be a", ...
-                           " numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("CompactRegressionGAM.%s: size of 'Weights'", ...
-                           " must equal the number of rows in X."), caller);
-          endif
-        else
-          error (strcat ("CompactRegressionGAM.%s: invalid parameter name", ...
-                         " in optional paired arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -879,10 +859,14 @@ endfunction
 %! predict (CMr)
 %!error<CompactRegressionGAM.predict: Xfit is empty.> ...
 %! predict (CMr, [])
+%!error<CompactRegressionGAM.predict: invalid optional paired argument.> ...
+%! predict (CMr, xc, 'Bogus', 1)
 %!error<CompactRegressionGAM.loss: too few input arguments.> ...
 %! loss (CMr, xc)
 %!error<CompactRegressionGAM.loss: unsupported 'LossFun' value.> ...
 %! loss (CMr, xc, yc, 'LossFun', 'mad')
+%!error<CompactRegressionGAM.loss: invalid optional paired argument.> ...
+%! loss (CMr, xc, yc, 'Bogus', 1)
 %!error<CompactRegressionGAM.savemodel: too few input arguments.> ...
 %! savemodel (CompactRegressionGAM ())
 %!error<CompactRegressionGAM.savemodel: FNAME must be a character vector.> ...

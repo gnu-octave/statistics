@@ -617,177 +617,146 @@ classdef RegressionNeuralNetwork < PredictiveModel
       this.X = X;
       this.Y = Y;
 
-      ## Set default values before parsing optional parameters
-      Standardize             = false;
-      ResponseName            = [];
-      PredictorNames          = [];
-      LayerSizes              = 10;
-      Activations             = 'relu';
-      OutputLayerActivation   = 'none';
-      LearningRate            = 0.003;
-      IterationLimit          = 1000;
-      DisplayInfo             = false;
-      Solver                  = 'lbfgs';
-      GradientTolerance       = 1e-6;
-      LossTolerance           = 1e-6;
-      StepTolerance           = 1e-6;
-      ## Which of the solver-specific options the caller actually named, so
-      ## that one meant for the other solver can be refused by name.
-      GivenTols               = {};
-      LearningRateGiven       = false;
-
       ## Supported activation functions.  'none' is MATLAB's name for the
       ## identity and is what a regression output layer wants.
       acList = {'linear', 'none', 'sigmoid', 'relu', 'tanh', ...
                 'lrelu', 'prelu', 'elu', 'gelu'};
 
-      ## Parse extra parameters
-      CatPreds = [];
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Parse optional paired arguments
+      optNames = {'Standardize', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'LayerSizes', 'LearningRate', ...
+                  'Activations', 'OutputLayerActivation', 'IterationLimit', ...
+                  'Solver', 'GradientTolerance', 'LossTolerance', ...
+                  'StepTolerance', 'DisplayInfo', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y'; no
+      ## 'ResponseTransform' leaves the response as it is; 'LearningRate' is
+      ## 0.003 and each tolerance 1e-6, empty so that giving one can be
+      ## refused by name when the solver cannot use it.
+      dfValues = {false, [], [], [], 10, [], 'relu', 'none', 1000, 'lbfgs', ...
+                  [], [], [], false, []};
+      [Standardize, PredictorNames, ResponseName, RTin, LayerSizes, ...
+       LearningRate, Activations, OutputLayerActivation, IterationLimit, ...
+       Solver, GradientTolerance, LossTolerance, StepTolerance, DisplayInfo, ...
+       CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (Standardize == true || Standardize == false))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'Standardize' must be either true or false."));
-            endif
+      ## Validate optional paired arguments
+      if (! (Standardize == true || Standardize == false))
+        error (strcat ("RegressionNeuralNetwork: 'Standardize' must be", ...
+                       " either true or false."));
+      endif
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("RegressionNeuralNetwork: 'PredictorNames' must be", ...
+                       " supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && columns (PredictorNames) != columns (X))
+        error (strcat ("RegressionNeuralNetwork: 'PredictorNames' must", ...
+                       " have the same number of columns as X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error (strcat ("RegressionNeuralNetwork: 'ResponseName' must be a", ...
+                       " character vector."));
+      endif
+      if (! (isnumeric (LayerSizes) && isvector (LayerSizes)
+        && all (LayerSizes > 0) && all (mod (LayerSizes, 1) == 0)))
+        error (strcat ("RegressionNeuralNetwork: 'LayerSizes' must be a", ...
+                       " positive integer vector."));
+      endif
+      if (! isempty (LearningRate) &&
+          ! (isnumeric (LearningRate) && isscalar (LearningRate) &&
+             LearningRate > 0))
+        error (strcat ("RegressionNeuralNetwork: 'LearningRate' must be a", ...
+                       " positive scalar."));
+      endif
+      if (! (ischar (Activations) || iscellstr (Activations)))
+        error (strcat ("RegressionNeuralNetwork: 'Activations' must be a", ...
+                       " character vector or a cellstring vector."));
+      endif
+      if (ischar (Activations))
+        if (! any (strcmpi (Activations, acList)))
+          error ("RegressionNeuralNetwork: unsupported 'Activation' function.");
+        endif
+      else
+        if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
+                             Activations, 'UniformOutput', false))))
+          error (strcat ("RegressionNeuralNetwork: unsupported", ...
+                         " 'Activation' functions."));
+        endif
+      endif
+      Activations = tolower (Activations);
+      if (! (ischar (OutputLayerActivation)))
+        error (strcat ("RegressionNeuralNetwork: 'OutputLayerActivation'", ...
+                       " must be a character vector."));
+      endif
+      if (! any (strcmpi (OutputLayerActivation, acList)))
+        error (strcat ("RegressionNeuralNetwork: unsupported", ...
+                       " 'OutputLayerActivation' function."));
+      endif
+      OutputLayerActivation = tolower (OutputLayerActivation);
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+        && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
+        error (strcat ("RegressionNeuralNetwork: 'IterationLimit' must be", ...
+                       " a positive integer."));
+      endif
+      if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
+                                                       'lbfgs'}))))
+        error (strcat ("RegressionNeuralNetwork: 'Solver' must be either", ...
+                       " 'sgd' or 'lbfgs'."));
+      endif
+      Solver = tolower (Solver);
+      if (! isempty (GradientTolerance) &&
+          ! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && GradientTolerance >= 0))
+        error (strcat ("RegressionNeuralNetwork: 'GradientTolerance' must", ...
+                       " be a nonnegative scalar."));
+      endif
+      if (! isempty (LossTolerance) &&
+          ! (isnumeric (LossTolerance) && isscalar (LossTolerance)
+             && ! isnan (LossTolerance)))
+        error (strcat ("RegressionNeuralNetwork: 'LossTolerance' must be a", ...
+                       " real scalar."));
+      endif
+      if (! isempty (StepTolerance) &&
+          ! (isnumeric (StepTolerance) && isscalar (StepTolerance)
+             && StepTolerance >= 0))
+        error (strcat ("RegressionNeuralNetwork: 'StepTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (DisplayInfo == true || DisplayInfo == false))
+        error (strcat ("RegressionNeuralNetwork: 'DisplayInfo' must be", ...
+                       " either true or false."));
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("RegressionNeuralNetwork: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (columns (PredictorNames) != columns (X))
-              error (strcat ("RegressionNeuralNetwork: 'PredictorNames'", ...
-                             " must have the same number of columns as X."));
-            endif
+      if (! isempty (RTin))
+        [this.RTfun, this.ResponseTransform] = ...
+              parseResponseTransform (RTin, 'RegressionNeuralNetwork');
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("RegressionNeuralNetwork: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
+      if (! isempty (args))
+        error ("RegressionNeuralNetwork: invalid optional paired argument.");
+      endif
 
-          case 'responsetransform'
-            name = 'RegressionNeuralNetwork';
-            [this.RTfun, this.ResponseTransform] = ...
-                  parseResponseTransform (varargin{2}, name);
-
-          case 'layersizes'
-            LayerSizes = varargin{2};
-            if (! (isnumeric (LayerSizes) && isvector (LayerSizes)
-              && all (LayerSizes > 0) && all (mod (LayerSizes, 1) == 0)))
-              error (strcat ("RegressionNeuralNetwork: 'LayerSizes'", ...
-                             " must be a positive integer vector."));
-            endif
-
-          case 'learningrate'
-            LearningRate = varargin{2};
-            LearningRateGiven = true;
-            if (! (isnumeric (LearningRate) && isscalar (LearningRate) &&
-                   LearningRate > 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'LearningRate' must be a positive scalar."));
-            endif
-
-          case 'activations'
-            Activations = varargin{2};
-            if (! (ischar (Activations) || iscellstr (Activations)))
-              error (strcat ("RegressionNeuralNetwork: 'Activations'", ...
-                        " must be a character vector or a cellstring vector."));
-            endif
-            if (ischar (Activations))
-              if (! any (strcmpi (Activations, acList)))
-                error (strcat ("RegressionNeuralNetwork: unsupported", ...
-                               " 'Activation' function."));
-              endif
-            else
-              if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
-                                   Activations, 'UniformOutput', false))))
-                error (strcat ("RegressionNeuralNetwork: unsupported", ...
-                               " 'Activation' functions."));
-              endif
-            endif
-            Activations = tolower (Activations);
-
-          case 'outputlayeractivation'
-            OutputLayerActivation = varargin{2};
-            if (! (ischar (OutputLayerActivation)))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                       " 'OutputLayerActivation' must be a character vector."));
-            endif
-            if (! any (strcmpi (OutputLayerActivation, acList)))
-              error (strcat ("RegressionNeuralNetwork: unsupported", ...
-                             " 'OutputLayerActivation' function."));
-            endif
-            OutputLayerActivation = tolower (OutputLayerActivation);
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-              && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'IterationLimit' must be a positive integer."));
-            endif
-
-          case 'solver'
-            Solver = varargin{2};
-            if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
-                                                             'lbfgs'}))))
-              error (strcat ("RegressionNeuralNetwork: 'Solver' must", ...
-                             " be either 'sgd' or 'lbfgs'."));
-            endif
-            Solver = tolower (Solver);
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            GivenTols{end+1} = 'GradientTolerance';
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && GradientTolerance >= 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'GradientTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-
-          case 'losstolerance'
-            LossTolerance = varargin{2};
-            GivenTols{end+1} = 'LossTolerance';
-            if (! (isnumeric (LossTolerance) && isscalar (LossTolerance)
-                   && ! isnan (LossTolerance)))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'LossTolerance' must be a real scalar."));
-            endif
-
-          case 'steptolerance'
-            StepTolerance = varargin{2};
-            GivenTols{end+1} = 'StepTolerance';
-            if (! (isnumeric (StepTolerance) && isscalar (StepTolerance)
-                   && StepTolerance >= 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'StepTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-
-          case 'displayinfo'
-            DisplayInfo = varargin{2};
-            if (! (DisplayInfo == true || DisplayInfo == false))
-              error (strcat ("RegressionNeuralNetwork: 'DisplayInfo'", ...
-                             " must be either true or false."));
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionNeuralNetwork: invalid",...
-                           " parameter name in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## The solver-specific options the caller named, so that one meant for
+      ## the other solver can be refused by name, then their defaults
+      tolNames = {'GradientTolerance', 'LossTolerance', 'StepTolerance'};
+      GivenTols = tolNames(! cellfun (@isempty, {GradientTolerance, ...
+                                                  LossTolerance, ...
+                                                  StepTolerance}));
+      LearningRateGiven = ! isempty (LearningRate);
+      if (isempty (LearningRate))
+        LearningRate = 0.003;
+      endif
+      if (isempty (GradientTolerance))
+        GradientTolerance = 1e-6;
+      endif
+      if (isempty (LossTolerance))
+        LossTolerance = 1e-6;
+      endif
+      if (isempty (StepTolerance))
+        StepTolerance = 1e-6;
+      endif
 
       ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
@@ -1177,31 +1146,38 @@ classdef RegressionNeuralNetwork < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      W = [];
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionNeuralNetwork.loss: parameter name", ...
-                         " must be a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("RegressionNeuralNetwork.loss: 'LossFun' must", ...
-                           " be a character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
-            error (strcat ("RegressionNeuralNetwork.loss: unsupported", ...
-                           " 'LossFun' value."));
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionNeuralNetwork.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error ("RegressionNeuralNetwork.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("RegressionNeuralNetwork.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("RegressionNeuralNetwork.loss: size of 'Weights'", ...
+                       " must equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("RegressionNeuralNetwork.loss: invalid optional", ...
+                       " paired argument."));
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
@@ -1482,34 +1458,6 @@ classdef RegressionNeuralNetwork < PredictiveModel
         error (strcat ("RegressionNeuralNetwork.%s: Y must have the", ...
                        " same number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionNeuralNetwork.%s: parameter name", ...
-                         " must be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("RegressionNeuralNetwork.%s: 'Weights'", ...
-                           " must be a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("RegressionNeuralNetwork.%s: size of", ...
-                           " 'Weights' must equal the number of", ...
-                           " rows in X."), caller);
-          endif
-        else
-          error (strcat ("RegressionNeuralNetwork.%s: invalid", ...
-                         " parameter name in optional paired", ...
-                         " arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -2033,7 +1981,7 @@ endfunction
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'IterationLimit', 2.5)
 %!error<RegressionNeuralNetwork: 'DisplayInfo' must be either true or false.> ...
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'DisplayInfo', 'yes')
-%!error<RegressionNeuralNetwork: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionNeuralNetwork: invalid optional paired argument.> ...
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'Prior', 1)
 %!error<RegressionNeuralNetwork: 'Activations' vector does not match the number of layers.> ...
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'LayerSizes', [4, 4], ...
@@ -2081,9 +2029,9 @@ endfunction
 %! loss (RNNMdl, [1; 2], [2; 4], 'Weights', {'a'})
 %!error<RegressionNeuralNetwork.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Weights', [1; 2; 3])
-%!error<RegressionNeuralNetwork.loss: invalid parameter name in optional paired arguments.> ...
+%!error<RegressionNeuralNetwork.loss: invalid optional paired argument.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Nope', 1)
-%!error<RegressionNeuralNetwork.loss: parameter name must be a character vector.> ...
+%!error<RegressionNeuralNetwork.loss: invalid optional paired argument.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 5, 1)
 
 ## Test input validation for savemodel

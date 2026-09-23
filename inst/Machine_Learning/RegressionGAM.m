@@ -1352,37 +1352,34 @@ classdef RegressionGAM < PredictiveModel
         incInt = true;
       endif
 
-      ## Parse optional arguments
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Parse optional paired arguments; interactions are included when the
+      ## model has them
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionGAM.predict: optional arguments must be", ...
+                       " given in Name-Value pairs."));
+      endif
+      optNames = {'IncludeInteractions', 'Alpha'};
+      dfValues = {incInt, alpha};
+      [incInt, alpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'includeinteractions'
-            tmpInt = varargin{2};
-            if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat ("RegressionGAM.predict: includeinteractions", ...
-                             " must be a logical value."));
-            endif
-            ## Check model for interactions
-            if (tmpInt && ! hasInt)
-              error (strcat ("RegressionGAM.predict: trained model", ...
-                             " does not include any interactions."));
-            endif
-            incInt = tmpInt;
+      ## Validate optional paired arguments
+      if (! islogical (incInt) || (incInt != 0 && incInt != 1))
+        error (strcat ("RegressionGAM.predict: includeinteractions must be", ...
+                       " a logical value."));
+      endif
+      if (incInt && ! hasInt)
+        error (strcat ("RegressionGAM.predict: trained model does not", ...
+                       " include any interactions."));
+      endif
+      if (! (isnumeric (alpha) && isscalar (alpha) && alpha > 0 && alpha < 1))
+        error (strcat ("RegressionGAM.predict: alpha must be a scalar", ...
+                       " value between 0 and 1."));
+      endif
 
-          case 'alpha'
-            alpha = varargin{2};
-            if (! (isnumeric (alpha) && isscalar (alpha)
-                                      && alpha > 0 && alpha < 1))
-              error (strcat ("RegressionGAM.predict: alpha must be a", ...
-                             " scalar value between 0 and 1."));
-            endif
-
-          otherwise
-            error (strcat ("RegressionGAM.predict: invalid NAME in", ...
-                          " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionGAM.predict: invalid optional paired argument.");
+      endif
 
       ## Choose whether interactions must be included.  The reshaping is done
       ## by gamTerms rather than inline, because the training data has to be
@@ -1535,29 +1532,36 @@ classdef RegressionGAM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionGAM.loss: parameter name must be a", ...
-                         " character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("RegressionGAM.loss: 'LossFun' must be a", ...
-                           " character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
-            error ("RegressionGAM.loss: unsupported 'LossFun' value.");
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionGAM.loss: 'LossFun' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error ("RegressionGAM.loss: unsupported 'LossFun' value.");
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error ("RegressionGAM.loss: 'Weights' must be a numeric vector.");
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("RegressionGAM.loss: size of 'Weights' must equal", ...
+                       " the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionGAM.loss: invalid optional paired argument.");
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
@@ -1945,33 +1949,6 @@ classdef RegressionGAM < PredictiveModel
         error (strcat ("RegressionGAM.%s: Y must have the same number of", ...
                        " rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionGAM.%s: parameter name must be a", ...
-                         " character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("RegressionGAM.%s: 'Weights' must be a numeric", ...
-                           " vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("RegressionGAM.%s: size of 'Weights' must equal", ...
-                           " the number of rows in X."), caller);
-          endif
-        else
-          error (strcat ("RegressionGAM.%s: invalid parameter name in", ...
-                         " optional paired arguments."), caller);
-        endif
-      endfor
-
     endfunction
 
     ## Drive the boosted-tree engine: the predictor phase, then a search for
@@ -2953,8 +2930,10 @@ endfunction
 %! predict (RegressionGAM (ones (10,1), ones (10,1)), [])
 %!error<RegressionGAM.predict: Xfit must have the same number of features> ...
 %! predict (RegressionGAM (ones (10,2), ones (10,1)), 2)
-%!error<RegressionGAM.predict: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionGAM.predict: invalid optional paired argument.> ...
 %! predict (RegressionGAM (ones (10,2), ones (10,1)), ones (10,2), 'some', 'some')
+%!error<RegressionGAM.predict: optional arguments must be given in Name-Value pairs.> ...
+%! predict (RegressionGAM (ones (10,2), ones (10,1)), ones (10,2), 'Alpha')
 %!error<RegressionGAM.predict: includeinteractions must be a logical value.> ...
 %! predict (RegressionGAM (ones (10,2), ones (10,1)), ones (10,2), 'includeinteractions', 'some')
 %!error<RegressionGAM.predict: includeinteractions must be a logical value.> ...
@@ -3072,6 +3051,8 @@ endfunction
 %! loss (Mr, xr, yr(1:10))
 %!error<RegressionGAM.loss: unsupported 'LossFun' value.> ...
 %! loss (Mr, xr, yr, 'LossFun', 'mad')
+%!error<RegressionGAM.loss: invalid optional paired argument.> ...
+%! loss (Mr, xr, yr, 'Bogus', 1)
 %!error<RegressionGAM: unrecognized 'ResponseTransform' function.> ...
 %! Mr.ResponseTransform = 'nonsense';
 

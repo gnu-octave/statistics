@@ -1552,29 +1552,30 @@ classdef ClassificationGAM < PredictiveModel
       incInt = hasInt;
       Cost = this.Cost;
 
-      ## Parse optional arguments
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Parse optional paired arguments; interactions are included when the
+      ## model has them
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationGAM.predict: optional arguments must", ...
+                       " be given in Name-Value pairs."));
+      endif
+      optNames = {'IncludeInteractions'};
+      dfValues = {incInt};
+      [incInt, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'includeinteractions'
-            tmpInt = varargin{2};
-            if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat ("ClassificationGAM.predict:", ...
-                             " includeinteractions must be a logical value."));
-            endif
-            ## Check model for interactions
-            if (tmpInt && ! hasInt)
-              error (strcat ("ClassificationGAM.predict: trained model", ...
-                             " does not include any interactions."));
-            endif
-            incInt = tmpInt;
+      ## Validate optional paired arguments
+      if (! islogical (incInt) || (incInt != 0 && incInt != 1))
+        error (strcat ("ClassificationGAM.predict: includeinteractions", ...
+                       " must be a logical value."));
+      endif
+      if (incInt && ! hasInt)
+        error (strcat ("ClassificationGAM.predict: trained model does not", ...
+                       " include any interactions."));
+      endif
 
-          otherwise
-            error (strcat ("ClassificationGAM.predict: invalid NAME in", ...
-                           " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationGAM.predict: invalid optional paired argument.");
+      endif
 
       ## The boosted-tree engine keeps its fit as step functions over bins,
       ## so a term is a lookup rather than a spline evaluation and the whole
@@ -2013,27 +2014,37 @@ classdef ClassificationGAM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, "loss");
 
-      ## Parse optional arguments
-      LossFun = 'mincost';
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
                    'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (ischar (LossFun) && isrow (LossFun)))
-            error (strcat ("ClassificationGAM.loss: 'LossFun' must be", ...
-                           " a character vector."));
-          endif
-          LossFun = tolower (LossFun);
-          if (! any (strcmpi (LossFun, lossnames)))
-            error ("ClassificationGAM.loss: unsupported Loss function.");
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), "loss");
+      if (! (ischar (LossFun) && isrow (LossFun)))
+        error ("ClassificationGAM.loss: 'LossFun' must be a character vector.");
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, lossnames)))
+        error ("ClassificationGAM.loss: unsupported Loss function.");
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error ("ClassificationGAM.loss: 'Weights' must be a numeric vector.");
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("ClassificationGAM.loss: size of 'Weights' must", ...
+                       " equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationGAM.loss: invalid optional paired argument.");
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
       W = W(:) / sum (W);
 
       [label, scores] = predict (this, X);
@@ -2408,32 +2419,6 @@ classdef ClassificationGAM < PredictiveModel
         error (strcat ("ClassificationGAM.%s: Y must have the same number", ...
                        " of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("ClassificationGAM.%s: parameter name must be", ...
-                         " a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("ClassificationGAM.%s: 'Weights' must be a", ...
-                           " numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("ClassificationGAM.%s: size of 'Weights' must", ...
-                           " equal the number of rows in X."), caller);
-          endif
-        else
-          error (strcat ("ClassificationGAM.%s: invalid parameter name in", ...
-                         " optional paired arguments."), caller);
-        endif
-      endfor
     endfunction
 
     ## Determine interactions from Interactions optional parameter
@@ -3527,6 +3512,10 @@ endfunction
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), [])
 %!error<ClassificationGAM.predict: XC must have the same number of predictors as the trained model.> ...
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), 1)
+%!error<ClassificationGAM.predict: optional arguments must be given in Name-Value pairs.> ...
+%! predict (ClassificationGAM (ones (4,2), ones (4,1)), ones (4,2), 'Bogus')
+%!error<ClassificationGAM.predict: invalid optional paired argument.> ...
+%! predict (ClassificationGAM (ones (4,2), ones (4,1)), ones (4,2), 'Bogus', 1)
 
 ## Test crossval method
 ## A numeric response is coded 0/1 for the fitter whatever its own labels
@@ -3909,6 +3898,8 @@ endfunction
 %! loss (Mdl, x, y, 'LossFun', 1)
 %!error<ClassificationGAM.loss: unsupported Loss function.> ...
 %! loss (Mdl, x, y, 'LossFun', 'nonsense')
+%!error<ClassificationGAM.loss: invalid optional paired argument.> ...
+%! loss (Mdl, x, y, 'Bogus', 1)
 
 ## RowsUsed is empty when every observation was used.
 %!test
