@@ -631,27 +631,28 @@ classdef RegressionPartitionedModel
                        " optional arguments are only accepted for a", ...
                        " cross-validated RegressionGP."));
       endif
-      CIAlpha = 0.05;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
-                         " optional arguments must be given in Name-Value", ...
-                         " pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'alpha'
-            CIAlpha = varargin{2};
-            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
-                   CIAlpha >= 0 && CIAlpha <= 1))
-              error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
-                             " 'Alpha' must be a scalar between 0 and 1."));
-            endif
-          otherwise
-            error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
-                           " invalid NAME in optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
+                       " optional arguments must be given in Name-Value", ...
+                       " pairs."));
+      endif
+      ## Parse optional paired arguments
+      optNames = {'Alpha'};
+      dfValues = {0.05};
+      [CIAlpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+             CIAlpha >= 0 && CIAlpha <= 1))
+        error (strcat ("RegressionPartitionedModel.kfoldPredict: 'Alpha'", ...
+                       " must be a scalar between 0 and 1."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("RegressionPartitionedModel.kfoldPredict: invalid", ...
+                       " optional paired argument."));
+      endif
 
       yFit = nan (this.NumObservations, 1);
       if (nargout > 1)
@@ -732,57 +733,39 @@ classdef RegressionPartitionedModel
                        " arguments must be in pairs."));
       endif
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      Mode    = 'average';
-      Folds   = 1:this.KFold;
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("RegressionPartitionedModel.kfoldLoss: parameter", ...
-                         " name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Mode', 'Folds'};
+      dfValues = {'mse', 'average', 1:this.KFold};
+      [LossFun, Mode, Folds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (is_function_handle (LossFun) ||
-                   (ischar (LossFun) && isrow (LossFun))))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " 'LossFun' must be a character vector or", ...
-                             " a function handle."));
-            endif
-            if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
-                                           {'mse', 'epsiloninsensitive'})))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " unsupported 'LossFun' value."));
-            endif
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: 'LossFun'", ...
+                       " must be a character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
+                                     {'mse', 'epsiloninsensitive'})))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: unsupported", ...
+                       " 'LossFun' value."));
+      endif
+      if (! (ischar (Mode) && isrow (Mode) &&
+             any (strcmpi (Mode, {'average', 'individual'}))))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: 'Mode' must", ...
+                       " be either 'average' or 'individual'."));
+      endif
+      if (! (isnumeric (Folds) && isvector (Folds)
+             && all (Folds == fix (Folds))
+             && all (Folds >= 1) && all (Folds <= this.KFold)))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: 'Folds' must", ...
+                       " be a vector of fold indices between 1 and KFold."));
+      endif
 
-          case 'mode'
-            Mode = varargin{2};
-            if (! (ischar (Mode) && isrow (Mode) &&
-                   any (strcmpi (Mode, {'average', 'individual'}))))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " 'Mode' must be either 'average' or", ...
-                             " 'individual'."));
-            endif
-
-          case 'folds'
-            Folds = varargin{2};
-            if (! (isnumeric (Folds) && isvector (Folds)
-                   && all (Folds == fix (Folds))
-                   && all (Folds >= 1) && all (Folds <= this.KFold)))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " 'Folds' must be a vector of fold indices", ...
-                             " between 1 and KFold."));
-            endif
-
-          otherwise
-            error (strcat ("RegressionPartitionedModel.kfoldLoss: invalid", ...
-                           " parameter name in optional paired arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       ## The insensitive tube is a property of a support vector model, so any
       ## other cross-validated model has nothing to measure against.  Answering
@@ -1172,7 +1155,7 @@ endclassdef
 %! load fisheriris; ...
 %! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
 %! kfoldPredict (CVMdl, 'Alpha', 2);
-%!error<RegressionPartitionedModel.kfoldPredict: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionPartitionedModel.kfoldPredict: invalid optional paired argument.> ...
 %! load fisheriris; ...
 %! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
 %! kfoldPredict (CVMdl, 'Bogus', 1);
@@ -1236,7 +1219,7 @@ endclassdef
 %! CVR = crossval (fitrsvm (randn (20, 2), randn (20, 1)), 'KFold', 4);
 %!error<RegressionPartitionedModel.kfoldLoss: Name-Value arguments must be in pairs.> ...
 %! kfoldLoss (CVR, 'Mode')
-%!error<RegressionPartitionedModel.kfoldLoss: parameter name must be a character vector.> ...
+%!error<RegressionPartitionedModel.kfoldLoss: invalid optional paired argument.> ...
 %! kfoldLoss (CVR, 5, 1)
 %!error<RegressionPartitionedModel.kfoldLoss: 'LossFun' must be a character vector or a function handle.> ...
 %! kfoldLoss (CVR, 'LossFun', 5)
@@ -1250,7 +1233,7 @@ endclassdef
 %! kfoldLoss (CVR, 'Folds', 0)
 %!error<RegressionPartitionedModel.kfoldLoss: 'Folds' must be a vector of fold indices between 1 and KFold.> ...
 %! kfoldLoss (CVR, 'Folds', 9)
-%!error<RegressionPartitionedModel.kfoldLoss: invalid parameter name in optional paired arguments.> ...
+%!error<RegressionPartitionedModel.kfoldLoss: invalid optional paired argument.> ...
 %! kfoldLoss (CVR, 'Nope', 1)
 
 ## The insensitive tube belongs to a support vector model only.
